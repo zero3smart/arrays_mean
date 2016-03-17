@@ -1,9 +1,17 @@
 {
-  "name": "arrays-server-js",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "dependencies": {
-    "gcloud": "^0.29.0"
-  }
+    "name": "arrays",
+    "version": "1.0.0",
+    "description": "",
+    "repository": "https://github.com/schemadesign/arrays",
+    "private": true,
+    "main": "local_modules/server/index.js",
+    "engines": {
+      "node": ">=0.12.7"
+    },
+    "scripts" : {
+        
+    },
+    "dependencies": {
+        "gcloud": "^0.29.0"
+    }
 }
