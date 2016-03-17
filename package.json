@@ -1,0 +1,9 @@
+{
+  "name": "arrays-server-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "gcloud": "^0.29.0"
+  }
+}
