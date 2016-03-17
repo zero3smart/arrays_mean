@@ -1,17 +1,18 @@
 {
-    "name": "arrays",
-    "version": "1.0.0",
-    "description": "",
-    "repository": "https://github.com/schemadesign/arrays",
-    "private": true,
-    "main": "local_modules/server/index.js",
-    "engines": {
-      "node": ">=0.12.7"
-    },
-    "scripts" : {
-        
-    },
-    "dependencies": {
-        "gcloud": "^0.29.0"
-    }
+  "name": "arrays",
+  "version": "1.0.0",
+  "description": "",
+  "repository": "https://github.com/schemadesign/arrays",
+  "private": true,
+  "engines": {
+    "node": ">=0.12.7"
+  },
+  "scripts": {
+    "start": "node local_modules/app/app.js",
+    "monitor": "nodemon local_modules/app/app.js",
+    "deploy": "gcloud preview app deploy app.yaml"
+  },
+  "dependencies": {
+    "express": "^4.13.4"
+  }
 }
