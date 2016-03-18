@@ -19,7 +19,7 @@ var dataSourceDescriptions =
         format: DataSourceFormats.CSV,
         title: "New Orleans High Wage Jobs, 2009 - Present",
         fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex) {
-            return ""+rowIndex+"-"+rowObject["RowID"] // TODO: This does not appear to actually be unique for this dataset. Maybe we want to add a counter; where to store counter? pass in context for doc parse?
+            return "" + rowIndex + "-" + rowObject["RowID"]
         // },
         // scheme: {
         //     RowID: ArraysDataTypes.String,
