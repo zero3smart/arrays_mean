@@ -18,8 +18,17 @@ var dataSourceDescriptions =
         import_revision: 1,
         format: DataSourceFormats.CSV,
         title: "New Orleans High Wage Jobs, 2009 - Present",
-        fn_new_rowPrimaryKeyFromRowObject: function(rowObject) {
-            return rowObject["RowID"] // TODO: This does not appear to actually be unique for this dataset. Maybe we want to add a counter; where to store counter? pass in context for doc parse?
+        fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex) {
+            return ""+rowIndex+"-"+rowObject["RowID"] // TODO: This does not appear to actually be unique for this dataset. Maybe we want to add a counter; where to store counter? pass in context for doc parse?
+        // },
+        // scheme: {
+        //     RowID: ArraysDataTypes.String,
+        //     Date: ArraysData.Types.????,
+        //     Year: ArraysData.Types.Year,
+        //     Location: ArraysData.Types.GeoPoint_precursor_string,
+        //     IndicatorName,
+        //     IndicatorValue,
+        //     IndicatorTable
         }
     }    
 ]
@@ -72,12 +81,11 @@ function __new_templateFor_parsed_DocumentObject(sourceDocumentRevisionKey, sour
 
 function _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) 
 {
-    var filename = csvDescription.filename
     const CSV_resources_path_prefix = __dirname + "/resources"
+    var filename = csvDescription.filename
     var filepath = CSV_resources_path_prefix + "/" + filename    
     
     // todo: look up data type scheme here so we can do translation/mapping just below
-    
 
     var parser = parse({delimiter: ','}, function(err, columnNamesAndThenRowObjectValues)
     {
@@ -87,22 +95,22 @@ function _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(csvDescri
         var columnNames = columnNamesAndThenRowObjectValues[0]
         var num_columnNames = columnNames.length
         var num_rows = columnNamesAndThenRowObjectValues.length - 1
-        for (var i = 1 ; i < num_rows ; i++) {
-            var rowObjectValues = columnNamesAndThenRowObjectValues[i]
+        for (var rowIndex = 1 ; rowIndex < num_rows ; rowIndex++) {
+            var rowObjectValues = columnNamesAndThenRowObjectValues[rowIndex]
             if (rowObjectValues.length != num_columnNames) {
                 console.error("❌  Row has different number of values than number of CSV's number of columns. Skipping: ", rowObjectValues)
                 continue
             }
             var rowObject = {}
-            for (var j = 0 ; j < num_columnNames ; j++) {
-                var columnName = columnNames[j]
-                var rowValue = rowObjectValues[j]
+            for (var columnIndex = 0 ; columnIndex < num_columnNames ; columnIndex++) {
+                var columnName = columnNames[columnIndex]
+                var rowValue = rowObjectValues[columnIndex]
               
                 var typeFinalized_rowValue = rowValue // TODO: do type coersion/parsing here with functions
               
                 rowObject["" + columnName] = typeFinalized_rowValue
             }
-            var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject)
+            var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, rowIndex)
             if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
                 console.error("Error: missing pkey on row", rowObject, "with factory accessor", csvDescription.fn_new_rowPrimaryKeyFromRowObject)
 
@@ -114,6 +122,13 @@ function _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(csvDescri
                 dataSourceDocumentRevisionKey: sourceDocumentRevisionKey,
                 row_parameters: rowObject
             }
+            
+            // TODO: put these into mongo asynchronously - don't store them all in mem at once
+            // Huge datasets
+            // Do a find & update or create by primaryKey + sourceDocumentRevisionKey
+            
+            // However, on re-import, flash parsed_rowObjects_keys on stringDocumentObject in case rows change
+            
             parsed_rowObjects.push(parsedObject)
         }
         var stringDocumentObject = __new_templateFor_parsed_DocumentObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjects)
