@@ -1,0 +1,1 @@
+NODE_ENV=development nodemon local_modules/data_ingestion/MVP_CSV_DB_seed.js
