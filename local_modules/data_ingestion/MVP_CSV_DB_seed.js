@@ -1,5 +1,6 @@
-const csv = require("ya-csv")
 const async = require("async")
+const fs = require('fs');
+const parse = require('csv-parse');
 
 // NOTE: Run this from arrays-server-js via bin/_*_MVP_CSV_DB_seed
 //
@@ -28,16 +29,19 @@ async.each(dataSourceDescriptions, _dataSourceParsingFunction, function(err)
 });
 function _dataSourceParsingFunction(dataSourceDescription, callback)
 {
+    
     var dataSource_uid = dataSourceDescription.uid
     var dataSource_import_revision = dataSourceDescription.import_revision
     
     // Generated    
     var dataSourceRevision_pKey = dataSource_uid+"-rev"+dataSource_import_revision
+
+    var dataSource_title = dataSourceDescription.title
     
     var format = dataSourceDescription.format
     switch (format) {
         case DataSourceFormats.CSV:
-            _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(dataSourceDescription, dataSourceRevision_pKey, function(err, stringDocumentObject)
+            _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function(err, stringDocumentObject)
             {
                 if (err) {
                     callback(err)
@@ -57,44 +61,65 @@ function _dataSourceParsingFunction(dataSourceDescription, callback)
     }
 }
 
-function __new_templateFor_parsed_DocumentObject(sourceDocumentRevisionKey, parsed_rowObjects)
+function __new_templateFor_parsed_DocumentObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjects)
 {
     return {
         primaryKey: sourceDocumentRevisionKey,
+        title: sourceDocumentTitle,
         parsed_rowObjects: parsed_rowObjects
     }
 }
 
-function _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(csvDescription, sourceDocumentRevisionKey, fn) 
+function _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) 
 {
     var filename = csvDescription.filename
     const CSV_resources_path_prefix = __dirname + "/resources"
     var filepath = CSV_resources_path_prefix + "/" + filename    
-    var reader = csv.createCsvFileReader(filepath, {
-        columnsFromHeader: true
-    });
-    var parsed_rowObjects = []
-    reader.addListener('data', function(rowObject) 
+    
+    // todo: look up data type scheme here so we can do translation/mapping just below
+    
+
+    var parser = parse({delimiter: ','}, function(err, columnNamesAndThenRowObjectValues)
     {
-        var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject)
-        if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
-            console.error("Error: missing pkey on row", rowObject, "with factory accessor", csvDescription.fn_new_rowPrimaryKeyFromRowObject)
-            
-            return
+        // console.log(columnNamesAndThenRowObjectValues);
+        var parsed_rowObjects = []
+        // 
+        var columnNames = columnNamesAndThenRowObjectValues[0]
+        var num_columnNames = columnNames.length
+        var num_rows = columnNamesAndThenRowObjectValues.length - 1
+        for (var i = 1 ; i < num_rows ; i++) {
+            var rowObjectValues = columnNamesAndThenRowObjectValues[i]
+            if (rowObjectValues.length != num_columnNames) {
+                console.error("❌  Row has different number of values than number of CSV's number of columns. Skipping: ", rowObjectValues)
+                continue
+            }
+            var rowObject = {}
+            for (var j = 0 ; j < num_columnNames ; j++) {
+                var columnName = columnNames[j]
+                var rowValue = rowObjectValues[j]
+              
+                var typeFinalized_rowValue = rowValue // TODO: do type coersion/parsing here with functions
+              
+                rowObject["" + columnName] = typeFinalized_rowValue
+            }
+            var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject)
+            if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
+                console.error("Error: missing pkey on row", rowObject, "with factory accessor", csvDescription.fn_new_rowPrimaryKeyFromRowObject)
+
+                return
+            }
+            var parsedObject =
+            {
+                primaryKey: rowObject_primaryKey,
+                dataSourceDocumentRevisionKey: sourceDocumentRevisionKey,
+                row_parameters: rowObject
+            }
+            parsed_rowObjects.push(parsedObject)
         }
-        var parsedObject = 
-        {
-            primaryKey: rowObject_primaryKey,
-            dataSourceDocumentRevisionKey: sourceDocumentRevisionKey,
-            row_parameters: rowObject
-        }
-        parsed_rowObjects.push(parsedObject)
-    })
-    reader.addListener('end', function()
-    {
-        var stringDocumentObject = __new_templateFor_parsed_DocumentObject(sourceDocumentRevisionKey, parsed_rowObjects)
+        var stringDocumentObject = __new_templateFor_parsed_DocumentObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjects)
         stringDocumentObject.filename = filename
-        
+
         fn(null, stringDocumentObject)
-     })   
+    });
+    fs.createReadStream(filepath).pipe(parser);
 }
