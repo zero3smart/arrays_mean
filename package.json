@@ -16,7 +16,6 @@
     "async": "^1.5.2",
     "body-parser": "^1.15.0",
     "compression": "^1.6.1",
-    "deepcopy": "^0.6.1",
     "express": "^4.13.4",
     "express-form": "^0.12.4",
     "express-nunjucks": "^1.0.0",

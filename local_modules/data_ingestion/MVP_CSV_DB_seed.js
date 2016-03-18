@@ -1,5 +1,4 @@
 const csv = require("ya-csv")
-const deepcopy = require("deepcopy")
 const async = require("async")
 
 // NOTE: Run this from arrays-server-js via bin/_*_MVP_CSV_DB_seed
@@ -87,7 +86,7 @@ function _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(csvDescri
         {
             primaryKey: rowObject_primaryKey,
             dataSourceDocumentRevisionKey: sourceDocumentRevisionKey,
-            row_parameters: deepcopy(rowObject) // think it gets freed otherwise
+            row_parameters: rowObject
         }
         parsed_rowObjects.push(parsedObject)
     })
