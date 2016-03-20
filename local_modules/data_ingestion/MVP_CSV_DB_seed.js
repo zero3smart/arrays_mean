@@ -1,10 +1,16 @@
-const async = require("async")
-const fs = require('fs');
-const parse = require('csv-parse');
-
+//
 // NOTE: Run this from arrays-server-js via bin/_*_MVP_CSV_DB_seed
 //
 // 
+const async = require("async")
+const fs = require('fs');
+const parse = require('csv-parse');
+//
+//
+// Set up application runtime object graph
+var context = require('./import_context').NewHydratedContext() 
+module.exports = context // access app at context.app
+// Defining constants
 var DataSourceFormats = 
 {
     CSV: "csv"
@@ -56,8 +62,12 @@ function _dataSourceParsingFunction(dataSourceDescription, callback)
                     callback(err)
                     return
                 }
-                console.log("📌  TODO: Now persist string document object", stringDocumentObject)
-                
+                console.log("📌  TODO: Now pass import result to string document controller for merge import", stringDocumentObject)
+            
+            // TODO: put these into mongo asynchronously(.. concurrently, too?)
+            // Do a find & update or create by primaryKey + sourceDocumentRevisionKey
+            // However, on re-import, flash parsedRawRowObjects_primaryKeys and thus parse on stringDocumentObject in case rows change
+            
                 callback()
             })
             
@@ -69,16 +79,7 @@ function _dataSourceParsingFunction(dataSourceDescription, callback)
             callback(new Error(errDescStr)); // skip this one
     }
 }
-
-function __new_templateFor_parsed_DocumentObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjects)
-{
-    return {
-        primaryKey: sourceDocumentRevisionKey,
-        title: sourceDocumentTitle,
-        parsed_rowObjects: parsed_rowObjects
-    }
-}
-
+//
 function _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) 
 {
     const CSV_resources_path_prefix = __dirname + "/resources"
@@ -88,9 +89,10 @@ function _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(csvDescri
     // todo: look up data type scheme here so we can do translation/mapping just below
 
     var parser = parse({delimiter: ','}, function(err, columnNamesAndThenRowObjectValues)
-    {
+    { // Is it going to be a memory concern to hold entire large CSV files in memory?
         // console.log(columnNamesAndThenRowObjectValues);
         var parsed_rowObjects = []
+        var parsed_rowObjectPrimaryKeys = []
         // 
         var columnNames = columnNamesAndThenRowObjectValues[0]
         var num_columnNames = columnNames.length
@@ -123,15 +125,10 @@ function _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(csvDescri
                 row_parameters: rowObject
             }
             
-            // TODO: put these into mongo asynchronously - don't store them all in mem at once
-            // Huge datasets
-            // Do a find & update or create by primaryKey + sourceDocumentRevisionKey
-            
-            // However, on re-import, flash parsed_rowObjects_keys on stringDocumentObject in case rows change
-            
             parsed_rowObjects.push(parsedObject)
+            parsed_rowObjectPrimaryKeys.push(rowObject_primaryKey)
         }
-        var stringDocumentObject = __new_templateFor_parsed_DocumentObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjects)
+        var stringDocumentObject = context.raw_string_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjects, parsed_rowObjectPrimaryKeys)
         stringDocumentObject.filename = filename
 
         fn(null, stringDocumentObject)

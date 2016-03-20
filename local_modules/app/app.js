@@ -7,7 +7,7 @@ var app = express();
 //
 //
 // Set up application runtime object graph
-var context = require('./context').NewHydratedContext(app) 
+var context = require('./app_context').NewHydratedContext(app) 
 module.exports = context // access app at context.app
 //
 // Configure app
@@ -40,8 +40,9 @@ app.use(require('compression')())
 app.set('trust proxy', true);
 const helmet = require('helmet')
 app.use(helmet.xframe());
+//
 // Mount routes
-context.routes_controller.MountRoutes() // after app exported
+context.routes_controller.MountRoutes() 
 //
 //
 // Run actual server
