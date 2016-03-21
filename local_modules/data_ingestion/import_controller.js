@@ -1,78 +1,77 @@
 //
-// NOTE: Run this from arrays-server-js via bin/_*_MVP_CSV_DB_seed
 //
 // 
 const async = require("async")
-const fs = require('fs');
-const parse = require('csv-parse');
+const fs = require('fs')
+const parse = require('csv-parse')
+
+const import_datatypes = require('./import_datatypes')
 //
 //
-// Set up application runtime object graph
-var context = require('./import_context').NewHydratedContext() 
-module.exports = context // access app at context.app
-// Defining constants
-var DataSourceFormats = 
-{
-    CSV: "csv"
-}
 //
-var dataSourceDescriptions = 
-[
-    {
-        filename: "NewOrleans_High_Wage_Jobs__2009_-_Present_.csv",
-        uid: "NewOrleans_High_Wage_Jobs__2009_-_Present_.csv",
-        import_revision: 1,
-        format: DataSourceFormats.CSV,
-        title: "New Orleans High Wage Jobs, 2009 - Present",
-        fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex) {
-            return "" + rowIndex + "-" + rowObject["RowID"]
-        // },
-        // scheme: {
-        //     RowID: ArraysDataTypes.String,
-        //     Date: ArraysData.Types.????,
-        //     Year: ArraysData.Types.Year,
-        //     Location: ArraysData.Types.GeoPoint_precursor_string,
-        //     IndicatorName,
-        //     IndicatorValue,
-        //     IndicatorTable
-        }
-    }    
-]
-async.each(dataSourceDescriptions, _dataSourceParsingFunction, function(err) 
+////////////////////////////////////////////////////////////////////////////////
+
+var constructor = function(options, context)
 {
-    console.log("✅  Done.")
-});
-function _dataSourceParsingFunction(dataSourceDescription, callback)
-{
+    var self = this;
+    self.options = options
+    self.context = context
     
+    self._init()
+    
+    return self
+}
+module.exports = constructor
+constructor.prototype._init = function()
+{
+    var self = this;
+    console.log("raw string documents controller is up")
+}
+
+//
+constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescriptions)
+{
+    var self = this
+    async.each(dataSourceDescriptions, function(dataSourceDescription, callback)
+    {
+        self._dataSourceParsingFunction(dataSourceDescription, callback) // so self is accessible within the called function
+    }, function(err) 
+    {
+        console.log("✅  Import done.")
+    });
+}
+constructor.prototype._dataSourceParsingFunction = function(dataSourceDescription, callback)
+{
+    var self = this
     var dataSource_uid = dataSourceDescription.uid
     var dataSource_import_revision = dataSourceDescription.import_revision
-    
+
     // Generated    
     var dataSourceRevision_pKey = dataSource_uid+"-rev"+dataSource_import_revision
 
     var dataSource_title = dataSourceDescription.title
-    
+
     var format = dataSourceDescription.format
     switch (format) {
-        case DataSourceFormats.CSV:
-            _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function(err, stringDocumentObject)
+        case import_datatypes.DataSourceFormats.CSV:
+            console.log("self " , self)
+            self._new_parsed_StringDocumentObject_fromCSVDataSourceDescription(dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function(err, stringDocumentObject)
             {
                 if (err) {
                     callback(err)
                     return
                 }
                 console.log("📌  TODO: Now pass import result to string document controller for merge import", stringDocumentObject)
-            
+        
             // TODO: put these into mongo asynchronously(.. concurrently, too?)
             // Do a find & update or create by primaryKey + sourceDocumentRevisionKey
             // However, on re-import, flash parsedRawRowObjects_primaryKeys and thus parse on stringDocumentObject in case rows change
-            
+        
                 callback()
             })
-            
+        
             break;
-            
+        
         default:
             var errDescStr = "❌  Unrecognized data source format \"" + format + "\"."
             console.error(errDescStr);
@@ -80,12 +79,14 @@ function _dataSourceParsingFunction(dataSourceDescription, callback)
     }
 }
 //
-function _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) 
+constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function(csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) 
 {
+    var self = this
+    
     const CSV_resources_path_prefix = __dirname + "/resources"
     var filename = csvDescription.filename
     var filepath = CSV_resources_path_prefix + "/" + filename    
-    
+
     // todo: look up data type scheme here so we can do translation/mapping just below
 
     var parser = parse({delimiter: ','}, function(err, columnNamesAndThenRowObjectValues)
@@ -107,9 +108,9 @@ function _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(csvDescri
             for (var columnIndex = 0 ; columnIndex < num_columnNames ; columnIndex++) {
                 var columnName = columnNames[columnIndex]
                 var rowValue = rowObjectValues[columnIndex]
-              
+          
                 var typeFinalized_rowValue = rowValue // TODO: do type coersion/parsing here with functions
-              
+          
                 rowObject["" + columnName] = typeFinalized_rowValue
             }
             var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, rowIndex)
@@ -120,18 +121,34 @@ function _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(csvDescri
             }
             var parsedObject =
             {
-                primaryKey: rowObject_primaryKey,
+                primaryKey_withinThisRevision: rowObject_primaryKey,
                 dataSourceDocumentRevisionKey: sourceDocumentRevisionKey,
                 row_parameters: rowObject
             }
-            
-            parsed_rowObjects.push(parsedObject)
+        
+            parsed_rowObjects.push(parsedObject) // TODO: Turn this into a hash by id instead of an array
             parsed_rowObjectPrimaryKeys.push(rowObject_primaryKey)
         }
-        var stringDocumentObject = context.raw_string_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjects, parsed_rowObjectPrimaryKeys)
+        var stringDocumentObject = self.context.raw_string_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjects, parsed_rowObjectPrimaryKeys)
         stringDocumentObject.filename = filename
 
         fn(null, stringDocumentObject)
     });
     fs.createReadStream(filepath).pipe(parser);
 }
+
+
+//
+//
+// function New_templateFor_parsed_DocumentObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjects, parsed_rowObjectPrimaryKeys)
+// {
+//     return {
+//         primaryKey: sourceDocumentRevisionKey,
+//         title: sourceDocumentTitle,
+//         date_of_import: new Date(),
+//         parsed_rowObjects: parsed_rowObjects,
+//         parsed_rowObjectPrimaryKeys: parsed_rowObjectPrimaryKeys
+//     }
+// }
+
+
