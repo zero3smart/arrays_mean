@@ -60,7 +60,7 @@ var dataSourceDescriptions =
                         var now_year = new Date().getFullYear()
                         var asInt = parseInt(input)
                         var wouldDateBeInFuture = asInt + 2000 > now_year
-                        var outYear = asInt + (wouldDateBeInFuture ? 1900 : 2000) // 
+                        var outYear = asInt + (wouldDateBeInFuture ? 1900 : 2000) // if it would be in the future, put it in the past, else, assume it's post 00
 
                         return outYear
                     }
