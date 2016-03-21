@@ -18,5 +18,5 @@ module.exports = constructor
 constructor.prototype._init = function()
 {
     var self = this;
-    console.log("raw row objects documents controller is up")
+    // console.log("raw row objects documents controller is up")
 }

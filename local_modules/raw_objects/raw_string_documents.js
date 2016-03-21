@@ -16,7 +16,7 @@ module.exports = constructor
 constructor.prototype._init = function()
 {
     var self = this;
-    console.log("raw string documents controller is up")
+    // console.log("raw string documents controller is up")
 }
 
 //

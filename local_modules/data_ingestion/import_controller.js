@@ -25,7 +25,7 @@ module.exports = constructor
 constructor.prototype._init = function()
 {
     var self = this;
-    console.log("raw string documents controller is up")
+    // console.log("raw string documents controller is up")
 }
 
 //
@@ -53,14 +53,15 @@ constructor.prototype._dataSourceParsingFunction = function(dataSourceDescriptio
 
     var format = dataSourceDescription.format
     switch (format) {
-        case import_datatypes.DataSourceFormats.CSV:
+        case import_datatypes.DataSource_formats.CSV:
             self._new_parsed_StringDocumentObject_fromCSVDataSourceDescription(dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function(err, stringDocumentObject)
             {
                 if (err) {
                     callback(err)
                     return
                 }
-                console.log("📌  TODO: Now pass import result to string document controller for merge import", stringDocumentObject)
+                console.log("📌  TODO: Now pass import result to string document controller for merge import")
+                console.log("num rows " , stringDocumentObject.parsed_orderedRowObjectPrimaryKeys.length)
         
             // TODO: put these into mongo asynchronously(.. concurrently, too?)
             // Do a find & update or create by primaryKey + sourceDocumentRevisionKey
@@ -81,14 +82,16 @@ constructor.prototype._dataSourceParsingFunction = function(dataSourceDescriptio
 constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function(csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) 
 {
     var self = this
-    
+    //
     const CSV_resources_path_prefix = __dirname + "/resources"
     var filename = csvDescription.filename
-    var filepath = CSV_resources_path_prefix + "/" + filename    
-
-    // todo: look up data type scheme here so we can do translation/mapping just below
-
-    var parser = parse({delimiter: ','}, function(err, columnNamesAndThenRowObjectValues)
+    var filepath = CSV_resources_path_prefix + "/" + filename   
+    //
+    var raw_rowObjects_coersionScheme = csvDescription.raw_rowObjects_coersionScheme // look up data type scheme here
+    // so we can do translation/mapping just below
+    // console.log("raw_rowObjects_coersionScheme " , raw_rowObjects_coersionScheme)
+    //
+    var parser = parse({ delimiter: ',' }, function(err, columnNamesAndThenRowObjectValues)
     { // Is it going to be a memory concern to hold entire large CSV files in memory?
         // console.log(columnNamesAndThenRowObjectValues);
         var parsed_rowObjectsById = []
@@ -99,23 +102,30 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
         var num_rows = columnNamesAndThenRowObjectValues.length - 1
         var contentRowsStartingIndex_inParserFeed = 1
         for (var rowIndex_inParserFeed = contentRowsStartingIndex_inParserFeed ; rowIndex_inParserFeed < num_rows ; rowIndex_inParserFeed++) {
+            var actualRowIndexInDataset = rowIndex_inParserFeed - contentRowsStartingIndex_inParserFeed
             var rowObjectValues = columnNamesAndThenRowObjectValues[rowIndex_inParserFeed]
             if (rowObjectValues.length != num_columnNames) {
-                console.error("❌  Row has different number of values than number of CSV's number of columns. Skipping: ", rowObjectValues)
+                console.error("❌  Error: Row has different number of values than number of CSV's number of columns. Skipping: ", rowObjectValues)
                 continue
             }
             var rowObject = {}
             for (var columnIndex = 0 ; columnIndex < num_columnNames ; columnIndex++) {
-                var columnName = columnNames[columnIndex]
+                var columnName = "" + columnNames[columnIndex]
                 var rowValue = rowObjectValues[columnIndex]
-          
-                var typeFinalized_rowValue = rowValue // TODO: do type coersion/parsing here with functions
-          
-                rowObject["" + columnName] = typeFinalized_rowValue
+                //
+                var typeFinalized_rowValue = rowValue 
+                // now do type coersion/parsing here with functions to finalize
+                if (raw_rowObjects_coersionScheme != null && typeof raw_rowObjects_coersionScheme !== 'undefined') {
+                    var coersionSchemeForKey = raw_rowObjects_coersionScheme[columnName]
+                    if (coersionSchemeForKey != null && typeof coersionSchemeForKey !== 'undefined') {
+                        typeFinalized_rowValue = import_datatypes.NewDateTypeCoercedValue(coersionSchemeForKey, rowValue)
+                    }
+                }          
+                rowObject[columnName] = typeFinalized_rowValue // Now store the finalized value
             }
             var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, rowIndex_inParserFeed)
             if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
-                console.error("Error: missing pkey on row", rowObject, "with factory accessor", csvDescription.fn_new_rowPrimaryKeyFromRowObject)
+                console.error("❌  Error: missing pkey on row", rowObject, "with factory accessor", csvDescription.fn_new_rowPrimaryKeyFromRowObject)
 
                 return
             }
@@ -123,11 +133,12 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
             {
                 primaryKey_withinThisRevision: rowObject_primaryKey, // Queries to find this unique row will have to happen 
                 dataSourceDocumentRevisionKey: sourceDocumentRevisionKey, // by primaryKey_withinThisRevision && dataSourceDocumentRevisionKey
-                row_index: rowIndex_inParserFeed - contentRowsStartingIndex_inParserFeed,
+                row_index: actualRowIndexInDataset,
                 row_parameters: rowObject
             }
+            // console.log("rowObject " , rowObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
-                console.log("❌  Warning: An object with the same primary key, \"" 
+                console.log("‼️  Warning: An object with the same primary key, \"" 
                             + rowObject_primaryKey 
                             + "\" was already found in the parsed row objects cache on import." 
                             + " Use the primary key function to further disambiguate primary keys. Skipping importing this row, .")
