@@ -92,7 +92,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     var parser = parse({delimiter: ','}, function(err, columnNamesAndThenRowObjectValues)
     { // Is it going to be a memory concern to hold entire large CSV files in memory?
         // console.log(columnNamesAndThenRowObjectValues);
-        var parsed_rowObjects = []
+        var parsed_rowObjectsById = []
         var parsed_rowObjectPrimaryKeys = []
         // 
         var columnNames = columnNamesAndThenRowObjectValues[0]
@@ -121,34 +121,20 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
             }
             var parsedObject =
             {
-                primaryKey_withinThisRevision: rowObject_primaryKey,
-                dataSourceDocumentRevisionKey: sourceDocumentRevisionKey,
+                primaryKey_withinThisRevision: rowObject_primaryKey, // Queries to find this unique row will have to happen 
+                dataSourceDocumentRevisionKey: sourceDocumentRevisionKey, // by primaryKey_withinThisRevision && dataSourceDocumentRevisionKey
+                row_index: rowIndex,
                 row_parameters: rowObject
             }
         
-            parsed_rowObjects.push(parsedObject) // TODO: Turn this into a hash by id instead of an array
+            parsed_rowObjectsById[rowObject_primaryKey] = parsedObject
             parsed_rowObjectPrimaryKeys.push(rowObject_primaryKey)
         }
-        var stringDocumentObject = self.context.raw_string_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjects, parsed_rowObjectPrimaryKeys)
+        var stringDocumentObject = self.context.raw_string_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjectsById, parsed_rowObjectPrimaryKeys)
         stringDocumentObject.filename = filename
 
         fn(null, stringDocumentObject)
     });
     fs.createReadStream(filepath).pipe(parser);
 }
-
-
 //
-//
-// function New_templateFor_parsed_DocumentObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjects, parsed_rowObjectPrimaryKeys)
-// {
-//     return {
-//         primaryKey: sourceDocumentRevisionKey,
-//         title: sourceDocumentTitle,
-//         date_of_import: new Date(),
-//         parsed_rowObjects: parsed_rowObjects,
-//         parsed_rowObjectPrimaryKeys: parsed_rowObjectPrimaryKeys
-//     }
-// }
-
-
