@@ -49,13 +49,30 @@ var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private fo
     },
     ToDate: function(inString, options)
     { // -> new Date
-        const moment = require("moment")
+        // Now verify date string..
+        if (inString == "") { // no actual date
+            return undefined
+        }
+        if (inString == "Unknown") { // defined as not defined
+            return undefined
+        }
+        if (inString == "n.d.") { // null as in 'none'
+            return null
+        }
+        // Now verify date parsing format string    
         var dateFormatString = options.format
         if (dateFormatString == "" || dateFormatString == null || typeof dateFormatString === 'undefined') {
             console.error("❌  No format string with which to derive formatted date \"" + inString + "\". Returning undefined.")
             
             return undefined
         }
+        // Instantiate and configure fresh moment module
+        var moment = require("moment") // note, var not const as we're potentially replacing the parse two digit year method here every time
+        var replacement_parseTwoDigitYear_fn = options.replacement_parseTwoDigitYear_fn
+        if (replacement_parseTwoDigitYear_fn != null && typeof replacement_parseTwoDigitYear_fn !== 'undefined') {
+            moment.parseTwoDigitYear = replacement_parseTwoDigitYear_fn
+        }
+        // Parse
         var aMoment = moment(inString, dateFormatString)
         if (aMoment.isValid() == false) {
             console.error("❌  The date \"" + inString + "\" cannot be parsed with the format string \"" + dateFormatString + "\". Returning null.")

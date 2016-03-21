@@ -5,6 +5,7 @@
 //
 //
 const import_datatypes = require('./import_datatypes')
+
 //
 var dataSourceDescriptions = 
 [
@@ -16,27 +17,27 @@ var dataSourceDescriptions =
         title: "MoMA - Artists",
         fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
         {
-            return "" + rowIndex + "-" + rowObject["RowID"]
+            return "" + rowIndex + "-" + rowObject["ConstituentID"]
         },
         raw_rowObjects_coercionScheme:
         {
-            // RowID: { // Not necessary to define "ProxyExisting" operations but to show a "no-op" example…
-            //     do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ProxyExisting
-            // },
-            // Date: {
-            //     do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
-            //     opts: {
-            //         format: "MM/DD/YYYY HH:mm:ss A" // e.g. "01/01/2009 12:00:00 AM"
-            //     }
-            // },
-            // Year: {
-            //     do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
-            //     opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.YearOnly
-            // },
-            // IndicatorValue: {
-            //     do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToInteger
-            // }
-        }
+            BeginDate: {
+                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
+                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.YearOnly
+            },
+            EndDate: {
+                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
+                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.YearOnly
+            }
+        },
+        raw_rowObjects_postCoercion_pipeline: 
+        [
+            function(rowObject, rowIndex) 
+            { // An example of a key rewrite
+                rowObject["Gender"] = rowObject["Code"]
+                delete rowObject["Code"]
+            }
+        ]
     },
     {
         filename: "MoMA_Artworks_v1_jy.csv",
@@ -46,26 +47,29 @@ var dataSourceDescriptions =
         title: "MoMA - Artworks",
         fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
         {
-            return "" + rowIndex + "-" + rowObject["RowID"]
+            return "" + rowIndex + "-" + rowObject["ObjectID"]
         },
         raw_rowObjects_coercionScheme:
         {
-            // RowID: { // Not necessary to define "ProxyExisting" operations but to show a "no-op" example…
-            //     do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ProxyExisting
-            // },
-            // Date: {
-            //     do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
-            //     opts: {
-            //         format: "MM/DD/YYYY HH:mm:ss A" // e.g. "01/01/2009 12:00:00 AM"
-            //     }
-            // },
-            // Year: {
-            //     do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
-            //     opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.YearOnly
-            // },
-            // IndicatorValue: {
-            //     do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToInteger
-            // }
+            DateAcquired: {
+                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
+                opts: {
+                    format: "MM/DD/YY", // e.g. "1/01/2009"
+                    replacement_parseTwoDigitYear_fn: function (input) 
+                    {
+                        var now_year = new Date().getFullYear()
+                        var asInt = parseInt(input)
+                        var wouldDateBeInFuture = asInt + 2000 > now_year
+                        var outYear = asInt + (wouldDateBeInFuture ? 1900 : 2000) // 
+
+                        return outYear
+                    }
+                }
+            },
+            Date: {
+                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
+                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.YearOnly
+            }
         }
     }
     

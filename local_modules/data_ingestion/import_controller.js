@@ -138,7 +138,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
                 row_index: actualRowIndexInDataset,
                 row_parameters: rowObject
             }
-            // console.log("rowObject " , rowObject)
+            // console.log("parsedObject " , parsedObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
                 console.log("‼️  Warning: An object with the same primary key, \"" 
                             + rowObject_primaryKey 
