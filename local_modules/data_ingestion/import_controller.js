@@ -87,9 +87,9 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     var filename = csvDescription.filename
     var filepath = CSV_resources_path_prefix + "/" + filename   
     //
-    var raw_rowObjects_coersionScheme = csvDescription.raw_rowObjects_coersionScheme // look up data type scheme here
+    var raw_rowObjects_coercionScheme = csvDescription.raw_rowObjects_coercionScheme // look up data type scheme here
     // so we can do translation/mapping just below
-    // console.log("raw_rowObjects_coersionScheme " , raw_rowObjects_coersionScheme)
+    // console.log("raw_rowObjects_coercionScheme " , raw_rowObjects_coercionScheme)
     //
     var parser = parse({ delimiter: ',' }, function(err, columnNamesAndThenRowObjectValues)
     { // Is it going to be a memory concern to hold entire large CSV files in memory?
@@ -114,11 +114,11 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
                 var rowValue = rowObjectValues[columnIndex]
                 //
                 var typeFinalized_rowValue = rowValue 
-                // now do type coersion/parsing here with functions to finalize
-                if (raw_rowObjects_coersionScheme != null && typeof raw_rowObjects_coersionScheme !== 'undefined') {
-                    var coersionSchemeForKey = raw_rowObjects_coersionScheme[columnName]
-                    if (coersionSchemeForKey != null && typeof coersionSchemeForKey !== 'undefined') {
-                        typeFinalized_rowValue = import_datatypes.NewDataTypeCoercedValue(coersionSchemeForKey, rowValue)
+                // now do type coercion/parsing here with functions to finalize
+                if (raw_rowObjects_coercionScheme != null && typeof raw_rowObjects_coercionScheme !== 'undefined') {
+                    var coercionSchemeForKey = raw_rowObjects_coercionScheme[columnName]
+                    if (coercionSchemeForKey != null && typeof coercionSchemeForKey !== 'undefined') {
+                        typeFinalized_rowValue = import_datatypes.NewDataTypeCoercedValue(coercionSchemeForKey, rowValue)
                     }
                 }          
                 rowObject[columnName] = typeFinalized_rowValue // Now store the finalized value

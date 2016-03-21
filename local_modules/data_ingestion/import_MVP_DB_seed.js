@@ -1,5 +1,5 @@
 //
-// NOTE: Run this from arrays-server-js via bin/_*_MVP_CSV_DB_seed
+// NOTE: Run this from arrays-server-js via bin/_*_MVP_DB_seed
 //
 // 
 //
@@ -18,23 +18,23 @@ var dataSourceDescriptions =
         {
             return "" + rowIndex + "-" + rowObject["RowID"]
         },
-        raw_rowObjects_coersionScheme: 
+        raw_rowObjects_coercionScheme: 
         {
             RowID: { // Not necessary to define "ProxyExisting" operations but to show a "no-op" example…
-                do: import_datatypes.DataSource_fieldValueDataTypeCoersion_operationsByName.ProxyExisting
+                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ProxyExisting
             },
             Date: {
-                do: import_datatypes.DataSource_fieldValueDataTypeCoersion_operationsByName.ToDate,
+                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
                 opts: {
                     format: "MM/DD/YYYY HH:mm:ss A" // e.g. "01/01/2009 12:00:00 AM"
                 }
             },
             Year: {
-                do: import_datatypes.DataSource_fieldValueDataTypeCoersion_operationsByName.ToDate,
-                opts: import_datatypes.DataSource_fieldValueDataTypeCoersion_optionsPacksByNameByOperationName.ToDate.YearOnly
+                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
+                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.YearOnly
             },
             IndicatorValue: {
-                do: import_datatypes.DataSource_fieldValueDataTypeCoersion_operationsByName.ToInteger
+                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToInteger
             }
         }
     }    

@@ -7,7 +7,7 @@ module.exports.DataSource_formats =
 
 // See "import_MVP_DB_seed" for example of how to use all this
 
-module.exports.DataSource_fieldValueDataTypeCoersion_operationsByName = // For convenience
+module.exports.DataSource_fieldValueDataTypeCoercion_operationsByName = // For convenience
 {
     ProxyExisting: "ProxyExisting", // do nothing - "pass-through"
     ToInteger: "ToInteger",
@@ -15,7 +15,7 @@ module.exports.DataSource_fieldValueDataTypeCoersion_operationsByName = // For c
     ToDate: "ToDate"
 }
 //
-module.exports.DataSource_fieldValueDataTypeCoersion_optionsPacksByNameByOperationName = // For convenience
+module.exports.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName = // For convenience
 {
     ToDate: {
         YearOnly: {
@@ -27,7 +27,7 @@ module.exports.DataSource_fieldValueDataTypeCoersion_optionsPacksByNameByOperati
 //
 //
 //
-var fieldValueDataTypeCoersion_coersionFunctionsByOperationName =  // Private for now
+var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private for now
 { // Note: We're assuming all in-values will be strings, so these are inStrings rather than inValues
     ProxyExisting: function(inString, options) 
     {
@@ -69,15 +69,15 @@ var fieldValueDataTypeCoersion_coersionFunctionsByOperationName =  // Private fo
     }
 }
 // Public: 
-module.exports.NewDataTypeCoercedValue = function(coersionSchemeForKey, rowValue)
+module.exports.NewDataTypeCoercedValue = function(coercionSchemeForKey, rowValue)
 {
-    var operationName = coersionSchemeForKey.do
+    var operationName = coercionSchemeForKey.do
     if (operationName == null || operationName == "" || typeof operationName === 'undefined') {
-        console.error("❌  Illegal, malformed, or missing operation name at key 'do' in coersion scheme. Returning undefined.\ncoersionSchemeForKey:\n", coersionSchemeForKey)
+        console.error("❌  Illegal, malformed, or missing operation name at key 'do' in coercion scheme. Returning undefined.\ncoercionSchemeForKey:\n", coercionSchemeForKey)
         return undefined
     }
-    var operationOptions = coersionSchemeForKey.opts
-    var operationFn = fieldValueDataTypeCoersion_coersionFunctionsByOperationName[operationName]
+    var operationOptions = coercionSchemeForKey.opts
+    var operationFn = fieldValueDataTypeCoercion_coercionFunctionsByOperationName[operationName]
     var coercedValue = operationFn(rowValue, operationOptions)
     
     return coercedValue
