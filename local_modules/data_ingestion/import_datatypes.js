@@ -53,10 +53,17 @@ var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private fo
         if (inString == "") { // no actual date
             return undefined
         }
-        if (inString == "Unknown") { // defined as not defined
+        if (inString == "Unknown" || inString == "unknown" 
+            || inString == "Unkown" || inString == "unkown"
+        || inString == "Various" || inString == "various"
+        || inString == "N/A" || inString == "n/a") { // defined as not defined
             return undefined
         }
-        if (inString == "n.d.") { // null as in 'none'
+        if (inString == "n.d." 
+            || inString == "n.d"
+        || inString == "(n.d.)"
+        || inString == "n. d."
+        || inString == "no date") { // null as in 'none'
             return null
         }
         // Now verify date parsing format string    

@@ -60,18 +60,18 @@ constructor.prototype._dataSourceParsingAndImportingFunction = function(dataSour
                     callback(err)
                     return
                 }
-                console.log("📌  TODO: Now pass import result to string document controller for merge import")
-                console.log("💬  num rows " , stringDocumentObject.parsed_orderedRowObjectPrimaryKeys.length)
-        
-            // TODO: put these into mongo asynchronously(.. concurrently, too?)
-            // Do a find & update or create by primaryKey + sourceDocumentRevisionKey
-            // However, on re-import, flash parsedRawRowObjects_primaryKeys and thus parse on stringDocumentObject in case rows change
-        
-                callback()
+                self.context.raw_string_documents_controller.ImportAndPersistTemplateForPersistableObject(stringDocumentObject, function(err, record)
+                {
+                    if (err) {
+                        callback(err)
+                        return
+                    }
+                    callback()
+                })
             })
-        
-            break;
-        
+            
+            break
+                    
         default:
             var errDescStr = "❌  Unrecognized data source format \"" + format + "\"."
             console.error(errDescStr);
