@@ -70,8 +70,7 @@ constructor.prototype._dataSourceParsingAndImportingFunction = function(dataSour
                 })
             })
             
-            break
-                    
+            break        
         default:
             var errDescStr = "❌  Unrecognized data source format \"" + format + "\"."
             console.error(errDescStr);
@@ -131,13 +130,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
 
                 return
             }
-            var parsedObject =
-            {
-                primaryKey_withinThisRevision: rowObject_primaryKey, // Queries to find this unique row will have to happen 
-                dataSourceDocumentRevisionKey: sourceDocumentRevisionKey, // by primaryKey_withinThisRevision && dataSourceDocumentRevisionKey
-                row_index: actualRowIndexInDataset,
-                row_parameters: rowObject
-            }
+            var parsedObject = self.context.raw_row_objects_controller.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, actualRowIndexInDataset, rowObject)
             // console.log("parsedObject " , parsedObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
                 console.log("‼️  Warning: An object with the same primary key, \"" 

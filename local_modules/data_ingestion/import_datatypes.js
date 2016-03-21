@@ -18,7 +18,7 @@ module.exports.DataSource_fieldValueDataTypeCoercion_operationsByName = // For c
 module.exports.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName = // For convenience
 {
     ToDate: {
-        YearOnly: {
+        FourDigitYearOnly: {
             format: "YYYY"
         }
     }

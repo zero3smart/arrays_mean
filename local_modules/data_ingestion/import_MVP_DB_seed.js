@@ -23,11 +23,11 @@ var dataSourceDescriptions =
         {
             BeginDate: {
                 do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
-                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.YearOnly
+                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.FourDigitYearOnly
             },
             EndDate: {
                 do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
-                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.YearOnly
+                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.FourDigitYearOnly
             }
         },
         raw_rowObjects_postCoercion_pipeline: 
@@ -40,9 +40,9 @@ var dataSourceDescriptions =
         ]
     },
     {
-        filename: "MoMA_Artworks_v1_jy.csv",
-        uid: "MoMA_Artworks_v1_jy.csv",
-        import_revision: 1,
+        filename: "MoMA_Artworks_v2_jy.csv",
+        uid: "MoMA_Artworks CSV",
+        import_revision: 2,
         format: import_datatypes.DataSource_formats.CSV,
         title: "MoMA - Artworks",
         fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
@@ -54,21 +54,12 @@ var dataSourceDescriptions =
             DateAcquired: {
                 do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
                 opts: {
-                    format: "MM/DD/YY", // e.g. "1/01/2009"
-                    replacement_parseTwoDigitYear_fn: function (input) 
-                    {
-                        var now_year = new Date().getFullYear()
-                        var asInt = parseInt(input)
-                        var wouldDateBeInFuture = asInt + 2000 > now_year
-                        var outYear = asInt + (wouldDateBeInFuture ? 1900 : 2000) // if it would be in the future, put it in the past, else, assume it's post 00
-
-                        return outYear
-                    }
+                    format: "MM/DD/YYYY" // e.g. "1/01/2009"
                 }
             },
             Date: {
                 do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
-                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.YearOnly
+                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.FourDigitYearOnly
             }
         }
     }
@@ -98,7 +89,7 @@ var dataSourceDescriptions =
     //         },
     //         Year: {
     //             do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
-    //             opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.YearOnly
+    //             opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.FourDigitYearOnly
     //         },
     //         IndicatorValue: {
     //             do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToInteger
