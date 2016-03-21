@@ -31,7 +31,7 @@ var dataSourceDescriptions =
             },
             Year: {
                 do: import_datatypes.DataSource_fieldValueDataTypeCoersion_operationsByName.ToDate,
-                opts: import_datatypes.DataSource_fieldValueDataTypeCoersion_optionsPacksByOperationName.ToDate.YearOnly
+                opts: import_datatypes.DataSource_fieldValueDataTypeCoersion_optionsPacksByNameByOperationName.ToDate.YearOnly
             },
             IndicatorValue: {
                 do: import_datatypes.DataSource_fieldValueDataTypeCoersion_operationsByName.ToInteger

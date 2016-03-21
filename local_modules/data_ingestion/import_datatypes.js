@@ -15,7 +15,7 @@ module.exports.DataSource_fieldValueDataTypeCoersion_operationsByName = // For c
     ToDate: "ToDate"
 }
 //
-module.exports.DataSource_fieldValueDataTypeCoersion_optionsPacksByOperationName = // For convenience
+module.exports.DataSource_fieldValueDataTypeCoersion_optionsPacksByNameByOperationName = // For convenience
 {
     ToDate: {
         YearOnly: {
