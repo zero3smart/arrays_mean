@@ -69,7 +69,7 @@ var fieldValueDataTypeCoersion_coersionFunctionsByOperationName =  // Private fo
     }
 }
 // Public: 
-module.exports.NewDateTypeCoercedValue = function(coersionSchemeForKey, rowValue)
+module.exports.NewDataTypeCoercedValue = function(coersionSchemeForKey, rowValue)
 {
     var operationName = coersionSchemeForKey.do
     if (operationName == null || operationName == "" || typeof operationName === 'undefined') {

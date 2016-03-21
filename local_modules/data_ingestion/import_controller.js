@@ -118,7 +118,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
                 if (raw_rowObjects_coersionScheme != null && typeof raw_rowObjects_coersionScheme !== 'undefined') {
                     var coersionSchemeForKey = raw_rowObjects_coersionScheme[columnName]
                     if (coersionSchemeForKey != null && typeof coersionSchemeForKey !== 'undefined') {
-                        typeFinalized_rowValue = import_datatypes.NewDateTypeCoercedValue(coersionSchemeForKey, rowValue)
+                        typeFinalized_rowValue = import_datatypes.NewDataTypeCoercedValue(coersionSchemeForKey, rowValue)
                     }
                 }          
                 rowObject[columnName] = typeFinalized_rowValue // Now store the finalized value
