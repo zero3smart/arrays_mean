@@ -33,14 +33,14 @@ constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescrip
 {
     var self = this
     async.each(dataSourceDescriptions, function(dataSourceDescription, callback)
-    {
-        self._dataSourceParsingFunction(dataSourceDescription, callback) // so self is accessible within the called function
+    { // we wrap the function with this closure here so 'self' (this) is accessible within the called function
+        self._dataSourceParsingAndImportingFunction(dataSourceDescription, callback) 
     }, function(err) 
     {
         console.log("✅  Import done.")
     });
 }
-constructor.prototype._dataSourceParsingFunction = function(dataSourceDescription, callback)
+constructor.prototype._dataSourceParsingAndImportingFunction = function(dataSourceDescription, callback)
 {
     var self = this
     var dataSource_uid = dataSourceDescription.uid
@@ -61,7 +61,7 @@ constructor.prototype._dataSourceParsingFunction = function(dataSourceDescriptio
                     return
                 }
                 console.log("📌  TODO: Now pass import result to string document controller for merge import")
-                console.log("num rows " , stringDocumentObject.parsed_orderedRowObjectPrimaryKeys.length)
+                console.log("💬  num rows " , stringDocumentObject.parsed_orderedRowObjectPrimaryKeys.length)
         
             // TODO: put these into mongo asynchronously(.. concurrently, too?)
             // Do a find & update or create by primaryKey + sourceDocumentRevisionKey
@@ -85,6 +85,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     //
     const CSV_resources_path_prefix = __dirname + "/resources"
     var filename = csvDescription.filename
+    console.log("💬  Will import \"" + filename + "\"")
     var filepath = CSV_resources_path_prefix + "/" + filename   
     //
     var raw_rowObjects_coercionScheme = csvDescription.raw_rowObjects_coercionScheme // look up data type scheme here
@@ -94,6 +95,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     var parser = parse({ delimiter: ',' }, function(err, columnNamesAndThenRowObjectValues)
     { // Is it going to be a memory concern to hold entire large CSV files in memory?
         // console.log(columnNamesAndThenRowObjectValues);
+        console.log("💬  Opened \"" + filename + "\"")
         var parsed_rowObjectsById = []
         var parsed_orderedRowObjectPrimaryKeys = []
         // 
