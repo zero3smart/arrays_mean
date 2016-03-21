@@ -54,7 +54,6 @@ constructor.prototype._dataSourceParsingFunction = function(dataSourceDescriptio
     var format = dataSourceDescription.format
     switch (format) {
         case import_datatypes.DataSourceFormats.CSV:
-            console.log("self " , self)
             self._new_parsed_StringDocumentObject_fromCSVDataSourceDescription(dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function(err, stringDocumentObject)
             {
                 if (err) {
@@ -93,13 +92,14 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     { // Is it going to be a memory concern to hold entire large CSV files in memory?
         // console.log(columnNamesAndThenRowObjectValues);
         var parsed_rowObjectsById = []
-        var parsed_rowObjectPrimaryKeys = []
+        var parsed_orderedRowObjectPrimaryKeys = []
         // 
         var columnNames = columnNamesAndThenRowObjectValues[0]
         var num_columnNames = columnNames.length
         var num_rows = columnNamesAndThenRowObjectValues.length - 1
-        for (var rowIndex = 1 ; rowIndex < num_rows ; rowIndex++) {
-            var rowObjectValues = columnNamesAndThenRowObjectValues[rowIndex]
+        var contentRowsStartingIndex_inParserFeed = 1
+        for (var rowIndex_inParserFeed = contentRowsStartingIndex_inParserFeed ; rowIndex_inParserFeed < num_rows ; rowIndex_inParserFeed++) {
+            var rowObjectValues = columnNamesAndThenRowObjectValues[rowIndex_inParserFeed]
             if (rowObjectValues.length != num_columnNames) {
                 console.error("❌  Row has different number of values than number of CSV's number of columns. Skipping: ", rowObjectValues)
                 continue
@@ -113,7 +113,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
           
                 rowObject["" + columnName] = typeFinalized_rowValue
             }
-            var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, rowIndex)
+            var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, rowIndex_inParserFeed)
             if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
                 console.error("Error: missing pkey on row", rowObject, "with factory accessor", csvDescription.fn_new_rowPrimaryKeyFromRowObject)
 
@@ -123,14 +123,21 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
             {
                 primaryKey_withinThisRevision: rowObject_primaryKey, // Queries to find this unique row will have to happen 
                 dataSourceDocumentRevisionKey: sourceDocumentRevisionKey, // by primaryKey_withinThisRevision && dataSourceDocumentRevisionKey
-                row_index: rowIndex,
+                row_index: rowIndex_inParserFeed - contentRowsStartingIndex_inParserFeed,
                 row_parameters: rowObject
             }
-        
+            if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
+                console.log("❌  Warning: An object with the same primary key, \"" 
+                            + rowObject_primaryKey 
+                            + "\" was already found in the parsed row objects cache on import." 
+                            + " Use the primary key function to further disambiguate primary keys. Skipping importing this row, .")
+                
+                continue
+            }
             parsed_rowObjectsById[rowObject_primaryKey] = parsedObject
-            parsed_rowObjectPrimaryKeys.push(rowObject_primaryKey)
+            parsed_orderedRowObjectPrimaryKeys.push(rowObject_primaryKey)
         }
-        var stringDocumentObject = self.context.raw_string_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjectsById, parsed_rowObjectPrimaryKeys)
+        var stringDocumentObject = self.context.raw_string_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys)
         stringDocumentObject.filename = filename
 
         fn(null, stringDocumentObject)

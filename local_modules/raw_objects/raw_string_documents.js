@@ -20,13 +20,13 @@ constructor.prototype._init = function()
 }
 
 //
-constructor.prototype.New_templateForPersistableObject = function(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjectsById, parsed_rowObjectPrimaryKeys)
+constructor.prototype.New_templateForPersistableObject = function(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys)
 {
     return {
         primaryKey: sourceDocumentRevisionKey,
         title: sourceDocumentTitle,
         dateOfLastImport: new Date(),
         parsed_rowObjectsById: parsed_rowObjectsById,
-        parsed_rowObjectPrimaryKeys: parsed_rowObjectPrimaryKeys
+        parsed_orderedRowObjectPrimaryKeys: parsed_orderedRowObjectPrimaryKeys
     }
 }
