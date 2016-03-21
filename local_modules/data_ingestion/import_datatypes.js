@@ -14,7 +14,7 @@ module.exports.DataSource_fieldValueDataTypeCoersion_operationsByName = // For c
     ToFloat: "ToFloat",
     ToDate: "ToDate"
 }
-
+//
 module.exports.DataSource_fieldValueDataTypeCoersion_optionsPacksByOperationName = // For convenience
 {
     ToDate: {
@@ -23,12 +23,12 @@ module.exports.DataSource_fieldValueDataTypeCoersion_optionsPacksByOperationName
         }
     }
 }
-
-
-// Note: We're assuming all in-values will be strings, so these are inStrings rather than inValues
-
+//
+//
+//
+//
 var fieldValueDataTypeCoersion_coersionFunctionsByOperationName =  // Private for now
-{
+{ // Note: We're assuming all in-values will be strings, so these are inStrings rather than inValues
     ProxyExisting: function(inString, options) 
     {
         return inString
@@ -68,8 +68,7 @@ var fieldValueDataTypeCoersion_coersionFunctionsByOperationName =  // Private fo
         return parsedValue
     }
 }
-
-
+// Public: 
 module.exports.NewDateTypeCoercedValue = function(coersionSchemeForKey, rowValue)
 {
     var operationName = coersionSchemeForKey.do
