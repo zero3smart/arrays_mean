@@ -51,25 +51,29 @@ RawSourceDocument_model.on('index', function(error)
         console.log("✅  Built indices for '" + modelName + "'")
     }
 });
-var native_RawSourceDocument_collection = RawSourceDocument_model.collection
 //
-constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(persistableObjectTemplate, fn)
+//
+constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persistableObjectTemplate, fn)
 {
     var self = this
     var raw_row_objects_controller = self.context.raw_row_objects_controller
     var parsed_orderedRowObjectPrimaryKeys = persistableObjectTemplate.parsed_orderedRowObjectPrimaryKeys
     var parsed_rowObjectsById = persistableObjectTemplate.parsed_rowObjectsById
     var ordered_rawRowObject_mongoIds = []
+    // TODO: replace this with a bulk upsert:
+    var num_parsed_orderedRowObjectPrimaryKeys = parsed_orderedRowObjectPrimaryKeys.length
+    console.log("🔁  Upserting " + num_parsed_orderedRowObjectPrimaryKeys + " parsed rows for \"" + persistableObjectTemplate.title + "\".")
+    
     async.each(parsed_orderedRowObjectPrimaryKeys, function(rowObjectId, callback)
     {
         var rowObject = parsed_rowObjectsById[rowObjectId]
         // console.log("Row object ", rowObjectId, rowObject)
-        raw_row_objects_controller.CreateOrUpdateWithTemplateForPersistableObject(rowObject, function(err, rawRowObject)
+        raw_row_objects_controller.UpsertWithOnePersistableObjectTemplate(rowObject, function(err, rawRowObject)
         {
             if (err) {
                 console.log("❌  Error: An error while processing a row object: ", err)
                 callback(err)
-                
+            
                 return
             }
             ordered_rawRowObject_mongoIds.push(rawRowObject._id)
@@ -80,7 +84,7 @@ constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(
         if (err) {
             console.log("❌  Error: Raw row object processing error: ", err)
             fn(err, null)
-        
+    
             return // early
         }
         console.log("Number of ordered_rawRowObject_mongoIds: " , ordered_rawRowObject_mongoIds.length)

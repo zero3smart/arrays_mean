@@ -52,9 +52,9 @@ RawRowObject_model.on('index', function(error)
         console.log("✅  Built indices for '" + modelName + "'")
     }
 });
-var native_RawRowObject_collection = RawRowObject_model.collection
 //
-constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(persistableObjectTemplate,  fn)
+// Singular:
+constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persistableObjectTemplate,  fn)
 {
     var self = this
     var persistableObjectTemplate_primaryKey_withinThisRevision = persistableObjectTemplate.primaryKey_withinThisRevision
@@ -85,3 +85,12 @@ constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(
         fn(err, doc)
     });
 }
+//
+// Plural:
+constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(persistableObjectTemplates, fn)
+{
+    mongoose_client.BlockUntilMongoDBConnected(function()
+    { // ^ we block because we're going to work with the native connection
+    })
+}
+//
