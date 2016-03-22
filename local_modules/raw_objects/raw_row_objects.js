@@ -116,7 +116,6 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
         }
         var writeConcern =
         {
-            fsync: true,
             upsert: true
         }
         bulkOperation.execute(writeConcern, function(err, result)
