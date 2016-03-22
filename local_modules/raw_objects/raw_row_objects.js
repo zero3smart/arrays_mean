@@ -42,7 +42,7 @@ var RawRowObject_scheme = Schema({
 })
 var RawRowObject_model = mongoose.model('RawRowObject', RawRowObject_scheme)
 //
-constructor.prototype.CreateOrUpdateTemplateForPersistableObject = function(persistableObjectTemplate,  fn)
+constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(persistableObjectTemplate,  fn)
 {
     var self = this
     var persistableObjectTemplate_primaryKey_withinThisRevision = persistableObjectTemplate.primaryKey_withinThisRevision

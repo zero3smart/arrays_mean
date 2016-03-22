@@ -43,7 +43,7 @@ var RawRawSourceDocumentument_scheme = Schema({
 })
 var RawRawSourceDocumentument_model = mongoose.model('RawRawSourceDocumentument', RawRawSourceDocumentument_scheme)
 //
-constructor.prototype.CreateOrUpdateTemplateForPersistableObject = function(persistableObjectTemplate, fn)
+constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(persistableObjectTemplate, fn)
 {
     var self = this
     var raw_row_objects_controller = self.context.raw_row_objects_controller
@@ -54,7 +54,7 @@ constructor.prototype.CreateOrUpdateTemplateForPersistableObject = function(pers
     {
         var rowObject = parsed_rowObjectsById[rowObjectId]
         // console.log("Row object ", rowObjectId, rowObject)
-        raw_row_objects_controller.CreateOrUpdateTemplateForPersistableObject(rowObject, function(err, rawRowObject)
+        raw_row_objects_controller.CreateOrUpdateWithTemplateForPersistableObject(rowObject, function(err, rawRowObject)
         {
             if (err) {
                 console.log("❌  Error: An error while processing a row object: ", err)

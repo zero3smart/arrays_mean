@@ -66,7 +66,7 @@ constructor.prototype._dataSourceParsingAndImportingFunction = function(dataSour
                     callback(err)
                     return
                 }
-                self.context.raw_source_documents_controller.CreateOrUpdateTemplateForPersistableObject(stringDocumentObject, function(err, record)
+                self.context.raw_source_documents_controller.CreateOrUpdateWithTemplateForPersistableObject(stringDocumentObject, function(err, record)
                 {
                     if (err) {
                         callback(err)
