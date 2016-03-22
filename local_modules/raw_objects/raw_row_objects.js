@@ -47,7 +47,9 @@ var RawRowObject_model = mongoose.model(modelName, RawRowObject_scheme)
 RawRowObject_model.on('index', function(error) 
 {
     if (error != null) {
-        console.log("MongoDB index build error for '" + modelName + "':", error);
+        console.log("❌  MongoDB index build error for '" + modelName + "':", error);
+    } else {
+        console.log("✅  Built indices for '" + modelName + "'")
     }
 });
 var native_RawRowObject_collection = RawRowObject_model.collection

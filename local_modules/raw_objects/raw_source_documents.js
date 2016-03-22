@@ -46,7 +46,9 @@ var RawSourceDocument_model = mongoose.model(modelName, RawSourceDocument_scheme
 RawSourceDocument_model.on('index', function(error) 
 {
     if (error != null) {
-        console.log("MongoDB index build error for '" + modelName + "':", error);
+        console.log("❌  MongoDB index build error for '" + modelName + "':", error);
+    } else {
+        console.log("✅  Built indices for '" + modelName + "'")
     }
 });
 var native_RawSourceDocument_collection = RawSourceDocument_model.collection
