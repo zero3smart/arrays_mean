@@ -87,14 +87,16 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
 }
 //
 // Plural/Bulk:
-constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordered_persistableObjectTemplateUIDs, persistableObjectTemplatesByUID, fn)
-{ // fn: (err, )
+constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordered_persistableObjectTemplateUIDs, persistableObjectTemplatesByUID, dataSourceDocumentRevisionKey, fn)
+{ // fn: (err, [Schema.Types.ObjectId])
+    var self = this
     // console.log("💬  Going to upsert " + ordered_persistableObjectTemplateUIDs.length + " ordered_persistableObjectTemplateUIDs")
     mongoose_client.BlockUntilMongoDBConnected(function()
     { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         var nativeCollection = RawRowObject_model.collection
         var bulkOperation = nativeCollection.initializeUnorderedBulkOp()
         var num_ordered_persistableObjectTemplateUIDs = ordered_persistableObjectTemplateUIDs.length
+                
         for (var rowIdx = 0 ; rowIdx < num_ordered_persistableObjectTemplateUIDs ; rowIdx++) {            
             var rowUID = ordered_persistableObjectTemplateUIDs[rowIdx]
             var persistableObjectTemplate = persistableObjectTemplatesByUID[rowUID]
@@ -103,13 +105,14 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
             var bulkOperationQueryFragment = 
             {
                 primaryKey_withinThisRevision: persistableObjectTemplate_primaryKey_withinThisRevision,
-                dataSourceDocumentRevisionKey: persistableObjectTemplate_dataSourceDocumentRevisionKey
+                dataSourceDocumentRevisionKey: dataSourceDocumentRevisionKey
             }
-            bulkOperation.find(bulkOperationQueryFragment).upsert().update({ $set: persistableObjectTemplate });
+            bulkOperation.find(bulkOperationQueryFragment).upsert().update({ $set: persistableObjectTemplate })
         }
-        var writeConcern = 
+        var writeConcern =
         {
-            fsync: true
+            // fsync: true,
+            // upsert: true
         }
         bulkOperation.execute(writeConcern, function(err, result)
         {
@@ -120,10 +123,69 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
                 return
             }
             console.log("✅  Saved raw row objects.")
-            console.log("💬  Bulk upsert result ", JSON.stringify(result, true, '\t'))
-        
-            var ordered_rawRowObject_mongoIds = [] // TODO: obtain these
+            self._new_orderedMongoIds_fromOrderedCompoundKeyComponents(ordered_persistableObjectTemplateUIDs, dataSourceDocumentRevisionKey, function(err, ordered_mongoIds)
+            {
+                if (err) {
+                    return // early
+                }
+                console.log("Obtained " + ordered_mongoIds.length + " row object ordered_mongoIds.")
+                fn(null, ordered_mongoIds)
+            })        
         })
     })
 }
 //
+//
+//
+constructor.prototype._new_orderedMongoIds_fromOrderedCompoundKeyComponents = function(ordered_primaryKeys_withinThisRevision, dataSourceDocumentRevisionKey, fn) 
+{ // -> [Schema.Types.ObjectId]    
+    
+    var queryDescription = 
+    {
+        primaryKey_withinThisRevision: {
+            $in: ordered_primaryKeys_withinThisRevision
+        },
+        dataSourceDocumentRevisionKey: dataSourceDocumentRevisionKey
+    }
+    var fieldsToSelect = 
+    { 
+        primaryKey_withinThisRevision: 1, 
+        _id: 1
+    }
+    RawRowObject_model.find(queryDescription).select(fieldsToSelect).exec(function(err, docs)
+    {
+        if (err) {
+            console.log("❌ Error while retrieving raw row object ids: ", err);
+            fn(err, null)
+            
+            return
+        }
+        // Now we must order them (unfortunately this is slow)
+        var ordered_docs = docs.sort(function(doc1, doc2)
+        {
+            var doc1_primaryKey = doc1.primaryKey_withinThisRevision
+            var doc2_primaryKey = doc2.primaryKey_withinThisRevision
+            var idxOfDoc1PKeyInOrdering = ordered_primaryKeys_withinThisRevision.indexOf(doc1_primaryKey)
+            var idxOfDoc2PKeyInOrdering = ordered_primaryKeys_withinThisRevision.indexOf(doc2_primaryKey)
+            if (idxOfDoc1PKeyInOrdering == -1) {
+                console.error("❌ Code Fault: idxOfDoc1PKeyInOrdering didn't exist in ordered_primaryKeys_withinThisRevision");
+                
+                return 0
+            }
+            if (idxOfDoc2PKeyInOrdering == -1) {
+                console.error("❌ Code Fault: idxOfDoc2PKeyInOrdering didn't exist in ordered_primaryKeys_withinThisRevision");
+                
+                return 0
+            }
+            
+            return idxOfDoc2PKeyInOrdering - idxOfDoc1PKeyInOrdering
+        })
+        var ordered_mongoIds = ordered_docs.map(function(element)
+        { // aggregate ids
+            return element._id
+        })
+        console.log("ordered_mongoIds from ", ordered_mongoIds)
+        
+        fn(null, ordered_mongoIds)
+    })    
+}

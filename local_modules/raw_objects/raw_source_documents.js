@@ -56,6 +56,8 @@ RawSourceDocument_model.on('index', function(error)
 constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persistableObjectTemplate, fn)
 {
     var self = this
+    var persistableObjectTemplate_primaryKey = persistableObjectTemplate.primaryKey
+    
     var raw_row_objects_controller = self.context.raw_row_objects_controller
     var parsed_orderedRowObjectPrimaryKeys = persistableObjectTemplate.parsed_orderedRowObjectPrimaryKeys
     var parsed_rowObjectsById = persistableObjectTemplate.parsed_rowObjectsById
@@ -64,7 +66,7 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     console.log("🔁  Upserting " + num_parsed_orderedRowObjectPrimaryKeys + " parsed rows for \"" + persistableObjectTemplate.title + "\".")
     
     // Bulk for performance at volume
-    raw_row_objects_controller.UpsertWithManyPersistableObjectTemplates(parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, function(err, ordered_rawRowObject_mongoIds)
+    raw_row_objects_controller.UpsertWithManyPersistableObjectTemplates(parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, persistableObjectTemplate_primaryKey, function(err, ordered_rawRowObject_mongoIds)
     {
         if (err) {
             console.log("❌  Error: An error while saving raw row objects: ", err)

@@ -38,7 +38,7 @@ constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescrip
     }, function(err) 
     {
         if (err) {
-            console.log("❌ Error encountered:", err)
+            console.log("❌  Error encountered:", err)
             process.exit(1) // error code
         } else {
             console.log("✅  Import done.")
@@ -100,7 +100,12 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     //
     var parser = parse({ delimiter: ',' }, function(err, columnNamesAndThenRowObjectValues)
     { // Is it going to be a memory concern to hold entire large CSV files in memory?
-        // console.log(columnNamesAndThenRowObjectValues);
+        if (err) {
+            // console.log(err);
+            fn(err, null)
+            
+            return
+        }
         console.log("💬  Opened \"" + filename + "\"")
         var parsed_rowObjectsById = []
         var parsed_orderedRowObjectPrimaryKeys = []
@@ -154,7 +159,17 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
         stringDocumentObject.filename = filename
 
         fn(null, stringDocumentObject)
-    });
-    fs.createReadStream(filepath).pipe(parser);
+    })
+    // Now read
+    var readStream = fs.createReadStream(filepath)
+    readStream.on('error', function(err)
+    {
+        console.error("❌  Error encountered while trying to open CSV file. The file might not yet exist or the specified filename might contain a typo.")
+        fn(err, null)
+    })
+    readStream.on('readable', function()
+    {
+        readStream.pipe(parser)
+    })
 }
 //
