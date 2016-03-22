@@ -35,13 +35,13 @@ const mongoose_client = require('../mongoose_client/mongoose_client')
 const mongoose = mongoose_client.mongoose
 const Schema = mongoose.Schema
 //
-var RawStringDocument_scheme = Schema({
+var RawRawSourceDocumentument_scheme = Schema({
     primaryKey: String,
     title: String,
     dateOfLastImport: Date,
     orderedRawRowObjects: [ { type: Schema.Types.ObjectId, ref: 'RawRowObject' } ]    
 })
-var RawStringDocument_model = mongoose.model('RawStringDocument', RawStringDocument_scheme)
+var RawRawSourceDocumentument_model = mongoose.model('RawRawSourceDocumentument', RawRawSourceDocumentument_scheme)
 //
 constructor.prototype.CreateOrUpdateTemplateForPersistableObject = function(persistableObjectTemplate, fn)
 {
@@ -84,7 +84,7 @@ constructor.prototype.CreateOrUpdateTemplateForPersistableObject = function(pers
             orderedRawRowObjects: ordered_rawRowObject_mongoIds // aggregated above
         }
         //
-        RawStringDocument_model.findOneAndUpdate({
+        RawRawSourceDocumentument_model.findOneAndUpdate({
             primaryKey: persistableObjectTemplate_primaryKey
         }, {
             $set: updatedDocument

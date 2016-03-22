@@ -3,8 +3,8 @@
 // var context_object_instantiation_descriptions =
 // [
 //     {
-//         module_path: "../raw_objects/raw_string_documents",
-//         instance_key: "raw_string_documents_controller",
+//         module_path: "../raw_objects/raw_source_documents",
+//         instance_key: "raw_source_documents_controller",
 //         options: {}
 //     },
 //     {

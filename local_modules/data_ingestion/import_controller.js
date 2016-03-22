@@ -66,7 +66,7 @@ constructor.prototype._dataSourceParsingAndImportingFunction = function(dataSour
                     callback(err)
                     return
                 }
-                self.context.raw_string_documents_controller.CreateOrUpdateTemplateForPersistableObject(stringDocumentObject, function(err, record)
+                self.context.raw_source_documents_controller.CreateOrUpdateTemplateForPersistableObject(stringDocumentObject, function(err, record)
                 {
                     if (err) {
                         callback(err)
@@ -150,7 +150,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
             parsed_rowObjectsById[rowObject_primaryKey] = parsedObject
             parsed_orderedRowObjectPrimaryKeys.push(rowObject_primaryKey)
         }
-        var stringDocumentObject = self.context.raw_string_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys)
+        var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys)
         stringDocumentObject.filename = filename
 
         fn(null, stringDocumentObject)
