@@ -84,7 +84,7 @@ constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(
             orderedRawRowObjects: ordered_rawRowObject_mongoIds // aggregated above
         }
         //
-        RawSourceDocument_scheme.findOneAndUpdate({
+        RawSourceDocument_model.findOneAndUpdate({
             primaryKey: persistableObjectTemplate_primaryKey
         }, {
             $set: updatedDocument
