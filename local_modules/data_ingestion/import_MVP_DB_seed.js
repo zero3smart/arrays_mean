@@ -14,7 +14,7 @@ var dataSourceDescriptions =
     {
         filename: "MoMA_Artists_tinySlice.csv",
         uid: "MoMA_Artists_tinySlice.csv",
-        import_revision: 2,
+        import_revision: 4,
         format: import_datatypes.DataSource_formats.CSV,
         title: "MoMA - Artists - DEVELOPMENT - tinyslice",
         fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)

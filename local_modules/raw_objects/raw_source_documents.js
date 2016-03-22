@@ -45,8 +45,9 @@ var RawSourceDocument_scheme = Schema({
     dateOfLastImport: Date,
     orderedRawRowObjects: [ { type: Schema.Types.ObjectId, ref: 'RawRowObject' } ]    
 })
-RawSourceDocument_scheme.index({ importUID: 1, dataSourceDocumentRevisionKey: 1 }, { unique: true })
+RawSourceDocument_scheme.index({ importUID: 1, revisionNumber: 1 }, { unique: true })
 RawSourceDocument_scheme.index({ importUID: 1 }, { unique: false })
+RawSourceDocument_scheme.index({ revisionNumber: 1 }, { unique: false })
 var modelName = 'RawSourceDocument'
 var RawSourceDocument_model = mongoose.model(modelName, RawSourceDocument_scheme)
 RawSourceDocument_model.on('index', function(error) 
