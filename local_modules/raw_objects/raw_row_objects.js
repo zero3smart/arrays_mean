@@ -42,7 +42,14 @@ var RawRowObject_scheme = Schema({
 })
 RawRowObject_scheme.index({ primaryKey_withinThisRevision: 1, dataSourceDocumentRevisionKey: 1 }, { unique: true })
 RawRowObject_scheme.index({ dataSourceDocumentRevisionKey: 1 }, { unique: false })
-var RawRowObject_model = mongoose.model('RawRowObject', RawRowObject_scheme)
+var modelName = 'RawRowObject'
+var RawRowObject_model = mongoose.model(modelName, RawRowObject_scheme)
+RawRowObject_model.on('index', function(error) 
+{
+    if (error != null) {
+        console.log("MongoDB index build error for '" + modelName + "':", error);
+    }
+});
 var native_RawRowObject_collection = RawRowObject_model.collection
 //
 constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(persistableObjectTemplate,  fn)

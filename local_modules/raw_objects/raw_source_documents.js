@@ -41,7 +41,14 @@ var RawSourceDocument_scheme = Schema({
     dateOfLastImport: Date,
     orderedRawRowObjects: [ { type: Schema.Types.ObjectId, ref: 'RawRowObject' } ]    
 })
-var RawSourceDocument_model = mongoose.model('RawRawSourceDocumentument', RawSourceDocument_scheme)
+var modelName = 'RawRawSourceDocument'
+var RawSourceDocument_model = mongoose.model(modelName, RawSourceDocument_scheme)
+RawSourceDocument_model.on('index', function(error) 
+{
+    if (error != null) {
+        console.log("MongoDB index build error for '" + modelName + "':", error);
+    }
+});
 var native_RawSourceDocument_collection = RawSourceDocument_model.collection
 //
 constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(persistableObjectTemplate, fn)
