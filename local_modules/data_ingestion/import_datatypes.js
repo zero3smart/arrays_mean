@@ -92,12 +92,16 @@ var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private fo
         return parsedValue
     }
 }
+//
 // Public: 
 module.exports.NewDataTypeCoercedValue = function(coercionSchemeForKey, rowValue)
 {
     var operationName = coercionSchemeForKey.do
     if (operationName == null || operationName == "" || typeof operationName === 'undefined') {
-        console.error("❌  Illegal, malformed, or missing operation name at key 'do' in coercion scheme. Returning undefined.\ncoercionSchemeForKey:\n", coercionSchemeForKey)
+        console.error("❌  Illegal, malformed, or missing operation name at key 'do' in coercion scheme."
+                        + " Returning undefined.\ncoercionSchemeForKey:\n"
+                        , coercionSchemeForKey)
+        
         return undefined
     }
     var operationOptions = coercionSchemeForKey.opts

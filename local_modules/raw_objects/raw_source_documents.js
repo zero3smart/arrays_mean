@@ -21,11 +21,13 @@ constructor.prototype._init = function()
 }
 
 //
-constructor.prototype.New_templateForPersistableObject = function(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys)
+constructor.prototype.New_templateForPersistableObject = function(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys)
 {
     return {
         primaryKey: sourceDocumentRevisionKey,
         title: sourceDocumentTitle,
+        importUID: importUID,
+        revisionNumber: revisionNumber,
         parsed_rowObjectsById: parsed_rowObjectsById,
         parsed_orderedRowObjectPrimaryKeys: parsed_orderedRowObjectPrimaryKeys
     }
@@ -36,12 +38,16 @@ const mongoose = mongoose_client.mongoose
 const Schema = mongoose.Schema
 //
 var RawSourceDocument_scheme = Schema({
-    primaryKey: { type: String, index: true},
+    primaryKey: { type: String, index: true }, // NOTE: This primaryKey is made by NewCustomPrimaryKeyStringWithComponents
+    revisionNumber: Number,
+    importUID: String,
     title: String,
     dateOfLastImport: Date,
     orderedRawRowObjects: [ { type: Schema.Types.ObjectId, ref: 'RawRowObject' } ]    
 })
-var modelName = 'RawRawSourceDocument'
+RawSourceDocument_scheme.index({ importUID: 1, dataSourceDocumentRevisionKey: 1 }, { unique: true })
+RawSourceDocument_scheme.index({ importUID: 1 }, { unique: false })
+var modelName = 'RawSourceDocument'
 var RawSourceDocument_model = mongoose.model(modelName, RawSourceDocument_scheme)
 RawSourceDocument_model.on('index', function(error) 
 {
@@ -53,6 +59,16 @@ RawSourceDocument_model.on('index', function(error)
 });
 //
 //
+// Public - Accessors - Factories - UIDs
+//
+constructor.prototype.NewCustomPrimaryKeyStringWithComponents = function(dataSource_uid, dataSource_importRevisionNumber)
+{
+    return dataSource_uid + "-rev" + dataSource_importRevisionNumber
+}
+//
+//
+// Public - Imperatives - Upserts
+//
 constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persistableObjectTemplate, fn)
 {
     var self = this
@@ -61,7 +77,9 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     var raw_row_objects_controller = self.context.raw_row_objects_controller
     var parsed_orderedRowObjectPrimaryKeys = persistableObjectTemplate.parsed_orderedRowObjectPrimaryKeys
     var parsed_rowObjectsById = persistableObjectTemplate.parsed_rowObjectsById
-
+    var revisionNumber = persistableObjectTemplate.revisionNumber
+    var importUID = persistableObjectTemplate.importUID
+    
     var num_parsed_orderedRowObjectPrimaryKeys = parsed_orderedRowObjectPrimaryKeys.length
     console.log("🔁  Upserting " + num_parsed_orderedRowObjectPrimaryKeys + " parsed rows for \"" + persistableObjectTemplate.title + "\".")
     
@@ -73,12 +91,14 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
             
             return // bail
         }
-        console.log("Going to save document with " + ordered_rawRowObject_mongoIds.length + " row object mongoIds.")
+        console.log("💬  Going to save document with " + ordered_rawRowObject_mongoIds.length + " row object mongoIds.")
         var persistableObjectTemplate_primaryKey = persistableObjectTemplate.primaryKey
         var updatedDocument = 
         {
             primaryKey: persistableObjectTemplate_primaryKey,
             title: persistableObjectTemplate.title,
+            revisionNumber: revisionNumber,
+            importUID: importUID,
             dateOfLastImport: new Date(),
             orderedRawRowObjects: ordered_rawRowObject_mongoIds // aggregated above
         }
@@ -100,8 +120,4 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
             fn(err, doc)
         });
     })
-    
-
-    
-    
 }

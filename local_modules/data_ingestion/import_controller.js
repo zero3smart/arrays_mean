@@ -46,17 +46,16 @@ constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescrip
         }
     });
 }
+
 constructor.prototype._dataSourceParsingAndImportingFunction = function(dataSourceDescription, callback)
 {
     var self = this
     var dataSource_uid = dataSourceDescription.uid
     var dataSource_import_revision = dataSourceDescription.import_revision
-
-    // Generated    
-    var dataSourceRevision_pKey = dataSource_uid+"-rev"+dataSource_import_revision
-
     var dataSource_title = dataSourceDescription.title
-
+    //
+    // Generated    
+    var dataSourceRevision_pKey = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_import_revision)
     var format = dataSourceDescription.format
     switch (format) {
         case import_datatypes.DataSource_formats.CSV:
@@ -91,6 +90,8 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     //
     const CSV_resources_path_prefix = __dirname + "/resources"
     var filename = csvDescription.filename
+    var revisionNumber = csvDescription.import_revision
+    var importUID = csvDescription.uid
     console.log("💬  Will import \"" + filename + "\"")
     var filepath = CSV_resources_path_prefix + "/" + filename   
     //
@@ -112,13 +113,14 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
         // 
         var columnNames = columnNamesAndThenRowObjectValues[0]
         var num_columnNames = columnNames.length
-        var num_rows = columnNamesAndThenRowObjectValues.length - 1
+        var columnNamesAndThenRowObjectValues_length = columnNamesAndThenRowObjectValues.length
         var contentRowsStartingIndex_inParserFeed = 1
-        for (var rowIndex_inParserFeed = contentRowsStartingIndex_inParserFeed ; rowIndex_inParserFeed < num_rows ; rowIndex_inParserFeed++) {
+        for (var rowIndex_inParserFeed = contentRowsStartingIndex_inParserFeed ; rowIndex_inParserFeed < columnNamesAndThenRowObjectValues_length ; rowIndex_inParserFeed++) {
             var actualRowIndexInDataset = rowIndex_inParserFeed - contentRowsStartingIndex_inParserFeed
             var rowObjectValues = columnNamesAndThenRowObjectValues[rowIndex_inParserFeed]
             if (rowObjectValues.length != num_columnNames) {
                 console.error("❌  Error: Row has different number of values than number of CSV's number of columns. Skipping: ", rowObjectValues)
+                
                 continue
             }
             var rowObject = {}
@@ -155,7 +157,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
             parsed_rowObjectsById[rowObject_primaryKey] = parsedObject
             parsed_orderedRowObjectPrimaryKeys.push(rowObject_primaryKey)
         }
-        var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys)
+        var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys)
         stringDocumentObject.filename = filename
 
         fn(null, stringDocumentObject)

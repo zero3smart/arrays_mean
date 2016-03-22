@@ -53,7 +53,9 @@ RawRowObject_model.on('index', function(error)
     }
 });
 //
-// Singular:
+//
+// Public - Imperatives - Upserts - Singular
+//
 constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persistableObjectTemplate,  fn)
 {
     var self = this
@@ -86,7 +88,9 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     });
 }
 //
-// Plural/Bulk:
+//
+// Public - Imperatives - Upserts - Bulk
+//
 constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordered_persistableObjectTemplateUIDs, persistableObjectTemplatesByUID, dataSourceDocumentRevisionKey, fn)
 { // fn: (err, [Schema.Types.ObjectId])
     var self = this
@@ -128,7 +132,7 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
                 if (err) {
                     return // early
                 }
-                console.log("Obtained " + ordered_mongoIds.length + " row object ordered_mongoIds.")
+                // console.log("💬  Aggregated " + ordered_mongoIds.length + " row object ordered_mongoIds.")
                 fn(null, ordered_mongoIds)
             })        
         })
@@ -136,6 +140,7 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
 }
 //
 //
+// Private - Accessors - Factories - Obtaining MongoIds
 //
 constructor.prototype._new_orderedMongoIds_fromOrderedCompoundKeyComponents = function(ordered_primaryKeys_withinThisRevision, dataSourceDocumentRevisionKey, fn) 
 { // -> [Schema.Types.ObjectId]    
@@ -178,13 +183,13 @@ constructor.prototype._new_orderedMongoIds_fromOrderedCompoundKeyComponents = fu
                 return 0
             }
             
-            return idxOfDoc2PKeyInOrdering - idxOfDoc1PKeyInOrdering
+            return idxOfDoc1PKeyInOrdering - idxOfDoc2PKeyInOrdering
         })
         var ordered_mongoIds = ordered_docs.map(function(element)
         { // aggregate ids
             return element._id
         })
-        console.log("ordered_mongoIds from ", ordered_mongoIds)
+        // console.log("ordered_mongoIds from ", ordered_mongoIds)
         
         fn(null, ordered_mongoIds)
     })    
