@@ -36,11 +36,12 @@ const mongoose = mongoose_client.mongoose
 const Schema = mongoose.Schema
 //
 var RawSourceDocument_scheme = Schema({
-    primaryKey: String,
+    primaryKey: { type: String, index: true},
     title: String,
     dateOfLastImport: Date,
     orderedRawRowObjects: [ { type: Schema.Types.ObjectId, ref: 'RawRowObject' } ]    
 })
+RawSourceDocument_scheme.set('autoIndex', false);
 var RawSourceDocument_model = mongoose.model('RawRawSourceDocumentument', RawSourceDocument_scheme)
 //
 constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(persistableObjectTemplate, fn)
