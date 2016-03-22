@@ -1,14 +1,4 @@
-const mongoose_client = require('../mongoose_client/mongoose_client')
-const Schema = mongoose_client.mongoose.Schema
-//
-//
-var RawStringDocument_scheme = Schema({
-    primaryKey: String,
-    title: String,
-    dateOfLastImport: Date,
-    dateOfFirstImport: { type: Date, default: Date.now },
-    orderedRowObjects: [ { type: Schema.Types.ObjectId, ref: 'RawRowObject' } ]    
-})
+const async = require('async')
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,22 +26,79 @@ constructor.prototype.New_templateForPersistableObject = function(sourceDocument
     return {
         primaryKey: sourceDocumentRevisionKey,
         title: sourceDocumentTitle,
-        dateOfLastImport: new Date(),
         parsed_rowObjectsById: parsed_rowObjectsById,
         parsed_orderedRowObjectPrimaryKeys: parsed_orderedRowObjectPrimaryKeys
     }
 }
 //
-constructor.prototype.ImportAndPersistTemplateForPersistableObject = function(persistableObjectTemplate, fn)
+const mongoose_client = require('../mongoose_client/mongoose_client')
+const mongoose = mongoose_client.mongoose
+const Schema = mongoose.Schema
+//
+var RawStringDocument_scheme = Schema({
+    primaryKey: String,
+    title: String,
+    dateOfLastImport: Date,
+    orderedRawRowObjects: [ { type: Schema.Types.ObjectId, ref: 'RawRowObject' } ]    
+})
+var RawStringDocument_model = mongoose.model('RawStringDocument', RawStringDocument_scheme)
+//
+constructor.prototype.CreateOrUpdateTemplateForPersistableObject = function(persistableObjectTemplate, fn)
 {
-    console.log("persist ", Object.keys(persistableObjectTemplate))
-    
-    
-    // TODO: put these into mongo asynchronously(.. concurrently, too?)
-    // Do a find & update or create by primaryKey + sourceDocumentRevisionKey
-    // However, on re-import, flash parsedRawRowObjects_primaryKeys and thus parse on stringDocumentObject in case rows change
-
-    
-
-    fn(null, null)
+    var self = this
+    var raw_row_objects_controller = self.context.raw_row_objects_controller
+    var parsed_orderedRowObjectPrimaryKeys = persistableObjectTemplate.parsed_orderedRowObjectPrimaryKeys
+    var parsed_rowObjectsById = persistableObjectTemplate.parsed_rowObjectsById
+    var ordered_rawRowObject_mongoIds = []
+    async.each(parsed_orderedRowObjectPrimaryKeys, function(rowObjectId, callback)
+    {
+        var rowObject = parsed_rowObjectsById[rowObjectId]
+        // console.log("Row object ", rowObjectId, rowObject)
+        raw_row_objects_controller.CreateOrUpdateTemplateForPersistableObject(rowObject, function(err, rawRowObject)
+        {
+            if (err) {
+                console.log("❌  Error: An error while processing a row object: ", err)
+                callback(err)
+                
+                return
+            }
+            ordered_rawRowObject_mongoIds.push(rawRowObject._id)
+            callback(null)
+        })
+    }, function(err) 
+    {
+        if (err) {
+            console.log("❌  Error: Raw row object processing error: ", err)
+            fn(err, null)
+        
+            return // early
+        }
+        console.log("Number of ordered_rawRowObject_mongoIds: " , ordered_rawRowObject_mongoIds.length)
+        var persistableObjectTemplate_primaryKey = persistableObjectTemplate.primaryKey
+        //
+        var updatedDocument = 
+        {
+            primaryKey: persistableObjectTemplate_primaryKey,
+            title: persistableObjectTemplate.title,
+            dateOfLastImport: new Date(),
+            orderedRawRowObjects: ordered_rawRowObject_mongoIds // aggregated above
+        }
+        //
+        RawStringDocument_model.findOneAndUpdate({
+            primaryKey: persistableObjectTemplate_primaryKey
+        }, {
+            $set: updatedDocument
+        }, {
+            new: true, 
+            upsert: true
+        }, function(err, doc)
+        {
+            if (err) {
+                console.log("❌ Error while updating a raw string document: ", err);
+            } else {
+                console.log("✅  Saved raw string document object with id", doc._id)
+            }
+            fn(err, doc)
+        });  
+    })
 }

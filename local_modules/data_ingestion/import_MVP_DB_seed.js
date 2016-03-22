@@ -38,8 +38,8 @@ var dataSourceDescriptions =
                 delete rowObject["Code"]
             }
         ]
-    },
-    {
+    }
+    ,{
         filename: "MoMA_Artworks_v2_jy.csv",
         uid: "MoMA_Artworks CSV",
         import_revision: 2,

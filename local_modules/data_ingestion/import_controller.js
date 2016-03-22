@@ -37,7 +37,13 @@ constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescrip
         self._dataSourceParsingAndImportingFunction(dataSourceDescription, callback) 
     }, function(err) 
     {
-        console.log("✅  Import done.")
+        if (err) {
+            console.log("❌ Error encountered:", err)
+            process.exit(1) // error code
+        } else {
+            console.log("✅  Import done.")
+            process.exit(0) // all good
+        }
     });
 }
 constructor.prototype._dataSourceParsingAndImportingFunction = function(dataSourceDescription, callback)
@@ -60,13 +66,14 @@ constructor.prototype._dataSourceParsingAndImportingFunction = function(dataSour
                     callback(err)
                     return
                 }
-                self.context.raw_string_documents_controller.ImportAndPersistTemplateForPersistableObject(stringDocumentObject, function(err, record)
+                self.context.raw_string_documents_controller.CreateOrUpdateTemplateForPersistableObject(stringDocumentObject, function(err, record)
                 {
                     if (err) {
                         callback(err)
                         return
                     }
-                    callback()
+                    console.log("✅  Saved document: ", record._id)
+                    callback(null)
                 })
             })
             

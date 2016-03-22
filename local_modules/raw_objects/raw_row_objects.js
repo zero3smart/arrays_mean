@@ -1,13 +1,3 @@
-const mongoose_client = require('../mongoose_client/mongoose_client')
-const Schema = mongoose_client.mongoose.Schema
-//
-//
-var RawRowObject_scheme = Schema({
-    primaryKey_withinThisRevision: String,
-    dataSourceDocumentRevisionKey: String,
-    rowIndexWithinSet: Number,
-    rowParameters: Schema.Types.Mixed // be sure to call .markModified(path) on the model before saving if you update this Mixed property
-})
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,4 +27,49 @@ constructor.prototype.New_templateForPersistableObject = function(rowObject_prim
         row_index: rowIndex,
         row_parameters: rowParameters
     }
+}
+//
+const mongoose_client = require('../mongoose_client/mongoose_client')
+const mongoose = mongoose_client.mongoose
+const Schema = mongoose.Schema
+//
+//
+var RawRowObject_scheme = Schema({
+    primaryKey_withinThisRevision: String,
+    dataSourceDocumentRevisionKey: String,
+    rowIndexWithinSet: Number,
+    rowParameters: Schema.Types.Mixed // be sure to call .markModified(path) on the model before saving if you update this Mixed property
+})
+var RawRowObject_model = mongoose.model('RawRowObject', RawRowObject_scheme)
+//
+constructor.prototype.CreateOrUpdateTemplateForPersistableObject = function(persistableObjectTemplate,  fn)
+{
+    var self = this
+    var persistableObjectTemplate_primaryKey_withinThisRevision = persistableObjectTemplate.primaryKey_withinThisRevision
+    var persistableObjectTemplate_dataSourceDocumentRevisionKey = persistableObjectTemplate.dataSourceDocumentRevisionKey
+    var updatedDocument = 
+    {
+        primaryKey_withinThisRevision: persistableObjectTemplate_primaryKey_withinThisRevision,
+        dataSourceDocumentRevisionKey: persistableObjectTemplate_dataSourceDocumentRevisionKey,
+        rowIndexWithinSet: persistableObjectTemplate.row_index,
+        rowParameters: persistableObjectTemplate.row_parameters
+    }
+    //
+    RawRowObject_model.findOneAndUpdate({
+        primaryKey_withinThisRevision: persistableObjectTemplate_primaryKey_withinThisRevision,
+        dataSourceDocumentRevisionKey: persistableObjectTemplate_dataSourceDocumentRevisionKey
+    }, {
+        $set: updatedDocument
+    }, {
+        new: true, 
+        upsert: true
+    }, function(err, doc)
+    {
+        if (err) {
+            console.log("❌ Error while updating a raw string document: ", err);
+        } else {
+            console.log("✅  Saved raw row object with id", doc._id)
+        }
+        fn(err, doc)
+    });
 }
