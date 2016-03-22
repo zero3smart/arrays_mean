@@ -66,7 +66,7 @@ constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(
     }, function(err, doc)
     {
         if (err) {
-            console.log("❌ Error while updating a raw string document: ", err);
+            console.log("❌ Error while updating a raw source document: ", err);
         } else {
             console.log("✅  Saved raw row object with id", doc._id)
         }

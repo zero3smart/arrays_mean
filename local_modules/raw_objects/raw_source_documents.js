@@ -94,9 +94,9 @@ constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(
         }, function(err, doc)
         {
             if (err) {
-                console.log("❌ Error while updating a raw string document: ", err);
+                console.log("❌ Error while updating a raw source document: ", err);
             } else {
-                console.log("✅  Saved raw string document object with id", doc._id)
+                console.log("✅  Saved raw source document object with id", doc._id)
             }
             fn(err, doc)
         });  
