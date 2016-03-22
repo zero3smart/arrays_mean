@@ -1,10 +1,17 @@
 const mongoose_client = require('../mongoose_client/mongoose_client')
-
-
+const Schema = mongoose_client.mongoose.Schema
+//
+//
+var RawRowObject_scheme = Schema({
+    primaryKey_withinThisRevision: String,
+    dataSourceDocumentRevisionKey: String,
+    rowIndexWithinSet: Number,
+    rowParameters: Schema.Types.Mixed // be sure to call .markModified(path) on the model before saving if you update this Mixed property
+})
+//
+//
 ////////////////////////////////////////////////////////////////////////////////
-
-
-
+//
 var constructor = function(options, context)
 {
     var self = this;

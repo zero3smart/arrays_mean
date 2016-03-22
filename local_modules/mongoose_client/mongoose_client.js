@@ -15,10 +15,12 @@ var fullDBURI = process.env.NODE_ENV == 'development' ? developmentDBURI : produ
 
 console.log("fullDBURI " , fullDBURI)
 mongoose.connect(fullDBURI)
+exports.mongoose = mongoose
 
-var db = mongoose.connection
-db.on('error', console.error.bind(console, 'connection error:'))
-db.once('open', function()
+var connection = mongoose.connection
+connection.on('error', console.error.bind(console, 'connection error:'))
+connection.once('open', function()
 {
     console.log("📡  Connected to " + process.env.NODE_ENV + " MongoDB.")
 })
+exports.connection = connection

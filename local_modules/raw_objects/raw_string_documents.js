@@ -1,8 +1,18 @@
 const mongoose_client = require('../mongoose_client/mongoose_client')
-
+const Schema = mongoose_client.mongoose.Schema
+//
+//
+var RawStringDocument_scheme = Schema({
+    primaryKey: String,
+    title: String,
+    dateOfLastImport: Date,
+    dateOfFirstImport: { type: Date, default: Date.now },
+    orderedRowObjects: [ { type: Schema.Types.ObjectId, ref: 'RawRowObject' } ]    
+})
+//
 //
 ////////////////////////////////////////////////////////////////////////////////
-
+//
 var constructor = function(options, context)
 {
     var self = this;
