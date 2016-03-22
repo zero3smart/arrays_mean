@@ -41,8 +41,8 @@ var RawSourceDocument_scheme = Schema({
     dateOfLastImport: Date,
     orderedRawRowObjects: [ { type: Schema.Types.ObjectId, ref: 'RawRowObject' } ]    
 })
-RawSourceDocument_scheme.set('autoIndex', false);
 var RawSourceDocument_model = mongoose.model('RawRawSourceDocumentument', RawSourceDocument_scheme)
+var native_RawSourceDocument_collection = RawSourceDocument_model.collection
 //
 constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(persistableObjectTemplate, fn)
 {

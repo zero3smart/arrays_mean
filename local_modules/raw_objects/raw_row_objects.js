@@ -41,8 +41,9 @@ var RawRowObject_scheme = Schema({
     rowParameters: Schema.Types.Mixed // be sure to call .markModified(path) on the model before saving if you update this Mixed property
 })
 RawRowObject_scheme.index({ primaryKey_withinThisRevision: 1, dataSourceDocumentRevisionKey: 1 }, { unique: true })
-RawRowObject_scheme.set('autoIndex', false);
+RawRowObject_scheme.index({ dataSourceDocumentRevisionKey: 1 }, { unique: false })
 var RawRowObject_model = mongoose.model('RawRowObject', RawRowObject_scheme)
+var native_RawRowObject_collection = RawRowObject_model.collection
 //
 constructor.prototype.CreateOrUpdateWithTemplateForPersistableObject = function(persistableObjectTemplate,  fn)
 {
