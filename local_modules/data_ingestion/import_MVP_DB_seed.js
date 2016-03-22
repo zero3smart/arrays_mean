@@ -9,14 +9,14 @@ const import_datatypes = require('./import_datatypes')
 //
 var dataSourceDescriptions = 
 [
-
-
+    //
+    // Production - MoMA dataset
     {
-        filename: "MoMA_Artists_tinySlice.csv",
-        uid: "MoMA_Artists_tinySlice.csv",
-        import_revision: 4,
+        filename: "MoMA_Artists_v1_jy.csv",
+        uid: "MoMA_Artists_v1_jy.csv",
+        import_revision: 1,
         format: import_datatypes.DataSource_formats.CSV,
-        title: "MoMA - Artists - DEVELOPMENT - tinyslice",
+        title: "MoMA - Artists",
         fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
         {
             return "" + rowIndex + "-" + rowObject["ConstituentID"]
@@ -41,15 +41,41 @@ var dataSourceDescriptions =
             }
         ]
     }
-    
-    
-    // MoMA dataset
+    ,{
+        filename: "MoMA_Artworks_v2_jy.csv",
+        uid: "MoMA_Artworks CSV",
+        import_revision: 2,
+        format: import_datatypes.DataSource_formats.CSV,
+        title: "MoMA - Artworks",
+        fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
+        {
+            return "" + rowIndex + "-" + rowObject["ObjectID"]
+        },
+        raw_rowObjects_coercionScheme:
+        {
+            DateAcquired: {
+                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
+                opts: {
+                    format: "MM/DD/YYYY" // e.g. "1/01/2009"
+                }
+            },
+            Date: {
+                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
+                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.FourDigitYearOnly
+            }
+        }
+    }
+
+    //
+    // Small dataset for development/testing
+    // Generally, do not commit these uncommented
+    //
     // {
-    //     filename: "MoMA_Artists_v1_jy.csv",
-    //     uid: "MoMA_Artists_v1_jy.csv",
-    //     import_revision: 1,
+    //     filename: "MoMA_Artists_tinySlice.csv",
+    //     uid: "MoMA_Artists_tinySlice.csv",
+    //     import_revision: 4,
     //     format: import_datatypes.DataSource_formats.CSV,
-    //     title: "MoMA - Artists",
+    //     title: "MoMA - Artists - DEVELOPMENT - tinyslice",
     //     fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
     //     {
     //         return "" + rowIndex + "-" + rowObject["ConstituentID"]
@@ -74,33 +100,7 @@ var dataSourceDescriptions =
     //         }
     //     ]
     // }
-    // ,{
-    //     filename: "MoMA_Artworks_v2_jy.csv",
-    //     uid: "MoMA_Artworks CSV",
-    //     import_revision: 2,
-    //     format: import_datatypes.DataSource_formats.CSV,
-    //     title: "MoMA - Artworks",
-    //     fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
-    //     {
-    //         return "" + rowIndex + "-" + rowObject["ObjectID"]
-    //     },
-    //     raw_rowObjects_coercionScheme:
-    //     {
-    //         DateAcquired: {
-    //             do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
-    //             opts: {
-    //                 format: "MM/DD/YYYY" // e.g. "1/01/2009"
-    //             }
-    //         },
-    //         Date: {
-    //             do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
-    //             opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.FourDigitYearOnly
-    //         }
-    //     }
-    // }
     //
-    
-    
     // {
     //     filename: "NewOrleans_High_Wage_Jobs__2009_-_Present_.csv",
     //     uid: "NewOrleans_High_Wage_Jobs__2009_-_Present_.csv",

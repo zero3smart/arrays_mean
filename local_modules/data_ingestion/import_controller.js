@@ -107,7 +107,6 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
             
             return
         }
-        console.log("💬  Opened \"" + filename + "\"")
         var parsed_rowObjectsById = []
         var parsed_orderedRowObjectPrimaryKeys = []
         // 
@@ -115,6 +114,8 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
         var num_columnNames = columnNames.length
         var columnNamesAndThenRowObjectValues_length = columnNamesAndThenRowObjectValues.length
         var contentRowsStartingIndex_inParserFeed = 1
+        var num_actualContentRows = columnNamesAndThenRowObjectValues_length - contentRowsStartingIndex_inParserFeed
+        console.log("🔁  Parsing " + num_actualContentRows + " rows in \"" + filename + "\"")
         for (var rowIndex_inParserFeed = contentRowsStartingIndex_inParserFeed ; rowIndex_inParserFeed < columnNamesAndThenRowObjectValues_length ; rowIndex_inParserFeed++) {
             var actualRowIndexInDataset = rowIndex_inParserFeed - contentRowsStartingIndex_inParserFeed
             var rowObjectValues = columnNamesAndThenRowObjectValues[rowIndex_inParserFeed]
@@ -171,6 +172,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     })
     readStream.on('readable', function()
     {
+        console.log("💬  Opened \"" + filename + "\"")
         readStream.pipe(parser)
     })
 }

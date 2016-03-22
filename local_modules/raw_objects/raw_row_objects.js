@@ -1,3 +1,4 @@
+const async = require('async')
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -157,6 +158,7 @@ constructor.prototype._new_orderedMongoIds_fromOrderedCompoundKeyComponents = fu
         primaryKey_withinThisRevision: 1, 
         _id: 1
     }
+    console.log("🔁  Querying for mongoIds of row objects.")
     RawRowObject_model.find(queryDescription).select(fieldsToSelect).exec(function(err, docs)
     {
         if (err) {
@@ -165,32 +167,41 @@ constructor.prototype._new_orderedMongoIds_fromOrderedCompoundKeyComponents = fu
             
             return
         }
-        // Now we must order them (unfortunately this is slow)
-        var ordered_docs = docs.sort(function(doc1, doc2)
+        console.log("🔁  Sorting mongoIds of row objects.")
+        // Now we must order them (unfortunately this is slow which is why we use async instead of Array.sort)
+        async.sortBy(docs, function(doc, cb)
         {
-            var doc1_primaryKey = doc1.primaryKey_withinThisRevision
-            var doc2_primaryKey = doc2.primaryKey_withinThisRevision
-            var idxOfDoc1PKeyInOrdering = ordered_primaryKeys_withinThisRevision.indexOf(doc1_primaryKey)
-            var idxOfDoc2PKeyInOrdering = ordered_primaryKeys_withinThisRevision.indexOf(doc2_primaryKey)
-            if (idxOfDoc1PKeyInOrdering == -1) {
-                console.error("❌ Code Fault: idxOfDoc1PKeyInOrdering didn't exist in ordered_primaryKeys_withinThisRevision");
+            var doc_primaryKey = doc.primaryKey_withinThisRevision
+            var idxOfDocPKeyInOrdering = ordered_primaryKeys_withinThisRevision.indexOf(doc_primaryKey)
+            if (idxOfDocPKeyInOrdering == -1) {
+                var errStr = "❌ Code Fault: idxOfDocPKeyInOrdering didn't exist in ordered_primaryKeys_withinThisRevision"
+                var err = new Error(errStr)
+                console.error(errStr);
                 
-                return 0
+                cb(err, 0)
+                return
             }
-            if (idxOfDoc2PKeyInOrdering == -1) {
-                console.error("❌ Code Fault: idxOfDoc2PKeyInOrdering didn't exist in ordered_primaryKeys_withinThisRevision");
-                
-                return 0
+            cb(null, idxOfDocPKeyInOrdering)
+        }, function(err, ordered_docs) 
+        {
+            if (err) {
+                fn(err, null)
+                return
             }
-            
-            return idxOfDoc1PKeyInOrdering - idxOfDoc2PKeyInOrdering
-        })
-        var ordered_mongoIds = ordered_docs.map(function(element)
-        { // aggregate ids
-            return element._id
-        })
-        // console.log("ordered_mongoIds from ", ordered_mongoIds)
+            console.log("🔁  Aggregating mongoIds of row objects.")
+            async.map(ordered_docs, function(doc, cb) // Another optimization via async
+            { // aggregate ids
+                cb(null, doc._id)
+            }, function(err, ordered_mongoIds)
+            {
+                if (err) {
+                    fn(err, null)
+                    return
+                }
+                // console.log("ordered_mongoIds from ", ordered_mongoIds)
         
-        fn(null, ordered_mongoIds)
+                fn(null, ordered_mongoIds)
+            });
+        })
     })    
 }
