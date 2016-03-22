@@ -31,15 +31,16 @@ var dataSourceDescriptions =
                 do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
                 opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.FourDigitYearOnly
             }
-        },
-        raw_rowObjects_postCoercion_pipeline:
-        [
-            function(rowObject, rowIndex)
-            { // An example of a key rewrite
-                rowObject["Gender"] = rowObject["Code"]
-                delete rowObject["Code"]
-            }
-        ]
+        }
+        // This is not yet implemented
+        // , raw_rowObjects_postCoercion_pipeline:
+        // [
+        //     function(rowObject, rowIndex)
+        //     { // An example of a key rewrite
+        //         rowObject["Gender"] = rowObject["Code"]
+        //         delete rowObject["Code"]
+        //     }
+        // ]
     }
     ,{
         filename: "MoMA_Artworks_v2_jy.csv",
