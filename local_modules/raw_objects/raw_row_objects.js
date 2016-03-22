@@ -78,7 +78,7 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     }, function(err, doc)
     {
         if (err) {
-            console.log("❌ Error while updating a raw source document: ", err);
+            console.log("❌ Error while updating a raw row object: ", err);
         } else {
             console.log("✅  Saved raw row object with id", doc._id)
         }
@@ -86,11 +86,44 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     });
 }
 //
-// Plural:
-constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(persistableObjectTemplates, fn)
-{
+// Plural/Bulk:
+constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordered_persistableObjectTemplateUIDs, persistableObjectTemplatesByUID, fn)
+{ // fn: (err, )
+    // console.log("💬  Going to upsert " + ordered_persistableObjectTemplateUIDs.length + " ordered_persistableObjectTemplateUIDs")
     mongoose_client.BlockUntilMongoDBConnected(function()
-    { // ^ we block because we're going to work with the native connection
+    { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
+        var nativeCollection = RawRowObject_model.collection
+        var bulkOperation = nativeCollection.initializeUnorderedBulkOp()
+        var num_ordered_persistableObjectTemplateUIDs = ordered_persistableObjectTemplateUIDs.length
+        for (var rowIdx = 0 ; rowIdx < num_ordered_persistableObjectTemplateUIDs ; rowIdx++) {            
+            var rowUID = ordered_persistableObjectTemplateUIDs[rowIdx]
+            var persistableObjectTemplate = persistableObjectTemplatesByUID[rowUID]
+            var persistableObjectTemplate_primaryKey_withinThisRevision = persistableObjectTemplate.primaryKey_withinThisRevision
+            var persistableObjectTemplate_dataSourceDocumentRevisionKey = persistableObjectTemplate.dataSourceDocumentRevisionKey
+            var bulkOperationQueryFragment = 
+            {
+                primaryKey_withinThisRevision: persistableObjectTemplate_primaryKey_withinThisRevision,
+                dataSourceDocumentRevisionKey: persistableObjectTemplate_dataSourceDocumentRevisionKey
+            }
+            bulkOperation.find(bulkOperationQueryFragment).upsert().update({ $set: persistableObjectTemplate });
+        }
+        var writeConcern = 
+        {
+            fsync: true
+        }
+        bulkOperation.execute(writeConcern, function(err, result)
+        {
+            if (err) {
+                console.log("❌ Error while saving raw row objects: ", err);
+                fn(err, null)
+                
+                return
+            }
+            console.log("✅  Saved raw row objects.")
+            console.log("💬  Bulk upsert result ", JSON.stringify(result, true, '\t'))
+        
+            var ordered_rawRowObject_mongoIds = [] // TODO: obtain these
+        })
     })
 }
 //

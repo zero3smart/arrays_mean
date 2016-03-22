@@ -59,37 +59,20 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     var raw_row_objects_controller = self.context.raw_row_objects_controller
     var parsed_orderedRowObjectPrimaryKeys = persistableObjectTemplate.parsed_orderedRowObjectPrimaryKeys
     var parsed_rowObjectsById = persistableObjectTemplate.parsed_rowObjectsById
-    var ordered_rawRowObject_mongoIds = []
-    // TODO: replace this with a bulk upsert:
+
     var num_parsed_orderedRowObjectPrimaryKeys = parsed_orderedRowObjectPrimaryKeys.length
     console.log("🔁  Upserting " + num_parsed_orderedRowObjectPrimaryKeys + " parsed rows for \"" + persistableObjectTemplate.title + "\".")
     
-    async.each(parsed_orderedRowObjectPrimaryKeys, function(rowObjectId, callback)
-    {
-        var rowObject = parsed_rowObjectsById[rowObjectId]
-        // console.log("Row object ", rowObjectId, rowObject)
-        raw_row_objects_controller.UpsertWithOnePersistableObjectTemplate(rowObject, function(err, rawRowObject)
-        {
-            if (err) {
-                console.log("❌  Error: An error while processing a row object: ", err)
-                callback(err)
-            
-                return
-            }
-            ordered_rawRowObject_mongoIds.push(rawRowObject._id)
-            callback(null)
-        })
-    }, function(err) 
+    // Bulk for performance at volume
+    raw_row_objects_controller.UpsertWithManyPersistableObjectTemplates(parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, function(err, ordered_rawRowObject_mongoIds)
     {
         if (err) {
-            console.log("❌  Error: Raw row object processing error: ", err)
-            fn(err, null)
-    
-            return // early
+            console.log("❌  Error: An error while saving raw row objects: ", err)
+            
+            return // bail
         }
-        console.log("Number of ordered_rawRowObject_mongoIds: " , ordered_rawRowObject_mongoIds.length)
+        console.log("Going to save document with " + ordered_rawRowObject_mongoIds.length + " row object mongoIds.")
         var persistableObjectTemplate_primaryKey = persistableObjectTemplate.primaryKey
-        //
         var updatedDocument = 
         {
             primaryKey: persistableObjectTemplate_primaryKey,
@@ -97,10 +80,10 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
             dateOfLastImport: new Date(),
             orderedRawRowObjects: ordered_rawRowObject_mongoIds // aggregated above
         }
-        //
-        RawSourceDocument_model.findOneAndUpdate({
+        var findOneAndUpdate_queryParameters = {
             primaryKey: persistableObjectTemplate_primaryKey
-        }, {
+        }
+        RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {
             $set: updatedDocument
         }, {
             new: true, 
@@ -113,6 +96,10 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
                 console.log("✅  Saved raw source document object with id", doc._id)
             }
             fn(err, doc)
-        });  
+        });
     })
+    
+
+    
+    
 }
