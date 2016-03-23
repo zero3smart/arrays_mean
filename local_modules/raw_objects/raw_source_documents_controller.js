@@ -2,6 +2,7 @@ const async = require('async')
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
+// Controller definition
 //
 var constructor = function(options, context)
 {
@@ -48,6 +49,8 @@ var RawSourceDocument_scheme = Schema({
 RawSourceDocument_scheme.index({ importUID: 1, revisionNumber: 1 }, { unique: true })
 RawSourceDocument_scheme.index({ importUID: 1 }, { unique: false })
 RawSourceDocument_scheme.index({ revisionNumber: 1 }, { unique: false })
+constructor.prototype.Scheme = RawSourceDocument_scheme
+//
 var modelName = 'RawSourceDocument'
 var RawSourceDocument_model = mongoose.model(modelName, RawSourceDocument_scheme)
 RawSourceDocument_model.on('index', function(error) 
@@ -59,6 +62,7 @@ RawSourceDocument_model.on('index', function(error)
         // TODO: Don't let app start listening until indices built?
     }
 });
+constructor.prototype.Model = RawSourceDocument_model
 //
 //
 // Public - Accessors - Factories - UIDs

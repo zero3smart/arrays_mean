@@ -2,6 +2,7 @@ const async = require('async')
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
+// Controller definition
 //
 var constructor = function(options, context)
 {
@@ -25,8 +26,8 @@ constructor.prototype.New_templateForPersistableObject = function(rowObject_prim
     return {
         primaryKey_withinThisRevision: rowObject_primaryKey, // Queries to find this unique row will have to happen 
         dataSourceDocumentRevisionKey: sourceDocumentRevisionKey, // by primaryKey_withinThisRevision && dataSourceDocumentRevisionKey
-        row_index: rowIndex,
-        row_parameters: rowParameters
+        rowIndexWithinSet: rowIndex,
+        rowParameters: rowParameters
     }
 }
 //
@@ -43,6 +44,8 @@ var RawRowObject_scheme = Schema({
 })
 RawRowObject_scheme.index({ primaryKey_withinThisRevision: 1, dataSourceDocumentRevisionKey: 1 }, { unique: true })
 RawRowObject_scheme.index({ dataSourceDocumentRevisionKey: 1 }, { unique: false })
+constructor.prototype.Scheme = RawRowObject_scheme
+//
 var modelName = 'RawRowObject'
 var RawRowObject_model = mongoose.model(modelName, RawRowObject_scheme)
 RawRowObject_model.on('index', function(error) 
@@ -53,8 +56,10 @@ RawRowObject_model.on('index', function(error)
         console.log("✅  Built indices for '" + modelName + "'")
     }
 });
+constructor.prototype.Model = RawRowObject_model
 //
 //
+////////////////////////////////////////////////////////////////////////////////
 // Public - Imperatives - Upserts - Singular
 //
 constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persistableObjectTemplate,  fn)
@@ -66,8 +71,8 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     {
         primaryKey_withinThisRevision: persistableObjectTemplate_primaryKey_withinThisRevision,
         dataSourceDocumentRevisionKey: persistableObjectTemplate_dataSourceDocumentRevisionKey,
-        rowIndexWithinSet: persistableObjectTemplate.row_index,
-        rowParameters: persistableObjectTemplate.row_parameters
+        rowIndexWithinSet: persistableObjectTemplate.rowIndexWithinSet,
+        rowParameters: persistableObjectTemplate.rowParameters
     }
     //
     RawRowObject_model.findOneAndUpdate({
@@ -91,6 +96,7 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
 }
 //
 //
+////////////////////////////////////////////////////////////////////////////////
 // Public - Imperatives - Upserts - Bulk
 //
 constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordered_persistableObjectTemplateUIDs, persistableObjectTemplatesByUID, dataSourceDocumentRevisionKey, fn)
@@ -142,6 +148,7 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
 }
 //
 //
+////////////////////////////////////////////////////////////////////////////////
 // Private - Accessors - Factories - Obtaining MongoIds
 //
 constructor.prototype._new_orderedMongoIds_fromOrderedCompoundKeyComponents = function(ordered_primaryKeys_withinThisRevision, dataSourceDocumentRevisionKey, fn) 
