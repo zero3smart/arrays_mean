@@ -28,6 +28,8 @@
 3. Install MongoDB: 
 	* [Install MongoDB Community Edition on OS X](https://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
 	
+    Note: If you already have Mongo installed, be sure you have >= v3.2 with `brew update && brew upgrade mongodb`
+    
 4. Run the MongoDB daemon by executing `monogod` in a Terminal window
 
 #### ii. Installing the Arrays server locally
