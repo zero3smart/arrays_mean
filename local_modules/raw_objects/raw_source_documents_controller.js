@@ -56,6 +56,7 @@ RawSourceDocument_model.on('index', function(error)
         console.log("❌  MongoDB index build error for '" + modelName + "':", error);
     } else {
         console.log("✅  Built indices for '" + modelName + "'")
+        // TODO: Don't let app start listening until indices built?
     }
 });
 //

@@ -84,6 +84,7 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
             console.log("❌ Error while updating a raw row object: ", err);
         } else {
             console.log("✅  Saved raw row object with id", doc._id)
+            // TODO: Don't let app start listening until indices built?
         }
         fn(err, doc)
     });
