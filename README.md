@@ -18,9 +18,17 @@
 #### i. Setting up your local development environment
 
 1. Install brew
-2. Install Node.JS & NPM
-3. Install MongoDB
-4. Run the MongoDB daemon by executing `monogod`
+
+	* [Homebrew](http://brew.sh)
+
+2. Install Node.JS & NPM: 
+	* [Install Node.js and npm using Homebrew on OS X](https://changelog.com/install-node-js-with-homebrew-on-os-x/), 
+	* [How to Install Node.js and NPM on a Mac](http://blog.teamtreehouse.com/install-node-js-npm-mac)
+
+3. Install MongoDB: 
+	* [Install MongoDB Community Edition on OS X](https://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
+	
+4. Run the MongoDB daemon by executing `monogod` in a Terminal window
 
 #### ii. Installing the Arrays server locally
 
