@@ -91,7 +91,8 @@ See this Doc for information on the data import framework capabilities.
 	
 	3f. finally, execute `git merge [your branch name]`. 
 
-	If everything went well it's also a good idea to prune your old branches, especially if you have pushed them up to origin (github). (Note: This same interactive-rebase-and-merge procedure is applied when merging 'develop' into 'master' for a release.) 
+	If everything went well it's also a good idea to prune your old branches, especially if you have pushed them up to origin (github). (Note: This same interactive-rebase-and-merge procedure is applied when merging 'develop' into 'master' for a release. The rebase is included in case hotfixes are added to 
+	'master' which need to be backwards-integrated into 'develop' - which should be avoided whenever possible.) 
 
 4. Production releases should generally be tagged on 'master', and this should probably be automated later by using a continuous integration system.
 
