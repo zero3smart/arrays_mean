@@ -7,12 +7,12 @@ var context_object_instantiation_descriptions =
         options: {}
     },
     {
-        module_path: __dirname + "/../raw_objects/raw_source_documents",
+        module_path: __dirname + "/../raw_objects/raw_source_documents_controller",
         instance_key: "raw_source_documents_controller",
         options: {}
     },
     {
-        module_path: __dirname + "/../raw_objects/raw_row_objects",
+        module_path: __dirname + "/../raw_objects/raw_row_objects_controller",
         instance_key: "raw_row_objects_controller",
         options: {}
     }
