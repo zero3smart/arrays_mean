@@ -51,6 +51,13 @@
 2. Execute `bin/start_dev_app`
 
 
+### Customizing the database-seeding import
+
+See this Doc for information on the data import framework capabilities.
+
+[Arrays Server - Data Source Import documentation](https://docs.google.com/document/d/1wi93hWu-XtDxxbGrXZqZa0iQmXBV1f-MApUFt_R31eA)
+
+
 ### Contributing
 1. Contributors should check out the 'develop' branch with `git checkout develop` and push only non-breaking changes to this branch. 
 
