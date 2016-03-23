@@ -116,7 +116,8 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
         }
         var writeConcern =
         {
-            upsert: true
+            upsert: true,
+            j: true // 'requests acknowledgement from MongoDB that the write operation has been written to the journal'
         }
         bulkOperation.execute(writeConcern, function(err, result)
         {

@@ -21,6 +21,15 @@ var dataSourceDescriptions =
         {
             return "" + rowIndex + "-" + rowObject["ConstituentID"]
         },
+        
+        // , raw_rowObjects_preCoercion_pipeline:
+        // [
+        //     function(rowObject, rowIndex)
+        //     { // An example of a key rewrite
+        //         rowObject["new_title"] = rowObject["title"] + "hello"
+        //     }
+        // ]
+        
         raw_rowObjects_coercionScheme:
         {
             BeginDate: {
@@ -32,6 +41,7 @@ var dataSourceDescriptions =
                 opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.FourDigitYearOnly
             }
         }
+        
         // This is not yet implemented
         // , raw_rowObjects_postCoercion_pipeline:
         // [
