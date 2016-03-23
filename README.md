@@ -67,7 +67,7 @@ See this Doc for information on the data import framework capabilities.
 ### Contributing
 1. Contributors should check out the 'develop' branch with `git checkout develop` and push only non-breaking changes to this branch. 
 
-2. Commits that might include breaking changes, i.e. API modifications, large refactors, works in progress, etc., should go on a separate branch. To create a new branch, execute `git checkout -b [your branch name]`. 
+2. Commits that might include breaking changes, i.e. API modifications, large refactors, cross-module works-in–progress, etc., should go on a separate branch. To create a new branch, execute `git checkout -b [your branch name]`. 
 
 3. When you're ready to merge your branch back into 'develop':
 
