@@ -56,8 +56,13 @@
 3. (Optional) Recursively checkout 'develop' on nested submodules.
 
 
+#### iii. Seeding the local database with MVP CSV content
 
-#### iii. Running the front-end web server locally
+1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
+2. Execute [`bin/_dev_MVP_DB_seed`](bin/_dev_MVP_DB_seed)
+
+
+#### iv. Running the front-end web server locally
 
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
 2. Execute [`bin/start_dev_app`](bin/start_dev_app)
