@@ -36,63 +36,9 @@ const mongoose = mongoose_client.mongoose
 const Schema = mongoose.Schema
 //
 //
-var RawRowObject_scheme = Schema({
-    primaryKey_withinThisRevision: String,
-    dataSourceDocumentRevisionKey: String,
-    rowIndexWithinSet: Number,
-    rowParameters: Schema.Types.Mixed // be sure to call .markModified(path) on the model before saving if you update this Mixed property
-})
-RawRowObject_scheme.index({ primaryKey_withinThisRevision: 1, dataSourceDocumentRevisionKey: 1 }, { unique: true })
-RawRowObject_scheme.index({ dataSourceDocumentRevisionKey: 1 }, { unique: false })
-constructor.prototype.Scheme = RawRowObject_scheme
-//
-var modelName = 'RawRowObject'
-var RawRowObject_model = mongoose.model(modelName, RawRowObject_scheme)
-RawRowObject_model.on('index', function(error) 
+constructor.prototype.New_RowObjectsCollectionName = function(dataSourceDocumentRevisionKey)
 {
-    if (error != null) {
-        console.log("❌  MongoDB index build error for '" + modelName + "':", error);
-    } else {
-        console.log("✅  Built indices for '" + modelName + "'")
-    }
-});
-constructor.prototype.Model = RawRowObject_model
-//
-//
-////////////////////////////////////////////////////////////////////////////////
-// Public - Imperatives - Upserts - Singular
-//
-constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persistableObjectTemplate,  fn)
-{
-    var self = this
-    var persistableObjectTemplate_primaryKey_withinThisRevision = persistableObjectTemplate.primaryKey_withinThisRevision
-    var persistableObjectTemplate_dataSourceDocumentRevisionKey = persistableObjectTemplate.dataSourceDocumentRevisionKey
-    var updatedDocument = 
-    {
-        primaryKey_withinThisRevision: persistableObjectTemplate_primaryKey_withinThisRevision,
-        dataSourceDocumentRevisionKey: persistableObjectTemplate_dataSourceDocumentRevisionKey,
-        rowIndexWithinSet: persistableObjectTemplate.rowIndexWithinSet,
-        rowParameters: persistableObjectTemplate.rowParameters
-    }
-    //
-    RawRowObject_model.findOneAndUpdate({
-        primaryKey_withinThisRevision: persistableObjectTemplate_primaryKey_withinThisRevision,
-        dataSourceDocumentRevisionKey: persistableObjectTemplate_dataSourceDocumentRevisionKey
-    }, {
-        $set: updatedDocument
-    }, {
-        new: true, 
-        upsert: true
-    }, function(err, doc)
-    {
-        if (err) {
-            console.log("❌ Error while updating a raw row object: ", err);
-        } else {
-            console.log("✅  Saved raw row object with id", doc._id)
-            // TODO: Don't let app start listening until indices built?
-        }
-        fn(err, doc)
-    });
+    return 'RawRowObjects-' + dataSourceDocumentRevisionKey
 }
 //
 //
@@ -103,6 +49,23 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
 { // fn: (err, [Schema.Types.ObjectId])
     var self = this
     // console.log("💬  Going to upsert " + ordered_persistableObjectTemplateUIDs.length + " ordered_persistableObjectTemplateUIDs")
+
+
+    //
+    //
+    var forThisDataSource_RawRowObject_scheme = Schema({
+        primaryKey_withinThisRevision: String,
+        dataSourceDocumentRevisionKey: String,
+        rowIndexWithinSet: Number,
+        rowParameters: Schema.Types.Mixed // be sure to call .markModified(path) on the model before saving if you update this Mixed property
+    })
+    forThisDataSource_RawRowObject_scheme.index({ primaryKey_withinThisRevision: 1, dataSourceDocumentRevisionKey: 1 }, { unique: true })
+    forThisDataSource_RawRowObject_scheme.index({ dataSourceDocumentRevisionKey: 1 }, { unique: false })
+    //
+    var forThisDataSource_rowObjects_modelName = self.New_RowObjectsCollectionName(dataSourceDocumentRevisionKey)
+    var forThisDataSource_RawRowObject_model = mongoose.model(forThisDataSource_rowObjects_modelName, forThisDataSource_RawRowObject_scheme)
+
+    //
     mongoose_client.BlockUntilMongoDBConnected(function()
     { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         var nativeCollection = RawRowObject_model.collection
