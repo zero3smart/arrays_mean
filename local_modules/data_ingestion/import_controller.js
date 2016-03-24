@@ -32,9 +32,11 @@ constructor.prototype._init = function()
 constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescriptions)
 {
     var self = this
-    async.each(dataSourceDescriptions, function(dataSourceDescription, callback)
+    var i = 1
+    async.eachSeries(dataSourceDescriptions, function(dataSourceDescription, callback)
     { // we wrap the function with this closure here so 'self' (this) is accessible within the called function
-        self._dataSourceParsingAndImportingFunction(dataSourceDescription, callback) 
+        self._dataSourceParsingAndImportingFunction(i, dataSourceDescription, callback) 
+        i++
     }, function(err) 
     {
         if (err) {
@@ -47,7 +49,7 @@ constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescrip
     });
 }
 
-constructor.prototype._dataSourceParsingAndImportingFunction = function(dataSourceDescription, callback)
+constructor.prototype._dataSourceParsingAndImportingFunction = function(indexInList, dataSourceDescription, callback)
 {
     var self = this
     var dataSource_uid = dataSourceDescription.uid
@@ -59,7 +61,7 @@ constructor.prototype._dataSourceParsingAndImportingFunction = function(dataSour
     var format = dataSourceDescription.format
     switch (format) {
         case import_datatypes.DataSource_formats.CSV:
-            self._new_parsed_StringDocumentObject_fromCSVDataSourceDescription(dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function(err, stringDocumentObject)
+            self._new_parsed_StringDocumentObject_fromCSVDataSourceDescription(indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function(err, stringDocumentObject)
             {
                 if (err) {
                     callback(err)
@@ -84,7 +86,7 @@ constructor.prototype._dataSourceParsingAndImportingFunction = function(dataSour
     }
 }
 //
-constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function(csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) 
+constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function(dataSourceIsIndexInList, csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) 
 {
     var self = this
     //
@@ -92,7 +94,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     var filename = csvDescription.filename
     var revisionNumber = csvDescription.import_revision
     var importUID = csvDescription.uid
-    console.log("💬  Will import \"" + filename + "\"")
+    console.log("💬  " + dataSourceIsIndexInList + ": Will import \"" + filename + "\"")
     var filepath = CSV_resources_path_prefix + "/" + filename   
     //
     var raw_rowObjects_coercionScheme = csvDescription.raw_rowObjects_coercionScheme // look up data type scheme here
