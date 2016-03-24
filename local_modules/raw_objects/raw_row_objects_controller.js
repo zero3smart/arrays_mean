@@ -36,7 +36,7 @@ const mongoose = mongoose_client.mongoose
 const Schema = mongoose.Schema
 //
 //
-constructor.prototype.New_RowObjectsCollectionName = function(srcDocPKey)
+constructor.prototype.New_RowObjectsModelName = function(srcDocPKey)
 {
     return 'RawRowObjects-' + srcDocPKey
 }
@@ -56,10 +56,10 @@ constructor.prototype.New_RawRowObject_MongooseContext = function(srcDocPKey)
         rowIdxInDoc: Number,
         rowParams: Schema.Types.Mixed // be sure to call .markModified(path) on the model before saving if you update this Mixed property
     })
-    forThisDataSource_RawRowObject_scheme.index({ pKey: 1, srcDocPKey: 1 }, { unique: true })
+    forThisDataSource_RawRowObject_scheme.index({ srcDocPKey: 1 }, { unique: false })
     forThisDataSource_RawRowObject_scheme.index({ srcDocPKey: 1 }, { unique: false })
     //
-    var forThisDataSource_rowObjects_modelName = self.New_RowObjectsCollectionName(srcDocPKey)
+    var forThisDataSource_rowObjects_modelName = self.New_RowObjectsModelName(srcDocPKey)
     var forThisDataSource_RawRowObject_model = mongoose.model(forThisDataSource_rowObjects_modelName, forThisDataSource_RawRowObject_scheme)
     //
     mongooseContext = 
@@ -77,11 +77,13 @@ constructor.prototype.New_RawRowObject_MongooseContext = function(srcDocPKey)
 ////////////////////////////////////////////////////////////////////////////////
 // Public - Imperatives - Upserts - Bulk
 //
-constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordered_persistableObjectTemplateUIDs, persistableObjectTemplatesByUID, srcDocPKey, fn)
+constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordered_persistableObjectTemplateUIDs, persistableObjectTemplatesByUID, srcDocPKey, srcDocTitle, fn)
 { // fn: (err, [Schema.Types.ObjectId])
     var self = this
-    // console.log("💬  Going to upsert " + ordered_persistableObjectTemplateUIDs.length + " ordered_persistableObjectTemplateUIDs")
-    //
+    
+    var num_parsed_orderedRowObjectPrimaryKeys = ordered_persistableObjectTemplateUIDs.length
+    console.log("📡  [" + (new Date()).toString() + "] Upserting " + num_parsed_orderedRowObjectPrimaryKeys + " parsed rows for \"" + srcDocTitle + "\".")
+    
     var forThisDataSource_mongooseContext = self.New_RawRowObject_MongooseContext(srcDocPKey)
     var forThisDataSource_RawRowObject_scheme = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_scheme
     var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.forThisDataSource_rowObjects_modelName
@@ -107,98 +109,18 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
         }
         var writeConcern =
         {
-            upsert: true,
-            j: true // 'requests acknowledgement from MongoDB that the write operation has been written to the journal'
+            upsert: true
+            // note: we're turning this off as it's super slow for large datasets like Artworks
+            // j: true // 'requests acknowledgement from MongoDB that the write operation has been written to the journal'
         }
         bulkOperation.execute(writeConcern, function(err, result)
         {
             if (err) {
-                console.log("❌ Error while saving raw row objects: ", err);
-                fn(err, null)
-                
-                return
+                console.log("❌ [" + (new Date()).toString() + "] Error while saving raw row objects: ", err);
+            } else {
+                console.log("✅  [" + (new Date()).toString() + "] Saved raw row objects.")
             }
-            console.log("✅  Saved raw row objects.")
-            self._new_orderedMongoIds_fromOrderedCompoundKeyComponents(forThisDataSource_RawRowObject_model, ordered_persistableObjectTemplateUIDs, srcDocPKey, function(err, ordered_mongoIds)
-            {
-                if (err) {
-                    return // early
-                }
-                // console.log("💬  Aggregated " + ordered_mongoIds.length + " row object ordered_mongoIds.")
-                fn(null, ordered_mongoIds)
-            })        
+            fn(err, result)
         })
     })
-}
-//
-//
-////////////////////////////////////////////////////////////////////////////////
-// Private - Accessors - Factories - Obtaining MongoIds
-//
-constructor.prototype._new_orderedMongoIds_fromOrderedCompoundKeyComponents = function(forThisDataSource_RawRowObject_model, ordered_primaryKeys_withinThisRevision, srcDocPKey, fn) 
-{ // -> [Schema.Types.ObjectId]    
-    
-    var queryDescription = 
-    {
-        pKey: {
-            $in: ordered_primaryKeys_withinThisRevision
-        },
-        srcDocPKey: srcDocPKey
-    }
-    var fieldsToSelect = 
-    { 
-        pKey: 1, 
-        _id: 1
-    }
-    console.log("🔁  Querying for mongoIds of row objects.")
-    
-    
-    // TODO: Use the aggregate pipeline to optimize this whole function
-    
-    
-    forThisDataSource_RawRowObject_model.find(queryDescription).select(fieldsToSelect).exec(function(err, docs)
-    {
-        if (err) {
-            console.log("❌ Error while retrieving raw row object ids: ", err);
-            fn(err, null)
-            
-            return
-        }
-        console.log("🔁  Sorting mongoIds of row objects.")
-        // Now we must order them (unfortunately this is slow which is why we use async instead of Array.sort)
-        async.sortBy(docs, function(doc, cb)
-        {
-            var doc_primaryKey = doc.pKey
-            var idxOfDocPKeyInOrdering = ordered_primaryKeys_withinThisRevision.indexOf(doc_primaryKey)
-            if (idxOfDocPKeyInOrdering == -1) {
-                var errStr = "❌ Code Fault: idxOfDocPKeyInOrdering didn't exist in ordered_primaryKeys_withinThisRevision"
-                var err = new Error(errStr)
-                console.error(errStr);
-                
-                cb(err, 0)
-                return
-            }
-            cb(null, idxOfDocPKeyInOrdering)
-        }, function(err, ordered_docs) 
-        {
-            if (err) {
-                fn(err, null)
-                return
-            }
-            console.log("🔁  Aggregating mongoIds of row objects.")
-            async.map(ordered_docs, function(doc, cb) // Another optimization via async
-            { // aggregate ids
-                cb(null, doc._id)
-            }, function(err, ordered_mongoIds)
-            {
-                if (err) {
-                    fn(err, null)
-                    return
-                }
-                // console.log("ordered_mongoIds from ", ordered_mongoIds)
-        
-                fn(null, ordered_mongoIds)
-            });
-        })
-    })    
 }

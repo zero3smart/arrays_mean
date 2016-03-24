@@ -43,8 +43,7 @@ var RawSourceDocument_scheme = Schema({
     revisionNumber: Number,
     importUID: String,
     title: String,
-    dateOfLastImport: Date,
-    orderedRawRowObjects: [ { type: Schema.Types.ObjectId, ref: 'RawRowObject' } ]    
+    dateOfLastImport: Date
 })
 RawSourceDocument_scheme.index({ importUID: 1, revisionNumber: 1 }, { unique: true })
 RawSourceDocument_scheme.index({ importUID: 1 }, { unique: false })
@@ -86,18 +85,15 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     var revisionNumber = persistableObjectTemplate.revisionNumber
     var importUID = persistableObjectTemplate.importUID
     
-    var num_parsed_orderedRowObjectPrimaryKeys = parsed_orderedRowObjectPrimaryKeys.length
-    console.log("🔁  Upserting " + num_parsed_orderedRowObjectPrimaryKeys + " parsed rows for \"" + persistableObjectTemplate.title + "\".")
-    
     // Bulk for performance at volume
-    raw_row_objects_controller.UpsertWithManyPersistableObjectTemplates(parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, persistableObjectTemplate_primaryKey, function(err, ordered_rawRowObject_mongoIds)
+    raw_row_objects_controller.UpsertWithManyPersistableObjectTemplates(parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, persistableObjectTemplate_primaryKey, persistableObjectTemplate.title, function(err, result)
     {
         if (err) {
             console.log("❌  Error: An error while saving raw row objects: ", err)
             
             return // bail
         }
-        console.log("💬  Going to save document with " + ordered_rawRowObject_mongoIds.length + " row object mongoIds.")
+        console.log("📡  [" + (new Date()).toString() + "] Going to save source document.")
         var persistableObjectTemplate_primaryKey = persistableObjectTemplate.primaryKey
         var updatedDocument = 
         {
@@ -105,8 +101,7 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
             title: persistableObjectTemplate.title,
             revisionNumber: revisionNumber,
             importUID: importUID,
-            dateOfLastImport: new Date(),
-            orderedRawRowObjects: ordered_rawRowObject_mongoIds // aggregated above
+            dateOfLastImport: new Date()
         }
         var findOneAndUpdate_queryParameters = 
         {
@@ -120,9 +115,9 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
         }, function(err, doc)
         {
             if (err) {
-                console.log("❌ Error while updating a raw source document: ", err);
+                console.log("❌ [" + (new Date()).toString() + "] Error while updating a raw source document: ", err);
             } else {
-                console.log("✅  Saved raw source document object with id", doc._id)
+                console.log("✅  [" + (new Date()).toString() + "] Saved source document object with pKey \"" + persistableObjectTemplate_primaryKey + "\".")
             }
             fn(err, doc)
         });

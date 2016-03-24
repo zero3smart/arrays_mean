@@ -26,8 +26,12 @@ var questionAskingFns =
     // Count on matching rows of single source doc 
     function(cb)
     {
+        console.log("------------------------------------------")
+        console.log("⏱  Started at " + (new Date().toString()))
         CountOf_ArtistsWhereCodeIs("Male", function(err, value)
         {
+        console.log("⏱  Started at " + (new Date().toString()))
+            console.log("⏱  Finished at " + (new Date().toString()))
             if (err == null) {
                 console.log("💡  There are " + value + " male artists.")
             }
@@ -37,8 +41,11 @@ var questionAskingFns =
     ,
     function(cb)
     {
+        console.log("------------------------------------------")
+        console.log("⏱  Started at " + (new Date().toString()))
         CountOf_ArtistsWhereCodeIs("Female", function(err, value)
         {
+            console.log("⏱  Finished at " + (new Date().toString()))
             if (err == null) {
                 console.log("💡  There are " + value + " female artists.")
             }
@@ -46,25 +53,28 @@ var questionAskingFns =
         })
     }
     ,
-    //
-    // // Count after join
-    // function(cb)
-    // {
-    //     CountOf_ArtworksWhere_ArtistCodeIs("Female", function(err, value)
-    //     {
-    //         if (err == null) {
-    //             console.log("💡  There are " + value + " artworks by female artists.")
-    //         }
-    //         cb(err, value)
-    //     })
-    // }
+
+    // Count after join
+    function(cb)
+    {
+        console.log("------------------------------------------")
+        console.log("⏱  Started at " + (new Date().toString()))
+        CountOf_ArtworksWhere_ArtistCodeIs("Female", function(err, value)
+        {
+            console.log("⏱  Finished at " + (new Date().toString()))
+            if (err == null) {
+                console.log("💡  There are " + value + " artworks by female artists.")
+            }
+            cb(err, value)
+        })
+    }
 ]
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
 // Ask the questions concurrently (switch to .series for serial execution)
 //
-async.parallel(questionAskingFns, function(err, results)
+async.series(questionAskingFns, function(err, results)
 {
     if (err) {
         console.error("❌  Error encountered:", err)
@@ -119,39 +129,64 @@ function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
 {
     var artists_srcDoc_primaryKeyString = _Artists_srcDoc_primaryKeyString()
     var artworks_srcDoc_primaryKeyString = _Artworks_srcDoc_primaryKeyString()
-    
+
+    var artists_mongooseContext = context.raw_row_objects_controller.New_RawRowObject_MongooseContext(artists_srcDoc_primaryKeyString)
+    var artists_mongooseModel = artists_mongooseContext.forThisDataSource_RawRowObject_model
+
     // var artists_rowObjs_collectionName = _Artists_rowObjectsCollectionName()
-    // var artworks_rowObjs_collectionName = _Artworks_rowObjectsCollectionName()
+    var artworks_rowObjs_collectionName = _Artworks_rowObjectsCollectionName()
+    // console.log("Left-join artworks from " , artworks_rowObjs_collectionName)
     
-
-    var artists_mongooseContext = New_RawRowObject_MongooseContext(artists_srcDoc_primaryKeyString)
-    var artists_mongooseModel = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model
-
-    var artworks_mongooseContext = New_RawRowObject_MongooseContext(artists_srcDoc_primaryKeyString)
-    var artworks_mongooseModel = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model
-    
-    var aggregationOperators = 
+    var aggregationOperators =
     [
-        { // Female artists
+        { // Code:codeValue artists
             $match: {
-                srcDocPKey: artists_srcDoc_primaryKeyString,
                 "rowParams.Code": codeValue
             }
         },
-        {
-            $project: {
-                _id: 0,
-                Artist: "$rowParams.Artist"
+        { // Now join with artworks where artistname is the same
+            $lookup: {
+                from: artworks_rowObjs_collectionName,
+                localField: "rowParams.Artist",
+                foreignField: "rowParams.Artist",
+                as: "artworks"
             }
-        }
-        // ,
-        // {
+        },
+        
+        // I: Slow
+        // { // Flatten
+        //     $unwind: {
+        //         path: "$artworks"
+        //     }
+        // },
+        // { // Then $group to count
         //     $group: {
-        //         Artist: 1
+        //         _id: 1,
+        //         count: {
+        //             $sum: 1
+        //         }
         //     }
         // }
+        
+        // II: Faster?
+        { 
+            $project: { 
+                _id: 1,
+                rowsCoun: {
+                    $size: "$artworks"
+                }                
+             }
+        },
+        {
+            $group: {
+                _id: 1,
+                count: { $sum: "$count" }
+            }
+        }
     ]
-    rawRowObject_model.aggregate(aggregationOperators).exec(function(err, results)
+    artists_mongooseModel
+        .aggregate(aggregationOperators)
+        .exec(function(err, results)
     {
         if (err) {
             fn(err, null)
@@ -164,54 +199,10 @@ function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
 
             return
         }
-        console.log("results " , results)
+        // console.log("results " , results)
+        var value = results[0].count
+        fn(err, value)
     })
-    
-    // var aggregationOperators =
-    // [
-    //     { // codeValue Artists
-    //         $project: {
-    //             dataSrcDocRevPKey: "$srcDocPKey"
-    //             , rowPKey: "$pKey"
-    //             , Artist: "$rowParams.Artist"
-                // , IsArtist: { $eq: [ "$srcDocPKey", artists_srcDoc_primaryKeyString ] }
-                // , IsArtwork: { $eq: [ "$srcDocPKey", artworks_srcDoc_primaryKeyString ] }            }
-    //     },
-    //     {
-    //         $match: {
-    //             $or: [ // Either
-    //                 // { //  Artists,
-    //                 //     IsArtist: true
-    //                 // }
-    //                 // ,
-    //                 { // or Artworks
-    //                     IsArtwork: true
-    //                 }
-    //             ]
-    //         }
-    //     },
-    // Now need to merge the fields by artist
-    // Then filter where Code is codeValue
-    // Then count
-    // ]
-    // rawRowObject_model
-    //     .aggregate(aggregationOperators)
-    //     .exec(function(err, results)
-    // {
-    //     if (err) {
-    //         fn(err, null)
-    //
-    //         return
-    //     }
-    //     if (results == undefined || results == null
-    //         || results.length == 0) {
-    //         fn(null, 0)
-    //
-    //         return
-    //     }
-    //     var value = results[0].count
-    //     fn(err, value)
-    // })    
 }
 //
 //
@@ -235,9 +226,9 @@ function _Artworks_srcDoc_primaryKeyString()
 }
 function _Artists_rowObjectsCollectionName()
 {
-    return context.raw_row_objects_controller.New_RowObjectsCollectionName(_Artists_srcDoc_primaryKeyString())
+    return context.raw_row_objects_controller.New_RowObjectsModelName(_Artists_srcDoc_primaryKeyString()).toLowerCase()
 }
 function _Artworks_rowObjectsCollectionName()
 {
-    return context.raw_row_objects_controller.New_RowObjectsCollectionName(_Artworks_srcDoc_primaryKeyString())
+    return context.raw_row_objects_controller.New_RowObjectsModelName(_Artworks_srcDoc_primaryKeyString()).toLowerCase()
 }
