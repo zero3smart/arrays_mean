@@ -108,7 +108,8 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
             dateOfLastImport: new Date(),
             orderedRawRowObjects: ordered_rawRowObject_mongoIds // aggregated above
         }
-        var findOneAndUpdate_queryParameters = {
+        var findOneAndUpdate_queryParameters = 
+        {
             primaryKey: persistableObjectTemplate_primaryKey
         }
         RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {

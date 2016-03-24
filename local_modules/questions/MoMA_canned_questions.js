@@ -33,7 +33,8 @@ var questionAskingFns =
             }
             cb(err, value)
         })
-    },
+    }
+    ,
     function(cb)
     {
         CountOf_ArtistsWhereCodeIs("Female", function(err, value)
@@ -43,19 +44,20 @@ var questionAskingFns =
             }
             cb(err, value)
         })
-    },
-    
-    // Count after join
-    function(cb) 
-    {
-        CountOf_ArtworksWhere_ArtistCodeIs("Female", function(err, value)
-        {
-            if (err == null) {
-                console.log("💡  There are " + value + " artworks by female artists.")
-            }
-            cb(err, value)
-        })
     }
+    ,
+    //
+    // // Count after join
+    // function(cb)
+    // {
+    //     CountOf_ArtworksWhere_ArtistCodeIs("Female", function(err, value)
+    //     {
+    //         if (err == null) {
+    //             console.log("💡  There are " + value + " artworks by female artists.")
+    //         }
+    //         cb(err, value)
+    //     })
+    // }
 ]
 //
 //
@@ -82,14 +84,15 @@ function CountOf_ArtistsWhereCodeIs(codeValue, fn)
     var artists_srcDoc_primaryKeyString = _Artists_srcDoc_primaryKeyString()
     var artworks_srcDoc_primaryKeyString = _Artworks_srcDoc_primaryKeyString()
     
-    var rawRowObject_model = context.raw_row_objects_controller.Model
-    
+    var artists_mongooseContext = context.raw_row_objects_controller.New_RawRowObject_MongooseContext(artists_srcDoc_primaryKeyString)
+    var artists_mongooseModel = artists_mongooseContext.forThisDataSource_RawRowObject_model
+
     var aggregationOperators = 
     [
         {
             $match: {
-                dataSourceDocumentRevisionKey: artists_srcDoc_primaryKeyString,
-                "rowParameters.Code": codeValue
+                srcDocPKey: artists_srcDoc_primaryKeyString,
+                "rowParams.Code": codeValue
             }
         }
     ]
@@ -98,7 +101,7 @@ function CountOf_ArtistsWhereCodeIs(codeValue, fn)
         _id: null,
         count: { $sum: 1 }
     }
-    rawRowObject_model
+    artists_mongooseModel
         .aggregate(aggregationOperators)
         .group(grouping)
         .exec(function(err, results)
@@ -117,20 +120,28 @@ function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
     var artists_srcDoc_primaryKeyString = _Artists_srcDoc_primaryKeyString()
     var artworks_srcDoc_primaryKeyString = _Artworks_srcDoc_primaryKeyString()
     
-    var rawRowObject_model = context.raw_row_objects_controller.Model
+    // var artists_rowObjs_collectionName = _Artists_rowObjectsCollectionName()
+    // var artworks_rowObjs_collectionName = _Artworks_rowObjectsCollectionName()
+    
+
+    var artists_mongooseContext = New_RawRowObject_MongooseContext(artists_srcDoc_primaryKeyString)
+    var artists_mongooseModel = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model
+
+    var artworks_mongooseContext = New_RawRowObject_MongooseContext(artists_srcDoc_primaryKeyString)
+    var artworks_mongooseModel = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model
     
     var aggregationOperators = 
     [
         { // Female artists
             $match: {
-                dataSourceDocumentRevisionKey: artists_srcDoc_primaryKeyString,
-                "rowParameters.Code": codeValue
+                srcDocPKey: artists_srcDoc_primaryKeyString,
+                "rowParams.Code": codeValue
             }
         },
         {
             $project: {
                 _id: 0,
-                Artist: "$rowParameters.Artist"
+                Artist: "$rowParams.Artist"
             }
         }
         // ,
@@ -160,11 +171,11 @@ function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
     // [
     //     { // codeValue Artists
     //         $project: {
-    //             dataSrcDocRevPKey: "$dataSourceDocumentRevisionKey"
-    //             , rowPKey: "$primaryKey_withinThisRevision"
-    //             , Artist: "$rowParameters.Artist"
-                // , IsArtist: { $eq: [ "$dataSourceDocumentRevisionKey", artists_srcDoc_primaryKeyString ] }
-                // , IsArtwork: { $eq: [ "$dataSourceDocumentRevisionKey", artworks_srcDoc_primaryKeyString ] }            }
+    //             dataSrcDocRevPKey: "$srcDocPKey"
+    //             , rowPKey: "$pKey"
+    //             , Artist: "$rowParams.Artist"
+                // , IsArtist: { $eq: [ "$srcDocPKey", artists_srcDoc_primaryKeyString ] }
+                // , IsArtwork: { $eq: [ "$srcDocPKey", artworks_srcDoc_primaryKeyString ] }            }
     //     },
     //     {
     //         $match: {
@@ -221,4 +232,12 @@ function _Artworks_srcDoc_primaryKeyString()
 {
     return context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(artworksSrcDocUID, 
                                                                                            artworksSrcDocRevNumber)
+}
+function _Artists_rowObjectsCollectionName()
+{
+    return context.raw_row_objects_controller.New_RowObjectsCollectionName(_Artists_srcDoc_primaryKeyString())
+}
+function _Artworks_rowObjectsCollectionName()
+{
+    return context.raw_row_objects_controller.New_RowObjectsCollectionName(_Artworks_srcDoc_primaryKeyString())
 }

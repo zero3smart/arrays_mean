@@ -94,7 +94,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     var filename = csvDescription.filename
     var revisionNumber = csvDescription.import_revision
     var importUID = csvDescription.uid
-    console.log("💬  " + dataSourceIsIndexInList + ": Will import \"" + filename + "\"")
+    console.log("🔁  " + dataSourceIsIndexInList + ": Importing CSV \"" + filename + "\"")
     var filepath = CSV_resources_path_prefix + "/" + filename   
     //
     var raw_rowObjects_coercionScheme = csvDescription.raw_rowObjects_coercionScheme // look up data type scheme here
@@ -174,7 +174,6 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     })
     readStream.on('readable', function()
     {
-        console.log("💬  Opened \"" + filename + "\"")
         readStream.pipe(parser)
     })
 }

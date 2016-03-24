@@ -21,13 +21,13 @@ constructor.prototype._init = function()
     // console.log("raw row objects documents controller is up")
 }
 //
-constructor.prototype.New_templateForPersistableObject = function(rowObject_primaryKey, sourceDocumentRevisionKey, rowIndex, rowParameters)
+constructor.prototype.New_templateForPersistableObject = function(rowObject_primaryKey, sourceDocumentRevisionKey, rowIndex, rowParams)
 {
     return {
-        primaryKey_withinThisRevision: rowObject_primaryKey, // Queries to find this unique row will have to happen 
-        dataSourceDocumentRevisionKey: sourceDocumentRevisionKey, // by primaryKey_withinThisRevision && dataSourceDocumentRevisionKey
-        rowIndexWithinSet: rowIndex,
-        rowParameters: rowParameters
+        pKey: rowObject_primaryKey, // Queries to find this unique row will have to happen 
+        srcDocPKey: sourceDocumentRevisionKey, // by pKey && srcDocPKey
+        rowIdxInDoc: rowIndex,
+        rowParams: rowParams
     }
 }
 //
@@ -36,51 +36,72 @@ const mongoose = mongoose_client.mongoose
 const Schema = mongoose.Schema
 //
 //
-constructor.prototype.New_RowObjectsCollectionName = function(dataSourceDocumentRevisionKey)
+constructor.prototype.New_RowObjectsCollectionName = function(srcDocPKey)
 {
-    return 'RawRowObjects-' + dataSourceDocumentRevisionKey
+    return 'RawRowObjects-' + srcDocPKey
+}
+constructor.prototype.MongooseContextsBySrcDocPKey = {}
+constructor.prototype.New_RawRowObject_MongooseContext = function(srcDocPKey)
+{
+    var self = this
+    //
+    var mongooseContext = self.MongooseContextsBySrcDocPKey[srcDocPKey]
+    if (mongooseContext && typeof mongooseContext !== 'undefined') { // lazy cache, to avoid mongoose model re-definition error
+        return mongooseContext
+    }
+    //
+    var forThisDataSource_RawRowObject_scheme = Schema({
+        pKey: String,
+        srcDocPKey: String,
+        rowIdxInDoc: Number,
+        rowParams: Schema.Types.Mixed // be sure to call .markModified(path) on the model before saving if you update this Mixed property
+    })
+    forThisDataSource_RawRowObject_scheme.index({ pKey: 1, srcDocPKey: 1 }, { unique: true })
+    forThisDataSource_RawRowObject_scheme.index({ srcDocPKey: 1 }, { unique: false })
+    //
+    var forThisDataSource_rowObjects_modelName = self.New_RowObjectsCollectionName(srcDocPKey)
+    var forThisDataSource_RawRowObject_model = mongoose.model(forThisDataSource_rowObjects_modelName, forThisDataSource_RawRowObject_scheme)
+    //
+    mongooseContext = 
+    {
+        forThisDataSource_RawRowObject_scheme: forThisDataSource_RawRowObject_scheme,
+        forThisDataSource_rowObjects_modelName: forThisDataSource_rowObjects_modelName,
+        forThisDataSource_RawRowObject_model: forThisDataSource_RawRowObject_model
+    }
+    self.MongooseContextsBySrcDocPKey[srcDocPKey] = mongooseContext
+    
+    return mongooseContext
 }
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
 // Public - Imperatives - Upserts - Bulk
 //
-constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordered_persistableObjectTemplateUIDs, persistableObjectTemplatesByUID, dataSourceDocumentRevisionKey, fn)
+constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordered_persistableObjectTemplateUIDs, persistableObjectTemplatesByUID, srcDocPKey, fn)
 { // fn: (err, [Schema.Types.ObjectId])
     var self = this
     // console.log("💬  Going to upsert " + ordered_persistableObjectTemplateUIDs.length + " ordered_persistableObjectTemplateUIDs")
-
-
     //
-    //
-    var forThisDataSource_RawRowObject_scheme = Schema({
-        primaryKey_withinThisRevision: String,
-        dataSourceDocumentRevisionKey: String,
-        rowIndexWithinSet: Number,
-        rowParameters: Schema.Types.Mixed // be sure to call .markModified(path) on the model before saving if you update this Mixed property
-    })
-    forThisDataSource_RawRowObject_scheme.index({ primaryKey_withinThisRevision: 1, dataSourceDocumentRevisionKey: 1 }, { unique: true })
-    forThisDataSource_RawRowObject_scheme.index({ dataSourceDocumentRevisionKey: 1 }, { unique: false })
-    //
-    var forThisDataSource_rowObjects_modelName = self.New_RowObjectsCollectionName(dataSourceDocumentRevisionKey)
-    var forThisDataSource_RawRowObject_model = mongoose.model(forThisDataSource_rowObjects_modelName, forThisDataSource_RawRowObject_scheme)
-
+    var forThisDataSource_mongooseContext = self.New_RawRowObject_MongooseContext(srcDocPKey)
+    var forThisDataSource_RawRowObject_scheme = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_scheme
+    var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.forThisDataSource_rowObjects_modelName
+    var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model
     //
     mongoose_client.BlockUntilMongoDBConnected(function()
     { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
-        var nativeCollection = RawRowObject_model.collection
+        var nativeCollection = forThisDataSource_RawRowObject_model.collection
         var bulkOperation = nativeCollection.initializeUnorderedBulkOp()
         var num_ordered_persistableObjectTemplateUIDs = ordered_persistableObjectTemplateUIDs.length
                 
         for (var rowIdx = 0 ; rowIdx < num_ordered_persistableObjectTemplateUIDs ; rowIdx++) {            
             var rowUID = ordered_persistableObjectTemplateUIDs[rowIdx]
             var persistableObjectTemplate = persistableObjectTemplatesByUID[rowUID]
-            var persistableObjectTemplate_primaryKey_withinThisRevision = persistableObjectTemplate.primaryKey_withinThisRevision
-            var persistableObjectTemplate_dataSourceDocumentRevisionKey = persistableObjectTemplate.dataSourceDocumentRevisionKey
+            var persistableObjectTemplate_pKey = persistableObjectTemplate.pKey
+            var persistableObjectTemplate_srcDocPKey = persistableObjectTemplate.srcDocPKey
             var bulkOperationQueryFragment = 
             {
-                primaryKey_withinThisRevision: persistableObjectTemplate_primaryKey_withinThisRevision,
-                dataSourceDocumentRevisionKey: dataSourceDocumentRevisionKey
+                pKey: persistableObjectTemplate_pKey,
+                srcDocPKey: srcDocPKey
             }
             bulkOperation.find(bulkOperationQueryFragment).upsert().update({ $set: persistableObjectTemplate })
         }
@@ -98,7 +119,7 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
                 return
             }
             console.log("✅  Saved raw row objects.")
-            self._new_orderedMongoIds_fromOrderedCompoundKeyComponents(ordered_persistableObjectTemplateUIDs, dataSourceDocumentRevisionKey, function(err, ordered_mongoIds)
+            self._new_orderedMongoIds_fromOrderedCompoundKeyComponents(forThisDataSource_RawRowObject_model, ordered_persistableObjectTemplateUIDs, srcDocPKey, function(err, ordered_mongoIds)
             {
                 if (err) {
                     return // early
@@ -114,23 +135,28 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
 ////////////////////////////////////////////////////////////////////////////////
 // Private - Accessors - Factories - Obtaining MongoIds
 //
-constructor.prototype._new_orderedMongoIds_fromOrderedCompoundKeyComponents = function(ordered_primaryKeys_withinThisRevision, dataSourceDocumentRevisionKey, fn) 
+constructor.prototype._new_orderedMongoIds_fromOrderedCompoundKeyComponents = function(forThisDataSource_RawRowObject_model, ordered_primaryKeys_withinThisRevision, srcDocPKey, fn) 
 { // -> [Schema.Types.ObjectId]    
     
     var queryDescription = 
     {
-        primaryKey_withinThisRevision: {
+        pKey: {
             $in: ordered_primaryKeys_withinThisRevision
         },
-        dataSourceDocumentRevisionKey: dataSourceDocumentRevisionKey
+        srcDocPKey: srcDocPKey
     }
     var fieldsToSelect = 
     { 
-        primaryKey_withinThisRevision: 1, 
+        pKey: 1, 
         _id: 1
     }
     console.log("🔁  Querying for mongoIds of row objects.")
-    RawRowObject_model.find(queryDescription).select(fieldsToSelect).exec(function(err, docs)
+    
+    
+    // TODO: Use the aggregate pipeline to optimize this whole function
+    
+    
+    forThisDataSource_RawRowObject_model.find(queryDescription).select(fieldsToSelect).exec(function(err, docs)
     {
         if (err) {
             console.log("❌ Error while retrieving raw row object ids: ", err);
@@ -142,7 +168,7 @@ constructor.prototype._new_orderedMongoIds_fromOrderedCompoundKeyComponents = fu
         // Now we must order them (unfortunately this is slow which is why we use async instead of Array.sort)
         async.sortBy(docs, function(doc, cb)
         {
-            var doc_primaryKey = doc.primaryKey_withinThisRevision
+            var doc_primaryKey = doc.pKey
             var idxOfDocPKeyInOrdering = ordered_primaryKeys_withinThisRevision.indexOf(doc_primaryKey)
             if (idxOfDocPKeyInOrdering == -1) {
                 var errStr = "❌ Code Fault: idxOfDocPKeyInOrdering didn't exist in ordered_primaryKeys_withinThisRevision"
