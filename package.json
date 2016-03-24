@@ -5,7 +5,7 @@
   "repository": "https://github.com/schemadesign/arrays",
   "private": true,
   "engines": {
-    "node": ">=0.12.7"
+    "node": ">=5.9.1"
   },
   "scripts": {
     "start": "node local_modules/app/app.js",
@@ -23,7 +23,7 @@
     "express-winston": "^1.3.0",
     "helmet": "^1.3.0",
     "moment": "^2.12.0",
-    "mongoose": "^4.4.8",
+    "mongoose": "^4.4.9",
     "serve-favicon": "^2.3.0",
     "winston": "^2.2.0"
   }
