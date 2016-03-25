@@ -17,6 +17,7 @@ const artistsSrcDocUID = "MoMA_Artists_v1_jy.csv"
 const artistsSrcDocRevNumber = 1
 const artworksSrcDocUID = "MoMA_Artworks CSV"
 const artworksSrcDocRevNumber = 2
+
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -31,10 +32,13 @@ var questionAskingFns =
     function(cb)
     {
         console.log("------------------------------------------")
-        console.log("⏱  Started at " + (new Date().toString()))
+        var startTime_s = (new Date().getTime())/1000;
+        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         CountOf_Artists(function(err, value)
         {
-            console.log("⏱  Finished at " + (new Date().toString()))
+            var endTime_s = (new Date().getTime())/1000
+            var duration_s = endTime_s - startTime_s
+            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
                 console.log("💡  There are " + value + " artists in the Artists collection.")
             }
@@ -44,10 +48,13 @@ var questionAskingFns =
     function(cb)
     {
         console.log("------------------------------------------")
-        console.log("⏱  Started at " + (new Date().toString()))
+        var startTime_s = (new Date().getTime())/1000;
+        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         CountOf_UniqueArtistsOfArtworks(function(err, value)
         {
-            console.log("⏱  Finished at " + (new Date().toString()))
+            var endTime_s = (new Date().getTime())/1000
+            var duration_s = endTime_s - startTime_s
+            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
                 console.log("💡  There are " + value + " unique artists in the Artworks collection.")
             }
@@ -61,11 +68,13 @@ var questionAskingFns =
     function(cb)
     {
         console.log("------------------------------------------")
-        console.log("⏱  Started at " + (new Date().toString()))
+        var startTime_s = (new Date().getTime())/1000;
+        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         CountOf_ArtistsWhereCodeIs("Male", function(err, value)
         {
-        console.log("⏱  Started at " + (new Date().toString()))
-            console.log("⏱  Finished at " + (new Date().toString()))
+            var endTime_s = (new Date().getTime())/1000
+            var duration_s = endTime_s - startTime_s
+            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
                 console.log("💡  There are " + value + " male artists in the Artists collection.")
             }
@@ -75,10 +84,13 @@ var questionAskingFns =
     function(cb)
     {
         console.log("------------------------------------------")
-        console.log("⏱  Started at " + (new Date().toString()))
+        var startTime_s = (new Date().getTime())/1000;
+        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         CountOf_ArtistsWhereCodeIs("Female", function(err, value)
         {
-            console.log("⏱  Finished at " + (new Date().toString()))
+            var endTime_s = (new Date().getTime())/1000
+            var duration_s = endTime_s - startTime_s
+            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
                 console.log("💡  There are " + value + " female artists in the Artists collection.")
             }
@@ -92,10 +104,13 @@ var questionAskingFns =
     function(cb)
     {
         console.log("------------------------------------------")
-        console.log("⏱  Started at " + (new Date().toString()))
+        var startTime_s = (new Date().getTime())/1000;
+        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         CountOf_Artworks(function(err, value)
         {
-            console.log("⏱  Finished at " + (new Date().toString()))
+            var endTime_s = (new Date().getTime())/1000
+            var duration_s = endTime_s - startTime_s
+            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
                 console.log("💡  There are " + value + " artworks total.")
             }
@@ -109,10 +124,13 @@ var questionAskingFns =
     function(cb)
     {
         console.log("------------------------------------------")
-        console.log("⏱  Started at " + (new Date().toString()))
+        var startTime_s = (new Date().getTime())/1000;
+        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         CountOf_ArtworksWhere_ArtistCodeIs("Female", function(err, value)
         {
-            console.log("⏱  Finished at " + (new Date().toString()))
+            var endTime_s = (new Date().getTime())/1000
+            var duration_s = endTime_s - startTime_s
+            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
                 console.log("💡  There are " + value + " artworks by female artists.")
             }
@@ -122,10 +140,13 @@ var questionAskingFns =
     function(cb)
     {
         console.log("------------------------------------------")
-        console.log("⏱  Started at " + (new Date().toString()));
+        var startTime_s = (new Date().getTime())/1000;
+        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         CountOf_ArtworksWhere_ArtistCodeIs("Male", function(err, value)
         {
-            console.log("⏱  Finished at " + (new Date().toString()));
+            var endTime_s = (new Date().getTime())/1000
+            var duration_s = endTime_s - startTime_s
+            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
                 console.log("💡  There are " + value + " artworks by male artists.");
             }
@@ -141,11 +162,14 @@ var questionAskingFns =
         var startDate = moment("01/01/1900", "MM/DD/YYYY").toDate();
         var endDate = moment("12/31/1950", "MM/DD/YYYY").toDate();
         
-        console.log("------------------------------------------");
-        console.log("⏱  Started at " + (new Date().toString()));
+        console.log("------------------------------------------")
+        var startTime_s = (new Date().getTime())/1000;
+        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         CountOf_ArtworksWhere_DateIsInRange(startDate, endDate, function(err, value)
         {
-            console.log("⏱  Finished at " + (new Date().toString()));
+            var endTime_s = (new Date().getTime())/1000
+            var duration_s = endTime_s - startTime_s
+            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
                 console.log("💡  There are " + value + " artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + ".");
             }
@@ -163,11 +187,15 @@ var questionAskingFns =
         var fieldName = "rowParams.Medium"
         var limitToNResults = 20
         
-        console.log("------------------------------------------");
-        console.log("⏱  Started at " + (new Date().toString()));
+        
+        console.log("------------------------------------------")
+        var startTime_s = (new Date().getTime())/1000;
+        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         FieldValue_OrderedByIncidence_OfArtworksWhere_DateIsInRange(startDate, endDate, fieldName, limitToNResults, function(err, results)
         {
-            console.log("⏱  Finished at " + (new Date().toString()));
+            var endTime_s = (new Date().getTime())/1000
+            var duration_s = endTime_s - startTime_s
+            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
                 console.log("💡  The " + limitToNResults + " most prevalent " + fieldName + "s of artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + " are:\n", results);
             }
@@ -185,11 +213,14 @@ var questionAskingFns =
         var fieldName = "rowParams.Artist"
         var limitToNResults = 20
         
-        console.log("------------------------------------------");
-        console.log("⏱  Started at " + (new Date().toString()));
+        console.log("------------------------------------------")
+        var startTime_s = (new Date().getTime())/1000;
+        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         FieldValue_OrderedByIncidence_OfArtworksWhere_DateIsInRange(startDate, endDate, fieldName, limitToNResults, function(err, results)
         {
-            console.log("⏱  Finished at " + (new Date().toString()));
+            var endTime_s = (new Date().getTime())/1000
+            var duration_s = endTime_s - startTime_s
+            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
                 console.log("💡  The " + limitToNResults + " " + fieldName + "s with greatest number of artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + " are:\n", results);
             }
@@ -207,12 +238,16 @@ var questionAskingFns =
         var pageNumber = 3
         var skipNResults = pageSize * (Math.max(pageNumber, 1) - 1)
         var limitToNResults = pageSize
-        
-        console.log("------------------------------------------");
-        console.log("⏱  Started at " + (new Date().toString()));
+
+
+        console.log("------------------------------------------")
+        var startTime_s = (new Date().getTime())/1000;
+        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         FieldValue_OfArtworksWhere(fieldName, skipNResults, limitToNResults, function(err, results)
         {
-            console.log("⏱  Finished at " + (new Date().toString()));
+            var endTime_s = (new Date().getTime())/1000
+            var duration_s = endTime_s - startTime_s
+            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
                 console.log("💡  The " + pageSize + " unique " + fieldName +  "s of artworks on query results page " + pageNumber + " are:\n", results);
             }
@@ -384,7 +419,7 @@ function CountOf_UniqueArtistsOfArtworks(fn)
 
             return
         }
-        console.log("results " , results)
+        // console.log("results " , results)
         var value = results[0].count
         fn(err, value)
     }
@@ -393,85 +428,117 @@ function CountOf_UniqueArtistsOfArtworks(fn)
     // cursor.each(doneFn)
     artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
 }
+
+function FieldValuesOf_RowObjectsInSrcDoc_WhereFieldValueIs(mapValuesOfFieldNamed, inSrcDoc_primaryKeyString, match_fieldPath, match_fieldValue, fn)
+{
+    var collection_mongooseContext = context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(inSrcDoc_primaryKeyString)
+    var collection_mongooseModel = collection_mongooseContext.forThisDataSource_RawRowObject_model
+    var collection_mongooseScheme = collection_mongooseContext.forThisDataSource_RawRowObject_scheme
+    //
+    var filterOperator = { $match: {} }
+    filterOperator["$match"]["" + match_fieldPath] = match_fieldValue
+    //
+    var stripOperator = 
+    {
+        $project: {
+            _id: 0,
+            "V" : ("$" + mapValuesOfFieldNamed)
+        }
+    }
+    //
+    var aggregationOperators =
+    [
+        filterOperator,
+        stripOperator        
+    ];
+    //
+    var doneFn = function(err, results)
+    {
+        if (err) {
+            fn(err, null);
+
+            return;
+        }
+        if (results == undefined || results == null || results.length == 0) {
+            fn(null, []);
+
+            return;
+        }
+        // Now map results into list of flat values
+        var values = results.map(function(el)
+        {
+            return el.V;
+        });
+        // console.log("values " , values)
+        fn(err, values)
+    }
+    // todo: use a cursor?
+    // var aggregate = artists_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)
+    // var cursor = aggregate.cursor({ batchSize: 1000 }).exec();
+    // cursor.each(doneFn)
+    collection_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
+}
+
 function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
 {
     var artists_srcDoc_primaryKeyString = _Artists_srcDoc_primaryKeyString()
     var artworks_srcDoc_primaryKeyString = _Artworks_srcDoc_primaryKeyString()
-
-    var artists_mongooseContext = context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(artists_srcDoc_primaryKeyString)
-    var artists_mongooseModel = artists_mongooseContext.forThisDataSource_RawRowObject_model
-    var artists_mongooseScheme = artists_mongooseContext.forThisDataSource_RawRowObject_scheme
-    artists_mongooseScheme.index({ "rowParams.Artist": 1 }, { unique: true })
 
     var artworks_mongooseContext = context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(artworks_srcDoc_primaryKeyString)
     var artworks_mongooseModel = artworks_mongooseContext.forThisDataSource_RawRowObject_model
     var artworks_mongooseScheme = artworks_mongooseContext.forThisDataSource_RawRowObject_scheme
     artworks_mongooseScheme.index({ "rowParams.Artist": 1 }, { unique: false })
 
-    var artists_rowObjs_collectionName = _Artists_rowObjectsCollectionName()
-    var artworks_rowObjs_collectionName = _Artworks_rowObjectsCollectionName()
-    // console.log("Left-join artworks from " , artworks_rowObjs_collectionName)
-    
-    var aggregationOperators =
-    [
-        { // Filter
-            $match: {
-                // "c": codeValue
-                "rowParams.Code": codeValue
-            }
-        },
-        { // Strip dataset
-            $project: {
-                "A" : "$rowParams.Artist"
-            }
-        },
-        { // Join
-            $lookup: {
-                from: artworks_rowObjs_collectionName,
-                localField: "A",
-                // localField: "rowParams.Artist",
-                foreignField: "rowParams.Artist",
-                as: "artworks"
-            }
-        },
-        {
-            $unwind: {
-                path: "$artworks"
-            }
-        },
-        {
-            $project: {
-                _id: 1
-            }
-        },
-        { // Count
-            $group: {
-                _id: 1,
-                count: { $sum: 1 }
-            }
-        }
-    ]
-    var doneFn = function(err, results)
+    FieldValuesOf_RowObjectsInSrcDoc_WhereFieldValueIs("rowParams.Artist", artists_srcDoc_primaryKeyString, "rowParams.Code", codeValue, function(err, values)
     {
         if (err) {
             fn(err, null)
 
             return
         }
-        if (results == undefined || results == null
-            || results.length == 0) {
-            fn(null, 0)
+        var codeValue_artistNames = values;        
+        var aggregationOperators =
+        [
+            { // Filter
+                $match: {
+                    // "c": codeValue
+                    "rowParams.Artist": { $in: codeValue_artistNames }
+                }
+            },
+            {
+                $project: {
+                    _id: 1
+                }
+            },
+            { // Count
+                $group: {
+                    _id: 1,
+                    count: { $sum: 1 }
+                }
+            }
+        ];
+        var doneFn = function(err, results)
+        {
+            if (err) {
+                fn(err, null);
 
-            return
+                return;
+            }
+            if (results == undefined || results == null
+                || results.length == 0) {
+                fn(null, 0);
+
+                return;
+            }
+            // console.log("results " , results)
+            var value = results[0].count;
+            fn(err, value);
         }
-        // console.log("results " , results)
-        var value = results[0].count
-        fn(err, value)
-    }
-    // var aggregate = artists_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)
-    // var cursor = aggregate.cursor({ batchSize: 1000 }).exec();
-    // cursor.each(doneFn)
-    artists_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
+        // var aggregate = artists_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)
+        // var cursor = aggregate.cursor({ batchSize: 1000 }).exec();
+        // cursor.each(doneFn)
+        artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn);
+    });    
 }
 //
 function CountOf_ArtworksWhere_DateIsInRange(startDate, endDate, fn)
