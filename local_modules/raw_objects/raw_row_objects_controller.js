@@ -41,7 +41,7 @@ constructor.prototype.New_RowObjectsModelName = function(srcDocPKey)
     return 'RawRowObjects-' + srcDocPKey
 }
 constructor.prototype.MongooseContextsBySrcDocPKey = {}
-constructor.prototype.New_RawRowObject_MongooseContext = function(srcDocPKey)
+constructor.prototype.Lazy_Shared_RawRowObject_MongooseContext = function(srcDocPKey)
 {
     var self = this
     //
@@ -56,7 +56,7 @@ constructor.prototype.New_RawRowObject_MongooseContext = function(srcDocPKey)
         rowIdxInDoc: Number,
         rowParams: Schema.Types.Mixed // be sure to call .markModified(path) on the model before saving if you update this Mixed property
     })
-    forThisDataSource_RawRowObject_scheme.index({ srcDocPKey: 1 }, { unique: false })
+    forThisDataSource_RawRowObject_scheme.index({ pKey: 1, srcDocPKey: 1 }, { unique: true })
     forThisDataSource_RawRowObject_scheme.index({ srcDocPKey: 1 }, { unique: false })
     //
     var forThisDataSource_rowObjects_modelName = self.New_RowObjectsModelName(srcDocPKey)
@@ -84,7 +84,7 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
     var num_parsed_orderedRowObjectPrimaryKeys = ordered_persistableObjectTemplateUIDs.length
     console.log("📡  [" + (new Date()).toString() + "] Upserting " + num_parsed_orderedRowObjectPrimaryKeys + " parsed rows for \"" + srcDocTitle + "\".")
     
-    var forThisDataSource_mongooseContext = self.New_RawRowObject_MongooseContext(srcDocPKey)
+    var forThisDataSource_mongooseContext = self.Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey)
     var forThisDataSource_RawRowObject_scheme = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_scheme
     var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.forThisDataSource_rowObjects_modelName
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model
