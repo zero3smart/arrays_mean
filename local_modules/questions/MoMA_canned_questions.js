@@ -2,6 +2,7 @@
 //
 const async = require('async')
 const moment = require('moment')
+const mongoose_client = require('../mongoose_client/mongoose_client')
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -260,16 +261,20 @@ var questionAskingFns =
 ////////////////////////////////////////////////////////////////////////////////
 // Ask the questions concurrently (switch to .series for serial execution)
 //
-async.series(questionAskingFns, function(err, results)
-{
-    if (err) {
-        console.error("❌  Error encountered:", err)
-        process.exit(1)
-    } else {
-        console.log("✅  Finished without error.")
-        process.exit(0)
-    }
-})
+//
+mongoose_client.WhenMongoDBConnected(function()
+{ // ^ We wait so as not to mess up profiling
+    async.series(questionAskingFns, function(err, results)
+    {
+        if (err) {
+            console.error("❌  Error encountered:", err);
+            process.exit(1);
+        } else {
+            console.log("✅  Finished without error.");
+            process.exit(0);
+        }
+    });
+});
 //
 //
 ////////////////////////////////////////////////////////////////////////////////

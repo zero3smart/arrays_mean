@@ -89,7 +89,7 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
     var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.forThisDataSource_rowObjects_modelName
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model
     //
-    mongoose_client.BlockUntilMongoDBConnected(function()
+    mongoose_client.WhenMongoDBConnected(function()
     { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         var nativeCollection = forThisDataSource_RawRowObject_model.collection
         var bulkOperation = nativeCollection.initializeUnorderedBulkOp()

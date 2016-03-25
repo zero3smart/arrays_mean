@@ -36,7 +36,7 @@ connection.once('open', function()
 })
 exports.connection = connection
 //
-function BlockUntilMongoDBConnected(fn)
+function WhenMongoDBConnected(fn)
 {
     if (isConnected == true) {
         fn()
@@ -51,8 +51,8 @@ function BlockUntilMongoDBConnected(fn)
     console.log("💬  Waiting " + period_ms + "ms until MongoDB is connected….")
     setTimeout(function()
     {
-        BlockUntilMongoDBConnected(fn)
+        WhenMongoDBConnected(fn)
     }, period_ms)
 }
-exports.BlockUntilMongoDBConnected = BlockUntilMongoDBConnected
+exports.WhenMongoDBConnected = WhenMongoDBConnected
 //
