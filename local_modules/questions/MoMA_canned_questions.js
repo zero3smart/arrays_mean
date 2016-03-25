@@ -24,7 +24,27 @@ const artworksSrcDocRevNumber = 2
 //
 var questionAskingFns =
 [
-    // Count on matching rows of single source doc 
+    //
+    //
+    // Count of all artists
+    //
+    function(cb)
+    {
+        console.log("------------------------------------------")
+        console.log("⏱  Started at " + (new Date().toString()))
+        CountOf_Artists(function(err, value)
+        {
+            console.log("⏱  Finished at " + (new Date().toString()))
+            if (err == null) {
+                console.log("💡  There are " + value + " artists total.")
+            }
+            cb(err, value)
+        })
+    },
+    //
+    //
+    // Count artists by gender
+    //
     function(cb)
     {
         console.log("------------------------------------------")
@@ -38,8 +58,7 @@ var questionAskingFns =
             }
             cb(err, value)
         })
-    }
-    ,
+    },
     function(cb)
     {
         console.log("------------------------------------------")
@@ -53,8 +72,10 @@ var questionAskingFns =
             cb(err, value)
         })
     },
-    
-    
+    //
+    //
+    // Count all artworks
+    //
     function(cb)
     {
         console.log("------------------------------------------")
@@ -63,31 +84,15 @@ var questionAskingFns =
         {
             console.log("⏱  Finished at " + (new Date().toString()))
             if (err == null) {
-                console.log("💡  There are " + value + " artworks.")
+                console.log("💡  There are " + value + " artworks total.")
             }
             cb(err, value)
         })
-    },    
-    //
-    // Count of artworks in date range
-    function(cb)
-    {
-        var startDate = moment("1900", "YYYY").toDate();
-        var endDate = moment("1950", "YYYY").toDate();
-        
-        console.log("------------------------------------------");
-        console.log("⏱  Started at " + (new Date().toString()));
-        CountOf_ArtworksWhere_DateIsInRange(startDate, endDate, function(err, value)
-        {
-            console.log("⏱  Finished at " + (new Date().toString()));
-            if (err == null) {
-                console.log("💡  There are " + value + " artworks between " + startDate + " and " + endDate + ".");
-            }
-            cb(err, value);
-        });
     },
     //
+    //
     // Count of artworks by gender
+    //
     function(cb)
     {
         console.log("------------------------------------------")
@@ -113,7 +118,28 @@ var questionAskingFns =
             }
             cb(err, value);
         })
+    },
+    //
+    //
+    // Count of artworks in date range
+    //
+    function(cb)
+    {
+        var startDate = moment("01/01/1900", "MM/DD/YYYY").toDate();
+        var endDate = moment("12/31/1950", "MM/DD/YYYY").toDate();
+        
+        console.log("------------------------------------------");
+        console.log("⏱  Started at " + (new Date().toString()));
+        CountOf_ArtworksWhere_DateIsInRange(startDate, endDate, function(err, value)
+        {
+            console.log("⏱  Finished at " + (new Date().toString()));
+            if (err == null) {
+                console.log("💡  There are " + value + " artworks between " + startDate + " and " + endDate + ".");
+            }
+            cb(err, value);
+        });
     }
+    //
 ];
 //
 //
@@ -188,6 +214,42 @@ function CountOf_Artworks(fn)
         }
     ]
     artworks_mongooseModel
+        .aggregate(aggregationOperators)
+        .exec(function(err, results)
+    {
+        if (err) {
+            fn(err, null)
+
+            return
+        }
+        if (results == undefined || results == null
+            || results.length == 0) {
+            fn(null, 0)
+
+            return
+        }
+        // console.log("results " , results)
+        var value = results[0].count
+        fn(err, value)
+    })
+}
+function CountOf_Artists(fn)
+{
+    var artists_srcDoc_primaryKeyString = _Artists_srcDoc_primaryKeyString()
+
+    var artists_mongooseContext = context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(artists_srcDoc_primaryKeyString)
+    var artists_mongooseModel = artists_mongooseContext.forThisDataSource_RawRowObject_model
+    
+    var aggregationOperators =
+    [
+        {
+            $group: {
+                _id: 1,
+                count: { $sum: 1 }
+            }
+        }
+    ]
+    artists_mongooseModel
         .aggregate(aggregationOperators)
         .exec(function(err, results)
     {
@@ -365,8 +427,8 @@ function CountOf_ArtworksWhere_DateIsInRange(startDate, endDate, fn)
             $project: {
                 withinRange: {
                     $and: [
-                        { $gt: [ "$rowParams.Date", startDate ] },
-                        { $lt: [ "$rowParams.Date", endDate ] }
+                        { $gte: [ "$rowParams.Date", startDate ] },
+                        { $lte: [ "$rowParams.Date", endDate ] }
                     ]
                 }
             }
