@@ -216,7 +216,6 @@ function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
     var artists_mongooseModel = artists_mongooseContext.forThisDataSource_RawRowObject_model
     var artists_mongooseScheme = artists_mongooseContext.forThisDataSource_RawRowObject_scheme
     artists_mongooseScheme.index({ "rowParams.Artist": 1 }, { unique: true })
-    artists_mongooseScheme.index({ "rowParams.Code": 1 }, { unique: false })
 
     var artworks_mongooseContext = context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(artworks_srcDoc_primaryKeyString)
     var artworks_mongooseModel = artworks_mongooseContext.forThisDataSource_RawRowObject_model
