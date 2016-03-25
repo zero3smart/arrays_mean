@@ -36,7 +36,20 @@ var questionAskingFns =
         {
             console.log("⏱  Finished at " + (new Date().toString()))
             if (err == null) {
-                console.log("💡  There are " + value + " artists total.")
+                console.log("💡  There are " + value + " artists in the Artists collection.")
+            }
+            cb(err, value)
+        })
+    },
+    function(cb)
+    {
+        console.log("------------------------------------------")
+        console.log("⏱  Started at " + (new Date().toString()))
+        CountOf_UniqueArtistsOfArtworks(function(err, value)
+        {
+            console.log("⏱  Finished at " + (new Date().toString()))
+            if (err == null) {
+                console.log("💡  There are " + value + " unique artists in the Artworks collection.")
             }
             cb(err, value)
         })
@@ -54,7 +67,7 @@ var questionAskingFns =
         console.log("⏱  Started at " + (new Date().toString()))
             console.log("⏱  Finished at " + (new Date().toString()))
             if (err == null) {
-                console.log("💡  There are " + value + " male artists.")
+                console.log("💡  There are " + value + " male artists in the Artists collection.")
             }
             cb(err, value)
         })
@@ -67,7 +80,7 @@ var questionAskingFns =
         {
             console.log("⏱  Finished at " + (new Date().toString()))
             if (err == null) {
-                console.log("💡  There are " + value + " female artists.")
+                console.log("💡  There are " + value + " female artists in the Artists collection.")
             }
             cb(err, value)
         })
@@ -141,7 +154,7 @@ var questionAskingFns =
     },
     //
     //
-    // Predominate art media of art in range
+    // Predominate art media of art in date range
     //
     function(cb)
     {
@@ -157,6 +170,28 @@ var questionAskingFns =
             console.log("⏱  Finished at " + (new Date().toString()));
             if (err == null) {
                 console.log("💡  The " + limitToNResults + " most prevalent " + fieldName + "s of artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + " are:\n", results);
+            }
+            cb(err, results);
+        });
+    },
+    //
+    //
+    // Predominate artists of art in date range
+    //
+    function(cb)
+    {
+        var startDate = moment("01/01/1500", "MM/DD/YYYY").toDate();
+        var endDate = moment("12/31/2500", "MM/DD/YYYY").toDate();
+        var fieldName = "rowParams.Artist"
+        var limitToNResults = 20
+        
+        console.log("------------------------------------------");
+        console.log("⏱  Started at " + (new Date().toString()));
+        FieldValue_OrderedByIncidence_OfArtworksWhere_DateIsInRange(startDate, endDate, fieldName, limitToNResults, function(err, results)
+        {
+            console.log("⏱  Finished at " + (new Date().toString()));
+            if (err == null) {
+                console.log("💡  The " + limitToNResults + " " + fieldName + "s with greatest number of artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + " are:\n", results);
             }
             cb(err, results);
         });
@@ -289,6 +324,51 @@ function CountOf_Artists(fn)
         var value = results[0].count
         fn(err, value)
     })
+}
+function CountOf_UniqueArtistsOfArtworks(fn)
+{
+    var artworks_srcDoc_primaryKeyString = _Artworks_srcDoc_primaryKeyString()
+    var artworks_mongooseContext = context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(artworks_srcDoc_primaryKeyString)
+    var artworks_mongooseModel = artworks_mongooseContext.forThisDataSource_RawRowObject_model
+    //
+    var artworks_mongooseScheme = artworks_mongooseContext.forThisDataSource_RawRowObject_scheme
+    artworks_mongooseScheme.index({ "rowParams.Artist": 1 }, { unique: false })
+    //
+    var aggregationOperators =
+    [
+        { // Group by unique artist names
+            $group: {
+                _id: "$rowParams.Artist"
+            }
+        },
+        { // Count
+            $group: {
+                _id: 1,
+                count: { $sum: 1 }
+            }
+        }
+    ]
+    var doneFn = function(err, results)
+    {
+        if (err) {
+            fn(err, null)
+
+            return
+        }
+        if (results == undefined || results == null
+            || results.length == 0) {
+            fn(null, 0)
+
+            return
+        }
+        console.log("results " , results)
+        var value = results[0].count
+        fn(err, value)
+    }
+    // var aggregate = artists_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)
+    // var cursor = aggregate.cursor({ batchSize: 1000 }).exec();
+    // cursor.each(doneFn)
+    artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
 }
 function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
 {
