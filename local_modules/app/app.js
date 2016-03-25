@@ -1,19 +1,22 @@
-//
-//
-// Initialize application object for context
-const path = require('path')
+/**
+ * Initialize application object for context
+ */
+const path = require('path');
 const express = require('express');
 var app = express();
-//
-//
-// Set up application runtime object graph
-var context = require('./app_context').NewHydratedContext(app) 
-module.exports = context // access app at context.app
-//
-// Configure app
+
+/**
+ * Set up application runtime object graph
+ */
+var context = require('./app_context').NewHydratedContext(app);
+module.exports = context; // access app at context.app
+
+/**
+ * Configure app
+ */
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
-const nunjucks = require('express-nunjucks')
+const nunjucks = require('express-nunjucks');
 nunjucks.setup({
     // (default: true) controls if output with dangerous characters are escaped automatically.
     autoescape: true,
@@ -33,19 +36,22 @@ nunjucks.setup({
 app.use(context.logging.requestLogger);
 app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
 app.use(express.static(path.join(__dirname, '/public')));
-const bodyParser = require('body-parser')
-app.use(bodyParser.urlencoded({ extended: false })) // application/x-www-form-urlencoded
-app.use(bodyParser.json()) // application/JSON
-app.use(require('compression')())
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false })); // application/x-www-form-urlencoded
+app.use(bodyParser.json()); // application/JSON
+app.use(require('compression')());
 app.set('trust proxy', true);
-const helmet = require('helmet')
+const helmet = require('helmet');
 app.use(helmet.xframe());
-//
-// Mount routes
-context.routes_controller.MountRoutes() 
-//
-//
-// Run actual server
+
+/**
+ * Mount routes
+ */
+context.routes_controller.MountRoutes();
+
+/**
+ * Run actual server
+ */
 // TODO: Integrate SSL/HTTPS
 if (module === require.main) {
     var server = app.listen(process.env.PORT || 9080, function () {
