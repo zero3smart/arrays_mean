@@ -134,12 +134,33 @@ var questionAskingFns =
         {
             console.log("⏱  Finished at " + (new Date().toString()));
             if (err == null) {
-                console.log("💡  There are " + value + " artworks between " + startDate + " and " + endDate + ".");
+                console.log("💡  There are " + value + " artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + ".");
             }
             cb(err, value);
         });
-    }
+    },
     //
+    //
+    // Predominate art media of art in range
+    //
+    function(cb)
+    {
+        var startDate = moment("01/01/1900", "MM/DD/YYYY").toDate();
+        var endDate = moment("12/31/1950", "MM/DD/YYYY").toDate();
+        var fieldName = "rowParams.Medium"
+        var limitToNResults = 20
+        
+        console.log("------------------------------------------");
+        console.log("⏱  Started at " + (new Date().toString()));
+        FieldValue_OrderedByIncidence_OfArtworksWhere_DateIsInRange(startDate, endDate, fieldName, limitToNResults, function(err, results)
+        {
+            console.log("⏱  Finished at " + (new Date().toString()));
+            if (err == null) {
+                console.log("💡  The " + limitToNResults + " most prevalent " + fieldName + "s of artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + " are:\n", results);
+            }
+            cb(err, results);
+        });
+    }
 ];
 //
 //
@@ -288,71 +309,6 @@ function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
     var artworks_rowObjs_collectionName = _Artworks_rowObjectsCollectionName()
     // console.log("Left-join artworks from " , artworks_rowObjs_collectionName)
     
-    
-/*
-    Apparently slower with huge datasets?
-    var aggregationOperators =
-    [
-        // {
-        //     $project: {
-        //         A: "$rowParams.Artist"
-        //     }
-        // },
-        { // Join
-            $lookup: {
-                from: artists_rowObjs_collectionName,
-                // localField: "A",
-                localField: "rowParams.Artist",
-                foreignField: "rowParams.Artist",
-                as: "artist"
-            }
-        },
-        { // Flatten
-            $unwind: {
-                path: "$artist"
-            }
-        },
-        // { // Strip dataset
-        //     $project: {
-        //         "c" : "$artist.rowParams.Code"
-        //     }
-        // },
-        { // Filter
-            $match: {
-                // "c": codeValue
-                "artist.rowParams.Code": codeValue
-            }
-        },
-        { // Count
-            $group: {
-                _id: 1,
-                count: { $sum: 1 }
-            }
-        }
-    ]
-    var doneFn = function(err, results)
-    {
-        if (err) {
-            fn(err, null)
-
-            return
-        }
-        if (results == undefined || results == null
-            || results.length == 0) {
-            fn(null, 0)
-
-            return
-        }
-        // console.log("results " , results)
-        var value = results[0].count
-        fn(err, value)
-    }
-    // var aggregate = artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)
-    // var cursor = aggregate.cursor({ batchSize: 1000 }).exec();
-    // cursor.each(doneFn)
-    artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
-*/
-    
     var aggregationOperators =
     [
         { // Filter
@@ -472,6 +428,75 @@ function CountOf_ArtworksWhere_DateIsInRange(startDate, endDate, fn)
 ////////////////////////////////////////////////////////////////////////////////
 // Questions implementations - Returning List of Values
 //
+function FieldValue_OrderedByIncidence_OfArtworksWhere_DateIsInRange(startDate, endDate, fieldName, limitToNResults, fn)
+{
+    var artworks_srcDoc_primaryKeyString = _Artworks_srcDoc_primaryKeyString()
+    var artworks_mongooseContext = context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(artworks_srcDoc_primaryKeyString)
+    var artworks_mongooseModel = artworks_mongooseContext.forThisDataSource_RawRowObject_model
+    //
+    var aggregationOperators =
+    [
+        { // Filter
+            $project: {
+                withinRange: {
+                    $and: [
+                        { $gte: [ "$rowParams.Date", startDate ] },
+                        { $lte: [ "$rowParams.Date", endDate ] }
+                    ]
+                },
+                F: ("$" + fieldName)
+            }
+        },
+        {
+            $match: {
+                withinRange: true
+            }
+        },
+        { // Condense all unique fieldName rows into one row while counting number of rows condensed
+            $group: {
+                _id: "$F",
+                c: { $sum: 1 }
+            }
+        },
+        { // Remove rows with empty fieldName value ""…… maybe this should be exposed as an arg somehow
+            $redact: {
+                $cond: {
+                  if: { $eq: [ "$_id", '' ] },
+                  then: "$$PRUNE",
+                  else: "$$DESCEND"
+                }
+            }
+        }, 
+        { // Sort by fieldName value rows which appear most often 
+            $sort: {
+                c: -1
+            }
+        },
+        { // Finally, limit to top N
+            $limit: limitToNResults
+        }
+    ]
+    var doneFn = function(err, results)
+    {
+        if (err) {
+            fn(err, null)
+
+            return
+        }
+        if (results == undefined || results == null
+            || results.length == 0) {
+            fn(null, 0)
+
+            return
+        }
+        // console.log("results " , results)
+        fn(err, results)
+    }
+    // var aggregate = artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)
+    // var cursor = aggregate.cursor({ batchSize: 1000 }).exec();
+    // cursor.each(doneFn)
+    artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
+}
 
 //
 //
