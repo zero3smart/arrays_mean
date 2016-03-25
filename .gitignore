@@ -91,3 +91,7 @@ Temporary Items
 
 ### Espresso ###
 *.esproj
+
+
+### JSHint ###
+*.jshintrc
