@@ -73,6 +73,17 @@
 
 ---------------------
 
+### Asking questions 
+
+There are a handful of pre-prepared questions to run on the MVP MoMA dataset.
+
+To run these questions on the MongoLab (prod) DB, execute [`bin/_prod_MoMA_canned_questions`](bin/_prod_MoMA_canned_questions)
+
+To run them on your local (dev) DB, execute [`bin/_start_dev_MoMA_canned_questions`](bin/_start_dev_MoMA_canned_questions)
+
+
+---------------------
+
 ### Customizing the database-seeding import
 
 See this Doc for information on the data import framework capabilities.
