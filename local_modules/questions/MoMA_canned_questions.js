@@ -176,7 +176,7 @@ var questionAskingFns =
     },
     //
     //
-    // Predominate artists of art in date range
+    // Most prolific artists of artworks in date range
     //
     function(cb)
     {
@@ -192,6 +192,29 @@ var questionAskingFns =
             console.log("⏱  Finished at " + (new Date().toString()));
             if (err == null) {
                 console.log("💡  The " + limitToNResults + " " + fieldName + "s with greatest number of artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + " are:\n", results);
+            }
+            cb(err, results);
+        });
+    },
+    //
+    //
+    // The N artists on page M
+    //
+    function(cb)
+    {
+        var fieldName = "rowParams.Artist"
+        var pageSize = 20
+        var pageNumber = 3
+        var skipNResults = pageSize * (Math.max(pageNumber, 1) - 1)
+        var limitToNResults = pageSize
+        
+        console.log("------------------------------------------");
+        console.log("⏱  Started at " + (new Date().toString()));
+        FieldValue_OfArtworksWhere(fieldName, skipNResults, limitToNResults, function(err, results)
+        {
+            console.log("⏱  Finished at " + (new Date().toString()));
+            if (err == null) {
+                console.log("💡  The " + pageSize + " unique " + fieldName +  "s of artworks on query results page " + pageNumber + " are:\n", results);
             }
             cb(err, results);
         });
@@ -578,6 +601,52 @@ function FieldValue_OrderedByIncidence_OfArtworksWhere_DateIsInRange(startDate, 
     artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
 }
 
+function FieldValue_OfArtworksWhere(fieldName, skipNResults, limitToNResults, fn)
+{
+    var artworks_srcDoc_primaryKeyString = _Artworks_srcDoc_primaryKeyString()
+    var artworks_mongooseContext = context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(artworks_srcDoc_primaryKeyString)
+    var artworks_mongooseModel = artworks_mongooseContext.forThisDataSource_RawRowObject_model
+    //
+    var aggregationOperators =
+    [
+        { // Filter
+            $project: {
+                F: ("$" + fieldName)
+            }
+        },
+        { // Condense all unique fieldName rows into one row 
+            $group: {
+                _id: "$F"
+            }
+        },
+        {
+            $skip: skipNResults
+        },
+        { // Finally, limit to top N
+            $limit: limitToNResults
+        }
+    ]
+    var doneFn = function(err, results)
+    {
+        if (err) {
+            fn(err, null)
+
+            return
+        }
+        if (results == undefined || results == null
+            || results.length == 0) {
+            fn(null, 0)
+
+            return
+        }
+        // console.log("results " , results)
+        fn(err, results)
+    }
+    // var aggregate = artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)
+    // var cursor = aggregate.cursor({ batchSize: 1000 }).exec();
+    // cursor.each(doneFn)
+    artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
+}
 //
 //
 // Questions - Shared
