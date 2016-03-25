@@ -1,6 +1,7 @@
 //
 //
 const async = require('async')
+const moment = require('moment')
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,11 +67,27 @@ var questionAskingFns =
             }
             cb(err, value)
         })
+    },    
+    //
+    // Count of artworks in date range
+    function(cb)
+    {
+        var startDate = moment("1900", "YYYY").toDate();
+        var endDate = moment("1950", "YYYY").toDate();
+        
+        console.log("------------------------------------------");
+        console.log("⏱  Started at " + (new Date().toString()));
+        CountOf_ArtworksWhere_DateIsInRange(startDate, endDate, function(err, value)
+        {
+            console.log("⏱  Finished at " + (new Date().toString()));
+            if (err == null) {
+                console.log("💡  There are " + value + " artworks between " + startDate + " and " + endDate + ".");
+            }
+            cb(err, value);
+        });
     },
-    
-    
-
-    // Count after join
+    //
+    // Count of artworks by gender
     function(cb)
     {
         console.log("------------------------------------------")
@@ -87,17 +104,17 @@ var questionAskingFns =
     function(cb)
     {
         console.log("------------------------------------------")
-        console.log("⏱  Started at " + (new Date().toString()))
+        console.log("⏱  Started at " + (new Date().toString()));
         CountOf_ArtworksWhere_ArtistCodeIs("Male", function(err, value)
         {
-            console.log("⏱  Finished at " + (new Date().toString()))
+            console.log("⏱  Finished at " + (new Date().toString()));
             if (err == null) {
-                console.log("💡  There are " + value + " artworks by male artists.")
+                console.log("💡  There are " + value + " artworks by male artists.");
             }
-            cb(err, value)
+            cb(err, value);
         })
     }
-]
+];
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -207,95 +224,15 @@ function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
     
     var aggregationOperators =
     [
-        // { // Code:codeValue artists
-        //     $match: {
-        //         "rowParams.Code": codeValue
-        //     }
-        // },
-        // { // Now join with artworks where artistname is the same
-        //     $lookup: {
-        //         from: artworks_rowObjs_collectionName,
-        //         localField: "rowParams.Artist",
-        //         foreignField: "rowParams.Artist",
-        //         as: "artworks"
-        //     }
-        // },
-        //
-        // // I: Slow
-        // // { // Flatten
-        // //     $unwind: {
-        // //         path: "$artworks"
-        // //     }
-        // // },
-        // // { // Then $group to count
-        // //     $group: {
-        // //         _id: 1,
-        // //         count: {
-        // //             $sum: 1
-        // //         }
-        // //     }
-        // // }
-        //
-        // // II: Faster?
-        // {
-        //     $project: {
-        //         _id: 1,
-        //         rowsCoun: {
-        //             $size: "$artworks"
-        //         }
-        //      }
-        // },
-        // {
-        //     $group: {
-        //         _id: 1,
-        //         count: { $sum: "$count" }
-        //     }
-        // }
-        
-        
-        
-        // OBSERVATION: Using the large dataset's Model and doing the aggregate there
-        // is much faster than pulling in the large dataset with a join
-        // {
-        //     $lookup: {
-        //         from: artists_rowObjs_collectionName,
-        //         localField: "rowParams.Artist",
-        //         foreignField: "rowParams.Artist",
-        //         as: "artist"
-        //     }
-        // },
-        // {
-        //     $unwind: {
-        //         path: "$artist"
-        //     }
-        // },
-        // { // Trim down the object
-        //     $project: {
-        //         _id: 1,
-        //         // a: "$rowParams.Artist",
-        //         // b: "$rowParams.Title",
-        //         c: "$artist.rowParams.Code"
-        //     }
-        // },
-        // { // filter to Code:codeValue artists
-        //     $match: {
-        //         "c": codeValue
-        //     }
-        // },
-        // { // Count
-        //     $group: {
-        //         _id: 1,
-        //         count: { $sum: 1 }
-        //     }
-        // }
-        //        
-        //
-        // A slightly simpler, maybe faster method:        
-        //
+        {
+            $project: {
+                A: "$rowParams.Artist"
+            }
+        },
         { // Join
             $lookup: {
                 from: artists_rowObjs_collectionName,
-                localField: "rowParams.Artist",
+                localField: "A",
                 foreignField: "rowParams.Artist",
                 as: "artist"
             }
@@ -305,9 +242,14 @@ function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
                 path: "$artist"
             }
         },
+        { // Strip dataset
+            $project: {
+                "c" : "$artist.rowParams.Code"
+            }
+        },
         { // Filter
             $match: {
-                "artist.rowParams.Code": codeValue
+                "c": codeValue
             }
         },
         { // Count
@@ -316,7 +258,6 @@ function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
                 count: { $sum: 1 }
             }
         }
-        
     ]
     var doneFn = function(err, results)
     {
@@ -338,8 +279,60 @@ function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
     // var aggregate = artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)
     // var cursor = aggregate.cursor({ batchSize: 1000 }).exec();
     // cursor.each(doneFn)
+    artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
+}
+//
+function CountOf_ArtworksWhere_DateIsInRange(startDate, endDate, fn)
+{
+    var artworks_srcDoc_primaryKeyString = _Artworks_srcDoc_primaryKeyString()
+    var artworks_mongooseContext = context.raw_row_objects_controller.New_RawRowObject_MongooseContext(artworks_srcDoc_primaryKeyString)
+    var artworks_mongooseModel = artworks_mongooseContext.forThisDataSource_RawRowObject_model
+    //
+    var aggregationOperators =
+    [
+        { // Filter
+            $project: {
+                withinRange: {
+                    $and: [
+                        { $gt: [ "$rowParams.Date", startDate ] },
+                        { $lt: [ "$rowParams.Date", endDate ] }
+                    ]
+                }
+            }
+        },
+        {
+            $match: {
+                withinRange: true
+            }
+        },
+        { // Count
+            $group: {
+                _id: 1,
+                count: { $sum: 1 }
+            }
+        }        
+    ]
+    var doneFn = function(err, results)
+    {
+        if (err) {
+            fn(err, null)
 
-    artworks_mongooseModel.aggregate(aggregationOperators).exec(doneFn)    
+            return
+        }
+        if (results == undefined || results == null
+            || results.length == 0) {
+            fn(null, 0)
+
+            return
+        }
+        // console.log("results " , results)
+        var value = results[0].count
+        fn(err, value)
+    }
+    // var aggregate = artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)
+    // var cursor = aggregate.cursor({ batchSize: 1000 }).exec();
+    // cursor.each(doneFn)
+    artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn)
 }
 //
 //
