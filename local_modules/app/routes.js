@@ -27,14 +27,22 @@ constructor.prototype.MountRoutes = function()
 constructor.prototype._mountRoutes_viewEndpoints = function()
 {
     var self = this;
+    self._mountRoutes_viewEndpoints_homepage();
+};
+constructor.prototype._mountRoutes_viewEndpoints_homepage = function()
+{
+    var self = this;
     var context = self.context;
     var app = context.app;
     app.get('/', function(req, res)
     {
-        res.status(200).send('Hello, world!');
+        var bindPayload = 
+        { 
+            title: 'Home page' 
+        };
+        res.render('homepage/homepage', bindPayload);
     });
 };
-
 constructor.prototype._mountRoutes_JSONAPI = function()
 {
     var self = this;
