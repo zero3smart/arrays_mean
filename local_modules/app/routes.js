@@ -1,3 +1,19 @@
+//
+//
+// Template rendering dummy bind data factory functions
+// 
+function __new_bindPayloadFor_homepage(context)
+{
+    var app = context.app;
+    
+    return {
+        aMessage: "Hello! This is the homepage."
+    }
+}
+//
+//
+// Routes controller
+//
 var constructor = function(options, context)
 {
     var self = this;
@@ -36,10 +52,7 @@ constructor.prototype._mountRoutes_viewEndpoints_homepage = function()
     var app = context.app;
     app.get('/', function(req, res)
     {
-        var bindPayload = 
-        { 
-            title: 'Home page' 
-        };
+        var bindPayload = __new_bindPayloadFor_homepage(context);
         res.render('homepage/homepage', bindPayload);
     });
 };
