@@ -5,6 +5,10 @@
 	max-width: 100%;
 }
 
+.navbar-default {
+	font-size: 24px;
+}
+
 .navbar-default .navbar-brand {
 	position: absolute;
 	top: 0;
@@ -15,4 +19,5 @@
 	text-transform: uppercase;
 	letter-spacing: 10px;
 	font-weight: bold;
+	font-size: 24px;
 }

@@ -80,7 +80,7 @@ $headings-color:          inherit !default;
 
 // [converter] If $bootstrap-sass-asset-helper if used, provide path relative to the assets load path.
 // [converter] This is because some asset helpers, such as Sprockets, do not work with file-relative paths.
-$icon-font-path: if($bootstrap-sass-asset-helper, "bootstrap/", "../fonts/bootstrap/") !default;
+$icon-font-path: if($bootstrap-sass-asset-helper, "bootstrap/", "../../fonts/bootstrap/") !default;
 
 //** File name for all font files.
 $icon-font-name:          "glyphicons-halflings-regular" !default;
@@ -374,8 +374,8 @@ $navbar-default-bg:                #fff !default;
 $navbar-default-border:            darken($navbar-default-bg, 6.5%) !default;
 
 // Navbar links
-$navbar-default-link-color:                #000 !default;
-$navbar-default-link-hover-color:          #333 !default;
+$navbar-default-link-color:                #9B9B9B !default;
+$navbar-default-link-hover-color:          #000 !default;
 $navbar-default-link-hover-bg:             transparent !default;
 $navbar-default-link-active-color:         #555 !default;
 $navbar-default-link-active-bg:            darken($navbar-default-bg, 6.5%) !default;
@@ -383,7 +383,7 @@ $navbar-default-link-disabled-color:       #ccc !default;
 $navbar-default-link-disabled-bg:          transparent !default;
 
 // Navbar brand label
-$navbar-default-brand-color:               $navbar-default-link-color !default;
+$navbar-default-brand-color:               #000 !default;
 $navbar-default-brand-hover-color:         darken($navbar-default-brand-color, 10%) !default;
 $navbar-default-brand-hover-bg:            transparent !default;
 
