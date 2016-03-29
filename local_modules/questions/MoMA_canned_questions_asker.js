@@ -3,6 +3,7 @@
 const async = require('async')
 const moment = require('moment')
 const mongoose_client = require('../mongoose_client/mongoose_client')
+const winston = require('winston');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -23,32 +24,32 @@ var questionAskingFns =
     //
     function(cb)
     {
-        console.log("------------------------------------------")
+        winston.info("------------------------------------------")
         var startTime_s = (new Date().getTime())/1000;
-        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
+        winston.info("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         MoMA_question_implementations.CountOf_Artists(function(err, value)
         {
             var endTime_s = (new Date().getTime())/1000
             var duration_s = endTime_s - startTime_s
-            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
-                console.log("💡  There are " + value + " artists in the Artists collection.")
+                winston.info("💡  There are " + value + " artists in the Artists collection.")
             }
             cb(err, value)
         })
     },
     function(cb)
     {
-        console.log("------------------------------------------")
+        winston.info("------------------------------------------")
         var startTime_s = (new Date().getTime())/1000;
-        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
+        winston.info("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         MoMA_question_implementations.CountOf_UniqueArtistsOfArtworks(function(err, value)
         {
             var endTime_s = (new Date().getTime())/1000
             var duration_s = endTime_s - startTime_s
-            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
-                console.log("💡  There are " + value + " unique artists in the Artworks collection.")
+                winston.info("💡  There are " + value + " unique artists in the Artworks collection.")
             }
             cb(err, value)
         })
@@ -59,32 +60,32 @@ var questionAskingFns =
     //
     function(cb)
     {
-        console.log("------------------------------------------")
+        winston.info("------------------------------------------")
         var startTime_s = (new Date().getTime())/1000;
-        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
+        winston.info("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         MoMA_question_implementations.CountOf_ArtistsWhereCodeIs("Male", function(err, value)
         {
             var endTime_s = (new Date().getTime())/1000
             var duration_s = endTime_s - startTime_s
-            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
-                console.log("💡  There are " + value + " male artists in the Artists collection.")
+                winston.info("💡  There are " + value + " male artists in the Artists collection.")
             }
             cb(err, value)
         })
     },
     function(cb)
     {
-        console.log("------------------------------------------")
+        winston.info("------------------------------------------")
         var startTime_s = (new Date().getTime())/1000;
-        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
+        winston.info("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         MoMA_question_implementations.CountOf_ArtistsWhereCodeIs("Female", function(err, value)
         {
             var endTime_s = (new Date().getTime())/1000
             var duration_s = endTime_s - startTime_s
-            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
-                console.log("💡  There are " + value + " female artists in the Artists collection.")
+                winston.info("💡  There are " + value + " female artists in the Artists collection.")
             }
             cb(err, value)
         })
@@ -95,16 +96,16 @@ var questionAskingFns =
     //
     function(cb)
     {
-        console.log("------------------------------------------")
+        winston.info("------------------------------------------")
         var startTime_s = (new Date().getTime())/1000;
-        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
+        winston.info("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         MoMA_question_implementations.CountOf_Artworks(function(err, value)
         {
             var endTime_s = (new Date().getTime())/1000
             var duration_s = endTime_s - startTime_s
-            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
-                console.log("💡  There are " + value + " artworks total.")
+                winston.info("💡  There are " + value + " artworks total.")
             }
             cb(err, value)
         })
@@ -115,32 +116,32 @@ var questionAskingFns =
     //
     function(cb)
     {
-        console.log("------------------------------------------")
+        winston.info("------------------------------------------")
         var startTime_s = (new Date().getTime())/1000;
-        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
+        winston.info("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         MoMA_question_implementations.CountOf_ArtworksWhere_ArtistCodeIs("Female", function(err, value)
         {
             var endTime_s = (new Date().getTime())/1000
             var duration_s = endTime_s - startTime_s
-            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
-                console.log("💡  There are " + value + " artworks by female artists.")
+                winston.info("💡  There are " + value + " artworks by female artists.")
             }
             cb(err, value)
         })
     },
     function(cb)
     {
-        console.log("------------------------------------------")
+        winston.info("------------------------------------------")
         var startTime_s = (new Date().getTime())/1000;
-        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
+        winston.info("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         MoMA_question_implementations.CountOf_ArtworksWhere_ArtistCodeIs("Male", function(err, value)
         {
             var endTime_s = (new Date().getTime())/1000
             var duration_s = endTime_s - startTime_s
-            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
-                console.log("💡  There are " + value + " artworks by male artists.");
+                winston.info("💡  There are " + value + " artworks by male artists.");
             }
             cb(err, value);
         })
@@ -154,16 +155,16 @@ var questionAskingFns =
         var startDate = moment("01/01/1900", "MM/DD/YYYY").toDate();
         var endDate = moment("12/31/1950", "MM/DD/YYYY").toDate();
         
-        console.log("------------------------------------------")
+        winston.info("------------------------------------------")
         var startTime_s = (new Date().getTime())/1000;
-        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
+        winston.info("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         MoMA_question_implementations.CountOf_ArtworksWhere_DateIsInRange(startDate, endDate, function(err, value)
         {
             var endTime_s = (new Date().getTime())/1000
             var duration_s = endTime_s - startTime_s
-            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
-                console.log("💡  There are " + value + " artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + ".");
+                winston.info("💡  There are " + value + " artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + ".");
             }
             cb(err, value);
         });
@@ -180,16 +181,16 @@ var questionAskingFns =
         var limitToNResults = 20
         
         
-        console.log("------------------------------------------")
+        winston.info("------------------------------------------")
         var startTime_s = (new Date().getTime())/1000;
-        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
+        winston.info("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         MoMA_question_implementations.FieldValue_OrderedByIncidence_OfArtworksWhere_DateIsInRange(startDate, endDate, fieldName, limitToNResults, function(err, results)
         {
             var endTime_s = (new Date().getTime())/1000
             var duration_s = endTime_s - startTime_s
-            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
-                console.log("💡  The " + limitToNResults + " most prevalent " + fieldName + "s of artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + " are:\n", results);
+                winston.info("💡  The " + limitToNResults + " most prevalent " + fieldName + "s of artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + " are:\n", results);
             }
             cb(err, results);
         });
@@ -205,16 +206,16 @@ var questionAskingFns =
         var fieldName = "rowParams.Artist"
         var limitToNResults = 20
         
-        console.log("------------------------------------------")
+        winston.info("------------------------------------------")
         var startTime_s = (new Date().getTime())/1000;
-        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
+        winston.info("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         MoMA_question_implementations.FieldValue_OrderedByIncidence_OfArtworksWhere_DateIsInRange(startDate, endDate, fieldName, limitToNResults, function(err, results)
         {
             var endTime_s = (new Date().getTime())/1000
             var duration_s = endTime_s - startTime_s
-            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
-                console.log("💡  The " + limitToNResults + " " + fieldName + "s with greatest number of artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + " are:\n", results);
+                winston.info("💡  The " + limitToNResults + " " + fieldName + "s with greatest number of artworks between " + startDate.getFullYear() + " and " + endDate.getFullYear() + " are:\n", results);
             }
             cb(err, results);
         });
@@ -232,16 +233,16 @@ var questionAskingFns =
         var limitToNResults = pageSize
 
 
-        console.log("------------------------------------------")
+        winston.info("------------------------------------------")
         var startTime_s = (new Date().getTime())/1000;
-        console.log("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
+        winston.info("⏱  Started at\t\t" + startTime_s.toFixed(3) + "s")
         MoMA_question_implementations.FieldValue_OfArtworksWhere(fieldName, skipNResults, limitToNResults, function(err, results)
         {
             var endTime_s = (new Date().getTime())/1000
             var duration_s = endTime_s - startTime_s
-            console.log("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.")
             if (err == null) {
-                console.log("💡  The " + pageSize + " unique " + fieldName +  "s of artworks on query results page " + pageNumber + " are:\n", results);
+                winston.info("💡  The " + pageSize + " unique " + fieldName +  "s of artworks on query results page " + pageNumber + " are:\n", results);
             }
             cb(err, results);
         });
@@ -262,7 +263,7 @@ exports.Ask = function(fn)
             if (err) {
                 console.error("❌  Error encountered while asking questions:", err);
             } else {
-                console.log("✅  Finished asking questions without error.");
+                winston.info("✅  Finished asking questions without error.");
             }
             fn(err, results)
         });
