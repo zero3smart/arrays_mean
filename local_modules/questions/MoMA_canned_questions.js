@@ -8,4 +8,4 @@ asker.Ask(function(err, results)
     }
     
     process.exit(0);
-})
+});

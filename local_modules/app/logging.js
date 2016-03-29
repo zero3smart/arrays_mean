@@ -5,9 +5,9 @@ var expressWinston = require('express-winston');
 
 module.exports = function(options, context) 
 {
-    var self = this
-    self.options = options
-    self.context = context
+    var self = this;
+    self.options = options;
+    self.context = context;
     //
     var colorize = process.env.NODE_ENV === 'production' ? false : true;
     //
@@ -20,7 +20,7 @@ module.exports = function(options, context)
         ],
         expressFormat: true,
         meta: false
-    })
+    });
     //
     var errorLogger = expressWinston.errorLogger({
         transports: [
@@ -29,7 +29,7 @@ module.exports = function(options, context)
                 colorize: colorize
             }),
         ]
-    })
+    });
     //
     return {
         requestLogger: requestLogger,
@@ -41,5 +41,5 @@ module.exports = function(options, context)
         verbose: winston.verbose,
         debug: winston.debug,
         silly: winston.silly
-    }
-}
+    };
+};

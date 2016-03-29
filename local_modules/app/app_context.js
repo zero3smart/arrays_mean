@@ -21,14 +21,14 @@ var context_object_instantiation_descriptions =
         instance_key: "raw_row_objects_controller",
         options: {}
     }
-]
+];
 function NewHydratedContext(app) 
 {
     var initialContext = 
     {
         app: app
-    }
+    };
     
-    return require("../runtime_utils/runtime-context").NewHydratedContext(context_object_instantiation_descriptions, initialContext)
+    return require("../runtime_utils/runtime-context").NewHydratedContext(context_object_instantiation_descriptions, initialContext);
 }
-module.exports.NewHydratedContext = NewHydratedContext
+module.exports.NewHydratedContext = NewHydratedContext;

@@ -18,14 +18,14 @@
 // Hydrate context
 function NewHydratedContext(context_object_instantiation_descriptions, initialContext_orNilForNew)
 {
-    var context = initialContext_orNilForNew != null ? initialContext_orNilForNew : {}
+    var context = initialContext_orNilForNew != null ? initialContext_orNilForNew : {};
     for (var i in context_object_instantiation_descriptions) {
-        var description = context_object_instantiation_descriptions[i]
-        var module = require("" + description.module_path)
-        var instance = new module(description.options, context)
-        context[description.instance_key] = instance
+        var description = context_object_instantiation_descriptions[i];
+        var module = require("" + description.module_path);
+        var instance = new module(description.options, context);
+        context[description.instance_key] = instance;
     }
     
-    return context
+    return context;
 }
-module.exports.NewHydratedContext = NewHydratedContext
+module.exports.NewHydratedContext = NewHydratedContext;

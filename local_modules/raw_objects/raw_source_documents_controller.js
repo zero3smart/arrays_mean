@@ -59,7 +59,7 @@ RawSourceDocument_model.on('index', function(error)
     if (error != null) {
         winston.error("❌  MongoDB index build error for '" + modelName + "':", error);
     } else {
-        winston.info("✅  Built indices for '" + modelName + "'")
+        winston.info("✅  Built indices for '" + modelName + "'");
         // Don't let app start listening until indices built; Coordinate via 
         // mongoose client
         mongoose_client.FromModel_IndexHasBeenBuiltForSchemeWithModelNamed(modelName);
@@ -72,7 +72,7 @@ constructor.prototype.Model = RawSourceDocument_model;
 //
 constructor.prototype.NewCustomPrimaryKeyStringWithComponents = function(dataSource_uid, dataSource_importRevisionNumber)
 {
-    return dataSource_uid + "-rev" + dataSource_importRevisionNumber
+    return dataSource_uid + "-rev" + dataSource_importRevisionNumber;
 }
 //
 //
@@ -80,14 +80,14 @@ constructor.prototype.NewCustomPrimaryKeyStringWithComponents = function(dataSou
 //
 constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persistableObjectTemplate, fn)
 {
-    var self = this
-    var persistableObjectTemplate_primaryKey = persistableObjectTemplate.primaryKey
+    var self = this;
+    var persistableObjectTemplate_primaryKey = persistableObjectTemplate.primaryKey;
     
-    var raw_row_objects_controller = self.context.raw_row_objects_controller
-    var parsed_orderedRowObjectPrimaryKeys = persistableObjectTemplate.parsed_orderedRowObjectPrimaryKeys
-    var parsed_rowObjectsById = persistableObjectTemplate.parsed_rowObjectsById
-    var revisionNumber = persistableObjectTemplate.revisionNumber
-    var importUID = persistableObjectTemplate.importUID
+    var raw_row_objects_controller = self.context.raw_row_objects_controller;
+    var parsed_orderedRowObjectPrimaryKeys = persistableObjectTemplate.parsed_orderedRowObjectPrimaryKeys;
+    var parsed_rowObjectsById = persistableObjectTemplate.parsed_rowObjectsById;
+    var revisionNumber = persistableObjectTemplate.revisionNumber;
+    var importUID = persistableObjectTemplate.importUID;
     
     // Bulk for performance at volume
     raw_row_objects_controller.UpsertWithManyPersistableObjectTemplates(parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, persistableObjectTemplate_primaryKey, persistableObjectTemplate.title, function(err, result)
@@ -97,8 +97,8 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
             
             return // bail
         }
-        winston.log("📡  [" + (new Date()).toString() + "] Going to save source document.")
-        var persistableObjectTemplate_primaryKey = persistableObjectTemplate.primaryKey
+        winston.log("📡  [" + (new Date()).toString() + "] Going to save source document.");
+        var persistableObjectTemplate_primaryKey = persistableObjectTemplate.primaryKey;
         var updatedDocument = 
         {
             primaryKey: persistableObjectTemplate_primaryKey,
@@ -106,11 +106,11 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
             revisionNumber: revisionNumber,
             importUID: importUID,
             dateOfLastImport: new Date()
-        }
+        };
         var findOneAndUpdate_queryParameters = 
         {
             primaryKey: persistableObjectTemplate_primaryKey
-        }
+        };
         RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {
             $set: updatedDocument
         }, {
@@ -121,9 +121,9 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
             if (err) {
                 winston.error("❌ [" + (new Date()).toString() + "] Error while updating a raw source document: ", err);
             } else {
-                winston.info("✅  [" + (new Date()).toString() + "] Saved source document object with pKey \"" + persistableObjectTemplate_primaryKey + "\".")
+                winston.info("✅  [" + (new Date()).toString() + "] Saved source document object with pKey \"" + persistableObjectTemplate_primaryKey + "\".");
             }
-            fn(err, doc)
+            fn(err, doc);
         });
-    })
+    });
 }

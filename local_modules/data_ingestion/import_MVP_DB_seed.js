@@ -4,7 +4,7 @@
 // 
 //
 //
-const import_datatypes = require('./import_datatypes')
+const import_datatypes = require('./import_datatypes');
 
 //
 var dataSourceDescriptions = 
@@ -144,6 +144,6 @@ var dataSourceDescriptions =
     // }
 ]
 // Set up application runtime object graph
-var context = require('./import_context').NewHydratedContext() 
+var context = require('./import_context').NewHydratedContext();
 // Now import
-context.import_controller.Import_dataSourceDescriptions(dataSourceDescriptions)
+context.import_controller.Import_dataSourceDescriptions(dataSourceDescriptions);
