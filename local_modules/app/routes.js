@@ -1,3 +1,4 @@
+const winston = require('winston');
 //
 //
 // Template rendering dummy bind data factory functions
@@ -35,11 +36,32 @@ constructor.prototype._init = function()
 constructor.prototype.MountRoutes = function()
 {
     var self = this;
+    self._mountRoutes_monitoring();
     self._mountRoutes_viewEndpoints();
     self._mountRoutes_JSONAPI();
     self._mountRoutes_errorHandling();
 };
-
+constructor.prototype._mountRoutes_monitoring = function()
+{
+    var self = this;
+    var context = self.context;
+    var app = context.app;
+    app.get('/_ah/health', function(req, res)
+    {
+        res.set('Content-Type', 'text/plain');
+        res.status(200).send('ok');
+    });
+    app.get('/_ah/start', function(req, res)
+    {
+        res.set('Content-Type', 'text/plain');
+        res.status(200).send('ok');
+    });
+    app.get('/_ah/stop', function(req, res)
+    {
+        res.set('Content-Type', 'text/plain');
+        res.status(200).send('ok');
+    });
+};
 constructor.prototype._mountRoutes_viewEndpoints = function()
 {
     var self = this;
