@@ -1,0 +1,15 @@
+/* @override 
+	http://localhost:9080/stylesheets/module/array-create.css */
+
+.panel-source {
+	border-width: 2px;
+}
+
+.panel-source .panel-body {
+	padding: 20px;
+}
+
+.panel-body-title {
+	margin-top: 0;
+	margin-bottom: 0;
+}

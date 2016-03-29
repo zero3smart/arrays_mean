@@ -1,0 +1,53 @@
+{% extends "../shared/shared_layout.html" %}
+
+{% block headSuffix %}
+    <title>Arrays - Create</title>
+    
+    
+{% endblock %}
+
+{% block bodyWrapper %}
+    <body class="array array-create">
+        <div id="root">
+            {% include "../partials/header_bar.html" %}
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h1>Untitled Array</h1>
+
+                        <h2>1. Choose Sources</h2>
+
+                        <div class="panel panel-default panel-source">
+                            <div class="panel-body">
+                                <h3 class="panel-body-title">Cooper Hewitt</h3>
+                                <small><a href="https://collection.cooperhewitt.org/api/">https://collection.cooperhewitt.org/api/</a></small>
+                                <p>Cooper Hewitt, Smithsonian Design Museum Collections provides a REST-ish style application programming interface (API) for developers to use in their products and services.</p>
+                            </div>
+                        </div><!-- .panel -->
+
+                        <div class="panel panel-default panel-source">
+                            <div class="panel-body">
+                                <h3 class="panel-body-title">Museum of Modern Art Artworks</h3>
+                                <small><a href="https://github.com/MuseumofModernArt/collection">https://github.com/MuseumofModernArt/collection</a></small>
+                                <p>This research dataset contains 126,713 records, representing all of the works that have been accessioned into MoMA’s collection and cataloged in our database.</p>
+                            </div>
+                        </div><!-- .panel -->
+
+                        <div class="panel panel-default panel-source">
+                            <div class="panel-body">
+                                <h3 class="panel-body-title">Museum of Modern Art Artists</h3>
+                                <small><a href="https://github.com/MuseumofModernArt/collection">https://github.com/MuseumofModernArt/collection</a></small>
+                                <p>This research dataset contains 126,713 records, representing all of the works that have been accessioned into MoMA’s collection and cataloged in our database.</p>
+                            </div>
+                        </div><!-- .panel -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+        
+        <script type="text/javascript" src="/javascripts/main.js"></script>
+    </body>
+{% endblock %}

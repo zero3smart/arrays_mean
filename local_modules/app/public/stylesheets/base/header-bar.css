@@ -1,6 +1,10 @@
 /* @override 
 	http://localhost:9080/stylesheets/base/header-bar.css */
 
+.container-fluid.container-full-width {
+	max-width: 100%;
+}
+
 .navbar-default .navbar-brand {
 	position: absolute;
 	top: 0;

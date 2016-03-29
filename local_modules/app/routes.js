@@ -9,7 +9,15 @@ function __new_bindPayloadFor_homepage(context)
     
     return {
         aMessage: "Hello! This is the homepage."
-    }
+    };
+}
+function __new_bindPayloadFor_array_create(context)
+{
+    var app = context.app;
+    
+    return {
+        aMessage: "Hello! This is the create array page."
+    };
 }
 //
 //
@@ -66,6 +74,7 @@ constructor.prototype._mountRoutes_viewEndpoints = function()
 {
     var self = this;
     self._mountRoutes_viewEndpoints_homepage();
+    self._mountRoutes_viewEndpoints_array();
 };
 constructor.prototype._mountRoutes_viewEndpoints_homepage = function()
 {
@@ -76,6 +85,17 @@ constructor.prototype._mountRoutes_viewEndpoints_homepage = function()
     {
         var bindPayload = __new_bindPayloadFor_homepage(context);
         res.render('homepage/homepage', bindPayload);
+    });
+};
+constructor.prototype._mountRoutes_viewEndpoints_array = function()
+{
+    var self = this;
+    var context = self.context;
+    var app = context.app;
+    app.get('/array/create', function(req, res)
+    {
+        var bindPayload = __new_bindPayloadFor_array_create(context);
+        res.render('array/create', bindPayload);
     });
 };
 constructor.prototype._mountRoutes_JSONAPI = function()
