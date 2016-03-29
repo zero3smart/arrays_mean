@@ -29,7 +29,7 @@ module.exports = constructor;
 constructor.prototype._init = function()
 {
     var self = this;
-    console.log('routes controller is up');
+    // console.log('routes controller is up');
 };
 
 constructor.prototype.MountRoutes = function()

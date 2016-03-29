@@ -1,4 +1,6 @@
 const async = require('async')
+const winston = require('winston')
+//
 const mongoose_client = require('../mongoose_client/mongoose_client')
 //
 //
@@ -18,7 +20,7 @@ module.exports = constructor
 constructor.prototype._init = function()
 {
     var self = this;
-    console.log("💬  Questions Controller initialized")
+    // console.info("💬  Questions Controller initialized")
 }
 //
 //

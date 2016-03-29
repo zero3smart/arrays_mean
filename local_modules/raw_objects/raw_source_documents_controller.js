@@ -1,4 +1,5 @@
-const async = require('async')
+const async = require('async');
+const winston = require('winston');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -55,9 +56,9 @@ var RawSourceDocument_model = mongoose.model(modelName, RawSourceDocument_scheme
 RawSourceDocument_model.on('index', function(error) 
 {
     if (error != null) {
-        console.log("❌  MongoDB index build error for '" + modelName + "':", error);
+        winston.error("❌  MongoDB index build error for '" + modelName + "':", error);
     } else {
-        console.log("✅  Built indices for '" + modelName + "'")
+        winston.info("✅  Built indices for '" + modelName + "'")
         // TODO: Don't let app start listening until indices built?
     }
 });
@@ -89,11 +90,11 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     raw_row_objects_controller.UpsertWithManyPersistableObjectTemplates(parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, persistableObjectTemplate_primaryKey, persistableObjectTemplate.title, function(err, result)
     {
         if (err) {
-            console.log("❌  Error: An error while saving raw row objects: ", err)
+            winston.error("❌  Error: An error while saving raw row objects: ", err)
             
             return // bail
         }
-        console.log("📡  [" + (new Date()).toString() + "] Going to save source document.")
+        winston.log("📡  [" + (new Date()).toString() + "] Going to save source document.")
         var persistableObjectTemplate_primaryKey = persistableObjectTemplate.primaryKey
         var updatedDocument = 
         {
@@ -115,9 +116,9 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
         }, function(err, doc)
         {
             if (err) {
-                console.log("❌ [" + (new Date()).toString() + "] Error while updating a raw source document: ", err);
+                winston.error("❌ [" + (new Date()).toString() + "] Error while updating a raw source document: ", err);
             } else {
-                console.log("✅  [" + (new Date()).toString() + "] Saved source document object with pKey \"" + persistableObjectTemplate_primaryKey + "\".")
+                winston.info("✅  [" + (new Date()).toString() + "] Saved source document object with pKey \"" + persistableObjectTemplate_primaryKey + "\".")
             }
             fn(err, doc)
         });

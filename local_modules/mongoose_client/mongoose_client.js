@@ -2,6 +2,7 @@
 //
 //
 var mongoose = require('mongoose');
+const winston = require('winston');
 //
 const dbName = 'arraysdb'
 const developmentDBURI = 'mongodb://localhost/' + dbName
@@ -16,7 +17,7 @@ const productionDBURI = 'mongodb://' + productionDBUsername
 //
 var fullDBURI = process.env.NODE_ENV == 'development' ? developmentDBURI : productionDBURI
 //
-console.log("💬  MongoDB URI: " , fullDBURI)
+winston.info("💬  MongoDB URI: " , fullDBURI)
 mongoose.connect(fullDBURI)
 exports.mongoose = mongoose
 //
@@ -27,12 +28,12 @@ var connection = mongoose.connection
 connection.on('error', function(err)
 {
     erroredOnConnection = true
-    console.error("❌  MongoDB connection error:", err)
+    winston.error("❌  MongoDB connection error:", err)
 })
 connection.once('open', function()
 {
     isConnected = true
-    console.log("📡  Connected to " + process.env.NODE_ENV + " MongoDB.")
+    winston.info("📡  Connected to " + process.env.NODE_ENV + " MongoDB.")
 })
 exports.connection = connection
 //
@@ -43,12 +44,12 @@ function WhenMongoDBConnected(fn)
         
         return
     } else if (erroredOnConnection == true) {
-        console.warn("‼️  Not going to call blocked Mongo fn,", fn)
+        winston.warn("‼️  Not going to call blocked Mongo fn,", fn)
         
         return
     }
     var period_ms = 100
-    console.log("💬  Waiting " + period_ms + "ms until MongoDB is connected….")
+    winston.info("💬  Waiting " + period_ms + "ms until MongoDB is connected….")
     setTimeout(function()
     {
         WhenMongoDBConnected(fn)

@@ -3,6 +3,7 @@
  */
 const path = require('path');
 const express = require('express');
+const winston = require('winston');
 var app = express();
 
 /**
@@ -57,6 +58,6 @@ if (module === require.main) {
     var server = app.listen(process.env.PORT || 9080, function () {
         var host = process.env.NODE_ENV == 'development' ? 'localhost' : server.address().address;
         var port = server.address().port;
-        console.log('📡  App listening at http://%s:%s', host, port);
+        winston.info('📡  App listening at http://%s:%s', host, port);
     });
 }

@@ -1,4 +1,5 @@
 const async = require('async')
+const winston = require('winston');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +83,7 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
     var self = this
     
     var num_parsed_orderedRowObjectPrimaryKeys = ordered_persistableObjectTemplateUIDs.length
-    console.log("📡  [" + (new Date()).toString() + "] Upserting " + num_parsed_orderedRowObjectPrimaryKeys + " parsed rows for \"" + srcDocTitle + "\".")
+    winston.info("📡  [" + (new Date()).toString() + "] Upserting " + num_parsed_orderedRowObjectPrimaryKeys + " parsed rows for \"" + srcDocTitle + "\".")
     
     var forThisDataSource_mongooseContext = self.Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey)
     var forThisDataSource_RawRowObject_scheme = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_scheme
@@ -116,9 +117,9 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
         bulkOperation.execute(writeConcern, function(err, result)
         {
             if (err) {
-                console.log("❌ [" + (new Date()).toString() + "] Error while saving raw row objects: ", err);
+                winston.error("❌ [" + (new Date()).toString() + "] Error while saving raw row objects: ", err);
             } else {
-                console.log("✅  [" + (new Date()).toString() + "] Saved raw row objects.")
+                winston.info("✅  [" + (new Date()).toString() + "] Saved raw row objects.")
             }
             fn(err, result)
         })
