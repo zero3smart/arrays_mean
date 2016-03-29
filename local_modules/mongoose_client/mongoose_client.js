@@ -57,3 +57,37 @@ function WhenMongoDBConnected(fn)
 }
 exports.WhenMongoDBConnected = WhenMongoDBConnected
 //
+//
+//
+var _mustBuildIndexes_hasBeenInitialized = false
+var _mustBuildIndexes_forNRemaining = 0
+function FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed(modelNames) {
+    if (_mustBuildIndexes_hasBeenInitialized == true) {
+        console.log("Mustn't call this more than once")
+        process.exit(1)
+    }
+    _mustBuildIndexes_hasBeenInitialized = true
+    _mustBuildIndexes_forNRemaining = modelNames.length
+}
+exports.FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed = FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed
+function _mustBuildIndexes_areAllFinishedBuilding() {
+    return _mustBuildIndexes_hasBeenInitialized == true 
+            && _mustBuildIndexes_forNRemaining == 0
+}
+function WhenIndexesHaveBeenBuilt(fn) {
+    if (_mustBuildIndexes_areAllFinishedBuilding() == true) {
+        console.log("💬  All indexes finished building.")
+        fn()
+        
+        return
+    }
+    setTimeout(function() {
+        // console.log("💬  Waiting for indexes to finish building.")
+        WhenIndexesHaveBeenBuilt(fn)
+    }, 100)
+}
+exports.WhenIndexesHaveBeenBuilt = WhenIndexesHaveBeenBuilt
+function FromModel_IndexHasBeenBuiltForSchemeWithModelNamed(modelName) {
+    _mustBuildIndexes_forNRemaining -= 1
+}
+exports.FromModel_IndexHasBeenBuiltForSchemeWithModelNamed = FromModel_IndexHasBeenBuiltForSchemeWithModelNamed
