@@ -1,20 +1,21 @@
-/**
- * Initialize application object for context
- */
+//
+//
+// Initialize application object for context
+//
 const path = require('path');
 const express = require('express');
 const winston = require('winston');
 var app = express();
-
-/**
- * Set up application runtime object graph
- */
+//
+//
+// Set up application runtime object graph
+//
 var context = require('./app_context').NewHydratedContext(app);
 module.exports = context; // access app at context.app
-
-/**
- * Configure app
- */
+//
+//
+// Configure app
+//
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 const nunjucks = require('express-nunjucks');
@@ -44,20 +45,35 @@ app.use(require('compression')());
 app.set('trust proxy', true);
 const helmet = require('helmet');
 app.use(helmet.xframe());
-
-/**
- * Mount routes
- */
-context.routes_controller.MountRoutes();
-
-/**
- * Run actual server
- */
-// TODO: Integrate SSL/HTTPS
-if (module === require.main) {
-    var server = app.listen(process.env.PORT || 9080, function () {
-        var host = process.env.NODE_ENV == 'development' ? 'localhost' : server.address().address;
-        var port = server.address().port;
-        winston.info('📡  App listening at http://%s:%s', host, port);
+//
+//
+const mongoose_client = require('../mongoose_client/mongoose_client');
+var modelNames = []
+modelNames.push(context.raw_source_documents_controller.ModelName)
+mongoose_client.FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed(modelNames)
+//
+mongoose_client.WhenMongoDBConnected(function() 
+{
+    mongoose_client.WhenIndexesHaveBeenBuilt(function() 
+    {
+        _mountRoutesAndStartListening();
     });
+});
+//
+function _mountRoutesAndStartListening()
+{
+    winston.info("💬  Proceeding to boot app.");
+    
+    context.routes_controller.MountRoutes();
+    //
+    // Run actual server
+    // TODO: Integrate SSL/HTTPS
+    if (module === require.main) {
+        var server = app.listen(process.env.PORT || 9080, function () {
+            var host = process.env.NODE_ENV == 'development' ? 'localhost' : server.address().address;
+            var port = server.address().port;
+            winston.info('📡  App listening at http://%s:%s', host, port);
+        });
+    }
 }
+

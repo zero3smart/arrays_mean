@@ -76,7 +76,7 @@ function _mustBuildIndexes_areAllFinishedBuilding() {
 }
 function WhenIndexesHaveBeenBuilt(fn) {
     if (_mustBuildIndexes_areAllFinishedBuilding() == true) {
-        console.log("💬  All indexes finished building.")
+        winston.info("💬  All indexes finished building.")
         fn()
         
         return
