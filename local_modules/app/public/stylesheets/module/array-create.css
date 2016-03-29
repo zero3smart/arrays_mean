@@ -33,7 +33,9 @@
 	border-radius: 100%;
 	background-color: gray;
 	color: white;
-	content: "\2714";
+	font-family: 'Glyphicons Halflings';
+	content: "\e013";
 	text-align: center;
-	font-size: 22px;
+	font-size: 18px;
+	padding-top: 2px;
 }
