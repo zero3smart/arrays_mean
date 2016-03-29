@@ -1,0 +1,124 @@
+/*global module:false*/
+module.exports = function(grunt) {
+
+  // Project configuration.
+  grunt.initConfig({
+    // Metadata.
+    pkg: grunt.file.readJSON('package.json'),
+    banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
+      '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+      '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
+      '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
+      ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
+    // Task configuration.
+    // concat: {
+    //   options: {
+    //     banner: '<%= banner %>',
+    //     stripBanners: true
+    //   },
+    //   dist: {
+    //     src: ['lib/<%= pkg.name %>.js'],
+    //     dest: 'dist/<%= pkg.name %>.js'
+    //   }
+    // },
+    // uglify: {
+    //   options: {
+    //     banner: '<%= banner %>'
+    //   },
+    //   dist: {
+    //     src: '<%= concat.dist.dest %>',
+    //     dest: 'dist/<%= pkg.name %>.min.js'
+    //   }
+    // },
+
+    jshint: {
+      files: ['Gruntfile.js', 'local_modules/app/public/javascripts/**/*.js'],
+      options: {
+        // curly: true,
+        // eqeqeq: true,
+        // immed: true,
+        // latedef: true,
+        // newcap: true,
+        // noarg: true,
+        // sub: true,
+        // undef: true,
+        // unused: true,
+        // boss: true,
+        // eqnull: true,
+        // globals: {
+        //   jQuery: true
+        // }
+      },
+      gruntfile: {
+        src: 'Gruntfile.js'
+      },
+      // lib_test: {
+      //   src: ['lib/**/*.js', 'test/**/*.js']
+      // }
+    },
+
+    // nodeunit: {
+    //   files: ['test/**/*_test.js']
+    // },
+
+    sass: {
+      bootstrap: {
+        options: {
+          // sourceMap: true
+        },
+        files: {
+          'local_modules/app/public/stylesheets/base/bootstrap.css': 'local_modules/app/public/stylesheets/scss/bootstrap.scss'
+        }
+      }
+    },
+
+    watch: {
+      gruntfile: {
+        files: '<%= jshint.gruntfile.src %>',
+        tasks: ['jshint:gruntfile']
+      },
+      css : {
+        files : ['local_modules/app/public/stylesheets/**/*.css', '!local_modules/app/public/stylesheets/style.min.css'],
+        options : {
+          livereload : true
+        }
+      },
+      sass: {
+        files: ['local_modules/app/public/scss/**/*.scss'],
+        options: {
+          livereload: true
+        },
+        tasks: ['sass']
+      },
+      js : {
+        files : ['local_modules/app/public/javascripts/**/*.js', '!local_modules/app/public/javascripts/main.min.js'],
+        tasks : ['jshint'],
+        options : {
+          livereload : true
+        }
+      },
+      html : {
+        files : ['local_modules/app/views/**/*.html'],
+        options : {
+          livereload : true
+        }
+      }
+
+      // lib_test: {
+      //   files: '<%= jshint.lib_test.src %>',
+      //   tasks: ['jshint:lib_test', 'nodeunit']
+      // }
+    }
+  });
+
+  // These plugins provide necessary tasks.
+  // grunt.loadNpmTasks('grunt-contrib-concat');
+  // grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-sass');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+
+  // Default task.
+  grunt.registerTask('default', ['jshint']);
+
+};

@@ -1,3 +1,3 @@
 $(document).ready(function() {
-    alert('loaded')
-})
+    console.log('app loaded');
+});

@@ -95,3 +95,8 @@ Temporary Items
 
 ### JSHint ###
 *.jshintrc
+
+### Sass ###
+.sass-cache/
+*.css.map
+
