@@ -1,5 +1,4 @@
 
-application: arrays-production
 runtime: nodejs
 vm: true
 
