@@ -1,0 +1,14 @@
+/* @override 
+	http://localhost:9080/stylesheets/base/header-bar.css */
+
+.navbar-default .navbar-brand {
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: auto;
+	width: 100%;
+	text-align: center;
+	text-transform: uppercase;
+	letter-spacing: 10px;
+	font-weight: bold;
+}

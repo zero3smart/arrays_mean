@@ -84,7 +84,7 @@ module.exports = function(grunt) {
         }
       },
       sass: {
-        files: ['local_modules/app/public/scss/**/*.scss'],
+        files: ['local_modules/app/public/stylesheets/scss/**/*.scss'],
         options: {
           livereload: true
         },

@@ -7,11 +7,13 @@
 {% endblock %}
 
 {% block bodyWrapper %}
-    <body class="homepage">
+    <body class="home">
         <div id="root">
-            {{ aMessage }}
-            
-            {% include "../partials/header_bar.html" %}            
+            {% include "../partials/header_bar.html" %}
+
+            <div class="container-fluid">
+                <h1>{{ aMessage }}</h1>
+            </div>
         </div>
         
         <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
