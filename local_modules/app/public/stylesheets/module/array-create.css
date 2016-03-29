@@ -28,14 +28,14 @@
 	top: 15px;
 	right: 15px;
 	display: block;
+	padding-top: 4px;
 	width: 30px;
 	height: 30px;
 	border-radius: 100%;
-	background-color: gray;
+	background-color: #9b9b9b;
 	color: white;
-	font-family: 'Glyphicons Halflings';
 	content: "\e013";
 	text-align: center;
-	font-size: 18px;
-	padding-top: 2px;
+	font-size: 16px;
+	font-family: "Glyphicons Halflings";
 }
