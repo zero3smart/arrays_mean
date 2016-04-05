@@ -1,23 +1,27 @@
 {% extends "../shared/shared_layout.html" %}
 
 {% block headSuffix %}
-    <title>Arrays</title>
+    <title>Arrays - Create</title>
     
     
 {% endblock %}
 
 {% block bodyWrapper %}
-    <body class="home">
+    <body class="array array-create">
         <div id="root">
-            {% include "../partials/header_bar_blank.html" %}
+            {% include "../partials/header_bar_array.html" %}
 
             <div class="container-fluid">
-                <h1>{{ aMessage }}</h1>
+                <div class="row">
+                    <div class="col-sm-12">
 
-                <a href="/array/create">New Array</a>
+                        <h1>Show Array</h1>
+
+                    </div>
+                </div><!-- .row -->
             </div>
         </div>
-        
+
         <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
         
         <script type="text/javascript" src="/javascripts/main.js"></script>

@@ -9,7 +9,7 @@
 {% block bodyWrapper %}
     <body class="array array-create">
         <div id="root">
-            {% include "../partials/header_bar.html" %}
+            {% include "../partials/header_bar_blank.html" %}
 
             <div class="container-fluid">
                 <div class="row">
@@ -33,7 +33,7 @@
                                             <h2 class="section-title">Select a dataset</h2>
                                         </div>
                                         <div class="col-sm-3">
-                                            <h4 class="pull-right">Next: <a href="#" class="btn btn-default" onclick="document.getElementById('form-source').submit();">Create Array</a></h4>
+                                            <h4 class="pull-right">Next: <a href="#" class="btn btn-default" onclick="document.getElementById('form-source').submit(); return false;">Create Array</a></h4>
                                         </div>
                                     </div><!-- .row -->
 

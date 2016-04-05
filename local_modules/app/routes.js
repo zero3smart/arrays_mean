@@ -19,6 +19,14 @@ function __new_bindPayloadFor_array_create(context)
         aMessage: "Hello! This is the create array page."
     };
 }
+function __new_bindPayloadFor_array_show(context)
+{
+    var app = context.app;
+    
+    return {
+        aMessage: "Hello! This is the show array page."
+    };
+}
 //
 //
 // Routes controller
@@ -96,6 +104,12 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
     {
         var bindPayload = __new_bindPayloadFor_array_create(context);
         res.render('array/create', bindPayload);
+    });
+
+    app.get('/array', function(req, res)
+    {
+        var bindPayload = __new_bindPayloadFor_array_show(context);
+        res.render('array/show', bindPayload);
     });
 };
 constructor.prototype._mountRoutes_JSONAPI = function()
