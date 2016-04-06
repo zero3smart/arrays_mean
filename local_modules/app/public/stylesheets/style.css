@@ -1,5 +1,6 @@
 /* @group Base */
 @import url('base/bootstrap.css');
+@import url('base/variables.css');
 @import url('base/header-bar.css');
 /* @end Base */
 
@@ -8,5 +9,6 @@
 /* @end Layout */
 
 /* @group Module */
+@import url('module/sidebar-filter.css');
 @import url('module/array-create.css');
 /* @end Module */

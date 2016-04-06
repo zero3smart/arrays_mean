@@ -91,8 +91,8 @@ module.exports = function(grunt) {
         tasks: ['sass']
       },
       js : {
-        files : ['local_modules/app/public/javascripts/**/*.js', '!local_modules/app/public/javascripts/main.min.js'],
-        tasks : ['jshint'],
+        files : ['local_modules/app/public/javascripts/**/*.js', '!local_modules/app/public/javascripts/main.min.js', '!local_modules/app/public/javascripts/lib/**/*.js'],
+        // tasks : ['jshint'],
         options : {
           livereload : true
         }

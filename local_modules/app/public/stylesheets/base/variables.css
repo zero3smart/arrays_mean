@@ -1,0 +1,8 @@
+/* @override 
+	http://localhost:9080/stylesheets/base/variables.css */
+
+:root {
+	--color-primary: #feb600;
+	--color-sidebar-bg: #4a4a4a;
+	--color-sidebar-fg: #272727;
+}
