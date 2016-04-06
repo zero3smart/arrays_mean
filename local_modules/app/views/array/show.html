@@ -8,20 +8,24 @@
 
 {% block bodyWrapper %}
     <body class="array array-create">
-        <div id="root">
+        <div id="page" class="site">
             {% include "../partials/header_bar_array.html" %}
             {% include "../partials/sidebar_filter.html" %}
 
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-sm-12">
+            <div id="content" class="site-content">
 
-                        <h1>Show Array</h1>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
 
-                    </div>
-                </div><!-- .row -->
-            </div>
-        </div>
+                            <h1>Show Array</h1>
+
+                        </div>
+                    </div><!-- .row -->
+                </div>
+
+            </div><!-- #content -->
+        </div><!-- #page -->
 
         <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
         

@@ -2,22 +2,38 @@
 	http://localhost:9080/stylesheets/base/header-bar.css */
 
 .container-fluid.container-full-width {
+	padding-right: 15px;
+	padding-left: 0;
 	max-width: 100%;
 }
 
 .navbar-default {
-	font-size: 24px;
+	height: 50px;
+	font-size: 18px;
+}
+
+@media (min-width: 768px) {
+	.navbar-default {
+		height: 70px;
+		font-size: 24px;
+	}
 }
 
 .navbar-default .navbar-brand {
 	position: absolute;
 	top: 0;
-	left: 0;
+	left: 15px;
 	margin: auto;
 	width: 100%;
 	text-align: center;
 	font-weight: bold;
-	font-size: 28px;
+	font-size: 22px;
+}
+
+@media (min-width: 768px) {
+	.navbar-default .navbar-brand {
+		font-size: 28px;
+	}
 }
 
 .navbar-default .navbar-brand-arrays {
@@ -26,6 +42,15 @@
 	font-size: 20px;
 }
 
+/* @group Filter active */
+
+#navbar .active .sidebar-filter-toggle {
+	background-color: transparent;
+	color: var(--color-primary);
+}
+
+/* @end Filter active*/
+
 /* @group Dropdown */
 
 .dropdown-menu {
@@ -33,8 +58,15 @@
 }
 
 .navbar-nav > li > a {
-	padding-right: 20px;
-	padding-left: 20px;
+	padding-right: 10px;
+	padding-left: 10px;
+}
+
+@media (min-width: 768px) {
+	.navbar-nav > li > a {
+		padding-right: 20px;
+		padding-left: 20px;
+	}
 }
 
 .navbar-nav .open .dropdown-menu > li > a {

@@ -2,13 +2,25 @@
 	http://localhost:9080/stylesheets/module/sidebar-filter.css */
 
 .sidebar-filter {
-	position: absolute;
-	/*top: 0;
-	left: 0;*/
-	z-index: 1000;
+	position: fixed;
+	top: 0;
+	left: -200px;
+	z-index: 1030;
 	width: 200px;
 	height: 100vh;
 	background-color: var(--color-sidebar-bg);
+}
+
+.sidebar-filter,
+.navbar-fixed-top,
+.site-content {
+	transition: transform 400ms ease-in-out;
+}
+
+.sidebar-filter-in .sidebar-filter,
+.sidebar-filter-in .navbar-fixed-top,
+.sidebar-filter-in .site-content {
+	transform: translate(200px);
 }
 
 .sidebar-filter a {
@@ -49,3 +61,4 @@
 	background-color: var(--color-primary);
 	color: var(--color-sidebar-bg);
 }
+

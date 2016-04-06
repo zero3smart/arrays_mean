@@ -1,5 +1,12 @@
+/* @override 
+	http://localhost:9080/stylesheets/layout/body.css */
+
 body {
-	margin-top: 70px;
+	overflow-x: hidden;
+}
+
+.site {
+	padding-top: 70px;
 }
 
 .container-fluid {
