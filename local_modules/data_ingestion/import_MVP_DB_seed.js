@@ -83,7 +83,7 @@ var dataSourceDescriptions =
                     doing: import_processing.Ops.Join,
                     onField: "Artist",
                     ofOtherRawSrcUID: "MoMA_Artists_v1_jy.csv",
-                    andOtherRawSrcImportRevision: 2,
+                    andOtherRawSrcImportRevision: 1,
                     withLocalField: "Artist",
                     obtainingValueFromField: "Code"
                 }

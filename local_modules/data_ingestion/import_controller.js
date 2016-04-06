@@ -29,7 +29,7 @@ constructor.prototype._init = function()
     var self = this;
     // winston.info("raw source documents controller is up")
 };
-
+//
 //
 constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescriptions)
 {
@@ -46,11 +46,21 @@ constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescrip
             process.exit(1); // error code
         } else {
             winston.info("✅  Raw objects import done. Proceeding to post-processing.");
-            self._postProcessRawObjects(dataSourceDescriptions);
+            self._postProcessRawObjects(dataSourceDescriptions, function(err)
+            {
+                if (err) {
+                    winston.info("❌  Error encountered during import post-processing:", err);
+                    process.exit(1); // error code
+                } else {
+                    winston.info("✅  Import post-processing done.");
+                    process.exit(0); // all good
+                }
+            });
         }
     });
 };
-constructor.prototype._postProcessRawObjects = function(dataSourceDescriptions)
+//
+constructor.prototype._postProcessRawObjects = function(dataSourceDescriptions, callback)
 {
     var self = this;
     var i = 1;
@@ -60,13 +70,7 @@ constructor.prototype._postProcessRawObjects = function(dataSourceDescriptions)
         i++;
     }, function(err)
     {
-        if (err) {
-            winston.info("❌  Error encountered during import post-processing:", err);
-            process.exit(1); // error code
-        } else {
-            winston.info("✅  Import post-processing done.");
-            process.exit(0); // all good
-        }
+        callback(err);
     });
 };
 //
@@ -214,50 +218,65 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
     //
     winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
     //
-    var descriptionsOfFieldsToGenerate = dataSourceDescription.afterImportingAllSources_generate;
-    async.eachSeries(descriptionsOfFieldsToGenerate, function(description, cb)
-    {
-        var generateFieldNamed = description.field;
-        var isSingular = description.singular;
-        var by = description.by;
-        var byDoingOp = by.doing;
-        switch (byDoingOp) {
-            case import_processing.Ops.Join:
-            {
-                var onField = by.onField;
-                var ofOtherRawSrcUID = by.ofOtherRawSrcUID;
-                var andOtherRawSrcImportRevision = by.andOtherRawSrcImportRevision;
-                var withLocalField = by.withLocalField;
-                var obtainingValueFromField = by.obtainingValueFromField;
-                self.context.processed_row_objects_controller.GenerateFieldsByJoining(dataSource_uid,
-                                                                                     dataSource_importRevision,
-                                                                                     dataSource_title,
-                                                                                     generateFieldNamed, 
-                                                                                     isSingular, 
-                                                                                     onField,
-                                                                                     ofOtherRawSrcUID,
-                                                                                     andOtherRawSrcImportRevision,
-                                                                                     withLocalField,
-                                                                                     obtainingValueFromField,
-                                                                                     cb);
-                break;
-            }
-                
-            default:
-            {
-                winston.error("❌  Unrecognized post-processing field generation operation \"" + byDoingOp + "\" in", description);
-                break;
-            }
-        }        
-    }, function(err)
+    // Firstly, generate the whole processed objects dataset
+    self.context.processed_row_objects_controller.GenerateProcessedDatasetFromRawRowObjects(dataSource_uid,
+                                                                                            dataSource_importRevision,
+                                                                                            dataSource_title, 
+                                                                                            function(err)
     {
         if (err) {
-            winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
-        } else {
-            winston.info("✅  Done processing \"" + dataSource_title + "\.");
+            winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
+            callback(err);
+            return;
         }
-        callback(err);
+        //
+        // Now generate fields
+        var descriptionsOfFieldsToGenerate = dataSourceDescription.afterImportingAllSources_generate;
+        async.eachSeries(descriptionsOfFieldsToGenerate, function(description, cb)
+        {
+            var generateFieldNamed = description.field;
+            var isSingular = description.singular;
+            var by = description.by;
+            var byDoingOp = by.doing;
+            switch (byDoingOp) {
+                case import_processing.Ops.Join:
+                {
+                    var onField = by.onField;
+                    var ofOtherRawSrcUID = by.ofOtherRawSrcUID;
+                    var andOtherRawSrcImportRevision = by.andOtherRawSrcImportRevision;
+                    var withLocalField = by.withLocalField;
+                    var obtainingValueFromField = by.obtainingValueFromField;
+                    self.context.processed_row_objects_controller.GenerateFieldsByJoining(dataSource_uid,
+                                                                                         dataSource_importRevision,
+                                                                                         dataSource_title,
+                                                                                         generateFieldNamed, 
+                                                                                         isSingular, 
+                                                                                         onField,
+                                                                                         ofOtherRawSrcUID,
+                                                                                         andOtherRawSrcImportRevision,
+                                                                                         withLocalField,
+                                                                                         obtainingValueFromField,
+                                                                                         cb);
+                    break;
+                }
+                
+                default:
+                {
+                    winston.error("❌  Unrecognized post-processing field generation operation \"" + byDoingOp + "\" in", description);
+                    break;
+                }
+            }        
+        }, function(err)
+        {
+            if (err) {
+                winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
+            } else {
+                winston.info("✅  Done processing \"" + dataSource_title + "\.");
+            }
+            callback(err);
+        });
     });
+    
 };
 //
 
