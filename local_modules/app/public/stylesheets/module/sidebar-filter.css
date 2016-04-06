@@ -5,7 +5,7 @@
 	position: absolute;
 	/*top: 0;
 	left: 0;*/
-	z-index: 2000;
+	z-index: 1000;
 	width: 200px;
 	height: 100vh;
 	background-color: var(--color-sidebar-bg);
@@ -18,7 +18,9 @@
 	color: #ffffff;
 }
 
-.sidebar-filter a:hover {
+.sidebar-filter a:hover,
+.sidebar-filter a:focus,
+.sidebar-filter a:active {
 	text-decoration: none;
 }
 
