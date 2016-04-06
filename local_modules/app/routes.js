@@ -24,7 +24,7 @@ function __new_bindPayloadFor_array_show(context)
     var app = context.app;
     
     return {
-        aMessage: "Hello! This is the show array page."
+        arrayTitle: "Cooper Hewitt"
     };
 }
 //
