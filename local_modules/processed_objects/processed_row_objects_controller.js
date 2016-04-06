@@ -84,7 +84,7 @@ constructor.prototype.GenerateProcessedDatasetFromRawRowObjects
     var self = this;
     mongoose_client.WhenMongoDBConnected(function()
     { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
-        winston.info("🔁  Generating processed dataset from raw row objects of \"" + rawDataSource_title + "\" .");
+        winston.info("🔁  Pre-generating whole processed row objects collection from raw row objects of \"" + rawDataSource_title + "\" .");
                 
         var pKey_ofRawDataSrcDocBeingProcessed = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(rawDataSource_uid, rawDataSource_importRevision);
         //
