@@ -176,56 +176,6 @@ function CountOf_UniqueArtistsOfArtworks(fn)
     // cursor.each(doneFn)
     artworks_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn);
 }
-exports.FieldValuesOf_RowObjectsInSrcDoc_WhereFieldValueIs = FieldValuesOf_RowObjectsInSrcDoc_WhereFieldValueIs;
-function FieldValuesOf_RowObjectsInSrcDoc_WhereFieldValueIs(mapValuesOfFieldNamed, inSrcDoc_primaryKeyString, match_fieldPath, match_fieldValue, fn)
-{
-    var collection_mongooseContext = context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(inSrcDoc_primaryKeyString);
-    var collection_mongooseModel = collection_mongooseContext.forThisDataSource_RawRowObject_model;
-    var collection_mongooseScheme = collection_mongooseContext.forThisDataSource_RawRowObject_scheme;
-    //
-    var filterOperator = { $match: {} };
-    filterOperator["$match"]["" + match_fieldPath] = match_fieldValue;
-    //
-    var stripOperator = 
-    {
-        $project: {
-            _id: 0,
-            "V" : ("$" + mapValuesOfFieldNamed)
-        }
-    };
-    //
-    var aggregationOperators =
-    [
-        filterOperator,
-        stripOperator        
-    ];
-    //
-    var doneFn = function(err, results)
-    {
-        if (err) {
-            fn(err, null);
-
-            return;
-        }
-        if (results == undefined || results == null || results.length == 0) {
-            fn(null, []);
-
-            return;
-        }
-        // Now map results into list of flat values
-        var values = results.map(function(el)
-        {
-            return el.V;
-        });
-        // console.log("values " , values)
-        fn(err, values);
-    }
-    // todo: use a cursor?
-    // var aggregate = artists_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)
-    // var cursor = aggregate.cursor({ batchSize: 1000 }).exec();
-    // cursor.each(doneFn)
-    collection_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn);
-}
 exports.CountOf_ArtworksWhere_ArtistCodeIs = CountOf_ArtworksWhere_ArtistCodeIs;
 function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
 {
@@ -237,7 +187,7 @@ function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
     var artworks_mongooseScheme = artworks_mongooseContext.forThisDataSource_RawRowObject_scheme;
     artworks_mongooseScheme.index({ "rowParams.Artist": 1 }, { unique: false });
 
-    FieldValuesOf_RowObjectsInSrcDoc_WhereFieldValueIs("rowParams.Artist", artists_srcDoc_primaryKeyString, "rowParams.Code", codeValue, function(err, values)
+    context.questions_controller.FieldValuesOf_RawRowObjectsInSrcDoc_WhereFieldValueIs("rowParams.Artist", artists_srcDoc_primaryKeyString, "rowParams.Code", codeValue, function(err, values)
     {
         if (err) {
             fn(err, null);
@@ -477,12 +427,4 @@ function _Artworks_srcDoc_primaryKeyString()
 {
     return context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(artworksSrcDocUID, 
                                                                                            artworksSrcDocRevNumber);
-}
-function _Artists_rowObjectsCollectionName()
-{
-    return context.raw_row_objects_controller.New_RowObjectsModelName(_Artists_srcDoc_primaryKeyString()).toLowerCase();
-}
-function _Artworks_rowObjectsCollectionName()
-{
-    return context.raw_row_objects_controller.New_RowObjectsModelName(_Artworks_srcDoc_primaryKeyString()).toLowerCase();
 }

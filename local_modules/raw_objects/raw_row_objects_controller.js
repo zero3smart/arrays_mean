@@ -40,7 +40,7 @@ const Schema = mongoose.Schema;
 constructor.prototype.New_RowObjectsModelName = function(srcDocPKey)
 {
     return 'RawRowObjects-' + srcDocPKey;
-}
+};
 constructor.prototype.MongooseContextsBySrcDocPKey = {};
 constructor.prototype.Lazy_Shared_RawRowObject_MongooseContext = function(srcDocPKey)
 {
@@ -72,7 +72,7 @@ constructor.prototype.Lazy_Shared_RawRowObject_MongooseContext = function(srcDoc
     self.MongooseContextsBySrcDocPKey[srcDocPKey] = mongooseContext;
     
     return mongooseContext;
-}
+};
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,4 +124,4 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
             fn(err, result);
         });
     });
-}
+};

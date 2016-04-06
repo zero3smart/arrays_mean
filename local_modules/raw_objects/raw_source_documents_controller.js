@@ -73,7 +73,7 @@ constructor.prototype.Model = RawSourceDocument_model;
 constructor.prototype.NewCustomPrimaryKeyStringWithComponents = function(dataSource_uid, dataSource_importRevisionNumber)
 {
     return dataSource_uid + "-rev" + dataSource_importRevisionNumber;
-}
+};
 //
 //
 // Public - Imperatives - Upserts
@@ -126,4 +126,4 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
             fn(err, doc);
         });
     });
-}
+};
