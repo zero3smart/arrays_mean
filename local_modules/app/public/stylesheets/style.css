@@ -10,6 +10,7 @@
 
 /* @group Module */
 @import url('module/sidebar-filter.css');
+@import url('module/sort-bar.css');
 @import url('module/array-create.css');
 @import url('module/gallery-grid.css');
 /* @end Module */
