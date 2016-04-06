@@ -22,16 +22,20 @@
 	margin-bottom: 0;
 }
 
-.form-source .checkbox label {
+.form-source .radio label {
 	padding-left: 0;
 	width: 100%;
 }
 
-.form-source input[type="checkbox"]:checked + .panel-source {
+.form-source .panel-source:hover {
 	border-color: #9b9b9b;
 }
 
-.form-source input[type="checkbox"]:checked + .panel-source:after {
+/*.form-source input[type="radio"]:checked + .panel-source {
+	border-color: #9b9b9b;
+}*/
+
+/*.form-source input[type="radio"]:checked + .panel-source:after {
 	position: absolute;
 	top: 15px;
 	right: 15px;
@@ -46,4 +50,4 @@
 	text-align: center;
 	font-size: 16px;
 	font-family: "Glyphicons Halflings";
-}
+}*/

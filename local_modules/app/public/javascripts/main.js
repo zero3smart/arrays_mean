@@ -3,6 +3,15 @@ $(document).ready(function() {
     console.log('app loaded');
 
     /**
+     * Select source dataset click
+     */
+    $('.panel-source').on('click', function(e) {
+    	e.preventDefault();
+    	$(this).prev().prop('checked', true);
+    	$('.form-source').submit();
+    });
+
+    /**
      * Show sidebar filter on header bar click
      */
     $('.sidebar-filter-toggle').click(function(e) {
