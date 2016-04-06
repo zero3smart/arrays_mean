@@ -6,6 +6,8 @@
 	top: 0;
 	left: -200px;
 	z-index: 1030;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
 	width: 200px;
 	height: 100vh;
 	background-color: var(--color-sidebar-bg);
