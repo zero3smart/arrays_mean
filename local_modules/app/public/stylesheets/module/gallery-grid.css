@@ -1,0 +1,40 @@
+/* @override 
+	http://localhost:9080/stylesheets/module/gallery-grid.css */
+
+.gallery-grid {
+	margin-right: -5px;
+	margin-left: -5px;
+	padding-left: 0;
+	list-style-type: none;
+}
+
+@media (min-width: 768px) {
+	.gallery-grid {
+		margin-right: -20px;
+		margin-left: -20px;
+	}
+}
+
+.gallery-item {
+	display: inline-block;
+	margin-right: -0.125em;
+	margin-bottom: 10px;
+	margin-left: -0.125em;
+	padding-right: 5px;
+	padding-left: 5px;
+	width: 50%;
+}
+
+@media (min-width: 768px) {
+	.gallery-item {
+		margin-bottom: 40px;
+		padding-right: 20px;
+		padding-left: 20px;
+		width: 25%;
+	}
+}
+
+.gallery-image {
+	width: 100%;
+	height: auto;
+}
