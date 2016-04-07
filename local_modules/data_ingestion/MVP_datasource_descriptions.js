@@ -49,9 +49,14 @@ exports.Descriptions =
         ],
         //
         //
-        designatedFields: {
-            objectTitle: "Artist"
-        }
+        fe_designatedFields: 
+        {
+            objectTitle: "Artist",
+            originalImageURL: null, // not strictly necessary to define as null but done for explicitness
+            gridThumbImageURL: null // not strictly necessary to define as null but done for explicitness
+        },
+        //
+        fe_excludeFields: []
     }
     , {
         filename: "MoMA_Artworks_v2_jy.csv",
@@ -80,6 +85,19 @@ exports.Descriptions =
         },
         //
         //
+        fe_designatedFields: 
+        {
+            objectTitle: "Title",
+            originalImageURL: "imgURL_original",
+            gridThumbImageURL: "imgURL_gridThumb"
+        },
+        fe_excludeFields: 
+        [
+            "imgURL_original", 
+            "imgURL_gridThumb"
+        ],
+        //
+        //
         afterImportingAllSources_generate: 
         [
             {
@@ -97,30 +115,49 @@ exports.Descriptions =
         ],
         //
         //
-        afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(eachCtx, cb)
-        {
-            console.log("Setup each ctx")
-            cb(null);
-        },
-        //
-        afterGeneratingProcessedRowObjects_eachRowFns:
+        afterImportingAllSources_generateByScraping:
         [
-            function(eachCtx, rowDoc, cb)
             {
-                console.log("A row", rowDoc)
-                cb(null);
+                htmlSourceAtURLInField: "URL",
+                imageURLInSelector: 'img#anId[attr="src"]',
+                hostAndGenerateVersionsByField: {
+                    "imgURL_original": { // quotes not necessary but included to make clear these are field names
+                        original: true
+                    },
+                    "imgURL_gridThumb": { // quotes not necessary but included to make clear these are field names
+                        original: false, // not necessary to define 'false' but done for explicitness
+                        scaleToMaxPx: {
+                            w: 1000,
+                            h: 1000
+                        }
+                    }
+                }
             }
-        ],
-        //
-        afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function(eachCtx, cb)
-        {
-            console.log("Finished iterating")
-            cb(null);
-        },
+        ]
         //
         //
-        designatedFields: {
-            objectTitle: "Title"
-        }
+        // This is implemented but currently not used (it was built for scraping)
+        // afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
+        // {
+        //     console.log("Setup each ctx")
+        //     cb(null);
+        // },
+        // //
+        // afterGeneratingProcessedRowObjects_eachRowFns:
+        // [
+        //     function(appCtx, eachCtx, rowDoc, cb)
+        //     {
+        //         console.log("A row", rowDoc)
+        //         cb(null);
+        //     }
+        // ],
+        // //
+        // afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function(appCtx, eachCtx, cb)
+        // {
+        //     console.log("Finished iterating")
+        //     cb(null);
+        // },
+        // //
+        // //
     }
 ]

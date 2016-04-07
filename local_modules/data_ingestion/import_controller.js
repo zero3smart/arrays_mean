@@ -300,8 +300,6 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
     var dataSource_importRevision = dataSourceDescription.importRevision;    
     var dataSource_title = dataSourceDescription.title;
     //
-    winston.info("🔁  Performing each-row post-processing operations for \"" + dataSource_title + "\"");
-    //
     var setupBefore_eachRowFn = dataSourceDescription.afterGeneratingProcessedRowObjects_setupBefore_eachRowFn;
     // (eachCtx, cb) -> Void … cb: fn(err)
     //
@@ -311,10 +309,11 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
     var afterIterating_eachRowFn = dataSourceDescription.afterGeneratingProcessedRowObjects_afterIterating_eachRowFn;
     // (erreachCtx, cb) -> Void … cb: fn(err)
     //
-    
+    winston.info("🔁  Performing " + (eachRowFns?eachRowFns.length:0) + " each-row post-processing operations for \"" + dataSource_title + "\"");
+    //    
     var eachCtx = {};
     if (setupBefore_eachRowFn != null && typeof setupBefore_eachRowFn !== 'undefined') {
-        setupBefore_eachRowFn(eachCtx, function(err)
+        setupBefore_eachRowFn(self.context, eachCtx, function(err)
         {
             if (err) {
                 callback(err);
@@ -337,7 +336,7 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
             {
                 async.eachSeries(eachRowFns, function(eachRowFn, cb)
                 {
-                    eachRowFn(eachCtx, doc, function(err)
+                    eachRowFn(self.context, eachCtx, doc, function(err)
                     {
                         cb(err);
                     });
@@ -360,7 +359,7 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
     function continueToAfterIterating()
     {
         if (afterIterating_eachRowFn != null && typeof afterIterating_eachRowFn !== 'undefined') {
-            afterIterating_eachRowFn(eachCtx, function(err)
+            afterIterating_eachRowFn(self.context, eachCtx, function(err)
             {
                 callback(err);
             });
@@ -369,25 +368,5 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//
+//
