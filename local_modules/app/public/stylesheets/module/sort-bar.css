@@ -1,6 +1,8 @@
 /* @override 
 	http://localhost:9080/stylesheets/module/sort-bar.css */
 
+/* @group Sort Bar */
+
 .sort-bar {
 	margin-bottom: 20px;
 	padding-top: 25px;
@@ -22,7 +24,9 @@
 	vertical-align: middle;
 }
 
-.sort-bar label {
+.sort-bar label,
+.filter-bar label,
+.filter-tag {
 	color: var(--color-sort-bar-label);
 	text-transform: uppercase;
 	letter-spacing: 2px;
@@ -37,3 +41,38 @@
 	height: 25px;
 	vertical-align: middle;
 }
+
+/* @end Sort Bar */
+
+/* @group Filter Bar */
+
+.filter-bar {
+	margin-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+	.filter-bar {
+		margin-bottom: 35px;
+	}
+}
+
+.filter-tag {
+	display: inline-block;
+	margin-right: 5px;
+	margin-left: 5px;
+	padding: 5px 15px;
+	border: 1px solid var(--color-primary);
+	border-radius: 1000px;
+	color: #777777;
+}
+
+.filter-tag-close {
+	position: relative;
+	bottom: 1px;
+	left: 6px;
+	display: inline-block;
+	float: none;
+	color: var(--color-sort-bar-label);
+}
+
+/* @end Filter Bar */
