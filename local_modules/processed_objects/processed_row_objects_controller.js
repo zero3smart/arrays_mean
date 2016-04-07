@@ -76,23 +76,23 @@ constructor.prototype.Lazy_Shared_ProcessedRowObject_MongooseContext = function(
 //
 //
 constructor.prototype.GenerateProcessedDatasetFromRawRowObjects 
-    = function(rawDataSource_uid,
-               rawDataSource_importRevision,
-               rawDataSource_title,
+    = function(dataSource_uid,
+               dataSource_importRevision,
+               dataSource_title,
                callback)
 {
     var self = this;
     mongoose_client.WhenMongoDBConnected(function()
     { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
-        winston.info("🔁  Pre-generating whole processed row objects collection from raw row objects of \"" + rawDataSource_title + "\" .");
+        winston.info("🔁  Pre-generating whole processed row objects collection from raw row objects of \"" + dataSource_title + "\" .");
                 
-        var pKey_ofRawDataSrcDocBeingProcessed = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(rawDataSource_uid, rawDataSource_importRevision);
+        var pKey_ofDataSrcDocBeingProcessed = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
         //
-        var mongooseContext_ofRawRowObjectsBeingProcessed = self.context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofRawDataSrcDocBeingProcessed);
+        var mongooseContext_ofRawRowObjectsBeingProcessed = self.context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
         var nativeCollection_ofRawRowObjectsBeingProcessed = mongooseModel_ofRawRowObjectsBeingProcessed.collection;
         //
-        var mongooseContext_ofTheseProcessedRowObjects = self.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofRawDataSrcDocBeingProcessed);
+        var mongooseContext_ofTheseProcessedRowObjects = self.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
         //
@@ -102,7 +102,7 @@ constructor.prototype.GenerateProcessedDatasetFromRawRowObjects
         //
         function proceedToPersist()
         {
-            winston.info("📡  [" + (new Date()).toString() + "] Upserting " + numDocs + " processed rows for \"" + rawDataSource_title + "\".");
+            winston.info("📡  [" + (new Date()).toString() + "] Upserting " + numDocs + " processed rows for \"" + dataSource_title + "\".");
             
             var writeConcern =
             {
@@ -137,7 +137,7 @@ constructor.prototype.GenerateProcessedDatasetFromRawRowObjects
             cursor.each(function(err, doc)
             {
                 if (hasErroredAndReturned == true) {
-                    winston.error("‼️  Each called after hasErroredAndReturned.");
+                    winston.warn("‼️  Each called after hasErroredAndReturned.");
             
                     return;
                 }
@@ -193,9 +193,9 @@ constructor.prototype.GenerateProcessedDatasetFromRawRowObjects
 //
 //
 constructor.prototype.GenerateFieldsByJoining 
-    = function(rawDataSource_uid,
-               rawDataSource_importRevision,
-               rawDataSource_title,
+    = function(dataSource_uid,
+               dataSource_importRevision,
+               dataSource_title,
                generateFieldNamed, 
                isSingular, 
                onField, 
@@ -209,20 +209,20 @@ constructor.prototype.GenerateFieldsByJoining
     mongoose_client.WhenMongoDBConnected(function()
     { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Generating field \"" + generateFieldNamed 
-                        + "\" of \"" + rawDataSource_title 
+                        + "\" of \"" + dataSource_title 
                         + "\" by joining on \"" + onField 
                         + "\" of data source \"" + ofOtherRawSrcUID + "\" revision \"" + andOtherRawSrcImportRevision + "\".");
                     
         var pKey_ofFromDataSourceDoc = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(ofOtherRawSrcUID, andOtherRawSrcImportRevision);
-        var pKey_ofRawDataSrcDocBeingProcessed = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(rawDataSource_uid, rawDataSource_importRevision);
+        var pKey_ofDataSrcDocBeingProcessed = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
         //
-        var mongooseContext_ofRawRowObjectsBeingProcessed = self.context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofRawDataSrcDocBeingProcessed);
+        var mongooseContext_ofRawRowObjectsBeingProcessed = self.context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
         var nativeCollection_ofRawRowObjectsBeingProcessed = mongooseModel_ofRawRowObjectsBeingProcessed.collection;
         // var mongooseScheme_ofRawRowObjectsBeingProcessed = artworks_mongooseContext.forThisDataSource_RawRowObject_scheme;
         // mongooseScheme_ofRawRowObjectsBeingProcessed.index({ "rowParams._________": 1 }, { unique: false });
         //
-        var mongooseContext_ofTheseProcessedRowObjects = self.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofRawDataSrcDocBeingProcessed);
+        var mongooseContext_ofTheseProcessedRowObjects = self.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
         //
@@ -232,7 +232,7 @@ constructor.prototype.GenerateFieldsByJoining
         //
         function proceedToPersist()
         {
-            winston.info("📡  [" + (new Date()).toString() + "] Upserting " + numDocs + " processed rows for \"" + rawDataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
+            winston.info("📡  [" + (new Date()).toString() + "] Upserting " + numDocs + " processed rows for \"" + dataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
             
             var writeConcern =
             {
@@ -267,7 +267,7 @@ constructor.prototype.GenerateFieldsByJoining
             cursor.each(function(err, doc)
             {
                 if (hasErroredAndReturned == true) {
-                    winston.error("‼️  Each called after hasErroredAndReturned.");
+                    winston.warn("‼️  Each called after hasErroredAndReturned.");
                 
                     return;
                 }
@@ -292,7 +292,7 @@ constructor.prototype.GenerateFieldsByJoining
                 //
                 var fieldValue = doc["rowParams"][withLocalField];
                 if (typeof fieldValue === 'undefined' || fieldValue == null) {
-                    var errorString = "\"" + withLocalField + "\" of a \"" + rawDataSource_title + "\" was undefined or null";
+                    var errorString = "\"" + withLocalField + "\" of a \"" + dataSource_title + "\" was undefined or null";
                     var err = new Error(errorString);
                     winston.warn("❌  " + errorString + ". Bailing.");
                     hasErroredAndReturned = true;
@@ -367,26 +367,109 @@ constructor.prototype.GenerateFieldsByJoining
     });
 };
 //
+//
+constructor.prototype.EnumerateProcessedDataset
+    = function(dataSource_uid,
+               dataSource_importRevision,
+               eachFn,
+               errFn,
+               completeFn,
+               query_optl)
+{ 
+    // eachFn: (doc, cb) -> Void ……… call cb(null_optl) when done with doc
+    // errFn: (err) -> Void
+    // completeFn: () -> Void
+    var self = this;
+    mongoose_client.WhenMongoDBConnected(function()
+    { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
 
+        var pKey_ofDataSrcDocBeingProcessed = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+        //
+        var mongooseContext_ofTheseProcessedRowObjects = self.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
+        var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
+        //
+        var hasErroredAndReturned = false;
+        var hasReachedEndOfCursor = false;
+        var numberOfDocumentsFoundButNotYetProcessed = 0;
+        var numDocs = 0;
+        //
+        var query;
+        if (query_optl == null || typeof query_optl === 'undefined') {
+            query = {};
+        } else {
+            query = query_optl;
+        }
+        nativeCollection_ofTheseProcessedRowObjects.find(query, {}, function(err, cursor)
+        {
+            if (err) { // No cursor yet so we do not call closeCursorAndReturnWithErr(err)
+                hasErroredAndReturned = true;
+                errFn(err);
 
+                return;
+            }
+            function closeCursorAndReturnWithErr(err) 
+            {
+                hasErroredAndReturned = true;
+                cursor.close(function(closeErr, result) 
+                {
+                    if (closeErr != null) {
+                        winston.warn("‼️  Error has occurred on cursor close after err returned from each doc:", closeErr);
+                    }
+                    errFn(err);
+                });
+            }
+            cursor.each(function(err, doc)
+            {
+                if (hasErroredAndReturned == true) {
+                    winston.warn("‼️  Each called after hasErroredAndReturned.");
 
+                    return;
+                }
+                if (err) {
+                    closeCursorAndReturnWithErr(err);
 
+                    return;
+                }
+                if (doc === null) { // then we're finished
+                    // console.log("Reached end")
+                    hasReachedEndOfCursor = true;
+                    if (numberOfDocumentsFoundButNotYetProcessed == 0) { // in case we've already finished, i.e. if the operation we did with the docs was sync and not async
+                        completeFn();
+                    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                    return;
+                }
+                //
+                numberOfDocumentsFoundButNotYetProcessed += 1;
+                numDocs += 1;
+                //
+                function _finishedWithDoc()
+                {
+                    numberOfDocumentsFoundButNotYetProcessed -= 1; // finished with this doc - decrement
+                    //
+                    if (hasReachedEndOfCursor == true) {
+                        if (numberOfDocumentsFoundButNotYetProcessed == 0) {
+                            // console.log("Reached end of cursor and finished processing all")
+                            completeFn();
+                        } else {
+                            // console.log("Reached end of cursor but not finished processing all")
+                        }
+                    } else {
+                        // console.log("Hasn't reached end of cursor")
+                    }
+                }
+                //
+                eachFn(doc, function(err)
+                {
+                    if (err != null && typeof err !== 'undefined') {
+                        closeCursorAndReturnWithErr(err);
+                    }
+                    _finishedWithDoc();
+                });
+            });
+        });
+    });
+}
+//
+//

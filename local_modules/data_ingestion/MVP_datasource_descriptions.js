@@ -14,6 +14,7 @@ exports.Descriptions =
         format: import_datatypes.DataSource_formats.CSV,
         title: "MoMA - Artists",
         //
+        //
         fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
         {
             return "" + rowIndex + "-" + rowObject["ConstituentID"]
@@ -29,6 +30,7 @@ exports.Descriptions =
                 opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.FourDigitYearOnly
             }
         },
+        //
         //
         afterImportingAllSources_generate:
         [
@@ -46,6 +48,7 @@ exports.Descriptions =
             }
         ],
         //
+        //
         designatedFields: {
             objectTitle: "Artist"
         }
@@ -56,6 +59,7 @@ exports.Descriptions =
         importRevision: 2,
         format: import_datatypes.DataSource_formats.CSV,
         title: "MoMA - Artworks",
+        //
         //
         fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
         {
@@ -75,6 +79,7 @@ exports.Descriptions =
             }
         },
         //
+        //
         afterImportingAllSources_generate: 
         [
             {
@@ -90,6 +95,29 @@ exports.Descriptions =
                 }
             }
         ],
+        //
+        //
+        afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(eachCtx, cb)
+        {
+            console.log("Setup each ctx")
+            cb(null);
+        },
+        //
+        afterGeneratingProcessedRowObjects_eachRowFns:
+        [
+            function(eachCtx, rowDoc, cb)
+            {
+                console.log("A row", rowDoc)
+                cb(null);
+            }
+        ],
+        //
+        afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function(eachCtx, cb)
+        {
+            console.log("Finished iterating")
+            cb(null);
+        },
+        //
         //
         designatedFields: {
             objectTitle: "Title"

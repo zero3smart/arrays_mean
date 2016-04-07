@@ -270,16 +270,105 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
         {
             if (err) {
                 winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
-            } else {
-                winston.info("✅  Done processing \"" + dataSource_title + "\.");
-            }
-            callback(err);
+                callback(err);
+                
+                return;
+            }            
+            self._afterGeneratingProcessedDataSet_performEachRowOperations(dataSourceDescription, function(err)
+            {
+                if (err) {
+                    winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
+                    callback(err);
+                
+                    return;
+                }
+                winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\.");
+                //
+                callback();
+            });
         });
     });
     
 };
 //
-
+//
+constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations = function(dataSourceDescription, callback)
+{
+    var self = this;
+    //
+    var dataSource_uid = dataSourceDescription.uid;
+    var dataSource_importRevision = dataSourceDescription.importRevision;    
+    var dataSource_title = dataSourceDescription.title;
+    //
+    winston.info("🔁  Performing each-row post-processing operations for \"" + dataSource_title + "\"");
+    //
+    var setupBefore_eachRowFn = dataSourceDescription.afterGeneratingProcessedRowObjects_setupBefore_eachRowFn;
+    // (eachCtx, cb) -> Void … cb: fn(err)
+    //
+    var eachRowFns = dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFns;
+    // [ (eachCtx, rowDoc, cb) -> Void ] … cb: fn(err)
+    //
+    var afterIterating_eachRowFn = dataSourceDescription.afterGeneratingProcessedRowObjects_afterIterating_eachRowFn;
+    // (erreachCtx, cb) -> Void … cb: fn(err)
+    //
+    
+    var eachCtx = {};
+    if (setupBefore_eachRowFn != null && typeof setupBefore_eachRowFn !== 'undefined') {
+        setupBefore_eachRowFn(eachCtx, function(err)
+        {
+            if (err) {
+                callback(err);
+                
+                return;
+            }
+            continueToIterations();
+        });
+    } else {
+        continueToIterations();
+    }
+    function continueToIterations() 
+    {
+        if (eachRowFns == null || typeof eachRowFns === 'undefined' || eachRowFns.length == 0) {
+            continueToAfterIterating();
+        } else {
+            self.context.processed_row_objects_controller.EnumerateProcessedDataset(dataSource_uid, 
+                                                                                    dataSource_importRevision,
+            function(doc, eachCb)
+            {
+                async.eachSeries(eachRowFns, function(eachRowFn, cb)
+                {
+                    eachRowFn(eachCtx, doc, function(err)
+                    {
+                        cb(err);
+                    });
+                }, function(err)
+                {
+                    eachCb(err); // if err != null, the callback will be called just below in the errFn passed to EnumerateProcessedDataset
+                })
+            },
+            function(err)
+            {
+                callback(err); // bail early
+            },
+            function()
+            {
+                continueToAfterIterating(); // done iterating each row
+            }, 
+            {});
+        }
+    }
+    function continueToAfterIterating()
+    {
+        if (afterIterating_eachRowFn != null && typeof afterIterating_eachRowFn !== 'undefined') {
+            afterIterating_eachRowFn(eachCtx, function(err)
+            {
+                callback(err);
+            });
+        } else {
+            callback(); // all done
+        }
+    }
+}
 
 
 
