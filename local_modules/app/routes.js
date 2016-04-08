@@ -27,6 +27,15 @@ function __new_bindPayloadFor_array_show(context)
         arrayTitle: "Cooper Hewitt"
     };
 }
+function __new_bindPayloadFor_object_show(context)
+{
+    var app = context.app;
+    
+    return {
+        arrayTitle: "Cooper Hewitt",
+        aMessage: "Hello! This is the show object page."
+    };
+}
 //
 //
 // Routes controller
@@ -83,6 +92,7 @@ constructor.prototype._mountRoutes_viewEndpoints = function()
     var self = this;
     self._mountRoutes_viewEndpoints_homepage();
     self._mountRoutes_viewEndpoints_array();
+    self._mountRoutes_viewEndpoints_object();
 };
 constructor.prototype._mountRoutes_viewEndpoints_homepage = function()
 {
@@ -110,6 +120,17 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
     {
         var bindPayload = __new_bindPayloadFor_array_show(context);
         res.render('array/show', bindPayload);
+    });
+};
+constructor.prototype._mountRoutes_viewEndpoints_object = function()
+{
+    var self = this;
+    var context = self.context;
+    var app = context.app;
+    app.get('/object', function(req, res)
+    {
+        var bindPayload = __new_bindPayloadFor_object_show(context);
+        res.render('object/show', bindPayload);
     });
 };
 constructor.prototype._mountRoutes_JSONAPI = function()
@@ -142,7 +163,7 @@ constructor.prototype._mountRoutes_JSONAPI__DEBUG_cannedQuestions_MoMA = functio
             res.json({ ok: 1, results: results });
         });
     });
-}
+};
 
 constructor.prototype._mountRoutes_errorHandling = function()
 {

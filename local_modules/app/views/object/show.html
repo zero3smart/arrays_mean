@@ -1,0 +1,69 @@
+{% extends "../shared/shared_layout.html" %}
+
+{% block headSuffix %}
+    <title>Arrays - Create</title>
+    
+    
+{% endblock %}
+
+{% block bodyWrapper %}
+    <body class="object object-show">
+        <div id="page" class="site">
+            {% include "../partials/header_bar_array.html" %}
+            {% include "../partials/sidebar_filter.html" %}
+
+            <div id="content" class="site-content">
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-offset-2">
+
+                            <article id="object-id" class="object">
+                                <header class="object-header">
+                                    <img src="http://placehold.it/810x496" class="object-featured img-responsive" />
+                                    <h1 class="object-title">Yale University, School of Art Graduate Program: 1989–1990</h1>
+                                </header><!-- .oject-header -->
+
+                                <div class="object-content">
+
+                                    <dl>
+                                        <dt>Artist Name</dt>
+                                        <dd>Paul Rand</dd>
+
+                                        <dt>Type</dt>
+                                        <dd>Print</dd>
+
+                                        <dt>Date Created</dt>
+                                        <dd>1989</dd>
+
+                                        <dt>Client</dt>
+                                        <dd>Yale University</dd>
+
+                                        <dt>Medium</dt>
+                                        <dd>Offset lithography on white paper</dd>
+
+                                        <dt>Dimensions</dt>
+                                        <dd>(Closed) 26.6 × 15.2 cm (10 1/2 × 6 in)</dd>
+                                        <dd>(Open 53.3 × 45.7 cm (21 × 18 in)</dd>
+                                    </dl>
+
+                                </div><!-- .object-content -->
+
+                                <footer class="object-footer">
+    
+                                </footer><!-- .object-footer -->
+                            </article>
+
+                        </div>
+                    </div><!-- .row -->
+                </div>
+
+            </div><!-- #content -->
+        </div><!-- #page -->
+
+        <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+        
+        <script type="text/javascript" src="/javascripts/lib/bootstrap/bootstrap.js"></script>
+        <script type="text/javascript" src="/javascripts/main.js"></script>
+    </body>
+{% endblock %}

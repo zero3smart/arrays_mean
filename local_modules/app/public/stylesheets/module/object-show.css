@@ -1,0 +1,26 @@
+/* @override 
+	http://localhost:9080/stylesheets/module/object-show.css */
+
+.object {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.object-title {
+	margin-top: 40px;
+	margin-bottom: 40px;
+	color: #777777;
+}
+
+.object dt {
+	margin-top: 30px;
+	color: #4a4a4a;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	font-size: 14px;
+}
+
+.object dd {
+	color: #333333;
+	font: 20px Georgia, "Times New Roman", Times, serif;
+}
