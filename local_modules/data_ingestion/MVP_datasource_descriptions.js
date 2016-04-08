@@ -126,7 +126,7 @@ exports.Descriptions =
                         size: "2000w"
                     },
                     "imgURL_gridThumb": {
-                        size: "1024w"
+                        size: "640w"
                     }
                 }
             }
