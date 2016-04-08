@@ -26,10 +26,10 @@
 
 @media (min-width: 768px) {
 	.gallery-item {
-		margin-bottom: 40px;
-		padding-right: 20px;
-		padding-left: 20px;
-		width: 25%;
+		margin-bottom: 30px;
+		padding-right: 15px;
+		padding-left: 15px;
+		width: 16.6667%;
 	}
 }
 
