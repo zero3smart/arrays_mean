@@ -82,7 +82,7 @@ var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private fo
         // Parse
         var aMoment = moment(inString, dateFormatString);
         if (aMoment.isValid() == false) {
-            console.error("❌  The date \"" + inString + "\" cannot be parsed with the format string \"" + dateFormatString + "\". Returning null.");
+            console.warn("⚠️  The date \"" + inString + "\" cannot be parsed with the format string \"" + dateFormatString + "\". Returning null.");
             
             return null;
         }

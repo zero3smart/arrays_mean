@@ -4,16 +4,13 @@
 var mongoose = require('mongoose');
 const winston = require('winston');
 //
-const dbName = 'arraysdb';
+const dbName = process.env.MONGODB_DBNAME;
 const developmentDBURI = 'mongodb://localhost/' + dbName;
-//
-const productionDBUsername = 'arraysserver';
-const productionDBPassword = 'AAELBzHUm73Ra9g5'; // TODO: move this out of repo with .env & dotenv
-const productionDBURI = 'mongodb://' + productionDBUsername 
-                        + ':' + productionDBPassword 
-                        + '@ds019239-a0.mlab.com:19239,ds019239-a1.mlab.com:19239/' 
+const productionDBURI = 'mongodb://' + process.env.MONGODB_PROD_DBUSERNAME 
+                        + ':' + process.env.MONGODB_PROD_DBUSERNAMEPW 
+                        + '@' + process.env.MONGODB_PROD_CLUSTERURLS + '/' 
                         + dbName 
-                        + '?replicaSet=rs-ds019239';
+                        + '?replicaSet=' + process.env.MONGODB_PROD_REPLICASETID + '';
 //
 var fullDBURI = process.env.NODE_ENV == 'development' ? developmentDBURI : productionDBURI;
 //
@@ -44,7 +41,7 @@ function WhenMongoDBConnected(fn)
         
         return;
     } else if (erroredOnConnection == true) {
-        winston.warn("‼️  Not going to call blocked Mongo fn,", fn);
+        winston.warn("⚠️  Not going to call blocked Mongo fn,", fn);
         
         return;
     }

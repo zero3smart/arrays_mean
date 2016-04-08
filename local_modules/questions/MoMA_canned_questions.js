@@ -1,5 +1,7 @@
 //
 //
+require('dotenv').config();
+//
 const asker = require('./MoMA_canned_questions_asker');
 asker.Ask(function(err, results)
 {

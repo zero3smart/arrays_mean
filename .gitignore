@@ -1,4 +1,7 @@
-# Created by https://www.gitignore.io/api/node,bower,sublimetext,osx,espresso
+.env 
+
+
+
 
 ### Node ###
 # Logs

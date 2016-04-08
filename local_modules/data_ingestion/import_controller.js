@@ -180,7 +180,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
             var parsedObject = self.context.raw_row_objects_controller.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, actualRowIndexInDataset, rowObject);
             // winston.info("parsedObject " , parsedObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
-                winston.info("‼️  Warning: An object with the same primary key, \"" 
+                winston.info("⚠️  Warning: An object with the same primary key, \"" 
                             + rowObject_primaryKey 
                             + "\" was already found in the parsed row objects cache on import." 
                             + " Use the primary key function to further disambiguate primary keys. Skipping importing this row, .");
@@ -218,7 +218,9 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
     //
     winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
     //
+    //
     // Firstly, generate the whole processed objects dataset
+    //
     self.context.processed_row_objects_controller.GenerateProcessedDatasetFromRawRowObjects(dataSource_uid,
                                                                                             dataSource_importRevision,
                                                                                             dataSource_title, 
@@ -230,7 +232,9 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
             return;
         }
         //
-        // Now generate fields
+        //
+        // Now generate fields by joins, etc.
+        //
         var descriptionsOfFieldsToGenerate = dataSourceDescription.afterImportingAllSources_generate;
         async.eachSeries(descriptionsOfFieldsToGenerate, function(description, cb)
         {
@@ -273,18 +277,50 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
                 callback(err);
                 
                 return;
-            }            
-            self._afterGeneratingProcessedDataSet_performEachRowOperations(dataSourceDescription, function(err)
+            }
+            //
+            //
+            // Now generate hosted image fields by scraping
+            //
+            var descriptionsOfFieldsToGenerateByScraping = dataSourceDescription.afterImportingAllSources_generateByScraping;
+            async.eachSeries(descriptionsOfFieldsToGenerateByScraping, function(description, cb)
+            {
+                var htmlSourceAtURLInField = description.htmlSourceAtURLInField;
+                var imageSrcSetInSelector = description.imageSrcSetInSelector;
+                var prependToImageURLs = description.prependToImageURLs || "";
+                var useAndHostSrcSetSizeByField = description.useAndHostSrcSetSizeByField;
+                self.context.processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSource_uid,
+                                                                                               dataSource_importRevision,
+                                                                                               dataSource_title,
+                                                                                               htmlSourceAtURLInField, 
+                                                                                               imageSrcSetInSelector, 
+                                                                                               prependToImageURLs,
+                                                                                               useAndHostSrcSetSizeByField,
+                                                                                               cb);
+            }, function(err)
             {
                 if (err) {
-                    winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
+                    winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
                     callback(err);
                 
                     return;
                 }
-                winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\.");
                 //
-                callback();
+                //
+                // Now execute user-defined generalized post-processing pipeline
+                //
+                self._afterGeneratingProcessedDataSet_performEachRowOperations(dataSourceDescription, function(err)
+                {
+                    if (err) {
+                        winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
+                        callback(err);
+                
+                        return;
+                    }
+                    winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
+                    //
+                    callback();
+                });
             });
         });
     });

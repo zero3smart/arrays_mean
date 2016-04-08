@@ -119,27 +119,24 @@ exports.Descriptions =
         [
             {
                 htmlSourceAtURLInField: "URL",
-                imageURLInSelector: 'img#anId[attr="src"]',
-                hostAndGenerateVersionsByField: {
-                    "imgURL_original": { // quotes not necessary but included to make clear these are field names
-                        original: true
+                imageSrcSetInSelector: "img.sov-hero__image-container__image@srcset",
+                prependToImageURLs: "http://www.moma.org", // since the urls are like "/media/…", not "http://…/media/…"
+                useAndHostSrcSetSizeByField: {
+                    "imgURL_original": {
+                        size: "2000w"
                     },
-                    "imgURL_gridThumb": { // quotes not necessary but included to make clear these are field names
-                        original: false, // not necessary to define 'false' but done for explicitness
-                        scaleToMaxPx: {
-                            w: 1000,
-                            h: 1000
-                        }
+                    "imgURL_gridThumb": {
+                        size: "1024w"
                     }
                 }
             }
         ]
-        //
-        //
-        // This is implemented but currently not used (it was built for scraping)
+        // //
+        // //
+        // // This is implemented but currently not used (it was built for scraping)
         // afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
         // {
-        //     console.log("Setup each ctx")
+        //     // Setup each ctx, such as the batch operation
         //     cb(null);
         // },
         // //
@@ -147,16 +144,17 @@ exports.Descriptions =
         // [
         //     function(appCtx, eachCtx, rowDoc, cb)
         //     {
-        //         console.log("A row", rowDoc)
+        //         // console.log("A row", rowDoc)
+        //         // perform derivations and add update operations to batch operation in eachCtx
         //         cb(null);
         //     }
         // ],
         // //
         // afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function(appCtx, eachCtx, cb)
         // {
-        //     console.log("Finished iterating")
+        //     // Finished iterating … execute the batch operation
         //     cb(null);
-        // },
+        // }
         // //
         // //
     }
