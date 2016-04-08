@@ -1,0 +1,23 @@
+/* @override 
+	http://localhost:9080/stylesheets/module/pagination.css */
+
+.gallery-pagination {
+	text-align: center;
+}
+
+.pagination > li > a,
+.pagination > li > span {
+	border-style: none;
+	color: #cccccc;
+	font-size: 24px;
+}
+
+.pagination > li > a:hover {
+	background-color: transparent;
+	color: #4a4a4a;
+}
+
+.pagination > li > span:hover {
+	background-color: transparent;
+	color: #cccccc;
+}
