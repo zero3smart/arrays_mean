@@ -103,3 +103,5 @@ Temporary Items
 .sass-cache/
 *.css.map
 
+
+.env
