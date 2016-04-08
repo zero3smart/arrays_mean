@@ -246,9 +246,6 @@ constructor.prototype.GenerateFieldsByJoining
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
         var nativeCollection_ofRawRowObjectsBeingProcessed = mongooseModel_ofRawRowObjectsBeingProcessed.collection;
         var mongooseScheme_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_scheme;
-        var indexDescription = {};
-        indexDescription["rowParams." + onField] = 1;
-        mongooseScheme_ofRawRowObjectsBeingProcessed.index(indexDescription, { unique: false });
         //
         var mongooseContext_ofTheseProcessedRowObjects = self.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
