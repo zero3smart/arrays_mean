@@ -10,6 +10,7 @@
 
 3. Raw import MongoDB modeling at [`local_modules/raw_objects`](local_modules/raw_objects) 
 
+4. Processed objects modeling at [`local_modules/processed_objects`](local_modules/processed_objects)
 
 ---------------------
 
@@ -51,8 +52,15 @@
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
 2. Execute `npm install`
 
+##### IV. Creating your `.env` file
 
-###### IV. (Not necessary as of this edit) Installing git submodules
+Environment-related secrets such as the production password database are not committed to this repository as a security-related best practice.
+
+In order to add them you need to create a file named ".env" in the root directory of this repository at `arrays-server-js/.env` and then fill it with the content of the following Google Doc:
+
+[Arrays - Server - .env](https://docs.google.com/document/d/1d1IoAHgGPB4bwWGaYprtBFSVoLEcoEuw4WdruUt-v9k/)
+
+###### V. (Not necessary as of this edit) Installing git submodules
 
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
 2. Execute `git submodule init` and then `git submodule update`.
@@ -73,7 +81,7 @@
 
 ---------------------
 
-### Asking questions 
+### Asking pre-prepared questions 
 
 There are a handful of pre-prepared questions to run on the MVP MoMA dataset.
 
