@@ -34,42 +34,54 @@ constructor.prototype.FieldValuesOf_RawRowObjectsInSrcDoc_WhereFieldValueIs = fu
     var collection_mongooseModel = collection_mongooseContext.forThisDataSource_RawRowObject_model;
     var collection_mongooseScheme = collection_mongooseContext.forThisDataSource_RawRowObject_scheme;
     //
-    var filterOperator = { $match: {} };
-    filterOperator["$match"]["" + match_fieldPath] = match_fieldValue;
-    //
-    var stripOperator = 
-    {
-        $project: {
-            _id: 0,
-            "V" : ("$" + mapValuesOfFieldNamed)
-        }
-    };
-    //
-    var aggregationOperators =
-    [
-        filterOperator,
-        stripOperator        
-    ];
-    //
-    var doneFn = function(err, results)
+    var indexDescription = {};
+    indexDescription[match_fieldPath] = 1;
+    collection_mongooseScheme.index(indexDescription, { unique: false });
+    collection_mongooseModel.ensureIndexes(function(err)
     {
         if (err) {
-            fn(err, null);
-
+            winston.error("❌  Error ensuring index:", err);
+            callback(err);
             return;
         }
-        if (results == undefined || results == null || results.length == 0) {
-            fn(null, []);
-
-            return;
-        }
-        // Now map results into list of flat values
-        var values = results.map(function(el)
+        //
+        var filterOperator = { $match: {} };
+        filterOperator["$match"]["" + match_fieldPath] = match_fieldValue;
+        //
+        var stripOperator = 
         {
-            return el.V;
-        });
-        // console.log("values " , values)
-        fn(err, values);
-    };
-    collection_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn);
+            $project: {
+                _id: 0,
+                "V" : ("$" + mapValuesOfFieldNamed)
+            }
+        };
+        //
+        var aggregationOperators =
+        [
+            filterOperator,
+            stripOperator        
+        ];
+        //
+        var doneFn = function(err, results)
+        {
+            if (err) {
+                fn(err, null);
+
+                return;
+            }
+            if (results == undefined || results == null || results.length == 0) {
+                fn(null, []);
+
+                return;
+            }
+            // Now map results into list of flat values
+            var values = results.map(function(el)
+            {
+                return el.V;
+            });
+            // console.log("values " , values)
+            fn(err, values);
+        };
+        collection_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true).exec(doneFn);
+    });
 }
