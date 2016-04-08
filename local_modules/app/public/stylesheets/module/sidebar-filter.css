@@ -4,11 +4,11 @@
 .sidebar-filter {
 	position: fixed;
 	top: 0;
-	left: -200px;
+	left: calc(0px - var(--sidebar-width));
 	z-index: 1030;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
-	width: 200px;
+	width: var(--sidebar-width);
 	height: 100vh;
 	background-color: var(--color-sidebar-bg);
 }
@@ -22,7 +22,7 @@
 .sidebar-filter-in .sidebar-filter,
 .sidebar-filter-in .navbar-fixed-top,
 .sidebar-filter-in .site-content {
-	transform: translate(200px);
+	transform: translate(var(--sidebar-width));
 }
 
 .sidebar-filter a {
@@ -60,7 +60,7 @@
 }
 
 .sidebar-filter-subgroup-item > a:hover {
-	background-color: var(--color-primary);
+	background-color: var(--color-sort-bar-label);
 	color: var(--color-sidebar-bg);
 }
 
