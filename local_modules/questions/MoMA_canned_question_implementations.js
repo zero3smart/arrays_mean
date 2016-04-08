@@ -12,9 +12,9 @@ var context = require('./canned_questions_context').NewHydratedContext();
 ////////////////////////////////////////////////////////////////////////////////
 // Define constants
 //
-const artistsSrcDocUID = "MoMA_Artists_v1_jy.csv";
+const artistsSrcDocUID = "moma_artists_csv";
 const artistsSrcDocRevNumber = 1;
-const artworksSrcDocUID = "MoMA_Artworks CSV";
+const artworksSrcDocUID = "moma_artworks_csv";
 const artworksSrcDocRevNumber = 2;
 
 //

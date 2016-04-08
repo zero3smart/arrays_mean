@@ -9,7 +9,7 @@ exports.Descriptions =
     // Production - MoMA dataset
     {
         filename: "MoMA_Artists_v1_jy.csv",
-        uid: "MoMA_Artists_v1_jy.csv",
+        uid: "moma_artists_csv",
         importRevision: 1,
         format: import_datatypes.DataSource_formats.CSV,
         title: "MoMA - Artists",
@@ -40,7 +40,7 @@ exports.Descriptions =
                 by: {
                     doing: import_processing.Ops.Join,
                     onField: "Artist",
-                    ofOtherRawSrcUID: "MoMA_Artworks CSV",
+                    ofOtherRawSrcUID: "moma_artworks_csv",
                     andOtherRawSrcImportRevision: 2,
                     withLocalField: "Artist",
                     obtainingValueFromField: "Title"
@@ -60,7 +60,7 @@ exports.Descriptions =
     }
     , {
         filename: "MoMA_Artworks_v2_jy.csv",
-        uid: "MoMA_Artworks CSV",
+        uid: "moma_artworks_csv",
         importRevision: 2,
         format: import_datatypes.DataSource_formats.CSV,
         title: "MoMA - Artworks",
@@ -106,7 +106,7 @@ exports.Descriptions =
                 by: {
                     doing: import_processing.Ops.Join,
                     onField: "Artist",
-                    ofOtherRawSrcUID: "MoMA_Artists_v1_jy.csv",
+                    ofOtherRawSrcUID: "moma_artists_csv",
                     andOtherRawSrcImportRevision: 1,
                     withLocalField: "Artist",
                     obtainingValueFromField: "Code"
