@@ -183,12 +183,38 @@ constructor.prototype.GenerateProcessedDatasetFromRawRowObjects
                     pKey: doc.pKey,
                     srcDocPKey: doc.srcDocPKey
                 };
-                bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update({ $set: doc });
+                // we do not $set the whole doc but use rowParams.* paths so that 
+                // we don't overwrite the whole doc, blowing away stuff like already-imported images
+                var byPathUpdateDoc = _new_byPathUpdateDoc_fromPureDocUpdates(doc);
+                bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update({ $set: byPathUpdateDoc });
                 //
                 _finishedWithDoc();
             });
         });
     });
+}
+function _new_byPathUpdateDoc_fromPureDocUpdates(doc)
+{
+    var byPathUpdateDoc = {};
+    var rootKeys = Object.keys(doc);
+    var rootKeys_length = rootKeys.length;
+    for (var i = 0 ; i < rootKeys_length ; i++) {
+        var key = rootKeys[i];
+        var val = doc[key];
+        if (key !== 'rowParams') {
+            byPathUpdateDoc[key] = val;
+        } else {
+            var rowParams_keys = Object.keys(val);
+            var rowParams_keys_length = rowParams_keys.length;
+            for (var i = 0 ; i < rowParams_keys_length ; i++) {
+                var rowParams_key = rowParams_keys[i];
+                var rowParams_val = val[rowParams_key];
+                byPathUpdateDoc['rowParams.' + rowParams_key] = rowParams_val;
+            }
+        }
+    }
+    
+    return byPathUpdateDoc;
 }
 //
 //
