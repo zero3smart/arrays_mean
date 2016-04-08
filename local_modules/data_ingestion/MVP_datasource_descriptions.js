@@ -22,12 +22,12 @@ exports.Descriptions =
         raw_rowObjects_coercionScheme:
         {
             BeginDate: {
-                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
-                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.FourDigitYearOnly
+                do: import_datatypes.Coercion_ops.ToDate,
+                opts: import_datatypes.Coercion_optionsPacks.ToDate.FourDigitYearOnly
             },
             EndDate: {
-                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
-                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.FourDigitYearOnly
+                do: import_datatypes.Coercion_ops.ToDate,
+                opts: import_datatypes.Coercion_optionsPacks.ToDate.FourDigitYearOnly
             }
         },
         //
@@ -73,14 +73,14 @@ exports.Descriptions =
         raw_rowObjects_coercionScheme:
         {
             DateAcquired: {
-                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
+                do: import_datatypes.Coercion_ops.ToDate,
                 opts: {
                     format: "MM/DD/YYYY" // e.g. "1/01/2009"
                 }
             },
             Date: {
-                do: import_datatypes.DataSource_fieldValueDataTypeCoercion_operationsByName.ToDate,
-                opts: import_datatypes.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName.ToDate.FourDigitYearOnly
+                do: import_datatypes.Coercion_ops.ToDate,
+                opts: import_datatypes.Coercion_optionsPacks.ToDate.FourDigitYearOnly
             }
         },
         //

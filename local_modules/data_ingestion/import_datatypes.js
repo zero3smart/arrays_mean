@@ -7,7 +7,7 @@ module.exports.DataSource_formats =
 
 // See "import_MVP_DB_seed" for example of how to use all this
 
-module.exports.DataSource_fieldValueDataTypeCoercion_operationsByName = // For convenience
+module.exports.Coercion_ops = // For convenience
 {
     ProxyExisting: "ProxyExisting", // do nothing - "pass-through"
     ToInteger: "ToInteger",
@@ -15,7 +15,7 @@ module.exports.DataSource_fieldValueDataTypeCoercion_operationsByName = // For c
     ToDate: "ToDate"
 };
 //
-module.exports.DataSource_fieldValueDataTypeCoercion_optionsPacksByNameByOperationName = // For convenience
+module.exports.Coercion_optionsPacks = // For convenience
 {
     ToDate: {
         FourDigitYearOnly: {
