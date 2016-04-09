@@ -545,7 +545,8 @@ constructor.prototype.GenerateImageURLFieldsByScraping
                 }
                 if (anyImagesNeedToBeScraped == false) {
                     winston.info("💬  Already scraped all images for row at idx " + doc.rowIdxInDoc + " for fields ", useAndHostSrcSetSizeByField_keys);
-                    async.setImmediate(function() { // so as not to blow stack
+                    async.setImmediate(function() 
+                    { // ^ so as not to blow stack
                         eachCb(); // already done
                     });
                     
@@ -555,7 +556,8 @@ constructor.prototype.GenerateImageURLFieldsByScraping
                 var htmlSourceAtURL = doc["rowParams"][htmlSourceAtURLInField];
                 if (htmlSourceAtURL == null || typeof htmlSourceAtURL === 'undefined' || htmlSourceAtURL == "") {
                     // nothing to scrape
-                    async.setImmediate(function() { // so as not to blow stack
+                    async.setImmediate(function() 
+                    { // ^ so as not to blow stack
                         eachCb();
                     });
                     
