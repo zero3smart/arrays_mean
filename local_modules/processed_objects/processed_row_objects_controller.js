@@ -246,157 +246,146 @@ constructor.prototype.GenerateFieldsByJoining
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
         var nativeCollection_ofRawRowObjectsBeingProcessed = mongooseModel_ofRawRowObjectsBeingProcessed.collection;
         var mongooseScheme_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_scheme;
-        var indexDescription = {};
-        indexDescription["rowParams." + onField] = 1;
-        mongooseScheme_ofRawRowObjectsBeingProcessed.index(indexDescription, { unique: false });
-        mongooseModel_ofRawRowObjectsBeingProcessed.ensureIndexes(function(err)
+        //
+        var mongooseContext_ofTheseProcessedRowObjects = self.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
+        var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
+        //
+        var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp(); 
+        //       
+        var numDocs = 0;
+        //
+        function proceedToPersist()
+        {
+            winston.info("📡  [" + (new Date()).toString() + "] Upserting " + numDocs + " processed rows for \"" + dataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
+        
+            var writeConcern =
+            {
+                upsert: true
+                // note: we're turning this off as it's super slow for large datasets like Artworks
+                // j: true // 'requests acknowledgement from MongoDB that the write operation has been written to the journal'
+            };
+            bulkOperation_ofTheseProcessedRowObjects.execute(writeConcern, function(err, result)
+            {
+                if (err) {
+                    winston.error("❌ [" + (new Date()).toString() + "] Error while saving generated fields of processed row objects: ", err);
+                } else {
+                    winston.info("✅  [" + (new Date()).toString() + "] Saved generated fields on processed row objects.");
+                }
+                callback(err);
+            });
+        }
+        //
+        //
+        var hasErroredAndReturned = false;
+        var hasReachedEndOfCursor = false;
+        var numberOfDocumentsFoundButNotYetProcessed = 0;
+        nativeCollection_ofRawRowObjectsBeingProcessed.find({}, {}, function(err, cursor)
         {
             if (err) {
-                winston.error("❌  Error ensuring index during join field generation:", err);
+                winston.error("❌  Error while generating field by join:", err);
+                hasErroredAndReturned = true;
                 callback(err);
+                    
                 return;
             }
-            //
-            var mongooseContext_ofTheseProcessedRowObjects = self.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
-            var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
-            var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
-            //
-            var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp(); 
-            //       
-            var numDocs = 0;
-            //
-            function proceedToPersist()
+            cursor.each(function(err, doc)
             {
-                winston.info("📡  [" + (new Date()).toString() + "] Upserting " + numDocs + " processed rows for \"" + dataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
+                if (hasErroredAndReturned == true) {
+                    winston.warn("⚠️  Each called after hasErroredAndReturned.");
             
-                var writeConcern =
-                {
-                    upsert: true
-                    // note: we're turning this off as it's super slow for large datasets like Artworks
-                    // j: true // 'requests acknowledgement from MongoDB that the write operation has been written to the journal'
-                };
-                bulkOperation_ofTheseProcessedRowObjects.execute(writeConcern, function(err, result)
-                {
-                    if (err) {
-                        winston.error("❌ [" + (new Date()).toString() + "] Error while saving generated fields of processed row objects: ", err);
-                    } else {
-                        winston.info("✅  [" + (new Date()).toString() + "] Saved generated fields on processed row objects.");
-                    }
-                    callback(err);
-                });
-            }
-            //
-            //
-            var hasErroredAndReturned = false;
-            var hasReachedEndOfCursor = false;
-            var numberOfDocumentsFoundButNotYetProcessed = 0;
-            nativeCollection_ofRawRowObjectsBeingProcessed.find({}, {}, function(err, cursor)
-            {
+                    return;
+                }
                 if (err) {
                     winston.error("❌  Error while generating field by join:", err);
                     hasErroredAndReturned = true;
                     callback(err);
-                        
+                    
                     return;
                 }
-                cursor.each(function(err, doc)
+                if (doc === null) { // then we're finished
+                    hasReachedEndOfCursor = true;
+                    if (numberOfDocumentsFoundButNotYetProcessed == 0) { // in case we've already finished, i.e. if the operation we did with the docs was sync and not async
+                        proceedToPersist();
+                    }
+            
+                    return;
+                }
+                //
+                numberOfDocumentsFoundButNotYetProcessed += 1;
+                numDocs += 1;
+                //
+                var fieldValue = doc["rowParams"][withLocalField];
+                if (typeof fieldValue === 'undefined' || fieldValue == null) {
+                    var errorString = "\"" + withLocalField + "\" of a \"" + dataSource_title + "\" was undefined or null";
+                    var err = new Error(errorString);
+                    winston.warn("❌  " + errorString + ". Bailing.");
+                    hasErroredAndReturned = true;
+                    callback(err);
+        
+                    return;
+                }
+
+                function _finishedWithDoc()
+                {
+                    numberOfDocumentsFoundButNotYetProcessed -= 1; // finished with this doc - decrement
+                    //
+                    if (hasReachedEndOfCursor == true) {
+                        if (numberOfDocumentsFoundButNotYetProcessed == 0) {
+                            // console.log("Reached end of cursor and finished processing all")
+                            proceedToPersist();
+                        } else {
+                            // console.log("Reached end of cursor but not finished processing all")
+                        }
+                    } else {
+                        // console.log("Hasn't reached end of cursor")
+                    }                
+                }
+                self.context.questions_controller.FieldValuesOf_RawRowObjectsInSrcDoc_WhereFieldValueIs("rowParams." + obtainingValueFromField,
+                                                                                                        pKey_ofFromDataSourceDoc,
+                                                                                                        "rowParams." + onField,
+                                                                                                        fieldValue,
+                                                                                                        function(err, values)
                 {
                     if (hasErroredAndReturned == true) {
-                        winston.warn("⚠️  Each called after hasErroredAndReturned.");
-                
                         return;
                     }
                     if (err) {
                         winston.error("❌  Error while generating field by join:", err);
                         hasErroredAndReturned = true;
                         callback(err);
-                        
+            
                         return;
                     }
-                    if (doc === null) { // then we're finished
-                        hasReachedEndOfCursor = true;
-                        if (numberOfDocumentsFoundButNotYetProcessed == 0) { // in case we've already finished, i.e. if the operation we did with the docs was sync and not async
-                            proceedToPersist();
-                        }
-                
-                        return;
+                    if (isSingular) {
+                        persistableValue = values.length > 0 ? values[0] : null;
+                    } else {
+                        persistableValue = values;
                     }
-                    //
-                    numberOfDocumentsFoundButNotYetProcessed += 1;
-                    numDocs += 1;
-                    //
-                    var fieldValue = doc["rowParams"][withLocalField];
-                    if (typeof fieldValue === 'undefined' || fieldValue == null) {
-                        var errorString = "\"" + withLocalField + "\" of a \"" + dataSource_title + "\" was undefined or null";
+                    if (typeof persistableValue === 'undefined') {
+                        var errorString = "Value obtained by joining \"" + withLocalField + "\" of a \"" + ofOtherRawSrcUID + "\" was undefined";
                         var err = new Error(errorString);
                         winston.warn("❌  " + errorString + ". Bailing.");
                         hasErroredAndReturned = true;
                         callback(err);
-            
+        
                         return;
                     }
-
-                    function _finishedWithDoc()
+                    // console.log("Obtained persistable value…", persistableValue);
+                    //
+                    //
+                    var bulkOperationQueryFragment =
                     {
-                        numberOfDocumentsFoundButNotYetProcessed -= 1; // finished with this doc - decrement
-                        //
-                        if (hasReachedEndOfCursor == true) {
-                            if (numberOfDocumentsFoundButNotYetProcessed == 0) {
-                                // console.log("Reached end of cursor and finished processing all")
-                                proceedToPersist();
-                            } else {
-                                // console.log("Reached end of cursor but not finished processing all")
-                            }
-                        } else {
-                            // console.log("Hasn't reached end of cursor")
-                        }                
-                    }
-                    self.context.questions_controller.FieldValuesOf_RawRowObjectsInSrcDoc_WhereFieldValueIs("rowParams." + obtainingValueFromField,
-                                                                                                            pKey_ofFromDataSourceDoc,
-                                                                                                            "rowParams." + onField,
-                                                                                                            fieldValue,
-                                                                                                            function(err, values)
-                    {
-                        if (hasErroredAndReturned == true) {
-                            return;
-                        }
-                        if (err) {
-                            winston.error("❌  Error while generating field by join:", err);
-                            hasErroredAndReturned = true;
-                            callback(err);
-                
-                            return;
-                        }
-                        if (isSingular) {
-                            persistableValue = values.length > 0 ? values[0] : null;
-                        } else {
-                            persistableValue = values;
-                        }
-                        if (typeof persistableValue === 'undefined') {
-                            var errorString = "Value obtained by joining \"" + withLocalField + "\" of a \"" + ofOtherRawSrcUID + "\" was undefined";
-                            var err = new Error(errorString);
-                            winston.warn("❌  " + errorString + ". Bailing.");
-                            hasErroredAndReturned = true;
-                            callback(err);
-            
-                            return;
-                        }
-                        // console.log("Obtained persistable value…", persistableValue);
-                        //
-                        //
-                        var bulkOperationQueryFragment =
-                        {
-                            pKey: doc.pKey,
-                            srcDocPKey: doc.srcDocPKey
-                        };
-                        var updateFragment = {};
-                        updateFragment["$set"] = {};
-                        updateFragment["$set"]["rowParams." + generateFieldNamed] = persistableValue; // Note that we're only updating a specific path, not the whole rowParams value
-                        //
-                        bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update(updateFragment);
-                        //
-                        _finishedWithDoc();
-                    });
+                        pKey: doc.pKey,
+                        srcDocPKey: doc.srcDocPKey
+                    };
+                    var updateFragment = {};
+                    updateFragment["$set"] = {};
+                    updateFragment["$set"]["rowParams." + generateFieldNamed] = persistableValue; // Note that we're only updating a specific path, not the whole rowParams value
+                    //
+                    bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+                    //
+                    _finishedWithDoc();
                 });
             });
         });
@@ -468,7 +457,6 @@ constructor.prototype.EnumerateProcessedDataset
                     return;
                 }
                 if (doc === null) { // then we're finished
-                    // console.log("Reached end")
                     hasReachedEndOfCursor = true;
                     if (numberOfDocumentsFoundButNotYetProcessed == 0) { // in case we've already finished, i.e. if the operation we did with the docs was sync and not async
                         completeFn();
