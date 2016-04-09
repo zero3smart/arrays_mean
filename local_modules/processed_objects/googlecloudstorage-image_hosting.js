@@ -50,7 +50,12 @@ module.exports.hostImageLocatedAtRemoteURL = function(remoteImageSourceURL, dest
     function proceedToStreamToHost()
     {
         winston.info("📡  Streaming " + remoteImageSourceURL + " -> " + hostedFilePublicUrl);
-        var bucket_writeStream = bucket_file.createWriteStream({ validation: false }); // https://github.com/GoogleCloudPlatform/gcloud-node/issues/889
+        var writeStreamOptions =
+        {
+            validation: false, // https://github.com/GoogleCloudPlatform/gcloud-node/issues/889
+            resumable: false // https://github.com/GoogleCloudPlatform/gcloud-node/issues/470
+        }
+        var bucket_writeStream = bucket_file.createWriteStream({ validation: false }); 
         bucket_writeStream.on('finish', function() 
         {
             proceedToCallBack();

@@ -46,7 +46,7 @@ constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescrip
             process.exit(1); // error code
         } else {
             winston.info("✅  Raw objects import done. Proceeding to post-processing.");
-            self._postProcessRawObjects(dataSourceDescriptions, function(err)
+            self._postProcessRawObjects(dataSourceDescriptions, {}, function(err)
             {
                 if (err) {
                     winston.info("❌  Error encountered during import post-processing:", err);
@@ -60,13 +60,28 @@ constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescrip
     });
 };
 //
-constructor.prototype._postProcessRawObjects = function(dataSourceDescriptions, callback)
+constructor.prototype._Import_dataSourceDescriptions__enteringImageScrapingDirectly = function(dataSourceDescriptions)
+{
+    var self = this;
+    self._postProcessRawObjects(dataSourceDescriptions, { enterImageScrapingDirectly: true }, function(err)
+    {
+        if (err) {
+            winston.info("❌  Error encountered during import post-processing:", err);
+            process.exit(1); // error code
+        } else {
+            winston.info("✅  Import post-processing done.");
+            process.exit(0); // all good
+        }
+    });
+};
+//
+constructor.prototype._postProcessRawObjects = function(dataSourceDescriptions, options, callback)
 {
     var self = this;
     var i = 1;
     async.eachSeries(dataSourceDescriptions, function(dataSourceDescription, callback)
     {
-        self._dataSourcePostProcessingFunction(i, dataSourceDescription, callback);
+        self._dataSourcePostProcessingFunction(i, dataSourceDescription, options, callback);
         i++;
     }, function(err)
     {
@@ -209,94 +224,116 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
 };
 //
 //
-constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, dataSourceDescription, callback)
+constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, dataSourceDescription, options, callback)
 {
     var self = this;
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_importRevision = dataSourceDescription.importRevision;    
     var dataSource_title = dataSourceDescription.title;
     //
-    winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
-    //
-    //
-    // Firstly, generate the whole processed objects dataset
-    //
-    self.context.processed_row_objects_controller.GenerateProcessedDatasetFromRawRowObjects(dataSource_uid,
-                                                                                            dataSource_importRevision,
-                                                                                            dataSource_title, 
-                                                                                            function(err)
+    function _proceedToScrapeImagesAndRemainderOfPostProcessing()
     {
-        if (err) {
-            winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
-            callback(err);
-            return;
-        }
-        //
-        //
-        // Now generate fields by joins, etc.
-        //
-        var descriptionsOfFieldsToGenerate = dataSourceDescription.afterImportingAllSources_generate;
-        async.eachSeries(descriptionsOfFieldsToGenerate, function(description, cb)
+        var descriptionsOfFieldsToGenerateByScraping = dataSourceDescription.afterImportingAllSources_generateByScraping;
+        async.eachSeries(descriptionsOfFieldsToGenerateByScraping, function(description, cb)
         {
-            var generateFieldNamed = description.field;
-            var isSingular = description.singular;
-            var by = description.by;
-            var byDoingOp = by.doing;
-            switch (byDoingOp) {
-                case import_processing.Ops.Join:
-                {
-                    var onField = by.onField;
-                    var ofOtherRawSrcUID = by.ofOtherRawSrcUID;
-                    var andOtherRawSrcImportRevision = by.andOtherRawSrcImportRevision;
-                    var withLocalField = by.withLocalField;
-                    var obtainingValueFromField = by.obtainingValueFromField;
-                    self.context.processed_row_objects_controller.GenerateFieldsByJoining(dataSource_uid,
-                                                                                         dataSource_importRevision,
-                                                                                         dataSource_title,
-                                                                                         generateFieldNamed, 
-                                                                                         isSingular, 
-                                                                                         onField,
-                                                                                         ofOtherRawSrcUID,
-                                                                                         andOtherRawSrcImportRevision,
-                                                                                         withLocalField,
-                                                                                         obtainingValueFromField,
-                                                                                         cb);
-                    break;
-                }
-                
-                default:
-                {
-                    winston.error("❌  Unrecognized post-processing field generation operation \"" + byDoingOp + "\" in", description);
-                    break;
-                }
-            }        
+            var htmlSourceAtURLInField = description.htmlSourceAtURLInField;
+            var imageSrcSetInSelector = description.imageSrcSetInSelector;
+            var prependToImageURLs = description.prependToImageURLs || "";
+            var useAndHostSrcSetSizeByField = description.useAndHostSrcSetSizeByField;
+            self.context.processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSource_uid,
+                                                                                           dataSource_importRevision,
+                                                                                           dataSource_title,
+                                                                                           htmlSourceAtURLInField, 
+                                                                                           imageSrcSetInSelector, 
+                                                                                           prependToImageURLs,
+                                                                                           useAndHostSrcSetSizeByField,
+                                                                                           cb);
         }, function(err)
         {
             if (err) {
                 winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
                 callback(err);
-                
+        
                 return;
             }
             //
             //
-            // Now generate hosted image fields by scraping
+            // Now execute user-defined generalized post-processing pipeline
             //
-            var descriptionsOfFieldsToGenerateByScraping = dataSourceDescription.afterImportingAllSources_generateByScraping;
-            async.eachSeries(descriptionsOfFieldsToGenerateByScraping, function(description, cb)
+            self._afterGeneratingProcessedDataSet_performEachRowOperations(dataSourceDescription, function(err)
             {
-                var htmlSourceAtURLInField = description.htmlSourceAtURLInField;
-                var imageSrcSetInSelector = description.imageSrcSetInSelector;
-                var prependToImageURLs = description.prependToImageURLs || "";
-                var useAndHostSrcSetSizeByField = description.useAndHostSrcSetSizeByField;
-                self.context.processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSource_uid,
-                                                                                               dataSource_importRevision,
-                                                                                               dataSource_title,
-                                                                                               htmlSourceAtURLInField, 
-                                                                                               imageSrcSetInSelector, 
-                                                                                               prependToImageURLs,
-                                                                                               useAndHostSrcSetSizeByField,
-                                                                                               cb);
+                if (err) {
+                    winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
+                    callback(err);
+        
+                    return;
+                }
+                winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
+                //
+                callback();
+            });
+        });
+    }
+    //
+    var enterImageScrapingDirectly = options.enterImageScrapingDirectly;
+    if (enterImageScrapingDirectly == true) {
+        winston.info("🔁  " + indexInList + ": Proceeding directly to image scraping and remainder of post-processing of \"" + dataSource_title + "\"");
+        _proceedToScrapeImagesAndRemainderOfPostProcessing(); // skip over initial processing
+    } else {
+        winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
+        //
+        //
+        // Firstly, generate the whole processed objects dataset
+        //
+        self.context.processed_row_objects_controller.GenerateProcessedDatasetFromRawRowObjects(dataSource_uid,
+                                                                                                dataSource_importRevision,
+                                                                                                dataSource_title, 
+                                                                                                function(err)
+        {
+            if (err) {
+                winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
+                callback(err);
+                return;
+            }
+            //
+            //
+            // Now generate fields by joins, etc.
+            //
+            var descriptionsOfFieldsToGenerate = dataSourceDescription.afterImportingAllSources_generate;
+            async.eachSeries(descriptionsOfFieldsToGenerate, function(description, cb)
+            {
+                var generateFieldNamed = description.field;
+                var isSingular = description.singular;
+                var by = description.by;
+                var byDoingOp = by.doing;
+                switch (byDoingOp) {
+                    case import_processing.Ops.Join:
+                    {
+                        var onField = by.onField;
+                        var ofOtherRawSrcUID = by.ofOtherRawSrcUID;
+                        var andOtherRawSrcImportRevision = by.andOtherRawSrcImportRevision;
+                        var withLocalField = by.withLocalField;
+                        var obtainingValueFromField = by.obtainingValueFromField;
+                        self.context.processed_row_objects_controller.GenerateFieldsByJoining(dataSource_uid,
+                                                                                             dataSource_importRevision,
+                                                                                             dataSource_title,
+                                                                                             generateFieldNamed, 
+                                                                                             isSingular, 
+                                                                                             onField,
+                                                                                             ofOtherRawSrcUID,
+                                                                                             andOtherRawSrcImportRevision,
+                                                                                             withLocalField,
+                                                                                             obtainingValueFromField,
+                                                                                             cb);
+                        break;
+                    }
+                
+                    default:
+                    {
+                        winston.error("❌  Unrecognized post-processing field generation operation \"" + byDoingOp + "\" in", description);
+                        break;
+                    }
+                }        
             }, function(err)
             {
                 if (err) {
@@ -305,26 +342,10 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
                 
                     return;
                 }
-                //
-                //
-                // Now execute user-defined generalized post-processing pipeline
-                //
-                self._afterGeneratingProcessedDataSet_performEachRowOperations(dataSourceDescription, function(err)
-                {
-                    if (err) {
-                        winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
-                        callback(err);
-                
-                        return;
-                    }
-                    winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
-                    //
-                    callback();
-                });
+                _proceedToScrapeImagesAndRemainderOfPostProcessing();
             });
         });
-    });
-    
+    }    
 };
 //
 //
