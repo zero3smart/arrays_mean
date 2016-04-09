@@ -565,6 +565,7 @@ constructor.prototype.GenerateImageURLFieldsByScraping
                 xray_instance(htmlSourceAtURL, imageSrcSetInSelector)(function(err, scrapedString)
                 {
                     if (err) {
+                        winston.error("❌  Error while scraping " + htmlSourceAtURL + ": ", err);
                         eachCb(err);
 
                         return;
