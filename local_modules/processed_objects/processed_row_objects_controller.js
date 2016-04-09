@@ -573,7 +573,7 @@ constructor.prototype.GenerateImageURLFieldsByScraping
                     function proceedToPersistHostedImageURLOrNull_forKey(err, hostedURLOrNull, fieldKey, persistedCb)
                     {
                         if (err) {
-                            cb(err);    
+                            persistedCb(err);    
                             return;
                         }
                         winston.info("📝  Saving " + hostedURLOrNull + " at " + fieldKey + " of " + doc.pKey);
