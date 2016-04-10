@@ -55,14 +55,14 @@ module.exports.hostImageLocatedAtRemoteURL = function(remoteImageSourceURL, dest
             validation: false, // https://github.com/GoogleCloudPlatform/gcloud-node/issues/889
             resumable: false // https://github.com/GoogleCloudPlatform/gcloud-node/issues/470
         }
-        var bucket_writeStream = bucket_file.createWriteStream({ validation: false }); 
+        var bucket_writeStream = bucket_file.createWriteStream(writeStreamOptions); 
         bucket_writeStream.on('finish', function() 
         {
             proceedToCallBack();
         });
         bucket_writeStream.on('error', function(err)
         {
-            winston.error("❌  Google Cloud Storage write stream error for destinationFilenameSansExt" + destinationFilenameSansExt, " err: " , err)
+            winston.error("❌  Google Cloud Storage write stream error for remote img src url " + remoteImageSourceURL + " and dest filename " + finalizedFilenameWithExt, " err: " , err)
             proceedToCallBack(err);
         });
         //
