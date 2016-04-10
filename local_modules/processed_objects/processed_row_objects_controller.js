@@ -646,10 +646,21 @@ constructor.prototype.GenerateImageURLFieldsByScraping
                         var sizeForFieldKey = descriptionOf_useAndHostSrcSetSizeForField.size;
                         var rawURLForSize = rawURLsBySize[sizeForFieldKey];
                         if (rawURLForSize == null || typeof rawURLForSize === 'undefined') {
-                            var err = new Error("No available URL for size " + sizeForFieldKey + " in scraped image src set " + rawURLsBySize + " for", doc);
-                            cb(err);
+                            var nextLargestSize = _nextLargestImageSrcSetSizeAvailableInParsedRawURLsBySize(rawURLsBySize, sizeForFieldKey);
+                            if (nextLargestSize == null) { // still no available images (although this will actually throw)
+                                var err = new Error("No available URL for size " + sizeForFieldKey + " nor any next largest size available in scraped image src set " + JSON.stringify(rawURLsBySize) + " for", JSON.stringify(doc));
+                                cb(err);
                             
-                            return;
+                                return;
+                            }
+                            winston.warn("⚠️  No available URL for size " + sizeForFieldKey + " in scraped image src set " + JSON.stringify(rawURLsBySize) + ". Located next largest size " + nextLargestSize + "…");
+                            rawURLForSize = rawURLsBySize[nextLargestSize]; // re-pick next largest
+                            if (rawURLForSize == null || typeof rawURLForSize === 'undefined') { // still
+                                var err = new Error("Picked next largest size but unexpectedly no URL available for it in src set " + JSON.stringify(rawURLsBySize) + " for", JSON.stringify(doc));
+                                cb(err);
+                        
+                                return;
+                            }
                         }
                         var finalized_imageSourceURLForSize = prependToImageURLs + rawURLForSize;
                         // winston.info("🔁  Download/host and store hosted url for original " + finalized_imageSourceURLForSize)
@@ -684,3 +695,35 @@ constructor.prototype.GenerateImageURLFieldsByScraping
         });
     });
 };
+//
+function _nextLargestImageSrcSetSizeAvailableInParsedRawURLsBySize(rawURLsBySize, afterSize) // -> (String?)
+{
+    var sizes = Object.keys(rawURLsBySize);
+    var sizes_length = sizes.length;
+    if (sizes_length == 0) {
+        throw new Error("Unexpected 0 length rawURLsBySize.");
+        return null; // just in case
+    }
+    var afterSizeString_asInt = __intSizeFromSrcSetSizeString(afterSize);
+    var latestBiggestSizeString = null;
+    var latestBiggestSizeAsInt = -1;
+    for (var i = 0 ; i < sizes_length ; i++) {
+        var key = sizes[i]; // key will never be afterSize
+        if (key !== afterSize) { // but just in case...
+            var keySizeAsInt = __intSizeFromSrcSetSizeString(key);
+            if (latestBiggestSizeString == null || latestBiggestSizeAsInt < keySizeAsInt) {
+                latestBiggestSizeString = key;
+                latestBiggestSizeAsInt = keySizeAsInt;
+            }
+        }
+    }
+    
+    return latestBiggestSizeString;
+}
+function __intSizeFromSrcSetSizeString(sizeString)
+{
+    var stringWithoutLastChar = sizeString.substring(0, sizeString.length - 1); // to strip off the 'w'
+    var asInt = parseInt(stringWithoutLastChar);
+    
+    return asInt;
+}
