@@ -62,7 +62,7 @@ module.exports.hostImageLocatedAtRemoteURL = function(remoteImageSourceURL, dest
         });
         bucket_writeStream.on('error', function(err)
         {
-            winston.error("❌  Google Cloud Storage write stream error" , err)
+            winston.error("❌  Google Cloud Storage write stream error for destinationFilenameSansExt" + destinationFilenameSansExt, " err: " , err)
             proceedToCallBack(err);
         });
         //
