@@ -1,4 +1,5 @@
 var winston = require('winston');
+var url = require('url');
 //
 //
 // Template rendering dummy bind data factory functions
@@ -32,15 +33,37 @@ function __new_bindPayloadFor_array_create(context, callback)
         callback(null, bindPayload);
     });
 }
-function __new_bindPayloadFor_array_gallery(context, callback)
-{
-    var bindPayload = 
+function __new_bindPayloadFor_array_gallery(context, urlQuery, callback)
+{                                                 // ^ already validated to have source_key
+    var parameters =
     {
-        arrayTitle: "Cooper Hewitt"
+        source_pKey: urlQuery.source_key,
+        //
+        pageNumber: urlQuery.page ? urlQuery.page : 1,
+        pageLength: 250, // not configurable by url
+        //
+        sortByColumnName: urlQuery.sortBy ? urlQuery.sortBy : "Object Title",
+        sortDirection: urlQuery.sortDir ? urlQuery.sortDir == 'Ascending' ? 1 : -1 : 1,
+        //
+        filterColumn: urlQuery.filterCol, // if undefined, not filtered
+        filterValue: urlQuery.filterVal,
+        //
+        searchQueryString: urlQuery.searchQ, // if undefined or "", no search active
+        searchValuesOfColumn: urlQuery.searchCol 
     };
-    var err = null;
-    
-    callback(err, bindPayload);
+    context.API_data_preparation_controller.DataFor_array_gallery(parameters, function(err, data)
+    {
+        if (err) {
+            callback(err, null);
+            
+            return;
+        }
+        var bindPayload = 
+        {
+            docs: data.docs
+        };
+        callback(null, bindPayload);
+    });
 }
 function __new_bindPayloadFor_object_show(context, callback)
 {
@@ -138,7 +161,15 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
     });
     app.get('/array/gallery', function(req, res)
     {
-        __new_bindPayloadFor_array_gallery(context, function(err, bindPayload) 
+        var url_parts = url.parse(req.url, true);
+        var query = url_parts.query;
+        var source_key = query.source_key;
+        if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
+            res.status(403).send("Bad Request - source_key missing from url query")
+            
+            return;
+        }        
+        __new_bindPayloadFor_array_gallery(context, query, function(err, bindPayload) 
         {
             if (err) {
                 self._renderBindPayloadError(err, req, res);
