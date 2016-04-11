@@ -5,7 +5,6 @@ var winston = require('winston');
 // 
 function __new_bindPayloadFor_homepage(context, callback)
 {
-    var app = context.app;
     var bindPayload = 
     {
         aMessage: "Hello! This is the homepage."
@@ -16,18 +15,25 @@ function __new_bindPayloadFor_homepage(context, callback)
 }
 function __new_bindPayloadFor_array_create(context, callback)
 {
-    var app = context.app;    
-    var bindPayload = 
+    context.API_data_preparation_controller.DataFor_datasetsListing(function(err, data)
     {
-        aMessage: "Hello! This is the create array page."
-    };
-    var err = null;
-
-    callback(err, bindPayload);
+        if (err) {
+            callback(err, null);
+            
+            return;
+        }
+        // The data is unpacked redundantly here not only to give the chance to add
+        // additional data, but also so as to guard against hidden breakage in case
+        // the return value of DataFor_datasetsListing changes:
+        var bindPayload = 
+        {
+            sources: data.sources
+        };
+        callback(null, bindPayload);
+    });
 }
 function __new_bindPayloadFor_array_show(context, callback)
 {
-    var app = context.app;    
     var bindPayload = 
     {
         arrayTitle: "Cooper Hewitt"
@@ -38,7 +44,6 @@ function __new_bindPayloadFor_array_show(context, callback)
 }
 function __new_bindPayloadFor_object_show(context, callback)
 {
-    var app = context.app;
     var bindPayload = 
     {
         arrayTitle: "Cooper Hewitt",

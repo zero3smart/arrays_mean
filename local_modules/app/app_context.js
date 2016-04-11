@@ -22,6 +22,11 @@ var context_object_instantiation_descriptions =
         options: {}
     },
     {
+        module_path: __dirname + "/../processed_objects/processed_row_objects_controller",
+        instance_key: "processed_row_objects_controller",
+        options: {}
+    },
+    {
         module_path: __dirname + "/API_data_preparation_controller",
         instance_key: "API_data_preparation_controller",
         options: {}
