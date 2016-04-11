@@ -11,6 +11,8 @@ var dataSourceDescriptions = require('../data_ingestion/MVP_datasource_descripti
 ////////////////////////////////////////////////////////////////////////////////
 // Constants
 //
+var pageSize = 250;
+//
 var humanReadableColumnName_objectTitle = "Object Title";
 //
 //
@@ -64,6 +66,8 @@ constructor.prototype.DataFor_datasetsListing = function(callback)
     //    ^ parallel execution, but ordered results
 };
 //
+constructor.prototype.PageSize = function() { return pageSize; };
+//
 constructor.prototype.DataFor_array_gallery = function(parameters, callback)
 {
     var self = this;
@@ -79,10 +83,10 @@ constructor.prototype.DataFor_array_gallery = function(parameters, callback)
     var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
-    var pageLength = parameters.pageLength;
+    var pageSize = parameters.pageSize || pageSize;
     var pageNumber = parameters.pageNumber;
-    var skipNResults = pageLength * (Math.max(pageNumber, 1) - 1);
-    var limitToNResults = pageLength;
+    var skipNResults = pageSize * (Math.max(pageNumber, 1) - 1);
+    var limitToNResults = pageSize;
     //
     // TODO:
     // use _realColumnNameFromHumanReadableColumnName

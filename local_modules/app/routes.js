@@ -40,7 +40,7 @@ function __new_bindPayloadFor_array_gallery(context, urlQuery, callback)
         source_pKey: urlQuery.source_key,
         //
         pageNumber: urlQuery.page ? urlQuery.page : 1,
-        pageLength: 250, // not configurable by url
+        pageSize: context.API_data_preparation_controller.PageSize(), // not configurable by url
         //
         sortByColumnName: urlQuery.sortBy ? urlQuery.sortBy : "Object Title",
         sortDirection: urlQuery.sortDir ? urlQuery.sortDir == 'Ascending' ? 1 : -1 : 1,
