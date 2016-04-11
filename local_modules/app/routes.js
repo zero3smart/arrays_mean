@@ -3,38 +3,50 @@ var winston = require('winston');
 //
 // Template rendering dummy bind data factory functions
 // 
-function __new_bindPayloadFor_homepage(context)
+function __new_bindPayloadFor_homepage(context, callback)
 {
     var app = context.app;
-    
-    return {
+    var bindPayload = 
+    {
         aMessage: "Hello! This is the homepage."
     };
+    var err = null;
+
+    callback(err, bindPayload);
 }
-function __new_bindPayloadFor_array_create(context)
+function __new_bindPayloadFor_array_create(context, callback)
 {
-    var app = context.app;
-    
-    return {
+    var app = context.app;    
+    var bindPayload = 
+    {
         aMessage: "Hello! This is the create array page."
     };
+    var err = null;
+
+    callback(err, bindPayload);
 }
-function __new_bindPayloadFor_array_show(context)
+function __new_bindPayloadFor_array_show(context, callback)
 {
-    var app = context.app;
-    
-    return {
+    var app = context.app;    
+    var bindPayload = 
+    {
         arrayTitle: "Cooper Hewitt"
     };
+    var err = null;
+    
+    callback(err, bindPayload);
 }
-function __new_bindPayloadFor_object_show(context)
+function __new_bindPayloadFor_object_show(context, callback)
 {
     var app = context.app;
-    
-    return {
+    var bindPayload = 
+    {
         arrayTitle: "Cooper Hewitt",
         aMessage: "Hello! This is the show object page."
     };
+    var err = null;
+    
+    callback(err, bindPayload);
 }
 //
 //
@@ -76,16 +88,6 @@ constructor.prototype._mountRoutes_monitoring = function()
         res.set('Content-Type', 'text/plain');
         res.status(200).send('ok');
     });
-    app.get('/_ah/start', function(req, res)
-    {
-        res.set('Content-Type', 'text/plain');
-        res.status(200).send('ok');
-    });
-    app.get('/_ah/stop', function(req, res)
-    {
-        res.set('Content-Type', 'text/plain');
-        res.status(200).send('ok');
-    });
 };
 constructor.prototype._mountRoutes_viewEndpoints = function()
 {
@@ -101,8 +103,15 @@ constructor.prototype._mountRoutes_viewEndpoints_homepage = function()
     var app = context.app;
     app.get('/', function(req, res)
     {
-        var bindPayload = __new_bindPayloadFor_homepage(context);
-        res.render('homepage/homepage', bindPayload);
+        __new_bindPayloadFor_homepage(context, function(err, bindPayload)
+        {
+            if (err) {
+                self._renderBindPayloadError(err, req, res);
+                
+                return;
+            }
+            res.render('homepage/homepage', bindPayload);
+        });
     });
 };
 constructor.prototype._mountRoutes_viewEndpoints_array = function()
@@ -112,14 +121,28 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
     var app = context.app;
     app.get('/array/create', function(req, res)
     {
-        var bindPayload = __new_bindPayloadFor_array_create(context);
-        res.render('array/create', bindPayload);
+        __new_bindPayloadFor_array_create(context, function(err, bindPayload) 
+        {
+            if (err) {
+                self._renderBindPayloadError(err, req, res);
+                
+                return;
+            }
+            res.render('array/create', bindPayload);
+        });
     });
 
     app.get('/array', function(req, res)
     {
-        var bindPayload = __new_bindPayloadFor_array_show(context);
-        res.render('array/show', bindPayload);
+        __new_bindPayloadFor_array_show(context, function(err, bindPayload) 
+        {
+            if (err) {
+                self._renderBindPayloadError(err, req, res);
+                
+                return;
+            }
+            res.render('array/show', bindPayload);
+        });
     });
 };
 constructor.prototype._mountRoutes_viewEndpoints_object = function()
@@ -129,9 +152,23 @@ constructor.prototype._mountRoutes_viewEndpoints_object = function()
     var app = context.app;
     app.get('/object', function(req, res)
     {
-        var bindPayload = __new_bindPayloadFor_object_show(context);
-        res.render('object/show', bindPayload);
+        __new_bindPayloadFor_object_show(context, function(err, bindPayload)
+        {
+            if (err) {
+                self._renderBindPayloadError(err, req, res);
+                
+                return;
+            }
+            res.render('object/show', bindPayload);
+        });
     });
+};
+constructor.prototype._renderBindPayloadError = function(err, req, res)
+{
+    var self = this;
+    var context = self.context;
+    // TODO: render a view template?
+    res.status(500).send(err.response || 'Internal Server Error');
 };
 constructor.prototype._mountRoutes_JSONAPI = function()
 {
