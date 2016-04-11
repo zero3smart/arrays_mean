@@ -28,25 +28,10 @@ function __new_bindDataFor_array_create(context, callback)
 }
 function __new_bindDataFor_array_gallery(context, urlQuery, callback)
 {                                                 // ^ already validated to have source_key
-    var parameters =
-    {
-        source_pKey: urlQuery.source_key,
-        //
-        pageNumber: urlQuery.page ? urlQuery.page : 1,
-        pageSize: context.API_data_preparation_controller.PageSize(), // not configurable by url
-        //
-        sortByColumnName: urlQuery.sortBy ? urlQuery.sortBy : "Object Title",
-        sortDirection: urlQuery.sortDir ? urlQuery.sortDir == 'Ascending' ? 1 : -1 : 1,
-        //
-        filterColumn: urlQuery.filterCol, // if undefined, not filtered
-        filterValue: urlQuery.filterVal,
-        //
-        searchQueryString: urlQuery.searchQ, // if undefined or "", no search active
-        searchValuesOfColumn: urlQuery.searchCol 
-    };
-    context.API_data_preparation_controller.BindDataFor_array_gallery(parameters, function(err, bindData)
+    context.API_data_preparation_controller.BindDataFor_array_gallery(urlQuery, function(err, bindData)
     {
         if (err) {
+            winston.error("❌  Error getting bind data for Array gallery: ", err)
             callback(err, null);
             
             return;

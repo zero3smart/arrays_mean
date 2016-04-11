@@ -68,39 +68,59 @@ constructor.prototype.BindDataFor_datasetsListing = function(callback)
 //
 constructor.prototype.PageSize = function() { return pageSize; };
 //
-constructor.prototype.BindDataFor_array_gallery = function(parameters, callback)
+constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
 {
     var self = this;
-    var source_pKey = parameters.source_pKey; 
-    if (typeof source_pKey === 'undefined') {
-        callback(new Error('source_pKey undefined but required'), null);
-        
-        return;
-    }
+    // urlQuery keys:
+        // source_key
+        // page
+        // sortBy
+        // sortDir
+        // filterCol
+        // filterVal
+        // searchQ
+        // searchCol
+    var source_pKey = urlQuery.source_key;
     var dataSourceDescription = self._dataSourceDescriptionWithPKey(source_pKey);
-    console.log("dataSourceDescription" , dataSourceDescription)
-    //
     var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
-    var pageSize = parameters.pageSize || pageSize;
-    var pageNumber = parameters.pageNumber;
+    var pageNumber = urlQuery.page ? urlQuery.page : 1;
     var skipNResults = pageSize * (Math.max(pageNumber, 1) - 1);
     var limitToNResults = pageSize;
     //
-    // TODO:
-    // use _realColumnNameFromHumanReadableColumnName
-    // sortByColumnName: urlQuery.sortBy ? urlQuery.sortBy : "Object Title",
-    // sortDirection: urlQuery.sortDir ? urlQuery.sortDir == 'Ascending' ? 1 : -1 : 1,
+    var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
+    var sortDir = urlQuery.sortDir;
+    var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
     //
-    // filterColumn: urlQuery.filterCol, // if undefined, not filtered
-    // filterValue: urlQuery.filterVal,
+    var filterCol = urlQuery.filterCol;
+    var filterVal = urlQuery.filterVal;
+    var isFilterActive = typeof filterCol !== 'undefined' && filterCol != null && filterCol != "";
     //
-    // searchQueryString: urlQuery.searchQ, // if undefined or "", no search active
-    // searchValuesOfColumn: urlQuery.searchCol
-    //
+    var searchCol = urlQuery.searchCol;
+    var searchQ = urlQuery.searchQ;
+    var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
+                      && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
     //
     var wholeFilteredSet_aggregationOperators = [];
+    if (isSearchActive) { // Search must occur as the first pipeline stage or Mongo will error
+        // NOTE: A text index is required for this not to error. Currently, it must be created manually as
+        // indexes created dynamically are not yet guaranteed to have been built according to code written so far,
+        // and building such indexes dynamically is very unperformant
+        var realColumnName_path = "rowParams." + self._realColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
+        var matchOp = {};
+        matchOp["$match"] = {};
+        matchOp["$match"]["$text"] = {};
+        matchOp["$match"]["$text"]["$search"] = searchQ;
+        wholeFilteredSet_aggregationOperators.push(matchOp);
+    }
+    if (isFilterActive) { // rules out undefined filterCol
+        var realColumnName_path = "rowParams." + self._realColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
+        var matchOp = {};
+        matchOp["$match"] = {};
+        matchOp["$match"][realColumnName_path] = filterVal;
+        wholeFilteredSet_aggregationOperators.push(matchOp);
+    }
     //
     // Now kick off the query work
     _proceedTo_countWholeSet();
@@ -133,7 +153,11 @@ constructor.prototype.BindDataFor_array_gallery = function(parameters, callback)
     }
     function _proceedTo_obtainPagedDocs(nonpagedCount)
     {
+        var sortBy_realColumnName = self._realColumnNameFromHumanReadableColumnName(sortBy ? sortBy : humanReadableColumnName_objectTitle, dataSourceDescription);
         var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
+            // Sort (before pagination):
+            
+            //
             // Pagination:
             {
                 $skip: skipNResults
@@ -141,7 +165,6 @@ constructor.prototype.BindDataFor_array_gallery = function(parameters, callback)
             {
                 $limit: limitToNResults
             }
-            //
         ]);
         var pagedDocs_doneFn = function(err, docs)
         {
@@ -163,12 +186,28 @@ constructor.prototype.BindDataFor_array_gallery = function(parameters, callback)
         var hasThumbs = dataSourceDescription.fe_designatedFields.gridThumbImageURL ? true : false;
         var data =
         {
-            pageSize: pageSize,
+            pageSize: pageSize < nonpagedCount ? pageSize : nonpagedCount,
+            onPageNum: pageNumber,
+            numPages: Math.ceil(nonpagedCount / pageSize),
             nonpagedCount: nonpagedCount,
+            //
             docs: docs,
+            //
             fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
+            //
             hasThumbs: hasThumbs,
-            fieldKey_gridThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.gridThumbImageURL : undefined
+            fieldKey_gridThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.gridThumbImageURL : undefined,
+            //
+            sortBy: sortBy,
+            sortDir: sortDir,
+            //
+            filterCol: filterCol,
+            filterVal: filterVal,
+            isFilterActive: isFilterActive,
+            //
+            searchQ: searchQ,
+            searchCol: searchCol,
+            isSearchActive: isSearchActive            
         };
         callback(err, data);
     }
