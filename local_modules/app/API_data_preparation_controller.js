@@ -39,7 +39,7 @@ constructor.prototype._init = function()
 ////////////////////////////////////////////////////////////////////////////////
 // Controller - Accessors - Public
 //
-constructor.prototype.DataFor_datasetsListing = function(callback)
+constructor.prototype.BindDataFor_datasetsListing = function(callback)
 {
     var self = this;
     var iterateeFn = async.ensureAsync(function(dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
@@ -68,7 +68,7 @@ constructor.prototype.DataFor_datasetsListing = function(callback)
 //
 constructor.prototype.PageSize = function() { return pageSize; };
 //
-constructor.prototype.DataFor_array_gallery = function(parameters, callback)
+constructor.prototype.BindDataFor_array_gallery = function(parameters, callback)
 {
     var self = this;
     var source_pKey = parameters.source_pKey; 
@@ -78,7 +78,7 @@ constructor.prototype.DataFor_array_gallery = function(parameters, callback)
         return;
     }
     var dataSourceDescription = self._dataSourceDescriptionWithPKey(source_pKey);
-    console.log("dataSourceDescription " ,dataSourceDescription)
+    console.log("dataSourceDescription" , dataSourceDescription)
     //
     var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
@@ -99,34 +99,79 @@ constructor.prototype.DataFor_array_gallery = function(parameters, callback)
     // searchQueryString: urlQuery.searchQ, // if undefined or "", no search active
     // searchValuesOfColumn: urlQuery.searchCol
     //
-    var aggregationOperators = 
-    [
-        // Pagination:
-        {
-            $skip: skipNResults
-        },
-        {
-            $limit: limitToNResults
-        }
-        //
-    ];
-    var doneFn = function(err, docs)
+    //
+    var wholeFilteredSet_aggregationOperators = [];
+    //
+    // Now kick off the query work
+    _proceedTo_countWholeSet();
+    function _proceedTo_countWholeSet()
     {
-        if (err) {
-            callback(err, null);
+        var countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
+            { // Count
+                $group: {
+                    _id: 1,
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+        var countWhole_doneFn = function(err, results)
+        {
+            if (err) {
+                callback(err, null);
             
-            return;
-        }
-        if (docs == undefined || docs == null || docs.length == 0) {
-            docs = [];
-        }
+                return;
+            }
+            var nonpagedCount = 0;
+            if (results == undefined || results == null || results.length == 0) {
+                // 0
+            } else {
+                nonpagedCount = results[0].count;
+            }
+            _proceedTo_obtainPagedDocs(nonpagedCount);
+        };
+        processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).exec(countWhole_doneFn);
+    }
+    function _proceedTo_obtainPagedDocs(nonpagedCount)
+    {
+        var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
+            // Pagination:
+            {
+                $skip: skipNResults
+            },
+            {
+                $limit: limitToNResults
+            }
+            //
+        ]);
+        var pagedDocs_doneFn = function(err, docs)
+        {
+            if (err) {
+                callback(err, null);
+            
+                return;
+            }
+            if (docs == undefined || docs == null || docs.length == 0) {
+                docs = [];
+            }
+            _prepareDataAndCallBack(nonpagedCount, docs);
+        };
+        processedRowObjects_mongooseModel.aggregate(pagedDocs_aggregationOperators).exec(pagedDocs_doneFn);
+    }
+    function _prepareDataAndCallBack(nonpagedCount, docs)
+    {
+        var err = null;
+        var hasThumbs = dataSourceDescription.fe_designatedFields.gridThumbImageURL ? true : false;
         var data =
         {
-            docs: docs
+            pageSize: pageSize,
+            nonpagedCount: nonpagedCount,
+            docs: docs,
+            fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
+            hasThumbs: hasThumbs,
+            fieldKey_gridThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.gridThumbImageURL : undefined
         };
         callback(err, data);
-    };
-    processedRowObjects_mongooseModel.aggregate(aggregationOperators).exec(doneFn);
+    }
 };
 //
 //

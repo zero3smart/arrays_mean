@@ -43,151 +43,21 @@
                         <div class="col-sm-12">
 
                             <div class="filter-count">
-                                <span>{{ 250 | comma }} of {{ 1028 | comma }} Relevant Items</span>
+                                <span>{{ pageSize | comma }} of {{ nonpagedCount | comma }} Relevant Items</span>
                             </div>
 
                             <div class="gallery">
                                 <ul class="gallery-grid">
-
+                                    {% for doc in docs %}
                                     <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
+                                        <a href="/object/{{ doc.srcDocPKey }}/{{ doc._id }}">
+                                            <img src="{{ doc.rowParams[fieldKey_gridThumbImageURL] if hasThumbs else "http://placehold.it/180x180" }}" class="gallery-image" />
                                             <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
+                                                <h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] }}</h2>
                                             </div>
                                         </a>
                                     </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="gallery-item">
-                                        <a href="/object">
-                                            <img src="http://placehold.it/180x180" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">Yale University, School of Art Graduate Program: 1989–1990</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-
+                                    {% endfor %}
                                 </ul>
                             </div><!-- .gallery -->
 

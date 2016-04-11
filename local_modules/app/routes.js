@@ -4,36 +4,29 @@ var url = require('url');
 //
 // Template rendering dummy bind data factory functions
 // 
-function __new_bindPayloadFor_homepage(context, callback)
+function __new_bindDataFor_homepage(context, callback)
 {
-    var bindPayload = 
+    var bindData = 
     {
         aMessage: "Hello! This is the homepage."
     };
     var err = null;
 
-    callback(err, bindPayload);
+    callback(err, bindData);
 }
-function __new_bindPayloadFor_array_create(context, callback)
+function __new_bindDataFor_array_create(context, callback)
 {
-    context.API_data_preparation_controller.DataFor_datasetsListing(function(err, data)
+    context.API_data_preparation_controller.BindDataFor_datasetsListing(function(err, bindData)
     {
         if (err) {
             callback(err, null);
             
             return;
         }
-        // The data is unpacked redundantly here not only to give the chance to add
-        // additional data, but also so as to guard against hidden breakage in case
-        // the return value of DataFor_datasetsListing changes:
-        var bindPayload = 
-        {
-            sources: data.sources
-        };
-        callback(null, bindPayload);
+        callback(null, bindData);
     });
 }
-function __new_bindPayloadFor_array_gallery(context, urlQuery, callback)
+function __new_bindDataFor_array_gallery(context, urlQuery, callback)
 {                                                 // ^ already validated to have source_key
     var parameters =
     {
@@ -51,30 +44,26 @@ function __new_bindPayloadFor_array_gallery(context, urlQuery, callback)
         searchQueryString: urlQuery.searchQ, // if undefined or "", no search active
         searchValuesOfColumn: urlQuery.searchCol 
     };
-    context.API_data_preparation_controller.DataFor_array_gallery(parameters, function(err, data)
+    context.API_data_preparation_controller.BindDataFor_array_gallery(parameters, function(err, bindData)
     {
         if (err) {
             callback(err, null);
             
             return;
         }
-        var bindPayload = 
-        {
-            docs: data.docs
-        };
-        callback(null, bindPayload);
+        callback(null, bindData);
     });
 }
-function __new_bindPayloadFor_object_show(context, callback)
+function __new_bindDataFor_object_show(context, callback)
 {
-    var bindPayload = 
+    var bindData = 
     {
         arrayTitle: "Cooper Hewitt",
         aMessage: "Hello! This is the show object page."
     };
     var err = null;
     
-    callback(err, bindPayload);
+    callback(err, bindData);
 }
 //
 //
@@ -131,14 +120,14 @@ constructor.prototype._mountRoutes_viewEndpoints_homepage = function()
     var app = context.app;
     app.get('/', function(req, res)
     {
-        __new_bindPayloadFor_homepage(context, function(err, bindPayload)
+        __new_bindDataFor_homepage(context, function(err, bindData)
         {
             if (err) {
-                self._renderBindPayloadError(err, req, res);
+                self._renderBindDataError(err, req, res);
                 
                 return;
             }
-            res.render('homepage/homepage', bindPayload);
+            res.render('homepage/homepage', bindData);
         });
     });
 };
@@ -149,14 +138,14 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
     var app = context.app;
     app.get('/array/create', function(req, res)
     {
-        __new_bindPayloadFor_array_create(context, function(err, bindPayload) 
+        __new_bindDataFor_array_create(context, function(err, bindData) 
         {
             if (err) {
-                self._renderBindPayloadError(err, req, res);
+                self._renderBindDataError(err, req, res);
                 
                 return;
             }
-            res.render('array/create', bindPayload);
+            res.render('array/create', bindData);
         });
     });
     app.get('/array/gallery', function(req, res)
@@ -169,38 +158,38 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
             
             return;
         }        
-        __new_bindPayloadFor_array_gallery(context, query, function(err, bindPayload) 
+        __new_bindDataFor_array_gallery(context, query, function(err, bindData) 
         {
             if (err) {
-                self._renderBindPayloadError(err, req, res);
+                self._renderBindDataError(err, req, res);
                 
                 return;
             }
-            res.render('array/gallery', bindPayload);
+            res.render('array/gallery', bindData);
         });
     });
     app.get('/array/chart', function(req, res)
     {
-        __new_bindPayloadFor_array_chart(context, function(err, bindPayload) 
+        __new_bindDataFor_array_chart(context, function(err, bindData) 
         {
             if (err) {
-                self._renderBindPayloadError(err, req, res);
+                self._renderBindDataError(err, req, res);
                 
                 return;
             }
-            res.render('array/chart', bindPayload);
+            res.render('array/chart', bindData);
         });
     });
     app.get('/array/heatmap', function(req, res)
     {
-        __new_bindPayloadFor_array_heatmap(context, function(err, bindPayload) 
+        __new_bindDataFor_array_heatmap(context, function(err, bindData) 
         {
             if (err) {
-                self._renderBindPayloadError(err, req, res);
+                self._renderBindDataError(err, req, res);
                 
                 return;
             }
-            res.render('array/gallery', bindPayload);
+            res.render('array/gallery', bindData);
         });
     });
 };
@@ -211,18 +200,18 @@ constructor.prototype._mountRoutes_viewEndpoints_object = function()
     var app = context.app;
     app.get('/object', function(req, res)
     {
-        __new_bindPayloadFor_object_show(context, function(err, bindPayload)
+        __new_bindDataFor_object_show(context, function(err, bindData)
         {
             if (err) {
-                self._renderBindPayloadError(err, req, res);
+                self._renderBindDataError(err, req, res);
                 
                 return;
             }
-            res.render('object/show', bindPayload);
+            res.render('object/show', bindData);
         });
     });
 };
-constructor.prototype._renderBindPayloadError = function(err, req, res)
+constructor.prototype._renderBindDataError = function(err, req, res)
 {
     var self = this;
     var context = self.context;
