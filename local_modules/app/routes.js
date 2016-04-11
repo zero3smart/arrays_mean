@@ -32,7 +32,7 @@ function __new_bindPayloadFor_array_create(context, callback)
         callback(null, bindPayload);
     });
 }
-function __new_bindPayloadFor_array_show(context, callback)
+function __new_bindPayloadFor_array_gallery(context, callback)
 {
     var bindPayload = 
     {
@@ -136,17 +136,40 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
             res.render('array/create', bindPayload);
         });
     });
-
-    app.get('/array', function(req, res)
+    app.get('/array/gallery', function(req, res)
     {
-        __new_bindPayloadFor_array_show(context, function(err, bindPayload) 
+        __new_bindPayloadFor_array_gallery(context, function(err, bindPayload) 
         {
             if (err) {
                 self._renderBindPayloadError(err, req, res);
                 
                 return;
             }
-            res.render('array/show', bindPayload);
+            res.render('array/gallery', bindPayload);
+        });
+    });
+    app.get('/array/chart', function(req, res)
+    {
+        __new_bindPayloadFor_array_chart(context, function(err, bindPayload) 
+        {
+            if (err) {
+                self._renderBindPayloadError(err, req, res);
+                
+                return;
+            }
+            res.render('array/chart', bindPayload);
+        });
+    });
+    app.get('/array/heatmap', function(req, res)
+    {
+        __new_bindPayloadFor_array_heatmap(context, function(err, bindPayload) 
+        {
+            if (err) {
+                self._renderBindPayloadError(err, req, res);
+                
+                return;
+            }
+            res.render('array/gallery', bindPayload);
         });
     });
 };
