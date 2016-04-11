@@ -2,11 +2,11 @@
 //
 //
 var mongoose = require('mongoose');
-const winston = require('winston');
+var winston = require('winston');
 //
-const dbName = process.env.MONGODB_DBNAME;
-const developmentDBURI = 'mongodb://localhost/' + dbName;
-const productionDBURI = 'mongodb://' + process.env.MONGODB_PROD_DBUSERNAME 
+var dbName = process.env.MONGODB_DBNAME;
+var developmentDBURI = 'mongodb://localhost/' + dbName;
+var productionDBURI = 'mongodb://' + process.env.MONGODB_PROD_DBUSERNAME 
                         + ':' + process.env.MONGODB_PROD_DBUSERNAMEPW 
                         + '@' + process.env.MONGODB_PROD_CLUSTERURLS + '/' 
                         + dbName 

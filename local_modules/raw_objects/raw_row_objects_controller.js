@@ -1,5 +1,5 @@
-const async = require('async');
-const winston = require('winston');
+var async = require('async');
+var winston = require('winston');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,9 +32,9 @@ constructor.prototype.New_templateForPersistableObject = function(rowObject_prim
     };
 }
 //
-const mongoose_client = require('../mongoose_client/mongoose_client');
-const mongoose = mongoose_client.mongoose;
-const Schema = mongoose.Schema;
+var mongoose_client = require('../mongoose_client/mongoose_client');
+var mongoose = mongoose_client.mongoose;
+var Schema = mongoose.Schema;
 //
 //
 constructor.prototype.New_RowObjectsModelName = function(srcDocPKey)

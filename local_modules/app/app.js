@@ -3,9 +3,9 @@
 // Initialize application object for context
 //
 require('dotenv').config();
-const path = require('path');
-const express = require('express');
-const winston = require('winston');
+var path = require('path');
+var express = require('express');
+var winston = require('winston');
 var app = express();
 //
 //
@@ -19,7 +19,7 @@ module.exports = context; // access app at context.app
 //
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
-const nunjucks = require('express-nunjucks');
+var nunjucks = require('express-nunjucks');
 nunjucks.setup({
     // (default: true) controls if output with dangerous characters are escaped automatically.
     autoescape: true,
@@ -39,16 +39,16 @@ nunjucks.setup({
 app.use(context.logging.requestLogger);
 app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
 app.use(express.static(path.join(__dirname, '/public')));
-const bodyParser = require('body-parser');
+var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false })); // application/x-www-form-urlencoded
 app.use(bodyParser.json()); // application/JSON
 app.use(require('compression')());
 app.set('trust proxy', true);
-const helmet = require('helmet');
+var helmet = require('helmet');
 app.use(helmet.xframe());
 //
 //
-const mongoose_client = require('../mongoose_client/mongoose_client');
+var mongoose_client = require('../mongoose_client/mongoose_client');
 var modelNames = []
 modelNames.push(context.raw_source_documents_controller.ModelName)
 mongoose_client.FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed(modelNames)

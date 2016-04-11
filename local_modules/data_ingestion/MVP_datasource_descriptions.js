@@ -1,6 +1,6 @@
 //
-const import_datatypes = require('./import_datatypes');
-const import_processing = require('./import_processing');
+var import_datatypes = require('./import_datatypes');
+var import_processing = require('./import_processing');
 //
 //
 exports.Descriptions = 

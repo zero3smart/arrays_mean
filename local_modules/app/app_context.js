@@ -20,6 +20,11 @@ var context_object_instantiation_descriptions =
         module_path: __dirname + "/../raw_objects/raw_row_objects_controller",
         instance_key: "raw_row_objects_controller",
         options: {}
+    },
+    {
+        module_path: __dirname + "/API_data_preparation_controller",
+        instance_key: "API_data_preparation_controller",
+        options: {}
     }
 ];
 function NewHydratedContext(app) 

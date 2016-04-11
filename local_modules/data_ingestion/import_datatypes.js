@@ -74,7 +74,7 @@ var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private fo
             return undefined;
         }
         // Instantiate and configure fresh moment module
-        var moment = require("moment"); // note, var not const as we're potentially replacing the parse two digit year method here every time
+        var moment = require("moment"); // note, var not var as we're potentially replacing the parse two digit year method here every time
         var replacement_parseTwoDigitYear_fn = options.replacement_parseTwoDigitYear_fn;
         if (replacement_parseTwoDigitYear_fn != null && typeof replacement_parseTwoDigitYear_fn !== 'undefined') {
             moment.parseTwoDigitYear = replacement_parseTwoDigitYear_fn;

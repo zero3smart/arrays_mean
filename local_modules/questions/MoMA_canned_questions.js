@@ -2,7 +2,7 @@
 //
 require('dotenv').config();
 //
-const asker = require('./MoMA_canned_questions_asker');
+var asker = require('./MoMA_canned_questions_asker');
 asker.Ask(function(err, results)
 {
     if (err) {

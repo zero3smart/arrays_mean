@@ -1,4 +1,4 @@
-const winston = require('winston');
+var winston = require('winston');
 //
 //
 // Template rendering dummy bind data factory functions
@@ -149,7 +149,7 @@ constructor.prototype._mountRoutes_JSONAPI__DEBUG_cannedQuestions_MoMA = functio
     var context = self.context;
     var app = context.app;
     //
-    const asker = require('../questions/MoMA_canned_questions_asker');
+    var asker = require('../questions/MoMA_canned_questions_asker');
     //
     app.get(apiURLPrefix + 'DEBUG_MoMA', function(req, res)
     {

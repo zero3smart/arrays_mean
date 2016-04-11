@@ -1,13 +1,13 @@
 //
 //
 // 
-const async = require("async");
-const fs = require('fs');
-const parse = require('csv-parse');
-const winston = require('winston');
+var async = require("async");
+var fs = require('fs');
+var parse = require('csv-parse');
+var winston = require('winston');
 
-const import_datatypes = require('./import_datatypes');
-const import_processing = require('./import_processing');
+var import_datatypes = require('./import_datatypes');
+var import_processing = require('./import_processing');
 //
 //
 //
@@ -135,7 +135,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
 {
     var self = this;
     //
-    const CSV_resources_path_prefix = __dirname + "/resources";
+    var CSV_resources_path_prefix = __dirname + "/resources";
     var filename = csvDescription.filename;
     var revisionNumber = csvDescription.importRevision;
     var importUID = csvDescription.uid;

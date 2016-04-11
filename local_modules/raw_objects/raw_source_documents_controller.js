@@ -1,5 +1,5 @@
-const async = require('async');
-const winston = require('winston');
+var async = require('async');
+var winston = require('winston');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,9 +35,9 @@ constructor.prototype.New_templateForPersistableObject = function(sourceDocument
     }
 };
 //
-const mongoose_client = require('../mongoose_client/mongoose_client');
-const mongoose = mongoose_client.mongoose;
-const Schema = mongoose.Schema;
+var mongoose_client = require('../mongoose_client/mongoose_client');
+var mongoose = mongoose_client.mongoose;
+var Schema = mongoose.Schema;
 //
 var RawSourceDocument_scheme = Schema({
     primaryKey: { type: String, index: true }, // NOTE: This primaryKey is made by NewCustomPrimaryKeyStringWithComponents

@@ -1,6 +1,6 @@
 //
 //
-const moment = require('moment');
+var moment = require('moment');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -12,10 +12,10 @@ var context = require('./canned_questions_context').NewHydratedContext();
 ////////////////////////////////////////////////////////////////////////////////
 // Define constants
 //
-const artistsSrcDocUID = "moma_artists_csv";
-const artistsSrcDocRevNumber = 1;
-const artworksSrcDocUID = "moma_artworks_csv";
-const artworksSrcDocRevNumber = 2;
+var artistsSrcDocUID = "moma_artists_csv";
+var artistsSrcDocRevNumber = 1;
+var artworksSrcDocUID = "moma_artworks_csv";
+var artworksSrcDocRevNumber = 2;
 
 //
 //

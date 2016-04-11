@@ -1,7 +1,7 @@
-const async = require('async');
-const winston = require('winston');
+var async = require('async');
+var winston = require('winston');
 //
-const mongoose_client = require('../mongoose_client/mongoose_client');
+var mongoose_client = require('../mongoose_client/mongoose_client');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////

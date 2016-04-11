@@ -4,11 +4,11 @@
 //
 require('dotenv').config();
 //
-const dataSourceDescriptions = require('./MVP_datasource_descriptions').Descriptions;
+var dataSourceDescriptions = require('./MVP_datasource_descriptions').Descriptions;
 //
 //
 // Set up application runtime object graph
 //
-const context = require('./import_context').NewHydratedContext();
+var context = require('./import_context').NewHydratedContext();
 // And initiate import
 context.import_controller._Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
