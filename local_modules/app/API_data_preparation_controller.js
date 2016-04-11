@@ -207,7 +207,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             //
             searchQ: searchQ,
             searchCol: searchCol,
-            isSearchActive: isSearchActive            
+            isSearchActive: isSearchActive
         };
         callback(err, data);
     }
