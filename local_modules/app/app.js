@@ -1,5 +1,10 @@
 //
 //
+// Constants
+var isDev = process.env.NODE_ENV == 'development' ? true : false;
+//
+//
+//
 // Initialize application object for context
 //
 require('dotenv').config();
@@ -20,22 +25,16 @@ module.exports = context; // access app at context.app
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 var nunjucks = require('express-nunjucks');
-nunjucks.setup({
-    // (default: true) controls if output with dangerous characters are escaped automatically.
-    autoescape: true,
-    // (default: false) throw errors when outputting a null/undefined value.
-    throwOnUndefined: false,
-    // (default: false) automatically remove trailing newlines from a block/tag.
-    trimBlocks: false,
-    // (default: false) automatically remove leading whitespace from a block/tag.
-    lstripBlocks: false,
-    // (default: false) if true, the system will automatically update templates when they are changed on the filesystem.
-    watch: true,
-    // (default: false) if true, the system will avoid using a cache and templates will be recompiled every single time.
-    noCache: true,
-    // (default: see nunjucks syntax) defines the syntax for nunjucks tags.
-    tags: {}
-}, app);
+var nunjucks_config = 
+{
+    watch: isDev,
+    noCache: isDev,
+};
+nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
+{
+    nunjucks_env.addFilter('comma', require('nunjucks-comma-filter'));
+});
+//
 app.use(context.logging.requestLogger);
 app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
 app.use(express.static(path.join(__dirname, '/public')));
@@ -71,7 +70,7 @@ function _mountRoutesAndStartListening()
     // TODO: Integrate SSL/HTTPS
     if (module === require.main) {
         var server = app.listen(process.env.PORT || 9080, function () {
-            var host = process.env.NODE_ENV == 'development' ? 'localhost' : server.address().address;
+            var host = isDev ? 'localhost' : server.address().address;
             var port = server.address().port;
             winston.info('📡  App listening at http://%s:%s', host, port);
         });
