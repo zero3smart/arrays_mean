@@ -81,14 +81,15 @@ module.exports = function(grunt) {
         files : ['local_modules/app/public/stylesheets/**/*.css', '!local_modules/app/public/stylesheets/style.min.css'],
         options : {
           livereload : true
-        }
+        },
+        tasks: ['postcss']
       },
       sass: {
         files: ['local_modules/app/public/stylesheets/scss/**/*.scss'],
         options: {
           livereload: true
         },
-        tasks: ['sass']
+        tasks: ['sass', 'postcss']
       },
       js : {
         files : ['local_modules/app/public/javascripts/**/*.js', '!local_modules/app/public/javascripts/main.min.js', '!local_modules/app/public/javascripts/lib/**/*.js'],
@@ -108,7 +109,38 @@ module.exports = function(grunt) {
       //   files: '<%= jshint.lib_test.src %>',
       //   tasks: ['jshint:lib_test', 'nodeunit']
       // }
-    }
+    },
+
+    postcss: {
+      options: {
+        map: true,
+        processors: [
+          require('postcss-import')({
+            path: ["resources"]
+          }),
+          require('postcss-custom-properties')({
+            //
+          }),
+          // require('postcss-opacity')(),
+          // require('pleeease-filters')(),
+          // require('css-mqpacker')(),
+          require('autoprefixer')({
+            browsers: ['> 1%', 'IE 9', 'IE 10', 'IE 11'],
+            remove: false
+          }),
+          // require('cssnano')({
+          //   autoprefixer: false,
+          //   reduceTransforms: false,
+          //   discardUnused: false,
+          //   zindex: false
+          // })
+        ]
+      },
+      dist: {
+        src: 'local_modules/app/public/stylesheets/style.css',
+        dest: 'local_modules/app/public/stylesheets/style.min.css'
+      }
+    },
   });
 
   // These plugins provide necessary tasks.
@@ -117,8 +149,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-postcss');
 
   // Default task.
   grunt.registerTask('default', ['jshint']);
+  grunt.registerTask('build', ['sass', 'postcss']);
 
 };

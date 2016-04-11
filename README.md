@@ -52,7 +52,20 @@
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
 2. Execute `npm install`
 
-##### IV. Creating your `.env` file
+##### IV. Building the front-end CSS files
+
+###### 1. Install `bower_components` in the 'develop' bower.json
+
+1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
+2. Execute `bower install`
+
+###### 2. Run the Grunt tasks
+
+1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
+2. Execute `grunt build` to rebuild the main CSS file, style.min.css
+3. Execute `grunt watch` to start LiveReload which will rebuild the css and reload the page whenever a CSS, HTML, or JS file is saved
+
+##### V. Creating your `.env` file
 
 Environment-related secrets such as the production password database are not committed to this repository as a security-related best practice.
 
@@ -60,7 +73,7 @@ In order to add them you need to create a file named ".env" in the root director
 
 [Arrays - Server - .env](https://docs.google.com/document/d/1d1IoAHgGPB4bwWGaYprtBFSVoLEcoEuw4WdruUt-v9k/)
 
-###### V. (Not necessary as of this edit) Installing git submodules
+###### VI. (Not necessary as of this edit) Installing git submodules
 
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
 2. Execute `git submodule init` and then `git submodule update`.
