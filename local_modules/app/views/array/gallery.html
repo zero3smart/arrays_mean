@@ -34,10 +34,11 @@
                     </div><!-- .form-group -->
                 </nav>
 
+            {% if isFilterActive %}
                 <div class="filter-bar">
-                    <span class="filter-tag">Unique Value 4 <a href="#" class="close filter-tag-close">&times;</a></span>
+                    <span class="filter-tag">{{ filterVal | safe }} <a href="{{ routePath_withoutFilter }}" class="close filter-tag-close">&times;</a></span>
                 </div>
-
+            {% endif %}
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-12">

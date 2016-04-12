@@ -144,10 +144,9 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         var limitOp = { $project: { } };
         for (var i = 0 ; i < feVisible_keys_length ; i++) {
             var key = feVisible_keys[i];
-            var pluralKey = key + "s";
             var keyPath = "rowParams." + key; 
-            uniqueOp["$group"][pluralKey] = { $addToSet: "$" + keyPath };
-            limitOp["$project"][pluralKey] = { $slice: [ "$" + pluralKey, 0, 10 ] };
+            uniqueOp["$group"][key] = { $addToSet: "$" + keyPath };
+            limitOp["$project"][key] = { $slice: [ "$" + key, 0, 10 ] };
         }
         var uniqueFieldValues_aggregationOperators = 
         [
@@ -232,6 +231,35 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     {
         var err = null;
         var hasThumbs = dataSourceDescription.fe_designatedFields.gridThumbImageURL ? true : false;
+        var routePath_base = "/array/" + source_pKey + "/gallery";
+        var routePath_withoutFilter = routePath_base;
+        var routePath_withoutSearch = routePath_base;
+        if (sortBy !== undefined && sortBy != null && sortBy !== "") {
+            routePath_withoutFilter = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,
+                                                                                        "sortBy=" + sortBy,
+                                                                                        routePath_base);
+            routePath_withoutSearch = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,
+                                                                                        "sortBy=" + sortBy,
+                                                                                        routePath_base);
+        }
+        if (sortDir !== undefined && sortDir != null && sortDir !== "") {
+            routePath_withoutFilter = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,
+                                                                                        "sortDir=" + sortDir,
+                                                                                        routePath_base);
+            routePath_withoutSearch = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,
+                                                                                        "sortDir=" + sortDir,
+                                                                                        routePath_base);
+        }
+        if (isFilterActive) {
+            routePath_withoutSearch = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,
+                                                                                        "filterCol=" + filterCol + "&" + "filterVal=" + filterVal,
+                                                                                        routePath_base);
+        }
+        if (isSearchActive) {
+            routePath_withoutFilter = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,
+                                                                                        "searchCol=" + searchCol + "&" + "searchQ=" + searchQ,
+                                                                                        routePath_base);
+        }
         var data =
         {
             pageSize: pageSize < nonpagedCount ? pageSize : nonpagedCount,
@@ -258,9 +286,22 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             searchCol: searchCol,
             isSearchActive: isSearchActive,
             //
-            columnNames_humanReadable: self._humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleDoc, dataSourceDescription)
+            routePath_base: routePath_base,
+            routePath_withoutFilter: routePath_withoutFilter,
+            routePath_withoutSearch: routePath_withoutSearch
         };
         callback(err, data);
+    }
+    function _routePathByAppendingQueryStringToVariationOfBase(routePath_variation, queryString, routePath_base)
+    {
+        if (routePath_variation === routePath_base) {
+            routePath_variation += "?";
+        } else {
+            routePath_variation += "&";
+        }
+        routePath_variation += queryString;
+        
+        return routePath_variation;
     }
 };
 //

@@ -1,68 +1,31 @@
 <nav id="accordion" class="sidebar-filter" role="navigation" aria-multiselectable="true">
 	<ul class="sidebar-filter-group">
+        {% for fieldName, fieldValues in uniqueFieldValuesByFieldName %}
 		<li class="sidebar-filter-group-item">
-			<a class="collapse-trigger" role="button" href="#column-a" aria-expanded="false" aria-controls="column-a">Column A</a>
+			<a class="collapse-trigger" role="button" href="#column-a" aria-expanded="false" aria-controls="column-a">
+                {{ fieldName }}
+            </a>
 			<ul id="column-a" class="sidebar-filter-subgroup collapse">
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 1</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 2</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 3</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 4</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 5</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 6</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 7</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 8</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 9</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 10</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Other</a></li>
+                {% for fieldValue in fieldValues %}
+                {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
+                {% set isThisTheActiveFilter = false %}
+                {% if isFilterActive %}
+                    {% if fieldName == filterCol %}
+                        {% if fieldValue == filterVal %}
+                            {% set isThisTheActiveFilter = true %}
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+				<li class="sidebar-filter-subgroup-item">
+                    <a href="{{ routePath_withoutFilter }}{{ queryParamJoinChar }}filterCol={{ fieldName }}&filterVal={{ fieldValue }}"
+                        {{ "class=sidebar-filter-active" if isThisTheActiveFilter else "" }}
+                    >
+                        {{ fieldValue }}
+                    </a>
+                </li>
+                {% endfor %}
 			</ul>
 		</li>
-		<li class="sidebar-filter-group-item">
-			<a class="collapse-trigger" role="button" href="#column-b" aria-expanded="false" aria-controls="column-b">Column B</a>
-			<ul id="column-b" class="sidebar-filter-subgroup collapse">
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 1</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 2</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 3</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 4</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 5</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 6</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 7</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 8</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 9</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 10</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Other</a></li>
-			</ul>
-		</li>
-		<li class="sidebar-filter-group-item">
-			<a class="collapse-trigger" role="button" href="#column-c" aria-expanded="false" aria-controls="column-c">Column C</a>
-			<ul id="column-c" class="sidebar-filter-subgroup collapse">
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 1</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 2</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 3</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 4</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 5</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 6</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 7</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 8</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 9</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 10</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Other</a></li>
-			</ul>
-		</li>
-		<li class="sidebar-filter-group-item">
-			<a class="collapse-trigger" role="button" href="#column-d" aria-expanded="false" aria-controls="column-d">Column D</a>
-			<ul id="column-d" class="sidebar-filter-subgroup collapse">
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 1</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 2</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 3</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 4</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 5</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 6</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 7</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 8</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 9</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Unique Value 10</a></li>
-				<li class="sidebar-filter-subgroup-item"><a href="">Other</a></li>
-			</ul>
-		</li>
+        {% endfor %}
 	</ul>
 </nav>
