@@ -262,6 +262,9 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         }
         var data =
         {
+            arrayTitle: dataSourceDescription.title,
+            array_source_key: source_pKey,
+            //
             pageSize: pageSize < nonpagedCount ? pageSize : nonpagedCount,
             onPageNum: pageNumber,
             numPages: Math.ceil(nonpagedCount / pageSize),
@@ -304,6 +307,63 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         return routePath_variation;
     }
 };
+//
+constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, rowObject_id, callback)
+{
+    var self = this;
+    var dataSourceDescription = self._dataSourceDescriptionWithPKey(source_pKey);
+    var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+    var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
+    var query =
+    {
+        _id: rowObject_id,
+        srcDocPKey: source_pKey
+    };
+    processedRowObjects_mongooseModel.findOne(query, function(err, rowObject)
+    {
+        if (err) {
+            callback(err, null);
+        
+            return;
+        }
+        if (rowObject == null) {
+            callback(null, null);
+            
+            return;
+        }
+        var colNames_sansObjectTitle = self._humanReadableFEVisibleColumnNamesWithSampleRowObject(rowObject, dataSourceDescription);
+        // ^ to finalize:
+        var idxOf_objTitle = colNames_sansObjectTitle.indexOf(humanReadableColumnName_objectTitle);
+        colNames_sansObjectTitle.splice(idxOf_objTitle, 1);
+        //
+        var alphaSorted_colNames_sansObjectTitle = colNames_sansObjectTitle.sort();
+        
+        var designatedOriginalImageField = dataSourceDescription.fe_designatedFields.originalImageURL;
+        var hasDesignatedOriginalImageField = designatedOriginalImageField ? true : false;
+        var rowObjectHasOriginalImage = false;
+        if (hasDesignatedOriginalImageField) {
+            var valueAtOriginalImageField = rowObject.rowParams[designatedOriginalImageField];
+            if (typeof valueAtOriginalImageField !== 'undefined' && valueAtOriginalImageField != null && valueAtOriginalImageField != "") {
+                rowObjectHasOriginalImage = true;
+            }
+        }
+        var data =
+        {
+            arrayTitle: dataSourceDescription.title,
+            array_source_key: source_pKey,
+            //
+            rowObject: rowObject,
+            //
+            fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
+            //
+            fieldKey_originalImageURL: hasDesignatedOriginalImageField ? designatedOriginalImageField : undefined,
+            hasOriginalImage: rowObjectHasOriginalImage,
+            //
+            ordered_colNames_sansObjectTitleAndImages: alphaSorted_colNames_sansObjectTitle
+        };
+        callback(null, data);
+    });
+}
 //
 //
 ////////////////////////////////////////////////////////////////////////////////

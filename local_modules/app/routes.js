@@ -39,16 +39,18 @@ function __new_bindDataFor_array_gallery(context, urlQuery, callback)
         callback(null, bindData);
     });
 }
-function __new_bindDataFor_object_show(context, callback)
+function __new_bindDataFor_object_show(context, source_key, object_id, callback)
 {
-    var bindData = 
+    context.API_data_preparation_controller.BindDataFor_array_objectDetails(source_key, object_id, function(err, bindData) 
     {
-        arrayTitle: "Cooper Hewitt",
-        aMessage: "Hello! This is the show object page."
-    };
-    var err = null;
-    
-    callback(err, bindData);
+        if (err) {
+            winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err)
+            callback(err, null);
+            
+            return;
+        }    
+        callback(null, bindData);
+    });
 }
 //
 //
@@ -216,10 +218,15 @@ constructor.prototype._mountRoutes_viewEndpoints_object = function()
             
             return;
         }        
-        __new_bindDataFor_object_show(context, function(err, bindData)
+        __new_bindDataFor_object_show(context, source_key, object_id, function(err, bindData)
         {
             if (err) {
                 self._renderBindDataError(err, req, res);
+                
+                return;
+            }
+            if (bindData == null) { // 404
+                self._renderNotFound(err, req, res);
                 
                 return;
             }
@@ -233,6 +240,13 @@ constructor.prototype._renderBindDataError = function(err, req, res)
     var context = self.context;
     // TODO: render a view template?
     res.status(500).send(err.response || 'Internal Server Error');
+};
+constructor.prototype._renderNotFound = function(err, req, res)
+{
+    var self = this;
+    var context = self.context;
+    // TODO: render a view template?
+    res.status(404).send(err.response || 'Not Found');
 };
 constructor.prototype._mountRoutes_JSONAPI = function()
 {

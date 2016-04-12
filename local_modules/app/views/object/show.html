@@ -20,31 +20,17 @@
 
                             <article id="object-id" class="object">
                                 <header class="object-header">
-                                    <img src="http://placehold.it/810x496" class="object-featured img-responsive" />
-                                    <h1 class="object-title">Yale University, School of Art Graduate Program: 1989–1990</h1>
-                                </header><!-- .oject-header -->
+                                    <img src="{{ rowObject.rowParams[fieldKey_originalImageURL] if hasOriginalImage else "http://placehold.it/810x496" }}" class="object-featured img-responsive" />
+                                    <h1 class="object-title">{{ rowObject.rowParams[fieldKey_objectTitle] }}</h1>
+                                </header><!-- .object-header -->
 
                                 <div class="object-content">
 
                                     <dl>
-                                        <dt>Artist Name</dt>
-                                        <dd>Paul Rand</dd>
-
-                                        <dt>Type</dt>
-                                        <dd>Print</dd>
-
-                                        <dt>Date Created</dt>
-                                        <dd>1989</dd>
-
-                                        <dt>Client</dt>
-                                        <dd>Yale University</dd>
-
-                                        <dt>Medium</dt>
-                                        <dd>Offset lithography on white paper</dd>
-
-                                        <dt>Dimensions</dt>
-                                        <dd>(Closed) 26.6 × 15.2 cm (10 1/2 × 6 in)</dd>
-                                        <dd>(Open 53.3 × 45.7 cm (21 × 18 in)</dd>
+                                        {% for columnName in ordered_colNames_sansObjectTitleAndImages %}
+                                        <dt>{{ columnName }}</dt>
+                                        <dd>{{ rowObject.rowParams[columnName] }}</dd>
+                                        {% endfor %}
                                     </dl>
 
                                 </div><!-- .object-content -->
