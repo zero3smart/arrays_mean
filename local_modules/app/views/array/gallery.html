@@ -15,7 +15,42 @@
             <div id="content" class="site-content">
 
                 <nav id="sort-bar" class="sort-bar" role="navigation">
-                    <div class="form-group">
+
+                    <!-- <ul class="sort-control">
+                        <li class="sort-label">
+                            <span class="sort-label-">SortBy</span>
+                            <ul class="sort-dropdown">
+                                <li class="sort-dropdown-item"><a href="#">Object Title</a></li>
+                            </ul>
+                        </li>
+                    </ul> -->
+
+                    <div class="dropdown sort-control">
+                        <a class="btn btn-default dropdown-toggle" type="button" id="sort-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Sort By: <span class="sort-criteria">Object Title</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="sort-by">
+                            <li><a href="#">Object Title</a></li>
+                            <li><a href="#">Acquisition Date</a></li>
+                            <li><a href="#">Completion Date</a></li>
+                            <li><a href="#">Artist Nationality</a></li>
+                            <li><a href="#">Years in Collection</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="dropdown sort-control">
+                        <a class="btn btn-default dropdown-toggle" type="button" id="sort-direction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Sort Direction: <span class="sort-criteria">Ascending</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="sort-direction">
+                            <li><a href="#">Ascending</a></li>
+                            <li><a href="#">Descending</a></li>
+                        </ul>
+                    </div>
+
+                    {# <div class="form-group">
                         <label for="sort-control">Sort By:</label>
                         <select id="sort-control" class="form-control">
                             <option>Object Title</option>
@@ -31,7 +66,7 @@
                             <option>Ascending</option>
                             <option>Descending</option>
                         </select>
-                    </div><!-- .form-group -->
+                    </div><!-- .form-group --> #}
                 </nav>
 
             {% if isFilterActive %}
