@@ -123,8 +123,56 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     }
     //
     // Now kick off the query work
-    _proceedTo_countWholeSet();
-    function _proceedTo_countWholeSet()
+    _proceedTo_obtainSampleDocument();
+    function _proceedTo_obtainSampleDocument()
+    {
+        processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
+        {
+            if (err) {
+                callback(err, null);
+            
+                return;
+            }
+            _proceedTo_obtainUniqueFieldValuesForFiltering(sampleDoc);
+        });
+    }
+    function _proceedTo_obtainUniqueFieldValuesForFiltering(sampleDoc)
+    {
+        var feVisible_keys = self._rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleDoc, dataSourceDescription);
+        var feVisible_keys_length = feVisible_keys.length;
+        var uniqueOp = { $group: { _id: 1 } }; // TODO: sum incidence and sort before limit to get top vals?
+        var limitOp = { $project: { } };
+        for (var i = 0 ; i < feVisible_keys_length ; i++) {
+            var key = feVisible_keys[i];
+            var pluralKey = key + "s";
+            var keyPath = "rowParams." + key; 
+            uniqueOp["$group"][pluralKey] = { $addToSet: "$" + keyPath };
+            limitOp["$project"][pluralKey] = { $slice: [ "$" + pluralKey, 0, 10 ] };
+        }
+        var uniqueFieldValues_aggregationOperators = 
+        [
+            uniqueOp,
+            limitOp
+        ];
+        var doneFn = function(err, results)
+        {
+            if (err) {
+                callback(err, null);
+            
+                return;
+            }
+            if (results == undefined || results == null || results.length == 0) {
+                callback(new Error('Unexpectedly empty unique field value aggregation'), null);
+                
+                return;
+            }
+            var uniqueFieldValuesByFieldName = results[0];
+            delete uniqueFieldValuesByFieldName["_id"];
+            _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName);
+        };
+        processedRowObjects_mongooseModel.aggregate(uniqueFieldValues_aggregationOperators).exec(doneFn);
+    }
+    function _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName)
     {
         var countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
             { // Count
@@ -134,7 +182,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
                 }
             }
         ]);
-        var countWhole_doneFn = function(err, results)
+        var doneFn = function(err, results)
         {
             if (err) {
                 callback(err, null);
@@ -147,11 +195,11 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             } else {
                 nonpagedCount = results[0].count;
             }
-            _proceedTo_obtainPagedDocs(nonpagedCount);
+            _proceedTo_obtainPagedDocs(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
         };
-        processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).exec(countWhole_doneFn);
+        processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).exec(doneFn);
     }
-    function _proceedTo_obtainPagedDocs(nonpagedCount)
+    function _proceedTo_obtainPagedDocs(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
     {
         var sortBy_realColumnName = self._realColumnNameFromHumanReadableColumnName(sortBy ? sortBy : humanReadableColumnName_objectTitle, dataSourceDescription);
         var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
@@ -166,7 +214,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
                 $limit: limitToNResults
             }
         ]);
-        var pagedDocs_doneFn = function(err, docs)
+        var doneFn = function(err, docs)
         {
             if (err) {
                 callback(err, null);
@@ -176,11 +224,11 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             if (docs == undefined || docs == null || docs.length == 0) {
                 docs = [];
             }
-            _prepareDataAndCallBack(nonpagedCount, docs);
+            _prepareDataAndCallBack(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs);
         };
-        processedRowObjects_mongooseModel.aggregate(pagedDocs_aggregationOperators).exec(pagedDocs_doneFn);
+        processedRowObjects_mongooseModel.aggregate(pagedDocs_aggregationOperators).exec(doneFn);
     }
-    function _prepareDataAndCallBack(nonpagedCount, docs)
+    function _prepareDataAndCallBack(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs)
     {
         var err = null;
         var hasThumbs = dataSourceDescription.fe_designatedFields.gridThumbImageURL ? true : false;
@@ -204,10 +252,13 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             filterCol: filterCol,
             filterVal: filterVal,
             isFilterActive: isFilterActive,
+            uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             //
             searchQ: searchQ,
             searchCol: searchCol,
-            isSearchActive: isSearchActive
+            isSearchActive: isSearchActive,
+            //
+            columnNames_humanReadable: self._humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleDoc, dataSourceDescription)
         };
         callback(err, data);
     }
@@ -250,3 +301,36 @@ constructor.prototype._realColumnNameFromHumanReadableColumnName = function(huma
     
     return humanReadableColumnName;
 };
+//
+constructor.prototype._rowParamKeysFromSampleRowObject_sansFEExcludedFields = function(sampleRowObject, dataSourceDescription)
+{
+    var rowParams = sampleRowObject.rowParams;
+    var rowParams_keys = Object.keys(rowParams);
+    var rowParams_keys_length = rowParams_keys.length;
+    var feVisible_rowParams_keys = [];
+    for (var i = 0 ; i < rowParams_keys_length ; i++) {
+        var key = rowParams_keys[i];
+        if (dataSourceDescription.fe_excludeFields) {
+            if (dataSourceDescription.fe_excludeFields.indexOf(key) !== -1) {
+                continue;
+            }
+        }
+        feVisible_rowParams_keys.push(key);
+    }
+    
+    return feVisible_rowParams_keys;
+};
+//
+constructor.prototype._humanReadableFEVisibleColumnNamesWithSampleRowObject = function(sampleRowObject, dataSourceDescription)
+{
+    var self = this;
+    var rowParams_keys = self._rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
+    // Replace designated object title with "Object Title"
+    var designatedObjectTitleKey = dataSourceDescription.fe_designatedFields.objectTitle;
+    var indexOfDesignatedObjectTitleKey = rowParams_keys.indexOf(designatedObjectTitleKey); // we presume this is not -1
+    rowParams_keys[indexOfDesignatedObjectTitleKey] = humanReadableColumnName_objectTitle; // replace that with "Object Title"
+    // Any other titles can be done here (^ factor this if necessary to reuse)
+    
+    return rowParams_keys;
+};
+//

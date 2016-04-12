@@ -133,16 +133,17 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
             res.render('array/create', bindData);
         });
     });
-    app.get('/array/gallery', function(req, res)
+    app.get('/array/:source_key/gallery', function(req, res)
     {
-        var url_parts = url.parse(req.url, true);
-        var query = url_parts.query;
-        var source_key = query.source_key;
+        var source_key = req.params.source_key;
         if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
-            res.status(403).send("Bad Request - source_key missing from url query")
+            res.status(403).send("Bad Request - source_key missing")
             
             return;
         }        
+        var url_parts = url.parse(req.url, true);
+        var query = url_parts.query;
+        query.source_key = source_key;
         __new_bindDataFor_array_gallery(context, query, function(err, bindData) 
         {
             if (err) {
@@ -153,8 +154,17 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
             res.render('array/gallery', bindData);
         });
     });
-    app.get('/array/chart', function(req, res)
+    app.get('/array/:source_key/chart', function(req, res)
     {
+        var source_key = req.params.source_key;
+        if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
+            res.status(403).send("Bad Request - source_key missing")
+            
+            return;
+        }        
+        var url_parts = url.parse(req.url, true);
+        var query = url_parts.query;
+        query.source_key = source_key;
         __new_bindDataFor_array_chart(context, function(err, bindData) 
         {
             if (err) {
@@ -165,8 +175,17 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
             res.render('array/chart', bindData);
         });
     });
-    app.get('/array/heatmap', function(req, res)
+    app.get('/array/:source_key/heatmap', function(req, res)
     {
+        var source_key = req.params.source_key;
+        if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
+            res.status(403).send("Bad Request - source_key missing")
+            
+            return;
+        }        
+        var url_parts = url.parse(req.url, true);
+        var query = url_parts.query;
+        query.source_key = source_key;
         __new_bindDataFor_array_heatmap(context, function(err, bindData) 
         {
             if (err) {
@@ -174,7 +193,7 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
                 
                 return;
             }
-            res.render('array/gallery', bindData);
+            res.render('array/heatmap', bindData);
         });
     });
 };
@@ -183,8 +202,20 @@ constructor.prototype._mountRoutes_viewEndpoints_object = function()
     var self = this;
     var context = self.context;
     var app = context.app;
-    app.get('/object', function(req, res)
+    app.get('/array/:source_key/:object_id', function(req, res)
     {
+        var source_key = req.params.source_key;
+        if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
+            res.status(403).send("Bad Request - source_key missing")
+            
+            return;
+        }        
+        var object_id = req.params.object_id;
+        if (object_id == null || typeof object_id === 'undefined' || object_id == "") {
+            res.status(403).send("Bad Request - object_id missing")
+            
+            return;
+        }        
         __new_bindDataFor_object_show(context, function(err, bindData)
         {
             if (err) {

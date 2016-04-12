@@ -58,7 +58,10 @@ exports.Descriptions =
             gridThumbImageURL: null // not strictly necessary to define as null but done for explicitness
         },
         //
-        fe_excludeFields: []
+        fe_excludeFields: 
+        [
+            "ObjectID" // not sure if we really want to exclude this
+        ]
     }
     , {
         filename: "MoMA_Artworks_v2_jy.csv",
@@ -97,6 +100,8 @@ exports.Descriptions =
         },
         fe_excludeFields: 
         [
+            "ObjectID", // not sure if we really want to exclude this
+            //
             "imgURL_original", 
             "imgURL_gridThumb"
         ],
