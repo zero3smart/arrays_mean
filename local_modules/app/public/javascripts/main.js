@@ -7,8 +7,15 @@ $(document).ready(function() {
      */
     $('.panel-source').on('click', function(e) {
     	e.preventDefault();
-    	$(this).prev().prop('checked', true);
-    	$('.form-source').submit();
+    	var sourceKey = $(this).prev().val();
+    	window.location.href = '/array/' + sourceKey + '/gallery';
+    });
+
+    /**
+     * Allow click on source dataset URL within the panel
+     */
+    $('.source-link').on('click', function(e) {
+        e.stopPropagation();
     });
 
     /**

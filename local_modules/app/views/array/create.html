@@ -18,7 +18,7 @@
                         <div class="col-sm-12">
 
                             <section class="section">
-                                <form id="form-source" class="form-source" action="/array/gallery" method="get">
+                                <form id="form-source" class="form-source">
 
                                     <div class="form-group">
                                         <div class="row">
@@ -29,16 +29,15 @@
                                     </div>
 
                                     <header class="section-header">
-
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <h2 class="section-title">Data sources</h2>
                                             </div>
                                         </div><!-- .row -->
-
                                     </header>
+
                                     {% for source in sources %}
-                                    <div class="radio" onclick="window.location.href='/array/{{ source.key }}/gallery'">
+                                    <div class="radio">
                                         <label>
                                             <input type="radio" name="source_key" value="{{ source.key }}" class="hidden">
                                             <div class="panel panel-default panel-source">
@@ -47,7 +46,7 @@
                                                     <small>
                                                         {% set comma = joiner() %}
                                                         {% for url in source.urls -%}
-                                                          {{ comma() }} <a href="{{ url }}">{{ url }}</a>
+                                                          {{ comma() }} <a href="{{ url }}" class="source-link">{{ url }}</a>
                                                         {%- endfor %}
                                                     </small>
                                                     <p>{{ source.description }}</p>
