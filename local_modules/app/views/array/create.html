@@ -38,7 +38,7 @@
 
                                     </header>
                                     {% for source in sources %}
-                                    <div class="radio">
+                                    <div class="radio" onclick="window.location.href='/array/{{ source.key }}/gallery'">
                                         <label>
                                             <input type="radio" name="source_key" value="{{ source.key }}" class="hidden">
                                             <div class="panel panel-default panel-source">
