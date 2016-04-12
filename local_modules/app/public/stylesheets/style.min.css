@@ -5032,13 +5032,19 @@ button.close {
 		font-size: 24px;
 	}
 }
-#page .navbar-default .navbar-brand {
+#page .navbar-default .navbar-brand-container {
 	position: absolute;
 	top: 0;
-	left: 15px;
-	margin: auto 15%;
-	width: 70%;
+	left: 0;
+	display: block;
+	width: 100%;
 	text-align: center;
+}
+#page .navbar-default .navbar-brand {
+	display: inline-block;
+	float: none;
+	margin-right: auto;
+	margin-left: auto;
 	font-weight: bold;
 	font-size: 22px;
 }
@@ -5218,16 +5224,10 @@ body {
 /* @end Sort Bar */
 /* @group Filter Bar */
 .filter-bar {
-	margin-bottom: 20px;
 	padding-top: 15px;
 	padding-bottom: 15px;
 	background-color: #9b9b9b;
 	text-align: center;
-}
-@media (min-width: 768px) {
-	.filter-bar {
-		margin-bottom: 20px;
-	}
 }
 .filter-tag {
 	position: relative;
@@ -5254,6 +5254,7 @@ body {
 }
 /* @end Filter Bar */
 .filter-count {
+	margin-top: 15px;
 	margin-bottom: 15px;
 	color: #9b9b9b;
 	text-align: right;
