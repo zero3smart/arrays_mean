@@ -19,13 +19,20 @@
 	}
 }
 
-#page .navbar-default .navbar-brand {
+#page .navbar-default .navbar-brand-container {
 	position: absolute;
 	top: 0;
-	left: 15px;
-	margin: auto 15%;
-	width: 70%;
+	left: 0;
+	display: block;
+	width: 100%;
 	text-align: center;
+}
+
+#page .navbar-default .navbar-brand {
+	display: inline-block;
+	float: none;
+	margin-right: auto;
+	margin-left: auto;
 	font-weight: bold;
 	font-size: 22px;
 }
