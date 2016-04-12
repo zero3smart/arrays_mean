@@ -200,12 +200,15 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     }
     function _proceedTo_obtainPagedDocs(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
     {
-        var sortBy_realColumnName = self._realColumnNameFromHumanReadableColumnName(sortBy ? sortBy : humanReadableColumnName_objectTitle, dataSourceDescription);
+        var sortBy_realColumnName_path = "rowParams." + self._realColumnNameFromHumanReadableColumnName(sortBy ? sortBy : humanReadableColumnName_objectTitle, 
+                                                                                                        dataSourceDescription);
+        var sortOpParams = {};
+        sortOpParams[sortBy_realColumnName_path] = sortDirection;
+        //
         var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
             // Sort (before pagination):
-            
-            //
-            // Pagination:
+            { $sort: sortOpParams },
+            // Pagination
             {
                 $skip: skipNResults
             },
