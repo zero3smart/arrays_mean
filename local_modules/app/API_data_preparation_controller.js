@@ -146,7 +146,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             var key = feVisible_keys[i];
             var keyPath = "rowParams." + key; 
             uniqueOp["$group"][key] = { $addToSet: "$" + keyPath };
-            limitOp["$project"][key] = { $slice: [ "$" + key, 0, 10 ] };
+            limitOp["$project"][key] = { $slice: [ "$" + key, 0, 50 ] };
         }
         var uniqueFieldValues_aggregationOperators = 
         [
