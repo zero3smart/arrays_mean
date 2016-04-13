@@ -48,8 +48,8 @@ app.use(helmet.xframe());
 //
 //
 var mongoose_client = require('../mongoose_client/mongoose_client');
-var modelNames = []
-modelNames.push(context.raw_source_documents_controller.ModelName)
+var modelNames = [];
+modelNames.push(context.raw_source_documents_controller.ModelName);
 mongoose_client.FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed(modelNames)
 //
 mongoose_client.WhenMongoDBConnected(function() 
@@ -67,12 +67,11 @@ function _mountRoutesAndStartListening()
     context.routes_controller.MountRoutes();
     //
     // Run actual server
-    // TODO: Integrate SSL/HTTPS
     if (module === require.main) {
         var server = app.listen(process.env.PORT || 9080, function () {
             var host = isDev ? 'localhost' : server.address().address;
             var port = server.address().port;
-            winston.info('📡  App listening at http://%s:%s', host, port);
+            winston.info('📡  App listening at %s:%s', host, port);
         });
     }
 }

@@ -30,6 +30,11 @@ var context_object_instantiation_descriptions =
         module_path: __dirname + "/API_data_preparation_controller",
         instance_key: "API_data_preparation_controller",
         options: {}
+    },
+    {
+        module_path: __dirname + "/../shared_pages/shared_pages_controller",
+        instance_key: "shared_pages_controller",
+        options: {}
     }
 ];
 function NewHydratedContext(app) 
@@ -38,7 +43,7 @@ function NewHydratedContext(app)
     {
         app: app
     };
-    
+
     return require("../runtime_utils/runtime-context").NewHydratedContext(context_object_instantiation_descriptions, initialContext);
 }
 module.exports.NewHydratedContext = NewHydratedContext;

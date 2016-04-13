@@ -36,4 +36,49 @@ $(document).ready(function() {
     	$(this).parent('li').find('.collapse').collapse('toggle');
     });
     
+    $('a.share-link').on('click', function(e) 
+    {
+        e.preventDefault();
+        _POST_toGetURLForSharingCurrentPage(function(err, share_url)
+        {
+            if (err) {
+                alert(err);
+            } else {
+                alert("Share url: " + share_url);
+            }
+        });
+        
+        return false;
+    });
+    $('a.get-embed-code-link').on('click', function(e) 
+    {
+        e.preventDefault();
+        _POST_toGetURLForSharingCurrentPage(function(err, share_url)
+        {
+            if (err) {
+                alert(err);
+            } else {
+                alert("Share url for embedding: " + share_url);
+            }
+        });
+        
+        return false;
+    });
 });
+
+function _POST_toGetURLForSharingCurrentPage(callback)
+{ // callback: (err:Error, share_url:String) -> Void
+    var parameters = 
+    { 
+        url: window.location.href 
+    };
+    $.post("/v1/share", parameters, function(data) 
+    {
+        var share_url = data.share_url;
+        var err = null;
+        if (share_url == null || typeof share_url === 'undefined' || share_url == "") {
+            err = new Error('Missing share_url from response.');
+        }
+        callback(err, share_url);
+    }, "json");
+}
