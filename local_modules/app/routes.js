@@ -146,7 +146,7 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
         }
         var url_parts = url.parse(req.url, true);
         var query = url_parts.query;
-        __render_array_gallery(req, res, source_key, query);
+        self.__render_array_gallery(req, res, source_key, query);
     });
     app.get('/array/:source_key/chart', function(req, res)
     {
@@ -158,7 +158,7 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
         }
         var url_parts = url.parse(req.url, true);
         var query = url_parts.query;
-        __render_array_chart(req, res, source_key, query);
+        self.__render_array_chart(req, res, source_key, query);
     });
     app.get('/array/:source_key/heatmap', function(req, res)
     {
@@ -170,7 +170,7 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
         }
         var url_parts = url.parse(req.url, true);
         var query = url_parts.query;
-        __render_array_heatmap(req, res, source_key, query);
+        self.__render_array_heatmap(req, res, source_key, query);
     });
 };
 
