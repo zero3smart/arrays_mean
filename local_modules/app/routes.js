@@ -423,7 +423,10 @@ constructor.prototype._mountRoutes_JSONAPI_arrayShare = function(apiURLPrefix)
                 return;
             }
             var id = sharedPageDoc._id;
-            var fabricatedShareURL = req.protocol + '://' + req.get('host') + "/s/" + id;
+            var protocol = process.env.NODE_ENV == 'production' ? 'https' : req.protocol; // we don't just
+            // look at req.protocol since on GCloud https is handled for us, and the protocol
+            // comes out as http when we look it up
+            var fabricatedShareURL = protocol + '://' + req.get('host') + "/s/" + id;
             res.json({ share_url: fabricatedShareURL });
         });
     });
