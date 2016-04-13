@@ -299,7 +299,7 @@ constructor.prototype._mountRoutes_viewEndpoints_sharedPages = function()
             var pageType = doc.pageType;
             if (pageType == "array_view") {
                 var viewType = doc.viewType;
-                var query = doc.query;
+                var query = doc.query || {};
                 if (viewType == "gallery") {
                     self.__render_array_gallery(req, res, source_key, query);
                 } else if (viewType == "chart") {
@@ -403,6 +403,12 @@ constructor.prototype._mountRoutes_JSONAPI_arrayShare = function(apiURLPrefix)
             source_key = _stringFromPathNameWithRegEx(/^\/array\/(.*)\/.*/g);
             //
             rowObjectId_orNull = _stringFromPathNameWithRegEx(/^\/array\/.*\/(.*)/g);
+        } else if (/^\/s\/.*/g.test(pathname) == true) { // special case
+            // Trying to share an already shared page - just use the same URL
+            var alreadySharedPageId = _stringFromPathNameWithRegEx(/^\/s\/(.*)/g);
+            _fabricateAndReplyWithShareURLWithSharedPageId(alreadySharedPageId);
+            
+            return;
         } else {
             res.status(403).send("Unable to share that URL");
             
@@ -423,12 +429,20 @@ constructor.prototype._mountRoutes_JSONAPI_arrayShare = function(apiURLPrefix)
                 return;
             }
             var id = sharedPageDoc._id;
+            _fabricateAndReplyWithShareURLWithSharedPageId(id);
+        });
+        function _fabricateAndReplyWithShareURLWithSharedPageId(id)
+        {
             var protocol = process.env.NODE_ENV == 'production' ? 'https' : req.protocol; // we don't just
             // look at req.protocol since on GCloud https is handled for us, and the protocol
             // comes out as http when we look it up
             var fabricatedShareURL = protocol + '://' + req.get('host') + "/s/" + id;
-            res.json({ share_url: fabricatedShareURL });
-        });
+            _replyWithShareURL(fabricatedShareURL);
+        }
+        function _replyWithShareURL(share_url)
+        {
+            res.json({ share_url: share_url });
+        }
     });
 };
 //

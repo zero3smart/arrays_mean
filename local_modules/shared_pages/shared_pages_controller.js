@@ -30,7 +30,7 @@ constructor.prototype.New_templateForPersistableObject = function(pageType, view
         viewType: viewType_orNull,
         sourceKey: sourceKey,
         rowObjectId: rowObjectId_orNull,
-        query: query
+        query: query || {} // so that it can't be null
     };
 };
 //
@@ -42,7 +42,7 @@ var MongooseScheme = Schema({
     dateCreated: { type: Date, default: Date.now },
     //
     pageType: String,
-    viewType: String,
+    viewType: String, // will not be on every share - only on array views
     //
     sourceKey: String,
     rowObjectId: String,  // will not be on every share - only for object details, at present
