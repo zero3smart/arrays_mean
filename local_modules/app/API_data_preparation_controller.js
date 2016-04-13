@@ -104,10 +104,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
                       && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
     //
     var wholeFilteredSet_aggregationOperators = [];
-    if (isSearchActive) { // Search must occur as the first pipeline stage or Mongo will error
-        // NOTE: A text index is required for this not to error. Currently, it must be created manually as
-        // indexes created dynamically are not yet guaranteed to have been built according to code written so far,
-        // and building such indexes dynamically is very unperformant
+    if (isSearchActive) { 
         var realColumnName_path = "rowParams." + self._realColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
         var matchOp = { $match: {} };
         matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: 'i' };
