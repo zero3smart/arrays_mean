@@ -85,7 +85,8 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
-    var pageNumber = urlQuery.page ? urlQuery.page : 1;
+    var page = urlQuery.page;
+    var pageNumber = page ? page : 1;
     var skipNResults = pageSize * (Math.max(pageNumber, 1) - 1);
     var limitToNResults = pageSize;
     //
@@ -253,31 +254,57 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         var routePath_base = "/array/" + source_pKey + "/gallery";
         var routePath_withoutFilter = routePath_base;
         var routePath_withoutSearch = routePath_base;
+        var routePath_withoutPage = routePath_base;
         if (sortBy !== undefined && sortBy != null && sortBy !== "") {
+            var appendQuery = "sortBy=" + sortBy;
             routePath_withoutFilter = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,
-                                                                                        "sortBy=" + sortBy,
+                                                                                        appendQuery,
                                                                                         routePath_base);
             routePath_withoutSearch = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,
-                                                                                        "sortBy=" + sortBy,
+                                                                                        appendQuery,
                                                                                         routePath_base);
+            routePath_withoutPage = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,
+                                                                                      appendQuery,
+                                                                                      routePath_base);
         }
         if (sortDir !== undefined && sortDir != null && sortDir !== "") {
+            var appendQuery = "sortDir=" + sortDir;
             routePath_withoutFilter = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,
-                                                                                        "sortDir=" + sortDir,
+                                                                                        appendQuery,
                                                                                         routePath_base);
             routePath_withoutSearch = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,
-                                                                                        "sortDir=" + sortDir,
+                                                                                        appendQuery,
+                                                                                        routePath_base);
+            routePath_withoutPage = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,
+                                                                                      appendQuery,
+                                                                                      routePath_base);
+        }
+        if (page !== undefined && page != null && page !== "") {
+            var appendQuery = "page=" + page;
+            routePath_withoutFilter = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,
+                                                                                        appendQuery,
+                                                                                        routePath_base);
+            routePath_withoutSearch = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,
+                                                                                        appendQuery,
                                                                                         routePath_base);
         }
         if (isFilterActive) {
+            var appendQuery = "filterCol=" + filterCol + "&" + "filterVal=" + filterVal;
             routePath_withoutSearch = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,
-                                                                                        "filterCol=" + filterCol + "&" + "filterVal=" + filterVal,
+                                                                                        appendQuery,
                                                                                         routePath_base);
+            routePath_withoutPage = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,
+                                                                                      appendQuery,
+                                                                                      routePath_base);
         }
         if (isSearchActive) {
+            var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
             routePath_withoutFilter = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,
-                                                                                        "searchCol=" + searchCol + "&" + "searchQ=" + searchQ,
+                                                                                        appendQuery,
                                                                                         routePath_base);
+            routePath_withoutPage = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,
+                                                                                      appendQuery,
+                                                                                      routePath_base);
         }
         var data =
         {
@@ -310,7 +337,8 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             //
             routePath_base: routePath_base,
             routePath_withoutFilter: routePath_withoutFilter,
-            routePath_withoutSearch: routePath_withoutSearch
+            routePath_withoutSearch: routePath_withoutSearch,
+            routePath_withoutPage: routePath_withoutPage
         };
         callback(err, data);
     }

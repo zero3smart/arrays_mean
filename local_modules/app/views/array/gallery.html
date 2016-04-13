@@ -74,9 +74,8 @@
                             {% set lastPage = numPages | int %}
                             {% set currentPage = onPageNum | int %}
 
-                            {% set currentFilters = '' %}
-                            {% set paginationPath = '/array/moma_artworks_csv-rev2/gallery/' %}
                             {% set showAlwaysFirstAndLast = true %}
+                            {% set paging_queryParamJoinChar = "?" if routePath_withoutPage == routePath_base else "&" %}
 
                             {% if lastPage > 1 %}
 
@@ -90,14 +89,14 @@
                                     <ul class="pagination">
                                         {% if currentPage > 1 %}
                                             <li>
-                                                <a href="#" aria-label="Previous">
+                                                <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage - 1 }}" aria-label="Previous">
                                                     <span aria-hidden="true">&laquo;</span>
                                                 </a>
                                             </li>
 
                                             {% for i in range(1, extremePagesLimit) -%}
                                                 {% if ( i < currentPage - nearbyPagesLimit ) %}
-                                                    <li><a href="#">{{ i }}</a></li>
+                                                    <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
                                                 {% endif %}
                                             {%- endfor %}
 
@@ -107,23 +106,23 @@
 
                                             {% for i in range(currentPage-nearbyPagesLimit, currentPage) -%}
                                                 {% if ( i > 0 ) %}
-                                                    <li><a href="#">{{ i }}</a></li>
+                                                    <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
                                                 {% endif %}
                                             {%- endfor %}
                                         {% elif showAlwaysFirstAndLast %}
                                             <li class="disabled">
-                                                <a href="#" aria-label="Previous">
+                                                <a onclick="return false;" href="#" aria-label="Previous">
                                                     <span aria-hidden="true">&laquo;</span>
                                                 </a>
                                             </li>
                                         {% endif %}
 
-                                        <li><a href="#" class="active">{{ currentPage }}</a></li>
+                                        <li><a onclick="return false;" href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage }}" class="active">{{ currentPage }}</a></li>
 
                                         {% if currentPage < lastPage %}
                                             {% for i in range(currentPage+1, currentPage + 1 + nearbyPagesLimit) -%}
                                                 {% if ( i <= lastPage ) %}
-                                                    <li><a href="#">{{ i }}</a></li>
+                                                    <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
                                                 {% endif %}
                                             {%- endfor %}
 
@@ -132,19 +131,19 @@
                                             {% endif %}
 
                                             {% for i in range(lastPage - extremePagesLimit+1, lastPage) -%}
-                                                {% if ( i > currentPage + nearbyPagesLimit ) %}
-                                                    <li><a href="#">{{ i }}</a></li>
+                                                {% if ( i >= currentPage + nearbyPagesLimit ) %}
+                                                    <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
                                                 {% endif %}
                                             {%- endfor %}
 
                                             <li>
-                                                <a href="#" aria-label="Next">
+                                                <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ lastPage }}" aria-label="Next">
                                                     <span aria-hidden="true">&raquo;</span>
                                                 </a>
                                             </li>
                                         {% elif showAlwaysFirstAndLast %}
                                             <li class="disabled">
-                                                <a href="#" aria-label="Next">
+                                                <a onclick="return false;" href="#" aria-label="Next">
                                                     <span aria-hidden="true">&raquo;</span>
                                                 </a>
                                             </li>
