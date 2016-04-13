@@ -109,17 +109,14 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         // indexes created dynamically are not yet guaranteed to have been built according to code written so far,
         // and building such indexes dynamically is very unperformant
         var realColumnName_path = "rowParams." + self._realColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
-        var matchOp = {};
-        matchOp["$match"] = {};
-        matchOp["$match"]["$text"] = {};
-        matchOp["$match"]["$text"]["$search"] = searchQ;
+        var matchOp = { $match: {} };
+        matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: 'i' };
         wholeFilteredSet_aggregationOperators.push(matchOp);
     }
     if (isFilterActive) { // rules out undefined filterCol
         var realColumnName_path = "rowParams." + self._realColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
-        var matchOp = {};
-        matchOp["$match"] = {};
-        matchOp["$match"][realColumnName_path] = filterVal;
+        var matchOp = { $match: {} };
+        matchOp["$match"][realColumnName_path] = { $regex: filterVal };
         wholeFilteredSet_aggregationOperators.push(matchOp);
     }
     //
@@ -154,15 +151,11 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             //
             processedRowObjects_mongooseModel.aggregate([
                 uniqueStage,
-                {
-                    $match: {
-                        count: { $gte: 2 }
-                    }
-                },
+                { $match: { count: { $gte: 2 } } },
                 { $sort : { count : -1 } },
                 { $limit : limitToNTopValues },
                 
-            ]).exec(function(err, results)
+            ]).allowDiskUse(true).exec(function(err, results)
             {
                 if (err) {
                     cb(err);
@@ -226,12 +219,8 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             // Sort (before pagination):
             { $sort: sortOpParams },
             // Pagination
-            {
-                $skip: skipNResults
-            },
-            {
-                $limit: limitToNResults
-            }
+            { $skip: skipNResults },
+            { $limit: limitToNResults }
         ]);
         var doneFn = function(err, docs)
         {
@@ -245,7 +234,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             }
             _prepareDataAndCallBack(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs);
         };
-        processedRowObjects_mongooseModel.aggregate(pagedDocs_aggregationOperators).exec(doneFn);
+        processedRowObjects_mongooseModel.aggregate(pagedDocs_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
     }
     function _prepareDataAndCallBack(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs)
     {
@@ -274,7 +263,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         if (page !== undefined && page != null && page !== "") {
             var appendQuery = "page=" + page;
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
-            routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,    appendQuery, routePath_base);
+            // we do not include page in the _withoutSearch url as new searches should reset the page to 1
             routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
         }
