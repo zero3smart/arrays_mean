@@ -121,7 +121,7 @@
                                         <li><a href="#" class="active">{{ currentPage }}</a></li>
 
                                         {% if currentPage < lastPage %}
-                                            {% for i in range(currentPage+1, currentPage + nearbyPagesLimit) -%}
+                                            {% for i in range(currentPage+1, currentPage + 1 + nearbyPagesLimit) -%}
                                                 {% if ( i <= lastPage ) %}
                                                     <li><a href="#">{{ i }}</a></li>
                                                 {% endif %}
