@@ -5,7 +5,7 @@
   "repository": "https://github.com/schemadesign/arrays",
   "private": true,
   "engines": {
-    "node": ">=5.9.1"
+    "node": ">=0.12.7"
   },
   "scripts": {
     "start": "node local_modules/app/app.js",
@@ -45,8 +45,8 @@
     "postcss-custom-properties": "^5.0.0",
     "postcss-import": "^8.1.0"
   },
-  "config" : {
-      "ghooks" : {
+  "config": {
+      "ghooks": {
           "post-merge": "npm install",
           "post-rewrite": "npm install"
       }
