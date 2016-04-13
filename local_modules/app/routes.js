@@ -298,7 +298,6 @@ constructor.prototype._mountRoutes_viewEndpoints_sharedPages = function()
             }
             var pageType = doc.pageType;
             if (pageType == "array_view") {
-            console.log("1 " , pageType)
                 var viewType = doc.viewType;
                 var query = doc.query;
                 if (viewType == "gallery") {
