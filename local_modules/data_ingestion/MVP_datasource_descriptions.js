@@ -57,10 +57,17 @@ exports.Descriptions =
             originalImageURL: null, // not strictly necessary to define as null but done for explicitness
             gridThumbImageURL: null // not strictly necessary to define as null but done for explicitness
         },
-        //
         fe_excludeFields: 
         [
-            "ObjectID" // not sure if we really want to exclude this
+            "ConstituentID" // not sure if we really want to exclude this
+        ],
+        fe_fieldsNotAvailableAsFilters:
+        [
+            "DisplayDate",
+            "BeginDate",
+            "EndDate",
+            "Wiki QID",
+            "ULAN"
         ]
     }
     , {
@@ -104,6 +111,16 @@ exports.Descriptions =
             //
             "imgURL_original", 
             "imgURL_gridThumb"
+        ],
+        fe_fieldsNotAvailableAsFilters:
+        [
+            "ArtistBio",
+            "Dimensions",
+            "CreditLine",
+            "MoMANumber",
+            "DateAcquired",
+            "URL",
+            "Date"
         ],
         //
         //
