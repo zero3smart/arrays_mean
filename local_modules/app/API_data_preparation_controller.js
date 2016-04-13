@@ -251,60 +251,46 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     {
         var err = null;
         var hasThumbs = dataSourceDescription.fe_designatedFields.gridThumbImageURL ? true : false;
-        var routePath_base = "/array/" + source_pKey + "/gallery";
-        var routePath_withoutFilter = routePath_base;
-        var routePath_withoutSearch = routePath_base;
-        var routePath_withoutPage = routePath_base;
+        var routePath_base              = "/array/" + source_pKey + "/gallery";
+        var routePath_withoutFilter     = routePath_base;
+        var routePath_withoutSearch     = routePath_base;
+        var routePath_withoutPage       = routePath_base;
+        var routePath_withoutSortBy     = routePath_base;
+        var routePath_withoutSortDir    = routePath_base;
         if (sortBy !== undefined && sortBy != null && sortBy !== "") {
             var appendQuery = "sortBy=" + sortBy;
-            routePath_withoutFilter = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,
-                                                                                        appendQuery,
-                                                                                        routePath_base);
-            routePath_withoutSearch = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,
-                                                                                        appendQuery,
-                                                                                        routePath_base);
-            routePath_withoutPage = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,
-                                                                                      appendQuery,
-                                                                                      routePath_base);
+            routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+            routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,    appendQuery, routePath_base);
+            routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
+            routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
         }
         if (sortDir !== undefined && sortDir != null && sortDir !== "") {
             var appendQuery = "sortDir=" + sortDir;
-            routePath_withoutFilter = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,
-                                                                                        appendQuery,
-                                                                                        routePath_base);
-            routePath_withoutSearch = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,
-                                                                                        appendQuery,
-                                                                                        routePath_base);
-            routePath_withoutPage = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,
-                                                                                      appendQuery,
-                                                                                      routePath_base);
+            routePath_withoutFilter = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,        appendQuery, routePath_base);
+            routePath_withoutSearch = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,        appendQuery, routePath_base);
+            routePath_withoutPage   = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,          appendQuery, routePath_base);
+            routePath_withoutSortBy = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,        appendQuery, routePath_base);
         }
         if (page !== undefined && page != null && page !== "") {
             var appendQuery = "page=" + page;
-            routePath_withoutFilter = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,
-                                                                                        appendQuery,
-                                                                                        routePath_base);
-            routePath_withoutSearch = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,
-                                                                                        appendQuery,
-                                                                                        routePath_base);
+            routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+            routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,    appendQuery, routePath_base);
+            routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
+            routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
         }
         if (isFilterActive) {
             var appendQuery = "filterCol=" + filterCol + "&" + "filterVal=" + filterVal;
-            routePath_withoutSearch = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,
-                                                                                        appendQuery,
-                                                                                        routePath_base);
-            routePath_withoutPage = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,
-                                                                                      appendQuery,
-                                                                                      routePath_base);
+            routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,    appendQuery, routePath_base);
+            routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
+            routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
+            routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
         }
         if (isSearchActive) {
             var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
-            routePath_withoutFilter = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,
-                                                                                        appendQuery,
-                                                                                        routePath_base);
-            routePath_withoutPage = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,
-                                                                                      appendQuery,
-                                                                                      routePath_base);
+            routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+            routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
+            routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
+            routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
         }
         var data =
         {
@@ -319,12 +305,14 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             docs: docs,
             //
             fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
+            humanReadableColumnName_objectTitle: humanReadableColumnName_objectTitle,
             //
             hasThumbs: hasThumbs,
             fieldKey_gridThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.gridThumbImageURL : undefined,
             //
             sortBy: sortBy,
             sortDir: sortDir,
+            colNames_orderedForSortByDropdown: self._humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
             filterCol: filterCol,
             filterVal: filterVal,
@@ -338,7 +326,9 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             routePath_base: routePath_base,
             routePath_withoutFilter: routePath_withoutFilter,
             routePath_withoutSearch: routePath_withoutSearch,
-            routePath_withoutPage: routePath_withoutPage
+            routePath_withoutPage: routePath_withoutPage,
+            routePath_withoutSortBy: routePath_withoutSortBy,
+            routePath_withoutSortDir: routePath_withoutSortDir
         };
         callback(err, data);
     }
@@ -499,5 +489,18 @@ constructor.prototype._humanReadableFEVisibleColumnNamesWithSampleRowObject = fu
     // Any other titles can be done here (^ factor this if necessary to reuse)
     
     return rowParams_keys;
+};
+//
+constructor.prototype._humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown = function(sampleRowObject, dataSourceDescription)
+{
+    var self = this;
+    var columnNames = self._humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, dataSourceDescription);
+    columnNames = columnNames.sort(); // alpha sort
+    // Move "Object Title" to idx 0
+    var indexOf_objectTitle = columnNames.indexOf(humanReadableColumnName_objectTitle); // we presume this is not -1
+    columnNames.splice(indexOf_objectTitle, 1);
+    columnNames.unshift(humanReadableColumnName_objectTitle);
+    
+    return columnNames;
 };
 //

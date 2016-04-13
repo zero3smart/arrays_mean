@@ -18,26 +18,26 @@
 
                     <div class="dropdown sort-control">
                         <a class="btn btn-default dropdown-toggle" type="button" id="sort-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Sort By: <span class="sort-criteria">Object Title</span>
+                            Sort By: <span class="sort-criteria">{{ sortBy if sortBy else humanReadableColumnName_objectTitle }}</span>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="sort-by">
-                            <li><a href="#">Object Title</a></li>
-                            <li><a href="#">Acquisition Date</a></li>
-                            <li><a href="#">Completion Date</a></li>
-                            <li><a href="#">Artist Nationality</a></li>
-                            <li><a href="#">Years in Collection</a></li>
+                            {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
+                            {% for colName in colNames_orderedForSortByDropdown %}
+                            <li><a href="{{ routePath_withoutSortBy }}{{ sortBy_queryParamJoinChar }}sortBy={{ colName }}">{{ colName }}</a></li>
+                            {% endfor %}
                         </ul>
                     </div>
 
                     <div class="dropdown sort-control">
+                        {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
                         <a class="btn btn-default dropdown-toggle" type="button" id="sort-direction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Sort Direction: <span class="sort-criteria">Ascending</span>
+                            Sort Direction: <span class="sort-criteria">{{ sortDir if sortDir else "Ascending" }}</span>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="sort-direction">
-                            <li><a href="#">Ascending</a></li>
-                            <li><a href="#">Descending</a></li>
+                            <li><a href="{{ routePath_withoutSortDir }}{{ sortBy_queryParamJoinChar }}sortDir=Ascending">Ascending</a></li>
+                            <li><a href="{{ routePath_withoutSortDir }}{{ sortBy_queryParamJoinChar }}sortDir=Descending">Descending</a></li>
                         </ul>
                     </div>
                 </nav>
