@@ -28,6 +28,7 @@
     "mongoose": "^4.4.9",
     "serve-favicon": "^2.3.0",
     "winston": "^2.2.0",
+    "nunjucks-comma-filter": "^1.0.0",
     "x-ray": "^2.2.0"
   },
   "devDependencies": {
@@ -40,7 +41,6 @@
     "grunt-contrib-sass": "^1.0.0",
     "grunt-contrib-uglify": "~0.5.0",
     "grunt-contrib-watch": "^1.0.0",
-    "nunjucks-comma-filter": "^1.0.0",
     "grunt-postcss": "^0.8.0",
     "postcss-custom-properties": "^5.0.0",
     "postcss-import": "^8.1.0"
