@@ -60,7 +60,10 @@ constructor.prototype._mountRoutes_viewEndpoints_homepage = function()
         var bindData = 
         {
         };
-        res.render('homepage/homepage', bindData);
+        // res.render('homepage/homepage', bindData);
+
+        // Temporary redirect to splash page
+        res.redirect(302, '/splash');
     });
 };
 constructor.prototype._mountRoutes_viewEndpoints_array = function()

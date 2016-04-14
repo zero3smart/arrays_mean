@@ -61,17 +61,6 @@ module.exports = function(grunt) {
     //   files: ['test/**/*_test.js']
     // },
 
-    sass: {
-      bootstrap: {
-        options: {
-          // sourceMap: true
-        },
-        files: {
-          'local_modules/app/public/stylesheets/base/bootstrap.css': 'local_modules/app/public/stylesheets/scss/bootstrap.scss'
-        }
-      }
-    },
-
     watch: {
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
@@ -109,6 +98,27 @@ module.exports = function(grunt) {
       //   files: '<%= jshint.lib_test.src %>',
       //   tasks: ['jshint:lib_test', 'nodeunit']
       // }
+    },
+
+    // Copy assets
+    copy: {
+      arraysSplash: {
+        expand: true,
+        cwd: 'bower_components/arrays-splash/dist/',
+        src: ['**'],
+        dest: 'local_modules/app/public/splash/'
+      }
+    },
+
+    sass: {
+      bootstrap: {
+        options: {
+          // sourceMap: true
+        },
+        files: {
+          'local_modules/app/public/stylesheets/base/bootstrap.css': 'local_modules/app/public/stylesheets/scss/bootstrap.scss'
+        }
+      }
     },
 
     postcss: {
@@ -149,10 +159,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-postcss');
 
   // Default task.
   grunt.registerTask('default', ['jshint']);
-  grunt.registerTask('build', ['sass', 'postcss']);
+  grunt.registerTask('build', ['copy', 'sass', 'postcss']);
 
 };

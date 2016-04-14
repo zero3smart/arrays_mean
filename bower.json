@@ -17,6 +17,7 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap-sass": "^3.3.6"
+    "bootstrap-sass": "^3.3.6",
+    "arrays-splash": "https://github.com/schemadesign/arrays-splash.git"
   }
 }
