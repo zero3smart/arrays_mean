@@ -361,6 +361,13 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     }
 };
 //
+constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
+{
+    var self = this;
+    // stubbed
+    callback(null, {});
+}
+//
 constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, rowObject_id, callback)
 {
     var self = this;

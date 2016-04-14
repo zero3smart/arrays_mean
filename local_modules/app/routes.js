@@ -2,71 +2,7 @@ var winston = require('winston');
 var url = require('url');
 //
 //
-// Template rendering dummy bind data factory functions
-// 
-function __new_bindDataFor_homepage(context, callback)
-{
-    var bindData = 
-    {
-        aMessage: "Hello! This is the homepage."
-    };
-    var err = null;
-
-    callback(err, bindData);
-}
-function __new_bindDataFor_array_create(context, callback)
-{
-    context.API_data_preparation_controller.BindDataFor_datasetsListing(function(err, bindData)
-    {
-        if (err) {
-            callback(err, null);
-            
-            return;
-        }
-        callback(null, bindData);
-    });
-}
-function __new_bindDataFor_array_gallery(context, urlQuery, callback)
-{                                                 // ^ already validated to have source_key
-    context.API_data_preparation_controller.BindDataFor_array_gallery(urlQuery, function(err, bindData)
-    {
-        if (err) {
-            winston.error("❌  Error getting bind data for Array gallery: ", err);
-            callback(err, null);
-            
-            return;
-        }
-        callback(null, bindData);
-    });
-}
-function __new_bindDataFor_array_chart(context, urlQuery, callback)
-{                                                 // ^ already validated to have source_key
-    context.API_data_preparation_controller.BindDataFor_array_gallery(urlQuery, function(err, bindData)
-    {
-        if (err) {
-            winston.error("❌  Error getting bind data for Array chart: ", err);
-            callback(err, null);
-            
-            return;
-        }
-        callback(null, bindData);
-    });
-}
-function __new_bindDataFor_object_show(context, source_key, object_id, callback)
-{
-    context.API_data_preparation_controller.BindDataFor_array_objectDetails(source_key, object_id, function(err, bindData) 
-    {
-        if (err) {
-            winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err);
-            callback(err, null);
-            
-            return;
-        }    
-        callback(null, bindData);
-    });
-}
-//
-//
+////////////////////////////////////////////////////////////////////////////////
 // Routes controller
 //
 var constructor = function(options, context)
@@ -121,15 +57,10 @@ constructor.prototype._mountRoutes_viewEndpoints_homepage = function()
     var app = context.app;
     app.get('/', function(req, res)
     {
-        __new_bindDataFor_homepage(context, function(err, bindData)
+        var bindData = 
         {
-            if (err) {
-                self._renderBindDataError(err, req, res);
-                
-                return;
-            }
-            res.render('homepage/homepage', bindData);
-        });
+        };
+        res.render('homepage/homepage', bindData);
     });
 };
 constructor.prototype._mountRoutes_viewEndpoints_array = function()
@@ -139,11 +70,11 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
     var app = context.app;
     app.get('/array/create', function(req, res)
     {
-        __new_bindDataFor_array_create(context, function(err, bindData) 
+        context.API_data_preparation_controller.BindDataFor_datasetsListing(function(err, bindData)
         {
             if (err) {
                 self._renderBindDataError(err, req, res);
-                
+            
                 return;
             }
             res.render('array/create', bindData);
@@ -192,9 +123,10 @@ constructor.prototype.__render_array_gallery = function(req, res, source_key, qu
     var self = this;
     var context = self.context;
     query.source_key = source_key;
-    __new_bindDataFor_array_gallery(context, query, function(err, bindData) 
+    context.API_data_preparation_controller.BindDataFor_array_gallery(query, function(err, bindData)
     {
         if (err) {
+            winston.error("❌  Error getting bind data for Array gallery: ", err);
             self._renderBindDataError(err, req, res);
             
             return;
@@ -207,9 +139,10 @@ constructor.prototype.__render_array_chart = function(req, res, source_key, quer
     var self = this;
     var context = self.context;
     query.source_key = source_key;
-    __new_bindDataFor_array_chart(context, query, function(err, bindData) 
+    context.API_data_preparation_controller.BindDataFor_array_chart(query, function(err, bindData)
     {
         if (err) {
+            winston.error("❌  Error getting bind data for Array chart: ", err);
             self._renderBindDataError(err, req, res);
             
             return;
@@ -260,13 +193,14 @@ constructor.prototype.__render_array_rowObject = function(req, res, source_key, 
 {
     var self = this;
     var context = self.context;
-    __new_bindDataFor_object_show(context, source_key, object_id, function(err, bindData)
+    context.API_data_preparation_controller.BindDataFor_array_objectDetails(source_key, object_id, function(err, bindData) 
     {
         if (err) {
+            winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err);
             self._renderBindDataError(err, req, res);
-            
+        
             return;
-        }
+        }    
         if (bindData == null) { // 404
             self._renderNotFound(err, req, res);
             
