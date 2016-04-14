@@ -31,7 +31,20 @@ function __new_bindDataFor_array_gallery(context, urlQuery, callback)
     context.API_data_preparation_controller.BindDataFor_array_gallery(urlQuery, function(err, bindData)
     {
         if (err) {
-            winston.error("❌  Error getting bind data for Array gallery: ", err)
+            winston.error("❌  Error getting bind data for Array gallery: ", err);
+            callback(err, null);
+            
+            return;
+        }
+        callback(null, bindData);
+    });
+}
+function __new_bindDataFor_array_chart(context, urlQuery, callback)
+{                                                 // ^ already validated to have source_key
+    context.API_data_preparation_controller.BindDataFor_array_gallery(urlQuery, function(err, bindData)
+    {
+        if (err) {
+            winston.error("❌  Error getting bind data for Array chart: ", err);
             callback(err, null);
             
             return;
@@ -44,7 +57,7 @@ function __new_bindDataFor_object_show(context, source_key, object_id, callback)
     context.API_data_preparation_controller.BindDataFor_array_objectDetails(source_key, object_id, function(err, bindData) 
     {
         if (err) {
-            winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err)
+            winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err);
             callback(err, null);
             
             return;
