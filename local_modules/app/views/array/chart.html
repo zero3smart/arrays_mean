@@ -14,6 +14,79 @@
 
             <div id="content" class="site-content">
 
+                <nav id="sort-bar" class="sort-bar" role="navigation">
+
+                    <div class="dropdown sort-control">
+                        <a class="btn btn-default dropdown-toggle" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Type: <span class="sort-criteria">Pie Chart</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="type">
+                            <li><a href="#">Pie Chart</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="dropdown sort-control">
+                        {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
+                        <a class="btn btn-default dropdown-toggle" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Group By: <span class="sort-criteria">Country</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="group-by">
+                            <li><a href="#">Country</a></li>
+                            <li><a href="#">Country</a></li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <script type="text/javascript">
+                    var pieData = [
+                        { 
+                            "label": "American",
+                            "value" : 29
+                        } , 
+                        { 
+                            "label": "German",
+                            "value" : 5
+                        } , 
+                        { 
+                            "label": "British",
+                            "value" : 32
+                        } , 
+                        { 
+                            "label": "French",
+                            "value" : 196
+                        } , 
+                        { 
+                            "label": "Italian",
+                            "value" : 2
+                        } , 
+                        { 
+                            "label": "Japanese",
+                            "value" : 98
+                        } , 
+                        { 
+                            "label": "Swiss",
+                            "value" : 13
+                        } , 
+                        { 
+                            "label": "Dutch",
+                            "value" : 5
+                        }
+                    ];
+                </script>
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+
+                            <div id="chart">
+                                <svg></svg>
+                            </div>
+
+                        </div>
+                    </div><!-- .row -->
+                </div><!-- .container-fluid -->
 
             </div><!-- #content -->
         </div><!-- #page -->
@@ -21,6 +94,11 @@
         <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
         
         <script type="text/javascript" src="/javascripts/lib/bootstrap/bootstrap.js"></script>
+
+        <script type="text/javascript" src="/javascripts/lib/d3/d3.js"></script>
+        <script type="text/javascript" src="/javascripts/lib/nvd3/nv.d3.js"></script>
+
         <script type="text/javascript" src="/javascripts/main.js"></script>
+        <script type="text/javascript" src="/javascripts/module/chart.js"></script>
     </body>
 {% endblock %}

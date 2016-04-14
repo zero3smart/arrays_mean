@@ -4,6 +4,10 @@
 @import url('base/header-bar.css');
 /* @end Base */
 
+/* @group Lib */
+@import url('lib/nvd3/nv.d3.css');
+/* @end Lib */
+
 /* @group Layout */
 @import url('layout/body.css');
 /* @end Layout */
@@ -15,4 +19,5 @@
 @import url('module/gallery-grid.css');
 @import url('module/pagination.css');
 @import url('module/object-show.css');
+@import url('module/chart.css');
 /* @end Module */
