@@ -59,6 +59,7 @@
 	font-size: 18px;
 }
 
+.sidebar-filter-subgroup-item > a.sidebar-filter-active,
 .sidebar-filter-subgroup-item > a:hover {
 	background-color: var(--color-sort-bar-label);
 	color: var(--color-sidebar-bg);

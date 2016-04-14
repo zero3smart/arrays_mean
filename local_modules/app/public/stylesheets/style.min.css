@@ -5179,6 +5179,7 @@ body {
 	background-color: #4a4a4a;
 	font-size: 18px;
 }
+.sidebar-filter-subgroup-item > a.sidebar-filter-active,
 .sidebar-filter-subgroup-item > a:hover {
 	background-color: #9b9b9b;
 	color: #4a4a4a;
