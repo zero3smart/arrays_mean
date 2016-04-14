@@ -17,9 +17,11 @@
                     {% endif %}
                 {% endif %}
 				<li class="sidebar-filter-subgroup-item">
-                    <a href="{{ routePath_withoutFilter }}{{ queryParamJoinChar }}filterCol={{ fieldName }}&filterVal={{ fieldValue }}"
-                        {{ "class=sidebar-filter-active" if isThisTheActiveFilter else "" }}
-                    >
+                        {% set urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + "filterCol=" + fieldName  + "&filterVal=" + fieldValue %}
+                    {% if isThisTheActiveFilter %}
+                        {% set urlForFilterValue = routePath_withoutFilter %}
+                    {% endif %}
+                    <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-active" if isThisTheActiveFilter else "" }}">
                         {{ fieldValue }}
                     </a>
                 </li>
