@@ -158,9 +158,10 @@ constructor.prototype.__render_array_heatmap = function(req, res, source_key, qu
     var self = this;
     var context = self.context;
     query.source_key = source_key;
-    __new_bindDataFor_array_heatmap(context, query, function(err, bindData) 
+    context.API_data_preparation_controller.BindDataFor_array_gallery(query, function(err, bindData)
     {
         if (err) {
+            winston.error("❌  Error getting bind data for Array heatmap: ", err);
             self._renderBindDataError(err, req, res);
             
             return;

@@ -1,0 +1,63 @@
+{% extends "../shared/shared_layout.html" %}
+
+{% block headSuffix %}
+    <title>Arrays - {{ arrayTitle }}</title>
+    
+    
+{% endblock %}
+
+{% block bodyWrapper %}
+    <body class="array array-show">
+        <div id="page" class="site">
+            {% include "../partials/header_bar_array.html" %}
+            {% include "../partials/sidebar_filter.html" %}
+
+            <div id="content" class="site-content">
+
+                <nav id="sort-bar" class="sort-bar" role="navigation">
+
+                    <div class="dropdown sort-control">
+                        <a class="btn btn-default dropdown-toggle" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Map: <span class="sort-criteria">Country of Origin</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="type">
+                            <li><a href="#">Country of Origin</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="dropdown sort-control">
+                        {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
+                        <a class="btn btn-default dropdown-toggle" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Size: <span class="sort-criteria">Uniform</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="group-by">
+                            <li><a href="#">Uniform</a></li>
+                            <li><a href="#">Uniform</a></li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+
+
+                        </div>
+                    </div><!-- .row -->
+                </div><!-- .container-fluid -->
+
+            </div><!-- #content -->
+        </div><!-- #page -->
+
+        <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+        
+        <script type="text/javascript" src="/javascripts/lib/bootstrap/bootstrap.js"></script>
+
+        <script type="text/javascript" src="/javascripts/lib/d3/d3.js"></script>
+        <script type="text/javascript" src="/javascripts/lib/nvd3/nv.d3.js"></script>
+
+        <script type="text/javascript" src="/javascripts/main.js"></script>
+    </body>
+{% endblock %}
