@@ -5947,7 +5947,7 @@ body {
 /* @override 
 	http://localhost:9080/stylesheets/module/chart.css */
 #chart svg {
-	height: 100vm;
+	height: calc(100vh - 135px);
 }
 /* @end Module */
 /*# sourceMappingURL=style.min.css.map */
