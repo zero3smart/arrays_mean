@@ -98,6 +98,8 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     var filterVal = urlQuery.filterVal;
     var isFilterActive = typeof filterCol !== 'undefined' && filterCol != null && filterCol != "";
     //
+    var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+    //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
     var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
@@ -107,13 +109,25 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     if (isSearchActive) { 
         var realColumnName_path = "rowParams." + self._realColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
         var matchOp = { $match: {} };
-        matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: 'i' };
+        matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: "i" };
         wholeFilteredSet_aggregationOperators.push(matchOp);
     }
     if (isFilterActive) { // rules out undefined filterCol
-        var realColumnName_path = "rowParams." + self._realColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
+        var realColumnName = self._realColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
+        var realColumnName_path = "rowParams." + realColumnName;
+        var realFilterValue = filterVal; // To finalize in case of override…
+        var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
+        if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
+            var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[filterVal];
+            if (typeof overrideValue === 'undefined') {
+                var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
+                winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
+             } else {
+                 realFilterValue = overrideValue;
+             }
+        }
         var matchOp = { $match: {} };
-        matchOp["$match"][realColumnName_path] = { $regex: filterVal };
+        matchOp["$match"][realColumnName_path] = { $regex: realFilterValue, $options: "i" };
         wholeFilteredSet_aggregationOperators.push(matchOp);
     }
     //
@@ -175,7 +189,23 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             
                 return;
             }
-            _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName);            
+            // Override values
+            var fieldNamesToOverride = Object.keys(oneToOneOverrideWithValuesByTitleByFieldName);
+            async.each(fieldNamesToOverride, function(fieldName, cb) 
+            {
+                var oneToOneOverrideWithValuesByTitle = oneToOneOverrideWithValuesByTitleByFieldName[fieldName];
+                var titles = Object.keys(oneToOneOverrideWithValuesByTitle);
+                uniqueFieldValuesByFieldName[fieldName] = titles;
+                cb();
+            }, function(err) 
+            {
+                if (err) {
+                    callback(err, null);
+            
+                    return;
+                }
+                _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName);            
+            });
         });
     }
     function _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName)

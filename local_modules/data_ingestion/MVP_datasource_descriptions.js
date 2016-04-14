@@ -122,6 +122,14 @@ exports.Descriptions =
             "URL",
             "Date"
         ],
+        fe_filters_oneToOneOverrideWithValuesByTitleByFieldName: 
+        {
+            "Artist Gender": {
+                "Male": "Male",
+                "Female": "Female",
+                "Not Specified": "NULL"
+            }
+        },
         //
         //
         afterImportingAllSources_generate: 
