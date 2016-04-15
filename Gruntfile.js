@@ -137,6 +137,12 @@ module.exports = function(grunt) {
         cwd: 'bower_components/mapbox-gl-js',
         src: 'mapbox-gl.css',
         dest: 'local_modules/app/public/stylesheets/lib/mapbox-gl-js'
+      },
+      worldGeoJson: {
+        expand: true,
+        cwd: 'bower_components/world.geo.json',
+        src: 'countries.geo.json',
+        dest: 'local_modules/app/public/data/lib/world.geo.json'
       }
     },
 
