@@ -384,9 +384,7 @@ constructor.prototype._mountRoutes_JSONAPI_arrayShare = function(apiURLPrefix)
         });
         function _fabricateAndReplyWithShareURLWithSharedPageId(id)
         {
-            var protocol = process.env.NODE_ENV == 'production' ? 'https' : req.protocol; // we don't just
-            // look at req.protocol since on GCloud https is handled for us, and the protocol
-            // comes out as http when we look it up
+            var protocol = req.protocol; // http in production at the moment since we have a custom domain and no https support yet; when https is in place on prod, use process.env.NODE_ENV == 'production' ? 'https' : 'http'
             var fabricatedShareURL = protocol + '://' + req.get('host') + "/s/" + id;
             _replyWithShareURL(fabricatedShareURL);
         }
