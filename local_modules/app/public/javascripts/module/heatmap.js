@@ -18,7 +18,7 @@ map.on('load', function () {
     map.addSource('countries', countries);
     map.addLayer({
         'id': 'countries',
-        'type': 'line',
+        'type': 'fill',
         'source': 'countries',
         'source-layer': 'contour',
         'layout': {
@@ -26,8 +26,8 @@ map.on('load', function () {
             'line-cap': 'round'
         },
         'paint': {
-            'line-color': '#00DAE5',
-            'line-width': 1
+            'fill-color': '#00DAE5',
+            'fill-opacity': 0.5
         }
     });
 });
