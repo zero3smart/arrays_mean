@@ -7,11 +7,27 @@ var countries = new mapboxgl.GeoJSONSource({
 	data: '/data/lib/world.geo.json/countries.geo.json'
 });
 
-console.log(countries);
-
-var choro = new mapboxgl.Map({
+var map = new mapboxgl.Map({
 	container: 'map',
-	style: 'mapbox://styles/mapbox/streets-v8',
+	style: 'mapbox://styles/mapbox/light-v8',
 	center: [0, 35],
   zoom: 1.5 // starting zoom
+});
+
+map.on('load', function () {
+    map.addSource('countries', countries);
+    map.addLayer({
+        'id': 'countries',
+        'type': 'line',
+        'source': 'countries',
+        'source-layer': 'contour',
+        'layout': {
+            'line-join': 'round',
+            'line-cap': 'round'
+        },
+        'paint': {
+            'line-color': '#00DAE5',
+            'line-width': 1
+        }
+    });
 });
