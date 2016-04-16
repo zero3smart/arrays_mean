@@ -5983,6 +5983,8 @@ body {
 	/*border-bottom: 1px solid var(--color-sort-bar-border);*/
 	background-color: #eeeeee;
 	text-align: center;
+	z-index: 1;
+	position: relative;
 }
 @media (min-width: 768px) {
 	.sort-bar {
@@ -6206,6 +6208,14 @@ body {
 	http://localhost:9080/stylesheets/module/chart.css */
 #chart svg {
 	height: calc(100vh - 135px);
+}
+/* @override 
+	http://localhost:9080/stylesheets/module/heatmap.css */
+#map {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
 }
 /* @end Module */
 /*# sourceMappingURL=style.min.css.map */

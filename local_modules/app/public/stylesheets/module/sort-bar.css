@@ -9,6 +9,8 @@
 	/*border-bottom: 1px solid var(--color-sort-bar-border);*/
 	background-color: #eeeeee;
 	text-align: center;
+	z-index: 1;
+	position: relative;
 }
 
 @media (min-width: 768px) {
