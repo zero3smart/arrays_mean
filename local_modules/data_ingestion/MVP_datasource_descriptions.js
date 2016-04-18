@@ -9,7 +9,7 @@ exports.Descriptions =
     // Production - MoMA dataset
     {
         filename: "MoMA_Artists_v1_jy.csv",
-        uid: "moma_artists_csv",
+        uid: "moma_artists",
         importRevision: 1,
         format: import_datatypes.DataSource_formats.CSV,
         title: "MoMA - Artists",
@@ -72,7 +72,7 @@ exports.Descriptions =
     }
     , {
         filename: "MoMA_Artworks_v2_jy.csv",
-        uid: "moma_artworks_csv",
+        uid: "moma_artworks",
         importRevision: 2,
         format: import_datatypes.DataSource_formats.CSV,
         title: "MoMA - Artworks",

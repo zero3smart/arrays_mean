@@ -72,7 +72,7 @@ constructor.prototype.Model = RawSourceDocument_model;
 //
 constructor.prototype.NewCustomPrimaryKeyStringWithComponents = function(dataSource_uid, dataSource_importRevisionNumber)
 {
-    return dataSource_uid + "-rev" + dataSource_importRevisionNumber;
+    return dataSource_uid + "-r" + dataSource_importRevisionNumber;
 };
 //
 //
