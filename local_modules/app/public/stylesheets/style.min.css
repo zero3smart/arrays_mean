@@ -5015,6 +5015,15 @@ button.close {
     display: none !important; } }
 /* @override 
 	http://localhost:9080/stylesheets/base/variables.css */
+.color-brand,
+a.color-brand:hover,
+a.color-brand:focus,
+a.color-brand:active {
+	color: #feb600;
+}
+.background-color-brand {
+	background-color: #feb600;
+}
 /* @override 
 	http://localhost:9080/stylesheets/base/typography.css */
 /*@font-face {
@@ -6157,9 +6166,6 @@ body {
 	padding-right: 0.25em;
 	padding-left: 0.25em;
 	content: "|";
-}
-.section-array-create .source-link {
-	color: #feb600;
 }
 .panel-source .panel-body-description {
 	color: #4a4a4a;

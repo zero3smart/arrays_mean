@@ -19,3 +19,14 @@
 	
 	--sidebar-width: 285px;
 }
+
+.color-brand,
+a.color-brand:hover,
+a.color-brand:focus,
+a.color-brand:active {
+	color: var(--color-primary);
+}
+
+.background-color-brand {
+	background-color: var(--color-primary);
+}

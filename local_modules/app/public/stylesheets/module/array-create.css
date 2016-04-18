@@ -64,10 +64,6 @@
 	content: "|";
 }
 
-.section-array-create .source-link {
-	color: var(--color-primary);
-}
-
 .panel-source .panel-body-description {
 	color: var(--color-text-med);
 	font-size: 20px;
