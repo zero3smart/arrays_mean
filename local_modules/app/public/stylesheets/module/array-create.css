@@ -1,25 +1,45 @@
 /* @override 
 	http://localhost:9080/stylesheets/module/array-create.css */
-
-.form-source .section-header {
-	margin-top: 50px;
+	
+.array-create {
+	background-color: var(--color-background);
 }
 
-.form-source .section-title {
+.section-array-create .section-header {
+	margin-bottom: 40px;
+	padding-top: 40px;
+	padding-bottom: 40px;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: var(--color-divider);
+}
+
+.section-array-create .section-title {
 	margin-top: 0;
+	text-align: center;
+	font-weight: bold;
+	font-size: 42px;
 }
 
 .panel-source {
-	border-width: 2px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: transparent;
+	border-radius: 2px;
+	box-shadow: 0 2px 6px;
+	color: var(--color-shadow);
 }
 
 .panel-source .panel-body {
-	padding: 20px;
+	padding: 40px 30px;
+	color: black;
 }
 
-.panel-body-title {
+.panel-source .panel-body-title {
 	margin-top: 0;
 	margin-bottom: 0;
+	font-weight: bold;
+	font-size: 42px;
 }
 
 .form-source .radio label {
@@ -27,8 +47,31 @@
 	width: 100%;
 }
 
-.form-source .panel-source:hover {
+.section-array-create .panel-source:hover {
 	border-color: #9b9b9b;
+}
+
+.section-array-create .panel-body-meta {
+	margin-top: 15px;
+	margin-bottom: 15px;
+	color: var(--color-text-light);
+	font-size: 18px;
+}
+
+.source-divider:before {
+	padding-right: 0.25em;
+	padding-left: 0.25em;
+	content: "|";
+}
+
+.section-array-create .source-link {
+	color: var(--color-primary);
+}
+
+.panel-source .panel-body-description {
+	color: var(--color-text-med);
+	font-size: 20px;
+	line-height: 26px;
 }
 
 /*.form-source input[type="radio"]:checked + .panel-source {

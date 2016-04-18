@@ -1,7 +1,7 @@
 /* @group Base */
 @import url('base/bootstrap.css');
 @import url('base/variables.css');
-@import url('base/header-bar.css');
+@import url('base/typography.css');
 /* @end Base */
 
 /* @group Lib */
@@ -14,6 +14,7 @@
 /* @end Layout */
 
 /* @group Module */
+@import url('module/header-bar.css');
 @import url('module/sidebar-filter.css');
 @import url('module/sort-bar.css');
 @import url('module/array-create.css');

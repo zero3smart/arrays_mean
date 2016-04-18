@@ -1,5 +1,5 @@
 /* @override 
-	http://localhost:9080/stylesheets/base/header-bar.css */
+	http://localhost:9080/stylesheets/module/header-bar.css */
 
 .container-fluid.container-full-width {
 	padding-right: 15px;
@@ -9,6 +9,9 @@
 
 .navbar-default {
 	height: 50px;
+	border-bottom-style: none;
+	box-shadow: 0 2px 4px;
+	color: var(--color-shadow);
 	font-size: 18px;
 }
 

@@ -1,0 +1,21 @@
+/* @override 
+	http://localhost:9080/stylesheets/base/typography.css */
+
+/*@font-face {
+	font-family: "Calibre";
+	src: url("/fonts/calibre/.eot?#iefix");
+	src: url("/fonts/calibre/.eot?#iefix") format("eot"),
+		url("/fonts/calibre/.woff2") format("woff2"),
+		url("/fonts/calibre/.woff") format("woff"),
+		url("/fonts/calibre/.ttf") format("truetype"),
+		url("/fonts/calibre/.svg#2e309b1b-08b8-477f-bc9e-7067cf0af0b3") format("svg");
+	font-weight: 200; /* Thin *!/
+}*/
+
+/*body {
+	font-family: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	
+	/* Render fonts thinner and smoother *!/
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}*/

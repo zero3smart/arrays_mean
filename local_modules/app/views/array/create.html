@@ -17,21 +17,13 @@
                     <div class="row">
                         <div class="col-sm-12">
 
-                            <section class="section">
+                            <section class="section section-array-create">
                                 <form id="form-source" class="form-source">
-
-                                    <div class="form-group">
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <h1>Explore Datasets</h1>
-                                            </div>
-                                        </div>
-                                    </div>
 
                                     <header class="section-header">
                                         <div class="row">
                                             <div class="col-sm-12">
-                                                <h2 class="section-title">Data sources</h2>
+                                                <h2 class="section-title">Explore Arrays</h2>
                                             </div>
                                         </div><!-- .row -->
                                     </header>
@@ -42,14 +34,18 @@
                                             <input type="radio" name="source_key" value="{{ source.key }}" class="hidden">
                                             <div class="panel panel-default panel-source">
                                                 <div class="panel-body">
-                                                    <h3 class="panel-body-title">{{ source.title }}</h3>
-                                                    <small>
+                                                    <h2 class="panel-body-title">{{ source.title }}</h2>
+                                                    <div class="panel-body-meta">
                                                         {% set comma = joiner() %}
                                                         {% for url in source.urls -%}
                                                           {{ comma() }} <a href="{{ url }}" class="source-link">{{ url }}</a>
                                                         {%- endfor %}
-                                                    </small>
-                                                    <p>{{ source.description }}</p>
+                                                        <span class="source-divider"></span>
+                                                        <span class="source-count">21,201 Records</span>
+                                                        <span class="source-divider"></span>
+                                                        <span class="source-updated">Last Updated March 2, 2016</span>
+                                                    </div>
+                                                    <p class="panel-body-description">{{ source.description }}</p>
                                                 </div>
                                             </div><!-- .panel -->
                                         </label>
