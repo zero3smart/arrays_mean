@@ -6,14 +6,13 @@
 var winston = require('winston');
 var async = require('async');
 var dataSourceDescriptions = require('../data_ingestion/MVP_datasource_descriptions').Descriptions;
+var importedDataPreparation = require('../data_ingestion/imported_data_preparation');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
 // Constants
 //
 var pageSize = 250;
-//
-var humanReadableColumnName_objectTitle = "Object Title";
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,7 +46,7 @@ constructor.prototype.BindDataFor_datasetsListing = function(callback)
         var err = null;
         var source = 
         {
-            key: self._dataSourcePKeyFromDataSourceDescription(dataSourceDescription),
+            key: importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription, self.context.raw_source_documents_controller),
             title: dataSourceDescription.title,
             description: dataSourceDescription.description,
             urls: dataSourceDescription.urls
@@ -81,7 +80,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         // searchQ
         // searchCol
     var source_pKey = urlQuery.source_key;
-    var dataSourceDescription = self._dataSourceDescriptionWithPKey(source_pKey);
+    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
     var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
@@ -107,13 +106,13 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     //
     var wholeFilteredSet_aggregationOperators = [];
     if (isSearchActive) { 
-        var realColumnName_path = "rowParams." + self._realColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
+        var realColumnName_path = "rowParams." + importedDataPreparation.RealColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
         var matchOp = { $match: {} };
         matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: "i" };
         wholeFilteredSet_aggregationOperators.push(matchOp);
     }
     if (isFilterActive) { // rules out undefined filterCol
-        var realColumnName = self._realColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
+        var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
         var realColumnName_path = "rowParams." + realColumnName;
         var realFilterValue = filterVal; // To finalize in case of override…
         var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
@@ -146,6 +145,11 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             
                 return;
             }
+            if (sampleDoc == null) {
+                callback(new Error('Unexpectedly missing sample document - wrong data source UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+                
+                return;
+            }
             var endTime_s = (new Date().getTime())/1000;
             var duration_s = endTime_s - startTime_s;
             winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.");
@@ -160,7 +164,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         winston.info("⏱  2: Started at\t\t" + startTime_s.toFixed(3) + "s");
 
         var limitToNTopValues = 50;
-        var feVisible_filter_keys = self._rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
+        var feVisible_filter_keys = importedDataPreparation.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
         var feVisible_filter_keys_length = feVisible_filter_keys.length;
         var uniqueFieldValuesByFieldName = {};
         for (var i = 0 ; i < feVisible_filter_keys_length ; i++) {
@@ -185,7 +189,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
                     return;
                 }
                 if (results == undefined || results == null || results.length == 0) {
-                    callback(new Error('Unexpectedly empty unique field value aggregation'));
+                    callback(new Error('Unexpectedly empty unique field value aggregation'), null);
 
                     return;
                 }
@@ -263,9 +267,10 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         winston.info("------------------------------------------");
         var startTime_s = (new Date().getTime())/1000;
         winston.info("⏱  4: Started at\t\t" + startTime_s.toFixed(3) + "s");
-
-        var sortBy_realColumnName_path = "rowParams." + self._realColumnNameFromHumanReadableColumnName(sortBy ? sortBy : humanReadableColumnName_objectTitle, 
-                                                                                                        dataSourceDescription);
+        
+        var sortBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy ? sortBy : importedDataPreparation.HumanReadableColumnName_objectTitle, 
+                                                                                                      dataSourceDescription);
+        var sortBy_realColumnName_path = "rowParams." + sortBy_realColumnName;
         var sortOpParams = {};
         sortOpParams[sortBy_realColumnName_path] = sortDirection;
         //
@@ -352,14 +357,14 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             docs: docs,
             //
             fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
-            humanReadableColumnName_objectTitle: humanReadableColumnName_objectTitle,
+            humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
             //
             hasThumbs: hasThumbs,
             fieldKey_gridThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.gridThumbImageURL : undefined,
             //
             sortBy: sortBy,
             sortDir: sortDir,
-            colNames_orderedForSortByDropdown: self._humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+            colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
             filterCol: filterCol,
             filterVal: filterVal,
@@ -402,7 +407,7 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
 constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, rowObject_id, callback)
 {
     var self = this;
-    var dataSourceDescription = self._dataSourceDescriptionWithPKey(source_pKey);
+    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
     var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     var query =
@@ -422,9 +427,9 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
             
             return;
         }
-        var colNames_sansObjectTitle = self._humanReadableFEVisibleColumnNamesWithSampleRowObject(rowObject, dataSourceDescription);
+        var colNames_sansObjectTitle = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject(rowObject, dataSourceDescription);
         // ^ to finalize:
-        var idxOf_objTitle = colNames_sansObjectTitle.indexOf(humanReadableColumnName_objectTitle);
+        var idxOf_objTitle = colNames_sansObjectTitle.indexOf(importedDataPreparation.HumanReadableColumnName_objectTitle);
         colNames_sansObjectTitle.splice(idxOf_objTitle, 1);
         //
         var alphaSorted_colNames_sansObjectTitle = colNames_sansObjectTitle.sort();
@@ -455,106 +460,3 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
         callback(null, data);
     });
 }
-//
-//
-////////////////////////////////////////////////////////////////////////////////
-// Controller - Accessors - Private
-//
-constructor.prototype._dataSourcePKeyFromDataSourceDescription = function(dataSourceDescription)
-{
-    var self = this;
-    var uid = dataSourceDescription.uid;
-    var importRevision = dataSourceDescription.importRevision;
-    var pKey = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(uid, importRevision);
-    
-    return pKey;
-};
-//
-constructor.prototype._dataSourceDescriptionWithPKey = function(source_pKey)
-{
-    var self = this;
-    var dataSourceDescriptions_length = dataSourceDescriptions.length;
-    for (var i = 0 ; i < dataSourceDescriptions_length ; i++) {
-        var dataSourceDescription = dataSourceDescriptions[i];
-        var dataSourceDescription_pKey = self._dataSourcePKeyFromDataSourceDescription(dataSourceDescription);
-        if (dataSourceDescription_pKey === source_pKey) {
-            return dataSourceDescription;
-        }
-    }
-    
-    return null;
-};
-//
-constructor.prototype._realColumnNameFromHumanReadableColumnName = function(humanReadableColumnName, dataSourceDescription)
-{
-    if (humanReadableColumnName === humanReadableColumnName_objectTitle) {
-        return dataSourceDescription.fe_designatedFields.objectTitle;
-    }
-    
-    return humanReadableColumnName;
-};
-//
-constructor.prototype._rowParamKeysFromSampleRowObject_sansFEExcludedFields = function(sampleRowObject, dataSourceDescription)
-{
-    var rowParams = sampleRowObject.rowParams;
-    var rowParams_keys = Object.keys(rowParams);
-    var rowParams_keys_length = rowParams_keys.length;
-    var feVisible_rowParams_keys = [];
-    for (var i = 0 ; i < rowParams_keys_length ; i++) {
-        var key = rowParams_keys[i];
-        if (dataSourceDescription.fe_excludeFields) {
-            if (dataSourceDescription.fe_excludeFields.indexOf(key) !== -1) {
-                continue;
-            }
-        }
-        feVisible_rowParams_keys.push(key);
-    }
-    
-    return feVisible_rowParams_keys;
-};
-//
-constructor.prototype._rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters = function(sampleRowObject, dataSourceDescription)
-{
-    var self = this;
-    var keys = self._rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    var keys_length = keys.length;
-    var filterAvailable_keys = [];
-    for (var i = 0 ; i < keys_length ; i++) {
-        var key = keys[i];
-        if (dataSourceDescription.fe_fieldsNotAvailableAsFilters) {
-            if (dataSourceDescription.fe_fieldsNotAvailableAsFilters.indexOf(key) !== -1) {
-                continue;
-            }
-        }
-        filterAvailable_keys.push(key);
-    }
-    
-    return filterAvailable_keys;
-};
-//
-constructor.prototype._humanReadableFEVisibleColumnNamesWithSampleRowObject = function(sampleRowObject, dataSourceDescription)
-{
-    var self = this;
-    var rowParams_keys = self._rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    // Replace designated object title with "Object Title"
-    var designatedObjectTitleKey = dataSourceDescription.fe_designatedFields.objectTitle;
-    var indexOfDesignatedObjectTitleKey = rowParams_keys.indexOf(designatedObjectTitleKey); // we presume this is not -1
-    rowParams_keys[indexOfDesignatedObjectTitleKey] = humanReadableColumnName_objectTitle; // replace that with "Object Title"
-    // Any other titles can be done here (^ factor this if necessary to reuse)
-    
-    return rowParams_keys;
-};
-//
-constructor.prototype._humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown = function(sampleRowObject, dataSourceDescription)
-{
-    var self = this;
-    var columnNames = self._humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, dataSourceDescription);
-    columnNames = columnNames.sort(); // alpha sort
-    // Move "Object Title" to idx 0
-    var indexOf_objectTitle = columnNames.indexOf(humanReadableColumnName_objectTitle); // we presume this is not -1
-    columnNames.splice(indexOf_objectTitle, 1);
-    columnNames.unshift(humanReadableColumnName_objectTitle);
-    
-    return columnNames;
-};
-//
