@@ -9,6 +9,7 @@ exports.Descriptions =
     // Production - MoMA dataset
     {
         filename: "MoMA_Artists_v1_jy.csv",
+        fileEncoding: "utf8", // the default
         uid: "moma_artists",
         importRevision: 1,
         format: import_datatypes.DataSource_formats.CSV,
@@ -72,6 +73,7 @@ exports.Descriptions =
     }
     , {
         filename: "MoMA_Artworks_v2_jy.csv",
+        fileEncoding: "utf8", // the default
         uid: "moma_artworks",
         importRevision: 2,
         format: import_datatypes.DataSource_formats.CSV,

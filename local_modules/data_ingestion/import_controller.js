@@ -8,6 +8,7 @@ var winston = require('winston');
 
 var import_datatypes = require('./import_datatypes');
 var import_processing = require('./import_processing');
+var imported_data_preparation = require('./imported_data_preparation')
 //
 //
 //
@@ -137,6 +138,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     //
     var CSV_resources_path_prefix = __dirname + "/resources";
     var filename = csvDescription.filename;
+    var fileEncoding = csvDescription.fileEncoding || 'utf8';
     var revisionNumber = csvDescription.importRevision;
     var importUID = csvDescription.uid;
     winston.info("🔁  " + dataSourceIsIndexInList + ": Importing CSV \"" + filename + "\"");
@@ -211,7 +213,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
         fn(null, stringDocumentObject);
     });
     // Now read
-    var readStream = fs.createReadStream(filepath);
+    var readStream = fs.createReadStream(filepath, { encoding: fileEncoding });
     readStream.on('error', function(err)
     {
         winston.error("❌  Error encountered while trying to open CSV file. The file might not yet exist or the specified filename might contain a typo.");
@@ -233,46 +235,55 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
     //
     function _proceedToScrapeImagesAndRemainderOfPostProcessing()
     {
-        var descriptionsOfFieldsToGenerateByScraping = dataSourceDescription.afterImportingAllSources_generateByScraping;
-        async.eachSeries(descriptionsOfFieldsToGenerateByScraping, function(description, cb)
-        {
-            var htmlSourceAtURLInField = description.htmlSourceAtURLInField;
-            var imageSrcSetInSelector = description.imageSrcSetInSelector;
-            var prependToImageURLs = description.prependToImageURLs || "";
-            var useAndHostSrcSetSizeByField = description.useAndHostSrcSetSizeByField;
-            self.context.processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSource_uid,
-                                                                                           dataSource_importRevision,
-                                                                                           dataSource_title,
-                                                                                           htmlSourceAtURLInField, 
-                                                                                           imageSrcSetInSelector, 
-                                                                                           prependToImageURLs,
-                                                                                           useAndHostSrcSetSizeByField,
-                                                                                           cb);
-        }, function(err)
-        {
-            if (err) {
-                winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
-                callback(err);
+        // var descriptionsOfFieldsToGenerateByScraping = dataSourceDescription.afterImportingAllSources_generateByScraping;
+        // async.eachSeries(descriptionsOfFieldsToGenerateByScraping, function(description, cb)
+        // {
+        //     var htmlSourceAtURLInField = description.htmlSourceAtURLInField;
+        //     var imageSrcSetInSelector = description.imageSrcSetInSelector;
+        //     var prependToImageURLs = description.prependToImageURLs || "";
+        //     var useAndHostSrcSetSizeByField = description.useAndHostSrcSetSizeByField;
+        //     self.context.processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSource_uid,
+        //                                                                                    dataSource_importRevision,
+        //                                                                                    dataSource_title,
+        //                                                                                    htmlSourceAtURLInField,
+        //                                                                                    imageSrcSetInSelector,
+        //                                                                                    prependToImageURLs,
+        //                                                                                    useAndHostSrcSetSizeByField,
+        //                                                                                    cb);
+        // }, function(err)
+        // {
+        //     if (err) {
+        //         winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
+        //         callback(err);
+        //
+        //         return;
+        //     }
+        //     //
+        //     //
+        //     // Now execute user-defined generalized post-processing pipeline
+        //     //
+        //     self._afterGeneratingProcessedDataSet_performEachRowOperations(dataSourceDescription, function(err)
+        //     {
+        //         if (err) {
+        //             winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
+        //             callback(err);
+        //
+        //             return;
+        //         }
+                self._afterGeneratingProcessedDataSet_generateUniqueFilterValueCacheCollection(dataSourceDescription, function(err) 
+                {
+                    if (err) {
+                        winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
+                        callback(err);
         
-                return;
-            }
-            //
-            //
-            // Now execute user-defined generalized post-processing pipeline
-            //
-            self._afterGeneratingProcessedDataSet_performEachRowOperations(dataSourceDescription, function(err)
-            {
-                if (err) {
-                    winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
-                    callback(err);
-        
-                    return;
-                }
-                winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
-                //
-                callback();
-            });
-        });
+                        return;
+                    }
+                    winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
+                    //
+                    callback();
+                });
+        //     });
+        // });
     }
     //
     var enterImageScrapingDirectly = options.enterImageScrapingDirectly;
@@ -427,3 +438,89 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
 }
 //
 //
+constructor.prototype._afterGeneratingProcessedDataSet_generateUniqueFilterValueCacheCollection = function(dataSourceDescription, callback)
+{
+    var self = this;
+    //
+    var dataSource_uid = dataSourceDescription.uid;
+    var dataSource_importRevision = dataSourceDescription.importRevision;    
+    //
+    processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
+    {
+        if (err) {
+            callback(err, null);
+        
+            return;
+        }
+        
+
+        var limitToNTopValues = 50;
+        var feVisible_filter_keys = imported_data_preparation.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
+        var feVisible_filter_keys_length = feVisible_filter_keys.length;
+        var uniqueFieldValuesByFieldName = {};
+        for (var i = 0 ; i < feVisible_filter_keys_length ; i++) {
+            var key = feVisible_filter_keys[i];
+            uniqueFieldValuesByFieldName[key] = [];
+        }
+        async.each(feVisible_filter_keys, function(key, cb) 
+        {            
+            var uniqueStage = { $group : { _id: {}, count: { $sum: 1 } } };
+            uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;
+            //
+            var formatForPersistenceStage = { $project: { _id: 1, count: 1, key: {} } };
+            formatForPersistenceStage["$project"]["key"]["$literal"] = key;
+            //
+            var aggregateOperations = 
+            [
+                uniqueStage,
+                { $sort : { count : -1 } },
+                formatForPersistenceStage,
+            ];
+            console.log("aggregateOperations " , aggregateOperations)
+            //
+            processedRowObjects_mongooseModel.aggregate(aggregateOperations).allowDiskUse(true).exec(function(err, results)
+            {
+                if (err) {
+                    cb(err);
+
+                    return;
+                }
+                if (results == undefined || results == null || results.length == 0) {
+                    callback(new Error('Unexpectedly empty unique field value aggregation'));
+
+                    return;
+                }
+                var values = results.map(function(el) { return el._id; });
+                uniqueFieldValuesByFieldName[key] = values;
+                cb();
+            });
+        }, function(err) 
+        {
+            if (err) {
+                callback(err, null);
+        
+                return;
+            }
+            // Override values
+            var fieldNamesToOverride = Object.keys(oneToOneOverrideWithValuesByTitleByFieldName);
+            async.each(fieldNamesToOverride, function(fieldName, cb) 
+            {
+                var oneToOneOverrideWithValuesByTitle = oneToOneOverrideWithValuesByTitleByFieldName[fieldName];
+                var titles = Object.keys(oneToOneOverrideWithValuesByTitle);
+                uniqueFieldValuesByFieldName[fieldName] = titles;
+                cb();
+            }, function(err) 
+            {
+                if (err) {
+                    callback(err, null);
+        
+                    return;
+                }
+
+
+                console.log("uniqueFieldValuesByFieldName"  , uniqueFieldValuesByFieldName)
+
+            });
+        });
+    });
+}

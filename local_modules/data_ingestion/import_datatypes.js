@@ -53,11 +53,15 @@ var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private fo
         if (inString == "") { // no actual date
             return undefined;
         }
+        // TODO: break these out into the import description function intead
         if (inString == "Unknown" || inString == "unknown" 
             || inString == "Unkown" || inString == "unkown"
         || inString == "Various" || inString == "various"
         || inString == "N/A" || inString == "n/a") { // defined as not defined
             return undefined;
+        }
+        if (inString === "0") {
+            return null;
         }
         if (inString == "n.d." 
             || inString == "n.d"
