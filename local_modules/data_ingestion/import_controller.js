@@ -235,60 +235,51 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
     //
     function _proceedToScrapeImagesAndRemainderOfPostProcessing()
     {
-        // var descriptionsOfFieldsToGenerateByScraping = dataSourceDescription.afterImportingAllSources_generateByScraping;
-        // async.eachSeries(descriptionsOfFieldsToGenerateByScraping, function(description, cb)
-        // {
-        //     var htmlSourceAtURLInField = description.htmlSourceAtURLInField;
-        //     var imageSrcSetInSelector = description.imageSrcSetInSelector;
-        //     var prependToImageURLs = description.prependToImageURLs || "";
-        //     var useAndHostSrcSetSizeByField = description.useAndHostSrcSetSizeByField;
-        //     self.context.processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSource_uid,
-        //                                                                                    dataSource_importRevision,
-        //                                                                                    dataSource_title,
-        //                                                                                    htmlSourceAtURLInField,
-        //                                                                                    imageSrcSetInSelector,
-        //                                                                                    prependToImageURLs,
-        //                                                                                    useAndHostSrcSetSizeByField,
-        //                                                                                    cb);
-        // }, function(err)
-        // {
-        //     if (err) {
-        //         winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
-        //         callback(err);
-        //
-        //         return;
-        //     }
-        //     //
-        //     //
-        //     // Now execute user-defined generalized post-processing pipeline
-        //     //
-        //     self._afterGeneratingProcessedDataSet_performEachRowOperations(dataSourceDescription, function(err)
-        //     {
-        //         if (err) {
-        //             winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
-        //             callback(err);
-        //
-        //             return;
-        //         }
-                self._afterGeneratingProcessedDataSet_generateUniqueFilterValueCacheCollection(dataSourceDescription, function(err) 
-                {
-                    if (err) {
-                        winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
-                        callback(err);
-        
-                        return;
-                    }
-                    winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
-                    //
-                    callback();
-                });
-        //     });
-        // });
+        var descriptionsOfFieldsToGenerateByScraping = dataSourceDescription.afterImportingAllSources_generateByScraping;
+        async.eachSeries(descriptionsOfFieldsToGenerateByScraping, function(description, cb)
+        {
+            var htmlSourceAtURLInField = description.htmlSourceAtURLInField;
+            var imageSrcSetInSelector = description.imageSrcSetInSelector;
+            var prependToImageURLs = description.prependToImageURLs || "";
+            var useAndHostSrcSetSizeByField = description.useAndHostSrcSetSizeByField;
+            self.context.processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSource_uid,
+                                                                                           dataSource_importRevision,
+                                                                                           dataSource_title,
+                                                                                           htmlSourceAtURLInField,
+                                                                                           imageSrcSetInSelector,
+                                                                                           prependToImageURLs,
+                                                                                           useAndHostSrcSetSizeByField,
+                                                                                           cb);
+        }, function(err)
+        {
+            if (err) {
+                winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
+                callback(err);
+
+                return;
+            }
+            //
+            //
+            // Now execute user-defined generalized post-processing pipeline
+            //
+            self._afterGeneratingProcessedDataSet_performEachRowOperations(dataSourceDescription, function(err)
+            {
+                if (err) {
+                    winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
+                    callback(err);
+
+                    return;
+                }
+                winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
+                //
+                callback();
+            });
+        });
     }
     //
     var enterImageScrapingDirectly = options.enterImageScrapingDirectly;
     if (enterImageScrapingDirectly == true) {
-        winston.info("🔁  " + indexInList + ": Proceeding directly to image scraping and remainder of post-processing of \"" + dataSource_title + "\"");
+        winston.info("💬  " + indexInList + ": Proceeding directly to image scraping and remainder of post-processing of \"" + dataSource_title + "\"");
         _proceedToScrapeImagesAndRemainderOfPostProcessing(); // skip over initial processing
     } else {
         winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
@@ -435,92 +426,4 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
             callback(); // all done
         }
     }
-}
-//
-//
-constructor.prototype._afterGeneratingProcessedDataSet_generateUniqueFilterValueCacheCollection = function(dataSourceDescription, callback)
-{
-    var self = this;
-    //
-    var dataSource_uid = dataSourceDescription.uid;
-    var dataSource_importRevision = dataSourceDescription.importRevision;    
-    //
-    processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
-    {
-        if (err) {
-            callback(err, null);
-        
-            return;
-        }
-        
-
-        var limitToNTopValues = 50;
-        var feVisible_filter_keys = imported_data_preparation.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
-        var feVisible_filter_keys_length = feVisible_filter_keys.length;
-        var uniqueFieldValuesByFieldName = {};
-        for (var i = 0 ; i < feVisible_filter_keys_length ; i++) {
-            var key = feVisible_filter_keys[i];
-            uniqueFieldValuesByFieldName[key] = [];
-        }
-        async.each(feVisible_filter_keys, function(key, cb) 
-        {            
-            var uniqueStage = { $group : { _id: {}, count: { $sum: 1 } } };
-            uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;
-            //
-            var formatForPersistenceStage = { $project: { _id: 1, count: 1, key: {} } };
-            formatForPersistenceStage["$project"]["key"]["$literal"] = key;
-            //
-            var aggregateOperations = 
-            [
-                uniqueStage,
-                { $sort : { count : -1 } },
-                formatForPersistenceStage,
-            ];
-            console.log("aggregateOperations " , aggregateOperations)
-            //
-            processedRowObjects_mongooseModel.aggregate(aggregateOperations).allowDiskUse(true).exec(function(err, results)
-            {
-                if (err) {
-                    cb(err);
-
-                    return;
-                }
-                if (results == undefined || results == null || results.length == 0) {
-                    callback(new Error('Unexpectedly empty unique field value aggregation'));
-
-                    return;
-                }
-                var values = results.map(function(el) { return el._id; });
-                uniqueFieldValuesByFieldName[key] = values;
-                cb();
-            });
-        }, function(err) 
-        {
-            if (err) {
-                callback(err, null);
-        
-                return;
-            }
-            // Override values
-            var fieldNamesToOverride = Object.keys(oneToOneOverrideWithValuesByTitleByFieldName);
-            async.each(fieldNamesToOverride, function(fieldName, cb) 
-            {
-                var oneToOneOverrideWithValuesByTitle = oneToOneOverrideWithValuesByTitleByFieldName[fieldName];
-                var titles = Object.keys(oneToOneOverrideWithValuesByTitle);
-                uniqueFieldValuesByFieldName[fieldName] = titles;
-                cb();
-            }, function(err) 
-            {
-                if (err) {
-                    callback(err, null);
-        
-                    return;
-                }
-
-
-                console.log("uniqueFieldValuesByFieldName"  , uniqueFieldValuesByFieldName)
-
-            });
-        });
-    });
 }
