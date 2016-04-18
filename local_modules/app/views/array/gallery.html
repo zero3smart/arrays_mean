@@ -70,7 +70,7 @@
                                             {% for doc in docs %}
                                             <li class="gallery-item">
                                                 <a href="/array/{{ doc.srcDocPKey }}/{{ doc._id }}">
-                                                    <img src="{{ doc.rowParams[fieldKey_gridThumbImageURL] if hasThumbs and doc.rowParams[fieldKey_gridThumbImageURL] else "http://placehold.it/180x180" }}" class="gallery-image" />
+                                                    <img src="{{ doc.rowParams[fieldKey_medThumbImageURL] if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] else "http://placehold.it/180x180" }}" class="gallery-image" />
                                                     <div class="gallery-tooltip">
                                                         <h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] }}</h2>
                                                     </div>
@@ -139,8 +139,8 @@
                                                         <li><span>&hellip;</span></li>
                                                     {% endif %}
 
-                                                    {% for i in range(lastPage - extremePagesLimit+1, lastPage) -%}
-                                                        {% if ( i >= currentPage + nearbyPagesLimit ) %}
+                                                    {% for i in range(lastPage - extremePagesLimit+1, lastPage+1) -%}
+                                                        {% if ( i > currentPage + nearbyPagesLimit ) %}
                                                             <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
                                                         {% endif %}
                                                     {%- endfor %}
