@@ -135,6 +135,10 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     _proceedTo_obtainSampleDocument();
     function _proceedTo_obtainSampleDocument()
     {
+        winston.info("------------------------------------------");
+        var startTime_s = (new Date().getTime())/1000;
+        winston.info("⏱  1: Started at\t\t" + startTime_s.toFixed(3) + "s");
+
         processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
         {
             if (err) {
@@ -142,11 +146,19 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             
                 return;
             }
+            var endTime_s = (new Date().getTime())/1000;
+            var duration_s = endTime_s - startTime_s;
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.");
+        
             _proceedTo_obtainTopUniqueFieldValuesForFiltering(sampleDoc);
         });
     }
     function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sampleDoc)
     {
+        winston.info("------------------------------------------");
+        var startTime_s = (new Date().getTime())/1000;
+        winston.info("⏱  2: Started at\t\t" + startTime_s.toFixed(3) + "s");
+
         var limitToNTopValues = 50;
         var feVisible_filter_keys = self._rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
         var feVisible_filter_keys_length = feVisible_filter_keys.length;
@@ -204,12 +216,20 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             
                     return;
                 }
+                var endTime_s = (new Date().getTime())/1000;
+                var duration_s = endTime_s - startTime_s;
+                winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.");
+        
                 _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName);            
             });
         });
     }
     function _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName)
     {
+        winston.info("------------------------------------------");
+        var startTime_s = (new Date().getTime())/1000;
+        winston.info("⏱  3: Started at\t\t" + startTime_s.toFixed(3) + "s");
+
         var countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
             { // Count
                 $group: {
@@ -231,12 +251,20 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             } else {
                 nonpagedCount = results[0].count;
             }
+            var endTime_s = (new Date().getTime())/1000;
+            var duration_s = endTime_s - startTime_s;
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.");
+        
             _proceedTo_obtainPagedDocs(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
         };
         processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).exec(doneFn);
     }
     function _proceedTo_obtainPagedDocs(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
     {
+        winston.info("------------------------------------------");
+        var startTime_s = (new Date().getTime())/1000;
+        winston.info("⏱  4: Started at\t\t" + startTime_s.toFixed(3) + "s");
+
         var sortBy_realColumnName_path = "rowParams." + self._realColumnNameFromHumanReadableColumnName(sortBy ? sortBy : humanReadableColumnName_objectTitle, 
                                                                                                         dataSourceDescription);
         var sortOpParams = {};
@@ -259,6 +287,10 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             if (docs == undefined || docs == null || docs.length == 0) {
                 docs = [];
             }
+            var endTime_s = (new Date().getTime())/1000;
+            var duration_s = endTime_s - startTime_s;
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.");
+        
             _prepareDataAndCallBack(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs);
         };
         processedRowObjects_mongooseModel.aggregate(pagedDocs_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
