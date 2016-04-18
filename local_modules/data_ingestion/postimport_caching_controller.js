@@ -122,8 +122,8 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                 for (var i = 0 ; i < illegalValues_length ; i++) {
                     var illegalVal = illegalValues[i];
                     var idxOfIllegalVal = values.indexOf(illegalVal);
-                    if (idxOfIllegalVal != -1) {
-                        values.splice(idxOfIllegalVal);
+                    if (idxOfIllegalVal !== -1) {
+                        values.splice(idxOfIllegalVal, 1);
                     }
                 }
                 //
