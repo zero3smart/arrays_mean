@@ -116,6 +116,17 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                     return;
                 }
                 var values = results.map(function(el) { return el._id; });
+                // remove illegal values
+                var illegalValues = [ "" ];
+                var illegalValues_length = illegalValues.length;
+                for (var i = 0 ; i < illegalValues_length ; i++) {
+                    var illegalVal = illegalValues[i];
+                    var idxOfIllegalVal = values.indexOf(illegalVal);
+                    if (idxOfIllegalVal != -1) {
+                        values.splice(idxOfIllegalVal);
+                    }
+                }
+                //
                 uniqueFieldValuesByFieldName[key] = values;
                 cb();
             });
