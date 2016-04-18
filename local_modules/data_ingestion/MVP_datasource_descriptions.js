@@ -43,9 +43,9 @@ exports.Descriptions =
                 by: {
                     doing: import_processing.Ops.Join,
                     onField: "Artist",
-                    ofOtherRawSrcUID: "moma_artworks_csv",
+                    ofOtherRawSrcUID: "moma_artworks",
                     andOtherRawSrcImportRevision: 2,
-                    withLocalField: "Artist",
+                    withLocalField: "DisplayName",
                     obtainingValueFromField: "Title"
                 }
             }
@@ -64,6 +64,7 @@ exports.Descriptions =
         ],
         fe_fieldsNotAvailableAsFilters:
         [
+            "Artworks", // it's an array
             "DisplayDate",
             "BeginDate",
             "EndDate",
@@ -116,6 +117,7 @@ exports.Descriptions =
         ],
         fe_fieldsNotAvailableAsFilters:
         [
+            "Title", // they're almost exclusively unique
             "ArtistBio",
             "Dimensions",
             "CreditLine",
@@ -141,8 +143,8 @@ exports.Descriptions =
                 singular: true, // there is only one gender per artwork's artist
                 by: {
                     doing: import_processing.Ops.Join,
-                    onField: "Artist",
-                    ofOtherRawSrcUID: "moma_artists_csv",
+                    onField: "DisplayName",
+                    ofOtherRawSrcUID: "moma_artists",
                     andOtherRawSrcImportRevision: 1,
                     withLocalField: "Artist",
                     obtainingValueFromField: "Code"

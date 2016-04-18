@@ -7,6 +7,7 @@ var winston = require('winston');
 var async = require('async');
 var dataSourceDescriptions = require('../data_ingestion/MVP_datasource_descriptions').Descriptions;
 var importedDataPreparation = require('../data_ingestion/imported_data_preparation');
+var cached_values_model = require('../cached_values/cached_values_model');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -81,6 +82,11 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         // searchCol
     var source_pKey = urlQuery.source_key;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
+    if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
+        callback(new Error("No data source with that source pkey " + source_pKey), null);
+        
+        return;
+    }
     var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
@@ -162,69 +168,30 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         winston.info("------------------------------------------");
         var startTime_s = (new Date().getTime())/1000;
         winston.info("⏱  2: Started at\t\t" + startTime_s.toFixed(3) + "s");
-
-        var limitToNTopValues = 50;
-        var feVisible_filter_keys = importedDataPreparation.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
-        var feVisible_filter_keys_length = feVisible_filter_keys.length;
-        var uniqueFieldValuesByFieldName = {};
-        for (var i = 0 ; i < feVisible_filter_keys_length ; i++) {
-            var key = feVisible_filter_keys[i];
-            uniqueFieldValuesByFieldName[key] = [];
-        }
-        async.each(feVisible_filter_keys, function(key, cb) 
-        {            
-            var uniqueStage = { $group : { _id: {}, count: { $sum: 1 } } };
-            uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;
-            //
-            processedRowObjects_mongooseModel.aggregate([
-                uniqueStage,
-                { $sort : { count : -1 } },
-                { $limit : limitToNTopValues },
-                
-            ]).allowDiskUse(true).exec(function(err, results)
-            {
-                if (err) {
-                    cb(err);
-
-                    return;
-                }
-                if (results == undefined || results == null || results.length == 0) {
-                    callback(new Error('Unexpectedly empty unique field value aggregation'), null);
-
-                    return;
-                }
-                var values = results.map(function(el) { return el._id; });
-                uniqueFieldValuesByFieldName[key] = values;
-                cb();
-            });
-        }, function(err) 
+        //
+        cached_values_model.MongooseModel.findOne({ srcDocPKey: source_pKey }, function(err, doc) 
         {
             if (err) {
-                callback(err, null);
-            
+                callback(err);
+
                 return;
             }
-            // Override values
-            var fieldNamesToOverride = Object.keys(oneToOneOverrideWithValuesByTitleByFieldName);
-            async.each(fieldNamesToOverride, function(fieldName, cb) 
-            {
-                var oneToOneOverrideWithValuesByTitle = oneToOneOverrideWithValuesByTitleByFieldName[fieldName];
-                var titles = Object.keys(oneToOneOverrideWithValuesByTitle);
-                uniqueFieldValuesByFieldName[fieldName] = titles;
-                cb();
-            }, function(err) 
-            {
-                if (err) {
-                    callback(err, null);
-            
-                    return;
-                }
-                var endTime_s = (new Date().getTime())/1000;
-                var duration_s = endTime_s - startTime_s;
-                winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.");
-        
-                _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName);            
-            });
+            if (doc == null) {
+                callback(new Error('Missing cached values document for srcDocPKey: ' + source_pKey), null);
+
+                return;
+            }
+            var uniqueFieldValuesByFieldName = doc.limitedUniqValsByHumanReadableColName;
+            if (uniqueFieldValuesByFieldName == null || typeof uniqueFieldValuesByFieldName === 'undefined') {
+                callback(new Error('Unexpectedly missing uniqueFieldValuesByFieldName for srcDocPKey: ' + source_pKey), null);
+
+                return;
+            }
+            var endTime_s = (new Date().getTime())/1000;
+            var duration_s = endTime_s - startTime_s;
+            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.");
+    
+            _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName);            
         });
     }
     function _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName)

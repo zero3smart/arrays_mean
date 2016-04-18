@@ -8,7 +8,6 @@ var winston = require('winston');
 
 var import_datatypes = require('./import_datatypes');
 var import_processing = require('./import_processing');
-var imported_data_preparation = require('./imported_data_preparation')
 //
 //
 //
@@ -37,7 +36,7 @@ constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescrip
     var self = this;
     var i = 1;
     async.eachSeries(dataSourceDescriptions, function(dataSourceDescription, callback)
-    { // we wrap the function with this closure here so 'self' (this) is accessible within the called function
+    { 
         self._dataSourceParsingAndImportingFunction(i, dataSourceDescription, callback);
         i++;
     }, function(err) 
@@ -427,3 +426,4 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
         }
     }
 }
+
