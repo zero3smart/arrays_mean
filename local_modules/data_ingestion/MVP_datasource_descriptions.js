@@ -86,6 +86,11 @@ exports.Descriptions =
             "DisplayDate" : "Bio",
             "BeginDate" : "Date of Birth",
             "EndDate" : "Date of Death"
+        },
+        fe_filters_valuesToExcludeByOriginalKey:
+        {
+            _all: [ "" ],
+            "Nationality" : [ "NULL" ]
         }
     }
     , {
@@ -149,6 +154,10 @@ exports.Descriptions =
                 "Female": "Female",
                 "Not Specified": "NULL"
             }
+        },
+        fe_filters_valuesToExcludeByOriginalKey:
+        {
+            _all: [ "" ]
         },
         fe_filters_displayTitleOverride:
         { // these are to be tuples - the values must be unique as well

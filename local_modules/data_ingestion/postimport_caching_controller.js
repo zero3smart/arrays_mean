@@ -116,8 +116,19 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                     return;
                 }
                 var values = results.map(function(el) { return el._id; });
+                //
                 // remove illegal values
-                var illegalValues = [ "" ];
+                var illegalValues = []; // default val
+                if (dataSourceDescription.fe_filters_valuesToExcludeByOriginalKey) {
+                    if (dataSourceDescription.fe_filters_valuesToExcludeByOriginalKey._all) {
+                        illegalValues = illegalValues.concat(dataSourceDescription.fe_filters_valuesToExcludeByOriginalKey._all);
+                    }
+                    var illegalValuesForThisKey = dataSourceDescription.fe_filters_valuesToExcludeByOriginalKey[key];
+                    if (illegalValuesForThisKey) {
+                        illegalValues = illegalValues.concat(illegalValuesForThisKey);
+                    }
+                }                
+                //
                 var illegalValues_length = illegalValues.length;
                 for (var i = 0 ; i < illegalValues_length ; i++) {
                     var illegalVal = illegalValues[i];
