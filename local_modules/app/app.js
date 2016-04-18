@@ -64,21 +64,6 @@ mongoose_client.WhenMongoDBConnected(function()
 function _mountRoutesAndStartListening()
 {
     winston.info("💬  Proceeding to boot app.");
-    
-    // this does not work yet
-    // if (isDev == true) {
-    //     app.all(function(req, res, next)
-    //     { // redirect all non-www to www
-    //         console.log("HELLO")
-    //         var host = req.header("host");
-    //         var protocol = "http";
-    //         if (host.match(/^www\..*/i)) {
-    //             next();
-    //         } else {
-    //             res.redirect(301, protocol + "://www." + host);
-    //         }
-    //     });
-    // }
     //
     context.routes_controller.MountRoutes();
     //

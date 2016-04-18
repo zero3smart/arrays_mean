@@ -3,6 +3,14 @@ var url = require('url');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
+// Constants
+//
+var isDev = process.env.NODE_ENV == 'development';
+var __DEBUG_enableEnsureWWWForDev = false; // for debug
+var shouldEnsureWWW = isDev == false || __DEBUG_enableEnsureWWWForDev;
+//
+//
+////////////////////////////////////////////////////////////////////////////////
 // Routes controller
 //
 var constructor = function(options, context)
@@ -55,7 +63,7 @@ constructor.prototype._mountRoutes_viewEndpoints_homepage = function()
     var self = this;
     var context = self.context;
     var app = context.app;
-    app.get('/', function(req, res)
+    app.get('/', _ensureWWW, function(req, res)
     {
         var bindData = 
         {
@@ -71,7 +79,7 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
     var self = this;
     var context = self.context;
     var app = context.app;
-    app.get('/array/create', function(req, res)
+    app.get('/array/create', _ensureWWW, function(req, res)
     {
         context.API_data_preparation_controller.BindDataFor_datasetsListing(function(err, bindData)
         {
@@ -83,7 +91,7 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
             res.render('array/create', bindData);
         });
     });
-    app.get('/array/:source_key/gallery', function(req, res)
+    app.get('/array/:source_key/gallery', _ensureWWW, function(req, res)
     {
         var source_key = req.params.source_key;
         if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
@@ -95,7 +103,7 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
         var query = url_parts.query;
         self.__render_array_gallery(req, res, source_key, query);
     });
-    app.get('/array/:source_key/chart', function(req, res)
+    app.get('/array/:source_key/chart', _ensureWWW, function(req, res)
     {
         var source_key = req.params.source_key;
         if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
@@ -107,7 +115,7 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
         var query = url_parts.query;
         self.__render_array_chart(req, res, source_key, query);
     });
-    app.get('/array/:source_key/heatmap', function(req, res)
+    app.get('/array/:source_key/heatmap', _ensureWWW, function(req, res)
     {
         var source_key = req.params.source_key;
         if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
@@ -120,7 +128,6 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
         self.__render_array_heatmap(req, res, source_key, query);
     });
 };
-
 constructor.prototype.__render_array_gallery = function(req, res, source_key, query)
 {
     var self = this;
@@ -176,7 +183,7 @@ constructor.prototype._mountRoutes_viewEndpoints_object = function()
     var self = this;
     var context = self.context;
     var app = context.app;
-    app.get('/array/:source_key/:object_id', function(req, res)
+    app.get('/array/:source_key/:object_id', _ensureWWW, function(req, res)
     {
         var source_key = req.params.source_key;
         if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
@@ -221,7 +228,7 @@ constructor.prototype._mountRoutes_viewEndpoints_sharedPages = function()
     var self = this;
     var context = self.context;
     var app = context.app;
-    app.get('/s/:shared_page_id', function(req, res)
+    app.get('/s/:shared_page_id', _ensureWWW, function(req, res)
     {
         var shared_page_id = req.params.shared_page_id;
         if (shared_page_id == null || typeof shared_page_id === 'undefined' || shared_page_id == "") {
@@ -422,21 +429,39 @@ constructor.prototype._mountRoutes_errorHandling = function()
     var self = this;
     var context = self.context;
     var app = context.app;
+    //
     // Add the error logger after all middleware and routes so that
     // it can log errors from the whole application. Any custom error
     // handlers should go after this.
     app.use(context.logging.errorLogger);
-
-    app.use(function (req, res)
-    {
-        //  404 handler
+    //
+    app.use(function(req, res)
+    { // 404 handler
         res.status(404).send('Not Found');
     });
-
-    app.use(function (err, req, res, next) 
-    {
-        // Basic error handler
+    //
+    app.use(function(err, req, res, next) 
+    { // Basic error handler
         res.status(500).send(err.response || 'Internal Server Error');
     });
-    
 };
+//
+//
+////////////////////////////////////////////////////////////////////////////////
+// Middleware
+//
+function _ensureWWW(req, res, next)
+{
+    if (shouldEnsureWWW == false) {
+        next();
+        
+        return;
+    }
+    var host = req.header("host");
+    var protocol = "http";
+    if (host.match(/^www\..*/i)) {
+        next();
+    } else {
+        res.redirect(301, protocol + "://www." + host + req.originalUrl);
+    }
+}
