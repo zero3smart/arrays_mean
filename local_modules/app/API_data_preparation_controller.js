@@ -292,8 +292,9 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         }
         if (page !== undefined && page != null && page !== "") {
             var appendQuery = "page=" + page;
-            routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
-            // we do not include page in the _withoutSearch url as new searches should reset the page to 1
+            // we do not include page in the _withoutSearch and _withoutFilter urls as new searches and filters should reset the page to 1,
+            // not only as it constitutes a new data set/search which means a reset of the origin of the set from a UX standpoint,
+            // but because the set might be of a different length and result in an empty page being displayed
             routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
         }
