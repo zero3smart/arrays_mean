@@ -91,7 +91,7 @@ exports.Descriptions =
             DateAcquired: {
                 do: import_datatypes.Coercion_ops.ToDate,
                 opts: {
-                    format: "MM/DD/YYYY" // e.g. "1/01/2009"
+                    format: "YYYY-MM-DD" // e.g. "2009-03-21"
                 }
             },
             Date: {
