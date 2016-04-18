@@ -216,8 +216,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
                 return;
             }
             var nonpagedCount = 0;
-            if (results == undefined || results == null || results.length == 0) {
-                // 0
+            if (results == undefined || results == null || results.length == 0) { // 0
             } else {
                 nonpagedCount = results[0].count;
             }
@@ -285,10 +284,10 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         }
         if (sortDir !== undefined && sortDir != null && sortDir !== "") {
             var appendQuery = "sortDir=" + sortDir;
-            routePath_withoutFilter = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,        appendQuery, routePath_base);
-            routePath_withoutSearch = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,        appendQuery, routePath_base);
-            routePath_withoutPage   = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,          appendQuery, routePath_base);
-            routePath_withoutSortBy = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,        appendQuery, routePath_base);
+            routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,        appendQuery, routePath_base);
+            routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,        appendQuery, routePath_base);
+            routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,          appendQuery, routePath_base);
+            routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,        appendQuery, routePath_base);
         }
         if (page !== undefined && page != null && page !== "") {
             var appendQuery = "page=" + page;
@@ -401,7 +400,7 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
         colNames_sansObjectTitle.splice(idxOf_objTitle, 1);
         //
         var alphaSorted_colNames_sansObjectTitle = colNames_sansObjectTitle.sort();
-        
+        //
         var designatedOriginalImageField = dataSourceDescription.fe_designatedFields.originalImageURL;
         var hasDesignatedOriginalImageField = designatedOriginalImageField ? true : false;
         var rowObjectHasOriginalImage = false;
@@ -411,6 +410,17 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
                 rowObjectHasOriginalImage = true;
             }
         }
+        // Move the data to the human-readable keys so they are accessible by the template
+        var fe_filters_displayTitleOverride = dataSourceDescription.fe_filters_displayTitleOverride || {};
+        var originalKeys = Object.keys(fe_filters_displayTitleOverride);
+        var originalKeys_length = originalKeys.length;
+        for (var i = 0 ; i < originalKeys_length ; i++) {
+            var originalKey = originalKeys[i];
+            var overrideTitle = fe_filters_displayTitleOverride[originalKey];
+            var valueAtOriginalKey = rowObject.rowParams[originalKey];
+            rowObject.rowParams[overrideTitle] = valueAtOriginalKey;
+        }
+        //
         var data =
         {
             arrayTitle: dataSourceDescription.title,

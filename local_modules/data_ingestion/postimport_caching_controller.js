@@ -126,8 +126,10 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                         values.splice(idxOfIllegalVal, 1);
                     }
                 }
-                //
-                uniqueFieldValuesByFieldName[key] = values;
+                // Note here we use the human-readable key. We decode it back to the original key at query-time
+                delete uniqueFieldValuesByFieldName[key]; // so no stale values persist in hash
+                var finalizedStorageKey = dataSourceDescription.fe_filters_displayTitleOverride[key] || key;
+                uniqueFieldValuesByFieldName[finalizedStorageKey] = values;
                 cb();
             });
         }, function(err) 

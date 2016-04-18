@@ -54,7 +54,7 @@ exports.Descriptions =
         //
         fe_designatedFields: 
         {
-            objectTitle: "Artist",
+            objectTitle: "DisplayName",
             originalImageURL: null, // not strictly necessary to define as null but done for explicitness
             medThumbImageURL: null // not strictly necessary to define as null but done for explicitness
         },
@@ -64,13 +64,29 @@ exports.Descriptions =
         ],
         fe_fieldsNotAvailableAsFilters:
         [
+            "DisplayName", // because they're effectively unique
             "Artworks", // it's an array
             "DisplayDate",
             "BeginDate",
             "EndDate",
             "Wiki QID",
             "ULAN"
-        ]
+        ],
+        fe_filters_oneToOneOverrideWithValuesByTitleByFieldName: 
+        {
+            "Gender": {
+                "Male": "Male",
+                "Female": "Female",
+                "Not Specified": "NULL"
+            }
+        },
+        fe_filters_displayTitleOverride:
+        { // these are to be tuples - the values must be unique as well
+            "Code" : "Gender",
+            "DisplayDate" : "Bio",
+            "BeginDate" : "Date of Birth",
+            "EndDate" : "Date of Death"
+        }
     }
     , {
         filename: "MoMA_Artworks_v2_jy.csv",
@@ -133,6 +149,14 @@ exports.Descriptions =
                 "Female": "Female",
                 "Not Specified": "NULL"
             }
+        },
+        fe_filters_displayTitleOverride:
+        { // these are to be tuples - the values must be unique as well
+            "CuratorApproved": "Curator Approved",
+            "DateAcquired": "Date Acquired",
+            "CreditLine": "Credit Line",
+            "ArtistBio": "Artist Bio",
+            "MoMANumber": "MoMA Number"
         },
         //
         //

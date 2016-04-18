@@ -46,6 +46,16 @@ function _realColumnNameFromHumanReadableColumnName(humanReadableColumnName, dat
     if (humanReadableColumnName === humanReadableColumnName_objectTitle) {
         return dataSourceDescription.fe_designatedFields.objectTitle;
     }
+    var fe_filters_displayTitleOverride = dataSourceDescription.fe_filters_displayTitleOverride || {};
+    var originalKeys = Object.keys(fe_filters_displayTitleOverride);
+    var originalKeys_length = originalKeys.length;
+    for (var i = 0 ; i < originalKeys_length ; i++) {
+        var originalKey = originalKeys[i];
+        var overrideTitle = fe_filters_displayTitleOverride[originalKey];
+        if (overrideTitle === humanReadableColumnName) {
+            return originalKey;
+        }
+    }
     
     return humanReadableColumnName;
 };
@@ -91,13 +101,23 @@ function _rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleRowOb
 module.exports.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters = _rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters;
 //
 function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, dataSourceDescription)
-{
+{ // e.g. Replace designated object title with "Object Title"
     var rowParams_keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    // Replace designated object title with "Object Title"
-    var designatedObjectTitleKey = dataSourceDescription.fe_designatedFields.objectTitle;
-    var indexOfDesignatedObjectTitleKey = rowParams_keys.indexOf(designatedObjectTitleKey); // we presume this is not -1
-    rowParams_keys[indexOfDesignatedObjectTitleKey] = humanReadableColumnName_objectTitle; // replace that with "Object Title"
-    // Any other titles can be done here (^ factor this if necessary to reuse)
+    var fe_filters_displayTitleOverride = dataSourceDescription.fe_filters_displayTitleOverride || {};
+    // add in "Object Title" so we use the same machinery as the hand-specified ones
+    fe_filters_displayTitleOverride["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
+    //
+    var originalKeys = Object.keys(fe_filters_displayTitleOverride);
+    var originalKeys_length = originalKeys.length;
+    for (var i = 0 ; i < originalKeys_length ; i++) {
+        var originalKey = originalKeys[i];
+        var displayTitleForKey = fe_filters_displayTitleOverride[originalKey];
+        var indexOfOriginalKey = rowParams_keys.indexOf(originalKey);
+        if (indexOfOriginalKey !== -1) {
+            rowParams_keys[indexOfOriginalKey] = displayTitleForKey; // replace with display title
+        }
+    }
+    
     
     return rowParams_keys;
 };
