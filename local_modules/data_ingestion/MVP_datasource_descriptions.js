@@ -56,7 +56,7 @@ exports.Descriptions =
         {
             objectTitle: "Artist",
             originalImageURL: null, // not strictly necessary to define as null but done for explicitness
-            gridThumbImageURL: null // not strictly necessary to define as null but done for explicitness
+            medThumbImageURL: null // not strictly necessary to define as null but done for explicitness
         },
         fe_excludeFields: 
         [
@@ -106,7 +106,7 @@ exports.Descriptions =
         {
             objectTitle: "Title",
             originalImageURL: "imgURL_original",
-            gridThumbImageURL: "imgURL_gridThumb"
+            medThumbImageURL: "imgURL_gridThumb"
         },
         fe_excludeFields: 
         [

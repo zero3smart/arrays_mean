@@ -269,7 +269,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     function _prepareDataAndCallBack(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs)
     {
         var err = null;
-        var hasThumbs = dataSourceDescription.fe_designatedFields.gridThumbImageURL ? true : false;
+        var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
         var routePath_base              = "/array/" + source_pKey + "/gallery";
         var routePath_withoutFilter     = routePath_base;
         var routePath_withoutSearch     = routePath_base;
@@ -327,7 +327,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
             //
             hasThumbs: hasThumbs,
-            fieldKey_gridThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.gridThumbImageURL : undefined,
+            fieldKey_medThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.medThumbImageURL : undefined,
             //
             sortBy: sortBy,
             sortDir: sortDir,
