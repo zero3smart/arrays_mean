@@ -22,7 +22,23 @@
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a>
 					<ul class="dropdown-menu dropdown-search">
-						<li><input type="text" class="form-control" placeholder="Start Searching"></li>
+						<form action="/array/{{ array_source_key }}/search" method="get">
+							<li>
+								<div class="dropdown search-control">
+									<a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+										Search: <span class="search-criteria">Object Title</span>
+										<span class="caret"></span>
+									</a>
+									<input type="hidden" name="col" value="Object Title" class="search-colname">
+									<ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+										{% for colName in colNames_orderedForSortByDropdown %}
+										<li class="search-dropdown-item"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
+										{% endfor %}
+									</ul>
+								</div>
+							</li>
+							<li><input type="text" name="query" class="form-control" placeholder="Start Searching"></li>
+						</form>
 					</ul>
 				</li>
 				<li class="dropdown">

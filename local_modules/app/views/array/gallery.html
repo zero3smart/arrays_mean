@@ -17,7 +17,7 @@
                 <nav id="sort-bar" class="sort-bar" role="navigation">
 
                     <div class="dropdown sort-control">
-                        <a class="btn btn-default dropdown-toggle" type="button" id="sort-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <a class="btn btn-default dropdown-toggle" id="sort-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Sort By: <span class="sort-criteria">{{ sortBy if sortBy else humanReadableColumnName_objectTitle }}</span>
                             <span class="caret"></span>
                         </a>
@@ -31,7 +31,7 @@
 
                     <div class="dropdown sort-control">
                         {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
-                        <a class="btn btn-default dropdown-toggle" type="button" id="sort-direction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <a class="btn btn-default dropdown-toggle" id="sort-direction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Sort Direction: <span class="sort-criteria">{{ sortDir if sortDir else "Ascending" }}</span>
                             <span class="caret"></span>
                         </a>

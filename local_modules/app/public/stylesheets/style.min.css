@@ -5089,6 +5089,7 @@ button.close {
 	width: 280px;
 }
 .dropdown-search .form-control {
+	margin-top: 15px;
 	padding: 13px 20px;
 	height: auto;
 	border-color: #979797;
@@ -5100,6 +5101,22 @@ button.close {
 .dropdown-search .form-control:focus {
 	border-color: white;
 	box-shadow: none;
+}
+.dropdown-search .dropdown-toggle {
+	padding-top: 13px;
+	padding-bottom: 13px;
+	width: 100%;
+	border-color: #979797;
+	border-radius: 0;
+	background-color: #979797;
+	color: white;
+	text-align: left;
+}
+.search-criteria {
+	font-weight: bold;
+}
+.search-dropdown-menu {
+	width: 100%;
 }
 /* @end Search Dropdown */
 /* @end Base */
