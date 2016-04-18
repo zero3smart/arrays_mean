@@ -174,7 +174,6 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             //
             processedRowObjects_mongooseModel.aggregate([
                 uniqueStage,
-                { $match: { count: { $gte: 2 } } },
                 { $sort : { count : -1 } },
                 { $limit : limitToNTopValues },
                 
