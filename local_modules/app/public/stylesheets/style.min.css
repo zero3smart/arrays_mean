@@ -6159,7 +6159,7 @@ body {
 .section-array-create .section-header {
 	margin-bottom: 40px;
 	padding-top: 40px;
-	padding-bottom: 40px;
+	padding-bottom: 30px;
 	border-bottom-width: 1px;
 	border-bottom-style: solid;
 	border-bottom-color: #d8d8d8;
@@ -6196,8 +6196,8 @@ body {
 	border-color: #9b9b9b;
 }
 .section-array-create .panel-body-meta {
-	margin-top: 15px;
-	margin-bottom: 15px;
+	margin-top: 5px;
+	margin-bottom: 5px;
 	color: #9b9b9b;
 	font-size: 18px;
 }
@@ -6210,6 +6210,9 @@ body {
 	color: #4a4a4a;
 	font-size: 20px;
 	line-height: 26px;
+}
+.panel-source .panel-body-description:last-child {
+	margin-bottom: 0;
 }
 /*.form-source input[type="radio"]:checked + .panel-source {
 	border-color: #9b9b9b;
