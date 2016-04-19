@@ -1,21 +1,37 @@
 /* @override 
 	http://localhost:9080/stylesheets/base/typography.css */
 
-/*@font-face {
+@font-face {
 	font-family: "Calibre";
-	src: url("/fonts/calibre/.eot?#iefix");
-	src: url("/fonts/calibre/.eot?#iefix") format("eot"),
-		url("/fonts/calibre/.woff2") format("woff2"),
-		url("/fonts/calibre/.woff") format("woff"),
-		url("/fonts/calibre/.ttf") format("truetype"),
-		url("/fonts/calibre/.svg#2e309b1b-08b8-477f-bc9e-7067cf0af0b3") format("svg");
-	font-weight: 200; /* Thin *!/
-}*/
+	src: url("/fonts/calibre/CalibreWeb-Regular.eot?#iefix");
+	src: url("/fonts/calibre/CalibreWeb-Regular.eot?#iefix") format("eot"),
+		url("/fonts/calibre/CalibreWeb-Regular.woff2") format("woff2"),
+		url("/fonts/calibre/CalibreWeb-Regular.woff") format("woff");
+	font-weight: normal;
+}
 
-/*body {
+@font-face {
+	font-family: "Calibre";
+	src: url("/fonts/calibre/CalibreWeb-Semibold.eot?#iefix");
+	src: url("/fonts/calibre/CalibreWeb-Semibold.eot?#iefix") format("eot"),
+		url("/fonts/calibre/CalibreWeb-Semibold.woff2") format("woff2"),
+		url("/fonts/calibre/CalibreWeb-Semibold.woff") format("woff");
+	font-weight: 600; /* Semibold */
+}
+
+@font-face {
+	font-family: "Calibre";
+	src: url("/fonts/calibre/CalibreWeb-Bold.eot?#iefix");
+	src: url("/fonts/calibre/CalibreWeb-Bold.eot?#iefix") format("eot"),
+		url("/fonts/calibre/CalibreWeb-Bold.woff2") format("woff2"),
+		url("/fonts/calibre/CalibreWeb-Bold.woff") format("woff");
+	font-weight: bold;
+}
+
+body {
 	font-family: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	
-	/* Render fonts thinner and smoother *!/
+	/* Render fonts thinner and smoother */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-}*/
+}

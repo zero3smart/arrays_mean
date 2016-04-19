@@ -5025,7 +5025,7 @@ a.color-brand:active {
 .background-color-brand,
 .background-color-brand-hover:hover,
 .background-color-brand-hover:hover > a {
-	background-color: #feb600  !important;
+	background-color: #feb600 !important;
 }
 /* @end Primary Color */
 /* @group Blue */
@@ -5043,23 +5043,37 @@ a.color-brand:active {
 /* @end  Blue */
 /* @override 
 	http://localhost:9080/stylesheets/base/typography.css */
-/*@font-face {
+@font-face {
 	font-family: "Calibre";
-	src: url("/fonts/calibre/.eot?#iefix");
-	src: url("/fonts/calibre/.eot?#iefix") format("eot"),
-		url("/fonts/calibre/.woff2") format("woff2"),
-		url("/fonts/calibre/.woff") format("woff"),
-		url("/fonts/calibre/.ttf") format("truetype"),
-		url("/fonts/calibre/.svg#2e309b1b-08b8-477f-bc9e-7067cf0af0b3") format("svg");
-	font-weight: 200; /* Thin *!/
-}*/
-/*body {
+	src: url("/fonts/calibre/CalibreWeb-Regular.eot?#iefix");
+	src: url("/fonts/calibre/CalibreWeb-Regular.eot?#iefix") format("eot"),
+		url("/fonts/calibre/CalibreWeb-Regular.woff2") format("woff2"),
+		url("/fonts/calibre/CalibreWeb-Regular.woff") format("woff");
+	font-weight: normal;
+}
+@font-face {
+	font-family: "Calibre";
+	src: url("/fonts/calibre/CalibreWeb-Semibold.eot?#iefix");
+	src: url("/fonts/calibre/CalibreWeb-Semibold.eot?#iefix") format("eot"),
+		url("/fonts/calibre/CalibreWeb-Semibold.woff2") format("woff2"),
+		url("/fonts/calibre/CalibreWeb-Semibold.woff") format("woff");
+	font-weight: 600; /* Semibold */
+}
+@font-face {
+	font-family: "Calibre";
+	src: url("/fonts/calibre/CalibreWeb-Bold.eot?#iefix");
+	src: url("/fonts/calibre/CalibreWeb-Bold.eot?#iefix") format("eot"),
+		url("/fonts/calibre/CalibreWeb-Bold.woff2") format("woff2"),
+		url("/fonts/calibre/CalibreWeb-Bold.woff") format("woff");
+	font-weight: bold;
+}
+body {
 	font-family: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	
-	/* Render fonts thinner and smoother *!/
+	/* Render fonts thinner and smoother */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-}*/
+}
 /* @end Base */
 /* @group Lib */
 /* nvd3 version 1.8.2 (https://github.com/novus/nvd3) 2016-01-24 */

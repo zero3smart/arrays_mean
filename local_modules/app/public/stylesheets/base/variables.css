@@ -34,7 +34,7 @@ a.color-brand:active {
 .background-color-brand,
 .background-color-brand-hover:hover,
 .background-color-brand-hover:hover > a {
-	background-color: var(--color-primary)  !important;
+	background-color: var(--color-primary) !important;
 }
 
 /* @end Primary Color */
