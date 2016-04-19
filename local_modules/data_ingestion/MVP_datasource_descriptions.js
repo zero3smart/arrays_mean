@@ -195,7 +195,7 @@ exports.Descriptions =
                         title: "Has no image",
                         $match: {
                             $or: [
-                                { "rowParams.imgURL_gridThumb": { exists: false } },
+                                { "rowParams.imgURL_gridThumb": { $exists: false } },
                                 { "rowParams.imgURL_gridThumb": { $eq: "" } },
                                 { "rowParams.imgURL_gridThumb": { $eq: null } },
                             ]
