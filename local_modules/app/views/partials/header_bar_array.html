@@ -20,42 +20,6 @@
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a>
-					<ul class="dropdown-menu dropdown-search">
-						<form action="{{ routePath_base }}" method="get">
-							<li>
-								<div class="dropdown search-control">
-                                    {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
-                                    
-									<a href="#" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-										Search: <span class="search-criteria">{{ searchColToOutput }}</span>
-										<span class="caret"></span>
-									</a>
-									<input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
-									<ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
-										{% for colName in colNames_orderedForSortByDropdown %}
-										<li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
-										{% endfor %}
-									</ul>
-								</div>
-							</li>
-							<li><input type="text" name="searchQ" class="form-control" placeholder="Start Searching" value="{{ searchQ if searchQ else "" }}"></li>
-                            {% if sortBy %}
-                                <input type="hidden" name="sortBy" value="{{ sortBy }}">
-                            {% endif %}
-                            {% if sortDir %}
-                                <input type="hidden" name="sortDir" value="{{ sortDir }}">
-                            {% endif %}
-                            {% if filterCol %}
-                                <input type="hidden" name="filterCol" value="{{ filterCol }}">
-                            {% endif %}
-                            {% if filterVal %}
-                                <input type="hidden" name="filterVal" value="{{ filterVal }}">
-                            {% endif %}
-						</form>
-					</ul>
-				</li>
-				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></a>
 					<ul class="dropdown-menu">
 						<li class="background-color-brand-hover"><a href="/array/{{ array_source_key }}/gallery">{{ arrayTitle }}</a></li>

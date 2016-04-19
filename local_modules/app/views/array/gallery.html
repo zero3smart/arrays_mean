@@ -25,30 +25,68 @@
                         <div class="row">
                             <div class="col-sm-12">
 
-                                <nav id="sort-bar" class="sort-bar" role="navigation">
+                                <div class="sort-bar clearfix">
 
-                                    <div class="sort-control">
-                                        {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
-                                        {% if sortDir == "Ascending" %}
-                                            <a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Descending"><span class="glyphicon glyphicon-sort-by-attributes-alt sort-direction" aria-hidden="true"></span></a>
-                                        {% else %}
-                                            <a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Ascending"><span class="glyphicon glyphicon-sort-by-attributes sort-direction" aria-hidden="true"></span></a>
-                                        {% endif %}
+                                    <nav class="pull-left" role="navigation">
+
+                                        <div class="sort-control sort-direction">
+                                            {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
+                                            {% if sortDir == "Ascending" %}
+                                                <a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Descending"><span class="glyphicon glyphicon-sort-by-attributes-alt sort-direction-icon" aria-hidden="true"></span></a>
+                                            {% else %}
+                                                <a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Ascending"><span class="glyphicon glyphicon-sort-by-attributes sort-direction-icon" aria-hidden="true"></span></a>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="dropdown sort-control">
+                                            <a class="btn btn-default dropdown-toggle ui-label" id="sort-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Sort: <span class="sort-criteria">{{ sortBy if sortBy else humanReadableColumnName_objectTitle }}</span>
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="sort-by">
+                                                {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
+                                                {% for colName in colNames_orderedForSortByDropdown %}
+                                                <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortBy }}{{ sortBy_queryParamJoinChar }}sortBy={{ colName }}">{{ colName }}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+
+                                    </nav>
+
+                                    <div class="pull-right">
+                                        <form action="{{ routePath_base }}" method="get">
+                                            <div class="dropdown sort-control search-control">
+                                                {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
+                                                
+                                                <a href="#" class="btn btn-default dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+                                                    Search in: <span class="search-criteria">{{ searchColToOutput }}</span>
+                                                </a>
+                                                <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
+                                                <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+                                                    {% for colName in colNames_orderedForSortByDropdown %}
+                                                    <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+
+                                            <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" value="{{ searchQ if searchQ else "" }}">
+                                            <span class="glyphicon glyphicon-search search-icon"></span>
+
+                                            {% if sortBy %}
+                                                <input type="hidden" name="sortBy" value="{{ sortBy }}">
+                                            {% endif %}
+                                            {% if sortDir %}
+                                                <input type="hidden" name="sortDir" value="{{ sortDir }}">
+                                            {% endif %}
+                                            {% if filterCol %}
+                                                <input type="hidden" name="filterCol" value="{{ filterCol }}">
+                                            {% endif %}
+                                            {% if filterVal %}
+                                                <input type="hidden" name="filterVal" value="{{ filterVal }}">
+                                            {% endif %}
+                                        </form>
                                     </div>
 
-                                    <div class="dropdown sort-control">
-                                        <a class="btn btn-default dropdown-toggle ui-label" id="sort-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Sort: <span class="sort-criteria">{{ sortBy if sortBy else humanReadableColumnName_objectTitle }}</span>
-                                        </a>
-                                        <ul class="dropdown-menu" aria-labelledby="sort-by">
-                                            {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
-                                            {% for colName in colNames_orderedForSortByDropdown %}
-                                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortBy }}{{ sortBy_queryParamJoinChar }}sortBy={{ colName }}">{{ colName }}</a></li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-
-                                </nav>
+                                </div>
 
                                 {% if isFilterActive %}
                                 <div class="filter-bar">

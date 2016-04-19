@@ -37,37 +37,6 @@ $(document).ready(function() {
     });
 
     /**
-     * Search criteria dropdown
-     */
-    $('.search-control .dropdown-toggle').on('click', function(e) {
-
-        e.preventDefault();
-        e.stopPropagation();
-        
-        var $this = $(this);
-
-        if ($this.is('.disabled, :disabled')) return;
-
-        var $parent  = $this.parent('.dropdown');
-        var isActive = $parent.hasClass('open');
-
-        if (!isActive) {
-            if ('ontouchstart' in document.documentElement && !$parent.closest('.navbar-nav').length) {
-                // if mobile we use a backdrop because click events don't delegate
-                $(document.createElement('div'))
-                    .addClass('dropdown-backdrop')
-                    .insertAfter($(this));
-            }
-
-            $this.trigger('focus').attr('aria-expanded', 'true');
-            $parent.toggleClass('open');
-        } else {
-            $this.attr('aria-expanded', 'false');
-            $parent.removeClass('open');
-        }
-    });
-
-    /**
      * Search criteria click dropdown item to select
      */
     $('.search-dropdown-item a').on('click', function(e) {
