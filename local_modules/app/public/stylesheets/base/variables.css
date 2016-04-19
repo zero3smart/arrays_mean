@@ -4,6 +4,8 @@
 :root {
 	--color-primary: #feb600;
 	
+	--color-brand-blue: #005cff;
+	
 	--color-background: #fafafa;
 	
 	--color-text-med: #4a4a4a;
@@ -17,8 +19,10 @@
 	--color-shadow: #d8d8d8;
 	--color-divider: #d8d8d8;
 	
-	--sidebar-width: 285px;
+	--sidebar-width: 280px;
 }
+
+/* @group Primary Color */
 
 .color-brand,
 a.color-brand:hover,
@@ -27,6 +31,27 @@ a.color-brand:active {
 	color: var(--color-primary);
 }
 
-.background-color-brand {
-	background-color: var(--color-primary);
+.background-color-brand,
+.background-color-brand-hover:hover,
+.background-color-brand-hover:hover > a {
+	background-color: var(--color-primary)  !important;
 }
+
+/* @end Primary Color */
+
+/* @group Blue */
+
+.brand-blue .color-brand,
+.brand-blue a.color-brand:hover,
+.brand-blue a.color-brand:focus,
+.brand-blue a.color-brand:active {
+	color: var(--color-brand-blue);
+}
+
+.brand-blue .background-color-brand,
+.brand-blue .background-color-brand-hover:hover,
+.brand-blue .background-color-brand-hover:hover > a {
+	background-color: var(--color-brand-blue);
+}
+
+/* @end  Blue */

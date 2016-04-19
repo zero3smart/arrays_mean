@@ -27,7 +27,7 @@
 
 .sidebar-filter a {
 	display: inline-block;
-	padding: 13px 20px;
+	padding: 13px 15px;
 	width: 100%;
 	color: #ffffff;
 }
@@ -51,17 +51,16 @@
 	text-transform: uppercase;
 	letter-spacing: 2px;
 	font-size: 16px;
+	line-height: 1em;
 }
 
 .sidebar-filter-subgroup-item > a {
 	border-bottom: 1px solid var(--color-sidebar-fg);
-	background-color: var(--color-sidebar-bg);
 	font-size: 18px;
+	line-height: 1em;
 }
 
 .sidebar-filter-subgroup-item > a.sidebar-filter-active,
 .sidebar-filter-subgroup-item > a:hover {
-	background-color: var(--color-sort-bar-label);
 	color: var(--color-sidebar-bg);
 }
-

@@ -1,5 +1,5 @@
 <!-- Fixed navbar -->
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar navbar-default navbar-fixed-top background-color-brand">
 	<div class="container-fluid container-full-width">
 		<div class="navbar-brand-container">
 			<a class="navbar-brand" href="/array/{{ array_source_key }}/gallery">{{ arrayTitle }}</a>
@@ -12,9 +12,9 @@
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></a>
 					<ul class="dropdown-menu">
-						<li><a href="/array/{{ array_source_key }}/gallery"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span> Gallery</a></li>
-						<li><a href="/array/{{ array_source_key }}/heatmap"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Map</a></li>
-						<li><a href="/array/{{ array_source_key }}/chart"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Chart</a></li>
+						<li class="background-color-brand-hover"><a href="/array/{{ array_source_key }}/gallery"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span> Gallery</a></li>
+						<li class="background-color-brand-hover"><a href="/array/{{ array_source_key }}/heatmap"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Map</a></li>
+						<li class="background-color-brand-hover"><a href="/array/{{ array_source_key }}/chart"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Chart</a></li>
 					</ul>
 				</li>
 			</ul>
@@ -32,7 +32,7 @@
 									<input type="hidden" name="col" value="Object Title" class="search-colname">
 									<ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
 										{% for colName in colNames_orderedForSortByDropdown %}
-										<li class="search-dropdown-item"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
+										<li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
 										{% endfor %}
 									</ul>
 								</div>
@@ -44,12 +44,12 @@
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span></a>
 					<ul class="dropdown-menu">
-						<li><a href="/array/{{ array_source_key }}/gallery">{{ arrayTitle }}</a></li>
-						<li><a href="#" class="share-link">Share on Facebook</a></li>
-						<li><a href="#" class="share-link">Share on Twitter</a></li>
-						<li><a href="#" class="get-embed-code-link">Get Embed Code</a></li>
+						<li class="background-color-brand-hover"><a href="/array/{{ array_source_key }}/gallery">{{ arrayTitle }}</a></li>
+						<li class="background-color-brand-hover"><a href="#" class="share-link">Share on Facebook</a></li>
+						<li class="background-color-brand-hover"><a href="#" class="share-link">Share on Twitter</a></li>
+						<li class="background-color-brand-hover"><a href="#" class="get-embed-code-link">Get Embed Code</a></li>
 						<li role="separator" class="divider"></li>
-						<li><a href="#">My Arrays</a></li>
+						<li class="background-color-brand-hover"><a href="#">My Arrays</a></li>
 					</ul>
 				</li>
 			</ul>

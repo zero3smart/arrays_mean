@@ -4,13 +4,13 @@
 /* @group Sort Bar */
 
 .sort-bar {
+	position: relative;
+	z-index: 1;
 	padding-top: 15px;
 	padding-bottom: 15px;
 	/*border-bottom: 1px solid var(--color-sort-bar-border);*/
 	background-color: #eeeeee;
 	text-align: center;
-	z-index: 1;
-	position: relative;
 }
 
 @media (min-width: 768px) {
@@ -42,13 +42,12 @@
 	font-weight: bold;
 }
 
-.sort-control .dropdown-menu {
-	padding-top: 15px;
-	padding-bottom: 15px;
+.sort-control .dropdown-menu > li > a {
+	padding: 15px 20px;
 }
 
-.sort-control .dropdown-menu > li > a {
-	padding: 15px 70px;
+.sort-control .dropdown-menu > li > a:hover {
+	color: var(--color-text-med);
 }
 
 .filter-tag {

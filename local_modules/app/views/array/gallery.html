@@ -24,7 +24,7 @@
                         <ul class="dropdown-menu" aria-labelledby="sort-by">
                             {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
                             {% for colName in colNames_orderedForSortByDropdown %}
-                            <li><a href="{{ routePath_withoutSortBy }}{{ sortBy_queryParamJoinChar }}sortBy={{ colName }}">{{ colName }}</a></li>
+                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortBy }}{{ sortBy_queryParamJoinChar }}sortBy={{ colName }}">{{ colName }}</a></li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -36,8 +36,8 @@
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="sort-direction">
-                            <li><a href="{{ routePath_withoutSortDir }}{{ sortBy_queryParamJoinChar }}sortDir=Ascending">Ascending</a></li>
-                            <li><a href="{{ routePath_withoutSortDir }}{{ sortBy_queryParamJoinChar }}sortDir=Descending">Descending</a></li>
+                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortDir }}{{ sortBy_queryParamJoinChar }}sortDir=Ascending">Ascending</a></li>
+                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortDir }}{{ sortBy_queryParamJoinChar }}sortDir=Descending">Descending</a></li>
                         </ul>
                     </div>
                 </nav>

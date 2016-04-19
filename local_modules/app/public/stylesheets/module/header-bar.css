@@ -10,8 +10,6 @@
 .navbar-default {
 	height: 50px;
 	border-bottom-style: none;
-	box-shadow: 0 2px 4px;
-	color: var(--color-shadow);
 	font-size: 18px;
 }
 
@@ -20,6 +18,15 @@
 		height: 70px;
 		font-size: 24px;
 	}
+}
+
+.header-shadow {
+	box-shadow: 0 2px 4px;
+	color: var(--color-shadow);
+}
+
+.background-color-bg {
+	background-color: var(--color-background);
 }
 
 #page .navbar-default .navbar-brand-container {
@@ -56,16 +63,20 @@
 
 #navbar .active .sidebar-filter-toggle {
 	background-color: transparent;
-	/*color: var(--color-primary);*/
-	color: black;
+	color: #ffffff;
 }
 
 /* @end Filter active*/
 
 /* @group Dropdown */
 
-.dropdown-menu {
-	border-radius: 0;
+#page .dropdown-menu {
+	border-radius: 4px;
+	box-shadow: 0 2px 4px #a8a8a8;
+}
+
+#page .navbar .dropdown-menu {
+	margin-top: 6px;
 }
 
 .navbar-nav > li > a {
