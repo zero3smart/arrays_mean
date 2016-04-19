@@ -35,7 +35,9 @@ module.exports.hostImageLocatedAtRemoteURL = function(remoteImageSourceURL, dest
         bucket_file.exists(function(err, exists)
         {
             if (err) {
+                winston.error("❌  Error during file.exists ", finalizedFilenameWithExt, err);
                 callback(err, null);
+                
                 return;
             }
             if (exists == true) {

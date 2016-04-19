@@ -671,6 +671,11 @@ constructor.prototype.GenerateImageURLFieldsByScraping
                         var destinationFilenameSansExt = doc.srcDocPKey + "__" + doc.pKey + "__" + key;
                         image_hosting.hostImageLocatedAtRemoteURL(finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, function(err, hostedURL)
                         {
+                            if (err) {
+                                cb(err);
+                                
+                                return;
+                            }
                             proceedToPersistHostedImageURLOrNull_forKey(err, hostedURL, key, function(err)
                             {
                                 cb(err);
