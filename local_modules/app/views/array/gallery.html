@@ -14,147 +14,160 @@
 
             <div id="content" class="site-content">
 
-                <nav id="sort-bar" class="sort-bar" role="navigation">
+                <section class="array">
 
-                    <div class="dropdown sort-control">
-                        <a class="btn btn-default dropdown-toggle" id="sort-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Sort By: <span class="sort-criteria">{{ sortBy if sortBy else humanReadableColumnName_objectTitle }}</span>
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="sort-by">
-                            {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
-                            {% for colName in colNames_orderedForSortByDropdown %}
-                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortBy }}{{ sortBy_queryParamJoinChar }}sortBy={{ colName }}">{{ colName }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+                    <header class="array-header header-shadow">
+                        <h1 class="array-title">{{ arrayTitle }}</h1>
+                        <div class="array-meta"><a href="#" class="array-meta-about">About</a> <span class="array-meta-divider"></span> <span class="array-meta-count">21,201 Records</span> <span class="array-meta-divider"></span> <span class="array-meta-updated">Last Updated March 2, 2016</span></div>
+                    </header><!-- .array-header -->
 
-                    <div class="dropdown sort-control">
-                        {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
-                        <a class="btn btn-default dropdown-toggle" id="sort-direction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Sort Direction: <span class="sort-criteria">{{ sortDir if sortDir else "Ascending" }}</span>
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="sort-direction">
-                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortDir }}{{ sortBy_queryParamJoinChar }}sortDir=Ascending">Ascending</a></li>
-                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortDir }}{{ sortBy_queryParamJoinChar }}sortDir=Descending">Descending</a></li>
-                        </ul>
-                    </div>
-                </nav>
+                    <nav id="sort-bar" class="sort-bar" role="navigation">
 
-            {% if isFilterActive %}
-                <div class="filter-bar">
-                    <span class="filter-tag">{{ filterVal | safe }} <a href="{{ routePath_withoutFilter }}" class="close filter-tag-close">&times;</a></span>
-                </div>
-            {% endif %}
-
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-sm-12">
-
-                            <div class="filter-count">
-                                <span>{{ pageSize | comma }} of {{ nonpagedCount | comma }} Relevant Items</span>
-                            </div>
-
-                            <div class="gallery">
-                                <ul class="gallery-grid">
-                                    {% for doc in docs %}
-                                    <li class="gallery-item">
-                                        <a href="/array/{{ doc.srcDocPKey }}/{{ doc._id }}">
-                                            <img src="{{ doc.rowParams[fieldKey_gridThumbImageURL] if hasThumbs and doc.rowParams[fieldKey_gridThumbImageURL] else "http://placehold.it/180x180" }}" class="gallery-image" />
-                                            <div class="gallery-tooltip">
-                                                <h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] }}</h2>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div><!-- .gallery -->
-
-                            {% set lastPage = numPages | int %}
-                            {% set currentPage = onPageNum | int %}
-
-                            {% set showAlwaysFirstAndLast = true %}
-                            {% set paging_queryParamJoinChar = "?" if routePath_withoutPage == routePath_base else "&" %}
-
-                            {% if lastPage > 1 %}
-
-                                {# the number of first and last pages to be displayed #}
-                                {% set extremePagesLimit = 3 %}
-
-                                {# the number of pages that are displayed around the active page #}
-                                {% set nearbyPagesLimit = 2 %}
-
-                                <nav class="gallery-pagination">
-                                    <ul class="pagination">
-                                        {% if currentPage > 1 %}
-                                            <li>
-                                                <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage - 1 }}" aria-label="Previous">
-                                                    <span aria-hidden="true">&laquo;</span>
-                                                </a>
-                                            </li>
-
-                                            {% for i in range(1, extremePagesLimit) -%}
-                                                {% if ( i < currentPage - nearbyPagesLimit ) %}
-                                                    <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
-                                                {% endif %}
-                                            {%- endfor %}
-
-                                            {% if extremePagesLimit + 1 < currentPage - nearbyPagesLimit %}
-                                                <li><span>&hellip;</span></li>
-                                            {% endif %}
-
-                                            {% for i in range(currentPage-nearbyPagesLimit, currentPage) -%}
-                                                {% if ( i > 0 ) %}
-                                                    <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
-                                                {% endif %}
-                                            {%- endfor %}
-                                        {% elif showAlwaysFirstAndLast %}
-                                            <li class="disabled">
-                                                <a onclick="return false;" href="#" aria-label="Previous">
-                                                    <span aria-hidden="true">&laquo;</span>
-                                                </a>
-                                            </li>
-                                        {% endif %}
-
-                                        <li><a onclick="return false;" href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage }}" class="active">{{ currentPage }}</a></li>
-
-                                        {% if currentPage < lastPage %}
-                                            {% for i in range(currentPage+1, currentPage + 1 + nearbyPagesLimit) -%}
-                                                {% if ( i <= lastPage ) %}
-                                                    <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
-                                                {% endif %}
-                                            {%- endfor %}
-
-                                            {% if  (lastPage - extremePagesLimit) > (currentPage + nearbyPagesLimit) %}
-                                                <li><span>&hellip;</span></li>
-                                            {% endif %}
-
-                                            {% for i in range(lastPage - extremePagesLimit+1, lastPage) -%}
-                                                {% if ( i >= currentPage + nearbyPagesLimit ) %}
-                                                    <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
-                                                {% endif %}
-                                            {%- endfor %}
-
-                                            <li>
-                                                <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ lastPage }}" aria-label="Next">
-                                                    <span aria-hidden="true">&raquo;</span>
-                                                </a>
-                                            </li>
-                                        {% elif showAlwaysFirstAndLast %}
-                                            <li class="disabled">
-                                                <a onclick="return false;" href="#" aria-label="Next">
-                                                    <span aria-hidden="true">&raquo;</span>
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                    </ul>
-                                </nav>
-                            {% endif %}
-
+                        <div class="dropdown sort-control">
+                            <a class="btn btn-default dropdown-toggle" id="sort-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Sort By: <span class="sort-criteria">{{ sortBy if sortBy else humanReadableColumnName_objectTitle }}</span>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="sort-by">
+                                {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
+                                {% for colName in colNames_orderedForSortByDropdown %}
+                                <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortBy }}{{ sortBy_queryParamJoinChar }}sortBy={{ colName }}">{{ colName }}</a></li>
+                                {% endfor %}
+                            </ul>
                         </div>
-                    </div><!-- .row -->
-                </div>
+
+                        <div class="dropdown sort-control">
+                            {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
+                            <a class="btn btn-default dropdown-toggle" id="sort-direction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Sort Direction: <span class="sort-criteria">{{ sortDir if sortDir else "Ascending" }}</span>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="sort-direction">
+                                <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortDir }}{{ sortBy_queryParamJoinChar }}sortDir=Ascending">Ascending</a></li>
+                                <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortDir }}{{ sortBy_queryParamJoinChar }}sortDir=Descending">Descending</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+
+                    {% if isFilterActive %}
+                    <div class="filter-bar">
+                        <span class="filter-tag">{{ filterVal | safe }} <a href="{{ routePath_withoutFilter }}" class="close filter-tag-close">&times;</a></span>
+                    </div>
+                    {% endif %}
+
+                    <div class="array-content">
+
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-sm-12">
+
+                                    <div class="filter-count">
+                                        <span>{{ pageSize | comma }} of {{ nonpagedCount | comma }} Relevant Items</span>
+                                    </div>
+
+                                    <div class="gallery">
+                                        <ul class="gallery-grid">
+                                            {% for doc in docs %}
+                                            <li class="gallery-item">
+                                                <a href="/array/{{ doc.srcDocPKey }}/{{ doc._id }}">
+                                                    <img src="{{ doc.rowParams[fieldKey_gridThumbImageURL] if hasThumbs and doc.rowParams[fieldKey_gridThumbImageURL] else "http://placehold.it/180x180" }}" class="gallery-image" />
+                                                    <div class="gallery-tooltip">
+                                                        <h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] }}</h2>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div><!-- .gallery -->
+
+                                    {% set lastPage = numPages | int %}
+                                    {% set currentPage = onPageNum | int %}
+
+                                    {% set showAlwaysFirstAndLast = true %}
+                                    {% set paging_queryParamJoinChar = "?" if routePath_withoutPage == routePath_base else "&" %}
+
+                                    {% if lastPage > 1 %}
+
+                                        {# the number of first and last pages to be displayed #}
+                                        {% set extremePagesLimit = 3 %}
+
+                                        {# the number of pages that are displayed around the active page #}
+                                        {% set nearbyPagesLimit = 2 %}
+
+                                        <nav class="gallery-pagination">
+                                            <ul class="pagination">
+                                                {% if currentPage > 1 %}
+                                                    <li>
+                                                        <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage - 1 }}" aria-label="Previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+
+                                                    {% for i in range(1, extremePagesLimit) -%}
+                                                        {% if ( i < currentPage - nearbyPagesLimit ) %}
+                                                            <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
+                                                        {% endif %}
+                                                    {%- endfor %}
+
+                                                    {% if extremePagesLimit + 1 < currentPage - nearbyPagesLimit %}
+                                                        <li><span>&hellip;</span></li>
+                                                    {% endif %}
+
+                                                    {% for i in range(currentPage-nearbyPagesLimit, currentPage) -%}
+                                                        {% if ( i > 0 ) %}
+                                                            <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
+                                                        {% endif %}
+                                                    {%- endfor %}
+                                                {% elif showAlwaysFirstAndLast %}
+                                                    <li class="disabled">
+                                                        <a onclick="return false;" href="#" aria-label="Previous">
+                                                            <span aria-hidden="true">&laquo;</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+
+                                                <li><a onclick="return false;" href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage }}" class="active">{{ currentPage }}</a></li>
+
+                                                {% if currentPage < lastPage %}
+                                                    {% for i in range(currentPage+1, currentPage + 1 + nearbyPagesLimit) -%}
+                                                        {% if ( i <= lastPage ) %}
+                                                            <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
+                                                        {% endif %}
+                                                    {%- endfor %}
+
+                                                    {% if  (lastPage - extremePagesLimit) > (currentPage + nearbyPagesLimit) %}
+                                                        <li><span>&hellip;</span></li>
+                                                    {% endif %}
+
+                                                    {% for i in range(lastPage - extremePagesLimit+1, lastPage) -%}
+                                                        {% if ( i >= currentPage + nearbyPagesLimit ) %}
+                                                            <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
+                                                        {% endif %}
+                                                    {%- endfor %}
+
+                                                    <li>
+                                                        <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ lastPage }}" aria-label="Next">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                {% elif showAlwaysFirstAndLast %}
+                                                    <li class="disabled">
+                                                        <a onclick="return false;" href="#" aria-label="Next">
+                                                            <span aria-hidden="true">&raquo;</span>
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                            </ul>
+                                        </nav>
+                                    {% endif %}
+
+                                </div>
+                            </div><!-- .row -->
+                        </div>
+
+                    </div><!-- .array-content -->
+
+                </section>
 
             </div><!-- #content -->
         </div><!-- #page -->

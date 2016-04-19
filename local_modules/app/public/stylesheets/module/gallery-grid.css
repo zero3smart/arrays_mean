@@ -1,5 +1,37 @@
 /* @override 
 	http://localhost:9080/stylesheets/module/gallery-grid.css */
+	
+/* @group Array Header */
+
+.array-header {
+	position: relative;
+	z-index: 500;
+	padding-top: 40px;
+	padding-bottom: 40px;
+	background-color: var(--color-background);
+	text-align: center;
+}
+
+.array-title {
+	margin-top: 0;
+	margin-bottom: 10px;
+	color: black;
+	font-weight: bold;
+	font-size: 42px;
+}
+
+.array-meta {
+	color: var(--color-text-light);
+	font-size: 18px;
+}
+
+.array-meta-divider:before {
+	padding-right: 0.25em;
+	padding-left: 0.25em;
+	content: "|";
+}
+
+/* @end Array Header */
 
 .gallery-grid {
 	margin-right: -5px;

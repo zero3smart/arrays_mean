@@ -49,6 +49,7 @@
 
 @media (min-width: 768px) {
 	.navbar-default .navbar-brand {
+		margin-top: 3px;
 		font-size: 28px;
 	}
 }
