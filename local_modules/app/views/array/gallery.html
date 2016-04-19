@@ -189,7 +189,7 @@
                                                     {%- endfor %}
 
                                                     <li>
-                                                        <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ lastPage }}" aria-label="Next">
+                                                        <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage + 1 }}" aria-label="Next">
                                                             <span aria-hidden="true">&raquo;</span>
                                                         </a>
                                                     </li>
