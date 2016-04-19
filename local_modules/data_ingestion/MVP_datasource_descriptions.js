@@ -145,6 +145,15 @@ exports.Descriptions =
             "imgURL_original", 
             "imgURL_gridThumb"
         ],
+        fe_displayTitleOverrides:
+        { // these are to be tuples - the values must be unique as well
+            "CuratorApproved": "Curator Approved",
+            "DateAcquired": "Date Acquired",
+            "CreditLine": "Credit Line",
+            "ArtistBio": "Artist Bio",
+            "MoMANumber": "MoMA Number"
+        },
+        //
         fe_fieldsNotAvailableAsFilters:
         [
             "Title", // they're almost exclusively unique
@@ -168,14 +177,57 @@ exports.Descriptions =
         {
             _all: [ "" ]
         },
-        fe_displayTitleOverrides:
-        { // these are to be tuples - the values must be unique as well
-            "CuratorApproved": "Curator Approved",
-            "DateAcquired": "Date Acquired",
-            "CreditLine": "Credit Line",
-            "ArtistBio": "Artist Bio",
-            "MoMANumber": "MoMA Number"
-        },
+        fe_filters_fabricatedFilters:
+        [
+            {
+                title: "Image",
+                choices: [
+                    {
+                        title: "Has image",
+                        $match: {
+                            "rowParams.imgURL_gridThumb": {
+                                $exists: true,
+                                $nin: [ "", null ]
+                            }
+                        }
+                    },
+                    {
+                        title: "Has no image",
+                        $match: {
+                            $or: [
+                                { "rowParams.imgURL_gridThumb": { exists: false } },
+                                { "rowParams.imgURL_gridThumb": { $eq: "" } },
+                                { "rowParams.imgURL_gridThumb": { $eq: null } },
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                title: "Object Title",
+                choices: [
+                    {
+                        title: "Has title",
+                        $match: {
+                            "rowParams.Title": {
+                                $exists: true,
+                                $nin: [ "", null ]
+                            }
+                        }
+                    },
+                    {
+                        title: "Has no title",
+                        $match: {
+                            $or: [
+                                { "rowParams.Title": { $exists: false } },
+                                { "rowParams.Title": { $eq: "" } },
+                                { "rowParams.Title": { $eq: null } }
+                            ]
+                        }
+                    }
+                ]
+            }
+        ],
         //
         //
         fe_chart_defaultGroupByColumnName_humanReadable: "Artist Gender",

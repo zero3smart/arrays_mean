@@ -118,21 +118,61 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         wholeFilteredSet_aggregationOperators.push(matchOp);
     }
     if (isFilterActive) { // rules out undefined filterCol
-        var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
-        var realColumnName_path = "rowParams." + realColumnName;
-        var realFilterValue = filterVal; // To finalize in case of override…
-        var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
-        if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
-            var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[filterVal];
-            if (typeof overrideValue === 'undefined') {
-                var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
-                winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
-             } else {
-                 realFilterValue = overrideValue;
-             }
+        var matchOp = undefined;
+        var isAFabricatedFilter = false; // finalize
+        if (dataSourceDescription.fe_filters_fabricatedFilters) {
+            var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
+            for (var i = 0 ; i < fabricatedFilters_length ; i++) {
+                var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
+                if (fabricatedFilter.title === filterCol) {
+                    isAFabricatedFilter = true;
+                    // Now find the applicable filter choice
+                    var choices = fabricatedFilter.choices;
+                    var choices_length = choices.length;
+                    var foundChoice = false;
+                    for (var j = 0 ; j < choices_length ; j++) {
+                        var choice = choices[j];
+                        if (choice.title === filterVal) {
+                            foundChoice = true;
+                            matchOp = { $match: choice["$match"] };
+                            
+                            break; // found the applicable filter choice
+                        }
+                    }
+                    if (foundChoice == false) { // still not found despite the filter col being recognized as fabricated
+                        callback(new Error("No such choice \"" + filterVal + "\" for filter " + filterCol), null);
+            
+                        return;
+                    }
+                    
+                    break; // found the applicable fabricated filter
+                }
+            }
         }
-        var matchOp = { $match: {} };
-        matchOp["$match"][realColumnName_path] = { $regex: realFilterValue, $options: "i" };
+        if (isAFabricatedFilter == true) { // already obtained matchOp just above
+            if (typeof matchOp === 'undefined') {
+                callback(new Error("Unexpectedly missing matchOp given fabricated filter…" + JSON.stringify(urlQuery)), null);
+    
+                return;
+            }
+            console.log("using fabricated match op " , matchOp);
+        } else {
+            var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
+            var realColumnName_path = "rowParams." + realColumnName;
+            var realFilterValue = filterVal; // To finalize in case of override…
+            var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
+            if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
+                var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[filterVal];
+                if (typeof overrideValue === 'undefined') {
+                    var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
+                    winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
+                 } else {
+                     realFilterValue = overrideValue;
+                 }
+            }
+            matchOp = { $match: {} };
+            matchOp["$match"][realColumnName_path] = { $regex: realFilterValue, $options: "i" };
+        }
         wholeFilteredSet_aggregationOperators.push(matchOp);
     }
     //
@@ -187,6 +227,29 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
 
                 return;
             }
+            // Now insert fabricated filters
+            if (dataSourceDescription.fe_filters_fabricatedFilters) {
+                var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
+                for (var i = 0 ; i < fabricatedFilters_length ; i++) {
+                    var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
+                    var choices = fabricatedFilter.choices;
+                    var choices_length = choices.length;
+                    var values = [];
+                    for (var j = 0 ; j < choices_length ; j++) {
+                        var choice = choices[j];
+                        values.push(choice.title);
+                    }
+                    if (typeof uniqueFieldValuesByFieldName[fabricatedFilter.title] !== 'undefined') {
+                        var errStr = 'Unexpectedly already-existent filter for the fabricated filter title ' + fabricatedFilter.title;
+                        winston.error("❌  " + errStr);
+                        callback(new Error(errStr), null);
+
+                        return;
+                    }
+                    uniqueFieldValuesByFieldName[fabricatedFilter.title] = values;
+                }
+            }
+            
             var endTime_s = (new Date().getTime())/1000;
             var duration_s = endTime_s - startTime_s;
             winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.");
