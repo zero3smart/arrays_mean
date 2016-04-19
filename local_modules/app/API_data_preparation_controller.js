@@ -68,6 +68,7 @@ constructor.prototype.BindDataFor_datasetsListing = function(callback)
 //
 constructor.prototype.PageSize = function() { return pageSize; };
 //
+//
 constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
 {
     var self = this;
@@ -112,68 +113,22 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     //
     var wholeFilteredSet_aggregationOperators = [];
     if (isSearchActive) { 
-        var realColumnName_path = "rowParams." + importedDataPreparation.RealColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
-        var matchOp = { $match: {} };
-        matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: "i" };
-        wholeFilteredSet_aggregationOperators.push(matchOp);
+        var _orErrDesc = _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+        if (typeof _orErrDesc.err !== 'undefined') {
+            callback(_orErrDesc.err, null);
+            
+            return;
+        }
+        wholeFilteredSet_aggregationOperators.push(_orErrDesc.matchOp);
     }
     if (isFilterActive) { // rules out undefined filterCol
-        var matchOp = undefined;
-        var isAFabricatedFilter = false; // finalize
-        if (dataSourceDescription.fe_filters_fabricatedFilters) {
-            var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
-            for (var i = 0 ; i < fabricatedFilters_length ; i++) {
-                var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
-                if (fabricatedFilter.title === filterCol) {
-                    isAFabricatedFilter = true;
-                    // Now find the applicable filter choice
-                    var choices = fabricatedFilter.choices;
-                    var choices_length = choices.length;
-                    var foundChoice = false;
-                    for (var j = 0 ; j < choices_length ; j++) {
-                        var choice = choices[j];
-                        if (choice.title === filterVal) {
-                            foundChoice = true;
-                            matchOp = { $match: choice["$match"] };
-                            
-                            break; // found the applicable filter choice
-                        }
-                    }
-                    if (foundChoice == false) { // still not found despite the filter col being recognized as fabricated
-                        callback(new Error("No such choice \"" + filterVal + "\" for filter " + filterCol), null);
+        var _orErrDesc = _activeFilter_matchOp_orErrDescription(dataSourceDescription, filterCol, filterVal);
+        if (typeof _orErrDesc.err !== 'undefined') {
+            callback(_orErrDesc.err, null);
             
-                        return;
-                    }
-                    
-                    break; // found the applicable fabricated filter
-                }
-            }
+            return;
         }
-        if (isAFabricatedFilter == true) { // already obtained matchOp just above
-            if (typeof matchOp === 'undefined') {
-                callback(new Error("Unexpectedly missing matchOp given fabricated filter…" + JSON.stringify(urlQuery)), null);
-    
-                return;
-            }
-            console.log("using fabricated match op " , matchOp);
-        } else {
-            var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
-            var realColumnName_path = "rowParams." + realColumnName;
-            var realFilterValue = filterVal; // To finalize in case of override…
-            var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
-            if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
-                var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[filterVal];
-                if (typeof overrideValue === 'undefined') {
-                    var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
-                    winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
-                 } else {
-                     realFilterValue = overrideValue;
-                 }
-            }
-            matchOp = { $match: {} };
-            matchOp["$match"][realColumnName_path] = { $regex: realFilterValue, $options: "i" };
-        }
-        wholeFilteredSet_aggregationOperators.push(matchOp);
+        wholeFilteredSet_aggregationOperators.push(_orErrDesc.matchOp);
     }
     //
     // Now kick off the query work
@@ -609,4 +564,74 @@ function _routePathByAppendingQueryStringToVariationOfBase(routePath_variation, 
     routePath_variation += queryString;
     
     return routePath_variation;
+}
+//
+//
+function _activeFilter_matchOp_orErrDescription(dataSourceDescription, filterCol, filterVal)
+{ // returns dictionary with err or matchOp
+    var matchOp = undefined;
+    var isAFabricatedFilter = false; // finalize
+    if (dataSourceDescription.fe_filters_fabricatedFilters) {
+        var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
+        for (var i = 0 ; i < fabricatedFilters_length ; i++) {
+            var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
+            if (fabricatedFilter.title === filterCol) {
+                isAFabricatedFilter = true;
+                // Now find the applicable filter choice
+                var choices = fabricatedFilter.choices;
+                var choices_length = choices.length;
+                var foundChoice = false;
+                for (var j = 0 ; j < choices_length ; j++) {
+                    var choice = choices[j];
+                    if (choice.title === filterVal) {
+                        foundChoice = true;
+                        matchOp = { $match: choice["$match"] };
+                        
+                        break; // found the applicable filter choice
+                    }
+                }
+                if (foundChoice == false) { // still not found despite the filter col being recognized as fabricated
+                    return { err: new Error("No such choice \"" + filterVal + "\" for filter " + filterCol) };
+                }
+                
+                break; // found the applicable fabricated filter
+            }
+        }
+    }
+    if (isAFabricatedFilter == true) { // already obtained matchOp just above
+        if (typeof matchOp === 'undefined') {
+            return { err: new Error("Unexpectedly missing matchOp given fabricated filter…" + JSON.stringify(urlQuery)) };
+        }
+    } else {
+        var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
+        var realColumnName_path = "rowParams." + realColumnName;
+        var realFilterValue = filterVal; // To finalize in case of override…
+        var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+        var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
+        if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
+            var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[filterVal];
+            if (typeof overrideValue === 'undefined') {
+                var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
+                winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
+             } else {
+                 realFilterValue = overrideValue;
+             }
+        }
+        matchOp = { $match: {} };
+        matchOp["$match"][realColumnName_path] = { $regex: realFilterValue, $options: "i" };
+    }
+    if (typeof matchOp === 'undefined') {
+        throw new Error("Undefined match operation");
+    }
+    
+    return { matchOp: matchOp };
+}
+//
+function _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ)
+{ // returns dictionary with err or matchOp
+    var realColumnName_path = "rowParams." + importedDataPreparation.RealColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
+    var matchOp = { $match: {} };
+    matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: "i" };
+
+    return { matchOp: matchOp };
 }
