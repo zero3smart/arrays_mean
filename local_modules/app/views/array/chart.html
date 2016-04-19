@@ -42,6 +42,12 @@
                     </div>
                 </nav>
 
+                {% if isFilterActive %}
+                <div class="filter-bar">
+                    <span class="filter-tag">{{ filterVal | safe }} <a href="{{ routePath_withoutFilter }}" class="close filter-tag-close">&times;</a></span>
+                </div>
+                {% endif %}
+
                 <script type="text/javascript">
                     var pieData = {{ groupedResults | dump | safe }}; 
                 </script>

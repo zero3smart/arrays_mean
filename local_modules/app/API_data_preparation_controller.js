@@ -104,8 +104,6 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     var filterVal = urlQuery.filterVal;
     var isFilterActive = typeof filterCol !== 'undefined' && filterCol != null && filterCol != "";
     //
-    var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
-    //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
     var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
@@ -227,35 +225,28 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
         var routePath_base              = "/array/" + source_pKey + "/gallery";
         var routePath_withoutFilter     = routePath_base;
-        // var routePath_withoutSearch     = routePath_base; // We comment this as we construct the params via input[type='hidden'] fields
         var routePath_withoutPage       = routePath_base;
         var routePath_withoutSortBy     = routePath_base;
         var routePath_withoutSortDir    = routePath_base;
         if (sortBy !== undefined && sortBy != null && sortBy !== "") {
             var appendQuery = "sortBy=" + sortBy;
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
-            // routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,    appendQuery, routePath_base);
             routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
         }
         if (sortDir !== undefined && sortDir != null && sortDir !== "") {
             var appendQuery = "sortDir=" + sortDir;
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,        appendQuery, routePath_base);
-            // routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,        appendQuery, routePath_base);
             routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,          appendQuery, routePath_base);
             routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,        appendQuery, routePath_base);
         }
         if (page !== undefined && page != null && page !== "") {
             var appendQuery = "page=" + page;
-            // we do not include page in the _withoutSearch and _withoutFilter urls as new searches and filters should reset the page to 1,
-            // not only as it constitutes a new data set/search which means a reset of the origin of the set from a UX standpoint,
-            // but because the set might be of a different length and result in an empty page being displayed
             routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
         }
         if (isFilterActive) {
             var appendQuery = "filterCol=" + filterCol + "&" + "filterVal=" + filterVal;
-            // routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,    appendQuery, routePath_base);
             routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
             routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
@@ -300,7 +291,6 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             //
             routePath_base: routePath_base,
             routePath_withoutFilter: routePath_withoutFilter,
-            // routePath_withoutSearch: routePath_withoutSearch,
             routePath_withoutPage: routePath_withoutPage,
             routePath_withoutSortBy: routePath_withoutSortBy,
             routePath_withoutSortDir: routePath_withoutSortDir
@@ -315,6 +305,10 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
     // urlQuery keys:
         // source_key
         // groupBy
+        // filterCol
+        // filterVal
+        // searchQ
+        // searchCol
     var source_pKey = urlQuery.source_key;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
     if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -327,6 +321,15 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
     //
     var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
     var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_chart_defaultGroupByColumnName_humanReadable;
+    //
+    var filterCol = urlQuery.filterCol;
+    var filterVal = urlQuery.filterVal;
+    var isFilterActive = typeof filterCol !== 'undefined' && filterCol != null && filterCol != "";
+    //
+    var searchCol = urlQuery.searchCol;
+    var searchQ = urlQuery.searchQ;
+    var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
+                      && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
     //
     // Now kick off the query work
     _proceedTo_obtainSampleDocument();
@@ -344,15 +347,47 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
                 
                 return;
             }        
-            _proceedTo_obtainGroupedResultSet(sampleDoc);
+            _proceedTo_obtainTopUniqueFieldValuesForFiltering(sampleDoc);
         });
     }
-    function _proceedTo_obtainGroupedResultSet(sampleDoc)
+    function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sampleDoc)
+    {
+        _topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName)
+        {
+            if (err) {
+                callback(err, null);
+
+                return;
+            }
+            //
+            _proceedTo_obtainGroupedResultSet(sampleDoc, uniqueFieldValuesByFieldName);
+        });
+    }
+    function _proceedTo_obtainGroupedResultSet(sampleDoc, uniqueFieldValuesByFieldName)
     {
         var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable, 
                                                                                                        dataSourceDescription);
         //
-        var aggregationOperators = 
+        var aggregationOperators = [];
+        if (isSearchActive) { 
+            var _orErrDesc = _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+            if (typeof _orErrDesc.err !== 'undefined') {
+                callback(_orErrDesc.err, null);
+            
+                return;
+            }
+            aggregationOperators.push(_orErrDesc.matchOp);
+        }
+        if (isFilterActive) { // rules out undefined filterCol
+            var _orErrDesc = _activeFilter_matchOp_orErrDescription(dataSourceDescription, filterCol, filterVal);
+            if (typeof _orErrDesc.err !== 'undefined') {
+                callback(_orErrDesc.err, null);
+            
+                return;
+            }
+            aggregationOperators.push(_orErrDesc.matchOp);
+        }        
+        aggregationOperators = aggregationOperators.concat(
         [
             { // unique/grouping and summing stage
                 $group: {
@@ -373,19 +408,19 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             { 
                 $limit : 100 // so the chart can actually handle the number
             }
-        ];
+        ]);
         //
-        var doneFn = function(err, results)
+        var doneFn = function(err, groupedResults)
         {
             if (err) {
                 callback(err, null);
             
                 return;
             }
-            if (results == undefined || results == null) {
-                results = [];
+            if (groupedResults == undefined || groupedResults == null) {
+                groupedResults = [];
             }
-            results.forEach(function(el, i, arr) 
+            groupedResults.forEach(function(el, i, arr) 
             {
                 if (el.label == null) {
                     el.label = "(null)"; // null breaks chart but we don't want to lose its data
@@ -393,17 +428,28 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
                     el.label = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
                 }
             });
-            _prepareDataAndCallBack(sampleDoc, results);
+            _prepareDataAndCallBack(sampleDoc, uniqueFieldValuesByFieldName, groupedResults);
         };
         processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
     }
-    function _prepareDataAndCallBack(sampleDoc, groupedResults)
+    function _prepareDataAndCallBack(sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
     {
         var err = null;
         var routePath_base              = "/array/" + source_pKey + "/chart";
-        var routePath_withoutGroupBy     = routePath_base;
+        var routePath_withoutFilter     = routePath_base;
+        var routePath_withoutGroupBy    = routePath_base;
         if (groupBy !== undefined && groupBy != null && groupBy !== "") {
             var appendQuery = "groupBy=" + groupBy;
+            routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+        }
+        if (isFilterActive) {
+            var appendQuery = "filterCol=" + filterCol + "&" + "filterVal=" + filterVal;
+            routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+        }
+        if (isSearchActive) {
+            var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
+            routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+            routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
         }
         var data =
         {
@@ -413,10 +459,20 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             groupedResults: groupedResults,
             groupBy: groupBy,
             //
+            filterCol: filterCol,
+            filterVal: filterVal,
+            isFilterActive: isFilterActive,
+            uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+            //
+            searchQ: searchQ,
+            searchCol: searchCol,
+            isSearchActive: isSearchActive,
+            //
             defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
             colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription),
             //
             routePath_base: routePath_base,
+            routePath_withoutFilter: routePath_withoutFilter,
             routePath_withoutGroupBy: routePath_withoutGroupBy
         };
         callback(err, data);
