@@ -111,14 +111,11 @@
                                     <div class="gallery">
                                         <ul class="gallery-grid">
                                             {% for doc in docs %}
-                                            <li class="gallery-item">
-                                                <a href="/array/{{ doc.srcDocPKey }}/{{ doc._id }}">
-                                                    <img src="{{ doc.rowParams[fieldKey_medThumbImageURL] if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] else "http://placehold.it/180x180" }}" class="gallery-image" />
-                                                    <div class="gallery-tooltip">
-                                                        <h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] }}</h2>
-                                                    </div>
-                                                </a>
-                                            </li>
+                                                {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}
+                                                    {% include "../partials/gallery_item_image.html" %}
+                                                {% else %}
+                                                    {% include "../partials/gallery_item_text.html" %}
+                                                {% endif %}
                                             {% endfor %}
                                         </ul>
                                     </div><!-- .gallery -->

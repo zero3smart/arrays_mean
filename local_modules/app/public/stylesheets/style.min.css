@@ -5027,6 +5027,9 @@ a.color-brand:active {
 .background-color-brand-hover:hover > a {
 	background-color: #feb600 !important;
 }
+.border-top-color-brand {
+	border-top-color: #feb600;
+}
 /* @end Primary Color */
 /* @group Blue */
 .brand-blue .color-brand,
@@ -6284,6 +6287,7 @@ body {
 	content: "|";
 }
 /* @end Array Header */
+/* @group Gallery Grid */
 .gallery-grid {
 	margin-right: -5px;
 	margin-left: -5px;
@@ -6304,6 +6308,7 @@ body {
 	padding-right: 5px;
 	padding-left: 5px;
 	width: 50%;
+	vertical-align: top;
 }
 @media (min-width: 768px) {
 	.gallery-item {
@@ -6313,29 +6318,59 @@ body {
 		width: 16.6667%;
 	}
 }
+.gallery-item > a {
+	position: relative;
+	display: block;
+	overflow: hidden;
+}
+/* @end Gallery Grid */
+/* @group Text Tile */
+.gallery-item-text > a {
+	min-height: 200px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #d8d8d8;
+}
+.gallery-title {
+	margin: 0;
+	color: black;
+	font-weight: bold;
+	font-size: 18px;
+	line-height: 22px;
+}
+.gallery-tooltip {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	display: block;
+	margin: 0;
+	padding: 10px;
+}
+/* @end Text Tile */
+/* @group Image Tile */
 .gallery-image {
 	width: 100%;
 	height: auto;
 }
-.gallery-tooltip {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	z-index: 1000;
-	display: none;
-	padding: 35px 40px;
-	width: 200%;
-	border: 1px solid #eeeeee;
-	background-color: white;
+.gallery-item-image .gallery-tooltip {
+	width: 100%;
+	border-top-width: 4px;
+	border-top-style: solid;
+	background-color: #ffffff;
+	-webkit-transition: -webkit-transform 0.4s ease-in-out;
+	transition: -webkit-transform 0.4s ease-in-out;
+	transition: transform 0.4s ease-in-out;
+	transition: transform 0.4s ease-in-out, -webkit-transform 0.4s ease-in-out;
+	-webkit-transform: translate(0, 100%);
+	    -ms-transform: translate(0, 100%);
+	        transform: translate(0, 100%);
 }
-.gallery-item a:hover .gallery-tooltip {
-	display: block;
+.gallery-item-image > a:hover .gallery-tooltip {
+	-webkit-transform: translate(0, 0);
+	    -ms-transform: translate(0, 0);
+	        transform: translate(0, 0);
 }
-.gallery-title {
-	margin: 0;
-	color: #777777;
-	font-size: 20px;
-}
+/* @end Image Tile */
 /* @override 
 	http://localhost:9080/stylesheets/module/pagination.css */
 .gallery-pagination {

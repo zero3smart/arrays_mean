@@ -38,6 +38,10 @@ a.color-brand:active {
 	background-color: var(--color-primary) !important;
 }
 
+.border-top-color-brand {
+	border-top-color: var(--color-primary);
+}
+
 /* @end Primary Color */
 
 /* @group Blue */
