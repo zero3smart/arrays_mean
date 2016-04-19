@@ -2,18 +2,23 @@
 	<ul class="sidebar-filter-group">
         {% for fieldName, fieldValues in uniqueFieldValuesByFieldName %}
 		<li class="sidebar-filter-group-item">
-			<a class="collapse-trigger" role="button" href="#column-{{ loop.index }}" aria-expanded="false" aria-controls="column-{{ loop.index }}">
+            {% set isThisTheActiveFilterColumn = false %}
+            {% if isFilterActive %}
+                {% if fieldName == filterCol %}
+                    {% set isThisTheActiveFilterColumn = true %}
+                {% endif %}
+            {% endif %}
+            
+			<a class="collapse-trigger" role="button" href="#column-{{ loop.index }}" aria-expanded="{{ isThisTheActiveFilterColumn }}" aria-controls="column-{{ loop.index }}">
                 {{ fieldName }}
             </a>
-			<ul id="column-{{ loop.index }}" class="sidebar-filter-subgroup collapse">
+			<ul id="column-{{ loop.index }}" class="sidebar-filter-subgroup collapse {{ "in" if isThisTheActiveFilterColumn else "" }}" aria-expanded="{{ isThisTheActiveFilterColumn }}">
                 {% for fieldValue in fieldValues %}
                 {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
                 {% set isThisTheActiveFilter = false %}
-                {% if isFilterActive %}
-                    {% if fieldName == filterCol %}
-                        {% if fieldValue == filterVal %}
-                            {% set isThisTheActiveFilter = true %}
-                        {% endif %}
+                {% if isThisTheActiveFilterColumn %}
+                    {% if fieldValue == filterVal %}
+                        {% set isThisTheActiveFilter = true %}
                     {% endif %}
                 {% endif %}
 				<li class="sidebar-filter-subgroup-item background-color-brand-hover">
