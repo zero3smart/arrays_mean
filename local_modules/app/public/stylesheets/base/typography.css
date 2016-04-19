@@ -35,3 +35,10 @@ body {
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+
+.ui-label {
+	color: var(--color-text-light);
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	font-size: 16px;
+}
