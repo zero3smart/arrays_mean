@@ -27,6 +27,26 @@
 
                                 <nav id="sort-bar" class="sort-bar" role="navigation">
 
+                                    <!-- <div class="dropdown sort-control">
+                                        {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
+                                        <a class="btn btn-default dropdown-toggle ui-label" id="sort-direction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Sort Direction: <span class="sort-criteria">{{ sortDir if sortDir else "Ascending" }}</span>
+                                        </a>
+                                        <ul class="dropdown-menu" aria-labelledby="sort-direction">
+                                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Ascending">Ascending</a></li>
+                                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Descending">Descending</a></li>
+                                        </ul>
+                                    </div> -->
+
+                                    <div class="sort-control">
+                                        {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
+                                        {% if sortDir == "Ascending" %}
+                                            <a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Descending"><span class="glyphicon glyphicon-sort-by-attributes-alt sort-direction" aria-hidden="true"></span></a>
+                                        {% else %}
+                                            <a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Ascending"><span class="glyphicon glyphicon-sort-by-attributes sort-direction" aria-hidden="true"></span></a>
+                                        {% endif %}
+                                    </div>
+
                                     <div class="dropdown sort-control">
                                         <a class="btn btn-default dropdown-toggle ui-label" id="sort-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Sort: <span class="sort-criteria">{{ sortBy if sortBy else humanReadableColumnName_objectTitle }}</span>
@@ -39,16 +59,6 @@
                                         </ul>
                                     </div>
 
-                                    <div class="dropdown sort-control">
-                                        {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
-                                        <a class="btn btn-default dropdown-toggle ui-label" id="sort-direction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Sort Direction: <span class="sort-criteria">{{ sortDir if sortDir else "Ascending" }}</span>
-                                        </a>
-                                        <ul class="dropdown-menu" aria-labelledby="sort-direction">
-                                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Ascending">Ascending</a></li>
-                                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Descending">Descending</a></li>
-                                        </ul>
-                                    </div>
                                 </nav>
 
                                 {% if isFilterActive %}
@@ -68,7 +78,7 @@
                                 <div class="col-sm-12">
 
                                     <div class="filter-count">
-                                        <span>{{ pageSize | comma }} of {{ nonpagedCount | comma }} Relevant Items</span>
+                                        <span>{{ pageSize | comma }} of {{ nonpagedCount | comma }} Results in this set</span>
                                     </div>
 
                                     <div class="gallery">

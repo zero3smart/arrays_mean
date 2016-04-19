@@ -13,6 +13,14 @@
 
 .sort-control {
 	display: inline-block;
+	vertical-align: middle;
+}
+
+.sort-direction {
+	margin-right: 20px;
+	margin-left: 20px;
+	color: black;
+	font-size: 18px;
 }
 
 .sort-control .dropdown-toggle {
@@ -96,5 +104,5 @@
 	margin-bottom: 15px;
 	color: var(--color-sort-bar-label);
 	text-align: right;
-	font-size: 14px;
+	font-size: 16px;
 }
