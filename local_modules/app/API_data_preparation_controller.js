@@ -160,56 +160,15 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     }
     function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sampleDoc)
     {
-        winston.info("------------------------------------------");
-        var startTime_s = (new Date().getTime())/1000;
-        winston.info("⏱  2: Started at\t\t" + startTime_s.toFixed(3) + "s");
-        //
-        cached_values_model.MongooseModel.findOne({ srcDocPKey: source_pKey }, function(err, doc) 
+        _topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName)
         {
             if (err) {
-                callback(err);
+                callback(err, null);
 
                 return;
             }
-            if (doc == null) {
-                callback(new Error('Missing cached values document for srcDocPKey: ' + source_pKey), null);
-
-                return;
-            }
-            var uniqueFieldValuesByFieldName = doc.limitedUniqValsByHumanReadableColName;
-            if (uniqueFieldValuesByFieldName == null || typeof uniqueFieldValuesByFieldName === 'undefined') {
-                callback(new Error('Unexpectedly missing uniqueFieldValuesByFieldName for srcDocPKey: ' + source_pKey), null);
-
-                return;
-            }
-            // Now insert fabricated filters
-            if (dataSourceDescription.fe_filters_fabricatedFilters) {
-                var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
-                for (var i = 0 ; i < fabricatedFilters_length ; i++) {
-                    var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
-                    var choices = fabricatedFilter.choices;
-                    var choices_length = choices.length;
-                    var values = [];
-                    for (var j = 0 ; j < choices_length ; j++) {
-                        var choice = choices[j];
-                        values.push(choice.title);
-                    }
-                    if (typeof uniqueFieldValuesByFieldName[fabricatedFilter.title] !== 'undefined') {
-                        var errStr = 'Unexpectedly already-existent filter for the fabricated filter title ' + fabricatedFilter.title;
-                        winston.error("❌  " + errStr);
-                        callback(new Error(errStr), null);
-
-                        return;
-                    }
-                    uniqueFieldValuesByFieldName[fabricatedFilter.title] = values;
-                }
-            }
-            
-            var endTime_s = (new Date().getTime())/1000;
-            var duration_s = endTime_s - startTime_s;
-            winston.info("⏱  Finished at\t\t" + endTime_s.toFixed(3) + "s in " + duration_s.toFixed(4) + "s.");
-    
-            _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName);            
+            //
+            _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName);
         });
     }
     function _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName)
@@ -634,4 +593,52 @@ function _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol
     matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: "i" };
 
     return { matchOp: matchOp };
+}
+//
+function _topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, callback)
+{
+    cached_values_model.MongooseModel.findOne({ srcDocPKey: source_pKey }, function(err, doc) 
+    {
+        if (err) {
+            callback(err, null);
+
+            return;
+        }
+        if (doc == null) {
+            callback(new Error('Missing cached values document for srcDocPKey: ' + source_pKey), null);
+
+            return;
+        }
+        var uniqueFieldValuesByFieldName = doc.limitedUniqValsByHumanReadableColName;
+        if (uniqueFieldValuesByFieldName == null || typeof uniqueFieldValuesByFieldName === 'undefined') {
+            callback(new Error('Unexpectedly missing uniqueFieldValuesByFieldName for srcDocPKey: ' + source_pKey), null);
+
+            return;
+        }
+        //
+        // Now insert fabricated filters
+        if (dataSourceDescription.fe_filters_fabricatedFilters) {
+            var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
+            for (var i = 0 ; i < fabricatedFilters_length ; i++) {
+                var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
+                var choices = fabricatedFilter.choices;
+                var choices_length = choices.length;
+                var values = [];
+                for (var j = 0 ; j < choices_length ; j++) {
+                    var choice = choices[j];
+                    values.push(choice.title);
+                }
+                if (typeof uniqueFieldValuesByFieldName[fabricatedFilter.title] !== 'undefined') {
+                    var errStr = 'Unexpectedly already-existent filter for the fabricated filter title ' + fabricatedFilter.title;
+                    winston.error("❌  " + errStr);
+                    callback(new Error(errStr), null);
+
+                    return;
+                }
+                uniqueFieldValuesByFieldName[fabricatedFilter.title] = values;
+            }
+        }
+        //
+        callback(null, uniqueFieldValuesByFieldName);            
+    });
 }
