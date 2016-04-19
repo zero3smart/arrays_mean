@@ -46,12 +46,12 @@ function _realColumnNameFromHumanReadableColumnName(humanReadableColumnName, dat
     if (humanReadableColumnName === humanReadableColumnName_objectTitle) {
         return dataSourceDescription.fe_designatedFields.objectTitle;
     }
-    var fe_filters_displayTitleOverride = dataSourceDescription.fe_filters_displayTitleOverride || {};
-    var originalKeys = Object.keys(fe_filters_displayTitleOverride);
+    var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
+    var originalKeys = Object.keys(fe_displayTitleOverrides);
     var originalKeys_length = originalKeys.length;
     for (var i = 0 ; i < originalKeys_length ; i++) {
         var originalKey = originalKeys[i];
-        var overrideTitle = fe_filters_displayTitleOverride[originalKey];
+        var overrideTitle = fe_displayTitleOverrides[originalKey];
         if (overrideTitle === humanReadableColumnName) {
             return originalKey;
         }
@@ -103,21 +103,20 @@ module.exports.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters = _row
 function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, dataSourceDescription)
 { // e.g. Replace designated object title with "Object Title"
     var rowParams_keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    var fe_filters_displayTitleOverride = dataSourceDescription.fe_filters_displayTitleOverride || {};
+    var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
     // add in "Object Title" so we use the same machinery as the hand-specified ones
-    fe_filters_displayTitleOverride["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
+    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
     //
-    var originalKeys = Object.keys(fe_filters_displayTitleOverride);
+    var originalKeys = Object.keys(fe_displayTitleOverrides);
     var originalKeys_length = originalKeys.length;
     for (var i = 0 ; i < originalKeys_length ; i++) {
         var originalKey = originalKeys[i];
-        var displayTitleForKey = fe_filters_displayTitleOverride[originalKey];
+        var displayTitleForKey = fe_displayTitleOverrides[originalKey];
         var indexOfOriginalKey = rowParams_keys.indexOf(originalKey);
         if (indexOfOriginalKey !== -1) {
             rowParams_keys[indexOfOriginalKey] = displayTitleForKey; // replace with display title
         }
     }
-    
     
     return rowParams_keys;
 };
@@ -136,3 +135,27 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByD
 };
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown;
 //
+function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleRowObject, dataSourceDescription)
+{
+    var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
+    // add in "Object Title" so we use the same machinery as the hand-specified ones
+    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
+    //
+    var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
+    var keys_length = keys.length;
+    var available_keys = [];
+    for (var i = 0 ; i < keys_length ; i++) {
+        var key = keys[i];
+        if (dataSourceDescription.fe_chart_fieldsNotAvailableAsGroupByColumns) {
+            if (dataSourceDescription.fe_chart_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
+                continue;
+            }
+        }
+        var displayTitleForKey = fe_displayTitleOverrides[key];
+        var humanReadable_key = displayTitleForKey || key;
+        available_keys.push(humanReadable_key);
+    }
+    
+    return available_keys;
+}
+module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown;

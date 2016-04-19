@@ -351,24 +351,120 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         };
         callback(err, data);
     }
-    function _routePathByAppendingQueryStringToVariationOfBase(routePath_variation, queryString, routePath_base)
-    {
-        if (routePath_variation === routePath_base) {
-            routePath_variation += "?";
-        } else {
-            routePath_variation += "&";
-        }
-        routePath_variation += queryString;
-        
-        return routePath_variation;
-    }
 };
 //
 constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
 {
     var self = this;
-    // stubbed
-    callback(null, {});
+    // urlQuery keys:
+        // source_key
+        // groupBy
+    var source_pKey = urlQuery.source_key;
+    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
+    if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
+        callback(new Error("No data source with that source pkey " + source_pKey), null);
+        
+        return;
+    }
+    var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+    var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
+    //
+    var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
+    var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_chart_defaultGroupByColumnName_humanReadable;
+    //
+    // Now kick off the query work
+    _proceedTo_obtainSampleDocument();
+    function _proceedTo_obtainSampleDocument()
+    {
+        processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
+        {
+            if (err) {
+                callback(err, null);
+            
+                return;
+            }
+            if (sampleDoc == null) {
+                callback(new Error('Unexpectedly missing sample document - wrong data source UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+                
+                return;
+            }        
+            _proceedTo_obtainGroupedResultSet(sampleDoc);
+        });
+    }
+    function _proceedTo_obtainGroupedResultSet(sampleDoc)
+    {
+        var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable, 
+                                                                                                       dataSourceDescription);
+        //
+        var aggregationOperators = 
+        [
+            { // unique/grouping and summing stage
+                $group: {
+                    _id: "$" + "rowParams." + groupBy_realColumnName,
+                    value: { $sum: 1 } // the count
+                }
+            },
+            { // reformat
+                $project: {
+                    _id: 0,
+                    label: "$_id",
+                    value: 1
+                }
+            },
+            { // priotize by incidence, since we're $limit-ing below 
+                $sort : { value : -1 } 
+            },
+            { 
+                $limit : 100 // so the chart can actually handle the number
+            }
+        ];
+        //
+        var doneFn = function(err, results)
+        {
+            if (err) {
+                callback(err, null);
+            
+                return;
+            }
+            if (results == undefined || results == null) {
+                results = [];
+            }
+            results.forEach(function(el, i, arr) 
+            {
+                if (el.label == null) {
+                    el.label = "(null)"; // null breaks chart but we don't want to lose its data
+                } else if (el.label === "") {
+                    el.label = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
+                }
+            });
+            _prepareDataAndCallBack(sampleDoc, results);
+        };
+        processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
+    }
+    function _prepareDataAndCallBack(sampleDoc, groupedResults)
+    {
+        var err = null;
+        var routePath_base              = "/array/" + source_pKey + "/chart";
+        var routePath_withoutGroupBy     = routePath_base;
+        if (groupBy !== undefined && groupBy != null && groupBy !== "") {
+            var appendQuery = "groupBy=" + groupBy;
+        }
+        var data =
+        {
+            arrayTitle: dataSourceDescription.title,
+            array_source_key: source_pKey,
+            //
+            groupedResults: groupedResults,
+            groupBy: groupBy,
+            //
+            defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
+            colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription),
+            //
+            routePath_base: routePath_base,
+            routePath_withoutGroupBy: routePath_withoutGroupBy
+        };
+        callback(err, data);
+    }
 }
 //
 constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, rowObject_id, callback)
@@ -411,12 +507,12 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
             }
         }
         // Move the data to the human-readable keys so they are accessible by the template
-        var fe_filters_displayTitleOverride = dataSourceDescription.fe_filters_displayTitleOverride || {};
-        var originalKeys = Object.keys(fe_filters_displayTitleOverride);
+        var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
+        var originalKeys = Object.keys(fe_displayTitleOverrides);
         var originalKeys_length = originalKeys.length;
         for (var i = 0 ; i < originalKeys_length ; i++) {
             var originalKey = originalKeys[i];
-            var overrideTitle = fe_filters_displayTitleOverride[originalKey];
+            var overrideTitle = fe_displayTitleOverrides[originalKey];
             var valueAtOriginalKey = rowObject.rowParams[originalKey];
             rowObject.rowParams[overrideTitle] = valueAtOriginalKey;
         }
@@ -437,4 +533,17 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
         };
         callback(null, data);
     });
+}
+//
+//
+function _routePathByAppendingQueryStringToVariationOfBase(routePath_variation, queryString, routePath_base)
+{
+    if (routePath_variation === routePath_base) {
+        routePath_variation += "?";
+    } else {
+        routePath_variation += "&";
+    }
+    routePath_variation += queryString;
+    
+    return routePath_variation;
 }

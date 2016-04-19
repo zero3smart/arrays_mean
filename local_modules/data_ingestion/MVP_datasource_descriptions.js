@@ -80,7 +80,7 @@ exports.Descriptions =
                 "Not Specified": "NULL"
             }
         },
-        fe_filters_displayTitleOverride:
+        fe_displayTitleOverrides:
         { // these are to be tuples - the values must be unique as well
             "Code" : "Gender",
             "DisplayDate" : "Bio",
@@ -91,7 +91,16 @@ exports.Descriptions =
         {
             _all: [ "" ],
             "Nationality" : [ "NULL" ]
-        }
+        },
+        fe_chart_defaultGroupByColumnName_humanReadable: "Nationality",
+        fe_chart_fieldsNotAvailableAsGroupByColumns:
+        [
+            "DisplayName", // because they're effectively unique
+            "Artworks", // it's an array
+            "DisplayDate",
+            "Wiki QID",
+            "ULAN"
+        ]
     }
     , {
         filename: "MoMA_Artworks_v2_jy.csv",
@@ -159,7 +168,7 @@ exports.Descriptions =
         {
             _all: [ "" ]
         },
-        fe_filters_displayTitleOverride:
+        fe_displayTitleOverrides:
         { // these are to be tuples - the values must be unique as well
             "CuratorApproved": "Curator Approved",
             "DateAcquired": "Date Acquired",
@@ -167,6 +176,19 @@ exports.Descriptions =
             "ArtistBio": "Artist Bio",
             "MoMANumber": "MoMA Number"
         },
+        //
+        //
+        fe_chart_defaultGroupByColumnName_humanReadable: "Artist Gender",
+        fe_chart_fieldsNotAvailableAsGroupByColumns:
+        [
+            "Title", // they're almost exclusively unique
+            "ArtistBio",
+            "Dimensions",
+            "CreditLine",
+            "MoMANumber",
+            "DateAcquired",
+            "URL"
+        ],
         //
         //
         afterImportingAllSources_generate: 

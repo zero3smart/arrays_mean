@@ -29,53 +29,21 @@
                     -->
 
                     <div class="dropdown sort-control">
-                        {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
                         <a class="btn btn-default dropdown-toggle" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Group By: <span class="sort-criteria">Country</span>
+                            Group By: <span class="sort-criteria">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
                             <span class="caret"></span>
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="group-by">
-                            <li><a href="#">Country</a></li>
-                            <li><a href="#">Country</a></li>
+                        <ul class="dropdown-menu" aria-labelledby="group-by">                            
+                            {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
+                            {% for colName in colNames_orderedForGroupByDropdown %}
+                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutGroupBy }}{{ groupBy_queryParamJoinChar }}groupBy={{ colName }}">{{ colName }}</a></li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </nav>
 
                 <script type="text/javascript">
-                    var pieData = [
-                        { 
-                            "label": "American",
-                            "value" : 29
-                        } , 
-                        { 
-                            "label": "German",
-                            "value" : 5
-                        } , 
-                        { 
-                            "label": "British",
-                            "value" : 32
-                        } , 
-                        { 
-                            "label": "French",
-                            "value" : 196
-                        } , 
-                        { 
-                            "label": "Italian",
-                            "value" : 2
-                        } , 
-                        { 
-                            "label": "Japanese",
-                            "value" : 98
-                        } , 
-                        { 
-                            "label": "Swiss",
-                            "value" : 13
-                        } , 
-                        { 
-                            "label": "Dutch",
-                            "value" : 5
-                        }
-                    ];
+                    var pieData = {{ groupedResults | dump | safe }}; 
                 </script>
 
                 <div class="container-fluid">
