@@ -115,7 +115,7 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
         var query = url_parts.query;
         self.__render_array_chart(req, res, source_key, query);
     });
-    app.get('/array/:source_key/heatmap', _ensureWWW, function(req, res)
+    app.get('/array/:source_key/choropleth', _ensureWWW, function(req, res)
     {
         var source_key = req.params.source_key;
         if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
@@ -168,12 +168,12 @@ constructor.prototype.__render_array_heatmap = function(req, res, source_key, qu
     context.API_data_preparation_controller.BindDataFor_array_gallery(query, function(err, bindData)
     {
         if (err) {
-            winston.error("❌  Error getting bind data for Array heatmap: ", err);
+            winston.error("❌  Error getting bind data for Array choropleth: ", err);
             self._renderBindDataError(err, req, res);
             
             return;
         }
-        res.render('array/heatmap', bindData);
+        res.render('array/choropleth', bindData);
     });
 };
 //
