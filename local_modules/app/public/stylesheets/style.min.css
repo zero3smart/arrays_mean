@@ -5922,7 +5922,7 @@ body {
 	float: none;
 	margin-right: auto;
 	margin-left: auto;
-	font-weight: bold;
+	font-weight: 600;
 	font-size: 22px;
 }
 @media (min-width: 768px) {
