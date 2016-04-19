@@ -271,21 +271,21 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
         var routePath_base              = "/array/" + source_pKey + "/gallery";
         var routePath_withoutFilter     = routePath_base;
-        var routePath_withoutSearch     = routePath_base;
+        // var routePath_withoutSearch     = routePath_base; // We comment this as we construct the params via input[type='hidden'] fields
         var routePath_withoutPage       = routePath_base;
         var routePath_withoutSortBy     = routePath_base;
         var routePath_withoutSortDir    = routePath_base;
         if (sortBy !== undefined && sortBy != null && sortBy !== "") {
             var appendQuery = "sortBy=" + sortBy;
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
-            routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,    appendQuery, routePath_base);
+            // routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,    appendQuery, routePath_base);
             routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
         }
         if (sortDir !== undefined && sortDir != null && sortDir !== "") {
             var appendQuery = "sortDir=" + sortDir;
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,        appendQuery, routePath_base);
-            routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,        appendQuery, routePath_base);
+            // routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,        appendQuery, routePath_base);
             routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,          appendQuery, routePath_base);
             routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,        appendQuery, routePath_base);
         }
@@ -299,7 +299,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         }
         if (isFilterActive) {
             var appendQuery = "filterCol=" + filterCol + "&" + "filterVal=" + filterVal;
-            routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,    appendQuery, routePath_base);
+            // routePath_withoutSearch     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSearch,    appendQuery, routePath_base);
             routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
             routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
@@ -344,7 +344,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             //
             routePath_base: routePath_base,
             routePath_withoutFilter: routePath_withoutFilter,
-            routePath_withoutSearch: routePath_withoutSearch,
+            // routePath_withoutSearch: routePath_withoutSearch,
             routePath_withoutPage: routePath_withoutPage,
             routePath_withoutSortBy: routePath_withoutSortBy,
             routePath_withoutSortDir: routePath_withoutSortDir
