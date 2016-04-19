@@ -94,6 +94,17 @@
 
 .navbar-nav .open .dropdown-menu > li > a {
 	padding: 13px 20px;
+	font-size: 20px;
+}
+
+.navbar-nav .open .dropdown-menu > li > a .glyphicon {
+	position: relative;
+	top: 3px;
+	margin-right: 15px;
+}
+
+.navbar-nav .open .dropdown-menu > li > a:hover .color-brand {
+	color: #ffffff;
 }
 
 /* @end Dropdown */

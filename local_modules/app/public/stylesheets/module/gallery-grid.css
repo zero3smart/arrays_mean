@@ -6,15 +6,15 @@
 .array-header {
 	position: relative;
 	z-index: 500;
-	padding-top: 40px;
-	padding-bottom: 40px;
+	padding-top: 35px;
+	padding-bottom: 30px;
 	background-color: var(--color-background);
 	text-align: center;
 }
 
 .array-title {
 	margin-top: 0;
-	margin-bottom: 10px;
+	margin-bottom: 5px;
 	color: black;
 	font-weight: bold;
 	font-size: 42px;
