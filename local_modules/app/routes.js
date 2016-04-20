@@ -125,7 +125,7 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
         }
         var url_parts = url.parse(req.url, true);
         var query = url_parts.query;
-        self.__render_array_heatmap(req, res, source_key, query);
+        self.__render_array_choropleth(req, res, source_key, query);
     });
 };
 constructor.prototype.__render_array_gallery = function(req, res, source_key, query)
@@ -160,7 +160,7 @@ constructor.prototype.__render_array_chart = function(req, res, source_key, quer
         res.render('array/chart', bindData);
     });
 };
-constructor.prototype.__render_array_heatmap = function(req, res, source_key, query)
+constructor.prototype.__render_array_choropleth = function(req, res, source_key, query)
 {
     var self = this;
     var context = self.context;
@@ -262,8 +262,8 @@ constructor.prototype._mountRoutes_viewEndpoints_sharedPages = function()
                     self.__render_array_gallery(req, res, source_key, query);
                 } else if (viewType == "chart") {
                     self.__render_array_chart(req, res, source_key, query);
-                } else if (viewType == "heatmap") {
-                    self.__render_array_heatmap(req, res, source_key, query);
+                } else if (viewType == "choropleth") {
+                    self.__render_array_choropleth(req, res, source_key, query);
                 } else {
                     res.status(500).send("Internal Server Error");
                 }
@@ -338,15 +338,15 @@ constructor.prototype._mountRoutes_JSONAPI_arrayShare = function(apiURLPrefix)
             
             return matches[1];
         }
-        if (/^\/array\/.*\/(gallery|chart|heatmap)/g.test(pathname) == true) {
+        if (/^\/array\/.*\/(gallery|chart|choropleth)/g.test(pathname) == true) {
             pageType = "array_view";
             //
             if (/^\/array\/.*\/gallery/g.test(pathname) == true) {
                 viewType_orNull = 'gallery';
             } else if (/^\/array\/.*\/chart/g.test(pathname) == true) {
                 viewType_orNull = "chart";
-            } else if (/^\/array\/.*\/heatmap/g.test(pathname) == true) {
-                viewType_orNull = "heatmap";
+            } else if (/^\/array\/.*\/choropleth/g.test(pathname) == true) {
+                viewType_orNull = "choropleth";
             } else {
                 // this will not happen unless the if above changes and this if structure does not get updated
                 res.status(500).send("Internal Server Error");
@@ -354,7 +354,7 @@ constructor.prototype._mountRoutes_JSONAPI_arrayShare = function(apiURLPrefix)
                 return;
             }
             //
-            source_key = _stringFromPathNameWithRegEx(/^\/array\/(.*)\/(gallery|chart|heatmap)/g);
+            source_key = _stringFromPathNameWithRegEx(/^\/array\/(.*)\/(gallery|chart|choropleth)/g);
         } else if (/^\/array\/.*\/.*/g.test(pathname) == true) {
             pageType = "object_details";
             //
