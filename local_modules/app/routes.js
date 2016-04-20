@@ -84,6 +84,7 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
         context.API_data_preparation_controller.BindDataFor_datasetsListing(function(err, bindData)
         {
             if (err) {
+                winston.error("❌  Error getting bind data for Array create: ", err);
                 self._renderBindDataError(err, req, res);
             
                 return;

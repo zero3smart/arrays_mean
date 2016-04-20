@@ -74,7 +74,22 @@ constructor.prototype.BindDataFor_datasetsListing = function(callback)
         };
         callback(err, data);
     };
-    async.map(dataSourceDescriptions, iterateeFn, completionFn);
+    var feVisible_dataSourceDescriptions = [];
+    async.each(dataSourceDescriptions, function(dataSourceDescription, cb) 
+    {
+        var isVisible = true;
+        var fe_visible = dataSourceDescription.fe_visible;
+        if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
+            isVisible = dataSourceDescription.fe_visible;
+        }
+        if (isVisible == true) {
+            feVisible_dataSourceDescriptions.push(dataSourceDescription);
+        }
+    }, function(err) 
+    {
+        
+    });
+    async.map(feVisible_dataSourceDescriptions, iterateeFn, completionFn);
     //    ^ parallel execution, but ordered results
 };
 //

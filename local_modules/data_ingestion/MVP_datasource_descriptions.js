@@ -6,7 +6,23 @@ var import_processing = require('./import_processing');
 exports.Descriptions = 
 [
     //
-    // Production - MoMA dataset
+    // Production - Invisible - Nationality <-> Country - 
+    {
+        filename: "Countries-to-Demonyms.csv",
+        fileEncoding: "utf8", // default
+        uid: "countries_to_demonyms",
+        importRevision: 1,
+        format: import_datatypes.DataSource_formats.CSV,
+        title: "Countries to Demonyms",
+        fe_visible: false,
+        //
+        fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
+        {
+            return "" + rowIndex + "-" + rowObject["ISO 3166 Code"]
+        }
+    },
+    //
+    // Production - Visible - MoMA dataset
     {
         filename: "MoMA_Artists_v1_jy.csv",
         fileEncoding: "utf8", // the default
