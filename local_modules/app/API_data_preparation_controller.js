@@ -439,11 +439,16 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             }
             groupedResults.forEach(function(el, i, arr) 
             {
-                if (el.label == null) {
-                    el.label = "(null)"; // null breaks chart but we don't want to lose its data
-                } else if (el.label === "") {
-                    el.label = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
+                var originalValue = el.label;
+                var displayableVal = originalValue;
+                if (originalValue == null) {
+                    displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
+                } else if (originalValue === "") {
+                    displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
+                } else {
+                    displayableVal = _reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalValue, groupBy_realColumnName, dataSourceDescription);
                 }
+                el.label = displayableVal;
             });
             _prepareDataAndCallBack(sampleDoc, uniqueFieldValuesByFieldName, groupedResults);
         };
@@ -708,8 +713,7 @@ function _topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, s
 }
 //
 //
-var moment_module = require('moment');
-var moment_instance = moment_module();
+var moment = require('moment');
 var _defaultFormat = "MMMM Do, YYYY";
 var import_datatypes = require('../data_ingestion/import_datatypes');
 //
@@ -738,13 +742,13 @@ function _reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, key, da
                 if (dateFormat == null) {
                     dateFormat = _defaultFormat;
                 }
-                displayableVal = moment_instance.format(dateFormat);
+                displayableVal = moment(originalVal).format(dateFormat);
             } else { // nothing to do? (no other types yet)                
             }
         } else { // nothing to do?
         }
     } else { // nothing to do?
     }
-    
+    //
     return displayableVal;
 }
