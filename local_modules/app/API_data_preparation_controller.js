@@ -765,32 +765,38 @@ function _reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, key, da
     // Perhaps we could do some type-introspection automated formatting later
     // here if needed, but I think generally that kind of thing would be done case-by-case
     // in the template, such as comma-formatting numbers.
-    if (originalVal == null) {
-        displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
-    } else if (originalVal === "") {
-        displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
-    } else {
-        var raw_rowObjects_coercionScheme = dataSourceDescription.raw_rowObjects_coercionScheme;
-        if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
-            var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
-            if (coersionSchemeOfKey && typeof coersionSchemeOfKey !== 'undefined') {
-                var _do = coersionSchemeOfKey.do;
-                if (_do === import_datatypes.Coercion_ops.ToDate) {
-                    var dateFormat = null;
+    var raw_rowObjects_coercionScheme = dataSourceDescription.raw_rowObjects_coercionScheme;
+    if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
+        var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
+        if (coersionSchemeOfKey && typeof coersionSchemeOfKey !== 'undefined') {
+            var _do = coersionSchemeOfKey.do;
+            if (_do === import_datatypes.Coercion_ops.ToDate) {
+                if (originalVal == null || originalVal == "") {
+                    return originalVal; // do not attempt to format
+                }
+                var dateFormat = null;
+                var fe_outputInFormat = dataSourceDescription.fe_outputInFormat;
+                if (fe_outputInFormat && typeof fe_outputInFormat !== 'undefined') {
+                    var outputInFormat_ofKey = fe_outputInFormat["" + key];
+                    if (outputInFormat_ofKey && typeof outputInFormat_ofKey !== 'undefined') {
+                        dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
+                    }
+                }
+                if (dateFormat == null) { // still null - no specific ovrride, so check initial coersion
                     var opts = coersionSchemeOfKey.opts;
                     if (opts && typeof opts !== 'undefined') {
                         dateFormat = opts.format;
                     }
-                    if (dateFormat == null) {
-                        dateFormat = _defaultFormat;
-                    }
-                    displayableVal = moment(originalVal).format(dateFormat);
-                } else { // nothing to do? (no other types yet)                
                 }
-            } else { // nothing to do?
+                if (dateFormat == null) { // still null? use default
+                    dateFormat = _defaultFormat;
+                }
+                displayableVal = moment(originalVal).format(dateFormat);
+            } else { // nothing to do? (no other types yet)                
             }
         } else { // nothing to do?
         }
+    } else { // nothing to do?
     }
     //
     return displayableVal;

@@ -153,6 +153,12 @@ exports.Descriptions =
             "ArtistBio": "Artist Bio",
             "MoMANumber": "MoMA Number"
         },
+        fe_outputInFormat:
+        {
+            DateAcquired: {
+                format: "MMMM Do, YYYY"
+            }
+        },
         //
         fe_fieldsNotAvailableAsFilters:
         [
