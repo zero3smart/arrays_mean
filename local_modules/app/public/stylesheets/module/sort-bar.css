@@ -102,7 +102,6 @@
 	display: inline-block;
 	padding: 0;
 	width: 175px;
-	height: 18px;
 	border-style: none;
 	border-radius: 0;
 	background-color: transparent;
@@ -110,6 +109,7 @@
 	vertical-align: baseline;
 	font-size: 18px;
 	line-height: 18px;
+	height: auto;
 }
 
 .search-input:focus {
