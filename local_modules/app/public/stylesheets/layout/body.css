@@ -1,6 +1,10 @@
 /* @override 
 	http://localhost:9080/stylesheets/layout/body.css */
 
+body {
+	
+}
+
 .site {
 	overflow-x: hidden;
 	padding-top: 60px;
