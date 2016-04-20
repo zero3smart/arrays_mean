@@ -11,6 +11,7 @@ require('dotenv').config();
 var path = require('path');
 var express = require('express');
 var winston = require('winston');
+var moment = require("moment"); 
 var app = express();
 //
 //
@@ -33,6 +34,10 @@ var nunjucks_config =
 nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
 {
     nunjucks_env.addFilter('comma', require('nunjucks-comma-filter'));
+    nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function(date)
+    {
+        return moment().format("MMMM Do, YYYY")
+    });
 });
 //
 //

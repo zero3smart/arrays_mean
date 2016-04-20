@@ -44,6 +44,7 @@ var RawSourceDocument_scheme = Schema({
     revisionNumber: Number,
     importUID: String,
     title: String,
+    numberOfRows: Number,
     dateOfLastImport: Date
 });
 RawSourceDocument_scheme.index({ importUID: 1, revisionNumber: 1 }, { unique: true });
@@ -87,6 +88,7 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     var parsed_orderedRowObjectPrimaryKeys = persistableObjectTemplate.parsed_orderedRowObjectPrimaryKeys;
     var parsed_rowObjectsById = persistableObjectTemplate.parsed_rowObjectsById;
     var revisionNumber = persistableObjectTemplate.revisionNumber;
+    var numberOfRows = persistableObjectTemplate.numberOfRows;
     var importUID = persistableObjectTemplate.importUID;
     
     // Bulk for performance at volume
@@ -105,6 +107,7 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
             title: persistableObjectTemplate.title,
             revisionNumber: revisionNumber,
             importUID: importUID,
+            numberOfRows: (parsed_orderedRowObjectPrimaryKeys ? parsed_orderedRowObjectPrimaryKeys.length : 0),
             dateOfLastImport: new Date()
         };
         var findOneAndUpdate_queryParameters = 

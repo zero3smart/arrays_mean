@@ -41,9 +41,9 @@
                                                           {{ comma() }} <a href="{{ url }}" class="source-link color-brand">{{ url }}</a>
                                                         {%- endfor %}
                                                         <span class="source-divider"></span>
-                                                        <span class="source-count">21,201 Records</span>
+                                                        <span class="source-count">{{ source.sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span>
                                                         <span class="source-divider"></span>
-                                                        <span class="source-updated">Last Updated March 2, 2016</span>
+                                                        <span class="source-updated">Last Updated {{ source.sourceDoc | dateFormattedAs_monthDayYear }}</span>
                                                     </div>
                                                     <p class="panel-body-description">{{ source.description }}</p>
                                                 </div>

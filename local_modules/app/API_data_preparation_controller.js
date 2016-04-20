@@ -45,20 +45,37 @@ constructor.prototype.BindDataFor_datasetsListing = function(callback)
     var iterateeFn = async.ensureAsync(function(dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
     {
         var err = null;
-        var source = 
+        var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription, self.context.raw_source_documents_controller);
+        self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, doc)
         {
-            key: importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription, self.context.raw_source_documents_controller),
-            title: dataSourceDescription.title,
-            description: dataSourceDescription.description,
-            urls: dataSourceDescription.urls
-        }
-        cb(err, source);
+            if (err) {
+                callback(err, null);
+            
+                return;
+            }
+            if (doc == null) {
+                callback(new Error('Unexpectedly missing source document - wrong source document pKey? source_pKey: ' + source_pKey), null);
+                
+                return;
+            }
+            //
+            var sourceDescription = 
+            {
+                key: source_pKey,
+                sourceDoc: doc,
+                title: dataSourceDescription.title,
+                description: dataSourceDescription.description,
+                urls: dataSourceDescription.urls
+            }
+            cb(err, sourceDescription);
+        });
+        
     });
-    var completionFn = function(err, results)
+    var completionFn = function(err, sourceDescriptions)
     {
         var data = 
         {
-            sources: results
+            sources: sourceDescriptions
         };
         callback(err, data);
     };
