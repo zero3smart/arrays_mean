@@ -46,16 +46,11 @@ constructor.prototype.BindDataFor_datasetsListing = function(callback)
     {
         var err = null;
         var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription, self.context.raw_source_documents_controller);
-        self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, doc)
+        self._fetchedSourceDoc(source_pKey, function(err, doc)
         {
             if (err) {
                 callback(err, null);
             
-                return;
-            }
-            if (doc == null) {
-                callback(new Error('Unexpectedly missing source document - wrong source document pKey? source_pKey: ' + source_pKey), null);
-                
                 return;
             }
             //
@@ -147,8 +142,16 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     }
     //
     // Now kick off the query work
-    _proceedTo_obtainSampleDocument();
-    function _proceedTo_obtainSampleDocument()
+    self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
+    {
+        if (err) {
+            callback(err, null);
+        
+            return;
+        }
+        _proceedTo_obtainSampleDocument(sourceDoc);
+    });
+    function _proceedTo_obtainSampleDocument(sourceDoc)
     {
         processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
         {
@@ -163,10 +166,10 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
                 return;
             }
             //
-            _proceedTo_obtainTopUniqueFieldValuesForFiltering(sampleDoc);
+            _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc);
         });
     }
-    function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sampleDoc)
+    function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc)
     {
         _topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName)
         {
@@ -176,10 +179,10 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
                 return;
             }
             //
-            _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName);
+            _proceedTo_countWholeSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName);
         });
     }
-    function _proceedTo_countWholeSet(sampleDoc, uniqueFieldValuesByFieldName)
+    function _proceedTo_countWholeSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
     {
         var countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
             { // Count
@@ -202,11 +205,11 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
                 nonpagedCount = results[0].count;
             }
             //
-            _proceedTo_obtainPagedDocs(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
+            _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
         };
         processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).exec(doneFn);
     }
-    function _proceedTo_obtainPagedDocs(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
+    function _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
     {        
         var sortBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy ? sortBy : importedDataPreparation.HumanReadableColumnName_objectTitle, 
                                                                                                       dataSourceDescription);
@@ -232,11 +235,11 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
                 docs = [];
             }
             //        
-            _prepareDataAndCallBack(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs);
+            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs);
         };
         processedRowObjects_mongooseModel.aggregate(pagedDocs_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
     }
-    function _prepareDataAndCallBack(sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs)
+    function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs)
     {
         var err = null;
         var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
@@ -279,6 +282,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         {
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
+            sourceDoc: sourceDoc,
             //
             pageSize: pageSize < nonpagedCount ? pageSize : nonpagedCount,
             onPageNum: pageNumber,
@@ -349,8 +353,16 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
                       && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
     //
     // Now kick off the query work
-    _proceedTo_obtainSampleDocument();
-    function _proceedTo_obtainSampleDocument()
+    self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
+    {
+        if (err) {
+            callback(err, null);
+
+            return;
+        }
+        _proceedTo_obtainSampleDocument(sourceDoc);
+    });
+    function _proceedTo_obtainSampleDocument(sourceDoc)
     {
         processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
         {
@@ -364,10 +376,10 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
                 
                 return;
             }        
-            _proceedTo_obtainTopUniqueFieldValuesForFiltering(sampleDoc);
+            _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc);
         });
     }
-    function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sampleDoc)
+    function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc)
     {
         _topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName)
         {
@@ -377,10 +389,10 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
                 return;
             }
             //
-            _proceedTo_obtainGroupedResultSet(sampleDoc, uniqueFieldValuesByFieldName);
+            _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName);
         });
     }
-    function _proceedTo_obtainGroupedResultSet(sampleDoc, uniqueFieldValuesByFieldName)
+    function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
     {
         var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable, 
                                                                                                        dataSourceDescription);
@@ -450,11 +462,11 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
                 }
                 el.label = displayableVal;
             });
-            _prepareDataAndCallBack(sampleDoc, uniqueFieldValuesByFieldName, groupedResults);
+            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults);
         };
         processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
     }
-    function _prepareDataAndCallBack(sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
+    function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
     {
         var err = null;
         var routePath_base              = "/array/" + source_pKey + "/chart";
@@ -477,6 +489,7 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
         {
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
+            sourceDoc: sourceDoc,
             //
             groupedResults: groupedResults,
             groupBy: groupBy,
@@ -578,6 +591,27 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
             ordered_colNames_sansObjectTitleAndImages: alphaSorted_colNames_sansObjectTitle
         };
         callback(null, data);
+    });
+}
+//
+//
+constructor.prototype._fetchedSourceDoc = function(source_pKey, callback)
+{
+    var self = this;
+    self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, doc)
+    {
+        if (err) {
+            callback(err, null);
+            //
+            return;
+        }
+        if (doc == null) {
+            callback(new Error('Unexpectedly missing source document - wrong source document pKey? source_pKey: ' + source_pKey), null);
+            //
+            return;
+        }
+        //
+        callback(null, doc);
     });
 }
 //
