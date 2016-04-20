@@ -36,7 +36,7 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
     nunjucks_env.addFilter('comma', require('nunjucks-comma-filter'));
     nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function(date)
     {
-        return moment().format("MMMM Do, YYYY")
+        return moment(date).format("MMMM Do, YYYY")
     });
 });
 //
