@@ -6062,6 +6062,13 @@ body {
 }
 .sort-control {
 	display: inline-block;
+	margin-right: 20px;
+	padding-right: 0;
+	padding-left: 0;
+	vertical-align: top;
+}
+.sort-control:last-child {
+	margin-right: 0;
 }
 .sort-direction {
 	display: block;
@@ -6081,16 +6088,16 @@ body {
 	color: black;
 }
 .sort-control .dropdown-toggle {
-	margin-right: 20px;
-	padding-right: 0;
-	padding-left: 0;
+	padding-top: 6px;
+	padding-bottom: 6px;
 	border-style: none;
-	background: none !important;
+	background-color: transparent;
 }
+.sort-control.open > .btn-default.dropdown-toggle,
 .sort-control .dropdown-toggle:hover,
 .sort-control .dropdown-toggle:focus,
 .sort-control .dropdown-toggle:active {
-	background: none !important;
+	background-color: transparent;
 	box-shadow: none;
 }
 .sort-criteria,
@@ -6119,19 +6126,18 @@ body {
 }
 /* @end Sort Bar */
 /* @group Search form */
-.search-control {
-	position: relative;
-	top: -3px;
-}
 .search-input {
 	display: inline-block;
-	padding: 6px 0;
+	padding: 0;
 	width: 175px;
+	height: 18px;
 	border-style: none;
 	border-radius: 0;
+	background-color: transparent;
 	box-shadow: none;
 	vertical-align: baseline;
 	font-size: 18px;
+	line-height: 18px;
 }
 .search-input:focus {
 	box-shadow: none;
@@ -6419,12 +6425,29 @@ body {
 	height: calc(100vh - 135px);
 }
 /* @override 
-	http://localhost:9080/stylesheets/module/heatmap.css */
+	http://localhost:9080/stylesheets/module/choropleth.css */
 #map {
 	position: absolute;
 	top: 0;
 	bottom: 0;
 	width: 100%;
+}
+.array-choropleth .sort-bar {
+	border-bottom-style: none;
+}
+.array-choropleth .sort-control .dropdown-toggle {
+	margin-bottom: 5px;
+	padding: 15px 20px;
+	border-radius: 5px;
+	background-color: #ffffff;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+.array-choropleth .sort-control.open > .btn-default.dropdown-toggle,
+.array-choropleth .sort-control .dropdown-toggle:hover,
+.array-choropleth .sort-control .dropdown-toggle:focus,
+.array-choropleth .sort-control .dropdown-toggle:active {
+	background-color: #ffffff;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 /* @end Module */
 /*# sourceMappingURL=style.min.css.map */

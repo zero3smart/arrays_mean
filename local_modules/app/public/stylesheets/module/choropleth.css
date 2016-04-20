@@ -1,0 +1,29 @@
+/* @override 
+	http://localhost:9080/stylesheets/module/choropleth.css */
+
+#map {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+}
+
+.array-choropleth .sort-bar {
+	border-bottom-style: none;
+}
+
+.array-choropleth .sort-control .dropdown-toggle {
+	margin-bottom: 5px;
+	padding: 15px 20px;
+	border-radius: 5px;
+	background-color: #ffffff;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.array-choropleth .sort-control.open > .btn-default.dropdown-toggle,
+.array-choropleth .sort-control .dropdown-toggle:hover,
+.array-choropleth .sort-control .dropdown-toggle:focus,
+.array-choropleth .sort-control .dropdown-toggle:active {
+	background-color: #ffffff;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}

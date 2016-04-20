@@ -1,9 +1,0 @@
-/* @override 
-	http://localhost:9080/stylesheets/module/heatmap.css */
-
-#map {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	width: 100%;
-}

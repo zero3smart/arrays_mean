@@ -7,38 +7,99 @@
 {% endblock %}
 
 {% block bodyWrapper %}
-    <body class="array array-show">
+    <body class="array array-choropleth">
         <div id="page" class="site">
             {% include "../partials/header_bar_array.html" %}
             {% include "../partials/sidebar_filter.html" %}
 
             <div id="content" class="site-content">
 
-                <nav id="sort-bar" class="sort-bar" role="navigation">
+                <section class="array">
 
-                    <div class="dropdown sort-control">
-                        <a class="btn btn-default dropdown-toggle" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Map: <span class="sort-criteria">Country of Origin</span>
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="type">
-                            <li><a href="#">Country of Origin</a></li>
-                        </ul>
+                    <header class="array-header header-shadow">
+                        <h1 class="array-title">{{ arrayTitle }}</h1>
+                        <div class="array-meta"><a href="#" class="array-meta-about">About</a> <span class="array-meta-divider"></span> <span class="array-meta-count">21,201 Records</span> <span class="array-meta-divider"></span> <span class="array-meta-updated">Last Updated March 2, 2016</span></div>
+                    </header><!-- .array-header -->
+
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-12">
+
+                                <div class="sort-bar clearfix">
+
+                                    <nav class="pull-left" role="navigation">
+
+                                        <div class="dropdown sort-control">
+                                            <a class="btn btn-default dropdown-toggle ui-label" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                Map: <span class="sort-criteria">Country of Origin</span>
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="type">
+                                                <li><a href="#">Country of Origin</a></li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="dropdown sort-control">
+                                            <a class="btn btn-default dropdown-toggle ui-label" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                Scale: <span class="sort-criteria">Uniform</span>
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="group-by">
+                                                <li><a href="#">Uniform</a></li>
+                                                <li><a href="#">Uniform</a></li>
+                                            </ul>
+                                        </div>
+
+                                    </nav>
+
+                                    <div class="pull-right">
+                                        <form action="{{ routePath_base }}" method="get">
+                                            <div class="dropdown sort-control search-control">
+                                                {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
+                                                
+                                                <a href="#" class="btn btn-default dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+                                                    Search in: <span class="search-criteria">{{ searchColToOutput }}</span>
+                                                </a>
+                                                <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
+                                                <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+                                                    {% for colName in colNames_orderedForSortByDropdown %}
+                                                    <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+
+                                            <div class="sort-control">
+                                                <div class="dropdown-toggle">
+                                                    <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" value="{{ searchQ if searchQ else "" }}">
+                                                    <span class="glyphicon glyphicon-search search-icon"></span>
+                                                </div>
+                                            </div>
+
+                                            {% if sortBy %}
+                                                <input type="hidden" name="sortBy" value="{{ sortBy }}">
+                                            {% endif %}
+                                            {% if sortDir %}
+                                                <input type="hidden" name="sortDir" value="{{ sortDir }}">
+                                            {% endif %}
+                                            {% if filterCol %}
+                                                <input type="hidden" name="filterCol" value="{{ filterCol }}">
+                                            {% endif %}
+                                            {% if filterVal %}
+                                                <input type="hidden" name="filterVal" value="{{ filterVal }}">
+                                            {% endif %}
+                                        </form>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div><!-- .row -->
+                    </div><!-- .container-fluid -->
+
+                    <div class="array-content">
+
+                        <div id="map"></div>
+
                     </div>
 
-                    <div class="dropdown sort-control">
-                        <a class="btn btn-default dropdown-toggle" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Size: <span class="sort-criteria">Uniform</span>
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="group-by">
-                            <li><a href="#">Uniform</a></li>
-                            <li><a href="#">Uniform</a></li>
-                        </ul>
-                    </div>
-                </nav>
-
-                <div id="map"></div>
+                </section>
 
             </div><!-- #content -->
         </div><!-- #page -->

@@ -68,8 +68,12 @@
                                                 </ul>
                                             </div>
 
-                                            <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" value="{{ searchQ if searchQ else "" }}">
-                                            <span class="glyphicon glyphicon-search search-icon"></span>
+                                            <div class="sort-control">
+                                                <div class="dropdown-toggle">
+                                                    <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" value="{{ searchQ if searchQ else "" }}">
+                                                    <span class="glyphicon glyphicon-search search-icon"></span>
+                                                </div>
+                                            </div>
 
                                             {% if sortBy %}
                                                 <input type="hidden" name="sortBy" value="{{ sortBy }}">
