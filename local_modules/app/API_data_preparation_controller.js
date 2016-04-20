@@ -519,6 +519,18 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
             
             return;
         }
+        //
+        // Format any coerced fields as necessary - BEFORE we translate the keys into human readable forms
+        var rowParams = rowObject.rowParams;
+        var rowParams_keys = Object.keys(rowParams);
+        var rowParams_keys_length = rowParams_keys.length;
+        for (var i = 0 ; i < rowParams_keys_length ; i++) {
+            var key = rowParams_keys[i];
+            var originalVal = rowParams[key];
+            var displayableVal = _reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, key, dataSourceDescription);
+            rowParams[key] = displayableVal;
+        }
+        //
         var colNames_sansObjectTitle = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject(rowObject, dataSourceDescription);
         // ^ to finalize:
         var idxOf_objTitle = colNames_sansObjectTitle.indexOf(importedDataPreparation.HumanReadableColumnName_objectTitle);
@@ -693,4 +705,46 @@ function _topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, s
         //
         callback(null, uniqueFieldValuesByFieldName);            
     });
+}
+//
+//
+var moment_module = require('moment');
+var moment_instance = moment_module();
+var _defaultFormat = "MMMM Do, YYYY";
+var import_datatypes = require('../data_ingestion/import_datatypes');
+//
+function _reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, key, dataSourceDescription)
+{
+    var displayableVal = originalVal;
+    // var prototypeName = Object.prototype.toString.call(originalVal);
+    // if (prototypeName === '[object Date]') {
+    // }
+    // ^ We could check this but we ought to have the info, and checking the
+    // coersion scheme will make this function slightly more rigorous.
+    // Perhaps we could do some type-introspection automated formatting later
+    // here if needed, but I think generally that kind of thing would be done case-by-case
+    // in the template, such as comma-formatting numbers.
+    var raw_rowObjects_coercionScheme = dataSourceDescription.raw_rowObjects_coercionScheme;
+    if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
+        var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
+        if (coersionSchemeOfKey && typeof coersionSchemeOfKey !== 'undefined') {
+            var _do = coersionSchemeOfKey.do;
+            if (_do === import_datatypes.Coercion_ops.ToDate) {
+                var dateFormat = null;
+                var opts = coersionSchemeOfKey.opts;
+                if (opts && typeof opts !== 'undefined') {
+                    dateFormat = opts.format;
+                }
+                if (dateFormat == null) {
+                    dateFormat = _defaultFormat;
+                }
+                displayableVal = moment_instance.format(dateFormat);
+            } else { // nothing to do? (no other types yet)                
+            }
+        } else { // nothing to do?
+        }
+    } else { // nothing to do?
+    }
+    
+    return displayableVal;
 }
