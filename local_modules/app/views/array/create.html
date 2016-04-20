@@ -38,7 +38,7 @@
                                                     <div class="panel-body-meta">
                                                         {% set comma = joiner() %}
                                                         {% for url in source.urls -%}
-                                                          {{ comma() }} <a href="{{ url }}" class="source-link color-brand">{{ url }}</a>
+                                                          {{ comma() }} <a href="{{ url }}" class="source-link color-brand" target="_blank">{{ url }}</a>
                                                         {%- endfor %}
                                                         <span class="source-divider"></span>
                                                         <span class="source-count">{{ source.sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span>
