@@ -54,6 +54,13 @@ constructor.prototype._dataSourcePostImportCachingFunction = function(indexInLis
 {
     var self = this;
     var dataSource_title = dataSourceDescription.title;
+    var fe_visible = dataSourceDescription.fe_visible;
+    if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
+        winston.warn("⚠️  The data source \"" + dataSource_title + "\" had fe_visible=false, so not going to generate its unique filter value cache.");
+        callback(null);
+        
+        return;
+    }
     winston.info("🔁  " + indexInList + ": Generated post-import caches for \"" + dataSource_title + "\"");
     self.generateUniqueFilterValueCacheCollection(dataSourceDescription, function(err) 
     {

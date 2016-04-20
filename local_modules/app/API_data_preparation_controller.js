@@ -115,6 +115,12 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         
         return;
     }
+    var fe_visible = dataSourceDescription.fe_visible;
+    if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
+        callback(new Error("That data source was set to be not visible: " + source_pKey), null);
+        
+        return;
+    }
     var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
@@ -353,6 +359,12 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
         
         return;
     }
+    var fe_visible = dataSourceDescription.fe_visible;
+    if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
+        callback(new Error("That data source was set to be not visible: " + source_pKey), null);
+        
+        return;
+    }
     var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
@@ -553,6 +565,12 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
 {
     var self = this;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
+    var fe_visible = dataSourceDescription.fe_visible;
+    if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
+        callback(new Error("That data source was set to be not visible: " + source_pKey), null);
+        
+        return;
+    }
     var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     var query =
