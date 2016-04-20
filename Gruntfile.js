@@ -143,6 +143,12 @@ module.exports = function(grunt) {
         cwd: 'bower_components/world.geo.json',
         src: 'countries.geo.json',
         dest: 'local_modules/app/public/data/lib/world.geo.json'
+      },
+      sharrre: {
+        expand: true,
+        cwd: 'bower_components/sharrre/dist',
+        src: 'jquery.sharrre.min.js',
+        dest: 'local_modules/app/public/javascripts/lib/sharrre'
       }
     },
 

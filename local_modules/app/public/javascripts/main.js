@@ -49,16 +49,54 @@ $(document).ready(function() {
         $('.search-control .dropdown-toggle').attr('aria-expanded', 'false');
         $(this).closest('.dropdown').removeClass('open');
     });
-    
-    $('a.share-link').on('click', function(e) 
-    {
+
+    /**
+     * Share links
+     */
+    $('#facebook').on('click', function(e) {
         e.preventDefault();
         _POST_toGetURLForSharingCurrentPage(function(err, share_url)
         {
             if (err) {
-                alert(err);
+                console.log(err);
             } else {
-                alert("Share url: " + share_url);
+                // alert("Share url: " + share_url);
+                $(this).sharrre({
+                    share: {
+                        facebook: true,
+                    },
+                    title: 'Arrays',
+                    url: 'http://www.arrays.co',
+                    enableTracking: false,
+                    render: function(api, options) {
+                        api.openPopup('facebook');
+                    }
+                });
+            }
+        });
+        
+        return false;
+    });
+
+    $('#twitter').on('click', function(e) {
+        e.preventDefault();
+        _POST_toGetURLForSharingCurrentPage(function(err, share_url)
+        {
+            if (err) {
+                console.log(err);
+            } else {
+                // alert("Share url: " + share_url);
+                $(this).sharrre({
+                    share: {
+                        twitter: true,
+                    },
+                    title: 'Arrays',
+                    url: 'http://www.arrays.co',
+                    enableTracking: false,
+                    render: function(api, options) {
+                        api.openPopup('twitter');
+                    }
+                });
             }
         });
         
