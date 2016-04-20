@@ -283,6 +283,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
             sourceDoc: sourceDoc,
+            sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,
             //
             pageSize: pageSize < nonpagedCount ? pageSize : nonpagedCount,
             onPageNum: pageNumber,
@@ -485,11 +486,13 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
             routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
         }
+        var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
         var data =
         {
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
             sourceDoc: sourceDoc,
+            sourceDocURL: sourceDocURL,
             //
             groupedResults: groupedResults,
             groupBy: groupBy,
