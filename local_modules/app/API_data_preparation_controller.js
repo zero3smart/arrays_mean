@@ -450,9 +450,26 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             if (groupedResults == undefined || groupedResults == null) {
                 groupedResults = [];
             }
+            var finalized_groupedResults = [];
             groupedResults.forEach(function(el, i, arr) 
             {
                 var originalVal = el.label;
+                //
+                var fe_chart_valuesToExcludeByOriginalKey = dataSourceDescription.fe_chart_valuesToExcludeByOriginalKey;
+                if (fe_chart_valuesToExcludeByOriginalKey != null && typeof fe_chart_valuesToExcludeByOriginalKey !== 'undefined') {
+                    if (fe_chart_valuesToExcludeByOriginalKey._all) {
+                        if (fe_chart_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
+                            return; // do not push to list
+                        }
+                    }
+                    var illegalValuesForThisKey = fe_chart_valuesToExcludeByOriginalKey[groupBy_realColumnName];
+                    if (illegalValuesForThisKey) {
+                        if (illegalValuesForThisKey.indexOf(originalVal) !== -1) {
+                            return; // do not push to list
+                        }
+                    }
+                }
+                //
                 var displayableVal = originalVal;
                 if (originalVal == null) {
                     displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
@@ -461,9 +478,9 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
                 } else {
                     displayableVal = _reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, groupBy_realColumnName, dataSourceDescription);
                 }
-                el.label = displayableVal;
+                finalized_groupedResults.push({ value: el.value, label: displayableVal });
             });
-            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults);
+            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, finalized_groupedResults);
         };
         processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
     }

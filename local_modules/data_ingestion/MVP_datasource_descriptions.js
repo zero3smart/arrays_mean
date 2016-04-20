@@ -62,7 +62,15 @@ exports.Descriptions =
         [
             "ConstituentID" // not sure if we really want to exclude this
         ],
-        fe_fieldsNotAvailableAsFilters:
+        fe_displayTitleOverrides:
+        { // these are to be tuples - the values must be unique as well
+            "Code" : "Gender",
+            "DisplayDate" : "Bio",
+            "BeginDate" : "Date of Birth",
+            "EndDate" : "Date of Death"
+        },
+        //
+        fe_filters_fieldsNotAvailable:
         [
             "DisplayName", // because they're effectively unique
             "Artworks", // it's an array
@@ -80,18 +88,13 @@ exports.Descriptions =
                 "Not Specified": "NULL"
             }
         },
-        fe_displayTitleOverrides:
-        { // these are to be tuples - the values must be unique as well
-            "Code" : "Gender",
-            "DisplayDate" : "Bio",
-            "BeginDate" : "Date of Birth",
-            "EndDate" : "Date of Death"
-        },
+        //
         fe_filters_valuesToExcludeByOriginalKey:
         {
             _all: [ "" ],
-            "Nationality" : [ "NULL" ]
+            "Nationality" : [ "NULL", "Nationality unknown", "nationality unknown", "Nationality Unknown" ]
         },
+        //
         fe_chart_defaultGroupByColumnName_humanReadable: "Nationality",
         fe_chart_fieldsNotAvailableAsGroupByColumns:
         [
@@ -100,7 +103,12 @@ exports.Descriptions =
             "DisplayDate",
             "Wiki QID",
             "ULAN"
-        ]
+        ],
+        fe_chart_valuesToExcludeByOriginalKey:
+        {
+            _all: [ "", null, "NULL", "(not specified)" ],
+            Nationality: [ "Nationality unknown", "nationality unknown", "Nationality Unknown" ]
+        },
     }
     , {
         filename: "MoMA_Artworks_v2_jy.csv",
@@ -160,7 +168,7 @@ exports.Descriptions =
             }
         },
         //
-        fe_fieldsNotAvailableAsFilters:
+        fe_filters_fieldsNotAvailable:
         [
             "Title", // they're almost exclusively unique
             "ArtistBio",
@@ -247,6 +255,11 @@ exports.Descriptions =
             "DateAcquired",
             "URL"
         ],
+        fe_chart_valuesToExcludeByOriginalKey:
+        {
+            _all: [ "", null, "NULL", "(not specified)" ],
+            Classification: [ "(not assigned)" ]
+        },
         //
         //
         afterImportingAllSources_generate: 
