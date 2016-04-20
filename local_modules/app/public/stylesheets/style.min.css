@@ -5890,9 +5890,6 @@ Interactive Layer
 /* @group Layout */
 /* @override 
 	http://localhost:9080/stylesheets/layout/body.css */
-body {
-	
-}
 .site {
 	overflow-x: hidden;
 	padding-top: 60px;
@@ -5904,6 +5901,13 @@ body {
 }
 .container-fluid {
 	max-width: 1280px;
+}
+@media (min-width: 768px) {
+	.container-fluid {
+		padding-right: 60px;
+		padding-left: 60px;
+		max-width: 1280px;
+	}
 }
 /* @end Layout */
 /* @group Module */
@@ -6331,13 +6335,18 @@ body {
 	padding-right: 5px;
 	padding-left: 5px;
 	width: 50%;
-	vertical-align: top;
+	vertical-align: bottom;
 }
 @media (min-width: 768px) {
 	.gallery-item {
 		margin-bottom: 30px;
 		padding-right: 15px;
 		padding-left: 15px;
+		width: 25%;
+	}
+}
+@media (min-width: 1024px) {
+	.gallery-item {
 		width: 16.6667%;
 	}
 }
@@ -6352,7 +6361,7 @@ body {
 	border-width: 1px;
 	border-style: solid;
 	border-color: #d8d8d8;
-	padding-top: 75%;
+	padding-top: 100%;
 }
 .gallery-tooltip {
 	position: absolute;
@@ -6372,7 +6381,6 @@ body {
 	max-height: 66px;
 	width: 100%;
 	color: black;
-	font-weight: bold;
 	font-size: 18px;
 	line-height: 22px;
 }

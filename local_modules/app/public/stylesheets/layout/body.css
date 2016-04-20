@@ -1,10 +1,6 @@
 /* @override 
 	http://localhost:9080/stylesheets/layout/body.css */
 
-body {
-	
-}
-
 .site {
 	overflow-x: hidden;
 	padding-top: 60px;
@@ -18,4 +14,12 @@ body {
 
 .container-fluid {
 	max-width: 1280px;
+}
+
+@media (min-width: 768px) {
+	.container-fluid {
+		padding-right: 60px;
+		padding-left: 60px;
+		max-width: 1280px;
+	}
 }

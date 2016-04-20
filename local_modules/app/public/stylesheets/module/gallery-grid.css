@@ -62,7 +62,7 @@
 	padding-right: 5px;
 	padding-left: 5px;
 	width: 50%;
-	vertical-align: top;
+	vertical-align: bottom;
 }
 
 @media (min-width: 768px) {
@@ -70,6 +70,12 @@
 		margin-bottom: 30px;
 		padding-right: 15px;
 		padding-left: 15px;
+		width: 25%;
+	}
+}
+
+@media (min-width: 1024px) {
+	.gallery-item {
 		width: 16.6667%;
 	}
 }
@@ -88,7 +94,7 @@
 	border-width: 1px;
 	border-style: solid;
 	border-color: var(--color-divider);
-	padding-top: 75%;
+	padding-top: 100%;
 }
 
 .gallery-tooltip {
@@ -110,7 +116,6 @@
 	max-height: 66px;
 	width: 100%;
 	color: black;
-	font-weight: bold;
 	font-size: 18px;
 	line-height: 22px;
 }
