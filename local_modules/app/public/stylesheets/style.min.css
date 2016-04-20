@@ -5025,7 +5025,10 @@ a.color-brand:active {
 .background-color-brand,
 .background-color-brand-hover:hover,
 .background-color-brand-hover:hover > a {
-	background-color: #feb600 !important;
+	background-color: #feb600;
+}
+.border-color-brand {
+	border-color: #feb600;
 }
 .border-top-color-brand {
 	border-top-color: #feb600;
@@ -5042,6 +5045,12 @@ a.color-brand:active {
 .brand-blue .background-color-brand-hover:hover,
 .brand-blue .background-color-brand-hover:hover > a {
 	background-color: #005cff;
+}
+.brand-blue .border-color-brand {
+	border-color: #005cff;
+}
+.brand-blue .border-top-color-brand {
+	border-top-color: #005cff;
 }
 /* @end  Blue */
 /* @override 
@@ -6042,7 +6051,7 @@ body {
 }
 .sidebar-filter-subgroup-item > a.sidebar-filter-active,
 .sidebar-filter-subgroup-item > a:hover {
-	color: #4a4a4a;
+	/*color: var(--color-sidebar-bg);*/
 }
 /* @override 
 	http://localhost:9080/stylesheets/module/sort-bar.css */
@@ -6114,7 +6123,7 @@ body {
 	font-size: 18px;
 }
 .sort-control .dropdown-menu > li > a:hover {
-	color: #4a4a4a;
+	/*color: var(--color-text-med);*/
 }
 .filter-tag {
 	color: #9b9b9b;
@@ -6156,7 +6165,8 @@ body {
 	margin-right: 5px;
 	margin-left: 5px;
 	padding: 5px 25px 5px 15px;
-	border: 1px solid #feb600;
+	border-width: 1px;
+	border-style: solid;
 	border-radius: 1000px;
 	color: #777777;
 	text-transform: uppercase;

@@ -62,5 +62,5 @@
 
 .sidebar-filter-subgroup-item > a.sidebar-filter-active,
 .sidebar-filter-subgroup-item > a:hover {
-	color: var(--color-sidebar-bg);
+	/*color: var(--color-sidebar-bg);*/
 }
