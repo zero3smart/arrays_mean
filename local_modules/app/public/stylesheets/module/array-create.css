@@ -33,6 +33,7 @@
 .panel-source .panel-body {
 	padding: 40px 30px;
 	color: black;
+	overflow-x: hidden;
 }
 
 .panel-source .panel-body-title {

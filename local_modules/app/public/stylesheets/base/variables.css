@@ -34,7 +34,9 @@ a.color-brand:active {
 
 .background-color-brand,
 .background-color-brand-hover:hover,
-.background-color-brand-hover:hover > a {
+.background-color-brand-hover:focus,
+.background-color-brand-hover:hover > a,
+.background-color-brand-hover:focus > a {
 	background-color: var(--color-primary);
 }
 
@@ -59,7 +61,9 @@ a.color-brand:active {
 
 .brand-blue .background-color-brand,
 .brand-blue .background-color-brand-hover:hover,
-.brand-blue .background-color-brand-hover:hover > a {
+.brand-blue .background-color-brand-hover:focus,
+.brand-blue .background-color-brand-hover:hover > a,
+.brand-blue .background-color-brand-hover:focus > a {
 	background-color: var(--color-brand-blue);
 }
 

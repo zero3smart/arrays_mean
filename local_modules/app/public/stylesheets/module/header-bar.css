@@ -103,7 +103,8 @@
 	margin-right: 15px;
 }
 
-.navbar-nav .open .dropdown-menu > li > a:hover .color-brand {
+.navbar-nav .open .dropdown-menu > li > a:hover .color-brand,
+.navbar-nav .open .dropdown-menu > li > a:focus .color-brand {
 	color: #ffffff;
 }
 

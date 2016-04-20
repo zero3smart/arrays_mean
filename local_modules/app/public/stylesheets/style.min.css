@@ -5024,7 +5024,9 @@ a.color-brand:active {
 }
 .background-color-brand,
 .background-color-brand-hover:hover,
-.background-color-brand-hover:hover > a {
+.background-color-brand-hover:focus,
+.background-color-brand-hover:hover > a,
+.background-color-brand-hover:focus > a {
 	background-color: #feb600;
 }
 .border-color-brand {
@@ -5043,7 +5045,9 @@ a.color-brand:active {
 }
 .brand-blue .background-color-brand,
 .brand-blue .background-color-brand-hover:hover,
-.brand-blue .background-color-brand-hover:hover > a {
+.brand-blue .background-color-brand-hover:focus,
+.brand-blue .background-color-brand-hover:hover > a,
+.brand-blue .background-color-brand-hover:focus > a {
 	background-color: #005cff;
 }
 .brand-blue .border-color-brand {
@@ -5886,10 +5890,8 @@ Interactive Layer
 /* @group Layout */
 /* @override 
 	http://localhost:9080/stylesheets/layout/body.css */
-body {
-	overflow-x: hidden;
-}
 .site {
+	overflow-x: hidden;
 	padding-top: 60px;
 }
 @media (min-width: 768px) {
@@ -5987,7 +5989,8 @@ body {
 	top: 3px;
 	margin-right: 15px;
 }
-.navbar-nav .open .dropdown-menu > li > a:hover .color-brand {
+.navbar-nav .open .dropdown-menu > li > a:hover .color-brand,
+.navbar-nav .open .dropdown-menu > li > a:focus .color-brand {
 	color: #ffffff;
 }
 /* @end Dropdown */
@@ -6219,6 +6222,7 @@ body {
 .panel-source .panel-body {
 	padding: 40px 30px;
 	color: black;
+	overflow-x: hidden;
 }
 .panel-source .panel-body-title {
 	margin-top: 0;
