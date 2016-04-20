@@ -6421,8 +6421,11 @@ body {
 }
 /* @override 
 	http://localhost:9080/stylesheets/module/chart.css */
+#chart {
+	margin-top: 15px;
+}
 #chart svg {
-	height: calc(100vh - 135px);
+	height: calc(100vh - 300px);
 }
 /* @override 
 	http://localhost:9080/stylesheets/module/choropleth.css */

@@ -14,39 +14,45 @@
 
             <div id="content" class="site-content">
 
-                <nav id="sort-bar" class="sort-bar" role="navigation">
+                <section class="array">
 
-                    <!--
-                    <div class="dropdown sort-control">
-                        <a class="btn btn-default dropdown-toggle" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Type: <span class="sort-criteria">Pie Chart</span>
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="type">
-                            <li><a href="#">Pie Chart</a></li>
-                        </ul>
-                    </div>
-                    -->
+                    <header class="array-header header-shadow">
+                        <h1 class="array-title">{{ arrayTitle }}</h1>
+                        <div class="array-meta"><a href="#" class="array-meta-about">About</a> <span class="array-meta-divider"></span> <span class="array-meta-count">21,201 Records</span> <span class="array-meta-divider"></span> <span class="array-meta-updated">Last Updated March 2, 2016</span></div>
+                    </header><!-- .array-header -->
 
-                    <div class="dropdown sort-control">
-                        <a class="btn btn-default dropdown-toggle" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            Group By: <span class="sort-criteria">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="group-by">                            
-                            {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
-                            {% for colName in colNames_orderedForGroupByDropdown %}
-                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutGroupBy }}{{ groupBy_queryParamJoinChar }}groupBy={{ colName }}">{{ colName }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </nav>
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm-12">
 
-                {% if isFilterActive %}
-                <div class="filter-bar">
-                    <span class="filter-tag">{{ filterVal | safe }} <a href="{{ routePath_withoutFilter }}" class="close filter-tag-close">&times;</a></span>
-                </div>
-                {% endif %}
+                                <div class="sort-bar clearfix">
+
+                                    <nav class="pull-left" role="navigation">
+
+                                        <div class="dropdown sort-control">
+                                            <a class="btn btn-default dropdown-toggle ui-label" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                Group By: <span class="sort-criteria">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
+                                            </a>
+                                            <ul class="dropdown-menu" aria-labelledby="group-by">                            
+                                                {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
+                                                {% for colName in colNames_orderedForGroupByDropdown %}
+                                                <li class="background-color-brand-hover"><a href="{{ routePath_withoutGroupBy }}{{ groupBy_queryParamJoinChar }}groupBy={{ colName }}">{{ colName }}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </nav>
+
+                                </div>
+
+                                {% if isFilterActive %}
+                                <div class="filter-bar">
+                                    <span class="filter-tag">{{ filterVal | safe }} <a href="{{ routePath_withoutFilter }}" class="close filter-tag-close">&times;</a></span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div><!-- .row -->
+                    </div><!-- .container-fluid -->
+                </section>
 
                 <script type="text/javascript">
                     var pieData = {{ groupedResults | dump | safe }}; 
