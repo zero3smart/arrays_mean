@@ -64,15 +64,25 @@ $(document).ready(function() {
         
         return false;
     });
-    $('a.get-embed-code-link').on('click', function(e) 
+
+    /**
+     * Popup modal on embed code click
+     */
+    $('.get-embed-code-link').on('click', function(e) 
     {
         e.preventDefault();
         _POST_toGetURLForSharingCurrentPage(function(err, share_url)
         {
             if (err) {
-                alert(err);
+                console.log(err);
             } else {
-                alert("Share url for embedding: " + share_url);
+                $('#modal')
+                    .on('show.bs.modal', function (e) {
+                        var modal = $(this);
+                        modal.find('.modal-title').html('Embed Code');
+                        modal.find('.modal-body').html('<h3>Share url for embedding:</h3> <pre>' + share_url + '</pre>');
+                    })
+                    .modal();
             }
         });
         
