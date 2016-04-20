@@ -31,10 +31,10 @@
 
                                         <div class="sort-control sort-direction">
                                             {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
-                                            {% if sortDir == "Ascending" %}
-                                                <a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Descending"><span class="glyphicon glyphicon-sort-by-attributes-alt sort-direction-icon" aria-hidden="true"></span></a>
-                                            {% else %}
+                                            {% if sortDir == "Descending" %}
                                                 <a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Ascending"><span class="glyphicon glyphicon-sort-by-attributes sort-direction-icon" aria-hidden="true"></span></a>
+                                            {% else %}
+                                                <a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Descending"><span class="glyphicon glyphicon-sort-by-attributes-alt sort-direction-icon" aria-hidden="true"></span></a>
                                             {% endif %}
                                         </div>
 
