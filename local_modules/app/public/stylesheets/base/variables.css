@@ -37,8 +37,10 @@ a.color-brand:active {
 .background-color-brand,
 .background-color-brand-hover:hover,
 .background-color-brand-hover:focus,
-.background-color-brand-hover:hover > a,
-.background-color-brand-hover:focus > a {
+.background-color-brand-hover:active,
+.background-color-brand-hover > a:hover,
+.background-color-brand-hover > a:focus,
+.background-color-brand-hover > a:active {
 	background-color: var(--color-primary);
 }
 
@@ -64,8 +66,10 @@ a.color-brand:active {
 .source-moma_artworks-r2 .background-color-brand,
 .source-moma_artworks-r2 .background-color-brand-hover:hover,
 .source-moma_artworks-r2 .background-color-brand-hover:focus,
-.source-moma_artworks-r2 .background-color-brand-hover:hover > a,
-.source-moma_artworks-r2 .background-color-brand-hover:focus > a {
+.source-moma_artworks-r2 .background-color-brand-hover:active,
+.source-moma_artworks-r2 .background-color-brand-hover > a:hover,
+.source-moma_artworks-r2 .background-color-brand-hover > a:focus,
+.source-moma_artworks-r2 .background-color-brand-hover > a:active {
 	background-color: var(--color-brand-blue);
 }
 
