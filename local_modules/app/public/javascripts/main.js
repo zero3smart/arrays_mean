@@ -28,6 +28,14 @@ $(document).ready(function() {
     });
 
     /**
+     * Resize content width after sidebar slide out animation complete
+     */
+    $('.sidebar-filter').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function(e) {
+        console.log('slide out complete');
+        $('body').toggleClass('sidebar-filter-complete');
+    });
+
+    /**
      * Sidebar filter accordion using Bootstrap
      */
     $('.collapse-trigger').on('click', function(e) {

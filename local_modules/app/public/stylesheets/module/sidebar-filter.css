@@ -42,6 +42,10 @@
 .sidebar-filter,
 .navbar-fixed-top,
 .site-content {
+	transition: transform 400ms ease-in-out;
+}
+
+.navbar-fixed-top {
 	transition: transform 400ms ease-in-out, width 400ms ease-in-out;
 }
 
@@ -53,7 +57,7 @@
 
 @media (min-width: 768px) {
 	.sidebar-filter-in .navbar-fixed-top,
-	.sidebar-filter-in .site-content {
+	.sidebar-filter-in.sidebar-filter-complete .site-content {
 		width: calc(100% - var(--sidebar-width));
 	}
 }

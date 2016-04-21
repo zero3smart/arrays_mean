@@ -6045,6 +6045,12 @@ Interactive Layer
 .sidebar-filter,
 .navbar-fixed-top,
 .site-content {
+	-webkit-transition: -webkit-transform 400ms ease-in-out;
+	transition: -webkit-transform 400ms ease-in-out;
+	transition: transform 400ms ease-in-out;
+	transition: transform 400ms ease-in-out, -webkit-transform 400ms ease-in-out;
+}
+.navbar-fixed-top {
 	-webkit-transition: width 400ms ease-in-out, -webkit-transform 400ms ease-in-out;
 	transition: width 400ms ease-in-out, -webkit-transform 400ms ease-in-out;
 	transition: transform 400ms ease-in-out, width 400ms ease-in-out;
@@ -6059,7 +6065,7 @@ Interactive Layer
 }
 @media (min-width: 768px) {
 	.sidebar-filter-in .navbar-fixed-top,
-	.sidebar-filter-in .site-content {
+	.sidebar-filter-in.sidebar-filter-complete .site-content {
 		width: calc(100% - 280px);
 	}
 }
