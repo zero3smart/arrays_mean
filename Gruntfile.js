@@ -146,8 +146,8 @@ module.exports = function(grunt) {
       },
       sharrre: {
         expand: true,
-        cwd: 'bower_components/sharrre/dist',
-        src: 'jquery.sharrre.min.js',
+        cwd: 'bower_components/sharrre',
+        src: 'jquery.sharrre.js',
         dest: 'local_modules/app/public/javascripts/lib/sharrre'
       }
     },

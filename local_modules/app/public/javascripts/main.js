@@ -68,7 +68,7 @@ $(document).ready(function() {
 
                         $modalTitle.html('Share');
                         $modalBody.html('<h3>Share on Social Media</h3>');
-                        $modalBody.append('<div id="twitter" data-url="' + share_url + '" data-text="Arrays"></div>');
+                        $modalBody.append('<a href="#" id="twitter" class="btn btn-default" data-url="' + share_url + '" data-text="Arrays">Twitter</a>');
                         $modalBody.append('<div id="facebook" data-url="' + share_url + '" data-text="Arrays"></div>');
                         $modalBody.append('<h3>Share url for embedding:</h3>');
                         $modalBody.append('<pre>' + share_url + '</pre>');
