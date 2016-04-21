@@ -32,7 +32,7 @@
                                         {% set columnValue = rowObject.rowParams[columnName] %}
                                         {% if columnValue %}
                                         <dt>{{ columnName }}</dt>
-                                        <dd>{{ columnValue }}</dd>
+                                        <dd>{{ columnValue | joinWithCommaIfArray }}</dd>
                                         {% endif %}
                                     {% endfor %}
                                     </dl>
