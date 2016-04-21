@@ -6134,14 +6134,6 @@ Interactive Layer
 .sort-control .dropdown-menu > li > a:hover {
 	/*color: var(--color-text-med);*/
 }
-.filter-tag {
-	color: #9b9b9b;
-	font-weight: normal;
-	/*text-transform: uppercase;
-	letter-spacing: 2px;
-	font-weight: 500;*/
-	font-size: 16px;
-}
 /* @end Sort Bar */
 /* @group Search form */
 .search-input {
@@ -6173,18 +6165,18 @@ Interactive Layer
 	display: inline-block;
 	margin-right: 5px;
 	margin-left: 5px;
-	padding: 5px 25px 5px 15px;
+	padding: 5px 30px 5px 15px;
 	border-width: 1px;
 	border-style: solid;
 	border-radius: 1000px;
 	color: #777777;
-	text-transform: uppercase;
-	letter-spacing: 2px;
+	font-weight: normal;
+	font-size: 16px;
 }
 .filter-tag-close {
 	position: absolute;
 	top: 1px;
-	right: 5px;
+	right: 10px;
 	display: inline-block;
 	float: none;
 	font-weight: normal;
