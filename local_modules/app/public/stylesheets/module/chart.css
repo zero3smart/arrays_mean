@@ -1,5 +1,9 @@
 /* @override 
 	http://localhost:9080/stylesheets/module/chart.css */
+	
+.array-chart .sort-bar {
+	border-bottom-style: none;
+}
 
 #chart {
 	margin-top: 15px;
@@ -9,6 +13,10 @@
 	height: calc(100vh - 300px);
 }
 
-.array-chart .sort-bar {
-	border-bottom-style: none;
+/* @group Chart Styling */
+
+.nvd3.nv-pie path {
+	stroke-width: 0;
 }
+
+/* @end Chart Styling */
