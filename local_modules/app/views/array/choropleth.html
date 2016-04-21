@@ -31,7 +31,7 @@
 
                                         <div class="dropdown sort-control">
                                             <a class="btn btn-default dropdown-toggle dropdown-toggle-button ui-label" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                Map: <span class="sort-criteria">Country of Origin</span>
+                                                Map by <span class="sort-criteria">Country of Origin</span>
                                             </a>
                                             <ul class="dropdown-menu" aria-labelledby="type">
                                                 <li><a href="#">Country of Origin</a></li>
@@ -57,7 +57,7 @@
                                                     {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
                                                     
                                                     <a href="#" class="btn btn-default dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                                                        Search in: <span class="search-criteria">{{ searchColToOutput }}</span>
+                                                        Search <span class="search-criteria">{{ searchColToOutput }}</span>
                                                     </a>
                                                     <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
                                                     <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
