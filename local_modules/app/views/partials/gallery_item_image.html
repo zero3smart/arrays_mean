@@ -2,7 +2,7 @@
 	<a href="/array/{{ doc.srcDocPKey }}/{{ doc._id }}">
 		<img src="{{ doc.rowParams[fieldKey_medThumbImageURL] }}" class="gallery-image" />
 		<div class="gallery-tooltip border-top-color-brand">
-			<h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] }}</h2>
+			<h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</h2>
 		</div>
 	</a>
 </li>
