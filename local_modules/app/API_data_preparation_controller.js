@@ -70,6 +70,8 @@ constructor.prototype.BindDataFor_datasetsListing = function(callback)
     {
         var data = 
         {
+            env: process.env,
+            //
             sources: sourceDescriptions
         };
         callback(err, data);
@@ -301,6 +303,8 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         }
         var data =
         {
+            env: process.env,
+            //
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
             sourceDoc: sourceDoc,
@@ -533,6 +537,8 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
         var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
         var data =
         {
+            env: process.env,
+            //
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
             sourceDoc: sourceDoc,
@@ -631,6 +637,8 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
         //
         var data =
         {
+            env: process.env,
+            //
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
             //

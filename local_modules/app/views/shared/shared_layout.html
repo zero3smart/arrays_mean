@@ -25,6 +25,7 @@
         Body
     {% endblock %}
 
-    <!-- Live Reload -->
+    {% if env.FE_LIVERELOAD == "true" %}
     <script src="//localhost:35729/livereload.js"></script>
+    {% endif %}
 </html>

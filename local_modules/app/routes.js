@@ -67,6 +67,7 @@ constructor.prototype._mountRoutes_viewEndpoints_homepage = function()
     {
         var bindData = 
         {
+            env: process.env
         };
         // res.render('homepage/homepage', bindData);
 
