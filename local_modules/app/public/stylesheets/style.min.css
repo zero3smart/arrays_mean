@@ -5892,11 +5892,11 @@ Interactive Layer
 	http://localhost:9080/stylesheets/layout/body.css */
 .site {
 	overflow-x: hidden;
-	padding-top: 60px;
+	padding-top: 50px;
 }
 @media (min-width: 768px) {
 	.site {
-		padding-top: 70px;
+		padding-top: 64px;
 	}
 }
 .container-fluid {
@@ -5953,7 +5953,6 @@ Interactive Layer
 }
 @media (min-width: 768px) {
 	.navbar-default .navbar-brand {
-		margin-top: 3px;
 		font-size: 28px;
 	}
 }
@@ -5977,8 +5976,7 @@ Interactive Layer
 	margin-top: 6px;
 }
 .navbar-nav > li > a {
-	padding-right: 10px;
-	padding-left: 10px;
+	padding: 15px 10px;
 }
 @media (min-width: 768px) {
 	.navbar-nav > li > a {

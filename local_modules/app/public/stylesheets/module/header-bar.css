@@ -8,6 +8,7 @@
 }
 
 .navbar-default {
+	min-height: 50px;
 	height: 50px;
 	border-bottom-style: none;
 	font-size: 18px;
@@ -15,7 +16,7 @@
 
 @media (min-width: 768px) {
 	.navbar-default {
-		height: 70px;
+		height: 64px;
 		font-size: 24px;
 	}
 }
@@ -43,20 +44,23 @@
 	margin-right: auto;
 	margin-left: auto;
 	font-weight: 600;
-	font-size: 22px;
-}
-
-@media (min-width: 768px) {
-	.navbar-default .navbar-brand {
-		margin-top: 3px;
-		font-size: 28px;
-	}
 }
 
 .navbar-default .navbar-brand-arrays {
+	padding-top: 15px;
+	padding-bottom: 15px;
+	height: 50px;
 	text-transform: uppercase;
 	letter-spacing: 10px;
-	font-size: 20px;
+	font-size: 17px;
+}
+
+@media (min-width: 768px) {
+	.navbar-default .navbar-brand-arrays {
+		padding-top: 22px;
+		padding-bottom: 22px;
+		font-size: 20px;
+	}
 }
 
 /* @group Filter active */
@@ -80,14 +84,12 @@
 }
 
 .navbar-nav > li > a {
-	padding-right: 10px;
-	padding-left: 10px;
+	padding: 15px 10px;
 }
 
 @media (min-width: 768px) {
 	.navbar-nav > li > a {
-		padding-right: 20px;
-		padding-left: 20px;
+		padding: 18px 20px;
 	}
 }
 
