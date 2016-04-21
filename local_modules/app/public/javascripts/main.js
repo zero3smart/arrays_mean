@@ -51,62 +51,9 @@ $(document).ready(function() {
     });
 
     /**
-     * Share links
-     */
-    $('#facebook').on('click', function(e) {
-        e.preventDefault();
-        _POST_toGetURLForSharingCurrentPage(function(err, share_url)
-        {
-            if (err) {
-                console.log(err);
-            } else {
-                // alert("Share url: " + share_url);
-                $(this).sharrre({
-                    share: {
-                        facebook: true,
-                    },
-                    title: 'Arrays',
-                    url: 'http://www.arrays.co',
-                    enableTracking: false,
-                    render: function(api, options) {
-                        api.openPopup('facebook');
-                    }
-                });
-            }
-        });
-        
-        return false;
-    });
-
-    $('#twitter').on('click', function(e) {
-        e.preventDefault();
-        _POST_toGetURLForSharingCurrentPage(function(err, share_url)
-        {
-            if (err) {
-                console.log(err);
-            } else {
-                // alert("Share url: " + share_url);
-                $(this).sharrre({
-                    share: {
-                        twitter: true,
-                    },
-                    title: 'Arrays',
-                    url: 'http://www.arrays.co',
-                    enableTracking: false,
-                    render: function(api, options) {
-                        api.openPopup('twitter');
-                    }
-                });
-            }
-        });
-        
-        return false;
-    });
-
-    /**
      * Popup modal on embed code click
      */
-    $('.get-embed-code-link').on('click', function(e) 
+    $('.share-link').on('click', function(e) 
     {
         e.preventDefault();
         _POST_toGetURLForSharingCurrentPage(function(err, share_url)
@@ -116,9 +63,41 @@ $(document).ready(function() {
             } else {
                 $('#modal')
                     .on('show.bs.modal', function (e) {
-                        var modal = $(this);
-                        modal.find('.modal-title').html('Embed Code');
-                        modal.find('.modal-body').html('<h3>Share url for embedding:</h3> <pre>' + share_url + '</pre>');
+                        var $modalTitle  = $(this).find('.modal-title');
+                        var $modalBody  = $(this).find('.modal-body');
+
+                        $modalTitle.html('Share');
+                        $modalBody.html('<h3>Share on Social Media</h3>');
+                        $modalBody.append('<div id="twitter" data-url="' + share_url + '" data-text="Arrays"></div>');
+                        $modalBody.append('<div id="facebook" data-url="' + share_url + '" data-text="Arrays"></div>');
+                        $modalBody.append('<h3>Share url for embedding:</h3>');
+                        $modalBody.append('<pre>' + share_url + '</pre>');
+
+                        /**
+                         * Initialize Sharrre buttons
+                         */
+                        $(this).find('#twitter').sharrre({
+                            share: {
+                                twitter: true,
+                            },
+                            template: '<a href="#" class="btn btn-default">Twitter</a>',
+                            enableHover: false,
+                            buttons: { twitter: {via: 'arrays'}},
+                            click: function(api, options){
+                                api.openPopup('twitter');
+                            }
+                        });
+
+                        $(this).find('#facebook').sharrre({
+                            share: {
+                                facebook: true,
+                            },
+                            template: '<a href="#" class="btn btn-default">Facebook</a>',
+                            enableHover: false,
+                            click: function(api, options){
+                                api.openPopup('facebook');
+                            }
+                        });
                     })
                     .modal();
             }
