@@ -30,7 +30,7 @@
                                     <nav class="pull-left" role="navigation">
 
                                         <div class="dropdown sort-control">
-                                            <a class="btn btn-default dropdown-toggle ui-label" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            <a class="btn btn-default dropdown-toggle dropdown-toggle-button ui-label" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                                 Map: <span class="sort-criteria">Country of Origin</span>
                                             </a>
                                             <ul class="dropdown-menu" aria-labelledby="type">
@@ -51,25 +51,27 @@
                                     </nav>
 
                                     <div class="pull-right">
-                                        <form action="{{ routePath_base }}" method="get">
-                                            <div class="dropdown sort-control search-control">
-                                                {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
-                                                
-                                                <a href="#" class="btn btn-default dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                                                    Search in: <span class="search-criteria">{{ searchColToOutput }}</span>
-                                                </a>
-                                                <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
-                                                <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
-                                                    {% for colName in colNames_orderedForSortByDropdown %}
-                                                    <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
+                                        <form action="{{ routePath_base }}" method="get" class="search-form">
+                                            <div class="dropdown-toggle-button-group" role="group">
+                                                <div class="dropdown sort-control sort-control-left search-control">
+                                                    {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
+                                                    
+                                                    <a href="#" class="btn btn-default dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+                                                        Search in: <span class="search-criteria">{{ searchColToOutput }}</span>
+                                                    </a>
+                                                    <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
+                                                    <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+                                                        {% for colName in colNames_orderedForSortByDropdown %}
+                                                        <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
 
-                                            <div class="sort-control">
-                                                <div class="dropdown-toggle">
-                                                    <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" value="{{ searchQ if searchQ else "" }}">
-                                                    <span class="glyphicon glyphicon-search search-icon"></span>
+                                                <div class="sort-control sort-control-right">
+                                                    <div class="dropdown-toggle">
+                                                        <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" value="{{ searchQ if searchQ else "" }}">
+                                                        <span class="glyphicon glyphicon-search search-icon"></span>
+                                                    </div>
                                                 </div>
                                             </div>
 

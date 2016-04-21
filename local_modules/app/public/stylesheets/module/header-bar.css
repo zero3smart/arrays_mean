@@ -21,8 +21,7 @@
 }
 
 .header-shadow {
-	box-shadow: 0 2px 4px;
-	color: var(--color-shadow);
+	box-shadow: var(--box-shadow);
 }
 
 .background-color-bg {
@@ -73,7 +72,7 @@
 
 #page .dropdown-menu {
 	border-radius: 4px;
-	box-shadow: 0 2px 4px #a8a8a8;
+	box-shadow: var(--box-shadow);
 }
 
 #page .navbar .dropdown-menu {

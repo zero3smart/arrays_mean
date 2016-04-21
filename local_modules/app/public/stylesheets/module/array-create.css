@@ -26,8 +26,7 @@
 	border-style: solid;
 	border-color: transparent;
 	border-radius: 2px;
-	box-shadow: 0 2px 6px;
-	color: var(--color-shadow);
+	box-shadow: var(--box-shadow);
 }
 
 .panel-source .panel-body {

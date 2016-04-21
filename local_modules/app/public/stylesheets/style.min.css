@@ -5930,8 +5930,7 @@ Interactive Layer
 	}
 }
 .header-shadow {
-	box-shadow: 0 2px 4px;
-	color: #d8d8d8;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 .background-color-bg {
 	background-color: #fafafa;
@@ -5972,7 +5971,7 @@ Interactive Layer
 /* @group Dropdown */
 #page .dropdown-menu {
 	border-radius: 4px;
-	box-shadow: 0 2px 4px #a8a8a8;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 #page .navbar .dropdown-menu {
 	margin-top: 6px;
@@ -6223,8 +6222,7 @@ Interactive Layer
 	border-style: solid;
 	border-color: transparent;
 	border-radius: 2px;
-	box-shadow: 0 2px 6px;
-	color: #d8d8d8;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 .panel-source .panel-body {
 	padding: 40px 30px;
@@ -6504,19 +6502,47 @@ Interactive Layer
 .array-choropleth .sort-bar {
 	border-bottom-style: none;
 }
-.array-choropleth .sort-control .dropdown-toggle {
+.dropdown-toggle-button-group,
+.sort-control .dropdown-toggle-button {
 	margin-bottom: 5px;
-	padding: 15px 20px;
 	border-radius: 5px;
 	background-color: #ffffff;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
-.array-choropleth .sort-control.open > .btn-default.dropdown-toggle,
-.array-choropleth .sort-control .dropdown-toggle:hover,
-.array-choropleth .sort-control .dropdown-toggle:focus,
-.array-choropleth .sort-control .dropdown-toggle:active {
+.dropdown-toggle-button-group {
+	padding: 0;
+}
+.sort-control .dropdown-toggle-button,
+.dropdown-toggle-button-group .dropdown-toggle {
+	padding: 15px 20px;
+}
+.sort-control.open > .btn-default.dropdown-toggle-button,
+.sort-control .dropdown-toggle-button:hover,
+.sort-control .dropdown-toggle-button:focus,
+.sort-control .dropdown-toggle-button:active {
 	background-color: #ffffff;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.sort-control-left {
+	margin-right: -3px;
+}
+.sort-control-left .dropdown-toggle-button {
+	margin-right: 0;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+.sort-control-left .dropdown-toggle,
+.sort-control-left.open > .btn-default.dropdown-toggle,
+.sort-control-left .dropdown-toggle:hover,
+.sort-control-left .dropdown-toggle:focus,
+.sort-control-left .dropdown-toggle:active {
+	background-color: #fafafa;
+}
+.sort-control-right {
+}
+.sort-control-right .dropdown-toggle-button {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
 }
 /* @end Module */
 /*# sourceMappingURL=style.min.css.map */
