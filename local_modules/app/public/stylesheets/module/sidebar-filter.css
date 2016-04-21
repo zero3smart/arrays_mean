@@ -34,16 +34,28 @@
 	}
 }
 
+.navbar-fixed-top,
+.site-content {
+	width: calc(100%);
+}
+
 .sidebar-filter,
 .navbar-fixed-top,
 .site-content {
-	transition: transform 400ms ease-in-out;
+	transition: transform 400ms ease-in-out, width 400ms ease-in-out;
 }
 
 .sidebar-filter-in .sidebar-filter,
 .sidebar-filter-in .navbar-fixed-top,
 .sidebar-filter-in .site-content {
 	transform: translate(var(--sidebar-width));
+}
+
+@media (min-width: 768px) {
+	.sidebar-filter-in .navbar-fixed-top,
+	.sidebar-filter-in .site-content {
+		width: calc(100% - var(--sidebar-width));
+	}
 }
 
 .sidebar-filter a {
