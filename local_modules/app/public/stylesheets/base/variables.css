@@ -54,26 +54,26 @@ a.color-brand:active {
 
 /* @group Blue */
 
-.brand-blue .color-brand,
-.brand-blue a.color-brand:hover,
-.brand-blue a.color-brand:focus,
-.brand-blue a.color-brand:active {
+.source-moma_artworks-r2 .color-brand,
+.source-moma_artworks-r2 a.color-brand:hover,
+.source-moma_artworks-r2 a.color-brand:focus,
+.source-moma_artworks-r2 a.color-brand:active {
 	color: var(--color-brand-blue);
 }
 
-.brand-blue .background-color-brand,
-.brand-blue .background-color-brand-hover:hover,
-.brand-blue .background-color-brand-hover:focus,
-.brand-blue .background-color-brand-hover:hover > a,
-.brand-blue .background-color-brand-hover:focus > a {
+.source-moma_artworks-r2 .background-color-brand,
+.source-moma_artworks-r2 .background-color-brand-hover:hover,
+.source-moma_artworks-r2 .background-color-brand-hover:focus,
+.source-moma_artworks-r2 .background-color-brand-hover:hover > a,
+.source-moma_artworks-r2 .background-color-brand-hover:focus > a {
 	background-color: var(--color-brand-blue);
 }
 
-.brand-blue .border-color-brand {
+.source-moma_artworks-r2 .border-color-brand {
 	border-color: var(--color-brand-blue);
 }
 
-.brand-blue .border-top-color-brand {
+.source-moma_artworks-r2 .border-top-color-brand {
 	border-top-color: var(--color-brand-blue);
 }
 
