@@ -8,3 +8,7 @@
 #chart svg {
 	height: calc(100vh - 300px);
 }
+
+.array-chart .sort-bar {
+	border-bottom-style: none;
+}
