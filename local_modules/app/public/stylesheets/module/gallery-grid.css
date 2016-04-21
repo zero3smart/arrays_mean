@@ -38,6 +38,26 @@
 
 /* @end Array Header */
 
+/* @group Small Array Header */
+
+.array-header-small {
+	padding-top: 25px;
+	padding-bottom: 25px;
+	text-align: left;
+}
+
+.array-header-small .array-title {
+	float: left;
+	margin-bottom: -17px;
+}
+
+.array-header-small .array-meta {
+	float: right;
+	margin-top: 17px;
+}
+
+/* @end Small Array Header */
+
 /* @group Gallery Grid */
 
 .gallery-grid {
