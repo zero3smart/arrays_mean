@@ -6019,6 +6019,25 @@ Interactive Layer
 	height: 100vh;
 	background-color: #4a4a4a;
 }
+.sidebar-filter-heading {
+	z-index: 1;
+	padding: 14px 15px;
+	min-height: 50px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+	color: #ffffff;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	font-weight: 600;
+	font-size: 16px;
+}
+@media (min-width: 768px) {
+	.sidebar-filter-heading {
+		position: relative;
+		padding-top: 21px;
+		padding-bottom: 21px;
+		min-height: 64px;
+	}
+}
 .sidebar-filter,
 .navbar-fixed-top,
 .site-content {
@@ -6052,17 +6071,25 @@ Interactive Layer
 	list-style-type: none;
 }
 .sidebar-filter-group-item > a {
-	border-bottom: 1px solid #4a4a4a;
+	position: relative;
+	border-top: 1px solid #4a4a4a;
 	background-color: #272727;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	text-transform: uppercase;
 	letter-spacing: 2px;
 	font-size: 16px;
 	line-height: 1em;
 }
+.sidebar-filter-group-item:first-child > a {
+	border-top: none;
+}
 .sidebar-filter-subgroup-item > a {
-	border-bottom: 1px solid #272727;
+	border-top: 1px solid #272727;
 	font-size: 18px;
 	line-height: 1em;
+}
+.sidebar-filter-subgroup-item:first-child > a {
+	border-top: none;
 }
 .sidebar-filter-subgroup-item > a.sidebar-filter-active,
 .sidebar-filter-subgroup-item > a:hover {
