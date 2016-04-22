@@ -716,6 +716,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
                 groupedResults = [];
             }
             var mapFeatures = [];
+            var highestValue = 0;
             groupedResults.forEach(function(el, i, arr) 
             {
                 var countryName = el.name;
@@ -723,6 +724,9 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
                     return; // skip
                 }
                 var countAtCountry = el.total;
+                if (countAtCountry > highestValue) {
+                    highestValue = countAtCountry;
+                }
                 var countAtCountry_str = "" + countAtCountry;
                 var geometryForCountry = cache_countryGeometryByLowerCasedCountryName[countryName.toLowerCase()];
                 if (typeof geometryForCountry === 'undefined') {
@@ -740,11 +744,11 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
                 });
             });
             // console.log("mapFeatures " ,mapFeatures)
-            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures);
+            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures, highestValue);
         };
         processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
     }
-    function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures)
+    function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures, highestValue)
     {
         var err = null;
         var routePath_base              = "/array/" + source_pKey + "/choropleth";
@@ -773,6 +777,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             sourceDoc: sourceDoc,
             sourceDocURL: sourceDocURL,
             //
+            highestValue: highestValue,
             featureCollection: {
                 type: "FeatureCollection",
                 features: mapFeatures

@@ -110,6 +110,7 @@
                     </div><!-- .container-fluid -->
 
                     <script type="text/javascript">
+                        var templateOutput_topValue = {{ highestValue if highestValue else 0 }};
                         var geoData = {{ featureCollection | dump | safe }};
                     </script>
 

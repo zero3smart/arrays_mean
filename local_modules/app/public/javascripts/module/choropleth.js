@@ -4,7 +4,7 @@
 var layer = 'contour',
 	metric = 'total',
 	numBreaks = 10, // How many layers of opacity values there should be
-	topValue = 100, // This should be the highest "total" value in the data
+	topValue = templateOutput_topValue, // This should be the highest "total" value in the data
 	filteruse,
 	breaks = [],
 	opacities = [],
