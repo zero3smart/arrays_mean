@@ -5060,9 +5060,16 @@ Interactive Layer
 .navbar-nav > li > a {
 	padding: 15px 10px;
 }
+.navbar-nav > li > a [class^="icon-"] {
+	font-size: 18px;
+}
 @media (min-width: 768px) {
 	.navbar-nav > li > a {
-		padding: 18px 20px;
+		padding: 20px;
+	}
+
+	.navbar-nav > li > a [class^="icon-"] {
+		font-size: 24px;
 	}
 }
 .navbar-nav .open .dropdown-menu > li > a {
