@@ -167,7 +167,7 @@ constructor.prototype.__render_array_choropleth = function(req, res, source_key,
     var self = this;
     var context = self.context;
     query.source_key = source_key;
-    context.API_data_preparation_controller.BindDataFor_array_gallery(query, function(err, bindData)
+    context.API_data_preparation_controller.BindDataFor_array_choropleth(query, function(err, bindData)
     {
         if (err) {
             winston.error("❌  Error getting bind data for Array choropleth: ", err);

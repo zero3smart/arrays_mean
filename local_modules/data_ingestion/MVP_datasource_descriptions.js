@@ -139,6 +139,21 @@ exports.Descriptions =
             _all: [ "", null, "NULL", "(not specified)" ],
             Nationality: [ "Nationality unknown", "nationality unknown", "Nationality Unknown" ]
         },
+        //
+        //
+        fe_choropleth_defaultMapByColumnName_humanReadable: "Country of Origin",
+        fe_choropleth_fieldsNotAvailableAsMapByColumns:
+        [
+            "DisplayName",
+            "Artworks",
+            "Code",
+            "Nationality",
+            "DisplayDate",
+            "BeginDate",
+            "EndDate",
+            "Wiki QID",
+            "ULAN"
+        ],
     }
     , {
         filename: "MoMA_Artworks_v2_jy.csv",
@@ -290,6 +305,26 @@ exports.Descriptions =
             _all: [ "", null, "NULL", "(not specified)" ],
             Classification: [ "(not assigned)" ]
         },
+        //
+        //
+        fe_choropleth_defaultMapByColumnName_humanReadable: "Country of Origin",
+        fe_choropleth_fieldsNotAvailableAsMapByColumns:
+        [
+            "Title",
+            "Artist",
+            "Artist Gender",
+            "ArtistBio",
+            "Dimensions",
+            "CreditLine",
+            "MoMANumber",
+            "Date",
+            "DateAcquired",
+            "URL",
+            "CuratorApproved",
+            "Classification",
+            "Department",
+            "Medium"
+        ],
         //
         //
         afterImportingAllSources_generate: 

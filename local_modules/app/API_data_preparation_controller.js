@@ -565,7 +565,206 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
         };
         callback(err, data);
     }
-}
+};
+//
+constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback)
+{
+    var self = this;
+    // urlQuery keys:
+        // source_key
+        // mapBy
+        // filterCol
+        // filterVal
+        // searchQ
+        // searchCol
+    var source_pKey = urlQuery.source_key;
+    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
+    if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
+        callback(new Error("No data source with that source pkey " + source_pKey), null);
+        
+        return;
+    }
+    var fe_visible = dataSourceDescription.fe_visible;
+    if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
+        callback(new Error("That data source was set to be not visible: " + source_pKey), null);
+        
+        return;
+    }
+    var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+    var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
+    //
+    var mapBy = urlQuery.mapBy; // the human readable col name - real col name derived below
+    var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_choropleth_defaultMapByColumnName_humanReadable;
+    //
+    var filterCol = urlQuery.filterCol;
+    var filterVal = urlQuery.filterVal;
+    var isFilterActive = typeof filterCol !== 'undefined' && filterCol != null && filterCol != "";
+    //
+    var searchCol = urlQuery.searchCol;
+    var searchQ = urlQuery.searchQ;
+    var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
+                      && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
+    //
+    // Now kick off the query work
+    self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
+    {
+        if (err) {
+            callback(err, null);
+
+            return;
+        }
+        _proceedTo_obtainSampleDocument(sourceDoc);
+    });
+    function _proceedTo_obtainSampleDocument(sourceDoc)
+    {
+        processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
+        {
+            if (err) {
+                callback(err, null);
+            
+                return;
+            }
+            if (sampleDoc == null) {
+                callback(new Error('Unexpectedly missing sample document - wrong data source UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+                
+                return;
+            }        
+            _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc);
+        });
+    }
+    function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc)
+    {
+        _topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName)
+        {
+            if (err) {
+                callback(err, null);
+
+                return;
+            }
+            //
+            _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName);
+        });
+    }
+    function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
+    {
+        var mapBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(mapBy ? mapBy : defaultMapByColumnName_humanReadable, 
+                                                                                                     dataSourceDescription);
+        //
+        var aggregationOperators = [];
+        if (isSearchActive) { 
+            var _orErrDesc = _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+            if (typeof _orErrDesc.err !== 'undefined') {
+                callback(_orErrDesc.err, null);
+            
+                return;
+            }
+            aggregationOperators.push(_orErrDesc.matchOp);
+        }
+        if (isFilterActive) { // rules out undefined filterCol
+            var _orErrDesc = _activeFilter_matchOp_orErrDescription(dataSourceDescription, filterCol, filterVal);
+            if (typeof _orErrDesc.err !== 'undefined') {
+                callback(_orErrDesc.err, null);
+            
+                return;
+            }
+            aggregationOperators.push(_orErrDesc.matchOp);
+        }        
+        aggregationOperators = aggregationOperators.concat(
+        [
+            { // unique/grouping and summing stage
+                $group: {
+                    _id: "$" + "rowParams." + mapBy_realColumnName,
+                    value: { $sum: 1 } // the count
+                }
+            },
+            { // reformat
+                $project: {
+                    _id: 0,
+                    name: "$_id",
+                    total: 1
+                }
+            },
+            { // priotize by incidence, since we're $limit-ing below 
+                $sort : { total : -1 } 
+            },
+            { 
+                $limit : 100 // so the chart can actually handle the number
+            }
+        ]);
+        //
+        var doneFn = function(err, groupedResults)
+        {
+            if (err) {
+                callback(err, null);
+            
+                return;
+            }
+            if (groupedResults == undefined || groupedResults == null) {
+                groupedResults = [];
+            }
+            var finalized_groupedResults = [];
+            groupedResults.forEach(function(el, i, arr) 
+            {
+                finalized_groupedResults.push({ 
+                    name: el.name, 
+                    total: "" + el.total // since we need a string out of this
+                });
+            });
+            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, finalized_groupedResults);
+        };
+        processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
+    }
+    function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
+    {
+        var err = null;
+        var routePath_base              = "/array/" + source_pKey + "/chart";
+        var routePath_withoutFilter     = routePath_base;
+        var routePath_withoutMapBy      = routePath_base;
+        if (mapBy !== undefined && mapBy != null && mapBy !== "") {
+            var appendQuery = "groupBy=" + groupBy;
+            routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+        }
+        if (isFilterActive) {
+            var appendQuery = "filterCol=" + filterCol + "&" + "filterVal=" + filterVal;
+            routePath_withoutMapBy      = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutMapBy,     appendQuery, routePath_base);
+        }
+        if (isSearchActive) {
+            var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
+            routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+            routePath_withoutMapBy      = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutMapBy,     appendQuery, routePath_base);
+        }
+        var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+        var data =
+        {
+            env: process.env,
+            //
+            arrayTitle: dataSourceDescription.title,
+            array_source_key: source_pKey,
+            sourceDoc: sourceDoc,
+            sourceDocURL: sourceDocURL,
+            //
+            groupedResults: groupedResults,
+            mappBy: mapBy,
+            //
+            filterCol: filterCol,
+            filterVal: filterVal,
+            isFilterActive: isFilterActive,
+            uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+            //
+            searchQ: searchQ,
+            searchCol: searchCol,
+            isSearchActive: isSearchActive,
+            //
+            defaultMapByColumnName_humanReadable: defaultMapByColumnName_humanReadable,
+            colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChoroplethMapByDropdown(sampleDoc, dataSourceDescription),
+            //
+            routePath_base: routePath_base,
+            routePath_withoutFilter: routePath_withoutFilter,
+            routePath_withoutMapBy: routePath_withoutMapBy
+        };
+        callback(err, data);
+    }
+};
 //
 constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, rowObject_id, callback)
 {
