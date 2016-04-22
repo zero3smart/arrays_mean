@@ -4168,10 +4168,19 @@ body {
 	font-size: 24px;
 }
 .ui-label {
-	color: #9b9b9b;
 	text-transform: uppercase;
 	letter-spacing: 2px;
 	font-size: 16px;
+}
+.ui-label,
+.sort-control .ui-label:hover,
+.sort-control .ui-label:focus,
+.sort-control .ui-label:active,
+.sort-control.open > .ui-label,
+.sort-control.open > .ui-label:hover,
+.sort-control.open > .ui-label:focus,
+.sort-control.open > .ui-label:active {
+	color: #9b9b9b;
 }
 /* @end Base */
 /* @group Lib */
