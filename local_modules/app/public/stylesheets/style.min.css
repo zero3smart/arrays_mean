@@ -5655,11 +5655,11 @@ Interactive Layer
 /* @override 
 	http://localhost:9080/stylesheets/module/choropleth.css */
 .array-choropleth .site-content {
-	height: calc(100vh - 60px);
+	height: calc(100vh - 50px);
 }
 @media (min-width: 768px) {
 	.array-choropleth  .site-content {
-		height: calc(100vh - 70px);
+		height: calc(100vh - 64px);
 	}
 }
 #map {
