@@ -121,7 +121,7 @@ exports.Descriptions =
         //
         fe_filters_valuesToExcludeByOriginalKey:
         {
-            _all: [ "" ],
+            _all: [ "", null ],
             "Nationality" : [ "NULL", "Nationality unknown", "nationality unknown", "Nationality Unknown" ]
         },
         //
@@ -234,7 +234,7 @@ exports.Descriptions =
         },
         fe_filters_valuesToExcludeByOriginalKey:
         {
-            _all: [ "" ]
+            _all: [ "", null ]
         },
         fe_filters_fabricatedFilters:
         [
