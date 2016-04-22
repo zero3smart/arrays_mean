@@ -41,8 +41,18 @@ body {
 }
 
 .ui-label {
-	color: var(--color-text-light);
 	text-transform: uppercase;
 	letter-spacing: 2px;
 	font-size: 16px;
+}
+
+.ui-label,
+.sort-control .ui-label:hover,
+.sort-control .ui-label:focus,
+.sort-control .ui-label:active,
+.sort-control.open > .ui-label,
+.sort-control.open > .ui-label:hover,
+.sort-control.open > .ui-label:focus,
+.sort-control.open > .ui-label:active {
+	color: var(--color-text-light);
 }
