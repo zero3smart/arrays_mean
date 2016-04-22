@@ -1,5 +1,6 @@
 /* @group Base */
 @import url('base/bootstrap.css');
+@import url('base/fontello-embedded.css');
 @import url('base/variables.css');
 @import url('base/typography.css');
 /* @end Base */
