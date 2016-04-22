@@ -503,7 +503,7 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             if (groupedResults == undefined || groupedResults == null) {
                 groupedResults = [];
             }
-            var finalized_groupedResults = [];
+            var finalizedButNotCoalesced_groupedResults = [];
             groupedResults.forEach(function(el, i, arr) 
             {
                 var originalVal = el.label;
@@ -531,7 +531,45 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
                 } else {
                     displayableVal = _reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, groupBy_realColumnName, dataSourceDescription);
                 }
-                finalized_groupedResults.push({ value: el.value, label: displayableVal });
+                finalizedButNotCoalesced_groupedResults.push({ 
+                    value: el.value, 
+                    label: displayableVal 
+                });
+            });
+            var finalized_groupedResults = [];
+            var summedValuesByLowercasedLabels = {};
+            var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
+            finalizedButNotCoalesced_groupedResults.forEach(function(el, i, arr) 
+            {
+                var label = el.label;
+                var value = el.value;
+                var label_toLowerCased = label.toLowerCase();
+                //
+                var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
+                var new_valueSum = existing_valueSum + value;
+                summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
+                //
+                var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] || { label: '', value: -1 };
+                if (existing_titleWithMostMatchesAndMatchCount.value < value) {
+                    var new_titleWithMostMatchesAndMatchCount = { label: label, value: value };
+                    titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
+                }
+            });
+            var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
+            lowercasedLabels.forEach(function(key, i, arr) 
+            {
+                var summedValue = summedValuesByLowercasedLabels[key];
+                var reconstitutedDisplayableTitle = key;
+                var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[key];
+                if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
+                    winston.error("❌  This should never be undefined.")
+                } else {
+                    reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
+                }
+                finalized_groupedResults.push({ 
+                    value: summedValue, 
+                    label: reconstitutedDisplayableTitle 
+                });
             });
             _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, finalized_groupedResults);
         };
