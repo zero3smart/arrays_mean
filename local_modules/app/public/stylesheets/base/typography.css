@@ -36,6 +36,10 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+[class^="icon-"] {
+	font-size: 24px;
+}
+
 .ui-label {
 	color: var(--color-text-light);
 	text-transform: uppercase;
