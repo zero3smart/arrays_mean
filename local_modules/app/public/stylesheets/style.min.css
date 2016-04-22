@@ -5302,6 +5302,12 @@ Interactive Layer
 .filter-bar {
 	padding-top: 25px;
 }
+.filter-bar-fixed-bottom {
+	position: absolute;
+	bottom: 0;
+	z-index: 1;
+	padding-bottom: 30px;
+}
 .filter-tag {
 	position: relative;
 	display: inline-block;
@@ -5314,6 +5320,10 @@ Interactive Layer
 	color: #777777;
 	font-weight: normal;
 	font-size: 16px;
+}
+.filter-bar-fixed-bottom .filter-tag {
+	background-color: #ffffff;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 .filter-tag-close {
 	position: absolute;

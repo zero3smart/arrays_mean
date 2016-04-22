@@ -87,32 +87,39 @@
                                     </div>
 
                                 </div>
-
-                                {% if isFilterActive %}
-                                <div class="filter-bar">
-                                    <span class="filter-tag border-color-brand">{{ filterVal | safe }} <a href="{{ routePath_withoutFilter }}" class="close filter-tag-close">&times;</a></span>
-                                </div>
-                                {% endif %}
                             </div>
                         </div><!-- .row -->
                     </div><!-- .container-fluid -->
-                </section>
 
-                <script type="text/javascript">
-                    var pieData = {{ groupedResults | dump | safe }}; 
-                </script>
-
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-sm-12">
-
-                            <div id="chart">
-                                <svg></svg>
-                            </div>
-
+                    {% if isFilterActive %}
+                    <div class="filter-bar filter-bar-fixed-bottom">
+                        <div class="container-fluid">
+                            <span class="filter-tag border-color-brand">{{ filterVal | safe }} <a href="{{ routePath_withoutFilter }}" class="close filter-tag-close">&times;</a></span>
                         </div>
-                    </div><!-- .row -->
-                </div><!-- .container-fluid -->
+                    </div>
+                    {% endif %}
+
+                    <script type="text/javascript">
+                        var pieData = {{ groupedResults | dump | safe }}; 
+                    </script>
+
+                    <div class="array-content">
+
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-sm-12">
+
+                                    <div id="chart">
+                                        <svg></svg>
+                                    </div>
+
+                                </div>
+                            </div><!-- .row -->
+                        </div><!-- .container-fluid -->
+
+                    </div><!-- .array-content -->
+
+                </section>
 
             </div><!-- #content -->
         </div><!-- #page -->
