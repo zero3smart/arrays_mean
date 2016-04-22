@@ -62,7 +62,7 @@
 
 .sort-criteria,
 .search-criteria {
-	color: var(--color-text-med);
+	color: var(--color-text-dark);
 	font-weight: 600;
 }
 
@@ -77,7 +77,7 @@
 }
 
 .sort-control .dropdown-menu > li > a:hover {
-	/*color: var(--color-text-med);*/
+	/*color: var(--color-text-dark);*/
 }
 
 /* @end Sort Bar */

@@ -5013,7 +5013,7 @@ Interactive Layer
 .background-color-bg {
 	background-color: #fafafa;
 }
-#page .navbar-default .navbar-brand-container {
+.navbar-default .navbar-brand-container {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -5021,23 +5021,22 @@ Interactive Layer
 	width: 100%;
 	text-align: center;
 }
-#page .navbar-default .navbar-brand {
+.navbar-default .navbar-brand {
 	display: inline-block;
 	float: none;
 	margin-right: auto;
 	margin-left: auto;
+	padding-top: 15px;
+	padding-bottom: 15px;
 	font-weight: 600;
 }
 .navbar-default .navbar-brand-arrays {
-	padding-top: 15px;
-	padding-bottom: 15px;
-	height: 50px;
 	text-transform: uppercase;
 	letter-spacing: 10px;
 	font-size: 17px;
 }
 @media (min-width: 768px) {
-	.navbar-default .navbar-brand-arrays {
+	.navbar-default .navbar-brand {
 		padding-top: 22px;
 		padding-bottom: 22px;
 		font-size: 20px;
@@ -5086,6 +5085,19 @@ Interactive Layer
 	color: #ffffff;
 }
 /* @end Dropdown */
+.navbar-nav > li > a.navbar-back {
+	color: #777777;
+}
+.navbar-back-label {
+	position: relative;
+	bottom: 2px;
+	display: inline-block;
+	margin-left: 5px;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	font-weight: 600;
+	font-size: 18px;
+}
 /* @override 
 	http://localhost:9080/stylesheets/module/sidebar-filter.css */
 .sidebar-filter {
@@ -5256,7 +5268,7 @@ Interactive Layer
 	font-size: 18px;
 }
 .sort-control .dropdown-menu > li > a:hover {
-	/*color: var(--color-text-med);*/
+	/*color: var(--color-text-dark);*/
 }
 /* @end Sort Bar */
 /* @group Search form */
