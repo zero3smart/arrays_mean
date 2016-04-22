@@ -2,6 +2,7 @@
 	http://localhost:9080/stylesheets/module/pagination.css */
 
 .gallery-pagination {
+	margin-bottom: 40px;
 	text-align: center;
 }
 

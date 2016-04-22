@@ -4997,7 +4997,6 @@ Interactive Layer
 }
 /* @group Footer */
 .site-footer {
-	margin-top: 50px;
 	padding-top: 70px;
 	padding-bottom: 25px;
 	color: #ffffff;
@@ -5414,6 +5413,9 @@ Interactive Layer
 .array-create {
 	background-color: #fafafa;
 }
+.section-array-create {
+	margin-bottom: 50px;
+}
 .section-array-create .section-header {
 	margin-bottom: 40px;
 	padding-top: 40px;
@@ -5664,6 +5666,7 @@ Interactive Layer
 /* @override 
 	http://localhost:9080/stylesheets/module/pagination.css */
 .gallery-pagination {
+	margin-bottom: 40px;
 	text-align: center;
 }
 .pagination > li > a,

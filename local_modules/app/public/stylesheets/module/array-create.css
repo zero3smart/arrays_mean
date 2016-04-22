@@ -5,6 +5,10 @@
 	background-color: var(--color-background);
 }
 
+.section-array-create {
+	margin-bottom: 50px;
+}
+
 .section-array-create .section-header {
 	margin-bottom: 40px;
 	padding-top: 40px;
