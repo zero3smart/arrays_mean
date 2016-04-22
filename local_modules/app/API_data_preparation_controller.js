@@ -5,15 +5,34 @@
 //
 var winston = require('winston');
 var async = require('async');
+var fs = require('fs');
+//
 var dataSourceDescriptions = require('../data_ingestion/MVP_datasource_descriptions').Descriptions;
 var importedDataPreparation = require('../data_ingestion/imported_data_preparation');
 var cached_values_model = require('../cached_values/cached_values_model');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
-// Constants
+// Constants/Caches
 //
 var pageSize = 250;
+//
+// Prepare country geo data cache
+var __countries_geo_json_str = fs.readFileSync(__dirname + '/resources/countries.geo.json', 'utf8');
+var __countries_geo_json = JSON.parse(__countries_geo_json_str);
+var cache_countryGeometryByLowerCasedCountryName = {};
+var numCountries = __countries_geo_json.features.length;
+for (var i = 0 ; i < numCountries ; i++) {
+    var countryFeature = __countries_geo_json.features[i];
+    var countryName = countryFeature.properties.name;
+    var geometry = countryFeature.geometry;
+    cache_countryGeometryByLowerCasedCountryName[countryName.toLowerCase()] = geometry;
+    // console.log(countryName + ": ", geometry);
+}
+winston.info("💬  Cached " + Object.keys(cache_countryGeometryByLowerCasedCountryName).length + " geometries by country name.");
+// console.log("cache_countryGeometryByLowerCasedCountryName " , cache_countryGeometryByLowerCasedCountryName);
+__countries_geo_json_str = undefined; // free
+__countries_geo_json = undefined; // free
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -674,7 +693,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             { // unique/grouping and summing stage
                 $group: {
                     _id: "$" + "rowParams." + mapBy_realColumnName,
-                    value: { $sum: 1 } // the count
+                    total: { $sum: 1 } // the count
                 }
             },
             { // reformat
@@ -683,12 +702,6 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
                     name: "$_id",
                     total: 1
                 }
-            },
-            { // priotize by incidence, since we're $limit-ing below 
-                $sort : { total : -1 } 
-            },
-            { 
-                $limit : 100 // so the chart can actually handle the number
             }
         ]);
         //
@@ -702,26 +715,43 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             if (groupedResults == undefined || groupedResults == null) {
                 groupedResults = [];
             }
-            var finalized_groupedResults = [];
+            var mapFeatures = [];
             groupedResults.forEach(function(el, i, arr) 
             {
-                finalized_groupedResults.push({ 
-                    name: el.name, 
-                    total: "" + el.total // since we need a string out of this
+                var countryName = el.name;
+                if (countryName == null) {
+                    return; // skip
+                }
+                var countAtCountry = el.total;
+                var countAtCountry_str = "" + countAtCountry;
+                var geometryForCountry = cache_countryGeometryByLowerCasedCountryName[countryName.toLowerCase()];
+                if (typeof geometryForCountry === 'undefined') {
+                    winston.warn("⚠️  No known geometry for country named \"" + countryName + "\"");
+                    geometryForCountry = {};
+                }
+                mapFeatures.push({
+                    type: "Feature",
+                    id: "" + i,
+                    properties: {
+                        name: countryName, 
+                        total: countAtCountry_str
+                    },
+                    geometry: geometryForCountry
                 });
             });
-            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, finalized_groupedResults);
+            // console.log("mapFeatures " ,mapFeatures)
+            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures);
         };
         processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
     }
-    function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
+    function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures)
     {
         var err = null;
-        var routePath_base              = "/array/" + source_pKey + "/chart";
+        var routePath_base              = "/array/" + source_pKey + "/choropleth";
         var routePath_withoutFilter     = routePath_base;
         var routePath_withoutMapBy      = routePath_base;
         if (mapBy !== undefined && mapBy != null && mapBy !== "") {
-            var appendQuery = "groupBy=" + groupBy;
+            var appendQuery = "mapBy=" + mapBy;
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
         }
         if (isFilterActive) {
@@ -743,7 +773,10 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             sourceDoc: sourceDoc,
             sourceDocURL: sourceDocURL,
             //
-            groupedResults: groupedResults,
+            featureCollection: {
+                type: "FeatureCollection",
+                features: mapFeatures
+            },
             mappBy: mapBy,
             //
             filterCol: filterCol,
