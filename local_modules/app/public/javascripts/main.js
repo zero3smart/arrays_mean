@@ -7,8 +7,17 @@ $(document).ready(function() {
      */
     $('.panel-source').on('click', function(e) {
         e.preventDefault();
-        var sourceKey = $(this).prev().val();
-        window.location.href = '/array/' + sourceKey + '/gallery';
+        var $parent = $(this).parent();
+        var sourceKey = $parent.find("[name='source_key']").val();
+        var default_filterCol = $parent.find("[name='default_filterCol']").val();
+        var default_filterVal = $parent.find("[name='default_filterVal']").val();
+        var href = '/array/' + sourceKey + '/gallery';
+        if (default_filterCol != '' && default_filterCol != null && typeof default_filterCol !== 'undefined') {
+            if (default_filterVal != '' && default_filterVal != null && typeof default_filterVal !== 'undefined') {
+                href += "?filterCol=" + default_filterCol + "&filterVal=" + default_filterVal;
+            }
+        }
+        window.location.href = href;
     });
 
     /**

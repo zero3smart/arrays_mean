@@ -72,14 +72,17 @@ constructor.prototype.BindDataFor_datasetsListing = function(callback)
             
                 return;
             }
-            //
+            var fe_filters_default = dataSourceDescription.fe_filters_default || {};
             var sourceDescription = 
             {
                 key: source_pKey,
                 sourceDoc: doc,
                 title: dataSourceDescription.title,
                 description: dataSourceDescription.description,
-                urls: dataSourceDescription.urls
+                urls: dataSourceDescription.urls,
+                //
+                default_filterCol: fe_filters_default.filterCol,
+                default_filterVal: fe_filters_default.filterVal
             }
             cb(err, sourceDescription);
         });

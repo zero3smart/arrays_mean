@@ -213,6 +213,11 @@ exports.Descriptions =
             }
         },
         //
+        fe_filters_default:
+        {
+            filterCol: "Image",
+            filterVal: "Has image" 
+        },
         fe_filters_fieldsNotAvailable:
         [
             "Title", // they're almost exclusively unique
