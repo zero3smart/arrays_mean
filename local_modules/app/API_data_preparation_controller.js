@@ -562,7 +562,10 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
                 var reconstitutedDisplayableTitle = key;
                 var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[key];
                 if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
-                    winston.error("❌  This should never be undefined.")
+                    winston.error("❌  This should never be undefined.");
+                    callback(new Error('Unexpectedly undefined title with most matches'), null);
+                    
+                    return;
                 } else {
                     reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
                 }
