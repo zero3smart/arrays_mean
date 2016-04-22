@@ -42,6 +42,7 @@ $(document).ready(function() {
     $('.sidebar-filter').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function(e) {
         console.log('slide out complete');
         $('body').toggleClass('sidebar-filter-complete');
+        $('body').hide().show(0);
     });
 
     /**
