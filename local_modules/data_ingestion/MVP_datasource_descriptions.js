@@ -54,11 +54,25 @@ exports.Descriptions =
         afterImportingAllSources_generate:
         [
             {
+                field: "Country of Origin",
+                singular: true,
+                by: {
+                    doing: import_processing.Ops.Join, 
+                    matchFn: import_processing.MatchFns.LocalContainsForeignString, // look for Demonym in Nationality, rather than Nationality in Demonym
+                    findingMatchOnFields: [ "Demonym 1", "Demonym 2", "Demonym 3" ],
+                    ofOtherRawSrcUID: "countries_to_demonyms",
+                    andOtherRawSrcImportRevision: 1,
+                    withLocalField: "Nationality", 
+                    obtainingValueFromField: "Name"
+                }
+            },
+            {
                 field: "Artworks",
                 singular: false, // many artworks per artist
                 by: {
                     doing: import_processing.Ops.Join,
-                    onField: "Artist",
+                    matchFn: import_processing.MatchFns.LocalEqualsForeignString,
+                    findingMatchOnFields: [ "Artist" ],
                     ofOtherRawSrcUID: "moma_artworks",
                     andOtherRawSrcImportRevision: 2,
                     withLocalField: "DisplayName",
@@ -285,11 +299,25 @@ exports.Descriptions =
                 singular: true, // there is only one gender per artwork's artist
                 by: {
                     doing: import_processing.Ops.Join,
-                    onField: "DisplayName",
+                    matchFn: import_processing.MatchFns.LocalEqualsForeignString,
+                    findingMatchOnFields: [ "DisplayName" ],
                     ofOtherRawSrcUID: "moma_artists",
                     andOtherRawSrcImportRevision: 1,
                     withLocalField: "Artist",
                     obtainingValueFromField: "Code"
+                }
+            },
+            {
+                field: "Country of Origin",
+                singular: true,
+                by: {
+                    doing: import_processing.Ops.Join, 
+                    matchFn: import_processing.MatchFns.LocalContainsForeignString, // look for Demonym in ArtistBio, rather than ArtistBio in Demonym
+                    findingMatchOnFields: [ "Demonym 1", "Demonym 2", "Demonym 3" ],
+                    ofOtherRawSrcUID: "countries_to_demonyms",
+                    andOtherRawSrcImportRevision: 1,
+                    withLocalField: "ArtistBio", 
+                    obtainingValueFromField: "Name"
                 }
             }
         ],

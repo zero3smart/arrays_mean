@@ -218,17 +218,18 @@ function _new_byPathUpdateDoc_fromPureDocUpdates(doc)
 }
 //
 //
-constructor.prototype.GenerateFieldsByJoining 
+constructor.prototype.GenerateFieldsByJoining_comparingWithMatchFn 
     = function(dataSource_uid,
                dataSource_importRevision,
                dataSource_title,
                generateFieldNamed, 
                isSingular, 
-               onField, 
+               findingMatchOnFields, 
                ofOtherRawSrcUID, 
                andOtherRawSrcImportRevision,
                withLocalField, 
                obtainingValueFromField, 
+               doesFieldMatch_fn,
                callback)
 {
     var self = this;
@@ -236,29 +237,141 @@ constructor.prototype.GenerateFieldsByJoining
     { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Generating field \"" + generateFieldNamed 
                         + "\" of \"" + dataSource_title 
-                        + "\" by joining on \"" + onField 
+                        + "\" by joining on \"" + findingMatchOnFields 
                         + "\" of data source \"" + ofOtherRawSrcUID + "\" revision \"" + andOtherRawSrcImportRevision + "\".");
                     
         var pKey_ofFromDataSourceDoc = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(ofOtherRawSrcUID, andOtherRawSrcImportRevision);
         var pKey_ofDataSrcDocBeingProcessed = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
         //
+        var mongooseContext_ofFromRawRowObjects = self.context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofFromDataSourceDoc);
+        var mongooseModel_ofFromRawRowObjects = mongooseContext_ofFromRawRowObjects.forThisDataSource_RawRowObject_model;
+        //
         var mongooseContext_ofRawRowObjectsBeingProcessed = self.context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
-        var nativeCollection_ofRawRowObjectsBeingProcessed = mongooseModel_ofRawRowObjectsBeingProcessed.collection;
-        var mongooseScheme_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_scheme;
         //
         var mongooseContext_ofTheseProcessedRowObjects = self.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
         //
-        var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp(); 
-        //       
-        var numDocs = 0;
+        var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();         
+        //
+        mongooseModel_ofRawRowObjectsBeingProcessed.find({}, function(err, ofTheseProcessedRowObjectDocs) 
+        {
+            if (err) {
+                winston.error("❌  Error while generating field by reverse-join:", err);
+                callback(err);
+                    
+                return;
+            }
+            mongooseModel_ofFromRawRowObjects.find({}, function(err, fromProcessedRowObjectDocs)
+            {
+                if (err) {
+                    winston.error("❌  Error while generating field by reverse-join:", err);
+                    callback(err);
+                
+                    return;
+                }
+                var fromProcessedRowObjectDocs_length = fromProcessedRowObjectDocs.length;
+                if (fromProcessedRowObjectDocs_length == 0) {
+                    var errorString = "No rows in foreign set " + pKey_ofFromDataSourceDoc + ".";
+                    var err = new Error(errorString);
+                    winston.error("❌  Error while generating field by reverse-join:", err);
+                    callback(err);
+                    
+                    return;
+                }
+                var ofTheseProcessedRowObjectDocs_length = ofTheseProcessedRowObjectDocs.length;
+                if (ofTheseProcessedRowObjectDocs_length == 0) {
+                    var errorString = "No rows in " + pKey_ofDataSrcDocBeingProcessed + ".";
+                    var err = new Error(errorString);
+                    winston.error("❌  Error while generating field by reverse-join:", err);
+                    callback(err);
+                    
+                    return;
+                }
+                for (var i = 0 ; i < ofTheseProcessedRowObjectDocs.length ; i++) {
+                    if (i != 0 && i % 1000 == 0) {
+                        console.log("Local: " + pKey_ofDataSrcDocBeingProcessed + ": " + i + " / " + ofTheseProcessedRowObjectDocs_length);
+                    }
+                    var ofTheseProcessedRowObjectDoc = ofTheseProcessedRowObjectDocs[i];
+                    var localFieldValue = ofTheseProcessedRowObjectDoc.rowParams["" + withLocalField];
+                    // now check if localFieldValue contains any of the demonyms
+                    var findingMatchOnFields_length = findingMatchOnFields.length;
+                    var wasFound = false;
+                    var matchingForeignValues = [];
+                    for (var j = 0 ; j < findingMatchOnFields_length ; j++) {
+                        var matchOnField = findingMatchOnFields[j];
+                        for (var k = 0 ; k < fromProcessedRowObjectDocs_length ; k++) {
+                            // if (k != 0 && k % 10000 == 0) {
+                            //     console.log("- Foreign: " + pKey_ofFromDataSourceDoc + ": " + k + " / " + fromProcessedRowObjectDocs_length);
+                            // }
+                            var fromProcessedRowObjectDoc = fromProcessedRowObjectDocs[k];
+                            var foreignFieldValue = fromProcessedRowObjectDoc.rowParams[matchOnField];
+                            var doesFieldMatch = doesFieldMatch_fn(localFieldValue, foreignFieldValue);
+                            if (doesFieldMatch == true) {
+                                wasFound = true;
+                                var foreignValueToExtract = fromProcessedRowObjectDoc.rowParams[obtainingValueFromField];
+                                if (typeof foreignValueToExtract === 'undefined') {
+                                    var errorString = "Value at \"" + obtainingValueFromField + "\" of foreign row object of \"" + ofOtherRawSrcUID + "\" was undefined… doc: " + JSON.stringify(fromProcessedRowObjectDoc, null, '  ');
+                                    var err = new Error(errorString);
+                                    winston.error("❌  Error while generating field by reverse-join:", err);
+                                    callback(err);
+                                    
+                                    return;
+                                }
+                                matchingForeignValues.push(foreignValueToExtract);
+                                if (isSingular == true) { // we have to check if it's singular here before we break
+                                    // otherwise we won't get all the possible values from all the foreign rows
+                                    break; 
+                                }
+                            }
+                        }
+                        if (wasFound == true) {
+                            if (isSingular == true) {
+                                break; // since we don't need to try any more fields, as we got a singular value
+                            } // otherwise, keep going until we have all the possible values of all fields from all rows
+                        }
+                    }
+                    if (wasFound == true) {
+                        var persistableValue = undefined;
+                        if (isSingular) {
+                            persistableValue = matchingForeignValues ? (matchingForeignValues.length > 0 ? matchingForeignValues[0] : null) : null;
+                        } else {
+                            persistableValue = matchingForeignValues;
+                        }
+                        if (typeof persistableValue === 'undefined') {
+                            var errorString = "Value obtained by joining \"" + findingMatchOnFields + "\" of a \"" + ofOtherRawSrcUID + "\" was undefined… doc: " + JSON.stringify(ofTheseProcessedRowObjectDoc, null, '  ');
+                            var err = new Error(errorString);
+                            winston.error("❌  Error while generating field by reverse-join:", err);
+                            callback(err);
+
+                            return;
+                        }
+                        //
+                        var bulkOperationQueryFragment =
+                        {
+                            pKey: ofTheseProcessedRowObjectDoc.pKey,
+                            srcDocPKey: ofTheseProcessedRowObjectDoc.srcDocPKey
+                        };
+                        var updateFragment = {};
+                        updateFragment["$set"] = {};
+                        updateFragment["$set"]["rowParams." + generateFieldNamed] = persistableValue; 
+                        // ^ Note that we're only updating a specific path, not the whole rowParams value
+                        // console.log("updateFragment…", updateFragment);
+                        bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+                    } else {
+                        // winston.warn("⚠️  Still didn't find a result for fieldValue " + localFieldValue);
+                    }
+                }
+                //
+                proceedToPersist();
+            });
+        });
         //
         function proceedToPersist()
         {
-            winston.info("📡  [" + (new Date()).toString() + "] Upserting " + numDocs + " processed rows for \"" + dataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
-        
+            winston.info("📡  [" + (new Date()).toString() + "] Upserting processed rows for \"" + dataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
+            //
             var writeConcern =
             {
                 upsert: true
@@ -275,120 +388,6 @@ constructor.prototype.GenerateFieldsByJoining
                 callback(err);
             });
         }
-        //
-        //
-        var hasErroredAndReturned = false;
-        var hasReachedEndOfCursor = false;
-        var numberOfDocumentsFoundButNotYetProcessed = 0;
-        nativeCollection_ofRawRowObjectsBeingProcessed.find({}, {}, function(err, cursor)
-        {
-            if (err) {
-                winston.error("❌  Error while generating field by join:", err);
-                hasErroredAndReturned = true;
-                callback(err);
-                    
-                return;
-            }
-            cursor.each(function(err, doc)
-            {
-                if (hasErroredAndReturned == true) {
-                    winston.warn("⚠️  Each called after hasErroredAndReturned.");
-            
-                    return;
-                }
-                if (err) {
-                    winston.error("❌  Error while generating field by join:", err);
-                    hasErroredAndReturned = true;
-                    callback(err);
-                    
-                    return;
-                }
-                if (doc === null) { // then we're finished
-                    hasReachedEndOfCursor = true;
-                    if (numberOfDocumentsFoundButNotYetProcessed == 0) { // in case we've already finished, i.e. if the operation we did with the docs was sync and not async
-                        proceedToPersist();
-                    }
-            
-                    return;
-                }
-                //
-                numberOfDocumentsFoundButNotYetProcessed += 1;
-                numDocs += 1;
-                //
-                var fieldValue = doc["rowParams"][withLocalField];
-                if (typeof fieldValue === 'undefined' || fieldValue == null) {
-                    var errorString = "\"" + withLocalField + "\" of a \"" + dataSource_title + "\" was undefined or null";
-                    var err = new Error(errorString);
-                    winston.warn("❌  " + errorString + ". Bailing.");
-                    hasErroredAndReturned = true;
-                    callback(err);
-        
-                    return;
-                }
-
-                function _finishedWithDoc()
-                {
-                    numberOfDocumentsFoundButNotYetProcessed -= 1; // finished with this doc - decrement
-                    //
-                    if (hasReachedEndOfCursor == true) {
-                        if (numberOfDocumentsFoundButNotYetProcessed == 0) {
-                            // console.log("Reached end of cursor and finished processing all")
-                            proceedToPersist();
-                        } else {
-                            // console.log("Reached end of cursor but not finished processing all")
-                        }
-                    } else {
-                        // console.log("Hasn't reached end of cursor")
-                    }                
-                }
-                self.context.questions_controller.FieldValuesOf_RawRowObjectsInSrcDoc_WhereFieldValueIs("rowParams." + obtainingValueFromField,
-                                                                                                        pKey_ofFromDataSourceDoc,
-                                                                                                        "rowParams." + onField,
-                                                                                                        fieldValue,
-                                                                                                        function(err, values)
-                {
-                    if (hasErroredAndReturned == true) {
-                        return;
-                    }
-                    if (err) {
-                        winston.error("❌  Error while generating field by join:", err);
-                        hasErroredAndReturned = true;
-                        callback(err);
-            
-                        return;
-                    }
-                    if (isSingular) {
-                        persistableValue = values.length > 0 ? values[0] : null;
-                    } else {
-                        persistableValue = values;
-                    }
-                    if (typeof persistableValue === 'undefined') {
-                        var errorString = "Value obtained by joining \"" + withLocalField + "\" of a \"" + ofOtherRawSrcUID + "\" was undefined";
-                        var err = new Error(errorString);
-                        winston.warn("❌  " + errorString + ". Bailing.");
-                        hasErroredAndReturned = true;
-                        callback(err);
-        
-                        return;
-                    }
-                    // console.log("Obtained persistable value…", persistableValue);
-                    //
-                    //
-                    var bulkOperationQueryFragment =
-                    {
-                        pKey: doc.pKey,
-                        srcDocPKey: doc.srcDocPKey
-                    };
-                    var updateFragment = {};
-                    updateFragment["$set"] = {};
-                    updateFragment["$set"]["rowParams." + generateFieldNamed] = persistableValue; // Note that we're only updating a specific path, not the whole rowParams value
-                    //
-                    bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update(updateFragment);
-                    //
-                    _finishedWithDoc();
-                });
-            });
-        });
     });
 };
 //
@@ -494,7 +493,7 @@ constructor.prototype.EnumerateProcessedDataset
             });
         });
     });
-}
+};
 //
 //
 var xray = require('x-ray');
@@ -700,6 +699,7 @@ constructor.prototype.GenerateImageURLFieldsByScraping
         });
     });
 };
+
 //
 function _nextLargestImageSrcSetSizeAvailableInParsedRawURLsBySize(rawURLsBySize, afterSize) // -> (String?)
 {

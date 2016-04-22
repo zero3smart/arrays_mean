@@ -310,25 +310,33 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
                 switch (byDoingOp) {
                     case import_processing.Ops.Join:
                     {
-                        var onField = by.onField;
+                        var findingMatchOnFields = by.findingMatchOnFields;
                         var ofOtherRawSrcUID = by.ofOtherRawSrcUID;
                         var andOtherRawSrcImportRevision = by.andOtherRawSrcImportRevision;
                         var withLocalField = by.withLocalField;
                         var obtainingValueFromField = by.obtainingValueFromField;
-                        self.context.processed_row_objects_controller.GenerateFieldsByJoining(dataSource_uid,
-                                                                                             dataSource_importRevision,
-                                                                                             dataSource_title,
-                                                                                             generateFieldNamed, 
-                                                                                             isSingular, 
-                                                                                             onField,
-                                                                                             ofOtherRawSrcUID,
-                                                                                             andOtherRawSrcImportRevision,
-                                                                                             withLocalField,
-                                                                                             obtainingValueFromField,
-                                                                                             cb);
+                        var matchFn = by.matchFn;
+                        if (typeof matchFn === 'undefined' || matchFn == null) {
+                            matchFn = import_processing.MatchFns.LocalEqualsForeignString;
+                        }
+                        self.context.processed_row_objects_controller.GenerateFieldsByJoining_comparingWithMatchFn(
+                            dataSource_uid,
+                            dataSource_importRevision,
+                            dataSource_title,
+                            generateFieldNamed, 
+                            isSingular, 
+                            findingMatchOnFields,
+                            ofOtherRawSrcUID,
+                            andOtherRawSrcImportRevision,
+                            withLocalField,
+                            obtainingValueFromField,
+                            matchFn,
+                            cb
+                        );
+
                         break;
                     }
-                
+                    
                     default:
                     {
                         winston.error("❌  Unrecognized post-processing field generation operation \"" + byDoingOp + "\" in", description);
