@@ -32,9 +32,9 @@
                                         <div class="sort-control sort-direction">
                                             {% set sortDir_queryParamJoinChar = "?" if routePath_withoutSortDir == routePath_base else "&" %}
                                             {% if sortDir == "Descending" %}
-                                                <a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Ascending"><span class="glyphicon glyphicon-sort-by-attributes sort-direction-icon" aria-hidden="true"></span></a>
+                                                <a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Ascending"><span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span></a>
                                             {% else %}
-                                                <a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Descending"><span class="glyphicon glyphicon-sort-by-attributes-alt sort-direction-icon" aria-hidden="true"></span></a>
+                                                <a href="{{ routePath_withoutSortDir }}{{ sortDir_queryParamJoinChar }}sortDir=Descending"><span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span></a>
                                             {% endif %}
                                         </div>
 
@@ -71,7 +71,7 @@
                                             <div class="sort-control">
                                                 <div class="dropdown-toggle">
                                                     <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" value="{{ searchQ if searchQ else "" }}">
-                                                    <span class="glyphicon glyphicon-search search-icon"></span>
+                                                    <span class="icon-search search-icon"></span>
                                                 </div>
                                             </div>
 
