@@ -20,7 +20,9 @@
 
                             <article id="object-id" class="object">
                                 <header class="object-header">
-                                    <img src="{{ rowObject.rowParams[fieldKey_originalImageURL] if hasOriginalImage else "http://placehold.it/810x496" }}" class="object-featured img-responsive" />
+                                    {% if hasOriginalImage %}
+                                    <img src="{{ rowObject.rowParams[fieldKey_originalImageURL] }}" class="object-featured img-responsive" />
+                                    {% endif %}
                                     {% set objectTitle = rowObject.rowParams[fieldKey_objectTitle] %}
                                     <h1 class="object-title">{{ objectTitle if objectTitle else "(Title not specified)" }}</h1>
                                 </header><!-- .object-header -->
