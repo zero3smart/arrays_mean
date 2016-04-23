@@ -2,15 +2,12 @@
 
 ## Server & Front-end Code Repository
 
-### Repository Contents:
+### Basic repository contents:
 
 1. Front-end web server application at [`local_modules/app`](local_modules/app), including front-end publicly hosted assets at [`local_modules/app/public`](local_modules/app/public)
 
-2. Database seeding for MVP via CSV import at [`local_modules/data_ingestion`](local_modules/data_ingestion)
+2. Database seeding and post-import caching for MVP via CSV import at [`local_modules/data_ingestion`](local_modules/data_ingestion)
 
-3. Raw import MongoDB modeling at [`local_modules/raw_objects`](local_modules/raw_objects) 
-
-4. Processed objects modeling at [`local_modules/processed_objects`](local_modules/processed_objects)
 
 ---------------------
 
@@ -84,23 +81,14 @@ In order to add them you need to create a file named ".env" in the root director
 
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
 2. Execute [`bin/_dev_MVP_DB_seed`](bin/_dev_MVP_DB_seed)
+(Note: Unless your data import description specifies any custom each-row operations, you can kill the DB seed during the image scraping stage on dev as it takes a long time and you probably don't need to scrape all the images in your dev environment.)
+3. Execute [`bin/_dev_postImportCaching`](bin/_dev_postImportCaching)
 
 
 #### iv. Running the front-end web server locally
 
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
 2. Execute [`bin/start_dev_app`](bin/start_dev_app)
-
-
----------------------
-
-### Asking pre-prepared questions 
-
-There are a handful of pre-prepared questions to run on the MVP MoMA dataset.
-
-To run these questions on the MongoLab (prod) DB, execute [`bin/_prod_MoMA_canned_questions`](bin/_prod_MoMA_canned_questions)
-
-To run them on your local (dev) DB, execute [`bin/_start_dev_MoMA_canned_questions`](bin/_start_dev_MoMA_canned_questions)
 
 
 ---------------------
@@ -150,3 +138,8 @@ See this Doc for information on the data import framework capabilities.
 #### Seeding the production database
 
 1. Execute [`bin/_PRODUCTION__MVP_DB_seed`](bin/_PRODUCTION__MVP_DB_seed)
+
+If you find that image scraping during the MVP seed is failing after you're sure the initial pre-scraping import work has completed, you can run [`bin/_runUntilSuccess_PRODUCTION__MVP_DB_seed__enterImageScrapingDirectly`](_runUntilSuccess_PRODUCTION__MVP_DB_seed__enterImageScrapingDirectly) to continuously retry running the image scraping stage and all subsequent stages until it completes successfully.
+
+2. Execute [`bin/_PRODUCTION_postImportCaching`](bin/_PRODUCTION_postImportCaching)
+
