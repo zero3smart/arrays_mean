@@ -3,11 +3,14 @@
 
 .site {
 	overflow-x: hidden;
+}
+
+.site-content {
 	padding-top: 50px;
 }
 
 @media (min-width: 768px) {
-	.site {
+	.site-content {
 		padding-top: 64px;
 	}
 }

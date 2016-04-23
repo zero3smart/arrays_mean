@@ -2,12 +2,14 @@
 	http://localhost:9080/stylesheets/module/choropleth.css */
 
 .array-choropleth .site-content {
-	height: calc(100vh - 50px);
+	/*height: calc(100vh - 50px);*/
+	height: 100vh;
 }
 
 @media (min-width: 768px) {
 	.array-choropleth .site-content {
-		height: calc(100vh - 64px);
+		/*height: calc(100vh - 64px);*/
+		height: 100vh;
 	}
 }
 

@@ -4985,10 +4985,12 @@ Interactive Layer
 	http://localhost:9080/stylesheets/layout/body.css */
 .site {
 	overflow-x: hidden;
+}
+.site-content {
 	padding-top: 50px;
 }
 @media (min-width: 768px) {
-	.site {
+	.site-content {
 		padding-top: 64px;
 	}
 }
@@ -5209,18 +5211,20 @@ Interactive Layer
 	}
 }
 .navbar-fixed-top,
-.site-content {
+.site-content,
+.site-footer {
 	width: calc(100%);
 }
 .sidebar-filter,
-.navbar-fixed-top,
-.site-content {
+.array-gallery .site-content {
 	-webkit-transition: -webkit-transform 400ms ease-in-out;
 	transition: -webkit-transform 400ms ease-in-out;
 	transition: transform 400ms ease-in-out;
 	transition: transform 400ms ease-in-out, -webkit-transform 400ms ease-in-out;
 }
-.navbar-fixed-top {
+.navbar-fixed-top,
+.site-content,
+.site-footer {
 	-webkit-transition: width 400ms ease-in-out, -webkit-transform 400ms ease-in-out;
 	transition: width 400ms ease-in-out, -webkit-transform 400ms ease-in-out;
 	transition: transform 400ms ease-in-out, width 400ms ease-in-out;
@@ -5228,14 +5232,17 @@ Interactive Layer
 }
 .sidebar-filter-in .sidebar-filter,
 .sidebar-filter-in .navbar-fixed-top,
-.sidebar-filter-in .site-content {
+.sidebar-filter-in .site-content,
+.sidebar-filter-in .site-footer {
 	-webkit-transform: translate(280px);
 	    -ms-transform: translate(280px);
 	        transform: translate(280px);
 }
 @media (min-width: 768px) {
 	.sidebar-filter-in .navbar-fixed-top,
-	.sidebar-filter-in.sidebar-filter-complete .site-content {
+	.sidebar-filter-in:not(.array-gallery) .site-content,
+	.sidebar-filter-in.sidebar-filter-complete.array-gallery .site-content,
+	.sidebar-filter-in .site-footer {
 		width: calc(100% - 280px);
 	}
 }
@@ -5783,11 +5790,13 @@ Interactive Layer
 /* @override 
 	http://localhost:9080/stylesheets/module/choropleth.css */
 .array-choropleth .site-content {
-	height: calc(100vh - 50px);
+	/*height: calc(100vh - 50px);*/
+	height: 100vh;
 }
 @media (min-width: 768px) {
 	.array-choropleth .site-content {
-		height: calc(100vh - 64px);
+		/*height: calc(100vh - 64px);*/
+		height: 100vh;
 	}
 }
 #map {
