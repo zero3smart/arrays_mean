@@ -29,6 +29,7 @@ nv.addGraph(function() {
 		.y(function(d) { return d.value; })
 		.showLabels(false)
 		.color(colors)
+		.legendPosition('right')
 		.labelType('value');
 
 	d3.select('#chart svg')

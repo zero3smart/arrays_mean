@@ -5770,7 +5770,7 @@ Interactive Layer
 	border-bottom-style: none;
 }
 #chart {
-	margin-top: 15px;
+	margin-bottom: 30px;
 }
 #chart svg {
 	height: calc(100vh - 300px);
