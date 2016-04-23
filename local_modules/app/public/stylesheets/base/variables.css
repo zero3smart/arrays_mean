@@ -70,7 +70,8 @@ a.color-brand:active {
 .source-moma_artists-r1 .background-color-brand-hover:active,
 .source-moma_artists-r1 .background-color-brand-hover > a:hover,
 .source-moma_artists-r1 .background-color-brand-hover > a:focus,
-.source-moma_artists-r1 .background-color-brand-hover > a:active {
+.source-moma_artists-r1 .background-color-brand-hover > a:active ,
+.source-moma_artists-r1 .background-color-brand-hover.active > a {
 	background-color: var(--color-brand-blue);
 }
 

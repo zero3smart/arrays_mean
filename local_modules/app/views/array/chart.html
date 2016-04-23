@@ -9,6 +9,7 @@
 {% block bodyWrapper %}
     <body class="array array-chart source-{{ array_source_key }}">
         <div id="page" class="site">
+            {% set currentView = "chart" %}
             {% include "../partials/header_bar_array.html" %}
             {% include "../partials/sidebar_filter.html" %}
 

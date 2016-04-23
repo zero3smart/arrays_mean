@@ -4127,7 +4127,8 @@ a.color-brand:active {
 .source-moma_artists-r1 .background-color-brand-hover:active,
 .source-moma_artists-r1 .background-color-brand-hover > a:hover,
 .source-moma_artists-r1 .background-color-brand-hover > a:focus,
-.source-moma_artists-r1 .background-color-brand-hover > a:active {
+.source-moma_artists-r1 .background-color-brand-hover > a:active ,
+.source-moma_artists-r1 .background-color-brand-hover.active > a {
 	background-color: #005cff;
 }
 .source-moma_artists-r1 .border-color-brand {
@@ -5156,7 +5157,9 @@ Interactive Layer
 	margin-right: 15px;
 }
 .navbar-nav .open .dropdown-menu > li > a:hover .color-brand,
-.navbar-nav .open .dropdown-menu > li > a:focus .color-brand {
+.navbar-nav .open .dropdown-menu > li > a:focus .color-brand,
+.navbar-nav .open .dropdown-menu > li > a:active .color-brand,
+.navbar-nav .open .dropdown-menu > li.active > a .color-brand {
 	color: #ffffff;
 }
 /* @end Dropdown */

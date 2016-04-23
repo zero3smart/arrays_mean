@@ -112,7 +112,9 @@
 }
 
 .navbar-nav .open .dropdown-menu > li > a:hover .color-brand,
-.navbar-nav .open .dropdown-menu > li > a:focus .color-brand {
+.navbar-nav .open .dropdown-menu > li > a:focus .color-brand,
+.navbar-nav .open .dropdown-menu > li > a:active .color-brand,
+.navbar-nav .open .dropdown-menu > li.active > a .color-brand {
 	color: #ffffff;
 }
 
