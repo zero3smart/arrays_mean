@@ -86,10 +86,10 @@ $(document).ready(function() {
 
                         $modalTitle.html('Share');
                         $modalBody.html('<h3>Share on Social Media</h3>');
-                        $modalBody.append('<a href="#" id="twitter" class="btn btn-default" data-url="' + share_url + '" data-text="Arrays">Twitter</a>');
                         $modalBody.append('<div id="facebook" data-url="' + share_url + '" data-text="Arrays"></div>');
-                        $modalBody.append('<h3>Share url for embedding:</h3>');
-                        $modalBody.append('<pre>' + share_url + '</pre>');
+                        $modalBody.append('<a href="#" id="twitter" class="btn btn-social background-color-brand" data-url="' + share_url + '" data-text="Arrays">Twitter</a>');
+                        $modalBody.append('<h3>Share URL</h3>');
+                        $modalBody.append('<pre class="border-color-brand">' + share_url + '</pre>');
 
                         /**
                          * Initialize Sharrre buttons
@@ -98,7 +98,7 @@ $(document).ready(function() {
                             share: {
                                 twitter: true,
                             },
-                            template: '<a href="#" class="btn btn-default">Twitter</a>',
+                            template: '<a href="#" class="btn btn-social background-color-brand">Twitter</a>',
                             enableHover: false,
                             buttons: { twitter: {via: 'arrays'}},
                             click: function(api, options){
@@ -110,7 +110,7 @@ $(document).ready(function() {
                             share: {
                                 facebook: true,
                             },
-                            template: '<a href="#" class="btn btn-default">Facebook</a>',
+                            template: '<a href="#" class="btn btn-social background-color-brand">Facebook</a>',
                             enableHover: false,
                             click: function(api, options){
                                 api.openPopup('facebook');
