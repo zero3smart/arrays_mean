@@ -38,13 +38,9 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
     {
         return moment(date).format("MMMM Do, YYYY")
     });
-    nunjucks_env.addFilter('joinWithCommaIfArray', function(val) 
+    nunjucks_env.addFilter('isArray', function(val) 
     {
-        if (Array.isArray(val)) {
-            return val.join(", ");
-        }
-        
-        return val;
+        return Array.isArray(val);
     });
 });
 //
