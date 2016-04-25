@@ -4988,6 +4988,7 @@ Interactive Layer
 }
 .site-content {
 	padding-top: 50px;
+	min-height: calc(100vh - 200px);
 }
 @media (min-width: 768px) {
 	.site-content {
@@ -5479,7 +5480,7 @@ Interactive Layer
 	background-color: #fafafa;
 }
 .section-array-create {
-	margin-bottom: 350px;
+	margin-bottom: 50px;
 }
 .section-array-create .section-header {
 	margin-bottom: 40px;
