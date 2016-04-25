@@ -84,10 +84,16 @@ $(document).ready(function() {
                         var $modalTitle  = $(this).find('.modal-title');
                         var $modalBody  = $(this).find('.modal-body');
 
-                        $modalTitle.html('Share');
+                        var $arrayTitle = $('.array-title');
+                        var arrayTitle = '';
+                        if ($arrayTitle.length) {
+                            arrayTitle = $('.array-title').html();
+                        }
+
+                        $modalTitle.html('Share ' + arrayTitle);
                         $modalBody.html('<h3>Share on Social Media</h3>');
                         $modalBody.append('<div id="facebook" data-url="' + share_url + '" data-text="Arrays"></div>');
-                        $modalBody.append('<a href="#" id="twitter" class="btn btn-social background-color-brand" data-url="' + share_url + '" data-text="Arrays">Twitter</a>');
+                        $modalBody.append('<a href="#" id="twitter" class="btn btn-social background-color-brand" data-url="' + share_url + '" data-text="Arrays"><span class="icon-twitter" aria-hidden="true"></span>Twitter</a>');
                         $modalBody.append('<h3>Share URL</h3>');
                         $modalBody.append('<pre class="border-color-brand">' + share_url + '</pre>');
 
@@ -98,7 +104,7 @@ $(document).ready(function() {
                             share: {
                                 twitter: true,
                             },
-                            template: '<a href="#" class="btn btn-social background-color-brand">Twitter</a>',
+                            template: '<a href="#" class="btn btn-social background-color-brand"><span class="icon-twitter" aria-hidden="true"></span>Twitter</a>',
                             enableHover: false,
                             buttons: { twitter: {via: 'arrays'}},
                             click: function(api, options){
@@ -110,7 +116,7 @@ $(document).ready(function() {
                             share: {
                                 facebook: true,
                             },
-                            template: '<a href="#" class="btn btn-social background-color-brand">Facebook</a>',
+                            template: '<a href="#" class="btn btn-social background-color-brand"><span class="icon-facebook" aria-hidden="true"></span>Facebook</a>',
                             enableHover: false,
                             click: function(api, options){
                                 api.openPopup('facebook');

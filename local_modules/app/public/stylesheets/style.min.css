@@ -5430,7 +5430,11 @@ Interactive Layer
 }
 /* @override 
 	http://localhost:9080/stylesheets/module/modal.css */
+.modal-backdrop.in {
+	opacity: 0.4;
+}
 .modal-content {
+	border-color: #ffffff;
 	border-radius: 4px;
 	background-color: #fafafa;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
@@ -5438,6 +5442,10 @@ Interactive Layer
 .modal-header {
 	padding: 20px 30px 0;
 	border-bottom-style: none;
+}
+.modal-header .close {
+	width: 1em;
+	margin-top: 0.5em;
 }
 .modal-title {
 	padding-bottom: 20px;
@@ -5449,9 +5457,10 @@ Interactive Layer
 	font-size: 36px;
 }
 .modal-body {
-	padding: 30px;
+	padding: 0 30px 30px;
 }
 .modal-body h3 {
+	margin-top: 30px;
 	color: #4a4a4a;
 	font-weight: normal;
 	font-size: 24px;
@@ -5460,12 +5469,16 @@ Interactive Layer
 	display: inline-block;
 }
 .modal-body pre {
+	overflow-x: auto;
 	border-radius: 0;
 	background-color: #ffffff;
+	white-space: nowrap;
 	font-size: 24px;
 }
 .btn-social {
+	position: relative;
 	margin-right: 15px;
+	margin-bottom: 5px;
 	border: 1px solid #ffffff;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	color: #ffffff;
@@ -5473,6 +5486,21 @@ Interactive Layer
 	letter-spacing: 2px;
 	font-weight: 600;
 	font-size: 20px;
+}
+.btn-social:hover {
+	color: white;
+}
+.btn-social [class^="icon-"] {
+	margin-right: 20px;
+}
+.btn-social [class^="icon-"]:after {
+	position: absolute;
+	top: 0;
+	margin-left: 5px;
+	width: 1px;
+	height: 100%;
+	background-color: #ffffff;
+	content: "";
 }
 /* @override 
 	http://localhost:9080/stylesheets/module/array-create.css */
