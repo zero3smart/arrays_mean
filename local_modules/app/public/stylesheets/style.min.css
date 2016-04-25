@@ -4983,6 +4983,30 @@ Interactive Layer
 /* @group Layout */
 /* @override 
 	http://localhost:9080/stylesheets/layout/body.css */
+html {
+	height: 100%;
+}
+body {
+	position: relative;
+	min-height: 100%;
+}
+/* @group Fixed footer */
+@media (min-width: 480px) {
+	body {
+		padding-bottom: 400px;
+	}
+}
+@media (min-width: 768px) {
+	body {
+		padding-bottom: 375px;
+	}
+}
+@media (min-width: 1024px) {
+	body {
+		padding-bottom: 255px;
+	}
+}
+/* @end Fixed footer */
 .site {
 	overflow-x: hidden;
 }
@@ -5009,6 +5033,14 @@ Interactive Layer
 	padding-top: 70px;
 	padding-bottom: 25px;
 	color: #ffffff;
+}
+@media (min-width: 480px) {
+	.site-footer {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		left: 0;
+	}
 }
 .site-footer .site-title {
 	margin: 0;
