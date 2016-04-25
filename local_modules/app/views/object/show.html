@@ -36,7 +36,8 @@
                                         <dt>{{ columnName }}</dt>
                                         <dd>
                                         {% if columnValue | isArray %}
-                                            {% for arrayMember in columnValue %}
+                                            {% set sortedArray = columnValue | alphaSortedArray %}
+                                            {% for arrayMember in sortedArray %}
                                                 <li>{{ arrayMember }}</li>
                                             {% endfor %}
                                         {% else %}

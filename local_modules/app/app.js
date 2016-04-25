@@ -42,6 +42,10 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
     {
         return Array.isArray(val);
     });
+    nunjucks_env.addFilter('alphaSortedArray', function(array) 
+    {
+        return array.sort();
+    });
 });
 //
 //
