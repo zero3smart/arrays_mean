@@ -29,7 +29,7 @@ exports.Descriptions =
         uid: "moma_artists",
         importRevision: 1,
         format: import_datatypes.DataSource_formats.CSV,
-        title: "MoMA - Artists",
+        title: "MoMA Artists",
         urls: [ "http://zenodo.org/record/46902" ],
         description: "Basic catalog information for artists with works in the collection of The Museum of Modern Art (MoMA), including artist name, nationality, gender, birth year, death year, Wiki QID and Getty ULAN ID. ",
         //
@@ -161,7 +161,7 @@ exports.Descriptions =
         uid: "moma_artworks",
         importRevision: 2,
         format: import_datatypes.DataSource_formats.CSV,
-        title: "MoMA - Artworks",
+        title: "MoMA Artworks",
         urls: [ "https://github.com/MuseumofModernArt/collection" ],
         description: "This research dataset contains 126,713 records, representing all of the works that have been accessioned into MoMA’s collection and cataloged in our database.",
         //
