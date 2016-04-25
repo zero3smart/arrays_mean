@@ -70,4 +70,35 @@ map.on('load', function () {
 			}
 		}, 'water');
 	}
+
+	/**
+	 * Create a popup, but don't add it to the map yet
+	 */
+	var popup = new mapboxgl.Popup({
+		closeButton: false,
+		closeOnClick: false
+	});
+
+	/**
+	 * Show popup on country hover
+	 */
+	 map.on('mousemove', function(e) {
+		var features = map.queryRenderedFeatures(e.point, { layers: names });
+
+		// Change cursor style
+		map.getCanvas().style.cursor = (features.length) ? 'default' : '';
+
+		if (!features.length) {
+			popup.remove();
+			return;
+		}
+
+		var feature = features[0];
+
+		// Populate the popup and set its coordinates
+		// based on the feature found.
+		popup.setLngLat(e.lngLat)
+			.setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + feature.properties.total + '</span>')
+			.addTo(map);
+	 });
 });

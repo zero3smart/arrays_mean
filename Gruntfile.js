@@ -126,18 +126,6 @@ module.exports = function(grunt) {
         src: 'nv.d3.css',
         dest: 'local_modules/app/public/stylesheets/lib/nvd3'
       },
-      mapboxjs: {
-        expand: true,
-        cwd: 'bower_components/mapbox-gl-js',
-        src: 'mapbox-gl.js',
-        dest: 'local_modules/app/public/javascripts/lib/mapbox-gl-js'
-      },
-      mapboxcss: {
-        expand: true,
-        cwd: 'bower_components/mapbox-gl-js',
-        src: 'mapbox-gl.css',
-        dest: 'local_modules/app/public/stylesheets/lib/mapbox-gl-js'
-      },
       worldGeoJson: {
         expand: true,
         cwd: 'bower_components/world.geo.json',
