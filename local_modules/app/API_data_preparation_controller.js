@@ -621,6 +621,7 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             //
             defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
             colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription),
+            colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
             routePath_base: routePath_base,
             routePath_withoutFilter: routePath_withoutFilter,
@@ -839,6 +840,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             //
             defaultMapByColumnName_humanReadable: defaultMapByColumnName_humanReadable,
             colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChoroplethMapByDropdown(sampleDoc, dataSourceDescription),
+            colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
             routePath_base: routePath_base,
             routePath_withoutFilter: routePath_withoutFilter,
