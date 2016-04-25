@@ -5772,6 +5772,10 @@ Interactive Layer
 	color: #333333;
 	font: 20px Georgia, "Times New Roman", Times, serif;
 }
+.object-list {
+	padding-left: 0;
+	list-style-type: none;
+}
 /* @override 
 	http://localhost:9080/stylesheets/module/chart.css */
 .array-chart .sort-bar {

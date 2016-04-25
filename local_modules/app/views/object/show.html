@@ -36,10 +36,12 @@
                                         <dt>{{ columnName }}</dt>
                                         <dd>
                                         {% if columnValue | isArray %}
+                                            <ul class="object-list">
                                             {% set sortedArray = columnValue | alphaSortedArray %}
                                             {% for arrayMember in sortedArray %}
-                                                <li>{{ arrayMember }}</li>
+                                                <li class="object-list-item">{{ arrayMember }}</li>
                                             {% endfor %}
+                                            </ul>
                                         {% else %}
                                             {{ columnValue }}
                                         {% endif %}
