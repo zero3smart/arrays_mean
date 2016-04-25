@@ -5819,6 +5819,61 @@ Interactive Layer
 .nvd3.nv-pie path {
 	stroke-width: 0;
 }
+.nvtooltip {
+	position: relative;
+	padding: 10px;
+	border-color: #eeeeee;
+	border-radius: 4px;
+	background-color: #ffffff;
+	font-family: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+.nvtooltip:after,
+.nvtooltip:before {
+	position: absolute;
+	top: 50%;
+	right: 100%;
+	width: 0;
+	height: 0;
+	border: solid transparent;
+	content: " ";
+	pointer-events: none;
+}
+.nvtooltip:after {
+	margin-top: -10px;
+	border-width: 10px;
+	border-color: rgba(255, 255, 255, 0);
+	border-right-color: #ffffff;
+}
+.nvtooltip:before {
+	margin-top: -11px;
+	border-width: 11px;
+	border-color: rgba(238, 238, 238, 0);
+	border-right-color: #eeeeee;
+}
+.nvtooltip table {
+	display: block;
+	margin: 0;
+	padding: 0;
+}
+.nvtooltip table td {
+	display: block;
+	margin: 0;
+	padding: 0;
+}
+.nvtooltip table td.legend-color-guide div {
+	display: none;
+}
+.nvtooltip table td.key {
+	color: #777777;
+	font-weight: 600;
+	font-size: 17px;
+}
+.nvtooltip table td.value {
+	color: #a8a8a8;
+	text-align: left;
+	font-weight: normal;
+	font-size: 17px;
+}
 /* @end Chart Styling */
 /* @override 
 	http://localhost:9080/stylesheets/module/choropleth.css */

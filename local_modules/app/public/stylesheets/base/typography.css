@@ -29,7 +29,7 @@
 }
 
 body {
-	font-family: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-family: var(--font-family-calibre);
 	
 	/* Render fonts thinner and smoother */
 	-webkit-font-smoothing: antialiased;
