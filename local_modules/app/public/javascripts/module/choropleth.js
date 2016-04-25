@@ -68,6 +68,6 @@ map.on('load', function () {
 				'fill-color': '#00DAE5',
 				'fill-opacity': opacities[i]
 			}
-		});
+		}, 'water');
 	}
 });
