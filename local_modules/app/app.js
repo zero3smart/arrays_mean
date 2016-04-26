@@ -67,6 +67,10 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
         var existing_filterCols_length = existing_filterCols.length;
         for (var i = 0 ; i < existing_filterCols_length ; i++) {
             var existing_filterCol = existing_filterCols[i];
+            if (existing_filterCol == this_filterCol) { 
+                continue; // never push other active values of this is filter col is already active
+                // which means we never allow more than one filter on the same column at present
+            }
             var existing_filterVals = existing_filterObj[existing_filterCol];
             //
             var filterVals = [];
@@ -74,11 +78,6 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
             var existing_filterVals_length = existing_filterVals.length;
             for (var j = 0 ; j < existing_filterVals_length ; j++) {
                 var existing_filterVal = existing_filterVals[j];
-                if (existing_filterCol == this_filterCol && existing_filterVal == this_filterVal) { 
-                    // either isThisAnActiveFilter=true in which case we'd want the 
-                    // effect of unsetting it, or we'd not want to add it redundantly
-                    continue;
-                }
                 filterVals.push(existing_filterVal); 
             }
             //
