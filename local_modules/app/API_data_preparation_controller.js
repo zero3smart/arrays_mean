@@ -776,20 +776,18 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
                 var geometryForCountry = cache_countryGeometryByLowerCasedCountryName[countryName.toLowerCase()];
                 if (typeof geometryForCountry === 'undefined') {
                     winston.warn("⚠️  No known geometry for country named \"" + countryName + "\"");
-                    // geometryForCountry = {};
+                    
+                    return;
                 }
-
-                if (typeof geometryForCountry != 'undefined') {
-                    mapFeatures.push({
-                        type: "Feature",
-                        id: "" + i,
-                        properties: {
-                            name: countryName, 
-                            total: parseInt(countAtCountry_str)
-                        },
-                        geometry: geometryForCountry
-                    });
-                }
+                mapFeatures.push({
+                    type: "Feature",
+                    id: "" + i,
+                    properties: {
+                        name: countryName, 
+                        total: parseInt(countAtCountry_str)
+                    },
+                    geometry: geometryForCountry
+                });
             });
             // console.log("mapFeatures " ,mapFeatures)
             _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures, highestValue);
