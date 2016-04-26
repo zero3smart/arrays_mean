@@ -128,8 +128,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         // page
         // sortBy
         // sortDir
-        // filterCol
-        // filterVal
+        // filterJSON
         // searchQ
         // searchCol
     var source_pKey = urlQuery.source_key;
@@ -157,9 +156,22 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
     var sortDir = urlQuery.sortDir;
     var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
     //
-    var filterCol = urlQuery.filterCol;
-    var filterVal = urlQuery.filterVal;
-    var isFilterActive = typeof filterCol !== 'undefined' && filterCol != null && filterCol != "";
+    var filterJSON = urlQuery.filterJSON;
+    var filterObj = {};
+    var isFilterActive = false;
+    if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
+        try {
+            filterObj = JSON.parse(filterJSON);
+            if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
+                isFilterActive = true;
+            }
+        } catch (e) {
+            winston.error("❌  Error parsing filterJSON: ", filterJSON);
+            callback(e, null);
+            
+            return;
+        }
+    }
     //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
@@ -176,8 +188,8 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         }
         wholeFilteredSet_aggregationOperators.push(_orErrDesc.matchOp);
     }
-    if (isFilterActive) { // rules out undefined filterCol
-        var _orErrDesc = _activeFilter_matchOp_orErrDescription(dataSourceDescription, filterCol, filterVal);
+    if (isFilterActive) { // rules out undefined filterJSON
+        var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, "$and");
         if (typeof _orErrDesc.err !== 'undefined') {
             callback(_orErrDesc.err, null);
             
@@ -311,7 +323,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
         }
         if (isFilterActive) {
-            var appendQuery = "filterCol=" + filterCol + "&" + "filterVal=" + filterVal;
+            var appendQuery = "filterJSON=" + filterJSON;
             routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
             routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
@@ -349,8 +361,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             sortDir: sortDir,
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
-            filterCol: filterCol,
-            filterVal: filterVal,
+            filterObj: filterObj,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             //
@@ -974,9 +985,37 @@ function _routePathByAppendingQueryStringToVariationOfBase(routePath_variation, 
 }
 //
 //
-function _activeFilter_matchOp_orErrDescription(dataSourceDescription, filterCol, filterVal)
-{ // returns dictionary with err or matchOp
-    var matchOp = undefined;
+//
+function _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, mongoDBLogicalOperator)
+{
+    var filterCols = Object.keys(filterObj);
+    var filterCols_length = filterCols.length;
+    if (filterCols_length == 0) {
+        return { err: new Error("No active filter despite filterObj") };
+    }
+    var conditions = [];
+    for (var i = 0 ; i < filterCols_length ; i++) {
+        var filterCol = filterCols[i];
+        var filterVals = filterObj[filterCol];
+        var filterVals_length = filterVals.length;
+        for (var j = 0 ; j < filterVals_length ; j++) {
+            var filterVal = filterVals[j];
+            var matchCondition = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
+            if (typeof matchCondition.err !== 'undefined') {
+                return { err: matchCondition.err };
+            }
+            conditions.push(matchCondition.matchCondition);
+        }
+    }
+    var matchOp = { $match: {} };
+    matchOp["$match"]["" + (mongoDBLogicalOperator || "$and")] = conditions;
+    
+    return { matchOp: matchOp };
+}
+
+function _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal)
+{
+    var matchCondition = undefined;
     var isAFabricatedFilter = false; // finalize
     if (dataSourceDescription.fe_filters_fabricatedFilters) {
         var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
@@ -992,7 +1031,7 @@ function _activeFilter_matchOp_orErrDescription(dataSourceDescription, filterCol
                     var choice = choices[j];
                     if (choice.title === filterVal) {
                         foundChoice = true;
-                        matchOp = { $match: choice["$match"] };
+                        matchCondition = choice["$match"];
                         
                         break; // found the applicable filter choice
                     }
@@ -1005,9 +1044,9 @@ function _activeFilter_matchOp_orErrDescription(dataSourceDescription, filterCol
             }
         }
     }
-    if (isAFabricatedFilter == true) { // already obtained matchOp just above
-        if (typeof matchOp === 'undefined') {
-            return { err: new Error("Unexpectedly missing matchOp given fabricated filter…" + JSON.stringify(urlQuery)) };
+    if (isAFabricatedFilter == true) { // already obtained matchCondition just above
+        if (typeof matchCondition === 'undefined') {
+            return { err: new Error("Unexpectedly missing matchCondition given fabricated filter…" + JSON.stringify(urlQuery)) };
         }
     } else {
         var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
@@ -1024,14 +1063,24 @@ function _activeFilter_matchOp_orErrDescription(dataSourceDescription, filterCol
                  realFilterValue = overrideValue;
              }
         }
-        matchOp = { $match: {} };
-        matchOp["$match"][realColumnName_path] = { $regex: realFilterValue, $options: "i" };
+        matchCondition = { };
+        matchCondition[realColumnName_path] = { $regex: realFilterValue, $options: "i" };
     }
-    if (typeof matchOp === 'undefined') {
-        throw new Error("Undefined match operation");
+    if (typeof matchCondition === 'undefined') {
+        throw new Error("Undefined match condition");
     }
     
-    return { matchOp: matchOp };
+    return { matchCondition: matchCondition };
+}
+//
+function _activeFilter_matchOp_orErrDescription(dataSourceDescription, filterCol, filterVal)
+{ // returns dictionary with err or matchOp
+    var matchCondition = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
+    if (typeof matchCondition.err !== 'undefined') {
+        return { err: matchCondition.err };
+    }
+    
+    return { $match: matchCondition.matchCondition };
 }
 //
 function _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ)
