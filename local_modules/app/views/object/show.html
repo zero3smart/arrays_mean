@@ -28,7 +28,6 @@
                                 </header><!-- .object-header -->
 
                                 <div class="object-content">
-
                                     <dl>
                                     {% for columnName in ordered_colNames_sansObjectTitleAndImages %}
                                         {% set columnValue = rowObject.rowParams[columnName] %}
@@ -43,7 +42,19 @@
                                             {% endfor %}
                                             </ul>
                                         {% else %}
-                                            {{ columnValue }}
+                                            {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
+                                            {% if shouldLink %}
+                                                {% set originalKeyForColumnName = originalKeysByColumnName[columnName] %}
+                                                {% set filterObjForThisFilterColVal = {} | constructedFilterObj(originalKeyForColumnName, columnValue, false) %}
+                                                {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
+                                                
+                                            
+                                                <a href="/array/{{ array_source_key }}/gallery?filterJSON={{ filterJSONString }}">
+                                            {% endif %}
+                                                    {{ columnValue }}
+                                            {% if shouldLink %}
+                                                </a>
+                                            {% endif %}
                                         {% endif %}
                                         </dd>
                                         {% endif %}

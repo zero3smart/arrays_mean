@@ -78,7 +78,8 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
             var existing_filterVals_length = existing_filterVals.length;
             for (var j = 0 ; j < existing_filterVals_length ; j++) {
                 var existing_filterVal = existing_filterVals[j];
-                filterVals.push(existing_filterVal); 
+                var encoded_existing_filterVal = encodeURIComponent(existing_filterVal);
+                filterVals.push(encoded_existing_filterVal); 
             }
             //
             if (filterVals.length != 0) {
@@ -89,7 +90,8 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
         if (isThisAnActiveFilter == false) { // do not push if active, since we'd want the effect of unsetting it
             var filterVals = filterObj[this_filterCol] || [];
             if (filterVals.indexOf(this_filterVal) == -1) {
-                filterVals.push(this_filterVal);
+                var encoded_this_filterVal = encodeURIComponent(this_filterVal);
+                filterVals.push(encoded_this_filterVal);
             }
             filterObj[this_filterCol] = filterVals; // in case it's not set yet
         }
