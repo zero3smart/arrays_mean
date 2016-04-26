@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block bodyWrapper %}
-    <body class="object object-show">
+    <body class="object object-show source-{{ array_source_key }}">
         <div id="page" class="site">
             {% include "../partials/header_bar_objectDetails.html" %}
             {% include "../partials/sidebar_filter.html" %}
@@ -49,7 +49,7 @@
                                                 {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
                                                 
                                             
-                                                <a href="/array/{{ array_source_key }}/gallery?filterJSON={{ filterJSONString }}">
+                                                <a href="/array/{{ array_source_key }}/gallery?filterJSON={{ filterJSONString }}" class="color-brand">
                                             {% endif %}
                                                     {{ columnValue }}
                                             {% if shouldLink %}
