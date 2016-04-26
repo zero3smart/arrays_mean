@@ -72,7 +72,10 @@ constructor.prototype.BindDataFor_datasetsListing = function(callback)
             
                 return;
             }
-            var fe_filters_default = dataSourceDescription.fe_filters_default || {};
+            var default_filterJSON = undefined;
+            if (typeof dataSourceDescription.fe_filters_default !== 'undefined') {
+                default_filterJSON = JSON.stringify(dataSourceDescription.fe_filters_default || {}); // "|| {}" for safety
+            }
             var sourceDescription = 
             {
                 key: source_pKey,
@@ -81,8 +84,7 @@ constructor.prototype.BindDataFor_datasetsListing = function(callback)
                 description: dataSourceDescription.description,
                 urls: dataSourceDescription.urls,
                 //
-                default_filterCol: fe_filters_default.filterCol,
-                default_filterVal: fe_filters_default.filterVal
+                default_filterJSON: default_filterJSON
             }
             cb(err, sourceDescription);
         });

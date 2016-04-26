@@ -9,13 +9,10 @@ $(document).ready(function() {
         e.preventDefault();
         var $parent = $(this).parent();
         var sourceKey = $parent.find("[name='source_key']").val();
-        var default_filterCol = $parent.find("[name='default_filterCol']").val();
-        var default_filterVal = $parent.find("[name='default_filterVal']").val();
+        var default_filterJSON = $parent.find("[name='default_filterJSON']").val();
         var href = '/array/' + sourceKey + '/gallery';
-        if (default_filterCol != '' && default_filterCol != null && typeof default_filterCol !== 'undefined') {
-            if (default_filterVal != '' && default_filterVal != null && typeof default_filterVal !== 'undefined') {
-                href += "?filterCol=" + default_filterCol + "&filterVal=" + default_filterVal;
-            }
+        if (default_filterJSON != '' && default_filterJSON != null && typeof default_filterJSON !== 'undefined') {
+            href += "?filterJSON=" + default_filterJSON;
         }
         window.location.href = href;
     });

@@ -215,8 +215,7 @@ exports.Descriptions =
         //
         fe_filters_default:
         {
-            filterCol: "Image",
-            filterVal: "Has image" 
+            "Image": [ "Has image" ]
         },
         fe_filters_fieldsNotAvailable:
         [
