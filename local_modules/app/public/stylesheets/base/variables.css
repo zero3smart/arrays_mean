@@ -33,7 +33,8 @@
 .color-brand,
 a.color-brand:hover,
 a.color-brand:focus,
-a.color-brand:active {
+a.color-brand:active,
+.sidebar-filter-toggle .color-brand {
 	color: var(--color-primary);
 }
 
@@ -62,7 +63,8 @@ a.color-brand:active {
 .source-moma_artists-r1 .color-brand,
 .source-moma_artists-r1 a.color-brand:hover,
 .source-moma_artists-r1 a.color-brand:focus,
-.source-moma_artists-r1 a.color-brand:active {
+.source-moma_artists-r1 a.color-brand:active,
+.source-moma_artists-r1 .sidebar-filter-toggle .color-brand {
 	color: var(--color-brand-blue);
 }
 

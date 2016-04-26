@@ -27,7 +27,7 @@ $(document).ready(function() {
     /**
      * Show sidebar filter on header bar click
      */
-    $('.sidebar-filter-toggle').click(function(e) {
+    $('.sidebar-filter-slide-toggle').click(function(e) {
         e.preventDefault();
         $(this).parents('li').toggleClass('active');
         $('body').toggleClass('sidebar-filter-in');

@@ -1,6 +1,8 @@
 /* @override 
 	http://localhost:9080/stylesheets/module/sidebar-filter.css */
 
+/* @group Sliding Transition */
+
 .sidebar-filter {
 	position: fixed;
 	top: 0;
@@ -11,27 +13,6 @@
 	width: var(--sidebar-width);
 	height: 100vh;
 	background-color: var(--color-sidebar-bg);
-}
-
-.sidebar-filter-heading {
-	z-index: 1;
-	padding: 14px 15px;
-	min-height: 50px;
-	box-shadow: var(--box-shadow-dark);
-	color: #ffffff;
-	text-transform: uppercase;
-	letter-spacing: 2px;
-	font-weight: 600;
-	font-size: 16px;
-}
-
-@media (min-width: 768px) {
-	.sidebar-filter-heading {
-		position: relative;
-		padding-top: 21px;
-		padding-bottom: 21px;
-		min-height: 64px;
-	}
 }
 
 .navbar-fixed-top,
@@ -66,6 +47,35 @@
 		width: calc(100% - var(--sidebar-width));
 	}
 }
+
+/* @end Sliding Transition */
+
+/* @group Sidebar Heading */
+
+.sidebar-filter-heading {
+	z-index: 1;
+	padding: 14px 15px;
+	min-height: 50px;
+	box-shadow: var(--box-shadow-dark);
+	color: #ffffff;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	font-weight: 600;
+	font-size: 16px;
+}
+
+@media (min-width: 768px) {
+	.sidebar-filter-heading {
+		position: relative;
+		padding-top: 21px;
+		padding-bottom: 21px;
+		min-height: 64px;
+	}
+}
+
+/* @end Sidebar Heading */
+
+/* @group Sidebar Filter Links */
 
 .sidebar-filter a {
 	display: inline-block;
@@ -116,3 +126,35 @@
 .sidebar-filter-subgroup-item > a:hover {
 	/*color: var(--color-sidebar-bg);*/
 }
+
+/* @end Sidebar Filter Links */
+
+/* @group Toggle Link */
+
+.sidebar-filter-toggle > a {
+	padding-top: 13px;
+	padding-bottom: 13px;
+	border-top: 1px solid var(--color-sidebar-fg);
+	background-color: var(--color-sidebar-bg);
+}
+
+.sidebar-filter-toggle:hover .sidebar-filter-toggle-check:before {
+	content: "\e802";
+}
+
+.sidebar-filter-toggle-title {
+	display: inline-block;
+	margin-top: 4px;
+}
+
+.sidebar-filter-toggle-check {
+	float: right;
+	width: 1em;
+	font-size: 24px;
+}
+
+.sidebar-filter-toggle-check.icon-check-off {
+	color: var(--color-text-light);
+}
+
+/* @end Toggle Link */
