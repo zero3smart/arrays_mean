@@ -34,6 +34,7 @@ var nunjucks_config =
 nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
 {
     nunjucks_env.addFilter('comma', require('nunjucks-comma-filter'));
+    // General/shared
     nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function(date)
     {
         return moment(date).format("MMMM Do, YYYY")
@@ -42,9 +43,67 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
     {
         return Array.isArray(val);
     });
+    nunjucks_env.addFilter('doesArrayContain', function(array, member)
+    {
+        return array.indexOf(member) !== -1;
+    });
+    nunjucks_env.addFilter('isObjectEmpty', function(obj) 
+    {
+        return Object.keys(obj).length == 0;
+    });
     nunjucks_env.addFilter('alphaSortedArray', function(array) 
     {
         return array.sort();
+    });
+    nunjucks_env.addFilter('jsonStringify', function(obj)
+    {
+        return JSON.stringify(obj);
+    });
+    // Array views - Filter obj construction
+    nunjucks_env.addFilter('constructedFilterObj', function(existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter) 
+    {
+        var filterObj = {};
+        var existing_filterCols = Object.keys(existing_filterObj);
+        var existing_filterCols_length = existing_filterCols.length;
+        for (var i = 0 ; i < existing_filterCols_length ; i++) {
+            var existing_filterCol = existing_filterCols[i];
+            var existing_filterVals = existing_filterObj[existing_filterCol];
+            //
+            var filterVals = [];
+            //
+            var existing_filterVals_length = existing_filterVals.length;
+            for (var j = 0 ; j < existing_filterVals_length ; j++) {
+                var existing_filterVal = existing_filterVals[j];
+                if (existing_filterCol == this_filterCol && existing_filterVal == this_filterVal) { 
+                    // either isThisAnActiveFilter=true in which case we'd want the 
+                    // effect of unsetting it, or we'd not want to add it redundantly
+                    continue;
+                }
+                filterVals.push(existing_filterVal); 
+            }
+            //
+            if (filterVals.length != 0) {
+                filterObj[existing_filterCol] = filterVals; // as it's not set yet
+            }
+        }
+        //
+        if (isThisAnActiveFilter == false) { // do not push if active, since we'd want the effect of unsetting it
+            var filterVals = filterObj[this_filterCol] || [];
+            if (filterVals.indexOf(this_filterVal) == -1) {
+                filterVals.push(this_filterVal);
+            }
+            filterObj[this_filterCol] = filterVals; // in case it's not set yet
+        }
+        //
+        if (this_filterCol == 'Curator Approved' || this_filterCol == 'Image') {
+            console.log("this_filterCol " , this_filterCol)
+            console.log("this_filterVal " , this_filterVal)
+            console.log("isThisAnActiveFilter " , isThisAnActiveFilter)
+            console.log("existing_filterObj " , existing_filterObj)
+            console.log("filterObj ", filterObj);
+            console.log("\n\n")
+        }        
+        return filterObj;
     });
 });
 //

@@ -164,6 +164,8 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             filterObj = JSON.parse(filterJSON);
             if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
                 isFilterActive = true;
+            } else {
+                filterObj = {}; // must replace it to prevent errors below
             }
         } catch (e) {
             winston.error("❌  Error parsing filterJSON: ", filterJSON);
@@ -991,6 +993,8 @@ function _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperat
     var filterCols = Object.keys(filterObj);
     var filterCols_length = filterCols.length;
     if (filterCols_length == 0) {
+        winston.error("❌  Programmer runtime check error. Filter obj had no keys.");
+        
         return { err: new Error("No active filter despite filterObj") };
     }
     var conditions = [];
@@ -1006,6 +1010,11 @@ function _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperat
             }
             conditions.push(matchCondition.matchCondition);
         }
+    }
+    if (conditions.length == 0) {
+        winston.error("❌  Programmer runtime check error. No match conditions in multifilter for filter obj: ", filterObj);
+        
+        return { err: new Error("No match conditions in multifilter despite filterObj") };
     }
     var matchOp = { $match: {} };
     matchOp["$match"]["" + (mongoDBLogicalOperator || "$and")] = conditions;
