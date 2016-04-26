@@ -364,6 +364,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
             filterObj: filterObj,
+            filterJSON: filterJSON,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             //
