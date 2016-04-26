@@ -962,14 +962,6 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
                 rowObjectHasOriginalImage = true;
             }
         }
-        // Prepared for f.e. access (this must occur before human readable columns placed in)
-        var originalKeysByColumnName = {}; // we will replace any human-readables below;
-        // we do this here before human readable keys to ensure /all/ keys are available
-        // even if there is no human-readable override
-        for (var i = 0 ; i < rowParams_keys_length ; i++) {
-            var key = rowParams_keys[i];
-            originalKeysByColumnName[key] = key; 
-        }
         //
         // Move the data structures to the human-readable keys so they are accessible by the template
         var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
@@ -986,9 +978,6 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
                 delete fieldsNotToLinkAsGalleryFilter_byColName[originalKey];
                 fieldsNotToLinkAsGalleryFilter_byColName[overrideTitle] = true; // replace with human-readable
             }
-            //
-            delete originalKeysByColumnName[originalKey];
-            originalKeysByColumnName[overrideTitle] = originalKey;
         }
         //
         var default_filterJSON = undefined;
@@ -1013,8 +1002,7 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
             //
             ordered_colNames_sansObjectTitleAndImages: alphaSorted_colNames_sansObjectTitle,
             //
-            fieldsNotToLinkAsGalleryFilter_byColName: fieldsNotToLinkAsGalleryFilter_byColName,
-            originalKeysByColumnName: originalKeysByColumnName
+            fieldsNotToLinkAsGalleryFilter_byColName: fieldsNotToLinkAsGalleryFilter_byColName
         };
         callback(null, data);
     });

@@ -44,10 +44,8 @@
                                         {% else %}
                                             {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
                                             {% if shouldLink %}
-                                                {% set originalKeyForColumnName = originalKeysByColumnName[columnName] %}
-                                                {% set filterObjForThisFilterColVal = {} | constructedFilterObj(originalKeyForColumnName, columnValue, false) %}
+                                                {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, columnValue, false) %}
                                                 {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                                                
                                             
                                                 <a href="/array/{{ array_source_key }}/gallery?filterJSON={{ filterJSONString }}" class="color-brand">
                                             {% endif %}
