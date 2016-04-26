@@ -339,6 +339,9 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
         }
+        //
+        var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+        //
         var data =
         {
             env: process.env,
@@ -369,6 +372,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             filterJSON: filterJSON,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+            truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
             //
             searchQ: searchQ,
             searchCol: searchCol,
@@ -628,6 +632,9 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
         }
         var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+        //
+        var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+        //
         var data =
         {
             env: process.env,
@@ -644,6 +651,7 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             filterJSON: filterJSON,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+            truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
             //
             searchQ: searchQ,
             searchCol: searchCol,
@@ -857,7 +865,11 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
             routePath_withoutMapBy      = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutMapBy,     appendQuery, routePath_base);
         }
+        //
         var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+        //
+        var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+        //
         var data =
         {
             env: process.env,
@@ -878,6 +890,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             filterJSON: filterJSON,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+            truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
             //
             searchQ: searchQ,
             searchCol: searchCol,
@@ -1247,3 +1260,29 @@ function _reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, key, da
     //
     return displayableVal;
 }
+//
+function _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription)
+{
+    var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = {};
+    var fe_filters_fabricatedFilters = dataSourceDescription.fe_filters_fabricatedFilters;
+    if (typeof fe_filters_fabricatedFilters !== 'undefined') {
+        var fe_filters_fabricatedFilters_length = fe_filters_fabricatedFilters.length;
+        for (var i = 0 ; i < fe_filters_fabricatedFilters_length ; i++) {
+            var fabricatedFilter = fe_filters_fabricatedFilters[i];
+            var filterCol = fabricatedFilter.title;
+            truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol] = {};
+            var choices = fabricatedFilter.choices;
+            var choices_length = choices.length;
+            if (choices_length == 1) { // then we do not want to display the filter col key for this one
+                for (var j = 0 ; j < choices_length ; j++) {
+                    var choice = choices[j];
+                    var filterVal = choice.title;
+                    truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] = true;
+                }
+            }
+        }
+    }
+    
+    return truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill;
+}
+//

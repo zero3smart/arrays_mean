@@ -98,7 +98,8 @@
                                     {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true) %}
                                     {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
                                     {% set routePath_withoutThisFilter = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString %}
-                            <span class="filter-tag border-color-brand">{{ filterCol | safe }}: {{ filterVal | safe }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close">&times;</a></span>
+                                    {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}                  
+                            <span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | safe }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close">&times;</a></span>
                                 {% endfor %}
                             {% endfor %}
                         </div>
