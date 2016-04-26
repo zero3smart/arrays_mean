@@ -1,0 +1,3 @@
+{
+  "ignore": ["local_modules/app/public/javascripts/**/*"]
+}
