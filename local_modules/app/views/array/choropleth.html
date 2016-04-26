@@ -90,11 +90,8 @@
                                             {% if sortDir %}
                                                 <input type="hidden" name="sortDir" value="{{ sortDir }}">
                                             {% endif %}
-                                            {% if filterCol %}
-                                                <input type="hidden" name="filterCol" value="{{ filterCol }}">
-                                            {% endif %}
-                                            {% if filterVal %}
-                                                <input type="hidden" name="filterVal" value="{{ filterVal }}">
+                                            {% if filterJSON %}
+                                                <input type="hidden" name="filterJSON" value="{{ filterJSON }}">
                                             {% endif %}
                                         </form>
                                     </div>
@@ -108,7 +105,15 @@
                     {% if isFilterActive %}
                     <div class="filter-bar filter-bar-fixed-bottom">
                         <div class="container-fluid">
-                            <span class="filter-tag border-color-brand">{{ filterCol | safe }}: {{ filterVal | safe }} <a href="{{ routePath_withoutFilter }}" class="close filter-tag-close">&times;</a></span>
+                            {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
+                            {% for filterCol, filterVals in filterObj %}
+                                {% for filterVal in filterVals %}
+                                    {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true) %}
+                                    {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
+                                    {% set routePath_withoutThisFilter = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString %}
+                            <span class="filter-tag border-color-brand">{{ filterCol | safe }}: {{ filterVal | safe }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close">&times;</a></span>
+                                {% endfor %}
+                            {% endfor %}
                         </div>
                     </div>
                     {% endif %}

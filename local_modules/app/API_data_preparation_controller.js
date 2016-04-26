@@ -388,8 +388,7 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
     // urlQuery keys:
         // source_key
         // groupBy
-        // filterCol
-        // filterVal
+        // filterJSON
         // searchQ
         // searchCol
     var source_pKey = urlQuery.source_key;
@@ -411,9 +410,24 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
     var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
     var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_chart_defaultGroupByColumnName_humanReadable;
     //
-    var filterCol = urlQuery.filterCol;
-    var filterVal = urlQuery.filterVal;
-    var isFilterActive = typeof filterCol !== 'undefined' && filterCol != null && filterCol != "";
+    var filterJSON = urlQuery.filterJSON;
+    var filterObj = {};
+    var isFilterActive = false;
+    if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
+        try {
+            filterObj = JSON.parse(filterJSON);
+            if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
+                isFilterActive = true;
+            } else {
+                filterObj = {}; // must replace it to prevent errors below
+            }
+        } catch (e) {
+            winston.error("❌  Error parsing filterJSON: ", filterJSON);
+            callback(e, null);
+            
+            return;
+        }
+    }
     //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
@@ -476,14 +490,14 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             aggregationOperators.push(_orErrDesc.matchOp);
         }
         if (isFilterActive) { // rules out undefined filterCol
-            var _orErrDesc = _activeFilter_matchOp_orErrDescription(dataSourceDescription, filterCol, filterVal);
+            var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, "$and");
             if (typeof _orErrDesc.err !== 'undefined') {
                 callback(_orErrDesc.err, null);
             
                 return;
             }
             aggregationOperators.push(_orErrDesc.matchOp);
-        }        
+        }
         aggregationOperators = aggregationOperators.concat(
         [
             { // unique/grouping and summing stage
@@ -603,7 +617,7 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
         }
         if (isFilterActive) {
-            var appendQuery = "filterCol=" + filterCol + "&" + "filterVal=" + filterVal;
+            var appendQuery = "filterJSON=" + filterJSON;
             routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
         }
         if (isSearchActive) {
@@ -624,8 +638,8 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             groupedResults: groupedResults,
             groupBy: groupBy,
             //
-            filterCol: filterCol,
-            filterVal: filterVal,
+            filterObj: filterObj,
+            filterJSON: filterJSON,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             //
@@ -651,8 +665,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
     // urlQuery keys:
         // source_key
         // mapBy
-        // filterCol
-        // filterVal
+        // filterJSON
         // searchQ
         // searchCol
     var source_pKey = urlQuery.source_key;
@@ -674,9 +687,24 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
     var mapBy = urlQuery.mapBy; // the human readable col name - real col name derived below
     var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_choropleth_defaultMapByColumnName_humanReadable;
     //
-    var filterCol = urlQuery.filterCol;
-    var filterVal = urlQuery.filterVal;
-    var isFilterActive = typeof filterCol !== 'undefined' && filterCol != null && filterCol != "";
+    var filterJSON = urlQuery.filterJSON;
+    var filterObj = {};
+    var isFilterActive = false;
+    if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
+        try {
+            filterObj = JSON.parse(filterJSON);
+            if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
+                isFilterActive = true;
+            } else {
+                filterObj = {}; // must replace it to prevent errors below
+            }
+        } catch (e) {
+            winston.error("❌  Error parsing filterJSON: ", filterJSON);
+            callback(e, null);
+            
+            return;
+        }
+    }
     //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
@@ -739,7 +767,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             aggregationOperators.push(_orErrDesc.matchOp);
         }
         if (isFilterActive) { // rules out undefined filterCol
-            var _orErrDesc = _activeFilter_matchOp_orErrDescription(dataSourceDescription, filterCol, filterVal);
+            var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, "$and");
             if (typeof _orErrDesc.err !== 'undefined') {
                 callback(_orErrDesc.err, null);
             
@@ -819,7 +847,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
         }
         if (isFilterActive) {
-            var appendQuery = "filterCol=" + filterCol + "&" + "filterVal=" + filterVal;
+            var appendQuery = "filterJSON=" + filterJSON;
             routePath_withoutMapBy      = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutMapBy,     appendQuery, routePath_base);
         }
         if (isSearchActive) {
@@ -842,10 +870,10 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
                 type: "FeatureCollection",
                 features: mapFeatures
             },
-            mappBy: mapBy,
+            mapBy: mapBy,
             //
-            filterCol: filterCol,
-            filterVal: filterVal,
+            filterObj: filterObj,
+            filterJSON: filterJSON,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             //
@@ -1081,16 +1109,6 @@ function _activeFilter_matchCondition_orErrDescription(dataSourceDescription, fi
     }
     
     return { matchCondition: matchCondition };
-}
-//
-function _activeFilter_matchOp_orErrDescription(dataSourceDescription, filterCol, filterVal)
-{ // returns dictionary with err or matchOp
-    var matchCondition = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
-    if (typeof matchCondition.err !== 'undefined') {
-        return { err: matchCondition.err };
-    }
-    
-    return { $match: matchCondition.matchCondition };
 }
 //
 function _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ)

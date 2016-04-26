@@ -95,14 +95,6 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
             filterObj[this_filterCol] = filterVals; // in case it's not set yet
         }
         //
-        if (this_filterCol == 'Curator Approved' || this_filterCol == 'Image') {
-            console.log("this_filterCol " , this_filterCol)
-            console.log("this_filterVal " , this_filterVal)
-            console.log("isThisAnActiveFilter " , isThisAnActiveFilter)
-            console.log("existing_filterObj " , existing_filterObj)
-            console.log("filterObj ", filterObj);
-            console.log("\n\n")
-        }        
         return filterObj;
     });
 });
