@@ -3,8 +3,8 @@
  */
 var layer = 'contour',
 	metric = 'total',
-	numBreaks = 10, // How many layers of opacity values there should be
-	topValue = templateOutput_topValue, // This should be the highest "total" value in the data
+	numBreaks = 100, // How many layers of opacity values there should be
+	topValue = parseInt(templateOutput_topValue), // This should be the highest "total" value in the data
 	filteruse,
 	breaks = [],
 	opacities = [],
@@ -14,7 +14,7 @@ var layer = 'contour',
  * Generate layer breakpoints, layer names, and opacity values;
  */
 for (i = 0; i < numBreaks; i++) {
-	breaks[i] = Math.round(topValue * (i / numBreaks)).toString(); // Only works when string
+	breaks[i] = Math.round(topValue * (i / numBreaks));
 	opacities[i] = (i / numBreaks);
 	names[i] = 'layer-' + i;
 }
@@ -49,7 +49,6 @@ map.on('load', function () {
 
 	/**
 	 * Loop through layers, filter countries, and apply opacity
-	 * NOTE: this only works when break values are strings, not integers
 	 */
 	for (i = 0; i < numBreaks; i++) {
 		if (i < numBreaks - 1) {

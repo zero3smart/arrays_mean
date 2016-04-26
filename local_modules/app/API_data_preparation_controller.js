@@ -785,7 +785,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
                         id: "" + i,
                         properties: {
                             name: countryName, 
-                            total: countAtCountry_str
+                            total: parseInt(countAtCountry_str)
                         },
                         geometry: geometryForCountry
                     });
