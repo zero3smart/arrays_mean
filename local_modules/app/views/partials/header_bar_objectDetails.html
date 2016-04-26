@@ -1,8 +1,11 @@
+{% set galleryURLQuery = "?filterJSON=" + default_filterJSON if default_filterJSON else "" %}
+{% set galleryURL = "/array/" + array_source_key + "/gallery" + galleryURLQuery %}
+
 <!-- Fixed navbar -->
 <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-bg">
 	<div class="container-fluid container-full-width">
 		<div class="navbar-brand-container">
-			<a class="navbar-brand" href="/array/{{ array_source_key }}/gallery">{{ arrayTitle }}</a>
+			<a class="navbar-brand" href="{{ galleryURL }}">{{ arrayTitle }}</a>
 		</div>
 		<ul class="nav navbar-nav">
 			<li>
@@ -15,7 +18,7 @@
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="icon-menu" aria-hidden="true"></span></a>
 					<ul class="dropdown-menu">
-						<li class="background-color-brand-hover"><a href="/array/{{ array_source_key }}/gallery">{{ arrayTitle }}</a></li>
+						<li class="background-color-brand-hover"><a href="{{ galleryURL }}">{{ arrayTitle }}</a></li>
 						<li class="background-color-brand-hover"><a href="#" class="share-link">Share</a></li>
 						<li role="separator" class="divider"></li>
 						<li class="background-color-brand-hover"><a href="/array/create">Explore Arrays</a></li>

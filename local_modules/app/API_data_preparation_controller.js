@@ -991,12 +991,18 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
             originalKeysByColumnName[overrideTitle] = originalKey;
         }
         //
+        var default_filterJSON = undefined;
+        if (typeof dataSourceDescription.fe_filters_default !== 'undefined') {
+            default_filterJSON = JSON.stringify(dataSourceDescription.fe_filters_default || {}); // "|| {}" for safety
+        }
+        //
         var data =
         {
             env: process.env,
             //
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
+            default_filterJSON: default_filterJSON,
             //
             rowObject: rowObject,
             //
