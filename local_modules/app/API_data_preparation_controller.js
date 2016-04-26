@@ -776,10 +776,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
                 var geometryForCountry = cache_countryGeometryByLowerCasedCountryName[countryName.toLowerCase()];
                 if (typeof geometryForCountry === 'undefined') {
                     winston.warn("⚠️  No known geometry for country named \"" + countryName + "\"");
-                    // geometryForCountry = {};
-                }
-
-                if (typeof geometryForCountry != 'undefined') {
+                } else {
                     mapFeatures.push({
                         type: "Feature",
                         id: "" + i,
