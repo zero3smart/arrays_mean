@@ -1,3 +1,10 @@
+$(window).load(function() {
+    /**
+     * Add class to body to prevent weird page width transitions
+     */
+    $('body').addClass('app-ready');
+});
+
 $(document).ready(function() {
 
     console.log('app loaded');

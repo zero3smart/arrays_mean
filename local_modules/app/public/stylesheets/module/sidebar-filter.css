@@ -26,9 +26,9 @@
 	transition: transform 400ms ease-in-out;
 }
 
-.navbar-fixed-top,
-.site-content,
-.site-footer {
+.app-ready .navbar-fixed-top,
+.app-ready .site-content,
+.app-ready .site-footer {
 	transition: transform 400ms ease-in-out, width 400ms ease-in-out;
 }
 
