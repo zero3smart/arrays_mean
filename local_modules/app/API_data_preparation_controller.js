@@ -309,6 +309,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         var routePath_withoutPage       = routePath_base;
         var routePath_withoutSortBy     = routePath_base;
         var routePath_withoutSortDir    = routePath_base;
+        var urlQuery_forSwitchingViews  = "";
         if (sortBy !== undefined && sortBy != null && sortBy !== "") {
             var appendQuery = "sortBy=" + sortBy;
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
@@ -331,6 +332,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
             routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
+            urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
         }
         if (isSearchActive) {
             var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
@@ -338,6 +340,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
             routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
+            urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
         }
         //
         var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
@@ -384,7 +387,9 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             routePath_withoutFilter: routePath_withoutFilter,
             routePath_withoutPage: routePath_withoutPage,
             routePath_withoutSortBy: routePath_withoutSortBy,
-            routePath_withoutSortDir: routePath_withoutSortDir
+            routePath_withoutSortDir: routePath_withoutSortDir,
+            //
+            urlQuery_forSwitchingViews: urlQuery_forSwitchingViews
         };
         callback(err, data);
     }
@@ -620,6 +625,7 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
         var routePath_base              = "/array/" + source_pKey + "/chart";
         var routePath_withoutFilter     = routePath_base;
         var routePath_withoutGroupBy    = routePath_base;
+        var urlQuery_forSwitchingViews  = "";
         if (groupBy !== undefined && groupBy != null && groupBy !== "") {
             var appendQuery = "groupBy=" + groupBy;
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
@@ -627,11 +633,13 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
         if (isFilterActive) {
             var appendQuery = "filterJSON=" + filterJSON;
             routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+            urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
         }
         if (isSearchActive) {
             var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
             routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+            urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
         }
         var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
         //
@@ -665,7 +673,9 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             //
             routePath_base: routePath_base,
             routePath_withoutFilter: routePath_withoutFilter,
-            routePath_withoutGroupBy: routePath_withoutGroupBy
+            routePath_withoutGroupBy: routePath_withoutGroupBy,
+            //
+            urlQuery_forSwitchingViews: urlQuery_forSwitchingViews
         };
         callback(err, data);
     }
@@ -854,6 +864,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
         var routePath_base              = "/array/" + source_pKey + "/choropleth";
         var routePath_withoutFilter     = routePath_base;
         var routePath_withoutMapBy      = routePath_base;
+        var urlQuery_forSwitchingViews  = "";
         if (mapBy !== undefined && mapBy != null && mapBy !== "") {
             var appendQuery = "mapBy=" + mapBy;
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
@@ -861,11 +872,13 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
         if (isFilterActive) {
             var appendQuery = "filterJSON=" + filterJSON;
             routePath_withoutMapBy      = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutMapBy,     appendQuery, routePath_base);
+            urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
         }
         if (isSearchActive) {
             var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
             routePath_withoutMapBy      = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutMapBy,     appendQuery, routePath_base);
+            urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
         }
         //
         var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
@@ -904,7 +917,9 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             //
             routePath_base: routePath_base,
             routePath_withoutFilter: routePath_withoutFilter,
-            routePath_withoutMapBy: routePath_withoutMapBy
+            routePath_withoutMapBy: routePath_withoutMapBy,
+            //
+            urlQuery_forSwitchingViews: urlQuery_forSwitchingViews
         };
         callback(err, data);
     }
@@ -1055,6 +1070,18 @@ function _routePathByAppendingQueryStringToVariationOfBase(routePath_variation, 
     routePath_variation += queryString;
     
     return routePath_variation;
+}
+function _urlQueryByAppendingQueryStringToExistingQueryString(existingQueryString, queryStringToAppend)
+{
+    var newWholeQueryString = existingQueryString;
+    if (existingQueryString.length == 0) {
+        newWholeQueryString += "?";
+    } else {
+        newWholeQueryString += "&";
+    }
+    newWholeQueryString += queryStringToAppend;
+    
+    return newWholeQueryString;
 }
 //
 //
