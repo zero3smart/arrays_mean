@@ -374,6 +374,8 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
             //
+            fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: dataSourceDescription.fe_galleryItem_htmlForIconFromRowObjWhenMissingImage,
+            //
             searchQ: searchQ,
             searchCol: searchCol,
             isSearchActive: isSearchActive,

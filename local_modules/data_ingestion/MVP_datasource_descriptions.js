@@ -1,4 +1,6 @@
 //
+var winston = require('winston');
+//
 var import_datatypes = require('./import_datatypes');
 var import_processing = require('./import_processing');
 //
@@ -154,6 +156,32 @@ exports.Descriptions =
             "Wiki QID",
             "ULAN"
         ],
+        //
+        //
+        fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function(rowObject)
+        {
+            var gender = rowObject.rowParams["Code"];
+            var iconSpanClass = undefined;
+            if (typeof gender === 'undefined' || gender == null || gender == "") {
+                iconSpanClass = "icon-tile-null";
+            } else if (gender === "NULL") {
+                iconSpanClass = "icon-tile-null";
+            } else {
+                var lowerCasedGender = gender.toLowerCase();
+                if (lowerCasedGender == "male" || lowerCasedGender == "female") {
+                    iconSpanClass = "icon-tile-" + lowerCasedGender;
+                } else {
+                    winston.warn("⚠️  Unrecognized non-NULL lowercased gender: ", gender + ". Defaulting.");
+                }
+            }
+            //
+            if (typeof iconSpanClass === 'undefined') { // if for some reason…
+                winston.warn("⚠️  Unable to derive icon span class for artist with no image in fe_galleryItem_htmlForIconFromRowObjWhenMissingImage. Using default of 'null' icon.");
+                iconSpanClass = "icon-tile-null";
+            }
+            //
+            return '<span class="' + iconSpanClass + ' color-gender"></span>';
+        }
     }
     , {
         filename: "MoMA_Artworks_v2_jy.csv",
@@ -271,6 +299,32 @@ exports.Descriptions =
                 ]
             }
         ],
+        //
+        //
+        fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function(rowObject)
+        {
+            var gender = rowObject.rowParams["Artist Gender"];
+            var iconSpanClass = undefined;
+            if (typeof gender === 'undefined' || gender == null || gender == "") {
+                iconSpanClass = "icon-tile-null";
+            } else if (gender === "NULL") {
+                iconSpanClass = "icon-tile-null";
+            } else {
+                var lowerCasedGender = gender.toLowerCase();
+                if (lowerCasedGender == "male" || lowerCasedGender == "female") {
+                    iconSpanClass = "icon-tile-" + lowerCasedGender;
+                } else {
+                    winston.warn("⚠️  Unrecognized non-NULL lowercased gender: ", gender + ". Defaulting.");
+                }
+            }
+            //
+            if (typeof iconSpanClass === 'undefined') { // if for some reason…
+                winston.warn("⚠️  Unable to derive icon span class for artist with no image in fe_galleryItem_htmlForIconFromRowObjWhenMissingImage. Using default of 'null' icon.");
+                iconSpanClass = "icon-tile-null";
+            }
+            //
+            return '<span class="' + iconSpanClass + ' color-gender"></span>';
+        },
         //
         //
         fe_chart_defaultGroupByColumnName_humanReadable: "Artist Gender",
