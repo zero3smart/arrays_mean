@@ -6,7 +6,8 @@
 		</div>
 		<ul class="nav navbar-nav">
 			<li>
-				<a href="#" class="navbar-back"><span class="icon-back" aria-hidden="true"></span> <span class="navbar-back-label hidden-xs">Back</span></a>
+                {% set onclickClassOrEmpty = "" if referer else " browser-back-on-click" %}
+				<a href="{{ referer if referer else "#" }}" class="navbar-back{{ onclickClassOrEmpty }}"><span class="icon-back" aria-hidden="true"></span> <span class="navbar-back-label hidden-xs">Back</span></a>
 			</li>
 		</ul>
 		<div id="navbar" class="navbar-collapse collapse">

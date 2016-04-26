@@ -219,6 +219,7 @@ constructor.prototype.__render_array_rowObject = function(req, res, source_key, 
             
             return;
         }
+        bindData.referer = req.headers.referer;
         res.render('object/show', bindData);
     });
 };

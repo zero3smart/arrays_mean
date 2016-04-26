@@ -126,6 +126,17 @@ $(document).ready(function() {
         
         return false;
     });
+    
+    /**
+     * For back links with no referer, do a browser "back"
+     */
+    $('.browser-back-on-click').on('click', function(e) 
+    {
+        e.preventDefault();
+        window.history.back();
+        
+        return false;
+    });
 });
 
 function _POST_toGetURLForSharingCurrentPage(callback)
