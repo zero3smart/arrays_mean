@@ -21,15 +21,15 @@
 	width: calc(100%);
 }
 
-.sidebar-filter,
-.array-gallery .site-content {
-	transition: transform 400ms ease-in-out;
-}
-
 .app-ready .navbar-fixed-top,
 .app-ready .site-content,
 .app-ready .site-footer {
 	transition: transform 400ms ease-in-out, width 400ms ease-in-out;
+}
+
+.app-ready .sidebar-filter,
+.app-ready .array-gallery .site-content {
+	transition: transform 400ms ease-in-out;
 }
 
 .sidebar-filter-in .sidebar-filter,

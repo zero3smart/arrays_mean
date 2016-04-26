@@ -41,6 +41,13 @@ $(document).ready(function() {
     });
 
     /**
+     * Stop sidebar child events from bubbling up and causing content width bug
+     */
+    $('.sidebar-filter-subgroup').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function(e) {
+        e.stopPropagation();
+    });
+
+    /**
      * Resize content width after sidebar slide out animation complete
      */
     $('.sidebar-filter').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function(e) {
