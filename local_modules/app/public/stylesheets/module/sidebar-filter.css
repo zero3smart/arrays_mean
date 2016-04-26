@@ -112,6 +112,13 @@
 	border-top: none;
 }
 
+.sidebar-filter .badge {
+	float: right;
+	width: 1.5em;
+	color: var(--color-text-dark);
+	font-size: 13px;
+}
+
 .sidebar-filter-subgroup-item > a {
 	border-top: 1px solid var(--color-sidebar-fg);
 	font-size: 18px;

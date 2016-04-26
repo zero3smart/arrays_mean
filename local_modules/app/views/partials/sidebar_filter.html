@@ -46,10 +46,10 @@
                         {% endif %}
                     {% endif %}
                     
-                    <a class="collapse-trigger" role="button" href="#column-{{ loop.index }}" aria-expanded="{{ isThisAnActiveFilterColumn }}" aria-controls="column-{{ loop.index }}">
-                        {{ fieldName }}
+                    <a class="collapse-trigger" role="button" href="#column-{{ loop.index }}" aria-expanded="false" aria-controls="column-{{ loop.index }}">
+                        <span class="sidebar-filter-fieldname">{{ fieldName }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">1</span>{%endif %}
                     </a>
-                    <ul id="column-{{ loop.index }}" class="sidebar-filter-subgroup collapse {{ "in" if isThisAnActiveFilterColumn else "" }}" aria-expanded="{{ isThisAnActiveFilterColumn }}">
+                    <ul id="column-{{ loop.index }}" class="sidebar-filter-subgroup collapse" aria-expanded="false">
                         {% for fieldValue in fieldValues %}
                         {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
                         {% set isThisAnActiveFilter = false %}

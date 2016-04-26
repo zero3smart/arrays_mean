@@ -2966,6 +2966,40 @@ tbody.collapse.in {
 .pagination-sm > li:last-child > span {
   border-bottom-right-radius: 3px;
   border-top-right-radius: 3px; }
+.badge {
+  display: inline-block;
+  min-width: 10px;
+  padding: 3px 7px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  line-height: 1;
+  vertical-align: middle;
+  white-space: nowrap;
+  text-align: center;
+  background-color: #777777;
+  border-radius: 10px; }
+.badge:empty {
+    display: none; }
+.btn .badge {
+    position: relative;
+    top: -1px; }
+.btn-xs .badge, .btn-group-xs > .btn .badge, .btn-group-xs > .btn .badge {
+    top: 0;
+    padding: 1px 5px; }
+.list-group-item.active > .badge, .nav-pills > .active > a > .badge {
+    color: #feb600;
+    background-color: #fff; }
+.list-group-item > .badge {
+    float: right; }
+.list-group-item > .badge + .badge {
+    margin-right: 5px; }
+.nav-pills > li > a > .badge {
+    margin-left: 3px; }
+a.badge:hover, a.badge:focus {
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer; }
 .thumbnail {
   display: block;
   padding: 4px;
@@ -5025,6 +5059,12 @@ Interactive Layer
 }
 .sidebar-filter-group-item:first-child > a {
 	border-top: none;
+}
+.sidebar-filter .badge {
+	float: right;
+	width: 1.5em;
+	color: #4a4a4a;
+	font-size: 13px;
 }
 .sidebar-filter-subgroup-item > a {
 	border-top: 1px solid #272727;
