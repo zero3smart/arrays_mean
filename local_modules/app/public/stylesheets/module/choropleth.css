@@ -82,8 +82,7 @@ html .mapboxgl-popup-content {
 	border: 1px solid #eeeeee;
 	border-radius: 4px;
 	box-shadow: var(--box-shadow);
-	font-size: 17px;
-	font-family: var(--font-family-calibre);
+	font: 17px/20px var(--font-family-calibre);
 }
 
 html .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {

@@ -71,17 +71,21 @@
 	display: none;
 }
 
+.nvtooltip table td.key,
+.nvtooltip table td.value {
+	text-align: left;
+	font-size: 17px;
+	line-height: 20px;
+}
+
 .nvtooltip table td.key {
 	color: var(--color-text-med);
 	font-weight: 600;
-	font-size: 17px;
 }
 
 .nvtooltip table td.value {
 	color: #a8a8a8;
-	text-align: left;
 	font-weight: normal;
-	font-size: 17px;
 }
 
 /* @end Chart Styling */

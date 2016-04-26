@@ -5606,16 +5606,19 @@ Interactive Layer
 .nvtooltip table td.legend-color-guide div {
 	display: none;
 }
+.nvtooltip table td.key,
+.nvtooltip table td.value {
+	text-align: left;
+	font-size: 17px;
+	line-height: 20px;
+}
 .nvtooltip table td.key {
 	color: #777777;
 	font-weight: 600;
-	font-size: 17px;
 }
 .nvtooltip table td.value {
 	color: #a8a8a8;
-	text-align: left;
 	font-weight: normal;
-	font-size: 17px;
 }
 /* @end Chart Styling */
 /* @override 
@@ -5687,8 +5690,7 @@ html .mapboxgl-popup-content {
 	border: 1px solid #eeeeee;
 	border-radius: 4px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	font-size: 17px;
-	font-family: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font: 17px/20px Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 html .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
 	position: relative;
