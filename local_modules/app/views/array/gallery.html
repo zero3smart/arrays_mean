@@ -40,7 +40,7 @@
                                         </div>
 
                                         <div class="dropdown sort-control">
-                                            <a class="btn btn-default dropdown-toggle ui-label" id="sort-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <a class="btn dropdown-toggle ui-label" id="sort-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 Sort By <span class="sort-criteria">{{ sortBy if sortBy else humanReadableColumnName_objectTitle }}</span>
                                             </a>
                                             <ul class="dropdown-menu" aria-labelledby="sort-by">
@@ -58,7 +58,7 @@
                                             <div class="dropdown sort-control search-control">
                                                 {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
                                                 
-                                                <a href="#" class="btn btn-default dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+                                                <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
                                                     Search <span class="search-criteria">{{ searchColToOutput }}</span>
                                                 </a>
                                                 <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">

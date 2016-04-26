@@ -41,11 +41,9 @@
 	padding: 15px 20px;
 }
 
-.sort-control.open > .btn-default.dropdown-toggle-button,
 .sort-control .dropdown-toggle-button:hover,
 .sort-control .dropdown-toggle-button:focus,
 .sort-control .dropdown-toggle-button:active {
-	background-color: #ffffff;
 	box-shadow: var(--box-shadow);
 }
 
@@ -59,11 +57,7 @@
 	border-bottom-right-radius: 0;
 }
 
-.sort-control-left .dropdown-toggle,
-.sort-control-left.open > .btn-default.dropdown-toggle,
-.sort-control-left .dropdown-toggle:hover,
-.sort-control-left .dropdown-toggle:focus,
-.sort-control-left .dropdown-toggle:active {
+.sort-control-left .dropdown-toggle {
 	background-color: var(--color-background);
 }
 
