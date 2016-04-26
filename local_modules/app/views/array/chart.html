@@ -36,7 +36,7 @@
 
                                         <div class="dropdown sort-control">
                                             <a class="btn dropdown-toggle dropdown-toggle-button ui-label" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                Chart By <span class="sort-criteria">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
+                                                Chart By <span class="sort-criteria color-brand-hover">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
                                             </a>
                                             <ul class="dropdown-menu" aria-labelledby="group-by">                            
                                                 {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
@@ -54,7 +54,7 @@
                                                     {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
                                                     
                                                     <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                                                        Search <span class="search-criteria">{{ searchColToOutput }}</span>
+                                                        Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
                                                     </a>
                                                     <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
                                                     <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">

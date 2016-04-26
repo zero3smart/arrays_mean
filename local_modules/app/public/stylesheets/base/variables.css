@@ -54,6 +54,12 @@ a.color-brand:active,
 	color: var(--color-primary);
 }
 
+.color-brand-hover:hover,
+.dropdown-toggle:hover .color-brand-hover,
+.open .color-brand-hover {
+	color: var(--color-primary);
+}
+
 .background-color-brand,
 .background-color-brand-hover:hover,
 .background-color-brand-hover:focus,
@@ -81,6 +87,12 @@ a.color-brand:active,
 .source-moma_artists-r1 a.color-brand:focus,
 .source-moma_artists-r1 a.color-brand:active,
 .source-moma_artists-r1 .sidebar-filter-toggle .color-brand {
+	color: var(--color-brand-blue);
+}
+
+.source-moma_artists-r1 .color-brand-hover:hover,
+.source-moma_artists-r1 .dropdown-toggle:hover .color-brand-hover,
+.source-moma_artists-r1 .open .color-brand-hover {
 	color: var(--color-brand-blue);
 }
 

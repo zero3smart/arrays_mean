@@ -37,7 +37,7 @@
 
                                         <div class="dropdown sort-control">
                                             <a class="btn dropdown-toggle dropdown-toggle-button ui-label" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                Map by <span class="sort-criteria">{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}</span>
+                                                Map by <span class="sort-criteria color-brand-hover">{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}</span>
                                             </a>
                                             <ul class="dropdown-menu" aria-labelledby="type">                                                
                                                 {% set mapBy_queryParamJoinChar = "?" if routePath_withoutMapBy == routePath_base else "&" %}
@@ -49,7 +49,7 @@
                                         <!--
                                         <div class="dropdown sort-control">
                                             <a class="btn dropdown-toggle ui-label" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                Scale: <span class="sort-criteria">Uniform</span>
+                                                Scale: <span class="sort-criteria color-brand-hover">Uniform</span>
                                             </a>
                                             <ul class="dropdown-menu" aria-labelledby="group-by">
                                                 <li><a href="#">Uniform</a></li>
@@ -66,7 +66,7 @@
                                                     {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
                                                     
                                                     <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                                                        Search <span class="search-criteria">{{ searchColToOutput }}</span>
+                                                        Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
                                                     </a>
                                                     <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
                                                     <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
