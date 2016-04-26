@@ -95,7 +95,7 @@
 
                                 {% if isFilterActive %}
                                 <div class="filter-bar">
-                                    <span class="filter-label ui-label">Filters:</span> <span class="filter-tag border-color-brand">{{ filterVal | safe }} <a href="{{ routePath_withoutFilter }}" class="close filter-tag-close">&times;</a></span>
+                                    <span class="filter-label ui-label">Filters:</span> <span class="filter-tag border-color-brand">{{ filterCol | safe }}: {{ filterVal | safe }} <a href="{{ routePath_withoutFilter }}" class="close filter-tag-close">&times;</a></span>
                                 </div>
                                 {% endif %}
 
