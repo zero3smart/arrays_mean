@@ -253,16 +253,6 @@ exports.Descriptions =
                                 $nin: [ "", null ]
                             }
                         }
-                    },
-                    {
-                        title: "Has no image",
-                        $match: {
-                            $or: [
-                                { "rowParams.imgURL_gridThumb": { $exists: false } },
-                                { "rowParams.imgURL_gridThumb": { $eq: "" } },
-                                { "rowParams.imgURL_gridThumb": { $eq: null } },
-                            ]
-                        }
                     }
                 ]
             },
@@ -270,22 +260,12 @@ exports.Descriptions =
                 title: "Object Title",
                 choices: [
                     {
-                        title: "Has title",
+                        title: "Has Title",
                         $match: {
                             "rowParams.Title": {
                                 $exists: true,
                                 $nin: [ "", null ]
                             }
-                        }
-                    },
-                    {
-                        title: "Has no title",
-                        $match: {
-                            $or: [
-                                { "rowParams.Title": { $exists: false } },
-                                { "rowParams.Title": { $eq: "" } },
-                                { "rowParams.Title": { $eq: null } }
-                            ]
                         }
                     }
                 ]
