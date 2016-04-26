@@ -1,5 +1,13 @@
 <li class="gallery-item gallery-item-text">
-	<a href="/array/{{ doc.srcDocPKey }}/{{ doc._id }}">
+	<a href="/array/{{ doc.srcDocPKey }}/{{ doc._id }}" class="gallery-item-text-link">
+		<div class="gallery-item-text-inner">
+			{# <span class="icon-tile-blank color-default"></span>
+			<span class="icon-tile-null color-gender"></span>
+			<span class="icon-tile-male color-gender"></span>
+			<span class="icon-tile-female color-gender"></span>
+			<span class="icon-tile-null color-vital-status"></span>
+			<span class="icon-tile-deceased color-vital-status"></span> #}
+		</div>
 		<div class="gallery-tooltip">
 			<h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</h2>
 		</div>

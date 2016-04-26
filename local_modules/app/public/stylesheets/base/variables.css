@@ -28,6 +28,22 @@
 	--box-shadow-dark: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+/* @group Icon colors */
+
+.color-default {
+	color: #000000;
+}
+
+.color-gender {
+	color: #7a00f6;
+}
+
+.color-vital-status {
+	color: #feb600;
+}
+
+/* @end */
+
 /* @group Primary Color */
 
 .color-brand,
