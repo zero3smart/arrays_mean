@@ -137,25 +137,32 @@
 
 /* @group Chart Styling */
 
-.nvd3.nv-pie path {
-	stroke-width: 0;
+.pie-background {
+	fill: #ffffff;
+	stroke-width: 5px;
+	stroke: #ffffff;
 }
 
-.nvtooltip {
-	position: relative;
+.chart-tooltip {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	display: none;
 	padding: 10px 15px;
 	border-color: #eeeeee;
 	border-radius: 4px;
 	background-color: #ffffff;
 	box-shadow: var(--box-shadow);
 	font-family: var(--font-family-calibre);
+	transform: translate(-50%);
 }
 
-.nvtooltip:after,
-.nvtooltip:before {
+.chart-tooltip:after,
+.chart-tooltip:before {
 	position: absolute;
-	top: 50%;
-	right: 100%;
+	top: 100%;
+	right: 50%;
 	width: 0;
 	height: 0;
 	border: solid transparent;
@@ -163,49 +170,34 @@
 	pointer-events: none;
 }
 
-.nvtooltip:after {
-	margin-top: -10px;
+.chart-tooltip:after {
+	margin-right: -10px;
 	border-width: 10px;
 	border-color: rgba(255, 255, 255, 0);
-	border-right-color: #ffffff;
+	border-top-color: #ffffff;
 }
 
-.nvtooltip:before {
-	margin-top: -11px;
+.chart-tooltip:before {
+	margin-right: -11px;
 	border-width: 11px;
 	border-color: rgba(238, 238, 238, 0);
-	border-right-color: #eeeeee;
+	border-top-color: #eeeeee;
 }
 
-.nvtooltip table {
+.tooltip-key,
+.tooltip-value {
 	display: block;
-	margin: 0;
-	padding: 0;
-}
-
-.nvtooltip table td {
-	display: block;
-	margin: 0;
-	padding: 0;
-}
-
-.nvtooltip table td.legend-color-guide div {
-	display: none;
-}
-
-.nvtooltip table td.key,
-.nvtooltip table td.value {
 	text-align: left;
 	font-size: 17px;
 	line-height: 20px;
 }
 
-.nvtooltip table td.key {
+.tooltip-key {
 	color: var(--color-text-med);
 	font-weight: 600;
 }
 
-.nvtooltip table td.value {
+.tooltip-value {
 	color: #a8a8a8;
 	font-weight: normal;
 }

@@ -23,67 +23,119 @@ var colors = [
 	'#FB5533'
 ];
 
-nv.addGraph(function() {
-	var chart = nv.models.pieChart()
-		.x(function(d) { return d.label; })
-		.y(function(d) { return d.value; })
-		.showLabels(false)
-		.color(colors)
-		.width(600)
-		.height(600)
-		.margin({
-			top: 0,
-			right: 0,
-			bottom: 0,
-			left: 0
-		})
-		.legendPosition('right')
-		.showLegend(false)
-		.labelType('value');
 
-	var svg = d3.select('#chart')
-		.append('div')
-			.classed('svg-container', true) //container class to make it responsive
-			.append('svg')
-				.attr('preserveAspectRatio', 'xMinYMin meet')
-				.attr('viewBox', '0 0 600 600')
-				.classed('svg-content-responsive', true)
-				.datum(pieData)
-				.transition().duration(1200)
-				.call(chart);
+/**
+ * Set up pie chart
+ */
+var width = 600,
+	height = 600,
+	radius = Math.min(width, height) / 2;
 
-	var legendList = d3.select('.legend-list');
-	var legendListItem = legendList.selectAll('.legend-list-item')
-		.data(pieData)
-		.enter()
-		.append('li')
-			.attr('class', 'legend-list-item');
+var color = d3.scale.ordinal()
+	.range(colors);
 
-	legendListItem.append('span')
-		.attr('class', 'legend-dot')
-		.style('background-color', function(d, i) {
-			var colorIndex = i % colors.length;
-			return colors[colorIndex];
-		});
+var arc = d3.svg.arc()
+	.outerRadius(radius - 10)
+	.innerRadius(0);
 
-	legendListItem.append('a')
-		.attr('class', 'legend-list-link')
-		.attr('href', '#')
-		.html(function(d) {
-			return d.label;
-		})
-		.on('click', function(d, i) {
-			d.disabled = !d.disabled;
-			d.focused = !d.focused;
-			chart.legend.dispatch.legendClick(d, i);
-		});
+var pie = d3.layout.pie()
+	.sort(null)
+	.value(function(d) {
+		return d.value;
+	});
 
-	chart.legend.dispatch.legendClick = function(d, i) {
-		chart.update();
-	};
+var svg = d3.select('#chart')
+	.attr('width', width)
+	.attr('height', height)
+	.append('div')
+		.classed('svg-container', true) //container class to make it responsive
+		.append('svg')
+			.attr('preserveAspectRatio', 'xMinYMin meet')
+			.attr('viewBox', '0 0 600 600')
+			.classed('svg-content-responsive', true)
+			.append('g')
+				.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
 
-	return chart;
+/**
+ * Place background circle
+ */
+svg.append('circle')
+	.attr('cx', 0)
+	.attr('cy', 0)
+	.attr('r', radius - 10)
+	.attr('class', 'pie-background');
+
+var g = svg.selectAll('.arc')
+	.data(pie(pieData))
+	.enter()
+	.append('g')
+		.attr('class', 'arc');
+
+g.append('path')
+	.attr('d', arc)
+	.style('fill', function(d) {
+		return color(d.value);
+	});
+
+/**
+ * Tooltip
+ */
+var tooltip = d3.select('body')
+	.append('div')
+	.attr('class', 'chart-tooltip');
+
+var tooltipKey = tooltip
+	.append('span')
+	.attr('class', 'tooltip-key');
+
+var tooltipValue = tooltip
+	.append('span')
+	.attr('class', 'tooltip-value');
+
+/**
+ * Tooltip behavior on mouse hover
+ */
+g.on('mouseover', function(d) {
+	tooltipKey.html(d.data.label);
+	tooltipValue.html(d.data.value);
+	tooltip.style('display', 'block');
 });
+
+g.on('mousemove', function() {
+	tooltip.style('top', (event.pageY-75)+'px').style('left', (event.pageX)+'px');
+});
+
+g.on('mouseout', function() {
+	tooltip.style('display', 'none');
+});
+
+
+/**
+ * Sidebar legend
+ */
+var legendList = d3.select('.legend-list');
+var legendListItem = legendList.selectAll('.legend-list-item')
+	.data(pieData)
+	.enter()
+	.append('li')
+		.attr('class', 'legend-list-item');
+
+legendListItem.append('span')
+	.attr('class', 'legend-dot')
+	.style('background-color', function(d, i) {
+		var colorIndex = i % colors.length;
+		return colors[colorIndex];
+	});
+
+legendListItem.append('a')
+	.attr('class', 'legend-list-link')
+	.attr('href', '#')
+	.html(function(d) {
+		return d.label;
+	})
+	.on('click', function(d, i) {
+
+	});
 
 /**
  * Toggle legend
