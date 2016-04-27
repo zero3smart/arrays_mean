@@ -5639,24 +5639,27 @@ Interactive Layer
 /* @override 
 	http://localhost:9080/stylesheets/module/object-show.css */
 .object {
-	margin-top: 20px;
-	margin-bottom: 20px;
+	margin-top: 60px;
+	margin-bottom: 60px;
 }
 .object-title {
-	margin-top: 40px;
-	margin-bottom: 40px;
-	color: #777777;
+	margin-top: 60px;
+	margin-bottom: 50px;
+	color: #000000;
+	font-size: 42px;
 }
 .object dt {
 	margin-top: 30px;
-	color: #4a4a4a;
+	color: #9b9b9b;
 	text-transform: uppercase;
-	letter-spacing: 1px;
-	font-size: 14px;
+	letter-spacing: 2px;
+	font-weight: normal;
+	font-size: 20px;
 }
 .object dd {
-	color: #333333;
-	font: 20px Georgia, "Times New Roman", Times, serif;
+	color: #000000;
+	font-size: 24px;
+	font-family: Georgia, "Times New Roman", Times, serif;
 }
 .object-list {
 	padding-left: 0;
