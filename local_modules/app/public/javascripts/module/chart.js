@@ -29,6 +29,8 @@ nv.addGraph(function() {
 		.y(function(d) { return d.value; })
 		.showLabels(false)
 		.color(colors)
+		.width(600)
+		.height(600)
 		.margin({
 			top: 0,
 			right: 0,
@@ -50,7 +52,8 @@ nv.addGraph(function() {
 				.transition().duration(1200)
 				.call(chart);
 
-	var legendListItem = d3.select('.legend-list').selectAll('.legend-list-item')
+	var legendList = d3.select('.legend-list');
+	var legendListItem = legendList.selectAll('.legend-list-item')
 		.data(pieData)
 		.enter()
 		.append('li')
@@ -68,7 +71,16 @@ nv.addGraph(function() {
 		.attr('href', '#')
 		.html(function(d) {
 			return d.label;
+		})
+		.on('click', function(d, i) {
+			d.disabled = !d.disabled;
+			d.focused = !d.focused;
+			chart.legend.dispatch.legendClick(d, i);
 		});
+
+	chart.legend.dispatch.legendClick = function(d, i) {
+		chart.update();
+	};
 
 	return chart;
 });

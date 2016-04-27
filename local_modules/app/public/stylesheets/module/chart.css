@@ -105,7 +105,9 @@
 	vertical-align: middle;
 }
 
-.legend-list-item:hover .legend-list-link {
+.legend-list-item:hover .legend-list-link,
+.legend-list-link:active,
+.legend-list-link:focus {
 	background-color: #ffffff;
 	color: var(--color-text-dark);
 	text-decoration: none;
