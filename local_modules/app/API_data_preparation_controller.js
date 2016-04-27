@@ -176,6 +176,8 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             return;
         }
     }
+    // We must re-URI-encode the filter vals since they get decoded    
+    var filterJSON_uriEncodedVals = _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
     //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
@@ -328,7 +330,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
         }
         if (isFilterActive) {
-            var appendQuery = "filterJSON=" + filterJSON;
+            var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
             routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
             routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
@@ -372,7 +374,8 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
             filterObj: filterObj,
-            filterJSON: filterJSON,
+            filterJSON_nonURIEncodedVals: filterJSON,
+            filterJSON: filterJSON_uriEncodedVals,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
@@ -441,6 +444,8 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             return;
         }
     }
+    // We must re-URI-encode the filter vals since they get decoded    
+    var filterJSON_uriEncodedVals = _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
     //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
@@ -631,7 +636,7 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
         }
         if (isFilterActive) {
-            var appendQuery = "filterJSON=" + filterJSON;
+            var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
             routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
             urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
         }
@@ -658,7 +663,8 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             groupBy: groupBy,
             //
             filterObj: filterObj,
-            filterJSON: filterJSON,
+            filterJSON_nonURIEncodedVals: filterJSON,
+            filterJSON: filterJSON_uriEncodedVals,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
@@ -727,6 +733,8 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             return;
         }
     }
+    // We must re-URI-encode the filter vals since they get decoded    
+    var filterJSON_uriEncodedVals = _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
     //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
@@ -870,7 +878,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
         }
         if (isFilterActive) {
-            var appendQuery = "filterJSON=" + filterJSON;
+            var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
             routePath_withoutMapBy      = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutMapBy,     appendQuery, routePath_base);
             urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
         }
@@ -902,7 +910,8 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             mapBy: mapBy,
             //
             filterObj: filterObj,
-            filterJSON: filterJSON,
+            filterJSON_nonURIEncodedVals: filterJSON,
+            filterJSON: filterJSON_uriEncodedVals,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
@@ -1315,3 +1324,25 @@ function _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnName
     return truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill;
 }
 //
+function _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj)
+{
+    var reconstructedURLEncodedFilterObjForFilterJSONString = {}; // to construct
+    var filterObj_keys = Object.keys(filterObj);
+    var filterObj_keys_length = filterObj_keys.length;
+    for (var i = 0 ; i < filterObj_keys_length ; i++) {
+        var filterObj_key = filterObj_keys[i];
+        var filterObj_key_vals = filterObj[filterObj_key];
+        // we need to re-URI-encode filterObj_key_vals elements and then stringify
+        var filterObj_key_vals_length = filterObj_key_vals.length;
+        var encodedVals = [];
+        for (var j = 0 ; j < filterObj_key_vals_length ; j++) {
+            var filterObj_key_val = filterObj_key_vals[j];
+            var encodedVal = encodeURIComponent(filterObj_key_val);
+            encodedVals.push(encodedVal);
+        }
+        reconstructedURLEncodedFilterObjForFilterJSONString[filterObj_key] = encodedVals;
+    }
+    var filterJSON_uriEncodedVals = JSON.stringify(reconstructedURLEncodedFilterObjForFilterJSONString);
+    
+    return filterJSON_uriEncodedVals;
+}

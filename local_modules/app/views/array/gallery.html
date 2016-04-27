@@ -83,7 +83,7 @@
                                                 <input type="hidden" name="sortDir" value="{{ sortDir }}">
                                             {% endif %}
                                             {% if filterJSON %}
-                                                <input type="hidden" name="filterJSON" value="{{ filterJSON }}">
+                                                <input type="hidden" name="filterJSON" value="{{ filterJSON_nonURIEncodedVals }}"> {# it will get re-encoded #}
                                             {% endif %}
                                         </form>
                                     </div>
