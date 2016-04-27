@@ -113,6 +113,11 @@
 	text-decoration: none;
 }
 
+.legend-list-link:active,
+.legend-list-link:focus {
+	background-color: transparent;
+}
+
 /* @end Legend */
 
 /* @group Reponsive chart */

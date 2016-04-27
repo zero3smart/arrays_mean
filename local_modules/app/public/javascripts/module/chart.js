@@ -65,16 +65,25 @@ svg.append('circle')
 	.attr('r', radius - 10)
 	.attr('class', 'pie-background');
 
+/**
+ * Place groups
+ */
 var g = svg.selectAll('.arc')
 	.data(pie(pieData))
 	.enter()
 	.append('g')
 		.attr('class', 'arc');
 
-g.append('path')
+/**
+ * Place paths
+ */
+var slices = g.append('path')
 	.attr('d', arc)
 	.style('fill', function(d) {
 		return color(d.value);
+	})
+	.attr('id', function(d, i) {
+		return 'slice-' + i;
 	});
 
 /**
@@ -109,7 +118,6 @@ g.on('mouseout', function() {
 	tooltip.style('display', 'none');
 });
 
-
 /**
  * Sidebar legend
  */
@@ -120,21 +128,41 @@ var legendListItem = legendList.selectAll('.legend-list-item')
 	.append('li')
 		.attr('class', 'legend-list-item');
 
-legendListItem.append('span')
-	.attr('class', 'legend-dot')
-	.style('background-color', function(d, i) {
-		var colorIndex = i % colors.length;
-		return colors[colorIndex];
-	});
+// legendListItem.append('span')
+// 	.attr('class', 'legend-dot')
+// 	.style('background-color', function(d, i) {
+// 		var colorIndex = i % colors.length;
+// 		return colors[colorIndex];
+// 	});
 
-legendListItem.append('a')
-	.attr('class', 'legend-list-link')
+var legendListLink = legendListItem.append('a');
+
+legendListLink.append('span')
+		.attr('class', 'legend-dot')
+		.style('background-color', function(d, i) {
+			var colorIndex = i % colors.length;
+			return colors[colorIndex];
+		});
+
+legendListLink.attr('class', 'legend-list-link')
 	.attr('href', '#')
+	.on('mouseover', function(d, i) {
+		d3.select(this)
+			.classed('active', true);
+
+		slices
+			.style('opacity', 0.25);
+
+		d3.select('#slice-' + i)
+			.style('opacity', 1);
+	})
+	.on('mouseout', function(d, i) {
+		slices
+			.style('opacity', 1);
+	})
+	.append('span')
 	.html(function(d) {
 		return d.label;
-	})
-	.on('click', function(d, i) {
-
 	});
 
 /**
