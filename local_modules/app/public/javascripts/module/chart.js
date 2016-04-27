@@ -29,13 +29,42 @@ nv.addGraph(function() {
 		.y(function(d) { return d.value; })
 		.showLabels(false)
 		.color(colors)
+		.margin({
+			top: 0,
+			right: 0,
+			bottom: 0,
+			left: 0
+		})
 		.legendPosition('right')
+		.showLegend(false)
 		.labelType('value');
 
-	d3.select('#chart svg')
-		.datum(pieData)
-		.transition().duration(1200)
-		.call(chart);
+	d3.select('#chart')
+		.append('div')
+			.classed('svg-container', true) //container class to make it responsive
+			.append('svg')
+				.attr('preserveAspectRatio', 'xMinYMin meet')
+				.attr('viewBox', '0 0 600 600')
+				.classed('svg-content-responsive', true)
+				.datum(pieData)
+				.transition().duration(1200)
+				.call(chart);
 
 	return chart;
+});
+
+/**
+ * Toggle legend
+ */
+$('.legend-toggle').on('click', function(e) {
+	e.preventDefault();
+	$('body').toggleClass('legend-open');
+});
+
+/**
+ * Close legend
+ */
+$('.legend-close').on('click', function(e) {
+	e.preventDefault();
+	$('body').removeClass('legend-open');
 });
