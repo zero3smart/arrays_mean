@@ -13,6 +13,26 @@
 	height: calc(100vh - 300px);
 }
 
+/* @group Legend */
+
+.search-form {
+	display: inline-block;
+	vertical-align: top;
+}
+
+.legend-toggle {
+	margin-left: 20px;
+	color: var(--color-text-ultralight);
+}
+
+.legend-toggle > span {
+	display: inline-block;
+	width: 1em;
+	line-height: 40px;
+}
+
+/* @end Legend */
+
 /* @group Chart Styling */
 
 .nvd3.nv-pie path {
