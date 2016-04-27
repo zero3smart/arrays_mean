@@ -39,7 +39,7 @@ nv.addGraph(function() {
 		.showLegend(false)
 		.labelType('value');
 
-	d3.select('#chart')
+	var svg = d3.select('#chart')
 		.append('div')
 			.classed('svg-container', true) //container class to make it responsive
 			.append('svg')
@@ -49,6 +49,26 @@ nv.addGraph(function() {
 				.datum(pieData)
 				.transition().duration(1200)
 				.call(chart);
+
+	var legendListItem = d3.select('.legend-list').selectAll('.legend-list-item')
+		.data(pieData)
+		.enter()
+		.append('li')
+			.attr('class', 'legend-list-item');
+
+	legendListItem.append('span')
+		.attr('class', 'legend-dot')
+		.style('background-color', function(d, i) {
+			var colorIndex = i % colors.length;
+			return colors[colorIndex];
+		});
+
+	legendListItem.append('a')
+		.attr('class', 'legend-list-link')
+		.attr('href', '#')
+		.html(function(d) {
+			return d.label;
+		});
 
 	return chart;
 });
