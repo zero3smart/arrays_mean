@@ -22,7 +22,7 @@
 }
 
 #page .navbar-default {
-	transition: width 400ms ease-in-out, transform 400ms ease-in-out, background-color 400ms ease-in-out, box-shadow 400ms ease-in-out;
+	transition: width 400ms ease-in-out, left 400ms ease-in-out, background-color 400ms ease-in-out, box-shadow 400ms ease-in-out;
 }
 
 .header-shadow {
@@ -114,6 +114,7 @@
 .array-controls-pinned #navbar .active .sidebar-filter-slide-toggle {
 	background-color: transparent;
 	color: #000000;
+	transition: color 400ms ease-in-out;
 }
 
 /* @end Filter active*/
