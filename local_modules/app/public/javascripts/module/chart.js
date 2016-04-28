@@ -79,8 +79,8 @@ var g = svg.selectAll('.arc')
  */
 var slices = g.append('path')
 	.attr('d', arc)
-	.style('fill', function(d) {
-		return color(d.value);
+	.style('fill', function(d, i) {
+		return color(i);
 	})
 	.attr('id', function(d, i) {
 		return 'slice-' + i;
