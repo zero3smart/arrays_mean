@@ -14,13 +14,14 @@
 
 .array-chart .sort-bar {
 	border-bottom-style: none;
+	padding-bottom: 0;
 }
 
 #chart {
-	height: calc(100vh - 270px);
-	max-width: 600px;
+	height: calc(100vh - 245px);
 	margin-right: auto;
 	margin-left: auto;
+	overflow: hidden;
 }
 
 .chart-container,
@@ -142,7 +143,7 @@
 	position: relative;
 	display: inline-block;
 	overflow: hidden;
-	padding-bottom: 100%; /* aspect ratio */
+	padding-bottom: 50%; /* aspect ratio */
 	width: 100%;
 	vertical-align: top;
 }

@@ -27,8 +27,8 @@ var colors = [
 /**
  * Set up pie chart
  */
-var width = 600,
-	height = 600,
+var width = 1000,
+	height = 450,
 	radius = Math.min(width, height) / 2;
 
 var color = d3.scale.ordinal()
@@ -51,7 +51,7 @@ var svg = d3.select('#chart')
 		.classed('svg-container', true) //container class to make it responsive
 		.append('svg')
 			.attr('preserveAspectRatio', 'xMinYMin meet')
-			.attr('viewBox', '0 0 600 600')
+			.attr('viewBox', '0 0 ' + width + ' ' + height)
 			.classed('svg-content-responsive', true)
 			.append('g')
 				.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
@@ -127,13 +127,6 @@ var legendListItem = legendList.selectAll('.legend-list-item')
 	.enter()
 	.append('li')
 		.attr('class', 'legend-list-item');
-
-// legendListItem.append('span')
-// 	.attr('class', 'legend-dot')
-// 	.style('background-color', function(d, i) {
-// 		var colorIndex = i % colors.length;
-// 		return colors[colorIndex];
-// 	});
 
 var legendListLink = legendListItem.append('a');
 
