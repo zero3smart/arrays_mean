@@ -58,6 +58,9 @@
 }
 
 .sort-control-left .dropdown-toggle {
+	border: 1px solid #ffffff;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
 	background-color: var(--color-background);
 }
 
