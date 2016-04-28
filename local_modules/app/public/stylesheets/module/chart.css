@@ -171,12 +171,13 @@
 	z-index: 10;
 	display: none;
 	padding: 10px 15px;
+	max-width: 450px;
 	border-color: #eeeeee;
 	border-radius: 4px;
 	background-color: #ffffff;
 	box-shadow: var(--box-shadow);
 	font-family: var(--font-family-calibre);
-	transform: translate(-50%);
+	transform: translate(-50%, -100%);
 }
 
 .chart-tooltip:after,
