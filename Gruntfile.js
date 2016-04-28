@@ -114,18 +114,6 @@ module.exports = function(grunt) {
         src: 'd3.js',
         dest: 'local_modules/app/public/javascripts/lib/d3'
       },
-      nvd3js: {
-        expand: true,
-        cwd: 'bower_components/nvd3/build',
-        src: 'nv.d3.js',
-        dest: 'local_modules/app/public/javascripts/lib/nvd3'
-      },
-      nvd3css: {
-        expand: true,
-        cwd: 'bower_components/nvd3/build',
-        src: 'nv.d3.css',
-        dest: 'local_modules/app/public/stylesheets/lib/nvd3'
-      },
       worldGeoJson: {
         expand: true,
         cwd: 'bower_components/world.geo.json',
