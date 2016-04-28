@@ -7,7 +7,12 @@ var isDev = process.env.NODE_ENV == 'development' ? true : false;
 //
 // Initialize application object for context
 //
-require('dotenv').config();
+var dotenv_path = __dirname + "/../../.env." + process.env.NODE_ENV;
+var dotenv_config =
+{
+    path: dotenv_path
+};
+require('dotenv').config(dotenv_config);
 var path = require('path');
 var express = require('express');
 var winston = require('winston');

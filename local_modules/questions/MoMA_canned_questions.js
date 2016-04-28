@@ -1,6 +1,11 @@
 //
 //
-require('dotenv').config();
+var dotenv_path = __dirname + "/../../.env." + process.env.NODE_ENV;
+var dotenv_config =
+{
+    path: dotenv_path
+};
+require('dotenv').config(dotenv_config);
 //
 var asker = require('./MoMA_canned_questions_asker');
 asker.Ask(function(err, results)
