@@ -42,12 +42,14 @@
                                                     <a class="btn dropdown-toggle dropdown-toggle-button ui-label" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                                         Chart By <span class="sort-criteria color-brand-hover">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
                                                     </a>
-                                                    <ul class="dropdown-menu" aria-labelledby="group-by">                            
+                                                    {% if colNames_orderedForGroupByDropdown | length %}
+                                                    <ul class="dropdown-menu" aria-labelledby="group-by">
                                                         {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
                                                         {% for colName in colNames_orderedForGroupByDropdown %}
                                                         <li class="background-color-brand-hover"><a href="{{ routePath_withoutGroupBy }}{{ groupBy_queryParamJoinChar }}groupBy={{ colName }}">{{ colName }}</a></li>
                                                         {% endfor %}
                                                     </ul>
+                                                    {% endif %}
                                                 </div>
                                             </nav>
 
@@ -61,11 +63,13 @@
                                                                 Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
                                                             </a>
                                                             <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
+                                                            {% if colNames_orderedForSortByDropdown | length %}
                                                             <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
                                                                 {% for colName in colNames_orderedForSortByDropdown %}
                                                                 <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
                                                                 {% endfor %}
                                                             </ul>
+                                                            {% endif %}
                                                         </div>
 
                                                         <div class="sort-control sort-control-right">
