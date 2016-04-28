@@ -81,36 +81,82 @@ map.on('load', function () {
 	/**
 	 * Show popup on country hover
 	 */
-	 map.on('mousemove', function(e) {
-		var features = map.queryRenderedFeatures(e.point, { layers: names });
+	map.on('mousemove', function(e) {
+	var features = map.queryRenderedFeatures(e.point, { layers: names });
 
-		// Change cursor style
-		map.getCanvas().style.cursor = (features.length) ? 'default' : '';
+	// Change cursor style
+	map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
 
-		if (!features.length) {
-			popup.remove();
-			return;
-		}
+	if (!features.length) {
+		popup.remove();
+		return;
+	}
 
-		var feature = features[0];
+	var feature = features[0];
 
-		// Populate the popup and set its coordinates
-		// based on the feature found.
-		popup.setLngLat(e.lngLat)
-			.setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + feature.properties.total + '</span>')
-			.addTo(map);
-	 });
+	// Populate the popup and set its coordinates
+	// based on the feature found.
+	popup.setLngLat(e.lngLat)
+		.setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + feature.properties.total + '</span>')
+		.addTo(map);
+	});
 
 	 /**
 	  * Filter by country on click
 	  */
-	 map.on('click', function(e) {
-	 	var features = map.queryRenderedFeatures(e.point, { layers: names });
+	map.on('click', function(e) {
+		var features = map.queryRenderedFeatures(e.point, { layers: names });
 
-	 	var feature = features[0];
+		var feature = features[0];
 
-	 	console.log(feature.properties.name); // Country name
+		var queryParamJoinChar = routePath_withoutFilter == routePath_base ? "?" : "&";
 
-	 	window.location = '#';
-	 });
+		var filterObjForThisFilterColVal = constructedFilterObj(filterObj, mapBy, feature.properties.name, false);
+		var filterJSONString = JSON.stringify(filterObjForThisFilterColVal);
+		var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString;
+
+		window.location = urlForFilterValue;
+	});
+
+	/**
+	 * Construct filter object
+	 * Analog of nunjucks filter constructedFilterObj() in app.js:63
+	 */
+	function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter) {
+		var filterObj = {};
+		var existing_filterCols = Object.keys(existing_filterObj);
+		for (var i = 0 ; i < existing_filterCols.length ; i++) {
+			var existing_filterCol = existing_filterCols[i];
+			if (existing_filterCol == this_filterCol) { 
+				continue; // never push other active values of this is filter col is already active
+				// which means we never allow more than one filter on the same column at present
+			}
+			var existing_filterVals = existing_filterObj[existing_filterCol];
+			//
+			var filterVals = [];
+			//
+			var existing_filterVals_length = existing_filterVals.length;
+			for (var j = 0 ; j < existing_filterVals_length ; j++) {
+				var existing_filterVal = existing_filterVals[j];
+				var encoded_existing_filterVal = existing_filterVal;
+				filterVals.push(encoded_existing_filterVal); 
+			}
+			//
+			if (filterVals.length !== 0) {
+				filterObj[existing_filterCol] = filterVals; // as it's not set yet
+			}
+		}
+		//
+		if (isThisAnActiveFilter === false) { // do not push if active, since we'd want the effect of unsetting it
+			var filterVals = filterObj[this_filterCol] || [];
+			if (filterVals.indexOf(this_filterVal) == -1) {
+				var encoded_this_filterVal = this_filterVal;
+				filterVals.push(encoded_this_filterVal);
+			}
+			filterObj[this_filterCol] = filterVals; // in case it's not set yet
+		}
+		//
+		return filterObj;
+	}
+
 });

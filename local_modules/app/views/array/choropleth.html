@@ -126,6 +126,11 @@
                     <script type="text/javascript">
                         var templateOutput_topValue = {{ highestValue if highestValue else 0 }};
                         var geoData = {{ featureCollection | dump | safe }};
+
+                        var filterObj = {{ filterObj | dump | safe }};
+                        var routePath_withoutFilter = '{{ routePath_withoutFilter }}';
+                        var routePath_base = '{{ routePath_base }}';
+                        var mapBy = '{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}';
                     </script>
 
                     <div class="array-content">
