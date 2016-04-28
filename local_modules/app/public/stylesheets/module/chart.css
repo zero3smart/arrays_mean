@@ -33,8 +33,13 @@
 }
 
 .legend-toggle {
+	display: inline-block;
 	margin-left: 20px;
 	color: var(--color-text-ultralight);
+}
+
+.legend-open .legend-toggle {
+	display: none;
 }
 
 .legend-toggle > span {
