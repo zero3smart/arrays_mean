@@ -133,6 +133,7 @@
 .filter-tag {
 	display: inline-block;
 	margin-right: 5px;
+	margin-bottom: 10px;
 	margin-left: 5px;
 	padding: 4px 0 4px 15px;
 	border-width: 1px;
