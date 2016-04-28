@@ -4607,6 +4607,10 @@ body {
 /* @end Toggle Link */
 /* @override 
 	http://localhost:9080/stylesheets/module/sort-bar.css */
+#array-controls {
+	z-index: 1;
+	background-color: #ffffff;
+}
 /* @group Sort Bar */
 .sort-bar {
 	position: relative;
@@ -4699,6 +4703,7 @@ body {
 /* @group Filter Bar */
 .filter-bar {
 	padding-top: 25px;
+	padding-bottom: 5px;
 }
 .filter-label {
 	display: inline-block;
