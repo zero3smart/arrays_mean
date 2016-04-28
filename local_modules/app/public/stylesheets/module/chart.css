@@ -1,6 +1,17 @@
 /* @override 
 	http://localhost:9080/stylesheets/module/chart.css */
 
+.array-chart .site-content .container-fluid {
+	transition: padding 400ms ease-in-out;
+}
+
+@media (min-width: 768px) {
+	.array-chart.legend-open .site-content .container-fluid {
+		padding-right: 20px;
+		padding-left: 20px;
+	}
+}
+
 .array-chart .sort-bar {
 	border-bottom-style: none;
 }
