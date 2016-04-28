@@ -332,36 +332,33 @@ constructor.prototype.GenerateFieldsByJoining_comparingWithMatchFn
                             } // otherwise, keep going until we have all the possible values of all fields from all rows
                         }
                     }
+                    // if (wasFound == false) {
+                    //  winston.warn("⚠️  Still didn't find a result for fieldValue " + localFieldValue);
+                    // }
+                    // instead of checking wasFound == true here, we still want to persist 
+                    // a value even if it wasn't found - so that the field exists
+                    var persistableValue;
                     if (wasFound == true) {
-                        var persistableValue = undefined;
                         if (isSingular) {
                             persistableValue = matchingForeignValues ? (matchingForeignValues.length > 0 ? matchingForeignValues[0] : null) : null;
                         } else {
                             persistableValue = matchingForeignValues;
                         }
-                        if (typeof persistableValue === 'undefined') {
-                            var errorString = "Value obtained by joining \"" + findingMatchOnFields + "\" of a \"" + ofOtherRawSrcUID + "\" was undefined… doc: " + JSON.stringify(ofTheseProcessedRowObjectDoc, null, '  ');
-                            var err = new Error(errorString);
-                            winston.error("❌  Error while generating field by reverse-join:", err);
-                            callback(err);
-
-                            return;
-                        }
-                        //
-                        var bulkOperationQueryFragment =
-                        {
-                            pKey: ofTheseProcessedRowObjectDoc.pKey,
-                            srcDocPKey: ofTheseProcessedRowObjectDoc.srcDocPKey
-                        };
-                        var updateFragment = {};
-                        updateFragment["$set"] = {};
-                        updateFragment["$set"]["rowParams." + generateFieldNamed] = persistableValue; 
-                        // ^ Note that we're only updating a specific path, not the whole rowParams value
-                        // console.log("updateFragment…", updateFragment);
-                        bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update(updateFragment);
                     } else {
-                        // winston.warn("⚠️  Still didn't find a result for fieldValue " + localFieldValue);
+                        persistableValue = null;
                     }
+                    //
+                    var bulkOperationQueryFragment =
+                    {
+                        pKey: ofTheseProcessedRowObjectDoc.pKey,
+                        srcDocPKey: ofTheseProcessedRowObjectDoc.srcDocPKey
+                    };
+                    var updateFragment = {};
+                    updateFragment["$set"] = {};
+                    updateFragment["$set"]["rowParams." + generateFieldNamed] = persistableValue; 
+                    // ^ Note that we're only updating a specific path, not the whole rowParams value
+                    // console.log("updateFragment…", updateFragment);
+                    bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update(updateFragment);
                 }
                 //
                 proceedToPersist();
