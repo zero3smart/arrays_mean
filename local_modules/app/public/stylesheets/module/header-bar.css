@@ -21,6 +21,10 @@
 	}
 }
 
+#page .navbar-default {
+	transition: width 400ms ease-in-out, transform 400ms ease-in-out, background-color 400ms ease-in-out, box-shadow 400ms ease-in-out;
+}
+
 .header-shadow {
 	box-shadow: var(--box-shadow);
 }
@@ -29,23 +33,35 @@
 	background-color: var(--color-background);
 }
 
+/* @group Navbar Brand */
+
 .navbar-default .navbar-brand-container {
 	position: absolute;
 	top: 0;
 	left: 0;
 	display: block;
+	overflow: hidden;
 	width: 100%;
+	height: 50px;
 	text-align: center;
+}
+
+@media (min-width: 768px) {
+	.navbar-default .navbar-brand-container {
+		height: 64px;
+	}
 }
 
 .navbar-default .navbar-brand {
 	display: inline-block;
 	float: none;
-	margin-right: auto;
-	margin-left: auto;
+	margin-right: 0;
+	margin-left: 0;
 	padding-top: 15px;
 	padding-bottom: 15px;
+	padding-left: 15px;
 	font-weight: 600;
+	transition: transform 400ms ease-in-out;
 }
 
 .navbar-default .navbar-brand-arrays {
@@ -62,11 +78,42 @@
 	}
 }
 
+.navbar-default .navbar-brand-array-title {
+	transform: translate(0, 100%);
+}
+
+/* @end Navbar Brand */
+
+/* @group Pinned */
+
+.array-controls-pinned .navbar-default {
+	background-color: var(--color-background);
+	box-shadow: var(--box-shadow);
+}
+
+.array-controls-pinned .navbar-brand-arrays {
+	transform: translate(0, -100%);
+}
+
+.array-controls-pinned .navbar-brand-array-title {
+	transform: translate(0, -100%);
+}
+
+.array-controls-pinned .navbar-default .navbar-nav > .open > a,
+.array-controls-pinned .navbar-default .navbar-nav > .open > a:hover,
+.array-controls-pinned .navbar-default .navbar-nav > .open > a:focus {
+	background-color: transparent;
+	color: #000000;
+	transition: color 400ms ease-in-out;
+}
+
+/* @end pinned */
+
 /* @group Filter active */
 
-#navbar .active .sidebar-filter-toggle {
+.array-controls-pinned #navbar .active .sidebar-filter-slide-toggle {
 	background-color: transparent;
-	color: #ffffff;
+	color: #000000;
 }
 
 /* @end Filter active*/
@@ -120,6 +167,8 @@
 
 /* @end Dropdown */
 
+/* @group Back button */
+
 .navbar-nav > li > a.navbar-back {
 	color: var(--color-text-med);
 }
@@ -134,3 +183,5 @@
 	font-weight: 600;
 	font-size: 18px;
 }
+
+/* @end back button */

@@ -15,5 +15,6 @@ $(function() {
 		})
 		.triggerHook('onLeave')
 		.setPin('#array-controls')
+		.setClassToggle('body', 'array-controls-pinned')
 		.addTo(controller);
 });
