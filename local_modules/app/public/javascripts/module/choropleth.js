@@ -100,4 +100,17 @@ map.on('load', function () {
 			.setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + feature.properties.total + '</span>')
 			.addTo(map);
 	 });
+
+	 /**
+	  * Filter by country on click
+	  */
+	 map.on('click', function(e) {
+	 	var features = map.queryRenderedFeatures(e.point, { layers: names });
+
+	 	var feature = features[0];
+
+	 	console.log(feature.properties.name); // Country name
+
+	 	window.location = '#';
+	 });
 });
