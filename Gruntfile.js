@@ -125,6 +125,12 @@ module.exports = function(grunt) {
         cwd: 'bower_components/sharrre',
         src: 'jquery.sharrre.js',
         dest: 'local_modules/app/public/javascripts/lib/sharrre'
+      },
+      scrollmagic: {
+        expand: true,
+        cwd: 'bower_components/scrollmagic/scrollmagic/uncompressed',
+        src: 'ScrollMagic.js',
+        dest: 'local_modules/app/public/javascripts/lib/scrollmagic'
       }
     },
 
