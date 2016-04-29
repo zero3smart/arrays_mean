@@ -57,13 +57,49 @@ var svg = d3.select('#chart')
 				.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
 
 /**
+ * Add blur filter definition for drop shadow
+ */
+var defs = svg.append('defs');
+
+var filter = defs.append('filter')
+	.attr('id', 'drop-shadow')
+	.attr('height', '150%');
+
+filter.append('feGaussianBlur')
+	.attr('in', 'SourceAlpha')
+	.attr('stdDeviation', 4)
+	.attr('result', 'blur');
+
+filter.append('feOffset')
+	.attr('in', 'blur')
+	.attr('dx', 0)
+	.attr('dy', 4);
+
+/**
+ * Blur opacity
+ */
+var feComponentTransfer = filter.append('feComponentTransfer');
+feComponentTransfer.append('feFuncA')
+	.attr('type', 'linear')
+	.attr('slope', '0.2');
+
+/**
+ * Merge blurs
+ */
+var feMerge = filter.append('feMerge');
+feMerge.append('feMergeNode');
+feMerge.append('feMergeNode')
+	.attr('in', 'SourceGraphic');
+
+/**
  * Place background circle
  */
 svg.append('circle')
 	.attr('cx', 0)
 	.attr('cy', 0)
 	.attr('r', radius - 10)
-	.attr('class', 'pie-background');
+	.attr('class', 'pie-background')
+	.style('filter', 'url(#drop-shadow)');
 
 /**
  * Place groups

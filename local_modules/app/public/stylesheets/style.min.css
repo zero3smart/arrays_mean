@@ -5350,7 +5350,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 /* @group Chart Styling */
 .pie-background {
 	fill: #ffffff;
-	stroke-width: 5px;
+	stroke-width: 2px;
 	stroke: #ffffff;
 }
 .chart-tooltip {
