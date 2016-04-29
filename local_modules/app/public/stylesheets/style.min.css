@@ -5412,14 +5412,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 /* @override 
 	http://localhost:9080/stylesheets/module/choropleth.css */
 .array-choropleth .site-content {
-	/*height: calc(100vh - 50px);*/
 	height: 100vh;
-}
-@media (min-width: 768px) {
-	.array-choropleth .site-content {
-		/*height: calc(100vh - 64px);*/
-		height: 100vh;
-	}
 }
 #map {
 	position: absolute;
@@ -5430,6 +5423,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 .array-choropleth .sort-bar {
 	border-bottom-style: none;
 }
+/* @group Dropdown buttons */
 .dropdown-toggle-button-group,
 .dropdown-toggle-button {
 	margin-bottom: 5px;
@@ -5463,12 +5457,11 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	border-bottom-right-radius: 0;
 	background-color: #fafafa;
 }
-.sort-control-right {
-}
 .sort-control-right .dropdown-toggle-button {
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 }
+/* @end Dropdown buttons */
 /* @group Map popups */
 html .mapboxgl-popup-content {
 	padding: 10px 15px;
