@@ -159,6 +159,18 @@
 	margin-right: 15px;
 }
 
+.navbar-default .navbar-nav > .open > a,
+.navbar-default .navbar-nav > .open > a:hover,
+.navbar-default .navbar-nav > .open > a:focus {
+	color: #000000;
+}
+
+body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-nav > .open > a,
+body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-nav > .open > a:hover,
+body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-nav > .open > a:focus {
+	color: #ffffff;
+}
+
 .navbar-nav .open .dropdown-menu > li > a:hover .color-brand,
 .navbar-nav .open .dropdown-menu > li > a:focus .color-brand,
 .navbar-nav .open .dropdown-menu > li > a:active .color-brand,
