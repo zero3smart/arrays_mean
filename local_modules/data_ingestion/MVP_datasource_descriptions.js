@@ -70,15 +70,18 @@ exports.Descriptions =
             },
             {
                 field: "Artworks",
-                singular: false, // many artworks per artist
+                singular: false,
+                relationship: true, // obtaining the _id instead of a field value, and will be hydrated with
+                // associated objects on API data prep instead of being sent along as primitive values
                 by: {
                     doing: import_processing.Ops.Join,
                     matchFn: import_processing.MatchFns.LocalEqualsForeignString,
                     findingMatchOnFields: [ "Artist" ],
                     ofOtherRawSrcUID: "moma_artworks",
                     andOtherRawSrcImportRevision: 2,
-                    withLocalField: "DisplayName",
-                    obtainingValueFromField: "Title"
+                    withLocalField: "DisplayName"
+                    // note we do not obtain a value from a field since this is a relationship-forming join
+                    // and a flag here saying "obtainingRelationship=true" would be redundant
                 }
             }
         ],
@@ -105,12 +108,12 @@ exports.Descriptions =
         fe_filters_fieldsNotAvailable:
         [
             "DisplayName", // because they're effectively unique
-            "Artworks", // it's an array
+            "Artworks", // it's an array of doc ids
             "DisplayDate",
             "BeginDate",
             "EndDate",
             "Wiki QID",
-            "ULAN"
+            "ULAN",
         ],
         fe_filters_oneToOneOverrideWithValuesByTitleByFieldName: 
         {
@@ -131,7 +134,7 @@ exports.Descriptions =
         fe_chart_fieldsNotAvailableAsGroupByColumns:
         [
             "DisplayName", // because they're effectively unique
-            "Artworks", // it's an array
+            "Artworks", // it's an array of doc ids
             "DisplayDate",
             "Wiki QID",
             "ULAN"
@@ -147,7 +150,7 @@ exports.Descriptions =
         fe_choropleth_fieldsNotAvailableAsMapByColumns:
         [
             "DisplayName",
-            "Artworks",
+            "Artworks", // it's an array of doc ids
             "Code",
             "Nationality",
             "DisplayDate",
@@ -181,6 +184,19 @@ exports.Descriptions =
             }
             //
             return '<span class="' + iconSpanClass + ' color-gender"></span>';
+        },
+        //
+        fe_objectShow_customHTMLOverrideFnsByColumnName:
+        {
+            "Artworks": function(rowObject, eachValue)
+            {
+                var relationshipObjectShowLink = "/array/" + eachValue.srcDocPKey + "/" + eachValue._id;
+                var openingTag = '<a href="' + relationshipObjectShowLink + '" class="color-brand">';
+                var tagContent = eachValue.rowParams.Title;
+                var closingTag = '</a>';
+                //
+                return openingTag + tagContent + closingTag;
+            }
         }
     }
     , {

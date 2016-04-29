@@ -306,6 +306,7 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
                 var generateFieldNamed = description.field;
                 var isSingular = description.singular;
                 var by = description.by;
+                var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
                 var byDoingOp = by.doing;
                 switch (byDoingOp) {
                     case import_processing.Ops.Join:
@@ -314,11 +315,11 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
                         var ofOtherRawSrcUID = by.ofOtherRawSrcUID;
                         var andOtherRawSrcImportRevision = by.andOtherRawSrcImportRevision;
                         var withLocalField = by.withLocalField;
-                        var obtainingValueFromField = by.obtainingValueFromField;
+                        var obtainingValueFromField_orUndefined = by.obtainingValueFromField;
                         var matchFn = by.matchFn;
                         if (typeof matchFn === 'undefined' || matchFn == null) {
                             matchFn = import_processing.MatchFns.LocalEqualsForeignString;
-                        }
+                        }                        
                         self.context.processed_row_objects_controller.GenerateFieldsByJoining_comparingWithMatchFn(
                             dataSource_uid,
                             dataSource_importRevision,
@@ -329,11 +330,11 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
                             ofOtherRawSrcUID,
                             andOtherRawSrcImportRevision,
                             withLocalField,
-                            obtainingValueFromField,
+                            obtainingValueFromField_orUndefined,
+                            formingRelationship,
                             matchFn,
                             cb
                         );
-
                         break;
                     }
                     
