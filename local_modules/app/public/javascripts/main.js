@@ -1,4 +1,7 @@
 $(window).load(function() {
+
+    trackEvent("page load");
+    
     /**
      * Add class to body to prevent weird page width transitions
      */
@@ -168,4 +171,14 @@ function _POST_toGetURLForSharingCurrentPage(callback)
         }
         callback(err, share_url);
     }, "json");
+}
+
+function trackEvent(eventName, eventPayload)
+{
+    if (typeof eventPayload === 'undefined' || eventPayload == null) {
+        eventPayload = {};
+    }
+    var basePayload = { source: "client" }; // this lets us identify the source vs the server
+    eventPayload = $.extend(basePayload, eventPayload);
+    mixpanel.track(eventName, eventPayload);
 }
