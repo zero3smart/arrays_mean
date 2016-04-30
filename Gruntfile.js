@@ -102,12 +102,6 @@ module.exports = function(grunt) {
 
     // Copy assets
     copy: {
-      arraysSplash: {
-        expand: true,
-        cwd: 'bower_components/arrays-splash/dist/',
-        src: '**',
-        dest: 'local_modules/app/public/splash/'
-      },
       d3: {
         expand: true,
         cwd: 'bower_components/d3',
