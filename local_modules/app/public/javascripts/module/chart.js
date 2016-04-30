@@ -155,6 +155,13 @@ g.on('mouseout', function() {
 });
 
 /**
+ * Filter slice on click
+ */
+g.on('click', function(d) {
+	var label = d.data.label;
+});
+
+/**
  * Sidebar legend
  */
 var legendList = d3.select('.legend-list');
