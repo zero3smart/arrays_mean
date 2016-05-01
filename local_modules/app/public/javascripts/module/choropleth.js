@@ -11,10 +11,28 @@ var layer = 'contour',
 	names = [];
 
 /**
+ * Logarithmic scale
+ */
+function logScale(currentBreak, numBreaks, topValue) {
+	// current break will be between 0 and numBreaks
+	var minp = 0;
+	var maxp = numBreaks;
+
+	// The result should be between 1 an topValue
+	var minv = Math.log(1);
+	var maxv = Math.log(topValue);
+
+	// calculate adjustment factor
+	var scale = (maxv - minv) / (maxp - minp);
+
+	return Math.exp(minv + scale * (currentBreak - minp));
+}
+
+/**
  * Generate layer breakpoints, layer names, and opacity values;
  */
 for (i = 0; i < numBreaks; i++) {
-	breaks[i] = Math.round(topValue * (i / numBreaks));
+	breaks[i] = logScale(i, numBreaks, topValue);
 	opacities[i] = (i / numBreaks);
 	names[i] = 'layer-' + i;
 }
