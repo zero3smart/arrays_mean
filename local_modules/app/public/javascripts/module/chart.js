@@ -158,7 +158,13 @@ g.on('mouseout', function() {
  * Filter slice on click
  */
 g.on('click', function(d) {
-	var label = d.data.label;
+	var queryParamJoinChar = routePath_withoutFilter == routePath_base ? "?" : "&";
+
+	var filterObjForThisFilterColVal = constructedFilterObj(filterObj, groupBy, d.data.label, false);
+	var filterJSONString = JSON.stringify(filterObjForThisFilterColVal);
+	var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString;
+
+	window.location = urlForFilterValue;
 });
 
 /**

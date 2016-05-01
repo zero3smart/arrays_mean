@@ -5352,6 +5352,9 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	stroke-width: 2px;
 	stroke: #ffffff;
 }
+#chart path:hover {
+	cursor: pointer;
+}
 .chart-tooltip {
 	position: absolute;
 	top: 0;

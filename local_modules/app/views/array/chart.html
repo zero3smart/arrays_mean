@@ -119,7 +119,12 @@
                             {% endif %}
 
                             <script type="text/javascript">
-                                var pieData = {{ groupedResults | dump | safe }}; 
+                                var pieData = {{ groupedResults | dump | safe }};
+
+                                var filterObj = {{ filterObj | dump | safe }};
+                                var routePath_withoutFilter = '{{ routePath_withoutFilter }}';
+                                var routePath_base = '{{ routePath_base }}';
+                                var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
                             </script>
 
                             <div class="container-fluid">
