@@ -203,7 +203,8 @@
 	}
 
 	.group-by,
-	.map-by {
+	.map-by,
+	.sort-by {
 		overflow: hidden;
 		max-width: calc(100vw - 90px);
 		text-overflow: ellipsis;
