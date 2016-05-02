@@ -26,24 +26,58 @@
 }
 
 .panel-source {
-	border-width: 1px;
-	border-style: solid;
-	border-color: transparent;
+	overflow: hidden;
+	margin-bottom: 10px;
 	border-radius: 2px;
 	box-shadow: var(--box-shadow);
 }
 
+.panel-view-array {
+	text-transform: uppercase;
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 24px;
+}
+
+@media (min-width: 768px) {
+	.panel-view-array {
+		font-size: 16px;
+	}
+}
+
+.panel-source:hover .panel-view-array {
+	text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+	.panel-source {
+		margin-bottom: 20px;
+	}
+}
+
 .panel-source .panel-body {
-	padding: 40px 30px;
+	padding: 15px;
 	color: black;
 	overflow-x: hidden;
+}
+
+@media (min-width: 768px) {
+	.panel-source .panel-body {
+		padding: 30px;
+	}
 }
 
 .panel-source .panel-body-title {
 	margin-top: 0;
 	margin-bottom: 0;
 	font-weight: bold;
-	font-size: 42px;
+	font-size: 24px;
+}
+
+@media (min-width: 768px) {
+	.panel-source .panel-body-title {
+		font-size: 42px;
+	}
 }
 
 .form-source .radio label {
@@ -51,15 +85,22 @@
 	width: 100%;
 }
 
-.section-array-create .panel-source:hover {
-	border-color: #9b9b9b;
-}
-
 .section-array-create .panel-body-meta {
 	margin-top: 5px;
 	margin-bottom: 5px;
 	color: var(--color-text-light);
 	font-size: 18px;
+}
+
+.section-array-create .panel-body-meta:hover ~ a {
+	text-decoration: none;
+}
+
+.source-link,
+.source-link:hover,
+.source-link:focus,
+.source-link:active {
+	color: var(--color-text-light);
 }
 
 .source-divider:before {
@@ -70,8 +111,15 @@
 
 .panel-source .panel-body-description {
 	color: var(--color-text-dark);
-	font-size: 20px;
-	line-height: 26px;
+	font-size: 16px;
+	line-height: 24px;
+}
+
+@media (min-width: 768px) {
+	.panel-source .panel-body-description {
+		font-size: 20px;
+		line-height: 26px;
+	}
 }
 
 .panel-source .panel-body-description:last-child {
