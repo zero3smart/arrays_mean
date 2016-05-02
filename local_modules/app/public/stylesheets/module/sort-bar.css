@@ -215,7 +215,7 @@
 /* @group Filter Bar */
 
 .filter-bar {
-	padding-top: 25px;
+	padding-top: 20px;
 	padding-bottom: 5px;
 }
 
@@ -229,8 +229,11 @@
 .filter-bar-fixed-bottom {
 	position: absolute;
 	bottom: 0;
-	z-index: 1;
 	padding-bottom: 30px;
+}
+
+.array-choropleth .filter-bar-fixed-bottom {
+	z-index: 1;
 }
 
 .filter-tag {
