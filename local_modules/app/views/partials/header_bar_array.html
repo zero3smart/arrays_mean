@@ -8,7 +8,7 @@
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
 				<li>
-					<a href="#" class="sidebar-filter-slide-toggle"><span class="icon-filter" aria-hidden="true"></span></a>
+					<a href="#" class="sidebar-filter-slide-toggle"><span class="icon-filter" aria-hidden="true"></span>{% if isFilterActive %}<span class="sidebar-filter-active background-color-brand"></span>{% endif %}</a>
 				</li>
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="icon-{{ currentView }}" aria-hidden="true"></span></a>

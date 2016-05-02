@@ -4450,6 +4450,20 @@ body {
 }
 /* @end pinned */
 /* @group Filter active */
+@media (max-width: 767px) {
+	.sidebar-filter-active {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		display: block;
+		width: 11px;
+		height: 11px;
+		border-width: 2px;
+		border-style: solid;
+		border-color: #ffffff;
+		border-radius: 1000px;
+	}
+}
 .array-controls-pinned #navbar .active .sidebar-filter-slide-toggle {
 	background-color: transparent;
 	color: #000000;
