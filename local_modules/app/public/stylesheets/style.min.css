@@ -5342,10 +5342,13 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	padding-bottom: 0;
 }
 #chart {
-	height: calc(100vh - 245px);
+	overflow: hidden;
 	margin-right: auto;
 	margin-left: auto;
-	overflow: hidden;
+	padding: 10px;
+	max-width: 100%;
+	width: calc(100vh - 260px);
+	height: calc(100vh - 260px);
 }
 .chart-container,
 .legend {
@@ -5355,6 +5358,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	transition: transform 400ms ease-in-out, width 400ms ease-in-out, -webkit-transform 400ms ease-in-out;
 }
 .chart-container {
+	position: relative;
 	width: calc(100%);
 }
 @media (min-width: 768px) {
@@ -5452,13 +5456,13 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	position: relative;
 	display: inline-block;
 	overflow: hidden;
-	padding-bottom: 50%; /* aspect ratio */
+	padding-bottom: 100%; /* aspect ratio */
 	width: 100%;
 	vertical-align: top;
 }
 .svg-content-responsive {
 	position: absolute;
-	top: 10px;
+	top: 0;
 	left: 0;
 	display: inline-block;
 }

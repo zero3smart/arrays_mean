@@ -18,10 +18,13 @@
 }
 
 #chart {
-	height: calc(100vh - 245px);
+	overflow: hidden;
 	margin-right: auto;
 	margin-left: auto;
-	overflow: hidden;
+	padding: 10px;
+	max-width: 100%;
+	width: calc(100vh - 260px);
+	height: calc(100vh - 260px);
 }
 
 .chart-container,
@@ -30,6 +33,7 @@
 }
 
 .chart-container {
+	position: relative;
 	width: calc(100%);
 }
 
@@ -145,14 +149,14 @@
 	position: relative;
 	display: inline-block;
 	overflow: hidden;
-	padding-bottom: 50%; /* aspect ratio */
+	padding-bottom: 100%; /* aspect ratio */
 	width: 100%;
 	vertical-align: top;
 }
 
 .svg-content-responsive {
 	position: absolute;
-	top: 10px;
+	top: 0;
 	left: 0;
 	display: inline-block;
 }

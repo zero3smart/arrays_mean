@@ -28,7 +28,7 @@ var colors = [
  * Set up pie chart
  */
 var width = 1000,
-	height = 450,
+	height = 1000,
 	radius = Math.min(width, height) / 2;
 
 var color = d3.scale.ordinal()
