@@ -19,7 +19,7 @@
 
                     <header class="array-header header-shadow">
                         <h1 class="array-title">{{ arrayTitle }}</h1>
-                        <div class="array-meta">{% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider"></span> <span class="array-meta-updated">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span></div>
+                        <div class="array-meta">{% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider hidden-xs"></span> {% endif %}<span class="array-meta-count hidden-xs">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider"></span> <span class="array-meta-updated">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span></div>
                     </header><!-- .array-header -->
 
                     <div id="array-controls" class="array-controls">
@@ -57,29 +57,37 @@
                                         </nav>
 
                                         <div class="pull-right">
-                                            <form action="{{ routePath_base }}" method="get">
-                                                <div class="dropdown sort-control search-control">
-                                                    {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
-                                                    
-                                                    <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                                                        Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
-                                                    </a>
-                                                    <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
-                                                    {% if colNames_orderedForSortByDropdown | length %}
-                                                    <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
-                                                        {% for colName in colNames_orderedForSortByDropdown %}
-                                                        <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                    {% endif %}
-                                                </div>
+                                            <form action="{{ routePath_base }}" method="get" class="form-search">
+                                            	<div class="sort-control visible-xs">
+                                            		<div class="dropdown-toggle search-toggle">
+                                            			<span class="icon-search search-icon"></span>
+                                            		</div>
+                                            	</div>
 
-                                                <div class="sort-control">
-                                                    <div class="dropdown-toggle">
-                                                        <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ if searchQ else "" }}">
-                                                        <span class="icon-search search-icon"></span>
-                                                    </div>
-                                                </div>
+                                            	<div class="mobile-search-popover dropdown-panel">
+	                                                <div class="dropdown sort-control search-control">
+	                                                    {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
+	                                                    
+	                                                    <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+	                                                        Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
+	                                                    </a>
+	                                                    <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
+	                                                    {% if colNames_orderedForSortByDropdown | length %}
+	                                                    <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+	                                                        {% for colName in colNames_orderedForSortByDropdown %}
+	                                                        <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
+	                                                        {% endfor %}
+	                                                    </ul>
+	                                                    {% endif %}
+	                                                </div>
+	
+	                                                <div class="sort-control">
+	                                                    <div class="dropdown-toggle">
+	                                                        <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ if searchQ else "" }}">
+	                                                        <span class="icon-search search-icon"></span>
+	                                                    </div>
+	                                                </div>
+                                               	</div>
 
                                                 {% if sortBy %}
                                                     <input type="hidden" name="sortBy" value="{{ sortBy }}">

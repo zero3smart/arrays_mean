@@ -22,7 +22,13 @@
 	margin-bottom: 5px;
 	color: black;
 	font-weight: bold;
-	font-size: 42px;
+	font-size: 36px;
+}
+
+@media (min-width: 768px) {
+	.array-title {
+		font-size: 42px;
+	}
 }
 
 .array-meta {
@@ -40,20 +46,22 @@
 
 /* @group Small Array Header */
 
-.array-header-small {
-	padding-top: 25px;
-	padding-bottom: 25px;
-	text-align: left;
-}
+@media (min-width: 768px) {
+	.array-header-small {
+		padding-top: 25px;
+		padding-bottom: 25px;
+		text-align: left;
+	}
 
-.array-header-small .array-title {
-	float: left;
-	margin-bottom: -17px;
-}
+	.array-header-small .array-title {
+		float: left;
+		margin-bottom: -17px;
+	}
 
-.array-header-small .array-meta {
-	float: right;
-	margin-top: 17px;
+	.array-header-small .array-meta {
+		float: right;
+		margin-top: 17px;
+	}
 }
 
 /* @end Small Array Header */

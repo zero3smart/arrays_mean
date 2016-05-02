@@ -33,13 +33,15 @@
 	width: calc(100%);
 }
 
-.legend-open .chart-container {
-	width: calc(100% - var(--legend-width));
+@media (min-width: 768px) {
+	.legend-open .chart-container {
+		width: calc(100% - var(--legend-width));
+	}
 }
 
 /* @group Legend */
 
-.search-form {
+.form-search {
 	display: inline-block;
 	vertical-align: top;
 }

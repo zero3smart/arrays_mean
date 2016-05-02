@@ -72,6 +72,7 @@
 /* @group Sidebar Heading */
 
 .sidebar-filter-heading {
+	position: relative;
 	z-index: 1;
 	padding: 14px 15px;
 	min-height: 50px;
@@ -85,7 +86,6 @@
 
 @media (min-width: 768px) {
 	.sidebar-filter-heading {
-		position: relative;
 		padding-top: 21px;
 		padding-bottom: 21px;
 		min-height: 64px;

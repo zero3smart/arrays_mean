@@ -21,7 +21,7 @@ $(document).ready(function() {
         var sourceKey = $parent.find("[name='source_key']").val();
         var default_filterJSON = $parent.find("[name='default_filterJSON']").val();
         var href = '/array/' + sourceKey + '/gallery';
-        if (default_filterJSON != '' && default_filterJSON != null && typeof default_filterJSON !== 'undefined') {
+        if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
             href += "?filterJSON=" + default_filterJSON;
         }
         window.location.href = href;
@@ -80,6 +80,15 @@ $(document).ready(function() {
 
         $('.search-control .dropdown-toggle').attr('aria-expanded', 'false');
         $(this).closest('.dropdown').removeClass('open');
+    });
+
+    /**
+     * Mobile search popover
+     */
+    $('.search-toggle').on('click', function(e) {
+        e.preventDefault();
+        $(this).toggleClass('search-active');
+        $('.mobile-search-popover').toggleClass('search-open');
     });
 
     /**
@@ -207,7 +216,7 @@ function _POST_toGetURLForSharingCurrentPage(callback)
     {
         var share_url = data.share_url;
         var err = null;
-        if (share_url == null || typeof share_url === 'undefined' || share_url == "") {
+        if (share_url === null || typeof share_url === 'undefined' || share_url === "") {
             err = new Error('Missing share_url from response.');
         }
         callback(err, share_url);
@@ -216,7 +225,7 @@ function _POST_toGetURLForSharingCurrentPage(callback)
 
 function trackEvent(eventName, eventPayload)
 {
-    if (typeof eventPayload === 'undefined' || eventPayload == null) {
+    if (typeof eventPayload === 'undefined' || eventPayload === null) {
         eventPayload = {};
     }
     var basePayload = { source: "client" }; // this lets us identify the source vs the server

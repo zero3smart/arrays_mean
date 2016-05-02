@@ -55,4 +55,5 @@ body {
 .sort-control.open > .ui-label:focus,
 .sort-control.open > .ui-label:active {
 	color: var(--color-text-light);
+	text-align: left;
 }
