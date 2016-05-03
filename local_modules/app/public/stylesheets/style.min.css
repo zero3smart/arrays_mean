@@ -5015,6 +5015,9 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	font-size: 42px;
 }
 .panel-source {
+	border-width: 1px;
+	border-style: solid;
+	border-color: transparent;
 	overflow: hidden;
 	margin-bottom: 10px;
 	border-radius: 2px;
@@ -5031,7 +5034,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 		font-size: 16px;
 	}
 }
-.panel-source:hover .panel-view-array {
+.panel-view-array:hover {
 	text-decoration: underline;
 }
 @media (min-width: 768px) {
@@ -5063,6 +5066,9 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 .form-source .radio label {
 	padding-left: 0;
 	width: 100%;
+}
+.section-array-create .panel-source:hover {
+	border-color: #9b9b9b;
 }
 .section-array-create .panel-body-meta {
 	margin-top: 5px;

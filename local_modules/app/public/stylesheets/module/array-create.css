@@ -26,6 +26,9 @@
 }
 
 .panel-source {
+	border-width: 1px;
+	border-style: solid;
+	border-color: transparent;
 	overflow: hidden;
 	margin-bottom: 10px;
 	border-radius: 2px;
@@ -45,7 +48,7 @@
 	}
 }
 
-.panel-source:hover .panel-view-array {
+.panel-view-array:hover {
 	text-decoration: underline;
 }
 
@@ -83,6 +86,10 @@
 .form-source .radio label {
 	padding-left: 0;
 	width: 100%;
+}
+
+.section-array-create .panel-source:hover {
+	border-color: #9b9b9b;
 }
 
 .section-array-create .panel-body-meta {

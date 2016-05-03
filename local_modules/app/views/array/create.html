@@ -37,6 +37,9 @@
                                                 <div class="panel-body border-top-color-brand">
                                                     <h2 class="panel-body-title">{{ source.title }}</h2>
                                                     <div class="panel-body-meta">
+                                                    	<div>
+                                                    		<a class="panel-view-array color-brand">View Array</a>
+                                                    	</div>
                                                         {% set comma = joiner() %}
                                                         {% for url in source.urls -%}
                                                           {{ comma() }} <a href="{{ url }}" class="source-link" target="_blank">{{ url }}</a>
@@ -47,7 +50,6 @@
                                                         <span class="source-updated hidden-xs">Last Updated {{ source.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
                                                     </div>
                                                     <p class="panel-body-description">{{ source.description }}</p>
-                                                    <a class="panel-view-array color-brand">View Array</a>
                                                 </div>
                                             </div><!-- .panel -->
                                         </label>
