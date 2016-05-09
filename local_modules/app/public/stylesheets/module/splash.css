@@ -24,16 +24,23 @@
 	}
 }
 
-.splash-logo {
+.splash-logo,
+.splash-logo-letters {
 	margin-top: 15px;
 	margin-bottom: 35px;
 }
 
 @media (min-width: 768px) {
-	.splash-logo {
+	.splash-logo,
+	.splash-logo-letters {
 		margin-top: 165px;
 		margin-bottom: 70px;
 	}
+}
+
+.splash-logo-letters .letter {
+	display: inline-block;
+	width: 16.6667%;
 }
 
 .splash-intro {
