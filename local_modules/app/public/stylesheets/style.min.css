@@ -4890,7 +4890,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	bottom: 0;
 	padding-bottom: 30px;
 }
-.array-choropleth .filter-bar-fixed-bottom {
+.filter-bar-fixed-bottom {
 	z-index: 1;
 }
 .filter-tag {
