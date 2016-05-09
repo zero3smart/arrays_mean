@@ -5825,9 +5825,12 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 	}
 }
 .splash-scenarios-list {
+	margin-right: -15px;
 	margin-bottom: 80px;
+	margin-left: -15px;
 	padding-left: 0;
 	list-style-type: none;
+	text-align: center;
 }
 @media (min-width: 768px) {
 	.splash-scenarios-list {
@@ -5835,15 +5838,26 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 	}
 }
 .splash-scenarios-list-item {
+	display: inline-block;
+	margin-right: -0.15em;
 	margin-bottom: 40px;
+	padding-right: 15px;
+	padding-left: 15px;
+	width: 100%;
 	color: #9b9b9b;
+	vertical-align: top;
+	text-align: left;
 	font-weight: 600;
 	font-size: 18px;
 	line-height: 24px;
 }
+.splash-scenarios-list-item:last-child {
+	text-align: center;
+}
 @media (min-width: 768px) {
 	.splash-scenarios-list-item {
 		margin-bottom: 50px;
+		width: 50%;
 		font-size: 20px;
 		line-height: 26px;
 	}
