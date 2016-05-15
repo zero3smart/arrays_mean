@@ -13,9 +13,9 @@
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="icon-{{ currentView }}" aria-hidden="true"></span></a>
 					<ul class="dropdown-menu">
-						<li class="background-color-brand-hover {{ "active" if currentView == "gallery" }}"><a href="/array/{{ array_source_key }}/gallery{{ urlQuery_forSwitchingViews }}"><span class="icon-gallery color-brand" aria-hidden="true"></span> Gallery</a></li>
-						<li class="background-color-brand-hover {{ "active" if currentView == "choropleth" }}"><a href="/array/{{ array_source_key }}/choropleth{{ urlQuery_forSwitchingViews }}"><span class="icon-choropleth color-brand" aria-hidden="true"></span> Choropleth</a></li>
-						<li class="background-color-brand-hover {{ "active" if currentView == "chart" }}"><a href="/array/{{ array_source_key }}/chart{{ urlQuery_forSwitchingViews }}"><span class="icon-chart color-brand" aria-hidden="true"></span> Chart</a></li>
+						<li class="background-color-brand-hover menu-item-gallery {{ "active" if currentView == "gallery" }}"><a href="/array/{{ array_source_key }}/gallery{{ urlQuery_forSwitchingViews }}"><span class="icon-gallery color-brand" aria-hidden="true"></span> Gallery</a></li>
+						<li class="background-color-brand-hover menu-item-choropleth {{ "active" if currentView == "choropleth" }}"><a href="/array/{{ array_source_key }}/choropleth{{ urlQuery_forSwitchingViews }}"><span class="icon-choropleth color-brand" aria-hidden="true"></span> Choropleth</a></li>
+						<li class="background-color-brand-hover menu-item-chart {{ "active" if currentView == "chart" }}"><a href="/array/{{ array_source_key }}/chart{{ urlQuery_forSwitchingViews }}"><span class="icon-chart color-brand" aria-hidden="true"></span> Chart</a></li>
 					</ul>
 				</li>
 			</ul>
