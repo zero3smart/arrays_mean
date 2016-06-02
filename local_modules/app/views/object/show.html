@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block bodyWrapper %}
-    <body class="object object-show source-{{ array_source_key }}">
+    <body class="object-show source-{{ array_source_key }}">
         <div id="page" class="site">
             {% include "../partials/header_bar_objectDetails.html" %}
             {% include "../partials/sidebar_filter.html" %}
@@ -30,17 +30,20 @@
                                 <div class="object-content">
                                     <dl>
                                     {% for columnName in ordered_colNames_sansObjectTitleAndImages %}
+                                        {% set htmlOverrideFn = fe_objectShow_customHTMLOverrideFnsByColumnName[columnName] %}
                                         {% set columnValue = rowObject.rowParams[columnName] %}
                                         {% if columnValue %}
                                         <dt>{{ columnName }}</dt>
                                         <dd>
                                         {% if columnValue | isArray %}
-                                            <ul class="object-list">
-                                            {% set sortedArray = columnValue | alphaSortedArray %}
-                                            {% for arrayMember in sortedArray %}
-                                                <li class="object-list-item">{{ arrayMember }}</li>
-                                            {% endfor %}
-                                            </ul>
+                                            {% if columnValue | length %}
+                                                <ul class="object-list">
+                                                {% set sortedArray = columnValue | alphaSortedArray %}
+                                                {% for arrayMember in sortedArray %}
+                                                    <li class="object-list-item">{{ htmlOverrideFn(rowObject, arrayMember) | safe if htmlOverrideFn else arrayMember }}</li>
+                                                {% endfor %}
+                                                </ul>
+                                            {% endif %}
                                         {% else %}
                                             {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
                                             {% if shouldLink %}
@@ -49,7 +52,7 @@
                                             
                                                 <a href="/array/{{ array_source_key }}/gallery?filterJSON={{ filterJSONString }}" class="color-brand">
                                             {% endif %}
-                                                    {{ columnValue }}
+                                                    {{ htmlOverrideFn(rowObject, columnValue) | safe if htmlOverrideFn else columnValue }}
                                             {% if shouldLink %}
                                                 </a>
                                             {% endif %}

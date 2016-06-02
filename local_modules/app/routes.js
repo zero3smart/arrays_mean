@@ -69,10 +69,7 @@ constructor.prototype._mountRoutes_viewEndpoints_homepage = function()
         {
             env: process.env
         };
-        // res.render('homepage/homepage', bindData);
-
-        // Temporary redirect to splash page
-        res.redirect(302, '/splash');
+        res.render('homepage/homepage', bindData);
     });
 };
 constructor.prototype._mountRoutes_viewEndpoints_array = function()

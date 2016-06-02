@@ -6,7 +6,7 @@
 /* @end Base */
 
 /* @group Lib */
-@import url('lib/nvd3/nv.d3.css');
+
 /* @end Lib */
 
 /* @group Layout */
@@ -24,4 +24,5 @@
 @import url('module/object-show.css');
 @import url('module/chart.css');
 @import url('module/choropleth.css');
+@import url('module/splash.css');
 /* @end Module */

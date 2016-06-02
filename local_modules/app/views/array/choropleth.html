@@ -22,7 +22,7 @@
                         <div class="container-fluid">
                             <h1 class="array-title">{{ arrayTitle }}</h1>
                             <div class="array-meta">
-                                {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider"></span> <span class="array-meta-updated">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                                {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
                             </div>
                         </div>
                     </header><!-- .array-header -->
@@ -36,20 +36,22 @@
                                     <nav class="pull-left" role="navigation">
 
                                         <div class="dropdown sort-control">
-                                            <a class="btn dropdown-toggle dropdown-toggle-button ui-label" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                Map by <span class="sort-criteria">{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}</span>
+                                            <a class="btn dropdown-toggle dropdown-toggle-button ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                Map by <span class="sort-criteria color-brand-hover">{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}</span>
                                             </a>
-                                            <ul class="dropdown-menu" aria-labelledby="type">                                                
+                                            {% if colNames_orderedForMapByDropdown | length %}
+                                            <ul class="dropdown-menu" aria-labelledby="type">
                                                 {% set mapBy_queryParamJoinChar = "?" if routePath_withoutMapBy == routePath_base else "&" %}
                                                 {% for colName in colNames_orderedForMapByDropdown %}
                                                 <li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li>
                                                 {% endfor %}
                                             </ul>
+                                            {% endif %}
                                         </div>
                                         <!--
                                         <div class="dropdown sort-control">
                                             <a class="btn dropdown-toggle ui-label" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                Scale: <span class="sort-criteria">Uniform</span>
+                                                Scale: <span class="sort-criteria color-brand-hover">Uniform</span>
                                             </a>
                                             <ul class="dropdown-menu" aria-labelledby="group-by">
                                                 <li><a href="#">Uniform</a></li>
@@ -60,29 +62,39 @@
                                     </nav>
 
                                     <div class="pull-right">
-                                        <form action="{{ routePath_base }}" method="get" class="search-form">
-                                            <div class="dropdown-toggle-button-group" role="group">
-                                                <div class="dropdown sort-control sort-control-left search-control">
-                                                    {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
-                                                    
-                                                    <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                                                        Search <span class="search-criteria">{{ searchColToOutput }}</span>
-                                                    </a>
-                                                    <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
-                                                    <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
-                                                        {% for colName in colNames_orderedForSortByDropdown %}
-                                                        <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                </div>
-
-                                                <div class="sort-control sort-control-right">
-                                                    <div class="dropdown-toggle">
-                                                        <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ if searchQ else "" }}">
-                                                        <span class="icon-search search-icon"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <form action="{{ routePath_base }}" method="get" class="form-search">
+                                        	<div class="sort-control visible-xs">
+                                        		<div class="btn dropdown-toggle-button search-toggle">
+                                        			<span class="icon-search search-icon"></span>
+                                        		</div>
+                                        	</div>
+                                        	
+                                        	<div class="mobile-search-popover">
+	                                            <div class="dropdown-toggle-button-group" role="group">
+	                                                <div class="dropdown sort-control sort-control-left search-control">
+	                                                    {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
+	                                                    
+	                                                    <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+	                                                        Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
+	                                                    </a>
+	                                                    <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
+	                                                    {% if colNames_orderedForSortByDropdown | length %}
+	                                                    <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+	                                                        {% for colName in colNames_orderedForSortByDropdown %}
+	                                                        <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
+	                                                        {% endfor %}
+	                                                    </ul>
+	                                                    {% endif %}
+	                                                </div>
+	
+	                                                <div class="sort-control sort-control-right">
+	                                                    <div class="dropdown-toggle">
+	                                                        <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ if searchQ else "" }}">
+	                                                        <span class="icon-search search-icon hidden-xs"></span>
+	                                                    </div>
+	                                                </div>
+	                                            </div>
+	                                        </div>
 
                                             {% if sortBy %}
                                                 <input type="hidden" name="sortBy" value="{{ sortBy }}">
@@ -91,7 +103,7 @@
                                                 <input type="hidden" name="sortDir" value="{{ sortDir }}">
                                             {% endif %}
                                             {% if filterJSON %}
-                                                <input type="hidden" name="filterJSON" value="{{ filterJSON }}">
+                                                <input type="hidden" name="filterJSON" value="{{ filterJSON_nonURIEncodedVals }}"> {# it will get re-encoded #}
                                             {% endif %}
                                         </form>
                                     </div>
@@ -122,6 +134,11 @@
                     <script type="text/javascript">
                         var templateOutput_topValue = {{ highestValue if highestValue else 0 }};
                         var geoData = {{ featureCollection | dump | safe }};
+
+                        var filterObj = {{ filterObj | dump | safe }};
+                        var routePath_withoutFilter = '{{ routePath_withoutFilter }}';
+                        var routePath_base = '{{ routePath_base }}';
+                        var mapBy = '{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}';
                     </script>
 
                     <div class="array-content">
@@ -133,8 +150,6 @@
                 </section>
 
             </div><!-- #content -->
-
-            {% include "../partials/footer.html" %}
         </div><!-- #page -->
 
         {% include "../partials/modal.html" %}

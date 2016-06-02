@@ -1,4 +1,7 @@
 $(window).load(function() {
+
+    trackEvent("page load");
+    
     /**
      * Add class to body to prevent weird page width transitions
      */
@@ -18,7 +21,7 @@ $(document).ready(function() {
         var sourceKey = $parent.find("[name='source_key']").val();
         var default_filterJSON = $parent.find("[name='default_filterJSON']").val();
         var href = '/array/' + sourceKey + '/gallery';
-        if (default_filterJSON != '' && default_filterJSON != null && typeof default_filterJSON !== 'undefined') {
+        if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
             href += "?filterJSON=" + default_filterJSON;
         }
         window.location.href = href;
@@ -77,6 +80,15 @@ $(document).ready(function() {
 
         $('.search-control .dropdown-toggle').attr('aria-expanded', 'false');
         $(this).closest('.dropdown').removeClass('open');
+    });
+
+    /**
+     * Mobile search popover
+     */
+    $('.search-toggle').on('click', function(e) {
+        e.preventDefault();
+        $(this).toggleClass('search-active');
+        $('.mobile-search-popover').toggleClass('search-open');
     });
 
     /**
@@ -153,6 +165,47 @@ $(document).ready(function() {
     });
 });
 
+/**
+ * Construct filter object
+ * Analog of nunjucks filter constructedFilterObj() in app.js:63
+ */
+function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter) {
+    var filterObj = {};
+    var existing_filterCols = Object.keys(existing_filterObj);
+    for (var i = 0 ; i < existing_filterCols.length ; i++) {
+        var existing_filterCol = existing_filterCols[i];
+        if (existing_filterCol == this_filterCol) { 
+            continue; // never push other active values of this is filter col is already active
+            // which means we never allow more than one filter on the same column at present
+        }
+        var existing_filterVals = existing_filterObj[existing_filterCol];
+        //
+        var filterVals = [];
+        //
+        var existing_filterVals_length = existing_filterVals.length;
+        for (var j = 0 ; j < existing_filterVals_length ; j++) {
+            var existing_filterVal = existing_filterVals[j];
+            var encoded_existing_filterVal = existing_filterVal;
+            filterVals.push(encoded_existing_filterVal); 
+        }
+        //
+        if (filterVals.length !== 0) {
+            filterObj[existing_filterCol] = filterVals; // as it's not set yet
+        }
+    }
+    //
+    if (isThisAnActiveFilter === false) { // do not push if active, since we'd want the effect of unsetting it
+        var filterVals = filterObj[this_filterCol] || [];
+        if (filterVals.indexOf(this_filterVal) == -1) {
+            var encoded_this_filterVal = this_filterVal;
+            filterVals.push(encoded_this_filterVal);
+        }
+        filterObj[this_filterCol] = filterVals; // in case it's not set yet
+    }
+    //
+    return filterObj;
+}
+
 function _POST_toGetURLForSharingCurrentPage(callback)
 { // callback: (err:Error, share_url:String) -> Void
     var parameters = 
@@ -163,9 +216,19 @@ function _POST_toGetURLForSharingCurrentPage(callback)
     {
         var share_url = data.share_url;
         var err = null;
-        if (share_url == null || typeof share_url === 'undefined' || share_url == "") {
+        if (share_url === null || typeof share_url === 'undefined' || share_url === "") {
             err = new Error('Missing share_url from response.');
         }
         callback(err, share_url);
     }, "json");
+}
+
+function trackEvent(eventName, eventPayload)
+{
+    if (typeof eventPayload === 'undefined' || eventPayload === null) {
+        eventPayload = {};
+    }
+    var basePayload = { source: "client" }; // this lets us identify the source vs the server
+    eventPayload = $.extend(basePayload, eventPayload);
+    mixpanel.track(eventName, eventPayload);
 }

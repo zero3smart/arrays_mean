@@ -2,7 +2,12 @@
 //
 // NOTE: Run this from arrays-server-js via bin/_*_MVP_DB_seed
 //
-require('dotenv').config();
+var dotenv_path = __dirname + "/../../.env." + process.env.NODE_ENV;
+var dotenv_config =
+{
+    path: dotenv_path
+};
+require('dotenv').config(dotenv_config);
 //
 var dataSourceDescriptions = require('./MVP_datasource_descriptions').Descriptions;
 //

@@ -228,7 +228,8 @@ constructor.prototype.GenerateFieldsByJoining_comparingWithMatchFn
                ofOtherRawSrcUID, 
                andOtherRawSrcImportRevision,
                withLocalField, 
-               obtainingValueFromField, 
+               obtainingValueFromField_orUndefined, 
+               or_formingRelationship,
                doesFieldMatch_fn,
                callback)
 {
@@ -284,19 +285,21 @@ constructor.prototype.GenerateFieldsByJoining_comparingWithMatchFn
                 if (ofTheseProcessedRowObjectDocs_length == 0) {
                     var errorString = "No rows in " + pKey_ofDataSrcDocBeingProcessed + ".";
                     var err = new Error(errorString);
-                    winston.error("❌  Error while generating field by reverse-join:", err);
+                    winston.error("❌  Error while generating field by join:", err);
                     callback(err);
                     
                     return;
                 }
+                var findingMatchOnFields_length = findingMatchOnFields.length;
+                var getIdInsteadOfValueFromField = typeof obtainingValueFromField_orUndefined === 'undefined';                
+                //
                 for (var i = 0 ; i < ofTheseProcessedRowObjectDocs.length ; i++) {
                     if (i != 0 && i % 1000 == 0) {
-                        console.log("Local: " + pKey_ofDataSrcDocBeingProcessed + ": " + i + " / " + ofTheseProcessedRowObjectDocs_length);
+                        console.log("" + i + " / " + ofTheseProcessedRowObjectDocs_length + " of local '" + pKey_ofDataSrcDocBeingProcessed + "'  *  " + fromProcessedRowObjectDocs_length + " of foreign '" + pKey_ofFromDataSourceDoc + "'");
                     }
                     var ofTheseProcessedRowObjectDoc = ofTheseProcessedRowObjectDocs[i];
                     var localFieldValue = ofTheseProcessedRowObjectDoc.rowParams["" + withLocalField];
-                    // now check if localFieldValue contains any of the demonyms
-                    var findingMatchOnFields_length = findingMatchOnFields.length;
+                    // now check if localFieldValue contains any of the foreignFieldValues in the matchOn fields
                     var wasFound = false;
                     var matchingForeignValues = [];
                     for (var j = 0 ; j < findingMatchOnFields_length ; j++) {
@@ -310,11 +313,36 @@ constructor.prototype.GenerateFieldsByJoining_comparingWithMatchFn
                             var doesFieldMatch = doesFieldMatch_fn(localFieldValue, foreignFieldValue);
                             if (doesFieldMatch == true) {
                                 wasFound = true;
-                                var foreignValueToExtract = fromProcessedRowObjectDoc.rowParams[obtainingValueFromField];
+                                if (typeof obtainingValueFromField_orUndefined === 'undefined') {
+                                    if (or_formingRelationship == false) {
+                                        var errorString = "Generate Join parameter configuration conflict: obtainingValueFromField was undefined as " + obtainingValueFromField_orUndefined + " but relationship=true";
+                                        var err = new Error(errorString);
+                                        winston.error("❌  Error while generating field by join:", err);
+                                        callback(err);
+                                    
+                                        return;
+                                    }
+                                } else {
+                                    if (or_formingRelationship == true) {
+                                        var errorString = "Generate Join parameter configuration conflict: obtainingValueFromField was not undefined as " + obtainingValueFromField_orUndefined + " but relationship=false";
+                                        var err = new Error(errorString);
+                                        winston.error("❌  Error while generating field by join:", err);
+                                        callback(err);
+                                    
+                                        return;
+                                    }
+                                }
+                                var foreignValueToExtract;
+                                if (getIdInsteadOfValueFromField == true) {
+                                    foreignValueToExtract = fromProcessedRowObjectDoc._id;
+                                } else {
+                                    foreignValueToExtract = fromProcessedRowObjectDoc.rowParams[obtainingValueFromField_orUndefined];
+                                }
+                                // console.log("foreignValueToExtract " , foreignValueToExtract)
                                 if (typeof foreignValueToExtract === 'undefined') {
-                                    var errorString = "Value at \"" + obtainingValueFromField + "\" of foreign row object of \"" + ofOtherRawSrcUID + "\" was undefined… doc: " + JSON.stringify(fromProcessedRowObjectDoc, null, '  ');
+                                    var errorString = "Value at \"" + obtainingValueFromField_orUndefined + "\" of foreign row object of \"" + ofOtherRawSrcUID + "\" was undefined… doc: " + JSON.stringify(fromProcessedRowObjectDoc, null, '  ');
                                     var err = new Error(errorString);
-                                    winston.error("❌  Error while generating field by reverse-join:", err);
+                                    winston.error("❌  Error while generating field by join:", err);
                                     callback(err);
                                     
                                     return;
@@ -332,36 +360,32 @@ constructor.prototype.GenerateFieldsByJoining_comparingWithMatchFn
                             } // otherwise, keep going until we have all the possible values of all fields from all rows
                         }
                     }
+                    // if (wasFound == false) {
+                    //  winston.warn("⚠️  Still didn't find a result for fieldValue " + localFieldValue);
+                    // }
+                    // instead of checking wasFound == true here, we still want to persist 
+                    // a value even if it wasn't found - so that the field exists
+                    var persistableValue;
                     if (wasFound == true) {
-                        var persistableValue = undefined;
                         if (isSingular) {
                             persistableValue = matchingForeignValues ? (matchingForeignValues.length > 0 ? matchingForeignValues[0] : null) : null;
                         } else {
                             persistableValue = matchingForeignValues;
                         }
-                        if (typeof persistableValue === 'undefined') {
-                            var errorString = "Value obtained by joining \"" + findingMatchOnFields + "\" of a \"" + ofOtherRawSrcUID + "\" was undefined… doc: " + JSON.stringify(ofTheseProcessedRowObjectDoc, null, '  ');
-                            var err = new Error(errorString);
-                            winston.error("❌  Error while generating field by reverse-join:", err);
-                            callback(err);
-
-                            return;
-                        }
-                        //
-                        var bulkOperationQueryFragment =
-                        {
-                            pKey: ofTheseProcessedRowObjectDoc.pKey,
-                            srcDocPKey: ofTheseProcessedRowObjectDoc.srcDocPKey
-                        };
-                        var updateFragment = {};
-                        updateFragment["$set"] = {};
-                        updateFragment["$set"]["rowParams." + generateFieldNamed] = persistableValue; 
-                        // ^ Note that we're only updating a specific path, not the whole rowParams value
-                        // console.log("updateFragment…", updateFragment);
-                        bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update(updateFragment);
                     } else {
-                        // winston.warn("⚠️  Still didn't find a result for fieldValue " + localFieldValue);
+                        persistableValue = null;
                     }
+                    //
+                    var bulkOperationQueryFragment =
+                    {
+                        pKey: ofTheseProcessedRowObjectDoc.pKey,
+                        srcDocPKey: ofTheseProcessedRowObjectDoc.srcDocPKey
+                    };
+                    var updateFragment = {};
+                    updateFragment["$set"] = {};
+                    updateFragment["$set"]["rowParams." + generateFieldNamed] = persistableValue; 
+                    // ^ Note that we're only updating a specific path, not the whole rowParams value
+                    bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update(updateFragment);
                 }
                 //
                 proceedToPersist();

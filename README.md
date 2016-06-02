@@ -62,13 +62,14 @@
 2. Execute `grunt build` to rebuild the main CSS file, style.min.css
 3. Execute `grunt watch` to start LiveReload which will rebuild the css and reload the page whenever a CSS, HTML, or JS file is saved
 
-##### V. Creating your `.env` file
+##### V. Creating your `.env.development` and `.env.production` files
 
 Environment-related secrets such as the production password database are not committed to this repository as a security-related best practice.
 
-In order to add them you need to create a file named ".env" in the root directory of this repository at `arrays-server-js/.env` and then fill it with the content of the following Google Doc:
+In order to add them (and to support both local development and production deployment) you need to create two files named ".env.development" and ".env.production" in the root directory of this repository at `arrays-server-js/.env*` and then fill them respectively with the content of the following Google Docs:
 
-[Arrays - Server - .env](https://docs.google.com/document/d/1d1IoAHgGPB4bwWGaYprtBFSVoLEcoEuw4WdruUt-v9k/)
+[Arrays - Server - .env.production](https://docs.google.com/document/d/1d1IoAHgGPB4bwWGaYprtBFSVoLEcoEuw4WdruUt-v9k/)
+[Arrays - Server - .env.development Template](https://docs.google.com/document/d/15-SkjQHqznSMOWevEH6yZvshdNqMzN4RErMhOPFz3jc/)
 
 ###### VI. (Not necessary as of this edit) Installing git submodules
 

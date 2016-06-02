@@ -176,6 +176,8 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             return;
         }
     }
+    // We must re-URI-encode the filter vals since they get decoded    
+    var filterJSON_uriEncodedVals = _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
     //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
@@ -328,7 +330,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
         }
         if (isFilterActive) {
-            var appendQuery = "filterJSON=" + filterJSON;
+            var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
             routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
             routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
             routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
@@ -372,7 +374,8 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
             filterObj: filterObj,
-            filterJSON: filterJSON,
+            filterJSON_nonURIEncodedVals: filterJSON,
+            filterJSON: filterJSON_uriEncodedVals,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
@@ -441,6 +444,8 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             return;
         }
     }
+    // We must re-URI-encode the filter vals since they get decoded    
+    var filterJSON_uriEncodedVals = _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
     //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
@@ -631,7 +636,7 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
         }
         if (isFilterActive) {
-            var appendQuery = "filterJSON=" + filterJSON;
+            var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
             routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
             urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
         }
@@ -658,7 +663,8 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             groupBy: groupBy,
             //
             filterObj: filterObj,
-            filterJSON: filterJSON,
+            filterJSON_nonURIEncodedVals: filterJSON,
+            filterJSON: filterJSON_uriEncodedVals,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
@@ -727,6 +733,8 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             return;
         }
     }
+    // We must re-URI-encode the filter vals since they get decoded    
+    var filterJSON_uriEncodedVals = _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
     //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
@@ -870,7 +878,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
         }
         if (isFilterActive) {
-            var appendQuery = "filterJSON=" + filterJSON;
+            var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
             routePath_withoutMapBy      = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutMapBy,     appendQuery, routePath_base);
             urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
         }
@@ -902,7 +910,8 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             mapBy: mapBy,
             //
             filterObj: filterObj,
-            filterJSON: filterJSON,
+            filterJSON_nonURIEncodedVals: filterJSON,
+            filterJSON: filterJSON_uriEncodedVals,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
@@ -954,6 +963,61 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
             
             return;
         }
+        _proceedTo_hydrateAllRelationships(rowObject);
+    });
+    function _proceedTo_hydrateAllRelationships(rowObject)
+    {
+        var afterImportingAllSources_generate = dataSourceDescription.afterImportingAllSources_generate;
+        if (typeof afterImportingAllSources_generate !== 'undefined') {
+            async.each(afterImportingAllSources_generate, function(afterImportingAllSources_generate_description, eachCB) 
+            {
+                if (afterImportingAllSources_generate_description.relationship == true) {
+                    var by = afterImportingAllSources_generate_description.by;
+                    var relationshipSource_uid = by.ofOtherRawSrcUID;
+                    var relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
+                    var relationshipSource_pKey = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(relationshipSource_uid, relationshipSource_importRevision);
+                    var rowObjectsOfRelationship_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(relationshipSource_pKey);
+                    var rowObjectsOfRelationship_mongooseModel = rowObjectsOfRelationship_mongooseContext.Model;
+                    //
+                    var field = afterImportingAllSources_generate_description.field;
+                    var isSingular = afterImportingAllSources_generate_description.singular;
+                    var valueInDocAtField = rowObject.rowParams[field];
+                    var findQuery = {};
+                    if (isSingular == true) {
+                        findQuery._id = valueInDocAtField;
+                    } else {
+                        findQuery._id = { $in: valueInDocAtField };
+                    }
+                    rowObjectsOfRelationship_mongooseModel.find(findQuery, function(err, hydrationFetchResults) 
+                    {
+                        if (err) {
+                            eachCB(err);
+                        
+                            return;
+                        }
+                        var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
+                        rowObject.rowParams[field] = hydrationValue; // a doc or list of docs
+                        //
+                        eachCB();
+                    });
+                } else {
+                    eachCB(); // nothing to hydrate
+                }
+            }, function(err) 
+            {
+                if (err) {
+                    callback(err, null);
+        
+                    return;
+                }
+                _proceedTo_prepareDataAndCallBack(rowObject);
+            });
+        } else {
+            _proceedTo_prepareDataAndCallBack(rowObject);
+        }
+    }
+    function _proceedTo_prepareDataAndCallBack(rowObject)
+    {
         //
         var fieldsNotToLinkAsGalleryFilter_byColName = {}; // we will translate any original keys to human-readable later
         var fe_filters_fieldsNotAvailable = dataSourceDescription.fe_filters_fieldsNotAvailable;
@@ -1032,10 +1096,12 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
             //
             ordered_colNames_sansObjectTitleAndImages: alphaSorted_colNames_sansObjectTitle,
             //
-            fieldsNotToLinkAsGalleryFilter_byColName: fieldsNotToLinkAsGalleryFilter_byColName
+            fieldsNotToLinkAsGalleryFilter_byColName: fieldsNotToLinkAsGalleryFilter_byColName,
+            //
+            fe_objectShow_customHTMLOverrideFnsByColumnName: dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName || {}
         };
         callback(null, data);
-    });
+    }
 }
 //
 //
@@ -1315,3 +1381,25 @@ function _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnName
     return truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill;
 }
 //
+function _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj)
+{
+    var reconstructedURLEncodedFilterObjForFilterJSONString = {}; // to construct
+    var filterObj_keys = Object.keys(filterObj);
+    var filterObj_keys_length = filterObj_keys.length;
+    for (var i = 0 ; i < filterObj_keys_length ; i++) {
+        var filterObj_key = filterObj_keys[i];
+        var filterObj_key_vals = filterObj[filterObj_key];
+        // we need to re-URI-encode filterObj_key_vals elements and then stringify
+        var filterObj_key_vals_length = filterObj_key_vals.length;
+        var encodedVals = [];
+        for (var j = 0 ; j < filterObj_key_vals_length ; j++) {
+            var filterObj_key_val = filterObj_key_vals[j];
+            var encodedVal = encodeURIComponent(filterObj_key_val);
+            encodedVals.push(encodedVal);
+        }
+        reconstructedURLEncodedFilterObjForFilterJSONString[filterObj_key] = encodedVals;
+    }
+    var filterJSON_uriEncodedVals = JSON.stringify(reconstructedURLEncodedFilterObjForFilterJSONString);
+    
+    return filterJSON_uriEncodedVals;
+}

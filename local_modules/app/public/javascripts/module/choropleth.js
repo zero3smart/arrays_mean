@@ -11,10 +11,28 @@ var layer = 'contour',
 	names = [];
 
 /**
+ * Logarithmic scale
+ */
+function logScale(currentBreak, numBreaks, topValue) {
+	// current break will be between 0 and numBreaks
+	var minp = 0;
+	var maxp = numBreaks;
+
+	// The result should be between 1 an topValue
+	var minv = Math.log(1);
+	var maxv = Math.log(topValue);
+
+	// calculate adjustment factor
+	var scale = (maxv - minv) / (maxp - minp);
+
+	return Math.exp(minv + scale * (currentBreak - minp));
+}
+
+/**
  * Generate layer breakpoints, layer names, and opacity values;
  */
 for (i = 0; i < numBreaks; i++) {
-	breaks[i] = Math.round(topValue * (i / numBreaks));
+	breaks[i] = logScale(i, numBreaks, topValue);
 	opacities[i] = (i / numBreaks);
 	names[i] = 'layer-' + i;
 }
@@ -81,23 +99,41 @@ map.on('load', function () {
 	/**
 	 * Show popup on country hover
 	 */
-	 map.on('mousemove', function(e) {
+	map.on('mousemove', function(e) {
+	var features = map.queryRenderedFeatures(e.point, { layers: names });
+
+	// Change cursor style
+	map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+
+	if (!features.length) {
+		popup.remove();
+		return;
+	}
+
+	var feature = features[0];
+
+	/**
+	 * Populate the popup and set its coordinates based on the feature found
+	 */
+	popup.setLngLat(e.lngLat)
+		.setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + feature.properties.total + '</span>')
+		.addTo(map);
+	});
+
+	 /**
+	  * Filter by country on click
+	  */
+	map.on('click', function(e) {
 		var features = map.queryRenderedFeatures(e.point, { layers: names });
-
-		// Change cursor style
-		map.getCanvas().style.cursor = (features.length) ? 'default' : '';
-
-		if (!features.length) {
-			popup.remove();
-			return;
-		}
 
 		var feature = features[0];
 
-		// Populate the popup and set its coordinates
-		// based on the feature found.
-		popup.setLngLat(e.lngLat)
-			.setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + feature.properties.total + '</span>')
-			.addTo(map);
-	 });
+		var queryParamJoinChar = routePath_withoutFilter == routePath_base ? "?" : "&";
+
+		var filterObjForThisFilterColVal = constructedFilterObj(filterObj, mapBy, feature.properties.name, false);
+		var filterJSONString = JSON.stringify(filterObjForThisFilterColVal);
+		var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString;
+
+		window.location = urlForFilterValue;
+	});
 });

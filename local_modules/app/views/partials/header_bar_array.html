@@ -2,19 +2,20 @@
 <nav class="navbar navbar-default navbar-fixed-top background-color-brand">
 	<div class="container-fluid container-full-width">
 		<div class="navbar-brand-container">
-			<a class="navbar-brand navbar-brand-arrays" href="/array/create">Arrays</a>
+			<a class="navbar-brand navbar-brand-arrays" href="/array/create">Arrays</a><br />
+			<a class="navbar-brand navbar-brand-array-title" href="/array/{{ array_source_key }}/gallery{{ urlQuery_forSwitchingViews }}">{{ arrayTitle }}</a>
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
 				<li>
-					<a href="#" class="sidebar-filter-slide-toggle"><span class="icon-filter" aria-hidden="true"></span></a>
+					<a href="#" class="sidebar-filter-slide-toggle"><span class="icon-filter" aria-hidden="true"></span>{% if isFilterActive %}<span class="sidebar-filter-active background-color-brand"></span>{% endif %}</a>
 				</li>
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="icon-{{ currentView }}" aria-hidden="true"></span></a>
 					<ul class="dropdown-menu">
-						<li class="background-color-brand-hover {{ "active" if currentView == "gallery" }}"><a href="/array/{{ array_source_key }}/gallery{{ urlQuery_forSwitchingViews }}"><span class="icon-gallery color-brand" aria-hidden="true"></span> Gallery</a></li>
-						<li class="background-color-brand-hover {{ "active" if currentView == "choropleth" }}"><a href="/array/{{ array_source_key }}/choropleth{{ urlQuery_forSwitchingViews }}"><span class="icon-choropleth color-brand" aria-hidden="true"></span> Choropleth</a></li>
-						<li class="background-color-brand-hover {{ "active" if currentView == "chart" }}"><a href="/array/{{ array_source_key }}/chart{{ urlQuery_forSwitchingViews }}"><span class="icon-chart color-brand" aria-hidden="true"></span> Chart</a></li>
+						<li class="background-color-brand-hover menu-item-gallery {{ "active" if currentView == "gallery" }}"><a href="/array/{{ array_source_key }}/gallery{{ urlQuery_forSwitchingViews }}"><span class="icon-gallery color-brand" aria-hidden="true"></span> Gallery</a></li>
+						<li class="background-color-brand-hover menu-item-choropleth {{ "active" if currentView == "choropleth" }}"><a href="/array/{{ array_source_key }}/choropleth{{ urlQuery_forSwitchingViews }}"><span class="icon-choropleth color-brand" aria-hidden="true"></span> Choropleth</a></li>
+						<li class="background-color-brand-hover menu-item-chart {{ "active" if currentView == "chart" }}"><a href="/array/{{ array_source_key }}/chart{{ urlQuery_forSwitchingViews }}"><span class="icon-chart color-brand" aria-hidden="true"></span> Chart</a></li>
 					</ul>
 				</li>
 			</ul>

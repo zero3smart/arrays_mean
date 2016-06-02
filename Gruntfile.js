@@ -102,29 +102,11 @@ module.exports = function(grunt) {
 
     // Copy assets
     copy: {
-      arraysSplash: {
-        expand: true,
-        cwd: 'bower_components/arrays-splash/dist/',
-        src: '**',
-        dest: 'local_modules/app/public/splash/'
-      },
       d3: {
         expand: true,
         cwd: 'bower_components/d3',
         src: 'd3.js',
         dest: 'local_modules/app/public/javascripts/lib/d3'
-      },
-      nvd3js: {
-        expand: true,
-        cwd: 'bower_components/nvd3/build',
-        src: 'nv.d3.js',
-        dest: 'local_modules/app/public/javascripts/lib/nvd3'
-      },
-      nvd3css: {
-        expand: true,
-        cwd: 'bower_components/nvd3/build',
-        src: 'nv.d3.css',
-        dest: 'local_modules/app/public/stylesheets/lib/nvd3'
       },
       worldGeoJson: {
         expand: true,
@@ -137,6 +119,12 @@ module.exports = function(grunt) {
         cwd: 'bower_components/sharrre',
         src: 'jquery.sharrre.js',
         dest: 'local_modules/app/public/javascripts/lib/sharrre'
+      },
+      scrollmagic: {
+        expand: true,
+        cwd: 'bower_components/scrollmagic/scrollmagic/uncompressed',
+        src: 'ScrollMagic.js',
+        dest: 'local_modules/app/public/javascripts/lib/scrollmagic'
       }
     },
 

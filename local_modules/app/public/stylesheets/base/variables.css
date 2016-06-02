@@ -5,6 +5,7 @@
 	--color-primary: #feb600;
 	
 	--color-brand-blue: #005cff;
+	--color-brand-pink: #fe00ff;
 	
 	--color-background: #fafafa;
 	
@@ -21,8 +22,10 @@
 	--color-divider: #d8d8d8;
 	
 	--font-family-calibre: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	--font-family-georgia: Georgia, "Times New Roman", Times, serif;
 	
 	--sidebar-width: 280px;
+	--legend-width: 300px;
 	
 	--box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	--box-shadow-dark: 0 2px 4px rgba(0, 0, 0, 0.5);
@@ -51,6 +54,12 @@ a.color-brand:hover,
 a.color-brand:focus,
 a.color-brand:active,
 .sidebar-filter-toggle .color-brand {
+	color: var(--color-primary);
+}
+
+.color-brand-hover:hover,
+.dropdown-toggle:hover .color-brand-hover,
+.open .color-brand-hover {
 	color: var(--color-primary);
 }
 
@@ -84,6 +93,12 @@ a.color-brand:active,
 	color: var(--color-brand-blue);
 }
 
+.source-moma_artists-r1 .color-brand-hover:hover,
+.source-moma_artists-r1 .dropdown-toggle:hover .color-brand-hover,
+.source-moma_artists-r1 .open .color-brand-hover {
+	color: var(--color-brand-blue);
+}
+
 .source-moma_artists-r1 .background-color-brand,
 .source-moma_artists-r1 .background-color-brand-hover:hover,
 .source-moma_artists-r1 .background-color-brand-hover:focus,
@@ -104,3 +119,48 @@ a.color-brand:active,
 }
 
 /* @end  Blue */
+
+/* @group Pink */
+
+.source-nasa_labs_facilities-r2 .color-brand,
+.source-nasa_labs_facilities-r2 a.color-brand:hover,
+.source-nasa_labs_facilities-r2 a.color-brand:focus,
+.source-nasa_labs_facilities-r2 a.color-brand:active,
+.source-nasa_labs_facilities-r2 .sidebar-filter-toggle .color-brand {
+	color: var(--color-brand-pink);
+}
+
+.source-nasa_labs_facilities-r2 .color-brand-hover:hover,
+.source-nasa_labs_facilities-r2 .dropdown-toggle:hover .color-brand-hover,
+.source-nasa_labs_facilities-r2 .open .color-brand-hover {
+	color: var(--color-brand-pink);
+}
+
+.source-nasa_labs_facilities-r2 .background-color-brand,
+.source-nasa_labs_facilities-r2 .background-color-brand-hover:hover,
+.source-nasa_labs_facilities-r2 .background-color-brand-hover:focus,
+.source-nasa_labs_facilities-r2 .background-color-brand-hover:active,
+.source-nasa_labs_facilities-r2 .background-color-brand-hover > a:hover,
+.source-nasa_labs_facilities-r2 .background-color-brand-hover > a:focus,
+.source-nasa_labs_facilities-r2 .background-color-brand-hover > a:active ,
+.source-nasa_labs_facilities-r2 .background-color-brand-hover.active > a {
+	background-color: var(--color-brand-pink);
+}
+
+.source-nasa_labs_facilities-r2 .border-color-brand {
+	border-color: var(--color-brand-pink);
+}
+
+.source-nasa_labs_facilities-r2 .border-top-color-brand {
+	border-top-color: var(--color-brand-pink);
+}
+
+/* @end  Pink */
+
+/* @group Temporarily hide choropleth */
+
+.source-nasa_labs_facilities-r2 .menu-item-choropleth {
+	display: none;
+}
+
+/* @end Temporarily hide choropleth */
