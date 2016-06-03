@@ -1,0 +1,1 @@
+until bin/__DEVELOPMENT__MVP_DB_seed__enterImageScrapingDirectly; do echo 'Trying again…' ; sleep 2; done
