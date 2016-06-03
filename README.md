@@ -78,7 +78,7 @@ In order to add them (and to support both local development and production deplo
 3. (Optional) Recursively checkout 'develop' on nested submodules.
 
 
-#### iii. Log into Google Cloud Platform
+#### iii. Signing into Google Cloud Platform
 
 1. Download the archive file and extract: https://cloud.google.com/sdk/docs/quickstart-mac-os-x
 2. Run `./google-cloud-sdk/install.sh` from the containing folder.
