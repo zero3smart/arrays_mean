@@ -69,13 +69,20 @@ Environment-related secrets such as the production password database are not com
 In order to add them (and to support both local development and production deployment) you need to create two files named ".env.development" and ".env.production" in the root directory of this repository at `arrays-server-js/.env*` and then fill them respectively with the content of the following Google Docs:
 
 * [Arrays - Server - .env.production](https://docs.google.com/document/d/1d1IoAHgGPB4bwWGaYprtBFSVoLEcoEuw4WdruUt-v9k/)
-* [Arrays - Server - .env.development Template](https://docs.google.com/document/d/15-SkjQHqznSMOWevEH6yZvshdNqMzN4RErMhOPFz3jc/)
+* [Arrays - Server - .env.development](https://docs.google.com/document/d/15-SkjQHqznSMOWevEH6yZvshdNqMzN4RErMhOPFz3jc/)
 
 ###### VI. (Not necessary as of this edit) Installing git submodules
 
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
 2. Execute `git submodule init` and then `git submodule update`.
 3. (Optional) Recursively checkout 'develop' on nested submodules.
+
+
+###### VII. Log into Google Cloud Platform
+
+1. Download the archive file and extract: https://cloud.google.com/sdk/docs/quickstart-mac-os-x
+2. Run `./google-cloud-sdk/install.sh` from the containing folder.
+3. Run `gcloud init`
 
 
 #### iii. Seeding the local database with MVP CSV content
@@ -90,15 +97,6 @@ In order to add them (and to support both local development and production deplo
 
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
 2. Execute [`bin/start_dev_app`](bin/start_dev_app)
-
-
----------------------
-
-### Log into Google Cloud Platform
-
-1. Download the archive file and extract: https://cloud.google.com/sdk/docs/quickstart-mac-os-x
-2. Run `./google-cloud-sdk/install.sh` from the containing folder.
-3. Run `gcloud init`
 
 
 ---------------------
