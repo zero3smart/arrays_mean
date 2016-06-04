@@ -140,6 +140,11 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         
         return;
     }
+    if (dataSourceDescription.fe_views.gallery == false) {
+        callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+        
+        return;
+    }
     var fe_visible = dataSourceDescription.fe_visible;
     if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
         callback(new Error("That data source was set to be not visible: " + source_pKey), null);
@@ -364,6 +369,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             docs: docs,
             //
             fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
+            view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
             humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
             //
             hasThumbs: hasThumbs,
@@ -411,6 +417,11 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
     if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
         callback(new Error("No data source with that source pkey " + source_pKey), null);
+        
+        return;
+    }
+    if (dataSourceDescription.fe_views.chart == false) {
+        callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
         
         return;
     }
@@ -700,6 +711,11 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
     if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
         callback(new Error("No data source with that source pkey " + source_pKey), null);
+        
+        return;
+    }
+    if (dataSourceDescription.fe_views.choropleth == false) {
+        callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
         
         return;
     }
