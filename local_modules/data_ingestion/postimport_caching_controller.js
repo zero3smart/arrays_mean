@@ -101,27 +101,16 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
             var key = feVisible_filter_keys[i];
             uniqueFieldValuesByFieldName[key] = [];
         }
+
         async.each(feVisible_filter_keys, function(key, cb) 
         {            
-            // var uniqueStage = { $group : { _id: {}, count: { $sum: 1 } } };
-            // uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;
-
-            // processedRowObjects_mongooseModel.aggregate([
-            //     uniqueStage,
-            //     { $sort : { count : -1 } },
-            //     { $limit : limitToNTopValues }                
-            // ]).allowDiskUse(true).exec(function(err, results)
-
-            // db.test.aggregate({$unwind:"$steps"}, 
-            //                   {$match:{"steps.action":"start"}},
-            //                   {$group: { _id: null, count: { $sum: 1 } } })
-
 
             var uniqueStage = { $group : { _id: {}, count: { $sum: 1 } } };
             uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;
 
             processedRowObjects_mongooseModel.aggregate([
-                { $unwind: "$" + "rowParams." + key },
+                
+                { $unwind: "$" + "rowParams." + key }, // requires MongoDB 3.2, otherwise throws an error if non-array
                 uniqueStage,
                 { $sort : { count : -1 } },
                 { $limit : 50 }                
