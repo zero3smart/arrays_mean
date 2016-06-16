@@ -97,19 +97,34 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
         var feVisible_filter_keys = imported_data_preparation.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
         var feVisible_filter_keys_length = feVisible_filter_keys.length;
         var uniqueFieldValuesByFieldName = {};
-        for (var i = 0 ; i < feVisible_filter_keys_length ; i++) {
+        for (var i = 0 ; i < feVisible_filter_keys_length; i++) {
             var key = feVisible_filter_keys[i];
             uniqueFieldValuesByFieldName[key] = [];
         }
         async.each(feVisible_filter_keys, function(key, cb) 
         {            
+            // var uniqueStage = { $group : { _id: {}, count: { $sum: 1 } } };
+            // uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;
+
+            // processedRowObjects_mongooseModel.aggregate([
+            //     uniqueStage,
+            //     { $sort : { count : -1 } },
+            //     { $limit : limitToNTopValues }                
+            // ]).allowDiskUse(true).exec(function(err, results)
+
+            // db.test.aggregate({$unwind:"$steps"}, 
+            //                   {$match:{"steps.action":"start"}},
+            //                   {$group: { _id: null, count: { $sum: 1 } } })
+
+
             var uniqueStage = { $group : { _id: {}, count: { $sum: 1 } } };
             uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;
-            //
+
             processedRowObjects_mongooseModel.aggregate([
+                { $unwind: "$" + "rowParams." + key },
                 uniqueStage,
                 { $sort : { count : -1 } },
-                { $limit : limitToNTopValues }                
+                { $limit : 50 }                
             ]).allowDiskUse(true).exec(function(err, results)
             {
                 if (err) {
@@ -122,7 +137,10 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
 
                     return;
                 }
-                var values = results.map(function(el) { return el._id; });
+                var valuesRaw = results.map(function(el) { return el._id; });
+
+                // flatten array of arrays (for nested tables)
+                var values = [].concat.apply([], valuesRaw);
                 //
                 // remove illegal values
                 var illegalValues = []; // default val
@@ -144,6 +162,10 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                         values.splice(idxOfIllegalVal, 1);
                     }
                 }
+                //
+                // sort the array alphabetically
+                values.sort();
+                //
                 // Note here we use the human-readable key. We decode it back to the original key at query-time
                 delete uniqueFieldValuesByFieldName[key]; // so no stale values persist in hash
                 var finalizedStorageKey = dataSourceDescription.fe_displayTitleOverrides[key] || key;

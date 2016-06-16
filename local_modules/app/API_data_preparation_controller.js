@@ -76,6 +76,10 @@ constructor.prototype.BindDataFor_datasetsListing = function(callback)
             if (typeof dataSourceDescription.fe_filters_default !== 'undefined') {
                 default_filterJSON = JSON.stringify(dataSourceDescription.fe_filters_default || {}); // "|| {}" for safety
             }
+            var default_listed = true; // list Arrays by default
+            if (dataSourceDescription.fe_listed == false) {
+                default_listed = false;
+            }
             var sourceDescription = 
             {
                 key: source_pKey,
@@ -83,6 +87,7 @@ constructor.prototype.BindDataFor_datasetsListing = function(callback)
                 title: dataSourceDescription.title,
                 description: dataSourceDescription.description,
                 urls: dataSourceDescription.urls,
+                arrayListed: default_listed,
                 //
                 default_filterJSON: default_filterJSON
             }
@@ -1253,6 +1258,15 @@ function _activeFilter_matchCondition_orErrDescription(dataSourceDescription, fi
              }
         }
         matchCondition = { };
+
+        // escape Mongo reserved characters in Mongo
+        realFilterValue = realFilterValue.split("(").join("\\(")
+                                         .split(")").join("\\)")
+                                         .split("+").join("\\+")
+                                         .split("$").join("\\$");
+
+        winston.info(realFilterValue);
+
         matchCondition[realColumnName_path] = { $regex: realFilterValue, $options: "i" };
     }
     if (typeof matchCondition === 'undefined') {

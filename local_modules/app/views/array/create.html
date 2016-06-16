@@ -29,6 +29,7 @@
                                     </header>
 
                                     {% for source in sources %}
+                                    {% if source.arrayListed %}
                                     <div class="radio">
                                         <label>
                                             <input type="radio" name="source_key" value="{{ source.key }}" class="hidden">
@@ -54,6 +55,7 @@
                                             </div><!-- .panel -->
                                         </label>
                                     </div><!-- .radio -->
+                                    {% endif %}
                                     {% endfor %}
                                 </form>
                             </section>

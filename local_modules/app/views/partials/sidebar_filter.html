@@ -51,24 +51,24 @@
                     </a>
                     <ul id="column-{{ loop.index }}" class="sidebar-filter-subgroup collapse" aria-expanded="false">
                         {% for fieldValue in fieldValues %}
-                        {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
-                        {% set isThisAnActiveFilter = false %}
-                        {% if isThisAnActiveFilterColumn %}
-                            {% if filterObj[fieldName] | doesArrayContain(fieldValue) %}
-                                {% set isThisAnActiveFilter = true %}
+                            {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
+                            {% set isThisAnActiveFilter = false %}
+                            {% if isThisAnActiveFilterColumn %}
+                                {% if filterObj[fieldName] | doesArrayContain(fieldValue) %}
+                                    {% set isThisAnActiveFilter = true %}
+                                {% endif %}
                             {% endif %}
-                        {% endif %}
-                        <li class="sidebar-filter-subgroup-item background-color-brand-hover">
-                            {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(fieldName, fieldValue, isThisAnActiveFilter) %}
-                            {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                            {% set urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString %}
-                            {% if filterObjForThisFilterColVal | isObjectEmpty %}
-                                {% set urlForFilterValue = routePath_withoutFilter %}
-                            {% endif %}
-                            <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-active background-color-brand" if isThisAnActiveFilter else "" }}">
-                                {{ fieldValue }}
-                            </a>
-                        </li>
+                            <li class="sidebar-filter-subgroup-item background-color-brand-hover">
+                                {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(fieldName, fieldValue, isThisAnActiveFilter) %}
+                                {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
+                                {% set urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString %}
+                                {% if filterObjForThisFilterColVal | isObjectEmpty %}
+                                    {% set urlForFilterValue = routePath_withoutFilter %}
+                                {% endif %}
+                                <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-active background-color-brand" if isThisAnActiveFilter else "" }}">
+                                    {{ fieldValue }}
+                                </a>
+                            </li>
                         {% endfor %}
                     </ul>
                 </li>

@@ -352,8 +352,8 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
                 
                     return;
                 }
-                //_proceedToScrapeImagesAndRemainderOfPostProcessing(); // comment out to omit image scraping, and add callback() below
-                callback();
+                _proceedToScrapeImagesAndRemainderOfPostProcessing(); // comment out to omit image scraping, and add callback() below
+                //callback();
             });
         });
     }    
