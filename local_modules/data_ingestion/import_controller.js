@@ -155,6 +155,11 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
             
             return;
         }
+        // replace any dotted fields with underscores, e.g. comics.items to comics_items
+        for (var i = 0; i < columnNamesAndThenRowObjectValues[0].length; i++) {
+            columnNamesAndThenRowObjectValues[0][i] = columnNamesAndThenRowObjectValues[0][i].replace(/\./g,"_");
+        }
+        //
         var parsed_rowObjectsById = [];
         var parsed_orderedRowObjectPrimaryKeys = [];
         // 
@@ -352,8 +357,11 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
                 
                     return;
                 }
-                _proceedToScrapeImagesAndRemainderOfPostProcessing(); // comment out to omit image scraping, and add callback() below
-                //callback();
+                // comment out _proceedToScrapeImagesAndRemainderOfPostProcessing() to omit image scraping,
+                // and uncomment callback() below
+                // if commented out, MVP_datasource_descriptions can't run afterGeneratingProcessedRowObjects_setupBefore_eachRowFn()
+                _proceedToScrapeImagesAndRemainderOfPostProcessing();
+                // callback();
             });
         });
     }    

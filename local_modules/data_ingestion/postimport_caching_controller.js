@@ -104,7 +104,6 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
 
         async.each(feVisible_filter_keys, function(key, cb) 
         {            
-
             var uniqueStage = { $group : { _id: {}, count: { $sum: 1 } } };
             uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;
 
