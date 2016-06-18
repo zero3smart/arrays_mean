@@ -145,7 +145,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         
         return;
     }
-    if (dataSourceDescription.fe_views.gallery == false) {
+    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.gallery != null && dataSourceDescription.fe_views.gallery === false) {
         callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
         
         return;
@@ -289,14 +289,45 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
         var sortBy_realColumnName_path = "rowParams." + sortBy_realColumnName;
         var sortOpParams = {};
         sortOpParams[sortBy_realColumnName_path] = sortDirection;
-        //
-        var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
-            // Sort (before pagination):
-            { $sort: sortOpParams },
-            // Pagination
-            { $skip: skipNResults },
-            { $limit: limitToNResults }
-        ]);
+
+        // First, get the first object from the dataset to determine field types
+        processedRowObjects_mongooseModel.find().limit(1).exec(function(err, results) {
+
+            var isFieldArray = Array.isArray(results[0]["rowParams"][sortBy_realColumnName]);
+
+            if (isFieldArray) {
+                var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
+                   // Sort (before pagination):
+                   { $project: {
+                        _id: 1,
+                        pKey: 1,
+                        srcDocPKey: 1,
+                        rowIdxInDoc: 1,
+                        rowParams: 1, // include the rowParams field
+                        size: { $size: "$" + sortBy_realColumnName_path }, // gets the number of items in the array
+                   }},
+                   { $sort: { size: -sortDirection } },
+                   // Pagination
+                   { $skip: skipNResults },
+                   { $limit: limitToNResults }
+                ]);
+            } else {
+                pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
+                    // Sort (before pagination):
+                    { $sort: sortOpParams },
+                    // Pagination
+                    { $skip: skipNResults },
+                    { $limit: limitToNResults }
+                ]);
+            }
+
+            // Next, get the full set of sorted results
+            processedRowObjects_mongooseModel.aggregate(pagedDocs_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
+
+        });
+        // A better way to handle this may be to create a look-up table of field types when we cache the data,
+        // in postimport_caching_controller.js, so that we don't have to run two queries.
+
         var doneFn = function(err, docs)
         {
             if (err) {
@@ -310,7 +341,6 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             //        
             _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs);
         };
-        processedRowObjects_mongooseModel.aggregate(pagedDocs_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
     }
     function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs)
     {
@@ -365,6 +395,7 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             array_source_key: source_pKey,
             sourceDoc: sourceDoc,
             sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,
+            view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
             //
             pageSize: pageSize < nonpagedCount ? pageSize : nonpagedCount,
             onPageNum: pageNumber,
@@ -374,7 +405,6 @@ constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
             docs: docs,
             //
             fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
-            view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
             humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
             //
             hasThumbs: hasThumbs,
@@ -425,7 +455,7 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
         
         return;
     }
-    if (dataSourceDescription.fe_views.chart == false) {
+    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != null && dataSourceDescription.fe_views.chart === false) {
         callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
         
         return;
@@ -534,6 +564,7 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
         }
         aggregationOperators = aggregationOperators.concat(
         [
+            { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
             { // unique/grouping and summing stage
                 $group: {
                     _id: "$" + "rowParams." + groupBy_realColumnName,
@@ -674,6 +705,7 @@ constructor.prototype.BindDataFor_array_chart = function(urlQuery, callback)
             array_source_key: source_pKey,
             sourceDoc: sourceDoc,
             sourceDocURL: sourceDocURL,
+            view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
             //
             groupedResults: groupedResults,
             groupBy: groupBy,
@@ -719,7 +751,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
         
         return;
     }
-    if (dataSourceDescription.fe_views.choropleth == false) {
+    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.choropleth != null && dataSourceDescription.fe_views.choropleth === false) {    
         callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
         
         return;
@@ -922,6 +954,7 @@ constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback
             array_source_key: source_pKey,
             sourceDoc: sourceDoc,
             sourceDocURL: sourceDocURL,
+            view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
             //
             highestValue: highestValue,
             featureCollection: {
@@ -1107,6 +1140,7 @@ constructor.prototype.BindDataFor_array_objectDetails = function(source_pKey, ro
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
             default_filterJSON: default_filterJSON,
+            view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
             //
             rowObject: rowObject,
             //
@@ -1264,8 +1298,6 @@ function _activeFilter_matchCondition_orErrDescription(dataSourceDescription, fi
                                          .split(")").join("\\)")
                                          .split("+").join("\\+")
                                          .split("$").join("\\$");
-
-        winston.info(realFilterValue);
 
         matchCondition[realColumnName_path] = { $regex: realFilterValue, $options: "i" };
     }
