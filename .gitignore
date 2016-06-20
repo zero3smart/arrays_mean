@@ -105,3 +105,6 @@ Temporary Items
 
 
 .env
+
+### Webstorm Env ###
+.idea/
