@@ -291,50 +291,7 @@
             sortOpParams.size = -sortDirection;
             sortOpParams[sortBy_realColumnName_path] = sortDirection;
 
-            /* // First, get the first object from the dataset to determine field types
-            processedRowObjects_mongooseModel.find().limit(1).exec(function(err, results) {
-
-                var isFieldArray = Array.isArray(results[0]["rowParams"][sortBy_realColumnName]);
-
-                if (isFieldArray) {
-                    var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
-                       // Sort (before pagination):
-                       { $project: {
-                            _id: 1,
-                            pKey: 1,
-                            srcDocPKey: 1,
-                            rowIdxInDoc: 1,
-                            rowParams: 1, // include the rowParams field
-                            size: { $size: "$" + sortBy_realColumnName_path }, // gets the number of items in the array
-                       }},
-                       { $sort: { size: -sortDirection } },
-                       // Pagination
-                       { $skip: skipNResults },
-                       { $limit: limitToNResults }
-                    ]);
-                } else {
-                    pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
-                        // Sort (before pagination):
-                        { $sort: sortOpParams },
-                        // Pagination
-                        { $skip: skipNResults },
-                        { $limit: limitToNResults }
-                    ]);
-                }
-
-                // Next, get the full set of sorted results
-                processedRowObjects_mongooseModel
-                    .aggregate(pagedDocs_aggregationOperators)
-                    .allowDiskUse(true)// or we will hit mem limit on some pages
-                    .exec(doneFn);
-
-            }); */
-
-            // A better way to handle this may be to create a look-up table of field types when we cache the data,
-            // in postimport_caching_controller.js, so that we don't have to run two queries.
-
             var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
-                // Sort (before pagination):
                 { $project: {
                     _id: 1,
                     pKey: 1,
@@ -349,6 +306,7 @@
                         }
                     }
                 }},
+                // Sort (before pagination):
                 { $sort: sortOpParams },
                 // Pagination
                 { $skip: skipNResults },
