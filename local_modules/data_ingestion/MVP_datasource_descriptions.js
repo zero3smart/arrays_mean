@@ -9,7 +9,7 @@ exports.Descriptions =
 [
     //
     // Production - Invisible - Nationality <-> Country - 
-    /* {
+    {
         filename: "Countries-to-Demonyms.csv",
         fileEncoding: "utf8", // default
         uid: "countries_to_demonyms",
@@ -555,7 +555,7 @@ exports.Descriptions =
             "Mail Stop",
             "Phone"
         ]
-    },*/
+    },
     {
         filename: "Marvel_Character_Database.csv",
         fileEncoding: "utf8", // default

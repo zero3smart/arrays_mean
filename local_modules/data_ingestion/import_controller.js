@@ -46,14 +46,40 @@ constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescrip
             process.exit(1); // error code
         } else {
             winston.info("✅  Raw objects import done. Proceeding to post-processing.");
-            self._postProcessRawObjects(dataSourceDescriptions, {}, function(err)
+            self._postProcessRawObjects(dataSourceDescriptions, function(err)
             {
                 if (err) {
                     winston.info("❌  Error encountered during import post-processing:", err);
                     process.exit(1); // error code
                 } else {
                     winston.info("✅  Import post-processing done.");
-                    process.exit(0); // all good
+
+                    // comment out the following async section to omit image scraping,
+                    // and uncomment process.exit(0); below
+                    // if commented out, MVP_datasource_descriptions can't run afterGeneratingProcessedRowObjects_setupBefore_eachRowFn()
+                    i = 1;
+                    async.eachSeries(dataSourceDescriptions, function(dataSourceDescription, callback)
+                    {
+                        self._proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, callback);
+                        i++;
+                    }, function(err) {
+                        if (err) {
+                            winston.info("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
+                            if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
+                                winston.info("💬  Waiting 3 seconds to restart...");
+                                setTimeout(function () {
+                                    self._Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
+                                }, 3000);
+                            } else {
+                                process.exit(1); // error code
+                            }
+                        } else {
+                            winston.info("✅  Image-scrapping done.");
+                            process.exit(0); // all good
+                        }
+                    });
+
+                    //process.exit(0); // all good
                 }
             });
         }
@@ -63,25 +89,38 @@ constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescrip
 constructor.prototype._Import_dataSourceDescriptions__enteringImageScrapingDirectly = function(dataSourceDescriptions)
 {
     var self = this;
-    self._postProcessRawObjects(dataSourceDescriptions, { enterImageScrapingDirectly: true }, function(err)
+    var i = 1;
+    async.eachSeries(dataSourceDescriptions, function(dataSourceDescription, callback)
+    {
+        winston.info("💬  " + i + ": Proceeding directly to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
+        self._proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, callback);
+        i++;
+    }, function(err)
     {
         if (err) {
-            winston.info("❌  Error encountered during import post-processing:", err);
-            process.exit(1); // error code
+            winston.info("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
+            if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
+                winston.info("💬  Waiting 3 seconds to restart...");
+                setTimeout(function () {
+                    self._Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
+                }, 3000);
+            } else {
+                process.exit(1); // error code
+            }
         } else {
-            winston.info("✅  Import post-processing done.");
+            winston.info("✅  Import image-scrapping done.");
             process.exit(0); // all good
         }
     });
 };
 //
-constructor.prototype._postProcessRawObjects = function(dataSourceDescriptions, options, callback)
+constructor.prototype._postProcessRawObjects = function(dataSourceDescriptions, callback)
 {
     var self = this;
     var i = 1;
     async.eachSeries(dataSourceDescriptions, function(dataSourceDescription, callback)
     {
-        self._dataSourcePostProcessingFunction(i, dataSourceDescription, options, callback);
+        self._dataSourcePostProcessingFunction(i, dataSourceDescription, callback);
         i++;
     }, function(err)
     {
@@ -230,30 +269,76 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
 };
 //
 //
-constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, dataSourceDescription, options, callback)
+constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, dataSourceDescription, callback)
 {
     var self = this;
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_importRevision = dataSourceDescription.importRevision;    
     var dataSource_title = dataSourceDescription.title;
     //
-    function _proceedToScrapeImagesAndRemainderOfPostProcessing()
+    winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
+    //
+    //
+    // Firstly, generate the whole processed objects dataset
+    //
+    self.context.processed_row_objects_controller.GenerateProcessedDatasetFromRawRowObjects(dataSource_uid,
+                                                                                            dataSource_importRevision,
+                                                                                            dataSource_title,
+                                                                                            function(err)
     {
-        var descriptionsOfFieldsToGenerateByScraping = dataSourceDescription.afterImportingAllSources_generateByScraping;
-        async.eachSeries(descriptionsOfFieldsToGenerateByScraping, function(description, cb)
+        if (err) {
+            winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
+            callback(err);
+            return;
+        }
+        //
+        //
+        // Now generate fields by joins, etc.
+        //
+        var descriptionsOfFieldsToGenerate = dataSourceDescription.afterImportingAllSources_generate;
+        async.eachSeries(descriptionsOfFieldsToGenerate, function(description, cb)
         {
-            var htmlSourceAtURLInField = description.htmlSourceAtURLInField;
-            var imageSrcSetInSelector = description.imageSrcSetInSelector;
-            var prependToImageURLs = description.prependToImageURLs || "";
-            var useAndHostSrcSetSizeByField = description.useAndHostSrcSetSizeByField;
-            self.context.processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSource_uid,
-                                                                                           dataSource_importRevision,
-                                                                                           dataSource_title,
-                                                                                           htmlSourceAtURLInField,
-                                                                                           imageSrcSetInSelector,
-                                                                                           prependToImageURLs,
-                                                                                           useAndHostSrcSetSizeByField,
-                                                                                           cb);
+            var generateFieldNamed = description.field;
+            var isSingular = description.singular;
+            var by = description.by;
+            var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
+            var byDoingOp = by.doing;
+            switch (byDoingOp) {
+                case import_processing.Ops.Join:
+                {
+                    var findingMatchOnFields = by.findingMatchOnFields;
+                    var ofOtherRawSrcUID = by.ofOtherRawSrcUID;
+                    var andOtherRawSrcImportRevision = by.andOtherRawSrcImportRevision;
+                    var withLocalField = by.withLocalField;
+                    var obtainingValueFromField_orUndefined = by.obtainingValueFromField;
+                    var matchFn = by.matchFn;
+                    if (typeof matchFn === 'undefined' || matchFn == null) {
+                        matchFn = import_processing.MatchFns.LocalEqualsForeignString;
+                    }
+                    self.context.processed_row_objects_controller.GenerateFieldsByJoining_comparingWithMatchFn(
+                        dataSource_uid,
+                        dataSource_importRevision,
+                        dataSource_title,
+                        generateFieldNamed,
+                        isSingular,
+                        findingMatchOnFields,
+                        ofOtherRawSrcUID,
+                        andOtherRawSrcImportRevision,
+                        withLocalField,
+                        obtainingValueFromField_orUndefined,
+                        formingRelationship,
+                        matchFn,
+                        cb
+                    );
+                    break;
+                }
+
+                default:
+                {
+                    winston.error("❌  Unrecognized post-processing field generation operation \"" + byDoingOp + "\" in", description);
+                    break;
+                }
+            }
         }, function(err)
         {
             if (err) {
@@ -262,110 +347,59 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
 
                 return;
             }
-            //
-            //
-            // Now execute user-defined generalized post-processing pipeline
-            //
-            self._afterGeneratingProcessedDataSet_performEachRowOperations(dataSourceDescription, function(err)
-            {
-                if (err) {
-                    winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
-                    callback(err);
-
-                    return;
-                }
-                winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
-                //
-                callback();
-            });
+            callback();
         });
-    }
-    //
-    var enterImageScrapingDirectly = options.enterImageScrapingDirectly;
-    if (enterImageScrapingDirectly == true) {
-        winston.info("💬  " + indexInList + ": Proceeding directly to image scraping and remainder of post-processing of \"" + dataSource_title + "\"");
-        _proceedToScrapeImagesAndRemainderOfPostProcessing(); // skip over initial processing
-    } else {
-        winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
+    });
+};
+//
+//
+constructor.prototype._proceedToScrapeImagesAndRemainderOfPostProcessing = function(indexInList, dataSourceDescription, callback)
+{
+    var self = this;
+    var dataSource_uid = dataSourceDescription.uid;
+    var dataSource_importRevision = dataSourceDescription.importRevision;
+    var dataSource_title = dataSourceDescription.title;
+    var descriptionsOfFieldsToGenerateByScraping = dataSourceDescription.afterImportingAllSources_generateByScraping;
+    async.eachSeries(descriptionsOfFieldsToGenerateByScraping, function(description, cb)
+    {
+        var htmlSourceAtURLInField = description.htmlSourceAtURLInField;
+        var imageSrcSetInSelector = description.imageSrcSetInSelector;
+        var prependToImageURLs = description.prependToImageURLs || "";
+        var useAndHostSrcSetSizeByField = description.useAndHostSrcSetSizeByField;
+        self.context.processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSource_uid,
+            dataSource_importRevision,
+            dataSource_title,
+            htmlSourceAtURLInField,
+            imageSrcSetInSelector,
+            prependToImageURLs,
+            useAndHostSrcSetSizeByField,
+            cb);
+    }, function(err)
+    {
+        if (err) {
+            winston.error("❌  Error encountered while scraping image with \"" + dataSource_title + "\".");
+            callback(err);
+
+            return;
+        }
         //
         //
-        // Firstly, generate the whole processed objects dataset
+        // Now execute user-defined generalized post-processing pipeline
         //
-        self.context.processed_row_objects_controller.GenerateProcessedDatasetFromRawRowObjects(dataSource_uid,
-                                                                                                dataSource_importRevision,
-                                                                                                dataSource_title, 
-                                                                                                function(err)
+        self._afterGeneratingProcessedDataSet_performEachRowOperations(dataSourceDescription, function(err)
         {
             if (err) {
-                winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
+                winston.error("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");
                 callback(err);
+
                 return;
             }
+            winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
             //
-            //
-            // Now generate fields by joins, etc.
-            //
-            var descriptionsOfFieldsToGenerate = dataSourceDescription.afterImportingAllSources_generate;
-            async.eachSeries(descriptionsOfFieldsToGenerate, function(description, cb)
-            {
-                var generateFieldNamed = description.field;
-                var isSingular = description.singular;
-                var by = description.by;
-                var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
-                var byDoingOp = by.doing;
-                switch (byDoingOp) {
-                    case import_processing.Ops.Join:
-                    {
-                        var findingMatchOnFields = by.findingMatchOnFields;
-                        var ofOtherRawSrcUID = by.ofOtherRawSrcUID;
-                        var andOtherRawSrcImportRevision = by.andOtherRawSrcImportRevision;
-                        var withLocalField = by.withLocalField;
-                        var obtainingValueFromField_orUndefined = by.obtainingValueFromField;
-                        var matchFn = by.matchFn;
-                        if (typeof matchFn === 'undefined' || matchFn == null) {
-                            matchFn = import_processing.MatchFns.LocalEqualsForeignString;
-                        }                        
-                        self.context.processed_row_objects_controller.GenerateFieldsByJoining_comparingWithMatchFn(
-                            dataSource_uid,
-                            dataSource_importRevision,
-                            dataSource_title,
-                            generateFieldNamed, 
-                            isSingular, 
-                            findingMatchOnFields,
-                            ofOtherRawSrcUID,
-                            andOtherRawSrcImportRevision,
-                            withLocalField,
-                            obtainingValueFromField_orUndefined,
-                            formingRelationship,
-                            matchFn,
-                            cb
-                        );
-                        break;
-                    }
-                    
-                    default:
-                    {
-                        winston.error("❌  Unrecognized post-processing field generation operation \"" + byDoingOp + "\" in", description);
-                        break;
-                    }
-                }        
-            }, function(err)
-            {
-                if (err) {
-                    winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
-                    callback(err);
-                
-                    return;
-                }
-                // comment out _proceedToScrapeImagesAndRemainderOfPostProcessing() to omit image scraping,
-                // and uncomment callback() below
-                // if commented out, MVP_datasource_descriptions can't run afterGeneratingProcessedRowObjects_setupBefore_eachRowFn()
-                _proceedToScrapeImagesAndRemainderOfPostProcessing();
-                // callback();
-            });
+            callback();
         });
-    }    
-};
+    });
+}
 //
 //
 constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations = function(dataSourceDescription, callback)
@@ -385,7 +419,7 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
     var afterIterating_eachRowFn = dataSourceDescription.afterGeneratingProcessedRowObjects_afterIterating_eachRowFn;
     // (erreachCtx, cb) -> Void … cb: fn(err)
     //
-    winston.info("🔁  Performing " + (eachRowFns?eachRowFns.length:0) + " each-row post-processing operations for \"" + dataSource_title + "\"");
+    winston.info("🔁  Performing " + (eachRowFns?eachRowFns.length:0) + " each-row operations for \"" + dataSource_title + "\"");
     //    
     var eachCtx = {};
     if (setupBefore_eachRowFn != null && typeof setupBefore_eachRowFn !== 'undefined') {

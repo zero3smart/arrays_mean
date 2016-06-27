@@ -598,7 +598,7 @@ constructor.prototype.GenerateImageURLFieldsByScraping
                     function proceedToPersistHostedImageURLOrNull_forKey(err, hostedURLOrNull, fieldKey, persistedCb)
                     {
                         if (err) {
-                            persistedCb(err);    
+                            persistedCb(err);
                             return;
                         }
                         winston.info("📝  Saving " + hostedURLOrNull + " at " + fieldKey + " of " + doc.pKey);
@@ -692,18 +692,26 @@ constructor.prototype.GenerateImageURLFieldsByScraping
                             overwrite: false // if already exists, do not re-upload
                         };
                         var destinationFilenameSansExt = doc.srcDocPKey + "__" + doc.pKey + "__" + key;
-                        image_hosting.hostImageLocatedAtRemoteURL(finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, function(err, hostedURL)
+                        var hostImageCb = function(err, hostedURL)
                         {
                             if (err) {
-                                cb(err);
-                                
-                                return;
+                                /* if (err.code == 'ECONNRESET') {
+                                    winston.info("💬  Waiting 3 seconds to restart...");
+                                    setTimeout(function () {
+                                        image_hosting.hostImageLocatedAtRemoteURL(finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, hostImageCb);
+                                    }, 3000);
+                                } else { */
+                                    cb(err);
+
+                                    return;
+                                /* } */
+                            } else {
+                                proceedToPersistHostedImageURLOrNull_forKey(err, hostedURL, key, function (err) {
+                                    cb(err);
+                                });
                             }
-                            proceedToPersistHostedImageURLOrNull_forKey(err, hostedURL, key, function(err)
-                            {
-                                cb(err);
-                            });
-                        });
+                        };
+                        image_hosting.hostImageLocatedAtRemoteURL(finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, hostImageCb);
                     }, function(err)
                     {
                         if (err) {
