@@ -54,32 +54,58 @@ constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescrip
                 } else {
                     winston.info("✅  Import post-processing done.");
 
-                    // comment out the following async section to omit image scraping,
-                    // and uncomment process.exit(0); below
-                    // if commented out, MVP_datasource_descriptions can't run afterGeneratingProcessedRowObjects_setupBefore_eachRowFn()
-                    i = 1;
-                    async.eachSeries(dataSourceDescriptions, function(dataSourceDescription, callback)
-                    {
-                        self._proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, callback);
-                        i++;
-                    }, function(err) {
-                        if (err) {
-                            winston.info("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
-                            if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
-                                winston.info("💬  Waiting 3 seconds to restart...");
-                                setTimeout(function () {
-                                    self._Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
-                                }, 3000);
-                            } else {
-                                process.exit(1); // error code
-                            }
-                        } else {
-                            winston.info("✅  Image-scrapping done.");
-                            process.exit(0); // all good
-                        }
-                    });
+                    var omitImageScrapping = true; // set true to omit image scraping,
 
-                    //process.exit(0); // all good
+                    if (!omitImageScrapping) {
+                        i = 1;
+                        async.eachSeries(dataSourceDescriptions, function (dataSourceDescription, callback) {
+                            self._proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, callback);
+                            i++;
+                        }, function (err) {
+
+                            if (err) {
+
+                                winston.info("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
+                                if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
+                                    winston.info("💬  Waiting 3 seconds to restart...");
+                                    setTimeout(function () {
+                                        self._Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
+                                    }, 3000);
+                                } else {
+                                    process.exit(1); // error code
+                                }
+
+                            } else {
+
+                                winston.info("✅  Image-scrapping done.");
+                                process.exit(0); // all good
+
+                            }
+                        });
+                    } else {
+                        //
+                        // Execute user-defined generalized post-processing pipeline since the image scrapping is omitted
+                        //
+                        i = 1;
+                        async.eachSeries(dataSourceDescriptions, function (dataSourceDescription, callback) {
+                            self._afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription, callback);
+                            i ++;
+                        }, function(err) {
+
+                            if (err) {
+
+                                winston.info("❌  Error encountered during performming each-row operations:(" + err.code + ')', err);
+                                process.exit(1); // error code
+
+                            } else {
+
+                                winston.info("✅  All done.");
+                                process.exit(0); // all good
+
+                            }
+
+                        });
+                    }
                 }
             });
         }
@@ -295,22 +321,13 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
         //
         // Now generate fields by joins, etc.
         //
-        var descriptionsOfFieldsToGenerate = dataSourceDescription.afterImportingAllSources_generate;
-        async.eachSeries(descriptionsOfFieldsToGenerate, function(description, cb)
+        async.eachSeries(dataSourceDescription.afterImportingAllSources_generate, function(description, cb)
         {
-            var generateFieldNamed = description.field;
-            var isSingular = description.singular;
             var by = description.by;
             var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
-            var byDoingOp = by.doing;
-            switch (byDoingOp) {
+            switch (by.doing) {
                 case import_processing.Ops.Join:
                 {
-                    var findingMatchOnFields = by.findingMatchOnFields;
-                    var ofOtherRawSrcUID = by.ofOtherRawSrcUID;
-                    var andOtherRawSrcImportRevision = by.andOtherRawSrcImportRevision;
-                    var withLocalField = by.withLocalField;
-                    var obtainingValueFromField_orUndefined = by.obtainingValueFromField;
                     var matchFn = by.matchFn;
                     if (typeof matchFn === 'undefined' || matchFn == null) {
                         matchFn = import_processing.MatchFns.LocalEqualsForeignString;
@@ -319,13 +336,13 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
                         dataSource_uid,
                         dataSource_importRevision,
                         dataSource_title,
-                        generateFieldNamed,
-                        isSingular,
-                        findingMatchOnFields,
-                        ofOtherRawSrcUID,
-                        andOtherRawSrcImportRevision,
-                        withLocalField,
-                        obtainingValueFromField_orUndefined,
+                        description.field,
+                        description.singular,
+                        by.findingMatchOnFields,
+                        by.ofOtherRawSrcUID,
+                        by.andOtherRawSrcImportRevision,
+                        by.withLocalField,
+                        by.obtainingValueFromField,
                         formingRelationship,
                         matchFn,
                         cb
@@ -356,28 +373,20 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
 constructor.prototype._proceedToScrapeImagesAndRemainderOfPostProcessing = function(indexInList, dataSourceDescription, callback)
 {
     var self = this;
-    var dataSource_uid = dataSourceDescription.uid;
-    var dataSource_importRevision = dataSourceDescription.importRevision;
-    var dataSource_title = dataSourceDescription.title;
-    var descriptionsOfFieldsToGenerateByScraping = dataSourceDescription.afterImportingAllSources_generateByScraping;
-    async.eachSeries(descriptionsOfFieldsToGenerateByScraping, function(description, cb)
+    async.eachSeries(dataSourceDescription.afterImportingAllSources_generateByScraping, function(description, cb)
     {
-        var htmlSourceAtURLInField = description.htmlSourceAtURLInField;
-        var imageSrcSetInSelector = description.imageSrcSetInSelector;
-        var prependToImageURLs = description.prependToImageURLs || "";
-        var useAndHostSrcSetSizeByField = description.useAndHostSrcSetSizeByField;
-        self.context.processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSource_uid,
-            dataSource_importRevision,
-            dataSource_title,
-            htmlSourceAtURLInField,
-            imageSrcSetInSelector,
-            prependToImageURLs,
-            useAndHostSrcSetSizeByField,
+        self.context.processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSourceDescription.uid,
+            dataSourceDescription.importRevision,
+            dataSourceDescription.title,
+            description.htmlSourceAtURLInField,
+            description.imageSrcSetInSelector,
+            description.prependToImageURLs || "",
+            description.useAndHostSrcSetSizeByField,
             cb);
     }, function(err)
     {
         if (err) {
-            winston.error("❌  Error encountered while scraping image with \"" + dataSource_title + "\".");
+            winston.error("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
             callback(err);
 
             return;
@@ -386,23 +395,12 @@ constructor.prototype._proceedToScrapeImagesAndRemainderOfPostProcessing = funct
         //
         // Now execute user-defined generalized post-processing pipeline
         //
-        self._afterGeneratingProcessedDataSet_performEachRowOperations(dataSourceDescription, function(err)
-        {
-            if (err) {
-                winston.error("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");
-                callback(err);
-
-                return;
-            }
-            winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
-            //
-            callback();
-        });
+        self._afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription, callback);
     });
 }
 //
 //
-constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations = function(dataSourceDescription, callback)
+constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations = function(indexInList, dataSourceDescription, callback)
 {
     var self = this;
     //
@@ -426,6 +424,7 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
         setupBefore_eachRowFn(self.context, eachCtx, function(err)
         {
             if (err) {
+                winston.error("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");
                 callback(err);
                 
                 return;
@@ -457,6 +456,7 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
             },
             function(err)
             {
+                winston.error("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");
                 callback(err); // bail early
             },
             function()
@@ -471,9 +471,16 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
         if (afterIterating_eachRowFn != null && typeof afterIterating_eachRowFn !== 'undefined') {
             afterIterating_eachRowFn(self.context, eachCtx, function(err)
             {
+                if (err) {
+                    winston.error("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");
+                } else {
+                    winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
+                }
+                //
                 callback(err);
             });
         } else {
+            winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
             callback(); // all done
         }
     }

@@ -538,7 +538,6 @@ constructor.prototype.GenerateImageURLFieldsByScraping
     var self = this;
     //
     var useAndHostSrcSetSizeByField_keys = Object.keys(useAndHostSrcSetSizeByField);
-    var useAndHostSrcSetSizeByField_keys_length = useAndHostSrcSetSizeByField_keys.length;
     //
     mongoose_client.WhenMongoDBConnected(function()
     { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
@@ -551,13 +550,12 @@ constructor.prototype.GenerateImageURLFieldsByScraping
         //
         mongooseModel.find({}, function(err, docs)
         { // this returns all docs in memory but at least it's simple to iterate them synchronously
-            var docs_length = docs.length;
             var concurrencyLimit = 15; // at a time
             async.eachLimit(docs, concurrencyLimit, function(doc, eachCb)
             {
                 var anyImagesNeedToBeScraped = false;
                 // The following allows us to skip scraping for this doc if we already have done so
-                for (var i = 0 ; i < useAndHostSrcSetSizeByField_keys_length ; i++) {
+                for (var i = 0 ; i < useAndHostSrcSetSizeByField_keys.length ; i++) {
                     var key = useAndHostSrcSetSizeByField_keys[i];
                     var hostedURLForKey = doc["rowParams"][key];
                     if (typeof hostedURLForKey === 'undefined') { 
