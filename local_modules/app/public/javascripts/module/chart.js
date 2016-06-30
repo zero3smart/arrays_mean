@@ -161,7 +161,7 @@ g.on('click', function(d) {
 	var queryParamJoinChar = routePath_withoutFilter == routePath_base ? "?" : "&";
 
 	var filterObjForThisFilterColVal = constructedFilterObj(filterObj, groupBy, d.data.label, false);
-	var filterJSONString = JSON.stringify(filterObjForThisFilterColVal);
+	var filterJSONString = encodeURIComponent(JSON.stringify(filterObjForThisFilterColVal));
 	var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString;
 
 	window.location = urlForFilterValue;
