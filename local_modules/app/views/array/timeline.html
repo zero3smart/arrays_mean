@@ -1,0 +1,179 @@
+{% extends "../shared/shared_layout.html" %}
+
+{% block headSuffix %}
+    <title>Arrays - {{ arrayTitle }}</title>
+    
+    
+{% endblock %}
+
+{% block bodyWrapper %}
+    <body class="array array-timeline source-{{ array_source_key }}">
+        <div id="page" class="site">
+            {% set currentView = "timeline" %}
+            {% include "../partials/header_bar_array.html" %}
+            {% include "../partials/sidebar_filter.html" %}
+
+            <div id="content" class="site-content">
+
+                <section class="array">
+
+                    <header class="array-header header-shadow array-header-small clearfix">
+                        <div class="container-fluid">
+                            <h1 class="array-title">{{ arrayTitle }}</h1>
+                            <div class="array-meta">
+                                {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                            </div>
+                        </div>
+                    </header><!-- .array-header -->
+
+                    <div class="array-content">
+
+                        <div class="chart-container">
+
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-sm-12">
+
+                                        <div class="sort-bar clearfix">
+
+                                            <nav class="pull-left" role="navigation">
+
+                                                <div class="dropdown sort-control">
+                                                    <a class="btn dropdown-toggle dropdown-toggle-button ui-label group-by" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        Group By <span class="sort-criteria color-brand-hover">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
+                                                    </a>
+                                                    {% if colNames_orderedForGroupByDropdown | length %}
+                                                    <ul class="dropdown-menu" aria-labelledby="group-by">
+                                                        {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
+                                                        {% for colName in colNames_orderedForGroupByDropdown %}
+                                                        <li class="background-color-brand-hover"><a href="{{ routePath_withoutGroupBy }}{{ groupBy_queryParamJoinChar }}groupBy={{ colName }}">{{ colName }}</a></li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                    {% endif %}
+                                                </div>
+
+                                                <div class="dropdown sort-control">
+                                                    <a class="btn dropdown-toggle dropdown-toggle-button ui-label order-by" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        Sort By <span class="sort-criteria color-brand-hover">{{ sortBy if sortBy else humanReadableColumnName_objectTitle }}</span>
+                                                    </a>
+                                                    {% if colNames_orderedForSortByDropdown | length %}
+                                                    <ul class="dropdown-menu" aria-labelledby="sort-by">
+                                                        {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
+                                                        {% for colName in colNames_orderedForSortByDropdown %}
+                                                        <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortBy }}{{ sortBy_queryParamJoinChar }}sortBy={{ colName }}">{{ colName }}</a></li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                    {% endif %}
+                                                </div>
+                                            </nav>
+
+                                            <div class="pull-right">
+                                                <form action="{{ routePath_base }}" method="get" class="form-search">
+                                                	<div class="sort-control visible-xs">
+                                                		<div class="btn dropdown-toggle-button search-toggle">
+                                                			<span class="icon-search search-icon"></span>
+                                                		</div>
+                                                	</div>
+                                                	
+                                                	<div class="mobile-search-popover">
+	                                                    <div class="dropdown-toggle-button-group" role="group">
+	                                                        <div class="dropdown sort-control sort-control-left search-control">
+	                                                            {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
+	                                                            
+	                                                            <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+	                                                                Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
+	                                                            </a>
+	                                                            <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
+	                                                            {% if colNames_orderedForSortByDropdown | length %}
+	                                                            <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+	                                                                {% for colName in colNames_orderedForSortByDropdown %}
+	                                                                <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
+	                                                                {% endfor %}
+	                                                            </ul>
+	                                                            {% endif %}
+	                                                        </div>
+	
+	                                                        <div class="sort-control sort-control-right">
+	                                                            <div class="dropdown-toggle">
+	                                                                <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ if searchQ else "" }}">
+	                                                                <span class="icon-search search-icon hidden-xs"></span>
+	                                                            </div>
+	                                                        </div>
+	                                                    </div>
+	                                               	</div>
+
+                                                    {% if sortBy %}
+                                                        <input type="hidden" name="sortBy" value="{{ sortBy }}">
+                                                    {% endif %}
+                                                    {% if sortDir %}
+                                                        <input type="hidden" name="sortDir" value="{{ sortDir }}">
+                                                    {% endif %}
+                                                    {% if filterJSON %}
+                                                        <input type="hidden" name="filterJSON" value="{{ filterJSON_nonURIEncodedVals }}"> {# it will get re-encoded #}
+                                                    {% endif %}
+                                                </form>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div><!-- .row -->
+                            </div><!-- .container-fluid -->
+
+                            {% if isFilterActive %}
+                            <div class="filter-bar filter-bar-fixed-bottom">
+                                <div class="container-fluid">
+                                    {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
+                                    {% for filterCol, filterVals in filterObj %}
+                                        {% for filterVal in filterVals %}
+                                            {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true) %}
+                                            {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
+                                            {% set routePath_withoutThisFilter = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString %}
+                                            {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}                  
+                                    <span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | safe }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <script type="text/javascript">
+                                var pieData = {{ groupedResults | dump | safe }};
+
+                                var filterObj = {{ filterObj | dump | safe }};
+                                var routePath_withoutFilter = '{{ routePath_withoutFilter }}';
+                                var routePath_base = '{{ routePath_base }}';
+                                var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
+                            </script>
+
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-sm-12">
+
+                                        <div id="chart"></div>
+
+                                    </div>
+                                </div><!-- .row -->
+                            </div><!-- .container-fluid -->
+
+                        </div><!-- .chart-container -->
+
+                    </div><!-- .array-content -->
+
+                </section>
+
+            </div><!-- #content -->
+
+        </div><!-- #page -->
+
+        {% include "../partials/modal.html" %}
+
+        <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+        
+        <script type="text/javascript" src="/javascripts/lib/bootstrap/bootstrap.js"></script>
+        <script type="text/javascript" src="/javascripts/lib/sharrre/jquery.sharrre.js"></script>
+
+        <script type="text/javascript" src="/javascripts/main.js"></script>
+
+        {% include "../partials/survicate.html" %}
+    </body>
+{% endblock %}
