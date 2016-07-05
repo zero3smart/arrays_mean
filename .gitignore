@@ -108,3 +108,7 @@ Temporary Items
 
 ### Webstorm Env ###
 .idea/
+
+### Eclipse IDE ###
+.project
+.settings
