@@ -1218,7 +1218,7 @@
         function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
         {
             var err = null;
-            var routePath_base              = "/array/" + source_pKey + "/chart";
+            var routePath_base              = "/array/" + source_pKey + "/timeline";
             var routePath_withoutFilter     = routePath_base;
             var routePath_withoutGroupBy    = routePath_base;
             var urlQuery_forSwitchingViews  = "";
@@ -1273,8 +1273,7 @@
                 isSearchActive: isSearchActive,
                 //
                 defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-                colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription),
-                colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                colNames_orderedForGroupByDropdown: dataSourceDescription.fe_timeline_durationsAvailableForGroupBy ? dataSourceDescription.fe_timeline_durationsAvailableForGroupBy : {},
                 //
                 routePath_base: routePath_base,
                 routePath_withoutFilter: routePath_withoutFilter,
