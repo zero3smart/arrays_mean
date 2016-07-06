@@ -136,20 +136,23 @@
                             </div>
                             {% endif %}
 
-                            <script type="text/javascript">
-                                var pieData = {{ groupedResults | dump | safe }};
-
-                                var filterObj = {{ filterObj | dump | safe }};
-                                var routePath_withoutFilter = '{{ routePath_withoutFilter }}';
-                                var routePath_base = '{{ routePath_base }}';
-                                var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
-                            </script>
-
                             <div class="container-fluid">
                                 <div class="row">
                                     <div class="col-sm-12">
 
-                                        <div id="chart"></div>
+                                    <div class="timeline">
+
+                                        {% if groupedResults | length %}
+                                            <ul class="timeline-grid">
+                                            {% for doc in groupedResults %}
+                                                {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}
+                                                    {% include "../partials/timeline_item.html" %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            </ul>
+                                        {% endif %}
+
+                                    </div>
 
                                     </div>
                                 </div><!-- .row -->
