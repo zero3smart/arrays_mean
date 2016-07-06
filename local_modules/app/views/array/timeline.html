@@ -145,6 +145,11 @@
 
                                     <div class="timeline">
 
+                                    {# {{ groupedResults | dump | safe }} #}
+
+                                    {# {{ sortBy_realColumnName }} #}
+                                    {# {{ groupBy_realColumnName }} #}
+
                                         {% if groupedResults | length %}
                                             <ul class="timeline-grid">
                                             {% for doc in groupedResults %}

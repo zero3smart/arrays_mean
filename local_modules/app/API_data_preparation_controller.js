@@ -1016,11 +1016,13 @@
         //
         var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
         var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_timeline_defaultGroupByColumnName_humanReadable;
+        var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable, dataSourceDescription);
         //
         var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
         var sortDir = urlQuery.sortDir;
         var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
         var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_timeline_defaultSortByColumnName_humanReadable;
+        var sortBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy ? sortBy : defaultSortByColumnName_humanReadable, dataSourceDescription);
         //
         var filterJSON = urlQuery.filterJSON;
         var filterObj = {};
@@ -1090,9 +1092,8 @@
         }
         function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
         {
-            var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
-                                                                                                           dataSourceDescription);
-            //
+            var groupBySortFieldPath = "rowParams." + sortBy_realColumnName
+            
             var aggregationOperators = [];
             if (isSearchActive) {
                 var _orErrDesc = _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
@@ -1112,13 +1113,14 @@
                 }
                 aggregationOperators.push(_orErrDesc.matchOp);
             }
+
             aggregationOperators = aggregationOperators.concat(
             [
-                // { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                { $unwind: "$" + "rowParams." + sortBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
                 // { // unique/grouping and summing stage
                 //     $group: {
-                //         _id: "$" + "rowParams." + groupBy_realColumnName,
-                //         value: { $sum: 1 } // the count
+                //         _id: { "$year": "$" + "rowParams." + sortBy_realColumnName },
+                //         total: { $sum: 1 } // the count
                 //     }
                 // },
                 // { // reformat
@@ -1129,7 +1131,7 @@
                 //     }
                 // },
                 { // priotize by incidence, since we're $limit-ing below
-                    $sort : { value : -1 }
+                    $sort : { [groupBySortFieldPath] : -1 }
                 },
                 {
                     $limit : 100 // so the chart can actually handle the number
@@ -1226,10 +1228,12 @@
                 //
                 groupedResults: groupedResults,
                 groupBy: groupBy,
+                groupBy_realColumnName: groupBy_realColumnName,
                 //
                 sortBy: sortBy,
                 sortDir: sortDir,
                 defaultSortByColumnName_humanReadable: defaultSortByColumnName_humanReadable,
+                sortBy_realColumnName: sortBy_realColumnName,
                 colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelineSortByDropdown(sampleDoc, dataSourceDescription),
                 //
                 filterObj: filterObj,

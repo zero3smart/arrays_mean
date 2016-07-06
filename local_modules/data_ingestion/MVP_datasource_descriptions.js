@@ -565,6 +565,13 @@ exports.Descriptions =
         title: "Marvel Character Database",
         urls: [ "http://developer.marvel.com/docs" ],
         description: "Find profiles for your favorite Marvel characters in Marvel.com's character database, including info on first appearances, key issues, and basic statistics.",
+        raw_rowObjects_coercionScheme:
+        {
+            modified: {
+                do: import_datatypes.Coercion_ops.ToDate,
+                opts: import_datatypes.Coercion_optionsPacks.ToDate.FourDigitYearOnly
+            }
+        },
         fe_listed: true,
         fe_displayTitleOverrides: {}, // this is needed to not through an error
         //
