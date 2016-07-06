@@ -9,7 +9,7 @@
 {% block bodyWrapper %}
     <body class="array array-chart source-{{ array_source_key }} legend-open">
         <div id="page" class="site">
-            {% set currentView = "chart" %}
+            {% set currentView = "scatterplot" %}
             {% include "../partials/header_bar_array.html" %}
             {% include "../partials/sidebar_filter.html" %}
 
@@ -52,7 +52,7 @@
 
                                             <div class="dropdown sort-control">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    X-Axis <span class="sort-criteria color-brand-hover">{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}</span>
+                                                    Y-Axis <span class="sort-criteria color-brand-hover">{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}</span>
                                                 </a>
                                                 {% if colNames_orderedForMapByDropdown | length %}
                                                 <ul class="dropdown-menu" aria-labelledby="type">

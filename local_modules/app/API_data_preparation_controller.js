@@ -1213,15 +1213,73 @@
         var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
                           && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
         //
-      self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
-      {
-          processedRowObjects_mongooseModel.find({}, function(err, characters)
-          {
-              callback(err, {
-                  characters : characters
-              });
-          }).limit(10);
-      });
+        var err = null;
+        var routePath_base              = "/array/" + source_pKey + "/chart";
+        var routePath_withoutFilter     = routePath_base;
+        var routePath_withoutGroupBy    = routePath_base;
+        var urlQuery_forSwitchingViews  = "";
+        var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+        //
+        if (groupBy !== undefined && groupBy != null && groupBy !== "") {
+            var appendQuery = "groupBy=" + groupBy;
+            routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+        }
+        if (isFilterActive) {
+            var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
+            routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+            urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        }
+        if (isSearchActive) {
+            var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
+            routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+            routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+            urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        }
+        //
+        self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
+        {
+            processedRowObjects_mongooseModel.find({}, function(err, characters)
+            {
+                var sampleDoc = characters[0];
+
+                callback(err, {
+                    characters: characters,
+                    //
+                    env: process.env,
+                    //
+                    arrayTitle: dataSourceDescription.title,
+                    array_source_key: source_pKey,
+                    sourceDoc: sourceDoc,
+                    sourceDocURL: sourceDocURL,
+                    view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+//                    view_visibility: source_pKey === 'marvel_character_database-r1',
+                    //
+//                    groupedResults: groupedResults,
+                    groupBy: groupBy,
+                    //
+                    filterObj: filterObj,
+                    filterJSON_nonURIEncodedVals: filterJSON,
+                    filterJSON: filterJSON_uriEncodedVals,
+                    isFilterActive: isFilterActive,
+//                  uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+//                  truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
+                    //
+                    searchQ: searchQ,
+                    searchCol: searchCol,
+                    isSearchActive: isSearchActive,
+                    //
+                    defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
+                    colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription),
+                    colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                    //
+                    routePath_base: routePath_base,
+                    routePath_withoutFilter: routePath_withoutFilter,
+                    routePath_withoutGroupBy: routePath_withoutGroupBy,
+                    //
+                    urlQuery_forSwitchingViews: urlQuery_forSwitchingViews
+                });
+            }).limit(50);
+        });
         // Now kick off the query work
 //        self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
 //        {

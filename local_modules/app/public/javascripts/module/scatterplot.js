@@ -5,7 +5,7 @@
 function arraysCoScatterPlot(data) {
 
     this._data = data;
-    this._radius = 10;
+    this._radius = 15;
     this._container = undefined;
     this._outerWitdh = undefined;
     this._outerHeight = undefined;
@@ -25,7 +25,7 @@ function arraysCoScatterPlot(data) {
         top : this._radius,
         right : this._radius,
         bottom : 20,
-        left : 20
+        left : 25
     };
 }
 
