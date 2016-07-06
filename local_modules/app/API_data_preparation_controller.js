@@ -1009,6 +1009,11 @@
         var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
         var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
         //
+        var page = urlQuery.page;
+        var pageNumber = page ? page : 1;
+        var skipNResults = pageSize * (Math.max(pageNumber, 1) - 1);
+        var limitToNResults = pageSize;
+        //
         var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
         var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_timeline_defaultGroupByColumnName_humanReadable;
         //
@@ -1151,21 +1156,52 @@
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
             var routePath_base              = "/array/" + source_pKey + "/timeline";
             var routePath_withoutFilter     = routePath_base;
+            var routePath_withoutPage       = routePath_base;
             var routePath_withoutGroupBy    = routePath_base;
+            var routePath_withoutSortBy     = routePath_base;
+            var routePath_withoutSortDir    = routePath_base;
             var urlQuery_forSwitchingViews  = "";
             if (groupBy !== undefined && groupBy != null && groupBy !== "") {
                 var appendQuery = "groupBy=" + groupBy;
                 routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+                routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,        appendQuery, routePath_base);
+                routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
+            }
+            if (sortBy !== undefined && sortBy != null && sortBy !== "") {
+                var appendQuery = "sortBy=" + sortBy;
+                routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+                routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+                routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
+                routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
+            }
+            if (sortDir !== undefined && sortDir != null && sortDir !== "") {
+                var appendQuery = "sortDir=" + sortDir;
+                routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,        appendQuery, routePath_base);
+                routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,          appendQuery, routePath_base);
+                routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,        appendQuery, routePath_base);
+                routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+            }
+            if (page !== undefined && page != null && page !== "") {
+                var appendQuery = "page=" + page;
+                routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
+                routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
+                routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
             }
             if (isFilterActive) {
                 var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
                 routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+                routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
+                routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
+                routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
                 urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
             }
             if (isSearchActive) {
                 var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
                 routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
                 routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+                routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
+                routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
+                routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
                 urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
             }
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
@@ -1213,6 +1249,7 @@
                 routePath_base: routePath_base,
                 routePath_withoutFilter: routePath_withoutFilter,
                 routePath_withoutGroupBy: routePath_withoutGroupBy,
+                routePath_withoutSortBy: routePath_withoutSortBy,
                 //
                 urlQuery_forSwitchingViews: urlQuery_forSwitchingViews
             };
