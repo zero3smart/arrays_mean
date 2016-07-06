@@ -589,7 +589,7 @@ exports.Descriptions =
             "id",
             // "name",
             // "description",
-            "modified",
+            // "modified",
             "thumbnail_path",
             "thumbnail_extension",
             "resourceURI",
@@ -798,6 +798,7 @@ exports.Descriptions =
         { // these are to be tuples - the values must be unique as well
             "name": "Name",
             "description": "Description",
+            "modified": "Last Modified"
         },
         fe_filters_fabricatedFilters:
         [
@@ -874,13 +875,11 @@ exports.Descriptions =
         fe_timeline_defaultSortByColumnName_humanReadable: "Last Modified",
         fe_timeline_fieldsNotAvailableAsSortByColumns:
         [
-            "events_available",
-            "series_available",
-            "stories_available",
-            "comics_available",
-            "description",
             "name",
-            "comics"
+            "description",
+            "Comics",
+            "Series",
+            "Events"
         ],
         //
         //

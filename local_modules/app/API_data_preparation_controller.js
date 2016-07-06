@@ -1015,6 +1015,7 @@
         var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
         var sortDir = urlQuery.sortDir;
         var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
+        var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_timeline_defaultSortByColumnName_humanReadable;
         //
         var filterJSON = urlQuery.filterJSON;
         var filterObj = {};
@@ -1192,7 +1193,8 @@
                 //
                 sortBy: sortBy,
                 sortDir: sortDir,
-                colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                defaultSortByColumnName_humanReadable: defaultSortByColumnName_humanReadable,
+                colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelineSortByDropdown(sampleDoc, dataSourceDescription),
                 //
                 filterObj: filterObj,
                 filterJSON_nonURIEncodedVals: filterJSON,
