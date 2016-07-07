@@ -145,17 +145,20 @@
 
                                     <div class="timeline">
 
-                                    {# {{ groupedResults | dump | safe }} #}
+                                    {# <pre>{{ groupedResults | dump | safe }}</pre> #}
 
                                     {# {{ sortBy_realColumnName }} #}
                                     {# {{ groupBy_realColumnName }} #}
 
                                         {% if groupedResults | length %}
                                             <ul class="timeline-grid">
-                                            {% for doc in groupedResults %}
-                                                {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}
-                                                    {% include "../partials/timeline_item.html" %}
-                                                {% endif %}
+                                            {% for group in groupedResults %}
+                                                {{ group.label }} {{ group.total }}
+                                                {% for doc in group.results %}
+                                                    {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}
+                                                        {% include "../partials/timeline_item.html" %}
+                                                    {% endif %}
+                                                {% endfor %}
                                             {% endfor %}
                                             </ul>
                                         {% endif %}

@@ -1092,7 +1092,7 @@
         }
         function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
         {
-            var groupBySortFieldPath = "rowParams." + sortBy_realColumnName
+            var groupBySortFieldPath = "results.rowParams." + sortBy_realColumnName
             
             var aggregationOperators = [];
             if (isSearchActive) {
@@ -1117,25 +1117,27 @@
             aggregationOperators = aggregationOperators.concat(
             [
                 { $unwind: "$" + "rowParams." + sortBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
-                // { // unique/grouping and summing stage
-                //     $group: {
-                //         _id: { "$year": "$" + "rowParams." + sortBy_realColumnName },
-                //         total: { $sum: 1 } // the count
-                //     }
-                // },
-                // { // reformat
-                //     $project: {
-                //         _id: 0,
-                //         label: "$_id",
-                //         value: 1
-                //     }
-                // },
+                { // unique/grouping and summing stage
+                   $group: {
+                       _id: { "$year": "$" + "rowParams." + sortBy_realColumnName },
+                       total: { $sum: 1 }, // the count
+                       results: { $push: "$$ROOT" }
+                   }
+                },
+                { // reformat
+                   $project: {
+                       _id: 0,
+                       label: "$_id",
+                       total: 1,
+                       results: { $slice: ["$results", 20] }
+                   }
+                },
                 { // priotize by incidence, since we're $limit-ing below
                     $sort : { [groupBySortFieldPath] : -1 }
                 },
-                {
-                    $limit : 100 // so the chart can actually handle the number
-                }
+                // {
+                //     $limit : 100 // so the chart can actually handle the number
+                // }
             ]);
             //
             var doneFn = function(err, groupedResults)
