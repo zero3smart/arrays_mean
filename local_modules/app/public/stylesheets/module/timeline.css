@@ -89,5 +89,26 @@
 	display: none;
 }
 
+.timeline-view-all-link {
+	display: block;
+	padding: 15px 10px;
+	width: 100%;
+	height: 100%;
+	color: var(--color-text-med);
+	font-size: 17px;
+}
+
+.timeline-view-all-link:hover,
+.timeline-view-all-link:focus,
+.timeline-view-all-link:active {
+	text-decoration: none;
+}
+
+.timeline-view-all-label {
+	display: block;
+	font-weight: 600;
+	line-height: 0.8em;
+}
+
 /* @end Timeline */
 	

@@ -1017,6 +1017,7 @@
         var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
         var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_timeline_defaultGroupByColumnName_humanReadable;
         var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable, dataSourceDescription);
+        var groupedResultsLimit = 20;
         //
         var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
         var sortDir = urlQuery.sortDir;
@@ -1129,7 +1130,7 @@
                        _id: 0,
                        label: "$_id",
                        total: 1,
-                       results: { $slice: ["$results", 20] }
+                       results: { $slice: ["$results", groupedResultsLimit] }
                    }
                 },
                 { // priotize by incidence, since we're $limit-ing below
@@ -1231,6 +1232,7 @@
                 groupedResults: groupedResults,
                 groupBy: groupBy,
                 groupBy_realColumnName: groupBy_realColumnName,
+                groupedResultsLimit: groupedResultsLimit,
                 //
                 sortBy: sortBy,
                 sortDir: sortDir,

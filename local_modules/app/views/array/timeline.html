@@ -162,6 +162,14 @@
                                                                         {% include "../partials/timeline_item.html" %}
                                                                     {% endif %}
                                                                 {% endfor %}
+                                                                {% if groupedResultsLimit < group.total %}
+                                                                    <li class="timeline-item timeline-view-all">
+                                                                        <a href="#" class="timeline-view-all-link">
+                                                                            <span class="timeline-view-all-label">View all</span>
+                                                                            <span class="timeline-view-all-count">{{ group.total }}</span>
+                                                                        </a>
+                                                                    </li>
+                                                                {% endif %}
                                                             </ul>
                                                         </li>
                                                     {% endif %}
