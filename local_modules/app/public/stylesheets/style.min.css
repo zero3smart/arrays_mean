@@ -5728,11 +5728,14 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 /* @end Map popups */
 /* @override 
 	http://localhost:9080/stylesheets/module/timeline.css */
+/* @group Timeline Layout */
+.array-timeline .filter-bar-fixed-bottom {
+	position: fixed;
+}
+/* @end Timeline Layout */
 /* @group Timeline */
 .timeline-list {
-	margin-top: 20px;
-	margin-right: -5px;
-	margin-left: -5px;
+	margin: 20px -5px 100px;
 	padding-left: 0;
 	list-style-type: none;
 }
@@ -5746,7 +5749,7 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 .timeline-group:before {
 	position: absolute;
 	top: 0;
-	left: 22px;
+	left: 23px;
 	display: block;
 	width: 1px;
 	height: 100%;
