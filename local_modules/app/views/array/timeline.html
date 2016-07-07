@@ -151,15 +151,21 @@
                                     {# {{ groupBy_realColumnName }} #}
 
                                         {% if groupedResults | length %}
-                                            <ul class="timeline-grid">
-                                            {% for group in groupedResults %}
-                                                {{ group.label }} {{ group.total }}
-                                                {% for doc in group.results %}
-                                                    {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}
-                                                        {% include "../partials/timeline_item.html" %}
+                                            <ul class="timeline-list">
+                                                {% for group in groupedResults %}
+                                                    {% if group.results | length %}
+                                                        <li class="timeline-group">
+                                                            <span class="timeline-group-label">{{ group.label }}</span>
+                                                            <ul class="timeline-group-list">
+                                                                {% for doc in group.results %}
+                                                                    {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}
+                                                                        {% include "../partials/timeline_item.html" %}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </ul>
+                                                        </li>
                                                     {% endif %}
                                                 {% endfor %}
-                                            {% endfor %}
                                             </ul>
                                         {% endif %}
 
