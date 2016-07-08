@@ -5790,7 +5790,6 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 	z-index: 10;
 	display: none;
 	padding: 10px 15px;
-	min-width: 100px;
 	max-width: 450px;
 	border-color: #eeeeee;
 	border-radius: 4px;

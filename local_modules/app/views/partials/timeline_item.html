@@ -1,11 +1,7 @@
-<li class="timeline-group-item">
+<li class="timeline-group-item" data-tooltip-key="{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}" data-tooltip-value="{{ group.label }}">
 	<div class="timeline-item timeline-item-image">
 		<a href="/array/{{ doc.srcDocPKey }}/{{ doc._id }}">
 			<img src="{{ doc.rowParams[fieldKey_medThumbImageURL] }}" class="timeline-image" />
 		</a>
-	</div>
-	<div class="global-tooltip">
-		<span class="tooltip-key">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</span>
-		<span class="tooltip-value">{{ group.label }}</span>
 	</div>
 </li>
