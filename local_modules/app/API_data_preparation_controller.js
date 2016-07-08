@@ -1096,26 +1096,32 @@
         {
             var groupByColumnName = groupBy ? groupBy : defaultGroupByColumnName_humanReadable;
             var groupByDuration;
+            var groupByDateFormat;
 
             switch(groupByColumnName) {
                 case 'Decade':
                     groupByDuration = moment.duration(10, 'years').asMilliseconds();
+                    groupByDateFormat = "%Y";
                     break;
 
                 case 'Year':
                     groupByDuration = moment.duration(1, 'years').asMilliseconds();
+                    groupByDateFormat = "%Y";
                     break;
 
                 case 'Month':
                     groupByDuration = moment.duration(1, 'months').asMilliseconds();
+                    groupByDateFormat = "%m %Y";
                     break;
 
                 case 'Day':
                     groupByDuration = moment.duration(1, 'days').asMilliseconds();
+                    groupByDateFormat = "%d %m %Y";
                     break;
 
                 default:
-                    groupByDuration = moment.duration(10, 'years').asMilliseconds();
+                    groupByDuration = moment.duration(1, 'years').asMilliseconds();
+                    groupByDateFormat = "%Y";
             }
 
             
@@ -1147,9 +1153,9 @@
                         // _id: { "$year": "$" + "rowParams." + sortBy_realColumnName },
                         _id: { 
                             "$subtract": [
-                                { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01") ] },
+                                { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("0001-01-01") ] },
                                 { "$mod": [
-                                    { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01") ] },
+                                    { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("0001-01-01") ] },
                                     groupByDuration
                                 ]}
                             ]
@@ -1163,15 +1169,17 @@
                         _id: 0,
                         startDate: {
                             $dateToString: {
-                                format: "%Y", date: {
-                                    "$add": [ "$_id", new Date("1970-01-01"), groupByDuration ]
+                                format: groupByDateFormat,
+                                date: {
+                                    "$add": [ "$_id", new Date("0001-01-01") ]
                                 }
                             }
                         },
                         endDate: {
                             $dateToString: {
-                                format: "%Y", date: {
-                                    "$add": [ "$_id", new Date("1970-01-01"), groupByDuration, moment.duration(1, 'years').asMilliseconds() ]
+                                format: groupByDateFormat,
+                                date: {
+                                    "$add": [ "$_id", new Date("0001-01-01"), groupByDuration ]
                                 }
                             }
                         },
