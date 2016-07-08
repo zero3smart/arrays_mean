@@ -38,13 +38,13 @@
 
                                             <div class="dropdown sort-control">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    X-Axis <span class="sort-criteria color-brand-hover">{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}</span>
+                                                    X-Axis <span class="sort-criteria color-brand-hover">{{ xField }}</span>
                                                 </a>
-                                                {% if colNames_orderedForMapByDropdown | length %}
+                                                {% if renderableFields | length %}
                                                 <ul class="dropdown-menu" aria-labelledby="type">
-                                                    {% set mapBy_queryParamJoinChar = "?" if routePath_withoutMapBy == routePath_base else "&" %}
-                                                    {% for colName in colNames_orderedForMapByDropdown %}
-                                                    <li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li>
+                                                    {% for colName in renderableFields %}
+                                                    <!-- li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li -->
+                                                    <li class="background-color-brand-hover"><a href="#">{{ colName }}</a></li>
                                                     {% endfor %}
                                                 </ul>
                                                 {% endif %}
@@ -52,13 +52,13 @@
 
                                             <div class="dropdown sort-control">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    Y-Axis <span class="sort-criteria color-brand-hover">{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}</span>
+                                                    Y-Axis <span class="sort-criteria color-brand-hover">{{ yField }}</span>
                                                 </a>
-                                                {% if colNames_orderedForMapByDropdown | length %}
+                                                {% if renderableFields | length %}
                                                 <ul class="dropdown-menu" aria-labelledby="type">
-                                                    {% set mapBy_queryParamJoinChar = "?" if routePath_withoutMapBy == routePath_base else "&" %}
-                                                    {% for colName in colNames_orderedForMapByDropdown %}
-                                                    <li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li>
+                                                    {% for colName in renderableFields %}
+                                                    <!-- li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li -->
+                                                    <li class="background-color-brand-hover"><a href="#">{{ colName }}</a></li>
                                                     {% endfor %}
                                                 </ul>
                                                 {% endif %}
@@ -170,9 +170,24 @@
         <script type="text/javascript" src="/javascripts/module/scatterplot.js"></script>
         <script>
         var scatterData = {{ characters | dump | safe }};
-        var scatterPlot = new arraysCoScatterPlot(scatterData)
-            .render('#scatterplot');
-        </script>
+        var scatterPlot = new arraysCoScatterPlot(scatterData.map(function(d) {
+            return d.rowParams;
+        })).setXAccessor(function(d) {
+            return d['{{ xField }}']
+        }, '{{ xField }}')
+        .setYAccessor(function(d) {
+            return d['{{ yField }}'];
+        }, '{{ yField }}')
+        .render('#scatterplot');
+
+/*         jQuery('ul.dropdown-menu').click(function(e) {
+            e.preventDefault();
+
+            console.log('x')
+
+            return false;
+        });
+ */        </script>
 
     {% include "../partials/survicate.html" %}
     </body>

@@ -1242,8 +1242,18 @@
             {
                 var sampleDoc = characters[0];
 
+                var numericFields = [];
+                for (i in sampleDoc.rowParams) {
+                    if (! isNaN(parseFloat(sampleDoc.rowParams[i])) && isFinite(sampleDoc.rowParams[i]) && i !== 'id') {
+                        numericFields.push(i);
+                    }
+                }
+
                 callback(err, {
                     characters: characters,
+                    renderableFields: numericFields,
+                    xField: numericFields[Math.floor(Math.random() * numericFields.length)],
+                    yField: numericFields[Math.floor(Math.random() * numericFields.length)],
                     //
                     env: process.env,
                     //

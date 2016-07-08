@@ -98,6 +98,42 @@ function arraysCoScatterPlot(data) {
      */
     this._yAxisContainer = undefined;
     /**
+     * Chart x label container.
+     * @private
+     * @member {Selection}
+     */
+    this._xLabelContainer = undefined;
+    /**
+     * Chart y label container.
+     * @private
+     * @member {Selection}
+     */
+    this._yLabelContainer = undefined;
+    /**
+     * Data x accessor.
+     * @private
+     * @member {Function}
+     */
+    this._xAccessor = function(d) { return d['x']; }
+    /**
+     * Data y accessor.
+     * @private
+     * @member {Function}
+     */
+    this._yAccessor = function(d) { return d['y']; }
+    /**
+     * X axis label.
+     * @private
+     * @member {String}
+     */
+    this._xLabel = 'x';
+    /**
+     * Y axis label.
+     * @private
+     * @member {String}
+     */
+    this._yLabel = 'y';
+    /**
      * Chart tooltip.
      * @private
      * @member {Tooltip}
@@ -111,8 +147,8 @@ function arraysCoScatterPlot(data) {
     this._margin = {
         top : this._radius,
         right : this._radius,
-        bottom : 20,
-        left : 25
+        bottom : 40,
+        left : 45
     };
 }
 
@@ -153,6 +189,20 @@ arraysCoScatterPlot.prototype.render = function(selector) {
      */
     this._yAxisContainer = this._canvas.append('g')
         .attr('class', 'axis y-axis');
+    /*
+     * Append x lable container
+     */
+    this._xLabelContainer = this._svg.append('g')
+        .attr('class', 'label x-label')
+        .attr('text-anchor', 'middle')
+        .append('text');
+    /*
+     * Append y label container.
+     */
+    this._yLabelContainer = this._svg.append('g')
+        .attr('class', 'label y-label')
+        .attr('text-anchor', 'middle')
+        .append('text');
     /*
      * Set up chart dimension.
      */
@@ -198,6 +248,70 @@ arraysCoScatterPlot.prototype.resize = function() {
      * Move x axis corresponding with chart height.
      */
     this._xAxisContainer.attr('transform', 'translate(0, ' + this._innerHeight + ')');
+    /*
+     * Update chart labels position.
+     */
+    this._xLabelContainer
+        .attr('transform', 'translate(' + (this._innerWidth / 2) + ', ' + this._outerHeight + ')');
+    this._yLabelContainer
+        .attr('transform', 'translate(15, ' + (this._innerHeight / 2) + ') rotate(-90)');
+
+    return this;
+};
+
+
+/**
+ * Normalize axis label.
+ * @private
+ * @param {String} label
+ * @return {String}
+ */
+arraysCoScatterPlot.prototype._normalizeLabel = function(label) {
+
+    label = label.replace('_', ' ');
+
+    return label;
+};
+
+
+/**
+ * Set data x accessor.
+ * @public
+ * @param {Function} [xAccessor]
+ * @param {String} [xLabel]
+ * @return {arraysCoScatterPlot}
+ */
+arraysCoScatterPlot.prototype.setXAccessor= function(xAccessor, xLabel) {
+
+
+    if (xAccessor) {
+        this._xAccessor = xAccessor;
+    }
+
+    if (xLabel) {
+        this._xLabel = this._normalizeLabel(xLabel);
+    }
+
+    return this;
+};
+
+
+/**
+ * Set data y accessor.
+ * @public
+ * @param {Function} [yAccessor]
+ * @param {String} [yLabel]
+ * @return {arraysCoScatterPlot}
+ */
+arraysCoScatterPlot.prototype.setYAccessor = function(yAccessor, yLabel) {
+
+    if (yAccessor) {
+        this._yAccessor = yAccessor;
+    }
+
+    if (yLabel) {
+        this._yLabel = this._normalizeLabel(yLabel);
+    }
 
     return this;
 };
@@ -215,16 +329,20 @@ arraysCoScatterPlot.prototype.update = function(data) {
      */
     data = data || this._data;
     /*
+     * Stash reference to this object.
+     */
+    var self = this;
+    /*
      * Calculate x domain.
      */
     this._xDomain = d3.extent(data, function(d) {
-        return Number(d.rowParams.comics_available);
+        return Number(self._xAccessor.call(undefined, d));
     });
     /*
      * Calculate y domain.
      */
     this._yDomain = d3.extent(data, function(d) {
-        return Number(d.rowParams.series_available);
+        return Number(self._yAccessor.call(undefined, d));
     });
     /*
      * Update scale functions.
@@ -232,14 +350,18 @@ arraysCoScatterPlot.prototype.update = function(data) {
     this._xScale.domain(this._xDomain);
     this._yScale.domain(this._yDomain);
     /*
-     * Update axis.
+     * Update axes.
      */
     this._xAxisContainer.call(this._xAxis);
     this._yAxisContainer.call(this._yAxis);
     /*
+     * Update axes labels.
+     */
+    this._xLabelContainer.text(this._xLabel);
+    this._yLabelContainer.text(this._yLabel);
+    /*
      * Render bubbles.
      */
-    var self = this;
     this._canvas.selectAll('circle.bubble')
         .data(data)
         .enter()
@@ -247,9 +369,9 @@ arraysCoScatterPlot.prototype.update = function(data) {
         .attr('class', 'bubble')
         .style('opacity', 0.5)
         .attr('cx', function(d) {
-            return self._xScale(d.rowParams.comics_available)
+            return self._xScale(self._xAccessor.call(undefined, d))
         }).attr('cy', function(d) {
-            return self._yScale(d.rowParams.series_available)
+            return self._yScale(self._yAccessor.call(undefined, d))
         }).attr('r', 0)
         .transition()
         .duration(1000)
@@ -285,8 +407,8 @@ arraysCoScatterPlot.prototype._bubbleMouseOverEventHandler = function(bubble, da
      */
     this._tooltip.setContent(
         '<div class="scatterplot-tooltip-container">' +
-            '<div class="scatterplot-tooltip-image" style="background-image:url(' + data.rowParams.thumb_small + ')"></div>' +
-            '<div class="scatterplot-tooltip-title">' + data.rowParams.name + '</div>' +
+            '<div class="scatterplot-tooltip-image" style="background-image:url(' + data.thumb_small + ')"></div>' +
+            '<div class="scatterplot-tooltip-title">' + data.name + '</div>' +
         '</div>')
         .show(bubble);
 };

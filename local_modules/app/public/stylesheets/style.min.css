@@ -5997,6 +5997,10 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 	stroke: black;
 	stroke-width: 1px;
 }
+#scatterplot .label {
+	text-transform: uppercase;
+	font-size: 1.5em;
+}
 div.arrays-co-tooltip {
 	position: absolute;
 	border-radius: 3px;

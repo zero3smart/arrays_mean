@@ -9,3 +9,8 @@
 	stroke: black;
 	stroke-width: 1px;
 }
+
+#scatterplot .label {
+	text-transform: uppercase;
+	font-size: 1.5em;
+}
