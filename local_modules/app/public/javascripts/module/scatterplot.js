@@ -3,24 +3,111 @@
  * @param {Object[]}
  */
 function arraysCoScatterPlot(data) {
-
+    /**
+     * Chart data.
+     * @private
+     * @member {Object[]}
+     */
     this._data = data;
+    /**
+     * Chart bubble's radius.
+     * @private
+     * @member {Integer}
+     */
     this._radius = 15;
+    /**
+     * Chart container.
+     * @private
+     * @member {Selection}
+     */
     this._container = undefined;
+    /**
+     * Chart canvas width.
+     * @private
+     * @member {Number}
+     */
+    this._innerWitdh = undefined;
+    /**
+     * Chart canvas height.
+     * @private
+     * @member {Number}
+     */
+    this._innerHeight = undefined;
+    /**
+     * Chart SVG width.
+     * @private
+     * @member {Number}
+     */
     this._outerWitdh = undefined;
+    /**
+     * Chart SVG height.
+     * @private
+     * @member {Number}
+     */
     this._outerHeight = undefined;
+    /**
+     * Chart SVG element.
+     * @private
+     * @member {Selection}
+     */
     this._svg = undefined;
+    /**
+     * Chart main g element.
+     * @private
+     * @member {Selection}
+     */
     this._canvas = undefined;
+    /**
+     * Chart x scale function.
+     * @private
+     * @member {Function}
+     */
     this._xScale = d3.scale.linear();
+    /**
+     * Chart y scale function.
+     * @private
+     * @member {Function}
+     */
     this._yScale = d3.scale.linear();
+    /**
+     * Chart x axis.
+     * @private
+     * @member {Function}
+     */
     this._xAxis = d3.svg.axis()
         .scale(this._xScale)
         .orient('bottom');
+    /**
+     * Chart y axis.
+     * @private
+     * @member {Function}
+     */
     this._yAxis = d3.svg.axis()
         .scale(this._yScale)
         .orient('left');
+    /**
+     * Chart x axis container.
+     * @private
+     * @member {Selection}
+     */
     this._xAxisContainer = undefined;
+    /**
+     * Chart y axis container.
+     * @private
+     * @member {Selection}
+     */
     this._yAxisContainer = undefined;
+    /**
+     * Chart tooltip.
+     * @private
+     * @member {Tooltip}
+     */
+    this._tooltip = new Tooltip();
+    /**
+     * Chart margins.
+     * @private
+     * @member {Object}
+     */
     this._margin = {
         top : this._radius,
         right : this._radius,
@@ -98,7 +185,7 @@ arraysCoScatterPlot.prototype.resize = function() {
     this._outerHeight = 400;
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
     /*
-     * Configure 
+     * Configure scale functions.
      */
     this._xScale.range([0, this._innerWidth]);
     this._yScale.range([this._innerHeight, 0]);
@@ -158,6 +245,7 @@ arraysCoScatterPlot.prototype.update = function(data) {
         .enter()
         .append('circle')
         .attr('class', 'bubble')
+        .style('opacity', 0.5)
         .attr('cx', function(d) {
             return self._xScale(d.rowParams.comics_available)
         }).attr('cy', function(d) {
@@ -165,7 +253,60 @@ arraysCoScatterPlot.prototype.update = function(data) {
         }).attr('r', 0)
         .transition()
         .duration(1000)
-        .attr('r', this._radius);
+        .attr('r', this._radius)
+        .each('end', function(d) {
+            d3.select(this).on('mouseover', function(d) {
+                self._bubbleMouseOverEventHandler(this, d);
+            }).on('mouseout', function(d) {
+                self._bubbleMouseOutEventHandler(this);
+            });
+        })
 
     return this;
+};
+
+
+/**
+ * Bubble mouse over event handler.
+ * @private
+ * @param {SVGElement} bubble
+ * @param {Object} data
+ */
+arraysCoScatterPlot.prototype._bubbleMouseOverEventHandler = function(bubble, data) {
+    /*
+     * Highlight bubble.
+     */
+    d3.select(bubble)
+        .transition()
+        .duration(500)
+        .style('opacity', 1)
+    /*
+     * Show tooltip.
+     */
+    this._tooltip.setContent(
+        '<div class="scatterplot-tooltip-container">' +
+            '<div class="scatterplot-tooltip-image" style="background-image:url(' + data.rowParams.thumb_small + ')"></div>' +
+            '<div class="scatterplot-tooltip-title">' + data.rowParams.name + '</div>' +
+        '</div>')
+        .show(bubble);
+};
+
+
+/**
+ * Bubble mouse over event handler.
+ * @private
+ * @param {SVGElement} bubble
+ */
+arraysCoScatterPlot.prototype._bubbleMouseOutEventHandler = function(bubble) {
+    /*
+     * Fade bubble.
+     */
+    d3.select(bubble)
+        .transition()
+        .duration(500)
+        .style('opacity', 0.5)
+    /*
+     * Hide tooltip.
+     */
+    this._tooltip.hide();
 };
