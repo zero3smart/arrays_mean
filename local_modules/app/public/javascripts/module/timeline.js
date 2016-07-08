@@ -10,7 +10,7 @@ var $tooltipValue = $('<span class="tooltip-value"></span>').appendTo($tooltip);
 /**
  * Tooltip behavior on mouse hover
  */
-var $timelineGroupItem = $('.timeline-group-item');
+var $timelineGroupItem = $('.timeline-group-item.has-tooltip');
 
 $timelineGroupItem.each(function(i) {
 	var $this = $(this);
