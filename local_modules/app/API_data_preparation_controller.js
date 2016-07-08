@@ -1019,6 +1019,7 @@
         var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_timeline_defaultGroupByColumnName_humanReadable;
         var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable, dataSourceDescription);
         var groupedResultsLimit = 20;
+        var groupByDateFormat;
         //
         var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
         var sortDir = urlQuery.sortDir;
@@ -1097,32 +1098,31 @@
             var groupBySortFieldPath = "results.rowParams." + sortBy_realColumnName
             var groupByColumnName = groupBy ? groupBy : defaultGroupByColumnName_humanReadable;
             var groupByDuration;
-            var groupByDateFormat;
 
             switch(groupByColumnName) {
                 case 'Decade':
                     groupByDuration = moment.duration(10, 'years').asMilliseconds();
-                    groupByDateFormat = "%Y";
+                    groupByDateFormat = "YYYY";
                     break;
 
                 case 'Year':
                     groupByDuration = moment.duration(1, 'years').asMilliseconds();
-                    groupByDateFormat = "%Y";
+                    groupByDateFormat = "YYYY";
                     break;
 
                 case 'Month':
                     groupByDuration = moment.duration(1, 'months').asMilliseconds();
-                    groupByDateFormat = "%m %Y";
+                    groupByDateFormat = "MMMM YYYY";
                     break;
 
                 case 'Day':
                     groupByDuration = moment.duration(1, 'days').asMilliseconds();
-                    groupByDateFormat = "%d %m %Y";
+                    groupByDateFormat = "MMMM Do YYYY";
                     break;
 
                 default:
                     groupByDuration = moment.duration(1, 'years').asMilliseconds();
-                    groupByDateFormat = "%Y";
+                    groupByDateFormat = "YYYY";
             }
 
             
@@ -1168,28 +1168,14 @@
                 { // reformat
                     $project: {
                         _id: 0,
-                        startDate: {
-                            $dateToString: {
-                                format: groupByDateFormat,
-                                date: {
-                                    "$add": [ "$_id", new Date("0001-01-01") ]
-                                }
-                            }
-                        },
-                        endDate: {
-                            $dateToString: {
-                                format: groupByDateFormat,
-                                date: {
-                                    "$add": [ "$_id", new Date("0001-01-01"), groupByDuration ]
-                                }
-                            }
-                        },
+                        startDate: { "$add": [ "$_id", new Date("0001-01-01") ] },
+                        endDate: { "$add": [ "$_id", new Date("0001-01-01"), groupByDuration ] },
                         total: 1,
                         results: { $slice: ["$results", groupedResultsLimit] }
                     }
                 },
                 {
-                    $sort : { [groupBySortFieldPath] : -1 }
+                    $sort: { [groupBySortFieldPath] : -1 }
                 },
                 // {
                 //     $limit : 100 // so the chart can actually handle the number
@@ -1221,6 +1207,7 @@
             var routePath_withoutSortBy     = routePath_base;
             var routePath_withoutSortDir    = routePath_base;
             var urlQuery_forSwitchingViews  = "";
+            var urlQuery_forViewAllInDuration = routePath_base;
             if (groupBy !== undefined && groupBy != null && groupBy !== "") {
                 var appendQuery = "groupBy=" + groupBy;
                 routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
@@ -1288,6 +1275,7 @@
                 groupBy: groupBy,
                 groupBy_realColumnName: groupBy_realColumnName,
                 groupedResultsLimit: groupedResultsLimit,
+                groupByDateFormat: groupByDateFormat,
                 //
                 sortBy: sortBy,
                 sortDir: sortDir,
@@ -1314,7 +1302,8 @@
                 routePath_withoutGroupBy: routePath_withoutGroupBy,
                 routePath_withoutSortBy: routePath_withoutSortBy,
                 //
-                urlQuery_forSwitchingViews: urlQuery_forSwitchingViews
+                urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
+                urlQuery_forViewAllInDuration: urlQuery_forViewAllInDuration
             };
             callback(err, data);
         }

@@ -44,6 +44,10 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
     {
         return moment(date).format("MMMM Do, YYYY")
     });
+    nunjucks_env.addFilter('dateFormat', function(date, format)
+    {
+        return format ? moment(date).format(format) : moment(date).format("MMMM Do, YYYY");
+    });
     nunjucks_env.addFilter('isArray', function(val) 
     {
         return Array.isArray(val);
