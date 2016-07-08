@@ -145,7 +145,7 @@ function arraysCoScatterPlot(data) {
      * @member {Object}
      */
     this._margin = {
-        top : this._radius,
+        top : this._radius * 2,
         right : this._radius,
         bottom : 40,
         left : 45
