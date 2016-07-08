@@ -1094,6 +1094,7 @@
         }
         function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
         {
+            var groupBySortFieldPath = "results.rowParams." + sortBy_realColumnName
             var groupByColumnName = groupBy ? groupBy : defaultGroupByColumnName_humanReadable;
             var groupByDuration;
             var groupByDateFormat;
@@ -1188,7 +1189,7 @@
                     }
                 },
                 {
-                    $sort : { ["results.rowParams." + sortBy_realColumnName] : -1 }
+                    $sort : { [groupBySortFieldPath] : -1 }
                 },
                 // {
                 //     $limit : 100 // so the chart can actually handle the number
