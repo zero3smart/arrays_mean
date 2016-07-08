@@ -1,8 +1,11 @@
-<li class="timeline-item timeline-item-image">
-	<a href="/array/{{ doc.srcDocPKey }}/{{ doc._id }}">
-		<img src="{{ doc.rowParams[fieldKey_medThumbImageURL] }}" class="timeline-image" />
-		<div class="timeline-tooltip border-top-color-brand">
-			<h2 class="timeline-title">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</h2>
-		</div>
-	</a>
+<li class="timeline-group-item">
+	<div class="timeline-item timeline-item-image">
+		<a href="/array/{{ doc.srcDocPKey }}/{{ doc._id }}">
+			<img src="{{ doc.rowParams[fieldKey_medThumbImageURL] }}" class="timeline-image" />
+		</a>
+	</div>
+	<div class="global-tooltip">
+		<span class="tooltip-key">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</span>
+		<span class="tooltip-value">{{ group.label }}</span>
+	</div>
 </li>

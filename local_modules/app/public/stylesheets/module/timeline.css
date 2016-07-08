@@ -19,7 +19,6 @@
 
 .timeline-group {
 	position: relative;
-	overflow-y: hidden;
 	margin-left: 80px;
 	padding-bottom: 20px;
 	padding-left: 60px;
@@ -70,29 +69,28 @@
 	padding-left: 0;
 }
 
-.timeline-item {
+.timeline-group-item {
 	position: relative;
 	display: inline-block;
-	overflow: hidden;
 	margin-right: 5px;
 	margin-bottom: 10px;
 	margin-left: 5px;
+	vertical-align: top;
+	text-align: left;
+}
+
+.timeline-item {
+	overflow: hidden;
 	width: 80px;
 	height: 80px;
 	border: 1px solid white;
 	border-radius: 4px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	vertical-align: top;
-	text-align: left;
 }
 
 .timeline-image {
 	width: 100%;
 	height: auto;
-}
-
-.timeline-title {
-	display: none;
 }
 
 .timeline-view-all-link {
@@ -117,4 +115,18 @@
 }
 
 /* @end Timeline */
-	
+
+/* @group Tooltip */
+
+.global-tooltip {
+	display: none;
+}
+
+.timeline-group-item:hover .global-tooltip {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
+}
+
+/* @end Tooltip */

@@ -5560,61 +5560,6 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 #chart path:hover {
 	cursor: pointer;
 }
-.chart-tooltip {
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: 10;
-	display: none;
-	padding: 10px 15px;
-	max-width: 450px;
-	border-color: #eeeeee;
-	border-radius: 4px;
-	background-color: #ffffff;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	font-family: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	-webkit-transform: translate(-50%, -100%);
-	    -ms-transform: translate(-50%, -100%);
-	        transform: translate(-50%, -100%);
-}
-.chart-tooltip:after,
-.chart-tooltip:before {
-	position: absolute;
-	top: 100%;
-	right: 50%;
-	width: 0;
-	height: 0;
-	border: solid transparent;
-	content: " ";
-	pointer-events: none;
-}
-.chart-tooltip:after {
-	margin-right: -10px;
-	border-width: 10px;
-	border-color: rgba(255, 255, 255, 0);
-	border-top-color: #ffffff;
-}
-.chart-tooltip:before {
-	margin-right: -11px;
-	border-width: 11px;
-	border-color: rgba(238, 238, 238, 0);
-	border-top-color: #eeeeee;
-}
-.tooltip-key,
-.tooltip-value {
-	display: block;
-	text-align: left;
-	font-size: 17px;
-	line-height: 20px;
-}
-.tooltip-key {
-	color: #777777;
-	font-weight: 600;
-}
-.tooltip-value {
-	color: #a8a8a8;
-	font-weight: normal;
-}
 /* @end Chart Styling */
 /* @override 
 	http://localhost:9080/stylesheets/module/choropleth.css */
@@ -5741,7 +5686,6 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 }
 .timeline-group {
 	position: relative;
-	overflow-y: hidden;
 	margin-left: 80px;
 	padding-bottom: 20px;
 	padding-left: 60px;
@@ -5785,27 +5729,26 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 	margin-top: 5px;
 	padding-left: 0;
 }
-.timeline-item {
+.timeline-group-item {
 	position: relative;
 	display: inline-block;
-	overflow: hidden;
 	margin-right: 5px;
 	margin-bottom: 10px;
 	margin-left: 5px;
+	vertical-align: top;
+	text-align: left;
+}
+.timeline-item {
+	overflow: hidden;
 	width: 80px;
 	height: 80px;
 	border: 1px solid white;
 	border-radius: 4px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	vertical-align: top;
-	text-align: left;
 }
 .timeline-image {
 	width: 100%;
 	height: auto;
-}
-.timeline-title {
-	display: none;
 }
 .timeline-view-all-link {
 	display: block;
@@ -5826,6 +5769,77 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 	line-height: 0.8em;
 }
 /* @end Timeline */
+/* @group Tooltip */
+.global-tooltip {
+	display: none;
+}
+.timeline-group-item:hover .global-tooltip {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: block;
+}
+/* @end Tooltip */
+/* @override 
+	http://localhost:9080/stylesheets/module/tooltip.css */
+/* @group Global Tooltip */
+.global-tooltip {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	display: none;
+	padding: 10px 15px;
+	min-width: 100px;
+	max-width: 450px;
+	border-color: #eeeeee;
+	border-radius: 4px;
+	background-color: #ffffff;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	font-family: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	-webkit-transform: translate(-50%, -100%);
+	    -ms-transform: translate(-50%, -100%);
+	        transform: translate(-50%, -100%);
+}
+.global-tooltip:after,
+.global-tooltip:before {
+	position: absolute;
+	top: 100%;
+	right: 50%;
+	width: 0;
+	height: 0;
+	border: solid transparent;
+	content: " ";
+	pointer-events: none;
+}
+.global-tooltip:after {
+	margin-right: -10px;
+	border-width: 10px;
+	border-color: rgba(255, 255, 255, 0);
+	border-top-color: #ffffff;
+}
+.global-tooltip:before {
+	margin-right: -11px;
+	border-width: 11px;
+	border-color: rgba(238, 238, 238, 0);
+	border-top-color: #eeeeee;
+}
+.tooltip-key,
+.tooltip-value {
+	display: block;
+	text-align: left;
+	font-size: 17px;
+	line-height: 20px;
+}
+.tooltip-key {
+	color: #777777;
+	font-weight: 600;
+}
+.tooltip-value {
+	color: #a8a8a8;
+	font-weight: normal;
+}
+/* @end Global Tooltip */
 /* @override 
 	http://localhost:9080/stylesheets/module/splash.css */
 .splash .container-fluid {
