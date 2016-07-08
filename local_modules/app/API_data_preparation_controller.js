@@ -1094,7 +1094,30 @@
         }
         function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
         {
-            var groupByDuration = groupBy ? moment.duration(1, 'years').asMilliseconds() : moment.duration(1, 'years').asMilliseconds();
+            var groupByColumnName = groupBy ? groupBy : defaultGroupByColumnName_humanReadable;
+            var groupByDuration;
+
+            switch(groupByColumnName) {
+                case 'Decade':
+                    groupByDuration = moment.duration(10, 'years').asMilliseconds();
+                    break;
+
+                case 'Year':
+                    groupByDuration = moment.duration(1, 'years').asMilliseconds();
+                    break;
+
+                case 'Month':
+                    groupByDuration = moment.duration(1, 'months').asMilliseconds();
+                    break;
+
+                case 'Day':
+                    groupByDuration = moment.duration(1, 'days').asMilliseconds();
+                    break;
+
+                default:
+                    groupByDuration = moment.duration(10, 'years').asMilliseconds();
+            }
+
             
             var aggregationOperators = [];
             if (isSearchActive) {
