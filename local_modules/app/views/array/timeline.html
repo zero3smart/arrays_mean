@@ -155,7 +155,7 @@
                                                 {% for group in groupedResults %}
                                                     {% if group.results | length %}
                                                         <li class="timeline-group">
-                                                            <span class="timeline-group-label">{{ group.label }}</span>
+                                                            <span class="timeline-group-label">{{ group.startDate }}{% if group.endDate %}&ndash;{{ group.endDate }}{% endif %}</span>
                                                             <ul class="timeline-group-list">
                                                                 {% for doc in group.results %}
                                                                     {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}

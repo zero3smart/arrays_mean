@@ -5,6 +5,7 @@
     //
     var winston = require('winston');
     var async = require('async');
+    var moment = require('moment');
     var fs = require('fs');
     //
     var dataSourceDescriptions = require('../data_ingestion/MVP_datasource_descriptions').Descriptions;
@@ -1093,7 +1094,7 @@
         }
         function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
         {
-            var groupBySortFieldPath = "results.rowParams." + sortBy_realColumnName
+            var groupByDuration = groupBy ? moment.duration(1, 'years').asMilliseconds() : moment.duration(1, 'years').asMilliseconds();
             
             var aggregationOperators = [];
             if (isSearchActive) {
@@ -1120,21 +1121,43 @@
                 { $unwind: "$" + "rowParams." + sortBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
                 { // unique/grouping and summing stage
                    $group: {
-                       _id: { "$year": "$" + "rowParams." + sortBy_realColumnName },
-                       total: { $sum: 1 }, // the count
-                       results: { $push: "$$ROOT" }
+                        // _id: { "$year": "$" + "rowParams." + sortBy_realColumnName },
+                        _id: { 
+                            "$subtract": [
+                                { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01") ] },
+                                { "$mod": [
+                                    { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01") ] },
+                                    groupByDuration
+                                ]}
+                            ]
+                        },
+                        total: { $sum: 1 }, // the count
+                        results: { $push: "$$ROOT" }
                    }
                 },
                 { // reformat
-                   $project: {
-                       _id: 0,
-                       label: "$_id",
-                       total: 1,
-                       results: { $slice: ["$results", groupedResultsLimit] }
-                   }
+                    $project: {
+                        _id: 0,
+                        startDate: {
+                            $dateToString: {
+                                format: "%Y", date: {
+                                    "$add": [ "$_id", new Date("1970-01-01"), groupByDuration ]
+                                }
+                            }
+                        },
+                        endDate: {
+                            $dateToString: {
+                                format: "%Y", date: {
+                                    "$add": [ "$_id", new Date("1970-01-01"), groupByDuration, moment.duration(1, 'years').asMilliseconds() ]
+                                }
+                            }
+                        },
+                        total: 1,
+                        results: { $slice: ["$results", groupedResultsLimit] }
+                    }
                 },
-                { // priotize by incidence, since we're $limit-ing below
-                    $sort : { [groupBySortFieldPath] : -1 }
+                {
+                    $sort : { ["results.rowParams." + sortBy_realColumnName] : -1 }
                 },
                 // {
                 //     $limit : 100 // so the chart can actually handle the number
