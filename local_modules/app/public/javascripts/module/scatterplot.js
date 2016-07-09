@@ -252,9 +252,9 @@ arraysCoScatterPlot.prototype.resize = function() {
      * Update chart labels position.
      */
     this._xLabelContainer
-        .attr('transform', 'translate(' + (this._innerWidth / 2) + ', ' + this._outerHeight + ')');
+        .attr('transform', 'translate(' + (this._margin.left + this._innerWidth / 2) + ', ' + this._outerHeight + ')');
     this._yLabelContainer
-        .attr('transform', 'translate(15, ' + (this._innerHeight / 2) + ') rotate(-90)');
+        .attr('transform', 'translate(15, ' + (this._margin.top + this._innerHeight / 2) + ') rotate(-90)');
 
     return this;
 };
@@ -269,6 +269,7 @@ arraysCoScatterPlot.prototype.resize = function() {
 arraysCoScatterPlot.prototype._normalizeLabel = function(label) {
 
     label = label.replace('_', ' ');
+    label = 'Number of ' + label;
 
     return label;
 };
