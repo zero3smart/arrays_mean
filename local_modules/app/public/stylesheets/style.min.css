@@ -5686,7 +5686,7 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 }
 .timeline-group {
 	position: relative;
-	margin-left: 80px;
+	margin-left: 0;
 	padding-bottom: 20px;
 	padding-left: 60px;
 }
