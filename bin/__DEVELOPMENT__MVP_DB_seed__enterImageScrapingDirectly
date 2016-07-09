@@ -1,1 +1,1 @@
-NODE_ENV=development node local_modules/data_ingestion/_import_MVP_DB_seed__enterImageScrapingDirectly.js
+NODE_ENV=development node local_modules/data_ingestion/_import_MVP_DB_seed__enterImageScrapingDirectly.js $@

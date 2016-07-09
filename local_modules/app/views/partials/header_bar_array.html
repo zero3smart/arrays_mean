@@ -25,6 +25,9 @@
 						{% if view_visibility.timeline != false %}
 						<li class="background-color-brand-hover menu-item-timeline {{ "active" if currentView == "timeline" }}"><a href="/array/{{ array_source_key }}/timeline{{ urlQuery_forSwitchingViews }}"><span class="icon-timeline color-brand" aria-hidden="true"></span> Timeline</a></li>
 						{% endif %}
+                        {% if view_visibility.scatterplot != false %}
+                        <li class="background-color-brand-hover menu-item-scatterplot {{ "active" if currentView == "scatterplot" }}"><a href="/array/{{ array_source_key }}/scatterplot{{ urlQuery_forSwitchingViews }}"><span class="icon-scatterplot color-brand" aria-hidden="true"></span> Scatterplot</a></li>
+                        {% endif %}	
 					</ul>
 				</li>
 			</ul>
