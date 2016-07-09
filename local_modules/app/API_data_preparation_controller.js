@@ -1151,16 +1151,17 @@
                 { $unwind: "$" + "rowParams." + sortBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
                 { // unique/grouping and summing stage
                    $group: {
-                        // _id: { "$year": "$" + "rowParams." + sortBy_realColumnName },
                         _id: { 
                             "$subtract": [
-                                { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("0001-01-01") ] },
+                                { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("0000-01-01") ] },
                                 { "$mod": [
-                                    { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("0001-01-01") ] },
+                                    { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("0000-01-01") ] },
                                     groupByDuration
                                 ]}
                             ]
                         },
+                        startDate: { $first: "$" + "rowParams." + sortBy_realColumnName },
+                        endDate: { $last: "$" + "rowParams." + sortBy_realColumnName },
                         total: { $sum: 1 }, // the count
                         results: { $push: "$$ROOT" }
                    }
@@ -1168,8 +1169,8 @@
                 { // reformat
                     $project: {
                         _id: 0,
-                        startDate: { "$add": [ "$_id", new Date("0001-01-01") ] },
-                        endDate: { "$add": [ "$_id", new Date("0001-01-01"), groupByDuration ] },
+                        startDate: "$startDate",
+                        endDate: "$endDate",
                         total: 1,
                         results: { $slice: ["$results", groupedResultsLimit] }
                     }
