@@ -1282,7 +1282,8 @@
                 sortDir: sortDir,
                 defaultSortByColumnName_humanReadable: defaultSortByColumnName_humanReadable,
                 sortBy_realColumnName: sortBy_realColumnName,
-                colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelineSortByDropdown(sampleDoc, dataSourceDescription),
+                colNames_orderedForTimelineSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelineSortByDropdown(sampleDoc, dataSourceDescription),
+                colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                 //
                 filterObj: filterObj,
                 filterJSON_nonURIEncodedVals: filterJSON,

@@ -53,10 +53,10 @@
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label order-by" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                                     Sort By <span class="sort-criteria color-brand-hover">{{ sortBy if sortBy else defaultSortByColumnName_humanReadable }}</span>
                                                 </a>
-                                                {% if colNames_orderedForSortByDropdown | length %}
+                                                {% if colNames_orderedForTimelineSortByDropdown | length %}
                                                 <ul class="dropdown-menu" aria-labelledby="sort-by">
                                                     {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
-                                                    {% for colName in colNames_orderedForSortByDropdown %}
+                                                    {% for colName in colNames_orderedForTimelineSortByDropdown %}
                                                     <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortBy }}{{ sortBy_queryParamJoinChar }}sortBy={{ colName }}">{{ colName }}</a></li>
                                                     {% endfor %}
                                                 </ul>
