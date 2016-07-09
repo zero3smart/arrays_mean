@@ -9,7 +9,8 @@ var dotenv_config =
 };
 require('dotenv').config(dotenv_config);
 //
-var dataSourceDescriptions = require('./MVP_datasource_descriptions').Descriptions;
+var datasources = process.argv.slice(2);
+var dataSourceDescriptions = require('./datasource_descriptions').GetDescriptionsToSetup(datasources);
 //
 //
 // Set up application runtime object graph

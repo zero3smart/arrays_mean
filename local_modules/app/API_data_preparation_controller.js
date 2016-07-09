@@ -7,7 +7,7 @@
     var async = require('async');
     var fs = require('fs');
     //
-    var dataSourceDescriptions = require('../data_ingestion/MVP_datasource_descriptions').Descriptions;
+    var dataSourceDescriptions = require('../data_ingestion/datasource_descriptions').GetDescriptions();
     var importedDataPreparation = require('../data_ingestion/imported_data_preparation');
     var cached_values_model = require('../cached_values/cached_values_model');
     //
@@ -67,11 +67,13 @@
             var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription, self.context.raw_source_documents_controller);
             self._fetchedSourceDoc(source_pKey, function(err, doc)
             {
-                if (err) {
-                    callback(err, null);
+                if (err)
+                    return callback(err, null);
 
-                    return;
-                }
+                // Should be null If we have not installed the datasource yet.
+                if (!doc)
+                    return cb(err, {});
+
                 var default_filterJSON = undefined;
                 if (typeof dataSourceDescription.fe_filters_default !== 'undefined') {
                     default_filterJSON = JSON.stringify(dataSourceDescription.fe_filters_default || {}); // "|| {}" for safety
@@ -1539,11 +1541,13 @@
                 //
                 return;
             }
-            if (doc == null) {
+            // In case we might have some datasources to be installed, but not installed yet.
+            // It should return null, which should not be buggy
+            /* if (doc == null) {
                 callback(new Error('Unexpectedly missing source document - wrong source document pKey? source_pKey: ' + source_pKey), null);
                 //
                 return;
-            }
+            } */
             //
             callback(null, doc);
         });
