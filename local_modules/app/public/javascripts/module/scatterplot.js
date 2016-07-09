@@ -360,11 +360,24 @@ arraysCoScatterPlot.prototype.update = function(data) {
     this._xLabelContainer.text(this._xLabel);
     this._yLabelContainer.text(this._yLabel);
     /*
-     * Render bubbles.
+     * Select bubbles.
      */
-    this._canvas.selectAll('circle.bubble')
-        .data(data)
-        .enter()
+    var bubbles = this._canvas.selectAll('circle.bubble')
+        .data(data);
+    /*
+     * Move existent bubbles.
+     */
+    bubbles.transition()
+        .duration(1000)
+        .attr('cx', function(d) {
+            return self._xScale(self._xAccessor.call(undefined, d))
+        }).attr('cy', function(d) {
+            return self._yScale(self._yAccessor.call(undefined, d))
+        });
+    /*
+     * Render new bubbles.
+     */
+    bubbles.enter()
         .append('circle')
         .attr('class', 'bubble')
         .style('opacity', 0.5)
