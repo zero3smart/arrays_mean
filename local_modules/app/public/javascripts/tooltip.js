@@ -21,12 +21,32 @@ function Tooltip() {
      * @param {Integer}
      */
     this._offset = 5;
+    /**
+     * Tooltip prefered position.
+     * @private
+     * @member {'top'|'right'|'bottom'|'left'}
+     */
+    this._position = 'left';
+};
+
+
+/**
+ * Set tooltip position.
+ * @public
+ * @param {'top'|'right'|'bottom'|'left'} position
+ * @returns {Tooltip}
+ */
+Tooltip.prototype.setPosition = function(position) {
+
+    this._position = position;
+    return this;
 };
 
 
 /**
  * Hide tooltip.
  * @public
+ * @returns {Tooltip}
  */
 Tooltip.prototype.hide = function() {
 

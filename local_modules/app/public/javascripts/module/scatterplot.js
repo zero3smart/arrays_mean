@@ -325,7 +325,7 @@ arraysCoScatterPlot.prototype.setXAccessor= function(xAccessor, xLabel) {
     }
 
     if (xLabel) {
-        this._xLabel = this._normalizeLabel(xLabel);
+        this._xLabel = xLabel;
     }
 
     return this;
@@ -346,7 +346,7 @@ arraysCoScatterPlot.prototype.setYAccessor = function(yAccessor, yLabel) {
     }
 
     if (yLabel) {
-        this._yLabel = this._normalizeLabel(yLabel);
+        this._yLabel = yLabel;
     }
 
     return this;
@@ -445,8 +445,8 @@ arraysCoScatterPlot.prototype.update = function(data) {
     /*
      * Update axes labels.
      */
-    this._xLabelContainer.text(this._xLabel);
-    this._yLabelContainer.text(this._yLabel);
+    this._xLabelContainer.text(this._normalizeLabel(this._xLabel));
+    this._yLabelContainer.text(this._normalizeLabel(this._yLabel));
     /*
      * Select bubbles.
      */
@@ -510,7 +510,8 @@ arraysCoScatterPlot.prototype._bubbleMouseOverEventHandler = function(bubble, da
     d3.select(bubble)
         .transition()
         .duration(500)
-        .style('opacity', 1)
+        .attr('r', this._radius * 1.5)
+        .style('opacity', 1);
     /*
      * Show tooltip.
      */
@@ -518,7 +519,12 @@ arraysCoScatterPlot.prototype._bubbleMouseOverEventHandler = function(bubble, da
         '<div class="scatterplot-tooltip-container">' +
             '<div class="scatterplot-tooltip-image" style="background-image:url(' + data.thumb_small + ')"></div>' +
             '<div class="scatterplot-tooltip-title">' + data.name + '</div>' +
+            '<div class="scatterplot-tooltip-content">' +
+            this._xAccessor(data) + ' ' + this._xLabel.replace('_', ' ') + ', ' +
+            this._yAccessor(data) + ' ' + this._yLabel.replace('_', ' ') +
+            '</div>' +
         '</div>')
+        .setOffset(this._radius / 2)
         .show(bubble);
 };
 
@@ -535,7 +541,8 @@ arraysCoScatterPlot.prototype._bubbleMouseOutEventHandler = function(bubble) {
     d3.select(bubble)
         .transition()
         .duration(500)
-        .style('opacity', 0.5)
+        .attr('r', this._radius)
+        .style('opacity', 0.5);
     /*
      * Hide tooltip.
      */

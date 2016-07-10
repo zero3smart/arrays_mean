@@ -7,19 +7,27 @@ div.arrays-co-tooltip {
 
 
 div.arrays-co-tooltip .scatterplot-tooltip-container {
-	width: 150px;
+	width: 220px;
 	overflow: hidden;
 }
 
 div.arrays-co-tooltip .scatterplot-tooltip-image {
 	border-top-left-radius: 3px;
 	border-top-right-radius: 3px;
-	width: 150px;
+	width: 220px;
 	height: 200px;
 	background-position: center;
 }
 
 div.arrays-co-tooltip .scatterplot-tooltip-title {
-	padding: 0.1em 0.5em;
-	min-height: 2.5em;
+	font-size: 1.2em;
+	font-weight: 600;
+	padding: 0.1em 0.5em 0 0.5em;
+}
+
+div.arrays-co-tooltip .scatterplot-tooltip-content {
+	font-size: 1.2em;
+	line-height: 90%;
+	padding: 0 0.5em 0.5em 0.5em;
+	color: #c9c9c9;
 }
