@@ -1254,8 +1254,10 @@
                 callback(err, {
                     characters: characters,
                     renderableFields: numericFields,
-                    xField: numericFields[Math.floor(Math.random() * numericFields.length)],
-                    yField: numericFields[Math.floor(Math.random() * numericFields.length)],
+//                    xField: numericFields[Math.floor(Math.random() * numericFields.length)],
+//                    yField: numericFields[Math.floor(Math.random() * numericFields.length)],
+                    xField: 'stories_returned',
+                    yField: 'comics_returned',
                     //
                     env: process.env,
                     //

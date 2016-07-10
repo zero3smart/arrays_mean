@@ -70,6 +70,12 @@ function arraysCoScatterPlot(data) {
      */
     this._yScale = d3.scale.linear();
     /**
+     * Axes cell's height.
+     * @private
+     * @member {Integer}
+     */
+    this._axesHeight = 20;
+    /**
      * Chart x axis.
      * @private
      * @member {Function}
@@ -97,6 +103,18 @@ function arraysCoScatterPlot(data) {
      * @member {Selection}
      */
     this._yAxisContainer = undefined;
+    /**
+     * X axis bottom border.
+     * @private
+     * @param {Selection}
+     */
+    this._xAxisBorder = undefined;
+    /**
+     * Y axis left border.
+     * @private
+     * @param {Selection}
+     */
+    this._yAxisBorder = undefined;
     /**
      * Chart x label container.
      * @private
@@ -184,11 +202,19 @@ arraysCoScatterPlot.prototype.render = function(selector) {
      */
     this._xAxisContainer = this._canvas.append('g')
         .attr('class', 'axis x-axis');
+    this._xAxisBorder = this._xAxisContainer.append('line')
+        .attr('x1', - this._axesHeight)
+        .attr('y1', this._axesHeight)
+        .attr('y2', this._axesHeight);
     /*
      * Append y axis container.
      */
     this._yAxisContainer = this._canvas.append('g')
         .attr('class', 'axis y-axis');
+    this._yAxisBorder = this._yAxisContainer.append('line')
+        .attr('x1', - this._axesHeight)
+        .attr('y1', 0)
+        .attr('x2', - this._axesHeight);
     /*
      * Append x lable container
      */
@@ -245,6 +271,16 @@ arraysCoScatterPlot.prototype.resize = function() {
     this._svg.attr('width', this._outerWidth)
         .attr('height', this._outerHeight);
     /*
+     * Update grid.
+     */
+    this._xAxis.tickSize(- this._innerHeight, this._axesHeight);
+    this._yAxis.tickSize(- this._innerWidth, this._axesHeight);
+    /*
+     * Update axes borders.
+     */
+    this._xAxisBorder.attr('x2', this._innerWidth);
+    this._yAxisBorder.attr('y2', this._innerHeight + this._axesHeight);
+    /*
      * Move x axis corresponding with chart height.
      */
     this._xAxisContainer.attr('transform', 'translate(0, ' + this._innerHeight + ')');
@@ -283,7 +319,6 @@ arraysCoScatterPlot.prototype._normalizeLabel = function(label) {
  * @return {arraysCoScatterPlot}
  */
 arraysCoScatterPlot.prototype.setXAccessor= function(xAccessor, xLabel) {
-
 
     if (xAccessor) {
         this._xAccessor = xAccessor;
@@ -351,10 +386,62 @@ arraysCoScatterPlot.prototype.update = function(data) {
     this._xScale.domain(this._xDomain);
     this._yScale.domain(this._yDomain);
     /*
-     * Update axes.
+     * Update x axis.
+     */
+    var xBinLength = 200;
+    var xBinsAmount = Math.floor(this._innerWidth / xBinLength);
+    xBinLength = this._innerWidth / xBinsAmount;
+
+    var xTicks = [];
+    for (var i = xBinLength; i <= this._innerWidth; i += xBinLength) {
+        xTicks.push(this._xScale.invert(i));
+    }
+
+    this._xAxis.ticks(xTicks.length)
+        .tickValues(xTicks)
+        .tickFormat(function(d) {
+            return d3.round(d, 1);
+        });
+    /*
+     * Update y axis.
+     */
+    var yBinLength = 150;
+    var yBinsAmount = Math.ceil(this._innerHeight / yBinLength);
+    yBinLength = this._innerHeight / yBinsAmount;
+
+    var yTicks = [];
+    for (var i = this._innerHeight - yBinLength; i >= 0; i -= yBinLength) {
+        yTicks.push(this._yScale.invert(i));
+    }
+
+    this._yAxis.ticks(yTicks.length)
+        .tickValues(yTicks)
+        .tickFormat(function(d) {
+            return d3.round(d, 1);
+        });
+    /*
+     * Update x axis and extend ticks.
      */
     this._xAxisContainer.call(this._xAxis);
+    this._xAxisContainer.selectAll('line').attr('y1', this._axesHeight);
+    this._xAxisContainer.selectAll('text')
+        .attr('x', xBinLength / - 2)
+        .text(function(d, i) {
+            return ((i - 1) in xTicks ? d3.round(xTicks[i - 1], 1) : 0) + ' - ' + d3.round(d, 1);
+        })
+    /*
+     * Update y axis and extend ticks.
+     */
     this._yAxisContainer.call(this._yAxis);
+    this._yAxisContainer.selectAll('line').attr('x1', - this._axesHeight);
+    this._yAxisContainer.selectAll('text')
+        .style('text-anchor', 'middle')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', - this._axesHeight / 2)
+        .attr('x', - yBinLength / 2)
+        .text(function(d, i) {
+            return ((i - 1) in yTicks ? d3.round(yTicks[i - 1], 1) : 0) + ' - ' + d3.round(d, 1);
+        });
     /*
      * Update axes labels.
      */
@@ -396,7 +483,15 @@ arraysCoScatterPlot.prototype.update = function(data) {
             }).on('mouseout', function(d) {
                 self._bubbleMouseOutEventHandler(this);
             });
-        })
+        });
+    /*
+     * Remove absent bubbles.
+     */
+    bubbles.exit()
+        .transition()
+        .duration(1000)
+        .attr('r', 0)
+        .remove();
 
     return this;
 };
