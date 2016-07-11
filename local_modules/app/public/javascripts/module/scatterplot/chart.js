@@ -2,7 +2,7 @@
  * @constructor
  * @param {Object[]}
  */
-function arraysCoScatterPlot(data) {
+scatterplot.chart = function(data) {
     /**
      * Chart data.
      * @private
@@ -152,12 +152,6 @@ function arraysCoScatterPlot(data) {
      */
     this._yLabel = 'y';
     /**
-     * Chart tooltip.
-     * @private
-     * @member {Tooltip}
-     */
-    this._tooltip = new Tooltip();
-    /**
      * Chart margins.
      * @private
      * @member {Object}
@@ -168,6 +162,12 @@ function arraysCoScatterPlot(data) {
         bottom : 40,
         left : 45
     };
+    /**
+     * Chart view.
+     * @private
+     * @member {scatterplot.view}
+     */
+    this._view = new scatterplot.view.factory(this, 500);
 }
 
 
@@ -175,9 +175,9 @@ function arraysCoScatterPlot(data) {
  * Render chart.
  * @public
  * @param {String} selector
- * @returns {arraysCoScatterPlot}
+ * @returns {scatterplot.chart}
  */
-arraysCoScatterPlot.prototype.render = function(selector) {
+scatterplot.chart.prototype.render = function(selector) {
     /*
      * Select chart container.
      */
@@ -245,9 +245,9 @@ arraysCoScatterPlot.prototype.render = function(selector) {
 /**
  * Resize chart.
  * @public
- * @returns {arraysCoScatterPlot}
+ * @returns {scatterplot.chart}
  */
-arraysCoScatterPlot.prototype.resize = function() {
+scatterplot.chart.prototype.resize = function() {
     /*
      * Get container dimensions.
      */
@@ -302,7 +302,7 @@ arraysCoScatterPlot.prototype.resize = function() {
  * @param {String} label
  * @return {String}
  */
-arraysCoScatterPlot.prototype._normalizeLabel = function(label) {
+scatterplot.chart.prototype._normalizeLabel = function(label) {
 
     label = label.replace('_', ' ');
     label = 'Number of ' + label;
@@ -316,9 +316,9 @@ arraysCoScatterPlot.prototype._normalizeLabel = function(label) {
  * @public
  * @param {Function} [xAccessor]
  * @param {String} [xLabel]
- * @return {arraysCoScatterPlot}
+ * @return {scatterplot.chart}
  */
-arraysCoScatterPlot.prototype.setXAccessor= function(xAccessor, xLabel) {
+scatterplot.chart.prototype.setXAccessor= function(xAccessor, xLabel) {
 
     if (xAccessor) {
         this._xAccessor = xAccessor;
@@ -337,9 +337,9 @@ arraysCoScatterPlot.prototype.setXAccessor= function(xAccessor, xLabel) {
  * @public
  * @param {Function} [yAccessor]
  * @param {String} [yLabel]
- * @return {arraysCoScatterPlot}
+ * @return {scatterplot.chart}
  */
-arraysCoScatterPlot.prototype.setYAccessor = function(yAccessor, yLabel) {
+scatterplot.chart.prototype.setYAccessor = function(yAccessor, yLabel) {
 
     if (yAccessor) {
         this._yAccessor = yAccessor;
@@ -357,9 +357,9 @@ arraysCoScatterPlot.prototype.setYAccessor = function(yAccessor, yLabel) {
  * Update chart.
  * @public
  * @param {Object[]} [data]
- * @returns {arraysCoScatterPlot}
+ * @returns {scatterplot.chart}
  */
-arraysCoScatterPlot.prototype.update = function(data) {
+scatterplot.chart.prototype.update = function(data) {
     /*
      * Use current data if not provided.
      */
@@ -448,50 +448,9 @@ arraysCoScatterPlot.prototype.update = function(data) {
     this._xLabelContainer.text(this._normalizeLabel(this._xLabel));
     this._yLabelContainer.text(this._normalizeLabel(this._yLabel));
     /*
-     * Select bubbles.
+     * Render chart content.
      */
-    var bubbles = this._canvas.selectAll('circle.bubble')
-        .data(data);
-    /*
-     * Move existent bubbles.
-     */
-    bubbles.transition()
-        .duration(1000)
-        .attr('cx', function(d) {
-            return self._xScale(self._xAccessor.call(undefined, d))
-        }).attr('cy', function(d) {
-            return self._yScale(self._yAccessor.call(undefined, d))
-        });
-    /*
-     * Render new bubbles.
-     */
-    bubbles.enter()
-        .append('circle')
-        .attr('class', 'bubble')
-        .style('opacity', 0.5)
-        .attr('cx', function(d) {
-            return self._xScale(self._xAccessor.call(undefined, d))
-        }).attr('cy', function(d) {
-            return self._yScale(self._yAccessor.call(undefined, d))
-        }).attr('r', 0)
-        .transition()
-        .duration(1000)
-        .attr('r', this._radius)
-        .each('end', function(d) {
-            d3.select(this).on('mouseover', function(d) {
-                self._bubbleMouseOverEventHandler(this, d);
-            }).on('mouseout', function(d) {
-                self._bubbleMouseOutEventHandler(this);
-            });
-        });
-    /*
-     * Remove absent bubbles.
-     */
-    bubbles.exit()
-        .transition()
-        .duration(1000)
-        .attr('r', 0)
-        .remove();
+    this._view.render(data);
 
     return this;
 };
@@ -503,29 +462,20 @@ arraysCoScatterPlot.prototype.update = function(data) {
  * @param {SVGElement} bubble
  * @param {Object} data
  */
-arraysCoScatterPlot.prototype._bubbleMouseOverEventHandler = function(bubble, data) {
+scatterplot.chart.prototype._bubbleMouseOverEventHandler = function(bubble, data) {
     /*
      * Highlight bubble.
      */
     d3.select(bubble)
         .transition()
         .duration(500)
-        .attr('r', this._radius * 1.5)
-        .style('opacity', 1);
+        .attr('r', function(d) {
+            return d.radius + 10;
+        }).style('opacity', 1);
     /*
      * Show tooltip.
      */
-    this._tooltip.setContent(
-        '<div class="scatterplot-tooltip-container">' +
-            '<div class="scatterplot-tooltip-image" style="background-image:url(' + data.thumb_small + ')"></div>' +
-            '<div class="scatterplot-tooltip-title">' + data.name + '</div>' +
-            '<div class="scatterplot-tooltip-content">' +
-            this._xAccessor(data) + ' ' + this._xLabel.replace('_', ' ') + ', ' +
-            this._yAccessor(data) + ' ' + this._yLabel.replace('_', ' ') +
-            '</div>' +
-        '</div>')
-        .setOffset(this._radius / 2)
-        .show(bubble);
+    this._view.showTooltip(bubble, data);
 };
 
 
@@ -534,17 +484,18 @@ arraysCoScatterPlot.prototype._bubbleMouseOverEventHandler = function(bubble, da
  * @private
  * @param {SVGElement} bubble
  */
-arraysCoScatterPlot.prototype._bubbleMouseOutEventHandler = function(bubble) {
+scatterplot.chart.prototype._bubbleMouseOutEventHandler = function(bubble) {
     /*
      * Fade bubble.
      */
     d3.select(bubble)
         .transition()
         .duration(500)
-        .attr('r', this._radius)
-        .style('opacity', 0.5);
+        .attr('r', function(d) {
+            return d.radius;
+        }).style('opacity', 0.5);
     /*
      * Hide tooltip.
      */
-    this._tooltip.hide();
+    this._view.hideTooltip();
 };

@@ -1292,7 +1292,7 @@
                     //
                     urlQuery_forSwitchingViews: urlQuery_forSwitchingViews
                 });
-            }).limit(50);
+            });
         });
         // Now kick off the query work
 //        self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)

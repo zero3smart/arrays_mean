@@ -167,12 +167,17 @@
 
         <script type="text/javascript" src="/javascripts/main.js"></script>
         <script type="text/javascript" src="/javascripts/tooltip.js"></script>
-        <script type="text/javascript" src="/javascripts/module/scatterplot.js"></script>
+        <script type="text/javascript" src="/javascripts/module/scatterplot/main.js"></script>
+        <script type="text/javascript" src="/javascripts/module/scatterplot/view.js"></script>
+        <script type="text/javascript" src="/javascripts/module/scatterplot/standardView.js"></script>
+        <script type="text/javascript" src="/javascripts/module/scatterplot/groupedView.js"></script>
+        <script type="text/javascript" src="/javascripts/module/scatterplot/factory.js"></script>
+        <script type="text/javascript" src="/javascripts/module/scatterplot/chart.js"></script>
         <script>
         // Define input data set.
         var scatterData = {{ characters | dump | safe }};
         // Render scatterplot.
-        var scatterPlot = new arraysCoScatterPlot(scatterData.map(function(d) {
+        var scatterPlot = new scatterplot.chart(scatterData.map(function(d) {
             return d.rowParams;
         })).setXAccessor(function(d) {
             return d['{{ xField }}']
