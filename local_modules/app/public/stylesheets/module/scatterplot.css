@@ -2,11 +2,19 @@
 	fill: orange;
 	stroke: #fff;
 	stroke-width: 1;
-	opacity: 0.5;
 }
 
 #scatterplot .axis path, #scatterplot .axis line {
 	fill: none;
-	stroke: black;
+	stroke: #c9c9c9;
 	stroke-width: 1px;
+}
+
+#scatterplot .axis text {
+	fill: #c9c9c9;
+}
+
+#scatterplot .label {
+	text-transform: uppercase;
+	font-size: 1.5em;
 }
