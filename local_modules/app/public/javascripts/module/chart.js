@@ -127,7 +127,7 @@ var slices = g.append('path')
  */
 var tooltip = d3.select('body')
 	.append('div')
-	.attr('class', 'chart-tooltip');
+	.attr('class', 'global-tooltip');
 
 var tooltipKey = tooltip
 	.append('span')
