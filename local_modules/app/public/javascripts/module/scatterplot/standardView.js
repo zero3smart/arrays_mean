@@ -30,7 +30,9 @@ scatterplot.view.standard.prototype.render = function(data) {
         .data(data.map(function(d) {
             d.radius = chart._radius;
             return d;
-        }));
+        }), function(d) {
+            return d.id;
+        });
     /*
      * Move existent bubbles.
      */
