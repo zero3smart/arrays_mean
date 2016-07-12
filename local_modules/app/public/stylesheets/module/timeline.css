@@ -44,6 +44,11 @@
 	height: 55px;
 }
 
+.timeline-group:only-child:before {
+	top: 0;
+	height: 0;
+}
+
 .timeline-group:after {
 	position: absolute;
 	top: 55px;
