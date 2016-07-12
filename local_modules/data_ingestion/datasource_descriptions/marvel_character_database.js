@@ -20,7 +20,9 @@ exports.Descriptions =
             {
                 modified: {
                     do: import_datatypes.Coercion_ops.ToDate,
-                    opts: import_datatypes.Coercion_optionsPacks.ToDate.FourDigitYearOnly
+                    opts: {
+                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
+                    }
                 }
             },
             fe_listed: true,
