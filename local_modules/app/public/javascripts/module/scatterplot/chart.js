@@ -306,7 +306,7 @@ scatterplot.chart.prototype.resize = function() {
  */
 scatterplot.chart.prototype._normalizeLabel = function(label) {
 
-    label = label.replace('_', ' ');
+    label = label.replace(/_/g, ' ');
     label = 'Number of ' + label;
 
     return label;

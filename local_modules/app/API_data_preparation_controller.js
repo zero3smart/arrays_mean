@@ -1256,8 +1256,8 @@
                     renderableFields: numericFields,
 //                    xField: numericFields[Math.floor(Math.random() * numericFields.length)],
 //                    yField: numericFields[Math.floor(Math.random() * numericFields.length)],
-                    xField: 'stories_returned',
-                    yField: 'comics_returned',
+                    xField: 'stories_available',
+                    yField: 'series_available',
                     //
                     env: process.env,
                     //
