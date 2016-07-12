@@ -307,10 +307,12 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
     //
     // Firstly, generate the whole processed objects dataset
     //
-    self.context.processed_row_objects_controller.GenerateProcessedDatasetFromRawRowObjects(dataSource_uid,
-                                                                                            dataSource_importRevision,
-                                                                                            dataSource_title,
-                                                                                            function(err)
+    //self.context.processed_row_objects_controller.GenerateProcessedDatasetFromRawRowObjects
+    self.context.processed_row_objects_controller.InsertProcessedDatasetFromRawRowObjects
+        (dataSource_uid,
+        dataSource_importRevision,
+        dataSource_title,
+        function(err)
     {
         if (err) {
             winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
@@ -328,25 +330,57 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
             switch (by.doing) {
                 case import_processing.Ops.Join:
                 {
-                    var matchFn = by.matchFn;
+                    /* var matchFn = by.matchFn;
                     if (typeof matchFn === 'undefined' || matchFn == null) {
                         matchFn = import_processing.MatchFns.LocalEqualsForeignString;
                     }
-                    self.context.processed_row_objects_controller.GenerateFieldsByJoining_comparingWithMatchFn(
-                        dataSource_uid,
-                        dataSource_importRevision,
-                        dataSource_title,
-                        description.field,
-                        description.singular,
-                        by.findingMatchOnFields,
-                        by.ofOtherRawSrcUID,
-                        by.andOtherRawSrcImportRevision,
-                        by.withLocalField,
-                        by.obtainingValueFromField,
-                        formingRelationship,
-                        matchFn,
-                        cb
-                    );
+                     self.context.processed_row_objects_controller.GenerateFieldsByJoining_comparingWithMatchFn(
+                     dataSource_uid,
+                     dataSource_importRevision,
+                     dataSource_title,
+                     description.field,
+                     description.singular,
+                     by.findingMatchOnFields,
+                     by.ofOtherRawSrcUID,
+                     by.andOtherRawSrcImportRevision,
+                     by.withLocalField,
+                     by.obtainingValueFromField,
+                     formingRelationship,
+                     matchFn,
+                     cb
+                     ); */
+                    var matchRegex = by.matchRegex;
+                    if (typeof matchRegex === 'undefined' || matchRegex == null || matchRegex == import_processing.MatchFns.LocalEqualsForeignString)
+                        self.context.processed_row_objects_controller.GenerateFieldsByJoining(
+                            dataSource_uid,
+                            dataSource_importRevision,
+                            dataSource_title,
+                            description.field,
+                            description.singular,
+                            by.findingMatchOnFields,
+                            by.ofOtherRawSrcUID,
+                            by.andOtherRawSrcImportRevision,
+                            by.withLocalField,
+                            by.obtainingValueFromField,
+                            formingRelationship,
+                            cb
+                        );
+                    else
+                        self.context.processed_row_objects_controller.GenerateFieldsByJoining_comparingWithMatchFn(
+                            dataSource_uid,
+                            dataSource_importRevision,
+                            dataSource_title,
+                            description.field,
+                            description.singular,
+                            by.findingMatchOnFields,
+                            by.ofOtherRawSrcUID,
+                            by.andOtherRawSrcImportRevision,
+                            by.withLocalField,
+                            by.obtainingValueFromField,
+                            formingRelationship,
+                            matchRegex,
+                            cb
+                        );
                     break;
                 }
 

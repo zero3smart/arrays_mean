@@ -1,4 +1,5 @@
 exports.Datasources = [
-    "marvel_character_database.js",
-    "nasa_labs_facilities",
+    //"marvel_character_database",
+    //"nasa_labs_facilities",
+    "moma_artists"
 ]

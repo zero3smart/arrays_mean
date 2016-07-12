@@ -74,6 +74,54 @@ constructor.prototype.Lazy_Shared_ProcessedRowObject_MongooseContext = function(
     return mongooseContext;
 };
 //
+constructor.prototype.InsertProcessedDatasetFromRawRowObjects
+    = function(dataSource_uid,
+               dataSource_importRevision,
+               dataSource_title,
+               callback)
+{
+    var self = this;
+    mongoose_client.WhenMongoDBConnected(function() { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
+        winston.info("🔁  Pre-generating whole processed row objects collection from raw row objects of \"" + dataSource_title + "\".");
+
+        var pKey_ofDataSrcDocBeingProcessed = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+        //
+        var mongooseContext_ofRawRowObjectsBeingProcessed = self.context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
+        //
+        var mongooseContext_ofTheseProcessedRowObjects = self.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
+        var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
+
+        var updateDocs = [];
+        mongooseModel_ofRawRowObjectsBeingProcessed.find({}, function(err, rowObjects){
+            if (err) {
+                winston.error("❌ [" + (new Date()).toString() + "] Error while saving processed row objects: ", err);
+                return callback(err);
+            }
+            rowObjects.forEach(function(doc) {
+                var bulkOperationQueryFragment =
+                {
+                    pKey: doc._doc.pKey,
+                    srcDocPKey: doc._doc.srcDocPKey
+                };
+                updateDocs.push({insertOne: {document: doc._doc}});
+            });
+
+            winston.info("📡  [" + (new Date()).toString() + "] Inserting " + rowObjects.length + " processed rows for \"" + dataSource_title + "\".");
+
+            nativeCollection_ofTheseProcessedRowObjects.bulkWrite(updateDocs, {ordered: false}, function(err) {
+                if (err) {
+                    winston.error("❌ [" + (new Date()).toString() + "] Error while saving processed row objects: ", err);
+                } else {
+                    winston.info("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.");
+                }
+                return callback(err);
+            });
+        });
+    });
+};
+//
 //
 constructor.prototype.GenerateProcessedDatasetFromRawRowObjects 
     = function(dataSource_uid,
@@ -254,7 +302,9 @@ constructor.prototype.GenerateFieldsByJoining_comparingWithMatchFn
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
         //
-        var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();         
+        var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();
+        var findingMatchOnFields_length = findingMatchOnFields.length;
+        var getIdInsteadOfValueFromField = typeof obtainingValueFromField_orUndefined === 'undefined';
         //
         mongooseModel_ofRawRowObjectsBeingProcessed.find({}, function(err, ofTheseProcessedRowObjectDocs) 
         {
@@ -264,6 +314,7 @@ constructor.prototype.GenerateFieldsByJoining_comparingWithMatchFn
                     
                 return;
             }
+
             mongooseModel_ofFromRawRowObjects.find({}, function(err, fromProcessedRowObjectDocs)
             {
                 if (err) {
@@ -290,8 +341,6 @@ constructor.prototype.GenerateFieldsByJoining_comparingWithMatchFn
                     
                     return;
                 }
-                var findingMatchOnFields_length = findingMatchOnFields.length;
-                var getIdInsteadOfValueFromField = typeof obtainingValueFromField_orUndefined === 'undefined';                
                 //
                 for (var i = 0 ; i < ofTheseProcessedRowObjectDocs.length ; i++) {
                     if (i != 0 && i % 1000 == 0) {
@@ -390,6 +439,294 @@ constructor.prototype.GenerateFieldsByJoining_comparingWithMatchFn
                 //
                 proceedToPersist();
             });
+        });
+        //
+        function proceedToPersist()
+        {
+            winston.info("📡  [" + (new Date()).toString() + "] Upserting processed rows for \"" + dataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
+            //
+            var writeConcern =
+            {
+                upsert: true
+                // note: we're turning this off as it's super slow for large datasets like Artworks
+                // j: true // 'requests acknowledgement from MongoDB that the write operation has been written to the journal'
+            };
+            bulkOperation_ofTheseProcessedRowObjects.execute(writeConcern, function(err, result)
+            {
+                if (err) {
+                    winston.error("❌ [" + (new Date()).toString() + "] Error while saving generated fields of processed row objects: ", err);
+                } else {
+                    winston.info("✅  [" + (new Date()).toString() + "] Saved generated fields on processed row objects.");
+                }
+                callback(err);
+            });
+        }
+    });
+};
+//
+//
+constructor.prototype.GenerateFieldsByJoining
+    = function(dataSource_uid,
+               dataSource_importRevision,
+               dataSource_title,
+               generateFieldNamed,
+               isSingular,
+               findingMatchOnFields,
+               ofOtherRawSrcUID,
+               andOtherRawSrcImportRevision,
+               withLocalField,
+               obtainingValueFromField_orUndefined,
+               or_formingRelationship,
+               callback)
+{
+    var self = this;
+    mongoose_client.WhenMongoDBConnected(function()
+    { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
+        winston.info("🔁  Generating field \"" + generateFieldNamed
+            + "\" of \"" + dataSource_title
+            + "\" by joining on \"" + findingMatchOnFields
+            + "\" of data source \"" + ofOtherRawSrcUID + "\" revision \"" + andOtherRawSrcImportRevision + "\".");
+
+        var pKey_ofFromDataSourceDoc = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(ofOtherRawSrcUID, andOtherRawSrcImportRevision);
+        var pKey_ofDataSrcDocBeingProcessed = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+        //
+        var mongooseContext_ofFromRawRowObjects = self.context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofFromDataSourceDoc);
+        var mongooseModel_ofFromRawRowObjects = mongooseContext_ofFromRawRowObjects.forThisDataSource_RawRowObject_model;
+        //
+        var mongooseContext_ofRawRowObjectsBeingProcessed = self.context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
+        //
+        var mongooseContext_ofTheseProcessedRowObjects = self.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
+        var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
+        //
+        var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();
+        var findingMatchOnFields_length = findingMatchOnFields.length;
+        var getIdInsteadOfValueFromField = typeof obtainingValueFromField_orUndefined === 'undefined';
+        //
+        async.each(findingMatchOnFields, function(findingMatchOnField, eachCB) {
+            var aggregationOperators = [ { $unwind: "$" + "rowParams." + withLocalField } ];
+            var projectOperator = { $project: {pKey: 1, srcDocPKey: 1} };
+            projectOperator['$project']['rowParams.'+withLocalField] = 1;
+            aggregationOperators.push(projectOperator);
+            aggregationOperators.push({ $lookup: {
+                    from: mongooseContext_ofFromRawRowObjects.forThisDataSource_rowObjects_modelName.toLowerCase(),
+                    as: 'fromProcessedRowObjectDoc',
+                    localField: 'rowParams.' + withLocalField,
+                    foreignField: 'rowParams.' + findingMatchOnField
+                }}
+            );
+            projectOperator = { $project: {pKey: 1, srcDocPKey: 1} };
+            if (getIdInsteadOfValueFromField)
+                projectOperator['$project']['fromProcessedRowObjectDoc._id'] = 1;
+            else
+                projectOperator['$project']['fromProcessedRowObjectDoc.rowParams.' + obtainingValueFromField_orUndefined] = 1;
+            aggregationOperators.push(projectOperator);
+
+            var counter = 0;
+            var cursor = mongooseModel_ofRawRowObjectsBeingProcessed.collection.aggregate(aggregationOperators, { cursor: { batchSize: 100 } });
+
+            cursor.on('data', function(item) {
+                if (counter != 0 && counter % 1000 == 0) {
+                    console.log("" + counter + " of local '" + pKey_ofDataSrcDocBeingProcessed + "'  with foreign '" + pKey_ofFromDataSourceDoc + "'");
+                }
+
+                var foreignValueToExtract = item.fromProcessedRowObjectDoc;
+                var persistableValue = null;
+                if (isSingular) {
+                    foreignValueToExtract = foreignValueToExtract ? foreignValueToExtract[0] : foreignValueToExtract;
+                    if (getIdInsteadOfValueFromField)
+                        persistableValue = foreignValueToExtract._id;
+                    else if (foreignValueToExtract)
+                        persistableValue = foreignValueToExtract.rowParams[obtainingValueFromField_orUndefined];
+                } else if (foreignValueToExtract) {
+                    persistableValue = [];
+                    foreignValueToExtract.forEach(function(record){
+                        if (getIdInsteadOfValueFromField)
+                            persistableValue.push(record._id);
+                        else
+                            persistableValue.push(record.rowParams[obtainingValueFromField_orUndefined]);
+                    });
+                }
+                //
+                var bulkOperationQueryFragment =
+                {
+                    pKey: item.pKey,
+                    srcDocPKey: item.srcDocPKey
+                };
+                var updateFragment = {};
+                updateFragment["$set"] = {};
+                updateFragment["$set"]["rowParams." + generateFieldNamed] = persistableValue;
+                // ^ Note that we're only updating a specific path, not the whole rowParams value
+                bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+
+                counter++;
+            });
+            cursor.on('end', function(){
+                eachCB();
+            });
+        }, function(err) {
+            if (err) {
+                return callback(err, null);
+            }
+            proceedToPersist();
+        });
+        //
+        function proceedToPersist()
+        {
+            winston.info("📡  [" + (new Date()).toString() + "] Upserting processed rows for \"" + dataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
+            //
+            var writeConcern =
+            {
+                upsert: true
+                // note: we're turning this off as it's super slow for large datasets like Artworks
+                // j: true // 'requests acknowledgement from MongoDB that the write operation has been written to the journal'
+            };
+            bulkOperation_ofTheseProcessedRowObjects.execute(writeConcern, function(err, result)
+            {
+                if (err) {
+                    winston.error("❌ [" + (new Date()).toString() + "] Error while saving generated fields of processed row objects: ", err);
+                } else {
+                    winston.info("✅  [" + (new Date()).toString() + "] Saved generated fields on processed row objects.");
+                }
+                callback(err);
+            });
+        }
+    });
+};
+//
+//
+constructor.prototype.GenerateFieldsByJoining_comparingWithMatchRegex
+    = function(dataSource_uid,
+               dataSource_importRevision,
+               dataSource_title,
+               generateFieldNamed,
+               isSingular,
+               findingMatchOnFields,
+               ofOtherRawSrcUID,
+               andOtherRawSrcImportRevision,
+               withLocalField,
+               obtainingValueFromField_orUndefined,
+               or_formingRelationship,
+               doesFieldMatch_regex,
+               callback)
+{
+    if (typeof obtainingValueFromField_orUndefined === 'undefined') {
+        if (or_formingRelationship == false) {
+            var errorString = "Generate Join parameter configuration conflict: obtainingValueFromField was undefined as " + obtainingValueFromField_orUndefined + " but relationship=true";
+            var err = new Error(errorString);
+            winston.error("❌  Error while generating field by join:", err);
+            return callback(err);
+        }
+    } else {
+        if (or_formingRelationship == true) {
+            var errorString = "Generate Join parameter configuration conflict: obtainingValueFromField was not undefined as " + obtainingValueFromField_orUndefined + " but relationship=false";
+            var err = new Error(errorString);
+            winston.error("❌  Error while generating field by join:", err);
+            return callback(err);
+        }
+    }
+
+    var self = this;
+    mongoose_client.WhenMongoDBConnected(function()
+    { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
+        winston.info("🔁  Generating field \"" + generateFieldNamed
+            + "\" of \"" + dataSource_title
+            + "\" by joining on \"" + findingMatchOnFields
+            + "\" of data source \"" + ofOtherRawSrcUID + "\" revision \"" + andOtherRawSrcImportRevision + "\".");
+
+        var pKey_ofFromDataSourceDoc = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(ofOtherRawSrcUID, andOtherRawSrcImportRevision);
+        var pKey_ofDataSrcDocBeingProcessed = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+        //
+        var mongooseContext_ofFromRawRowObjects = self.context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofFromDataSourceDoc);
+        var mongooseModel_ofFromRawRowObjects = mongooseContext_ofFromRawRowObjects.forThisDataSource_RawRowObject_model;
+        //
+        var mongooseContext_ofRawRowObjectsBeingProcessed = self.context.raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
+        //
+        var mongooseContext_ofTheseProcessedRowObjects = self.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
+        var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
+        //
+        var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();
+        var findingMatchOnFields_length = findingMatchOnFields.length;
+        var getIdInsteadOfValueFromField = typeof obtainingValueFromField_orUndefined === 'undefined';
+        //
+        mongooseModel_ofRawRowObjectsBeingProcessed.find({}, function(err, ofTheseProcessedRowObjectDocs)
+        {
+            if (err) {
+                winston.error("❌  Error while generating field by reverse-join:", err);
+                callback(err);
+
+                return;
+            }
+
+            var countOfTheseProcessedRowObjectDocs = 0;
+            for (var i = 0 ; i < ofTheseProcessedRowObjectDocs.length ; i++) {
+                var ofTheseProcessedRowObjectDoc = ofTheseProcessedRowObjectDocs[i];
+                var localFieldValue = ofTheseProcessedRowObjectDoc.rowParams["" + withLocalField];
+
+                var matchConditions = [];
+                for (var j = 0 ; j < findingMatchOnFields_length ; j++) {
+                    var matchOnField = findingMatchOnFields[j];
+                    var condition = {};
+                    condition["rowParams." + matchOnField] = doesFieldMatch_regex(localFieldValue);
+                    matchConditions.push(condition);
+                }
+
+                var foreignValueToExtract = {};
+                if (getIdInsteadOfValueFromField == true) {
+                    foreignValueToExtract["_id"] = 1;
+                } else {
+                    foreignValueToExtract["rowParams." + obtainingValueFromField_orUndefined] = 1;
+                }
+
+                mongooseModel_ofFromRawRowObjects.find({
+                    $or: matchConditions
+                }, foreignValueToExtract, function(err, matchingForeignValues) {
+                    if (err) {
+                        winston.error("❌  Error while generating field by join:", err);
+                        return callback(err);
+                    }
+
+                    if (countOfTheseProcessedRowObjectDocs != 0 && countOfTheseProcessedRowObjectDocs % 1000 == 0) {
+                        console.log("" + countOfTheseProcessedRowObjectDocs + " / " + ofTheseProcessedRowObjectDocs.length + " of local '" + pKey_ofDataSrcDocBeingProcessed + "' with foreign '" + pKey_ofFromDataSourceDoc + "'");
+                    }
+
+                    var persistableValue;
+                    if (matchingForeignValues && matchingForeignValues.length > 0) {
+                        if (isSingular) {
+                            persistableValue = getIdInsteadOfValueFromField ?
+                                matchingForeignValues[0]._doc._id : matchingForeignValues[0]._doc.rowParams[obtainingValueFromField_orUndefined];
+                        } else {
+                            persistableValue = matchingForeignValues.map(function(el) {
+                                if (getIdInsteadOfValueFromField == true) {
+                                    return el["_id"];
+                                } else {
+                                    return el["rowParams." + obtainingValueFromField_orUndefined];
+                                }
+                            });
+                        }
+                    } else {
+                        persistableValue = null;
+                    }
+                    //
+                    var bulkOperationQueryFragment =
+                    {
+                        pKey: ofTheseProcessedRowObjectDocs[countOfTheseProcessedRowObjectDocs].pKey,
+                        srcDocPKey: ofTheseProcessedRowObjectDocs[countOfTheseProcessedRowObjectDocs].srcDocPKey
+                    };
+                    var updateFragment = {};
+                    updateFragment["$set"] = {};
+                    updateFragment["$set"]["rowParams." + generateFieldNamed] = persistableValue;
+                    // ^ Note that we're only updating a specific path, not the whole rowParams value
+                    bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+                    countOfTheseProcessedRowObjectDocs ++;
+                    //
+                    if (countOfTheseProcessedRowObjectDocs == ofTheseProcessedRowObjectDocs.length) proceedToPersist();
+                });
+
+            }
         });
         //
         function proceedToPersist()

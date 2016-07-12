@@ -125,3 +125,40 @@ constructor.prototype.UpsertWithManyPersistableObjectTemplates = function(ordere
         });
     });
 };
+////////////////////////////////////////////////////////////////////////////////
+// Public - Imperatives - BulkWrite
+//
+constructor.prototype.InsertManyPersistableObjectTemplates = function(ordered_persistableObjectTemplateUIDs, persistableObjectTemplatesByUID, srcDocPKey, srcDocTitle, fn)
+{ // fn: (err, [Schema.Types.ObjectId])
+    var self = this;
+
+    var num_parsed_orderedRowObjectPrimaryKeys = ordered_persistableObjectTemplateUIDs.length;
+    winston.info("📡  [" + (new Date()).toString() + "] Inserting " + num_parsed_orderedRowObjectPrimaryKeys + " parsed rows for \"" + srcDocTitle + "\".");
+
+    var forThisDataSource_mongooseContext = self.Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey);
+    var forThisDataSource_RawRowObject_scheme = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_scheme;
+    var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.forThisDataSource_rowObjects_modelName;
+    var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model;
+    //
+    mongoose_client.WhenMongoDBConnected(function()
+    { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
+        var nativeCollection = forThisDataSource_RawRowObject_model.collection;
+
+        var updateDocs = [];
+        for (var rowIdx = 0 ; rowIdx < ordered_persistableObjectTemplateUIDs.length; rowIdx++) {
+            var rowUID = ordered_persistableObjectTemplateUIDs[rowIdx];
+
+            updateDocs.push({
+                insertOne: {document: persistableObjectTemplatesByUID[rowUID]}
+            });
+        }
+        nativeCollection.bulkWrite(updateDocs, {ordered: false}, function(err, result){
+            if (err) {
+                winston.error("❌ [" + (new Date()).toString() + "] Error while saving raw row objects: ", err);
+            } else {
+                winston.info("✅  [" + (new Date()).toString() + "] Saved raw row objects.");
+            }
+            return fn(err, result);
+        });
+    });
+};
