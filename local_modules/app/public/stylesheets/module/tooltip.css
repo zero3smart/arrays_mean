@@ -72,6 +72,7 @@ div.arrays-co-tooltip {
 	border-radius: 3px;
 	visibility: hidden;
 	box-shadow: 0.1em 0.1em 0.2em lightgrey, -0.05em -0.05em 0.1em lightgrey;
+	z-index: 1050;
 }
 
 
@@ -91,12 +92,14 @@ div.arrays-co-tooltip .scatterplot-tooltip-image {
 div.arrays-co-tooltip .scatterplot-tooltip-title {
 	font-size: 1.2em;
 	font-weight: 600;
-	padding: 0.1em 0.5em 0 0.5em;
+	line-height: 95%;
+	color: #4a4a4a;
+	padding: 0.2em 0.5em 0.1em 0.5em;
 }
 
 div.arrays-co-tooltip .scatterplot-tooltip-content {
 	font-size: 1.2em;
-	line-height: 90%;
+	line-height: 95%;
 	padding: 0 0.5em 0.5em 0.5em;
 	color: #c9c9c9;
 }

@@ -30,7 +30,9 @@ scatterplot.view.standard.prototype.render = function(data) {
         .data(data.map(function(d) {
             d.radius = chart._radius;
             return d;
-        }));
+        }), function(d) {
+            return d.id;
+        });
     /*
      * Move existent bubbles.
      */
@@ -90,6 +92,7 @@ scatterplot.view.standard.prototype.showTooltip = function(bubble, data) {
             chart._yAccessor(data) + ' ' + chart._yLabel.replace('_', ' ') +
             '</div>' +
         '</div>')
+        .setPosition('top')
         .setOffset(chart._radius / 2)
         .show(bubble);
 };

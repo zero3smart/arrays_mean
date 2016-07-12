@@ -46,7 +46,7 @@ scatterplot.view.main.prototype.showTooltip = function(bubble, data) {
  * Hide tooltip.
  * @public
  */
-scatterplot.view.main.prototype.hideTooltip = function(bubble, data) {
+scatterplot.view.main.prototype.hideTooltip = function() {
 
     this._tooltip.hide();
 };
