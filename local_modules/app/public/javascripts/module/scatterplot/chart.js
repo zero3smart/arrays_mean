@@ -221,14 +221,16 @@ scatterplot.chart.prototype.render = function(selector) {
     this._xLabelContainer = this._svg.append('g')
         .attr('class', 'label x-label')
         .attr('text-anchor', 'middle')
-        .append('text');
+        .append('text')
+        .attr('letter-spacing', 2);
     /*
      * Append y label container.
      */
     this._yLabelContainer = this._svg.append('g')
         .attr('class', 'label y-label')
         .attr('text-anchor', 'middle')
-        .append('text');
+        .append('text')
+        .attr('letter-spacing', 2);
     /*
      * Set up chart dimension.
      */
