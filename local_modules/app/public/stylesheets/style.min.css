@@ -5987,20 +5987,23 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 	}
 }
 /* @end Footer */
-#scatterplot circle.bubble {
+.scatterplot text {
+	color: #4a4a4a;
+}
+.scatterplot circle.bubble {
 	fill: orange;
 	stroke: #fff;
 	stroke-width: 1;
 }
-#scatterplot .axis path, #scatterplot .axis line {
+.scatterplot .axis path, .scatterplot .axis line {
 	fill: none;
 	stroke: #c9c9c9;
 	stroke-width: 1px;
 }
-#scatterplot .axis text {
+.scatterplot .axis text {
 	fill: #c9c9c9;
 }
-#scatterplot .label {
+.scatterplot .label {
 	text-transform: uppercase;
 	font-size: 1.5em;
 }
@@ -6024,11 +6027,13 @@ div.arrays-co-tooltip .scatterplot-tooltip-image {
 div.arrays-co-tooltip .scatterplot-tooltip-title {
 	font-size: 1.2em;
 	font-weight: 600;
-	padding: 0.1em 0.5em 0 0.5em;
+	line-height: 95%;
+	color: #4a4a4a;
+	padding: 0.2em 0.5em 0.1em 0.5em;
 }
 div.arrays-co-tooltip .scatterplot-tooltip-content {
 	font-size: 1.2em;
-	line-height: 90%;
+	line-height: 95%;
 	padding: 0 0.5em 0.5em 0.5em;
 	color: #c9c9c9;
 }
