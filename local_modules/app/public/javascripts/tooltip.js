@@ -97,7 +97,7 @@ Tooltip.prototype.show = function(element) {
     /*
      * Get element position.
      */
-    var position = jQuery(element).position()
+    var position = jQuery(element).position();
     /*
      * Append hidden content to the container.
      */
@@ -109,6 +109,31 @@ Tooltip.prototype.show = function(element) {
      * Get tooltip dimensions.
      */
     var tooltipDimension = this._container.node().getBoundingClientRect();
+
+    var name = this._position.slice(0, 1).toUpperCase() + this._position.slice(1).toLowerCase();
+    var coordinates = this['_get' + name + 'Position'](position, tooltipDimension, elementDimensions);
+    /*
+     * Set tooltip coordiantes and show.
+     */
+    this._container.style('top', coordinates.y + 'px')
+        .style('left', coordinates.x + 'px')
+        .style('visibility', 'visible');
+
+    return this;
+};
+
+
+/**
+ * Get tooltip left position coordinates.
+ * @private
+ * @param {Object} position
+ * @param {Number} position.top
+ * @param {Number} position.left
+ * @param {DOMRect} tooltipDimension
+ * @param {DOMRect} elementDimensions
+ * @returns {Object}
+ */
+Tooltip.prototype._getLeftPosition = function(position, tooltipDimension, elementDimensions) {
     /*
      * Evaluate tooltip x and y positions.
      */
@@ -138,12 +163,83 @@ Tooltip.prototype.show = function(element) {
     if (x < 0) {
         x = position.left + elementDimensions.width + this._offset;
     }
-    /*
-     * Set tooltip coordiantes and show.
-     */
-    this._container.style('top', y + 'px')
-        .style('left', x + 'px')
-        .style('visibility', 'visible');
 
-    return this;
+    return {
+        'x' : x,
+        'y' : y
+    };
+};
+
+
+/**
+ * Get tooltip top position coordinates.
+ * @private
+ * @param {Object} position
+ * @param {Number} position.top
+ * @param {Number} position.left
+ * @param {DOMRect} tooltipDimension
+ * @param {DOMRect} elementDimensions
+ * @returns {Object}
+ */
+Tooltip.prototype._getTopPosition = function(position, tooltipDimension, elementDimensions) {
+    /*
+     * Evaluate tooltip x and y positions.
+     */
+    var x = position.left - tooltipDimension.width / 2 + elementDimensions.width / 2;
+    var y = position.top - tooltipDimension.height - this._offset;
+    /*
+     * Show tooltip at the bottom if y < 0 (beyond window top border).
+     */
+    if (y < 0) {
+        y = position.top + elementDimensions.height + this._offset;
+    }
+    /*
+     * Fix document width left violence.
+     */
+    if (x < 0) {
+        x = 0;
+    }
+    /*
+     * Fix document width right violence.
+     */
+    if (x + tooltipDimension.width > document.body.clientWidth) {
+        x -= x + tooltipDimension.width - document.body.clientWidth;
+    }
+
+    return {
+        'x' : x,
+        'y' : y
+    };
+};
+
+
+/**
+ * Get tooltip right position coordinates.
+ * @private
+ * @param {Object} position
+ * @param {Number} position.top
+ * @param {Number} position.left
+ * @param {DOMRect} tooltipDimension
+ * @param {DOMRect} elementDimensions
+ * @returns {Object}
+ */
+Tooltip.prototype._getRightPosition = function() {
+
+    throw new Error('Tooltip#_getRightPosition not implemented');
+};
+
+
+/**
+ * Get tooltip bottom position coordinates.
+ * @private
+ * @param {Object} position
+ * @param {Number} position.top
+ * @param {Number} position.left
+ * @param {DOMRect} tooltipDimension
+ * @param {DOMRect} elementDimensions
+ * @returns {Object}
+ */
+Tooltip.prototype._getBottomPosition = function() {
+
+    throw new Error('Tooltip#_getBottomPosition not implemented');
 };

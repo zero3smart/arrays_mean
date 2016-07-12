@@ -6012,6 +6012,7 @@ div.arrays-co-tooltip {
 	border-radius: 3px;
 	visibility: hidden;
 	box-shadow: 0.1em 0.1em 0.2em lightgrey, -0.05em -0.05em 0.1em lightgrey;
+	z-index: 1050;
 }
 div.arrays-co-tooltip .scatterplot-tooltip-container {
 	width: 220px;

@@ -186,6 +186,7 @@ scatterplot.view.grouped.prototype.showTooltip = function(bubble, data) {
             '</div>' +
             '<div class="scatterplot-tooltip-content">' + data.density + ' Characters</div>' +
         '</div>')
+        .setPosition('top')
         .setOffset(chart._radius / 2)
         .show(bubble);
 

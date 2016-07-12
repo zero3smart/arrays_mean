@@ -90,6 +90,7 @@ scatterplot.view.standard.prototype.showTooltip = function(bubble, data) {
             chart._yAccessor(data) + ' ' + chart._yLabel.replace('_', ' ') +
             '</div>' +
         '</div>')
+        .setPosition('top')
         .setOffset(chart._radius / 2)
         .show(bubble);
 };
