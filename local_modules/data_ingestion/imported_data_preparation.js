@@ -135,6 +135,31 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByD
 };
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown;
 //
+function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelineSortByDropdown(sampleRowObject, dataSourceDescription)
+{
+    var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
+    // add in "Object Title" so we use the same machinery as the hand-specified ones
+    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
+    //
+    var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
+    var keys_length = keys.length;
+    var available_keys = [];
+    for (var i = 0 ; i < keys_length ; i++) {
+        var key = keys[i];
+        if (dataSourceDescription.fe_timeline_fieldsNotAvailableAsSortByColumns) {
+            if (dataSourceDescription.fe_timeline_fieldsNotAvailableAsSortByColumns.indexOf(key) !== -1) {
+                continue;
+            }
+        }
+        var displayTitleForKey = fe_displayTitleOverrides[key];
+        var humanReadable_key = displayTitleForKey || key;
+        available_keys.push(humanReadable_key);
+    }
+    
+    return available_keys;
+}
+module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelineSortByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelineSortByDropdown;
+//
 function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleRowObject, dataSourceDescription)
 {
     var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
