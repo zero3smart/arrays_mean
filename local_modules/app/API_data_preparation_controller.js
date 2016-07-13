@@ -283,7 +283,7 @@
                 //
                 _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
             };
-            processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).exec(doneFn);
+            processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         }
         function _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
         {
@@ -1148,6 +1148,8 @@
                 aggregationOperators.push(_orErrDesc.matchOp);
             }
 
+            var sort = {};
+            sort[groupBySortFieldPath] = -1;
             aggregationOperators = aggregationOperators.concat(
             [
                 { $unwind: "$" + "rowParams." + sortBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
@@ -1178,7 +1180,7 @@
                     }
                 },
                 {
-                    $sort: { [groupBySortFieldPath] : -1 }
+                    $sort: sort
                 },
                 // {
                 //     $limit : 100 // so the chart can actually handle the number

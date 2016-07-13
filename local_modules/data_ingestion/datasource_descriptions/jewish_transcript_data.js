@@ -25,19 +25,19 @@ exports.Descriptions =
                 'Date': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
-                        format: "MM/DD/YYYY" // e.g. "2009-03-21"
+                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
                     }
                 },
                 'Date created': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
-                        format: "MM/DD/YY" // e.g. "2009-03-21"
+                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
                     }
                 },
                 'Date modified': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
-                        format: "MM/DD/YY" // e.g. "2009-03-21"
+                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
                     }
                 },
 
