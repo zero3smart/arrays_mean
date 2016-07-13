@@ -13,7 +13,7 @@ exports.Descriptions =
             uid: "jewish_transcript_data",
             importRevision: 1,
             format: import_datatypes.DataSource_formats.CSV,
-            title: "Jewish Transcript Database",
+            title: "The Jewish Transcript",
             urls: [ "http://cdm16118.contentdm.oclc.org/cdm/landingpage/collection/p16118coll10" ],
             description: "Founded by Herman Horowitz in 1924, The Jewish Transcript documents the daily life of the Jewish community in Seattle as well as local and international events from the 1920's to present day.",
             fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
