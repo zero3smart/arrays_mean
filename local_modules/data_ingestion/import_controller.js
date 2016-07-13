@@ -315,24 +315,24 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     });
 };
 //
-constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescription = function(dataSourceIsIndexInList, csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn)
+constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescription = function(dataSourceIsIndexInList, tsvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn)
 {
     var self = this;
     //
     var TSV_resources_path_prefix = __dirname + "/resources";
-    var filename = csvDescription.filename;
-    var fileEncoding = csvDescription.fileEncoding || 'utf8';
-    var revisionNumber = csvDescription.importRevision;
-    var importUID = csvDescription.uid;
+    var filename = tsvDescription.filename;
+    var fileEncoding = tsvDescription.fileEncoding || 'utf8';
+    var revisionNumber = tsvDescription.importRevision;
+    var importUID = tsvDescription.uid;
     winston.info("🔁  " + dataSourceIsIndexInList + ": Importing TSV \"" + filename + "\"");
     var filepath = TSV_resources_path_prefix + "/" + filename;
     //
-    var raw_rowObjects_coercionScheme = csvDescription.raw_rowObjects_coercionScheme; // look up data type scheme here
+    var raw_rowObjects_coercionScheme = tsvDescription.raw_rowObjects_coercionScheme; // look up data type scheme here
     // so we can do translation/mapping just below
     // winston.info("raw_rowObjects_coercionScheme " , raw_rowObjects_coercionScheme)
     //
-    var parser = parse({ delimiter: '/t' }, function(err, columnNamesAndThenRowObjectValues)
-    { // Is it going to be a memory concern to hold entire large CSV files in memory?
+    var parser = parse({ delimiter: '\t', relax: true }, function(err, columnNamesAndThenRowObjectValues)
+    { // Is it going to be a memory concern to hold entire large TSV files in memory?
         if (err) {
             // winston.info(err);
             fn(err, null);
@@ -357,7 +357,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
             var actualRowIndexInDataset = rowIndex_inParserFeed - contentRowsStartingIndex_inParserFeed;
             var rowObjectValues = columnNamesAndThenRowObjectValues[rowIndex_inParserFeed];
             if (rowObjectValues.length != num_columnNames) {
-                winston.error("❌  Error: Row has different number of values than number of CSV's number of columns. Skipping: ", rowObjectValues);
+                winston.error("❌  Error: Row has different number of values than number of TSV's number of columns. Skipping: ", rowObjectValues);
 
                 continue;
             }
@@ -376,9 +376,9 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
                 }
                 rowObject[columnName] = typeFinalized_rowValue; // Now store the finalized value
             }
-            var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, rowIndex_inParserFeed);
+            var rowObject_primaryKey = tsvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, rowIndex_inParserFeed);
             if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
-                winston.error("❌  Error: missing pkey on row", rowObject, "with factory accessor", csvDescription.fn_new_rowPrimaryKeyFromRowObject);
+                winston.error("❌  Error: missing pkey on row", rowObject, "with factory accessor", tsvDescription.fn_new_rowPrimaryKeyFromRowObject);
 
                 return;
             }

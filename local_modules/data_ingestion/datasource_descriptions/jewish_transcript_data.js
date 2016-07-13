@@ -8,7 +8,7 @@ var import_processing = require('../import_processing');
 exports.Descriptions =
     [
         {
-            filename: "Jewish_Transcript_Data.csv",
+            filename: "Jewish_Transcript_Data1.tsv",
             fileEncoding: "utf8", // default
             uid: "jewish_transcript_data",
             importRevision: 1,
@@ -36,7 +36,7 @@ exports.Descriptions =
             //
             fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
             {
-                return "" + rowIndex + "-" + rowObject["identifier"]
+                return "" + rowIndex + "-" + rowObject["Identifier"]
             },
             fe_designatedFields:
             {
@@ -52,7 +52,7 @@ exports.Descriptions =
             },
             fe_excludeFields:
                 [
-                    "identifier",
+                    "Identifier",
                     "Neighborhood",
                     "Volume/Issue",
                     "Edition Label",
@@ -170,12 +170,10 @@ exports.Descriptions =
                 ],
             //
             //
-            // This is implemented but currently not used (it was built for scraping)
             afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
             {
                 // Setup each ctx, such as the batch operation
-                // Setup each ctx, such as the batch operation
-                var srcDoc_uid = "marvel_character_database";
+                var srcDoc_uid = "jewish_transcript_data";
                 var srcDoc_importRevision = 1; // INSERT YOUR IMPORT REVISION
                 // An accessor factory function that just combines the values in a
 
@@ -188,95 +186,31 @@ exports.Descriptions =
                 var forThisDataSource_nativeCollection = forThisDataSource_mongooseContext.Model.collection;
 
 
-                // specify (and cache/store) an operating spec for the field merge operation
-                eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Comics = "Comics";
-                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics =
-                    [
-                        "comics_items_0_name",
-                        "comics_items_1_name",
-                        "comics_items_2_name",
-                        "comics_items_3_name",
-                        "comics_items_4_name",
-                        "comics_items_5_name",
-                        "comics_items_6_name",
-                        "comics_items_7_name",
-                        "comics_items_8_name",
-                        "comics_items_9_name",
-                        "comics_items_10_name",
-                        "comics_items_11_name",
-                        "comics_items_12_name",
-                        "comics_items_13_name",
-                        "comics_items_14_name",
-                        "comics_items_15_name",
-                        "comics_items_16_name",
-                        "comics_items_17_name",
-                        "comics_items_18_name",
-                        "comics_items_19_name",
-                        "comics_items_20_name",
-                    ];
-                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics_length = eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics.length;
-                //
-                //
-                eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Series = "Series";
-                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series =
-                    [
-                        "series_items_0_name",
-                        "series_items_1_name",
-                        "series_items_2_name",
-                        "series_items_3_name",
-                        "series_items_4_name",
-                        "series_items_5_name",
-                        "series_items_6_name",
-                        "series_items_7_name",
-                        "series_items_8_name",
-                        "series_items_9_name",
-                        "series_items_10_name",
-                        "series_items_11_name",
-                        "series_items_12_name",
-                        "series_items_13_name",
-                        "series_items_14_name",
-                        "series_items_15_name",
-                        "series_items_16_name",
-                        "series_items_17_name",
-                        "series_items_18_name",
-                        "series_items_19_name",
-                        "series_items_20_name",
-                    ];
-                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series_length = eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series.length;
-                //
-                //
-                eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Events = "Events";
-                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events =
-                    [
-                        "events_items_0_name",
-                        "events_items_1_name",
-                        "events_items_2_name",
-                        "events_items_3_name",
-                        "events_items_4_name",
-                        "events_items_5_name",
-                        "events_items_6_name",
-                        "events_items_7_name",
-                        "events_items_8_name",
-                        "events_items_9_name",
-                        "events_items_10_name",
-                        "events_items_11_name",
-                        "events_items_12_name",
-                        "events_items_13_name",
-                        "events_items_14_name",
-                        "events_items_15_name",
-                        "events_items_16_name",
-                        "events_items_17_name",
-                        "events_items_18_name",
-                        "events_items_19_name",
-                        "events_items_20_name",
-                    ];
-                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events_length = eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events.length;
+                // specify (and cache/store) an operating spec for the row merge operation
+                eachCtx.pageFields = [
+                    'Title',
+                    'Date',
+                    'Decade',
+                    'Volume',
+                    'Issue',
+                    'Volume/Issue',
+                    'Type',
+                    'Local Type',
+                    'Transcript',
+                    'Date created',
+                    'Date modified',
+                    'Reference URL',
+                    'CONTENTdm number',
+                    'CONTENTdm file name',
+                    'CONTENTdm file path'
+                ];
+                eachCtx.prefixForPageFields = 'Pages_';
                 //
                 //
                 // generate a bulk operation for our merge field values operations that we're going to do
-                var mergeFieldsValuesIntoFieldArray_bulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
+                var mergeRowsIntoFieldArray_bulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
                 // store it into the "each-row" context for access during the each row operations
-                eachCtx.mergeFieldsValuesIntoFieldArray_bulkOperation = mergeFieldsValuesIntoFieldArray_bulkOperation;
+                eachCtx.mergeRowsIntoFieldArray_bulkOperation = mergeRowsIntoFieldArray_bulkOperation;
                 //
                 //
                 cb(null);
@@ -288,33 +222,46 @@ exports.Descriptions =
                     {
                         // Use this space to perform derivations and add update operations to batch operation in eachCtx
                         //
-                        mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Comics, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics_length);
-                        mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Series, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series_length);
-                        mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Events, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events_length);
-                        //
-                        function mergeManyFieldsIntoOne(generateFieldNamed, withValuesInFieldsNamed, withValuesInFieldsNamed_length) {
-                            var generatedArray = [];
-                            //
-                            for (var i = 0 ; i < withValuesInFieldsNamed_length; i++) {
-                                var fieldName = withValuesInFieldsNamed[i];
-                                var fieldValue = rowDoc["rowParams"][fieldName];
-                                if (typeof fieldValue !== 'undefined' && fieldValue !== null && fieldValue !== "") {
+                        // Detect if the row is an issue or page by primary key - Identifier
+                        if (rowDoc.rowParams.Identifier && rowDoc.rowParams.Identifier != '') {
+                            // Issue
+                            // Apply to Merge the cached rows(Page) into one row(Issue)
+                            var updateFragment = {$pushAll: {}};
+                            var bulkOperationQueryFragment;
+
+                            for (var i = 0; i < eachCtx.pageFields.length; i ++) {
+                                var fieldName = eachCtx.prefixForPageFields + eachCtx.pageFields[i];
+
+                                var generatedArray = [];
+                                //
+                                appCtx.raw_row_objects_controller.CachedPages.forEach(function(rowDoc) {
+                                    var fieldValue = rowDoc["rowParams"][eachCtx.pageFields[i]];
                                     generatedArray.push(fieldValue);
-                                }
+
+                                    bulkOperationQueryFragment =
+                                    {
+                                        pKey: rowDoc.pKey, // the specific row
+                                        srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
+                                    };
+                                    eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).remove();
+                                });
+
+                                updateFragment["$pushAll"]["rowParams." + fieldName] = generatedArray;
                             }
-                            //
-                            //
-                            var persistableValue = generatedArray;
 
-                            var updateFragment = { $addToSet: {} };
-                            updateFragment["$addToSet"]["rowParams." + generateFieldNamed] = { "$each": persistableValue };
-
-                            var bulkOperationQueryFragment =
+                            bulkOperationQueryFragment =
                             {
                                 pKey: rowDoc.pKey, // the specific row
                                 srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                             };
-                            eachCtx.mergeFieldsValuesIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+                            eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+
+                            // Clear cache
+                            appCtx.raw_row_objects_controller.CachedPages = [];
+
+                        } else {
+                            // Cache pages if it's a page
+                            appCtx.raw_row_objects_controller.CachedPages.push(rowDoc);
                         }
                         //
                         // finally, must call cb to advance
@@ -328,12 +275,15 @@ exports.Descriptions =
                 // Finished iterating … execute the batch operation
                 // cb(null);
 
+                // Skip if it's page row.
+                if (appCtx.raw_row_objects_controller.CachedPages.length > 0) return cb(null);
+
                 // Finished iterating … execute the batch operation
                 var writeConcern =
                 {
                     upsert: true // might as well - but this is not necessary
                 };
-                eachCtx.mergeFieldsValuesIntoFieldArray_bulkOperation.execute(writeConcern, function(err, result)
+                eachCtx.mergeRowsIntoFieldArray_bulkOperation.execute(writeConcern, function(err, result)
                     // changed from: bulkOperation.execute(writeConcern, function(err, result)
                 {
                     if (err) {

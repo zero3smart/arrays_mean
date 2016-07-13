@@ -162,3 +162,7 @@ constructor.prototype.InsertManyPersistableObjectTemplates = function(ordered_pe
         });
     });
 };
+////////////////////////////////////////////////////////////////////////////////
+// Public - To merge rows into a field - e.g - jewish_transcript_data.tsv
+//
+constructor.prototype.CachedPages = [];
