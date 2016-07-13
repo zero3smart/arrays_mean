@@ -10,6 +10,7 @@ module.exports.DataSource_formats =
 module.exports.Coercion_ops = // For convenience
 {
     ProxyExisting: "ProxyExisting", // do nothing - "pass-through"
+    ToStringTrim: "ToStringTrim",
     ToInteger: "ToInteger",
     ToFloat: "ToFloat",
     ToDate: "ToDate"
@@ -32,6 +33,11 @@ var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private fo
     ProxyExisting: function(inString, options) 
     {
         return inString;
+    },
+    ToStringTrim: function(inString, options) 
+    {
+        // Trim space characters from either side of string
+        return inString.trim();
     },
     ToInteger: function(inString, options) 
     {
