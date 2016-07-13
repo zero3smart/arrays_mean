@@ -28,13 +28,13 @@ exports.Descriptions =
                 'Record Date': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
-                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
+                        format: "MM/DD/YYYY" // e.g. "2009-03-21"
                     }
                 },
                 'Last Update': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
-                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
+                        format: "MM/DD/YYYY" // e.g. "2009-03-21"
                     }
                 }
             },
