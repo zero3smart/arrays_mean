@@ -6,6 +6,7 @@
 	
 	--color-brand-blue: #005cff;
 	--color-brand-pink: #fe00ff;
+	--color-brand-jewish-transcript: #6699CC;
 	
 	--color-background: #fafafa;
 	
@@ -155,7 +156,44 @@ a.color-brand:active,
 	border-top-color: var(--color-brand-pink);
 }
 
-/* @end  Pink */
+/* @end Pink */
+
+/* @group The Jewish Transcript */
+
+.source-jewish_transcript_data-r1 .color-brand,
+.source-jewish_transcript_data-r1 a.color-brand:hover,
+.source-jewish_transcript_data-r1 a.color-brand:focus,
+.source-jewish_transcript_data-r1 a.color-brand:active,
+.source-jewish_transcript_data-r1 .sidebar-filter-toggle .color-brand {
+	color: var(--color-brand-jewish-transcript);
+}
+
+.source-jewish_transcript_data-r1 .color-brand-hover:hover,
+.source-jewish_transcript_data-r1 .dropdown-toggle:hover .color-brand-hover,
+.source-jewish_transcript_data-r1 .open .color-brand-hover {
+	color: var(--color-brand-jewish-transcript);
+}
+
+.source-jewish_transcript_data-r1 .background-color-brand,
+.source-jewish_transcript_data-r1 .background-color-brand-hover:hover,
+.source-jewish_transcript_data-r1 .background-color-brand-hover:focus,
+.source-jewish_transcript_data-r1 .background-color-brand-hover:active,
+.source-jewish_transcript_data-r1 .background-color-brand-hover > a:hover,
+.source-jewish_transcript_data-r1 .background-color-brand-hover > a:focus,
+.source-jewish_transcript_data-r1 .background-color-brand-hover > a:active ,
+.source-jewish_transcript_data-r1 .background-color-brand-hover.active > a {
+	background-color: var(--color-brand-jewish-transcript);
+}
+
+.source-jewish_transcript_data-r1 .border-color-brand {
+	border-color: var(--color-brand-jewish-transcript);
+}
+
+.source-jewish_transcript_data-r1 .border-top-color-brand {
+	border-top-color: var(--color-brand-jewish-transcript);
+}
+
+/* @end The Jewish Transcript */
 
 /* @group Temporarily hide choropleth */
 

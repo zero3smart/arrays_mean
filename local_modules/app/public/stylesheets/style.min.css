@@ -4238,7 +4238,37 @@ a.color-brand:active,
 .source-nasa_labs_facilities-r2 .border-top-color-brand {
 	border-top-color: #fe00ff;
 }
-/* @end  Pink */
+/* @end Pink */
+/* @group The Jewish Transcript */
+.source-jewish_transcript_data-r1 .color-brand,
+.source-jewish_transcript_data-r1 a.color-brand:hover,
+.source-jewish_transcript_data-r1 a.color-brand:focus,
+.source-jewish_transcript_data-r1 a.color-brand:active,
+.source-jewish_transcript_data-r1 .sidebar-filter-toggle .color-brand {
+	color: #6699CC;
+}
+.source-jewish_transcript_data-r1 .color-brand-hover:hover,
+.source-jewish_transcript_data-r1 .dropdown-toggle:hover .color-brand-hover,
+.source-jewish_transcript_data-r1 .open .color-brand-hover {
+	color: #6699CC;
+}
+.source-jewish_transcript_data-r1 .background-color-brand,
+.source-jewish_transcript_data-r1 .background-color-brand-hover:hover,
+.source-jewish_transcript_data-r1 .background-color-brand-hover:focus,
+.source-jewish_transcript_data-r1 .background-color-brand-hover:active,
+.source-jewish_transcript_data-r1 .background-color-brand-hover > a:hover,
+.source-jewish_transcript_data-r1 .background-color-brand-hover > a:focus,
+.source-jewish_transcript_data-r1 .background-color-brand-hover > a:active ,
+.source-jewish_transcript_data-r1 .background-color-brand-hover.active > a {
+	background-color: #6699CC;
+}
+.source-jewish_transcript_data-r1 .border-color-brand {
+	border-color: #6699CC;
+}
+.source-jewish_transcript_data-r1 .border-top-color-brand {
+	border-top-color: #6699CC;
+}
+/* @end The Jewish Transcript */
 /* @group Temporarily hide choropleth */
 .source-nasa_labs_facilities-r2 .menu-item-choropleth {
 	display: none;
