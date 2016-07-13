@@ -1,3 +1,40 @@
+{% if brandColor %}
+    <style scoped>
+        .color-brand,
+        a.color-brand:hover,
+        a.color-brand:focus,
+        a.color-brand:active,
+        .sidebar-filter-toggle .color-brand {
+        	color: {{ brandColor }};
+        }
+
+        .color-brand-hover:hover,
+        .dropdown-toggle:hover .color-brand-hover,
+        .open .color-brand-hover {
+        	color: {{ brandColor }};
+        }
+
+        #page .background-color-brand,
+        #page .background-color-brand-hover:hover,
+        #page .background-color-brand-hover:focus,
+        #page .background-color-brand-hover:active,
+        #page .background-color-brand-hover > a:hover,
+        #page .background-color-brand-hover > a:focus,
+        #page .background-color-brand-hover > a:active ,
+        #page .background-color-brand-hover.active > a {
+        	background-color: {{ brandColor }};
+        }
+
+        .border-color-brand {
+        	border-color: {{ brandColor }};
+        }
+
+        .border-top-color-brand {
+        	border-top-color: {{ brandColor }};
+        }
+    </style>
+{% endif %}
+
 <!-- Fixed navbar -->
 <nav class="navbar navbar-default navbar-fixed-top background-color-brand">
 	<div class="container-fluid container-full-width">

@@ -32,6 +32,7 @@ exports.Descriptions =
             importRevision: 1,
             format: import_datatypes.DataSource_formats.CSV,
             title: "MoMA Artists",
+            brandColor: "#005cff",
             urls: [ "http://zenodo.org/record/46902" ],
             description: "Basic catalog information for artists with works in the collection of The Museum of Modern Art (MoMA), including artist name, nationality, gender, birth year, death year, Wiki QID and Getty ULAN ID. ",
             //

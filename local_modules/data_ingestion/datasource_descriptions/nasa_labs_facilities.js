@@ -14,6 +14,7 @@ exports.Descriptions =
             importRevision: 2,
             format: import_datatypes.DataSource_formats.CSV,
             title: "NASA Agency Data on User Facilities",
+            brandColor: "#fe00ff",
             urls: [ "https://catalog.data.gov/dataset/agency-data-on-user-facilities" ],
             description: "The purpose of the Aerospace Technical Facility Inventory is to facilitate the sharing of specialized capabilities within the aerospace research/engineering community primarily within NASA, but also throughout the nation and the entire world. A second use is to assist in answering questions regarding NASA capabilities for future missions or various alternative scenarios regarding mission support to help the Agency maintain the right set of assets.",
             fe_displayTitleOverrides: {}, // this is needed to not through an error
@@ -43,6 +44,13 @@ exports.Descriptions =
             fe_designatedFields:
             {
                 objectTitle: "Facility",
+            },
+            fe_views: {
+                gallery: true,
+                choropleth: false,
+                chart: true,
+                scatterplot: false,
+                timeline: false
             },
             fe_excludeFields:
                 [
