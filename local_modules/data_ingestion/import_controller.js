@@ -4,6 +4,7 @@
 var async = require("async");
 var fs = require('fs');
 var parse = require('csv-parse');
+var es = require('event-stream');
 var winston = require('winston');
 
 var import_datatypes = require('./import_datatypes');
@@ -166,23 +167,22 @@ constructor.prototype._dataSourceParsingAndImportingFunction = function(indexInL
     switch (format) {
         case import_datatypes.DataSource_formats.CSV:
         {
-            self._new_parsed_StringDocumentObject_fromCSVDataSourceDescription(indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function(err, stringDocumentObject)
+            self._new_parsed_StringDocumentObject_fromCSVDataSourceDescription(indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function(err)
             {
-                if (err) {
-                    callback(err);
-                    return;
-                }
-                self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, function(err, record)
-                {
-                    if (err) {
-                        callback(err);
-                        return;
-                    }
-                    winston.info("✅  Saved document: ", record._id);
-                    callback(null);
-                });
+                if (err) return callback(err);
+                winston.info("✅  Saved document: ", dataSource_title);
+                return callback(null);
             });
-            
+            break;
+        }
+        case import_datatypes.DataSource_formats.TSV:
+        {
+            self._new_parsed_StringDocumentObject_fromTSVDataSourceDescription(indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function(err)
+            {
+                if (err) return callback(err);
+                winston.info("✅  Saved document: ", dataSource_title);
+                return callback(null);
+            });
             break;
         }
         default:
@@ -190,10 +190,8 @@ constructor.prototype._dataSourceParsingAndImportingFunction = function(indexInL
             var errDescStr = "❌  Unrecognized data source format \"" + format + "\".";
             winston.error(errDescStr);
             callback(new Error(errDescStr)); // skip this one
-            
-            break;
         }
-    }
+    };
 };
 //
 constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function(dataSourceIsIndexInList, csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) 
@@ -212,40 +210,33 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     // so we can do translation/mapping just below
     // winston.info("raw_rowObjects_coercionScheme " , raw_rowObjects_coercionScheme)
     //
-    var parser = parse({ delimiter: ',' }, function(err, columnNamesAndThenRowObjectValues)
-    { // Is it going to be a memory concern to hold entire large CSV files in memory?
-        if (err) {
-            // winston.info(err);
-            fn(err, null);
-            
-            return;
-        }
+    // To solve a memory overflow issue to hold entire large CSV files, splitted them out by each line
+    var lineNr = 0;
+    var columnNames = [];
+    var parsed_rowObjectsById = {};
+    var parsed_orderedRowObjectPrimaryKeys = [];
+
+    var parser = function(columnNamesAndThenRowObject)
+    {
         // replace any dotted fields with underscores, e.g. comics.items to comics_items
-        for (var i = 0; i < columnNamesAndThenRowObjectValues[0].length; i++) {
-            columnNamesAndThenRowObjectValues[0][i] = columnNamesAndThenRowObjectValues[0][i].replace(/\./g,"_");
-        }
-        //
-        var parsed_rowObjectsById = [];
-        var parsed_orderedRowObjectPrimaryKeys = [];
-        // 
-        var columnNames = columnNamesAndThenRowObjectValues[0];
-        var num_columnNames = columnNames.length;
-        var columnNamesAndThenRowObjectValues_length = columnNamesAndThenRowObjectValues.length;
-        var contentRowsStartingIndex_inParserFeed = 1;
-        var num_actualContentRows = columnNamesAndThenRowObjectValues_length - contentRowsStartingIndex_inParserFeed;
-        winston.info("🔁  Parsing " + num_actualContentRows + " rows in \"" + filename + "\"");
-        for (var rowIndex_inParserFeed = contentRowsStartingIndex_inParserFeed ; rowIndex_inParserFeed < columnNamesAndThenRowObjectValues_length ; rowIndex_inParserFeed++) {
-            var actualRowIndexInDataset = rowIndex_inParserFeed - contentRowsStartingIndex_inParserFeed;
-            var rowObjectValues = columnNamesAndThenRowObjectValues[rowIndex_inParserFeed];
-            if (rowObjectValues.length != num_columnNames) {
+        // column names
+        if (lineNr == 1) {
+            for (var i = 0; i < columnNamesAndThenRowObject.length; i++) {
+                columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g,"_");
+            }
+            columnNames = columnNamesAndThenRowObject;
+        } else {
+            // row objects
+            //
+            if (columnNamesAndThenRowObject.length != columnNames.length) {
                 winston.error("❌  Error: Row has different number of values than number of CSV's number of columns. Skipping: ", rowObjectValues);
-                
-                continue;
+
+                return;
             }
             var rowObject = {};
-            for (var columnIndex = 0 ; columnIndex < num_columnNames ; columnIndex++) {
+            for (var columnIndex = 0 ; columnIndex < columnNames.length ; columnIndex++) {
                 var columnName = "" + columnNames[columnIndex];
-                var rowValue = rowObjectValues[columnIndex];
+                var rowValue = columnNamesAndThenRowObject[columnIndex];
                 //
                 var typeFinalized_rowValue = rowValue;
                 // now do type coercion/parsing here with functions to finalize
@@ -254,44 +245,235 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
                     if (coercionSchemeForKey != null && typeof coercionSchemeForKey !== 'undefined') {
                         typeFinalized_rowValue = import_datatypes.NewDataTypeCoercedValue(coercionSchemeForKey, rowValue);
                     }
-                }          
+                }
                 rowObject[columnName] = typeFinalized_rowValue; // Now store the finalized value
             }
-            var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, rowIndex_inParserFeed);
+            var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, (lineNr-1));
             if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
                 winston.error("❌  Error: missing pkey on row", rowObject, "with factory accessor", csvDescription.fn_new_rowPrimaryKeyFromRowObject);
 
                 return;
             }
-            var parsedObject = self.context.raw_row_objects_controller.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, actualRowIndexInDataset, rowObject);
+            var parsedObject = self.context.raw_row_objects_controller.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, lineNr-2, rowObject);
             // winston.info("parsedObject " , parsedObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
-                winston.info("⚠️  Warning: An object with the same primary key, \"" 
-                            + rowObject_primaryKey 
-                            + "\" was already found in the parsed row objects cache on import." 
-                            + " Use the primary key function to further disambiguate primary keys. Skipping importing this row, .");
-                
-                continue;
+                winston.info("⚠️  Warning: An object with the same primary key, \""
+                    + rowObject_primaryKey
+                    + "\" was already found in the parsed row objects cache on import."
+                    + " Use the primary key function to further disambiguate primary keys. Skipping importing this row, .");
+
+                return;
             }
             parsed_rowObjectsById[rowObject_primaryKey] = parsedObject;
             parsed_orderedRowObjectPrimaryKeys.push(rowObject_primaryKey);
         }
-        var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys);
-        stringDocumentObject.filename = filename;
-
-        fn(null, stringDocumentObject);
-    });
+    };
     // Now read
-    var readStream = fs.createReadStream(filepath, { encoding: fileEncoding });
-    readStream.on('error', function(err)
+    var readStream = fs.createReadStream(filepath, { encoding: fileEncoding })
+        .pipe(es.split())
+        .pipe(es.mapSync(function(line) {
+                // pause the readstream
+                readStream.pause();
+
+                lineNr += 1;
+
+                parse(line, {delimiter: ',', relax: true, skip_empty_lines: true}, function(err, output) {
+                    if (err) return fn(err);
+                    if (!output || output.length == 0) return readStream.resume();
+
+                    parser(output[0]);
+
+                    // process line here and call s.resume() when rdy
+                    if (lineNr % 1000 == 0) {
+                        winston.info("🔁  Parsing " + lineNr + " rows in \"" + filename + "\"");
+
+                        var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys);
+                        stringDocumentObject.filename = filename;
+
+                        self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, function(err, record)
+                        {
+                            if (err) return fn(err);
+                            winston.info("✅  Saved " + lineNr + " lines of document: ", record._id);
+
+                            parsed_rowObjectsById = {};
+                            parsed_orderedRowObjectPrimaryKeys = [];
+
+                            readStream.resume();
+                        });
+                    } else {
+                        // resume the readstream, possibly from a callback
+                        readStream.resume();
+                    }
+                });
+            })
+            .on('error', function(err)
+            {
+                winston.error("❌  Error encountered while trying to open CSV file. The file might not yet exist or the specified filename might contain a typo.");
+                return fn(err);
+            })
+            .on('end', function(){
+                // If we have any lines remaining, need to store document to the db.
+                if (lineNr % 1000 == 0) {
+
+                    winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
+                    return fn(null);
+
+                } else {
+
+                    var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys);
+                    stringDocumentObject.filename = filename;
+
+                    self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, function(err, record)
+                    {
+                        if (err) return fn(err);
+                        winston.info("✅  Saved " + lineNr + " lines of document: ", record._id);
+                        return fn(null);
+                    });
+
+                }
+            })
+        );
+};
+//
+constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescription = function(dataSourceIsIndexInList, tsvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn)
+{
+    var self = this;
+    //
+    var TSV_resources_path_prefix = __dirname + "/resources";
+    var filename = tsvDescription.filename;
+    var fileEncoding = tsvDescription.fileEncoding || 'utf8';
+    var revisionNumber = tsvDescription.importRevision;
+    var importUID = tsvDescription.uid;
+    winston.info("🔁  " + dataSourceIsIndexInList + ": Importing TSV \"" + filename + "\"");
+    var filepath = TSV_resources_path_prefix + "/" + filename;
+    //
+    var raw_rowObjects_coercionScheme = tsvDescription.raw_rowObjects_coercionScheme; // look up data type scheme here
+    // so we can do translation/mapping just below
+    // winston.info("raw_rowObjects_coercionScheme " , raw_rowObjects_coercionScheme)
+    //
+    // To solve a memory overflow issue to hold entire large TSV files, splitted them out by each line
+    var lineNr = 0;
+    var columnNames = [];
+    var parsed_rowObjectsById = {};
+    var parsed_orderedRowObjectPrimaryKeys = [];
+
+    var parser = function(columnNamesAndThenRowObject)
     {
-        winston.error("❌  Error encountered while trying to open CSV file. The file might not yet exist or the specified filename might contain a typo.");
-        fn(err, null);
-    });
-    readStream.on('readable', function()
-    {
-        readStream.pipe(parser);
-    });
+        // replace any dotted fields with underscores, e.g. comics.items to comics_items
+        // column names
+        if (lineNr == 1) {
+            for (var i = 0; i < columnNamesAndThenRowObject.length; i++) {
+                columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g,"_");
+            }
+            columnNames = columnNamesAndThenRowObject;
+        } else {
+            // row objects
+            //
+            if (columnNamesAndThenRowObject.length != columnNames.length) {
+                winston.error("❌  Error: Row has different number of values than number of TSV's number of columns. Skipping: ", rowObjectValues);
+
+                return;
+            }
+            var rowObject = {};
+            for (var columnIndex = 0 ; columnIndex < columnNames.length ; columnIndex++) {
+                var columnName = "" + columnNames[columnIndex];
+                var rowValue = columnNamesAndThenRowObject[columnIndex];
+                //
+                var typeFinalized_rowValue = rowValue;
+                // now do type coercion/parsing here with functions to finalize
+                if (raw_rowObjects_coercionScheme != null && typeof raw_rowObjects_coercionScheme !== 'undefined') {
+                    var coercionSchemeForKey = raw_rowObjects_coercionScheme[columnName];
+                    if (coercionSchemeForKey != null && typeof coercionSchemeForKey !== 'undefined') {
+                        typeFinalized_rowValue = import_datatypes.NewDataTypeCoercedValue(coercionSchemeForKey, rowValue);
+                    }
+                }
+                rowObject[columnName] = typeFinalized_rowValue; // Now store the finalized value
+            }
+            var rowObject_primaryKey = tsvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, (lineNr-1));
+            if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
+                winston.error("❌  Error: missing pkey on row", rowObject, "with factory accessor", tsvDescription.fn_new_rowPrimaryKeyFromRowObject);
+
+                return;
+            }
+            var parsedObject = self.context.raw_row_objects_controller.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, lineNr-2, rowObject);
+            // winston.info("parsedObject " , parsedObject)
+            if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
+                winston.info("⚠️  Warning: An object with the same primary key, \""
+                    + rowObject_primaryKey
+                    + "\" was already found in the parsed row objects cache on import."
+                    + " Use the primary key function to further disambiguate primary keys. Skipping importing this row, .");
+
+                return;
+            }
+            parsed_rowObjectsById[rowObject_primaryKey] = parsedObject;
+            parsed_orderedRowObjectPrimaryKeys.push(rowObject_primaryKey);
+        }
+    };
+    // Now read
+    var readStream = fs.createReadStream(filepath, { encoding: fileEncoding })
+        .pipe(es.split())
+        .pipe(es.mapSync(function(line) {
+                // pause the readstream
+                readStream.pause();
+
+                lineNr += 1;
+
+                parse(line, {delimiter: '\t', relax: true, skip_empty_lines: true}, function(err, output) {
+                    if (err) return fn(err);
+                    if (!output || output.length == 0) return readStream.resume();
+
+                    parser(output[0]);
+
+                    // process line here and call s.resume() when rdy
+                    if (lineNr % 1000 == 0) {
+                        winston.info("🔁  Parsing " + lineNr + " rows in \"" + filename + "\"");
+
+                        var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys);
+                        stringDocumentObject.filename = filename;
+
+                        self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, function(err, record)
+                        {
+                            if (err) return fn(err);
+                            winston.info("✅  Saved " + lineNr + " lines of document: ", record._id);
+
+                            parsed_rowObjectsById = {};
+                            parsed_orderedRowObjectPrimaryKeys = [];
+
+                            readStream.resume();
+                        });
+                    } else {
+                        // resume the readstream, possibly from a callback
+                        readStream.resume();
+                    }
+                });
+            })
+            .on('error', function(err)
+            {
+                winston.error("❌  Error encountered while trying to open TSV file. The file might not yet exist or the specified filename might contain a typo.");
+                return fn(err);
+            })
+            .on('end', function(){
+                // If we have any lines remaining, need to store document to the db.
+                if (lineNr % 1000 == 0) {
+
+                    winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
+                    return fn(null);
+
+                } else {
+
+                    var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys);
+                    stringDocumentObject.filename = filename;
+
+                    self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, function(err, record)
+                    {
+                        if (err) return fn(err);
+                        winston.info("✅  Saved " + lineNr + " lines of document: ", record._id);
+                        return fn(null);
+                    });
+
+                }
+            })
+        );
 };
 //
 //
@@ -307,10 +489,12 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
     //
     // Firstly, generate the whole processed objects dataset
     //
-    self.context.processed_row_objects_controller.GenerateProcessedDatasetFromRawRowObjects(dataSource_uid,
-                                                                                            dataSource_importRevision,
-                                                                                            dataSource_title,
-                                                                                            function(err)
+    //self.context.processed_row_objects_controller.GenerateProcessedDatasetFromRawRowObjects
+    self.context.processed_row_objects_controller.InsertProcessedDatasetFromRawRowObjects
+        (dataSource_uid,
+        dataSource_importRevision,
+        dataSource_title,
+        function(err)
     {
         if (err) {
             winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
@@ -328,25 +512,57 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
             switch (by.doing) {
                 case import_processing.Ops.Join:
                 {
-                    var matchFn = by.matchFn;
+                    /* var matchFn = by.matchFn;
                     if (typeof matchFn === 'undefined' || matchFn == null) {
                         matchFn = import_processing.MatchFns.LocalEqualsForeignString;
                     }
-                    self.context.processed_row_objects_controller.GenerateFieldsByJoining_comparingWithMatchFn(
-                        dataSource_uid,
-                        dataSource_importRevision,
-                        dataSource_title,
-                        description.field,
-                        description.singular,
-                        by.findingMatchOnFields,
-                        by.ofOtherRawSrcUID,
-                        by.andOtherRawSrcImportRevision,
-                        by.withLocalField,
-                        by.obtainingValueFromField,
-                        formingRelationship,
-                        matchFn,
-                        cb
-                    );
+                     self.context.processed_row_objects_controller.GenerateFieldsByJoining_comparingWithMatchFn(
+                     dataSource_uid,
+                     dataSource_importRevision,
+                     dataSource_title,
+                     description.field,
+                     description.singular,
+                     by.findingMatchOnFields,
+                     by.ofOtherRawSrcUID,
+                     by.andOtherRawSrcImportRevision,
+                     by.withLocalField,
+                     by.obtainingValueFromField,
+                     formingRelationship,
+                     matchFn,
+                     cb
+                     ); */
+                    var matchRegex = by.matchRegex;
+                    if (typeof matchRegex === 'undefined' || matchRegex == null || matchRegex == import_processing.MatchFns.LocalEqualsForeignString)
+                        self.context.processed_row_objects_controller.GenerateFieldsByJoining(
+                            dataSource_uid,
+                            dataSource_importRevision,
+                            dataSource_title,
+                            description.field,
+                            description.singular,
+                            by.findingMatchOnFields,
+                            by.ofOtherRawSrcUID,
+                            by.andOtherRawSrcImportRevision,
+                            by.withLocalField,
+                            by.obtainingValueFromField,
+                            formingRelationship,
+                            cb
+                        );
+                    else
+                        self.context.processed_row_objects_controller.GenerateFieldsByJoining_comparingWithMatchFn(
+                            dataSource_uid,
+                            dataSource_importRevision,
+                            dataSource_title,
+                            description.field,
+                            description.singular,
+                            by.findingMatchOnFields,
+                            by.ofOtherRawSrcUID,
+                            by.andOtherRawSrcImportRevision,
+                            by.withLocalField,
+                            by.obtainingValueFromField,
+                            formingRelationship,
+                            matchRegex,
+                            cb
+                        );
                     break;
                 }
 
