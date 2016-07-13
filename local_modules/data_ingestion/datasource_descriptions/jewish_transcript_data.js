@@ -8,7 +8,7 @@ var import_processing = require('../import_processing');
 exports.Descriptions =
     [
         {
-            filename: "Jewish_Transcript_Filtered_WithImages_7122016.csv",
+            filename: "Jewish_Transcript_Filtered_WithImages_DatesFixed_7122016_v2.csv",
             fileEncoding: "utf8", // default
             uid: "jewish_transcript_data",
             importRevision: 1,
@@ -25,7 +25,7 @@ exports.Descriptions =
                 'Date': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
-                        format: "MM/DD/YY" // e.g. "2009-03-21"
+                        format: "MM/DD/YYYY" // e.g. "2009-03-21"
                     }
                 },
                 'Date created': {
@@ -39,7 +39,27 @@ exports.Descriptions =
                     opts: {
                         format: "MM/DD/YY" // e.g. "2009-03-21"
                     }
-                }
+                },
+
+                'Decade': {
+                    do: import_datatypes.Coercion_ops.ToStringTrim
+                },
+                'Catalog Title': {
+                    do: import_datatypes.Coercion_ops.ToStringTrim
+                },
+                'LCCN': {
+                    do: import_datatypes.Coercion_ops.ToStringTrim
+                },
+
+                /*'Pages': {
+                    do: import_datatypes.Coercion_ops.ToInteger
+                },
+                'Issue': {
+                    do: import_datatypes.Coercion_ops.ToInteger
+                },
+                'Volume': {
+                    do: import_datatypes.Coercion_ops.ToInteger
+                }*/
             },
             fe_listed: true,
             fe_displayTitleOverrides: {}, // this is needed to not through an error
