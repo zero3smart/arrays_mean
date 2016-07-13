@@ -168,7 +168,27 @@ scatterplot.chart = function(data) {
      * @member {scatterplot.view}
      */
     this._view = new scatterplot.view.factory(this, 500);
+    /**
+     * Current data filer.
+     * @private
+     * @member {String[]}
+     */
+    this._filter = [];
 }
+
+
+/**
+ * Filter data.
+ * @param {String} key
+ * @param {String} value
+ * @return {scatterplot.chart}
+ */
+scatterplot.chart.prototype.filterBy = function(key, value) {
+
+    this._filter = [key, value];
+
+    return this;
+};
 
 
 /**
@@ -221,14 +241,16 @@ scatterplot.chart.prototype.render = function(selector) {
     this._xLabelContainer = this._svg.append('g')
         .attr('class', 'label x-label')
         .attr('text-anchor', 'middle')
-        .append('text');
+        .append('text')
+        .attr('letter-spacing', 2);
     /*
      * Append y label container.
      */
     this._yLabelContainer = this._svg.append('g')
         .attr('class', 'label y-label')
         .attr('text-anchor', 'middle')
-        .append('text');
+        .append('text')
+        .attr('letter-spacing', 2);
     /*
      * Set up chart dimension.
      */
@@ -304,7 +326,7 @@ scatterplot.chart.prototype.resize = function() {
  */
 scatterplot.chart.prototype._normalizeLabel = function(label) {
 
-    label = label.replace('_', ' ');
+    label = label.replace(/_/g, ' ');
     label = 'Number of ' + label;
 
     return label;
@@ -447,6 +469,17 @@ scatterplot.chart.prototype.update = function(data) {
      */
     this._xLabelContainer.text(this._normalizeLabel(this._xLabel));
     this._yLabelContainer.text(this._normalizeLabel(this._yLabel));
+    /*
+     * Filter data.
+     */
+//    console.log(this._filter);
+    if (this._filter.length && this._filter[1] !== '') {
+//        console.log(this._filter);
+        data = data.filter(function(d) {
+            return d[self._filter[0]].toLowerCase().indexOf(self._filter[1]) >= 0;
+        });
+    }
+//    console.log(data.length);
     /*
      * Render chart content.
      */

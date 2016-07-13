@@ -1162,8 +1162,8 @@
                                 ]}
                             ]
                         },
-                        startDate: { $first: "$" + "rowParams." + sortBy_realColumnName },
-                        endDate: { $last: "$" + "rowParams." + sortBy_realColumnName },
+                        startDate: { $min: "$" + "rowParams." + sortBy_realColumnName },
+                        endDate: { $max: "$" + "rowParams." + sortBy_realColumnName },
                         total: { $sum: 1 }, // the count
                         results: { $push: "$$ROOT" }
                    }
@@ -1542,11 +1542,6 @@
         // We must re-URI-encode the filter vals since they get decoded
         var filterJSON_uriEncodedVals = _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
         //
-        var searchCol = urlQuery.searchCol;
-        var searchQ = urlQuery.searchQ;
-        var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
-                          && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
-        //
         var err = null;
         var routePath_base              = "/array/" + source_pKey + "/chart";
         var routePath_withoutFilter     = routePath_base;
@@ -1560,12 +1555,6 @@
         }
         if (isFilterActive) {
             var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
-            routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
-            urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
-        }
-        if (isSearchActive) {
-            var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
-            routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
             routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
             urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
         }
@@ -1583,13 +1572,16 @@
                     }
                 }
 
+                var searchableFields = ['stories_available', 'name', 'description'];
+
                 callback(err, {
                     characters: characters,
                     renderableFields: numericFields,
+                    searchableFields: searchableFields,
 //                    xField: numericFields[Math.floor(Math.random() * numericFields.length)],
 //                    yField: numericFields[Math.floor(Math.random() * numericFields.length)],
-                    xField: 'stories_returned',
-                    yField: 'comics_returned',
+                    xField: 'stories_available',
+                    yField: 'series_available',
                     //
                     env: process.env,
                     //
@@ -1610,13 +1602,8 @@
 //                  uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
 //                  truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
                     //
-                    searchQ: searchQ,
-                    searchCol: searchCol,
-                    isSearchActive: isSearchActive,
-                    //
                     defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
                     colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription),
-                    colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     routePath_base: routePath_base,
                     routePath_withoutFilter: routePath_withoutFilter,

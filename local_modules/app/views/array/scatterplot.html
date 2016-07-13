@@ -38,13 +38,13 @@
 
                                             <div class="dropdown sort-control">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    X-Axis <span class="sort-criteria color-brand-hover x-axis-field">{{ xField }}</span>
+                                                    X-Axis <span class="sort-criteria color-brand-hover x-axis-field">{{ xField | replace(r/_/g, ' ') }}</span>
                                                 </a>
                                                 {% if renderableFields | length %}
                                                 <ul class="dropdown-menu" aria-labelledby="type">
                                                     {% for colName in renderableFields %}
                                                     <!-- li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li -->
-                                                    <li class="background-color-brand-hover"><a href="#" data-axis="x">{{ colName }}</a></li>
+                                                    <li class="background-color-brand-hover"><a href="#" data-axis="x" data-field="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
                                                     {% endfor %}
                                                 </ul>
                                                 {% endif %}
@@ -52,13 +52,13 @@
 
                                             <div class="dropdown sort-control">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    Y-Axis <span class="sort-criteria color-brand-hover y-axis-field">{{ yField }}</span>
+                                                    Y-Axis <span class="sort-criteria color-brand-hover y-axis-field">{{ yField | replace(r/_/g, ' ') }}</span>
                                                 </a>
                                                 {% if renderableFields | length %}
                                                 <ul class="dropdown-menu" aria-labelledby="type">
                                                     {% for colName in renderableFields %}
                                                     <!-- li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li -->
-                                                    <li class="background-color-brand-hover"><a href="#" data-axis="y">{{ colName }}</a></li>
+                                                    <li class="background-color-brand-hover"><a href="#" data-axis="y" data-field="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
                                                     {% endfor %}
                                                 </ul>
                                                 {% endif %}
@@ -66,50 +66,35 @@
                                         </nav>
 
                                         <div class="pull-right">
-                                            <form action="{{ routePath_base }}" method="get" class="form-search">
-                                                <div class="sort-control visible-xs">
-                                                    <div class="btn dropdown-toggle-button search-toggle">
-                                                        <span class="icon-search search-icon"></span>
-                                                    </div>
+                                            <div class="sort-control visible-xs">
+                                                <div class="btn dropdown-toggle-button search-toggle">
+                                                    <span class="icon-search search-icon"></span>
                                                 </div>
-                                                
-                                                <div class="mobile-search-popover">
-                                                    <div class="dropdown-toggle-button-group" role="group">
-                                                        <div class="dropdown sort-control sort-control-left search-control">
-                                                            {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
-                                                            
-                                                            <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                                                                Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
-                                                            </a>
-                                                            <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
-                                                            {% if colNames_orderedForSortByDropdown | length %}
-                                                            <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
-                                                                {% for colName in colNames_orderedForSortByDropdown %}
-                                                                <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
-                                                                {% endfor %}
-                                                            </ul>
-                                                            {% endif %}
-                                                        </div>
+                                            </div>
 
-                                                        <div class="sort-control sort-control-right">
-                                                            <div class="dropdown-toggle">
-                                                                <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ if searchQ else "" }}">
-                                                                <span class="icon-search search-icon hidden-xs"></span>
-                                                            </div>
+                                            <div class="mobile-search-popover">
+                                                <div class="dropdown-toggle-button-group" role="group">
+                                                    <div class="dropdown sort-control sort-control-left search-control">
+                                                        {% set searchColToOutput = searchableFields[0] if searchableFields else "Object Title" %}
+                                                        <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+                                                            Search <span class="search-criteria color-brand-hover" data-field="{{ searchColToOutput }}">{{ searchColToOutput | replace(r/_/g, ' ') }}</span>
+                                                        </a>
+                                                        {% if searchableFields | length %}
+                                                        <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+                                                            {% for colName in searchableFields %}
+                                                            <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-field="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="sort-control sort-control-right">
+                                                        <div class="dropdown-toggle">
+                                                            <input type="text" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="">
+                                                            <span class="icon-search search-icon hidden-xs"></span>
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                {% if sortBy %}
-                                                    <input type="hidden" name="sortBy" value="{{ sortBy }}">
-                                                {% endif %}
-                                                {% if sortDir %}
-                                                    <input type="hidden" name="sortDir" value="{{ sortDir }}">
-                                                {% endif %}
-                                                {% if filterJSON %}
-                                                    <input type="hidden" name="filterJSON" value="{{ filterJSON_nonURIEncodedVals }}"> {# it will get re-encoded #}
-                                                {% endif %}
-                                            </form>
+                                            </div>
 
                                             <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
                                                 <span class="icon-legend" aria-hidden="true"></span>
@@ -142,7 +127,7 @@
                             <div class="row">
                                 <div class="col-sm-12">
 
-                                    <div id="scatterplot"></div>
+                                    <div id="scatterplot" class="scatterplot"></div>
 
                                 </div>
                             </div><!-- .row -->
@@ -178,6 +163,7 @@
         var scatterData = {{ characters | dump | safe }};
         // Render scatterplot.
         var scatterPlot = new scatterplot.chart(scatterData.map(function(d) {
+            d.rowParams.id = d._id;
             return d.rowParams;
         })).setXAccessor(function(d) {
             return d['{{ xField }}']
@@ -186,20 +172,44 @@
             return d['{{ yField }}'];
         }, '{{ yField }}')
         .render('#scatterplot');
+
         // Set up axis fields dropdown click handler.
-        jQuery('ul.dropdown-menu a').click(function(e) {
+        jQuery('nav.pull-left ul.dropdown-menu a').click(function(e) {
             // Get item text.
-            var field = this.innerText;
+            var text = this.innerText;
+            // Get item field.
+            var field = this.getAttribute('data-field');
             // Get field's axis.
             var axis = this.getAttribute('data-axis');
             // Update dropdown current text.
-            jQuery('span.' + axis + '-axis-field').prop('innerText', field);
+            jQuery('span.' + axis + '-axis-field').prop('innerText', text);
             // Update scatterplot.
             scatterPlot['set' + axis.toUpperCase() + 'Accessor'](function(d) {
                 return d[field];
             }, field)
             .update();
         });
+
+        // Set up search dropdown click handler.
+        jQuery('ul.search-dropdown-menu a').click(function(e) {
+            // Get item text.
+            var text = this.innerText;
+            // Get item field.
+            var field = this.getAttribute('data-field');
+            // Update search form.
+            jQuery('#search-by span')
+                .prop('innerText', text)
+                .attr('data-field', field);
+            // Run search procedure.
+            scatterPlot.filterBy(field, jQuery('input.search-input').val())
+                .update();
+        });
+
+        // Set search input handler.
+        jQuery('input.search-input').on('input', function(event) {
+            scatterPlot.filterBy(jQuery('#search-by span').attr('data-field'), this.value)
+                .update();
+        })
         </script>
 
     {% include "../partials/survicate.html" %}

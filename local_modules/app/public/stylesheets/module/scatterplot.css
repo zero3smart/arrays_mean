@@ -1,20 +1,27 @@
-#scatterplot circle.bubble {
+.scatterplot text {
+	color: #4a4a4a;
+	font-family: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.scatterplot circle.bubble {
 	fill: orange;
 	stroke: #fff;
 	stroke-width: 1;
 }
 
-#scatterplot .axis path, #scatterplot .axis line {
+.scatterplot .axis path, .scatterplot .axis line {
 	fill: none;
 	stroke: #c9c9c9;
 	stroke-width: 1px;
 }
 
-#scatterplot .axis text {
+.scatterplot .axis text {
 	fill: #c9c9c9;
 }
 
-#scatterplot .label {
+.scatterplot .label text {
 	text-transform: uppercase;
-	font-size: 1.5em;
+	fill: #4a4a4a;
+	font-weight: 600;
+	font-size: 16px;
 }

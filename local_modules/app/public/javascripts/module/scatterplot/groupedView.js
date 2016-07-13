@@ -159,10 +159,34 @@ scatterplot.view.grouped.prototype.render = function(data) {
  * @override
  */
 scatterplot.view.grouped.prototype.showTooltip = function(bubble, data) {
-
+    /*
+     * Stash reference to the chart.
+     */
     var chart = this._chart;
-
-    this._tooltip.setContent(data.density)
+    /*
+     * Get axes ticks values.
+     */
+    var xTicks = chart._xAxis.tickValues();
+    var yTicks = chart._yAxis.tickValues();
+    /*
+     * Evaluate intervals depending on data provided. Remove spaces.
+     */
+    var xInterval = String(((data.i - 1) in xTicks ? d3.round(xTicks[data.i - 1], 1) : 0) + ' - ' + d3.round(xTicks[data.i], 1))
+        .replace(new RegExp(' ', 'g'), '');
+    var yInterval = String(((yTicks.length - data.j - 2) in yTicks ? d3.round(yTicks[yTicks.length - data.j - 2], 1) : 0) + ' - ' + d3.round(yTicks[yTicks.length - data.j - 1], 1))
+        .replace(new RegExp(' ', 'g'), '');
+    /*
+     * Show tooltip.
+     */
+    this._tooltip.setContent(
+        '<div class="scatterplot-tooltip-container">' +
+            '<div class="scatterplot-tooltip-title">' +
+                '<div>X: ' + xInterval + ' ' + chart._xLabel.replace('_', ' ') + '</div>' +
+                '<div>Y: ' + yInterval + ' ' + chart._yLabel.replace('_', ' ') + '</div>' +
+            '</div>' +
+            '<div class="scatterplot-tooltip-content">' + data.density + ' Characters</div>' +
+        '</div>')
+        .setPosition('top')
         .setOffset(chart._radius / 2)
         .show(bubble);
 

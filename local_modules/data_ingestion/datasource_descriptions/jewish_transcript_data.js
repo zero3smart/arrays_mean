@@ -29,7 +29,33 @@ exports.Descriptions =
                     opts: {
                         format: "YYYY-MM-DD" // e.g. "2009-03-21"
                     }
-                }
+                },
+                'Date modified': {
+                    do: import_datatypes.Coercion_ops.ToDate,
+                    opts: {
+                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
+                    }
+                },
+
+                'Decade': {
+                    do: import_datatypes.Coercion_ops.ToStringTrim
+                },
+                'Catalog Title': {
+                    do: import_datatypes.Coercion_ops.ToStringTrim
+                },
+                'LCCN': {
+                    do: import_datatypes.Coercion_ops.ToStringTrim
+                },
+
+                /*'Pages': {
+                    do: import_datatypes.Coercion_ops.ToInteger
+                },
+                'Issue': {
+                    do: import_datatypes.Coercion_ops.ToInteger
+                },
+                'Volume': {
+                    do: import_datatypes.Coercion_ops.ToInteger
+                }*/
             },
             fe_listed: true,
             fe_displayTitleOverrides: {}, // this is needed to not through an error
@@ -48,6 +74,7 @@ exports.Descriptions =
                 gallery: true,
                 choropleth: false,
                 chart: true,
+                scatterplot: true,
                 timeline: true
             },
             fe_excludeFields:
@@ -82,42 +109,41 @@ exports.Descriptions =
                     "Pages_CONTENTdm file path"
 
                 ],
-
             fe_displayTitleOverrides:
             { // these are to be tuples - the values must be unique as well
 
             },
             fe_filters_fabricatedFilters:
-                [
-                    {
-                        title: "Image",
-                        choices: [
-                            {
-                                title: "Has image",
-                                $match: {
-                                    "rowParams.thumb_large": {
-                                        $exists: true,
-                                        $nin: [ "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg", null ]
-                                    }
+            [
+                {
+                    title: "Image",
+                    choices: [
+                        {
+                            title: "Has image",
+                            $match: {
+                                "rowParams.CONTENTdm file path": {
+                                    $exists: true,
+                                    $nin: [ "", null ]
                                 }
                             }
-                        ]
-                    },
-                    {
-                        title: "Description",
-                        choices: [
-                            {
-                                title: "Has description",
-                                $match: {
-                                    "rowParams.description": {
-                                        $exists: true,
-                                        $nin: [ "", null ]
-                                    }
+                        }
+                    ]
+                },
+                {
+                    title: "Description",
+                    choices: [
+                        {
+                            title: "Has description",
+                            $match: {
+                                "rowParams.description": {
+                                    $exists: true,
+                                    $nin: [ "", null ]
                                 }
                             }
-                        ]
-                    }
-                ],
+                        }
+                    ]
+                }
+            ],
             fe_filters_valuesToExcludeByOriginalKey:
             {
                 _all: [ "", null ]
@@ -129,45 +155,90 @@ exports.Descriptions =
                 "Image": [ "Has image" ]
             },
             fe_filters_fieldsNotAvailable:
-                [
-                    "events_available",
-                    "series_available",
-                    "stories_available",
-                    "comics_available",
-                    "description",
-                    "name",
-                ],
+            [
+                "Title",
+                "Identifier",
+                "Description",
+                "Subjects",
+                "Creator",
+                "Neighborhood",
+                "Date Labeled",
+                "Publisher",
+                "Publisher Location (NDNP)",
+                "Edition Label",
+                "Notes",
+                "Directory Name",
+                "Title [NDNP]",
+                "Language",
+                "Source",
+                "Digital Tech",
+                "Rights and Reproduction",
+                "Collection",
+                "Contributing Institution"
+            ],
             //
             //
-            fe_chart_defaultGroupByColumnName_humanReadable: "Comics",
+            fe_chart_defaultGroupByColumnName_humanReadable: "Decade",
             fe_chart_fieldsNotAvailableAsGroupByColumns:
-                [
-                    "name",
-                    "description",
-                ],
+            [
+                "Title",
+                "Identifier",
+                "Subjects",
+                "Creator",
+                "Date Labeled",
+                "Publisher",
+                "Publisher Location (NDNP)",
+                "Collection",
+                "Contributing Institution",
+                "Rights and Reproduction",
+                "Source",
+                "Digital Tech",
+                "Language",
+                "Transcript",
+                "Title [NDNP]",
+                "OCLC number"
+            ],
             fe_chart_valuesToExcludeByOriginalKey:
             {
                 _all: [ "", null, "NULL", "(not specified)", "NA" ],
             },
             //
             //
-            fe_timeline_defaultGroupByColumnName_humanReadable: "Decade",
+            fe_timeline_defaultGroupByColumnName_humanReadable: "Year",
             fe_timeline_durationsAvailableForGroupBy:
-                [
-                    "Decade",
-                    "Year",
-                    "Month",
-                    "Day"
-                ],
-            fe_timeline_defaultSortByColumnName_humanReadable: "Last Modified",
+            [
+                "Decade",
+                "Year",
+                "Month",
+                "Day"
+            ],
+            fe_timeline_defaultSortByColumnName_humanReadable: "Date",
             fe_timeline_fieldsNotAvailableAsSortByColumns:
-                [
-                    "name",
-                    "description",
-                    "Comics",
-                    "Series",
-                    "Events"
-                ],
+            [
+                "Title",
+                "Catalog Title",
+                "Description",
+                "Subjects",
+                "Creator",
+                "Date Labeled",
+                "Decade",
+                "Publisher",
+                "Publisher Location (NDNP)",
+                "Volume",
+                "Issue",
+                "Physical Measurements",
+                "Collection",
+                "Contributing Institution",
+                "Rights and Reproduction",
+                "Source",
+                "Digital Tech",
+                "Language",
+                "Transcript",
+                "Title [NDNP]",
+                "LCCN",
+                "Pages",
+                "OCLC number"
+            ],
             //
             //
             afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
