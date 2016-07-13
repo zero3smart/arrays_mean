@@ -1469,6 +1469,7 @@
                 //
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
+                brandColor: dataSourceDescription.brandColor,
                 default_filterJSON: default_filterJSON,
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
                 //
