@@ -8,7 +8,7 @@ var import_processing = require('../import_processing');
 exports.Descriptions =
     [
         {
-            filename: "Jewish_Transcript_Data1.tsv",
+            filename: "Jewish_Transcript_Data.tsv",
             fileEncoding: "utf8", // default
             uid: "jewish_transcript_data",
             importRevision: 1,

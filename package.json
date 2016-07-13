@@ -19,6 +19,7 @@
     "compression": "^1.6.1",
     "csv-parse": "^1.0.2",
     "dotenv": "^2.0.0",
+    "event-stream": "^3.3.3",
     "express": "^4.13.4",
     "express-form": "^0.12.4",
     "express-nunjucks": "^1.0.0",
