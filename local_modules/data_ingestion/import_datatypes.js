@@ -2,7 +2,8 @@
 
 module.exports.DataSource_formats = 
 {
-    CSV: "csv"
+    CSV: "csv",
+    TSV: "tsv"
 };
 
 // See "import_MVP_DB_seed" for example of how to use all this
