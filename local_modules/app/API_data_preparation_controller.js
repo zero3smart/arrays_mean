@@ -1162,8 +1162,8 @@
                                 ]}
                             ]
                         },
-                        startDate: { $first: "$" + "rowParams." + sortBy_realColumnName },
-                        endDate: { $last: "$" + "rowParams." + sortBy_realColumnName },
+                        startDate: { $min: "$" + "rowParams." + sortBy_realColumnName },
+                        endDate: { $max: "$" + "rowParams." + sortBy_realColumnName },
                         total: { $sum: 1 }, // the count
                         results: { $push: "$$ROOT" }
                    }
