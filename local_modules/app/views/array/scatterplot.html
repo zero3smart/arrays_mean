@@ -35,30 +35,28 @@
                                     <div class="sort-bar clearfix">
 
                                         <nav class="pull-left" role="navigation">
-
-                                            <div class="dropdown sort-control">
-                                                <a class="btn dropdown-toggle dropdown-toggle-button ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    X-Axis <span class="sort-criteria color-brand-hover x-axis-field">{{ xField | replace(r/_/g, ' ') }}</span>
-                                                </a>
-                                                {% if renderableFields | length %}
-                                                <ul class="dropdown-menu" aria-labelledby="type">
-                                                    {% for colName in renderableFields %}
-                                                    <!-- li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li -->
-                                                    <li class="background-color-brand-hover"><a href="#" data-axis="x" data-field="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
-                                                    {% endfor %}
-                                                </ul>
-                                                {% endif %}
-                                            </div>
-
                                             <div class="dropdown sort-control">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                                     Y-Axis <span class="sort-criteria color-brand-hover y-axis-field">{{ yField | replace(r/_/g, ' ') }}</span>
                                                 </a>
                                                 {% if renderableFields | length %}
-                                                <ul class="dropdown-menu" aria-labelledby="type">
+                                                <ul class="dropdown-menu axis-control" aria-labelledby="type">
                                                     {% for colName in renderableFields %}
                                                     <!-- li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li -->
                                                     <li class="background-color-brand-hover"><a href="#" data-axis="y" data-field="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                                {% endif %}
+                                            </div>
+                                            <div class="dropdown sort-control">
+                                                <a class="btn dropdown-toggle dropdown-toggle-button ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    X-Axis <span class="sort-criteria color-brand-hover x-axis-field">{{ xField | replace(r/_/g, ' ') }}</span>
+                                                </a>
+                                                {% if renderableFields | length %}
+                                                <ul class="dropdown-menu axis-control" aria-labelledby="type">
+                                                    {% for colName in renderableFields %}
+                                                    <!-- li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li -->
+                                                    <li class="background-color-brand-hover"><a href="#" data-axis="x" data-field="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
                                                     {% endfor %}
                                                 </ul>
                                                 {% endif %}
@@ -174,7 +172,7 @@
         .render('#scatterplot');
 
         // Set up axis fields dropdown click handler.
-        jQuery('nav.pull-left ul.dropdown-menu a').click(function(e) {
+        jQuery('ul.axis-control a').click(function(e) {
             // Get item text.
             var text = this.innerText;
             // Get item field.
