@@ -155,7 +155,7 @@
                                                 {% for group in groupedResults %}
                                                     {% if group.results | length %}
                                                         <li class="timeline-group">
-                                                            <span class="timeline-group-label">{{ group.startDate | dateFormat(groupByDateFormat) }}{% if group.startDate | dateFormat('X') != group.endDate | dateFormat('X') %}&ndash;{{ group.endDate | dateFormat(groupByDateFormat) }}{% endif %}</span>
+                                                            <span class="timeline-group-label">{{ group.startDate | dateFormat(groupByDateFormat) }}{% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}&ndash;{{ group.endDate | dateFormat(groupByDateFormat) }}{% endif %}</span>
                                                             <ul class="timeline-group-list">
                                                                 {% for doc in group.results %}
                                                                     {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}
