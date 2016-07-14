@@ -13,12 +13,12 @@ exports.Descriptions =
             uid: "jewish_transcript_data",
             importRevision: 1,
             format: import_datatypes.DataSource_formats.TSV,
-            title: "Jewish Transcript Data",
-            urls: [ "cdm16118.contentdm.oclc.org/cdm/landingpage/collection/p16118coll10" ],
+            title: "The Jewish Transcript",
+            urls: [ "http://cdm16118.contentdm.oclc.org/cdm/landingpage/collection/p16118coll10" ],
             description: "Founded by Herman Horowitz in 1924, The Jewish Transcript documents the daily life of the Jewish community in Seattle as well as local and international events from the 1920's to present day.",
             raw_rowObjects_coercionScheme:
             {
-                Date: {
+                'Date': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
                         format: "YYYY-MM-DD" // e.g. "2009-03-21"
@@ -174,7 +174,10 @@ exports.Descriptions =
                     "Digital Tech",
                     "Rights and Reproduction",
                     "Collection",
-                    "Contributing Institution"
+                    "Contributing Institution",
+                    "Pages_Transcript",
+                    "File Name",
+                    "Transcript"
                 ],
             //
             //
@@ -196,7 +199,10 @@ exports.Descriptions =
                     "Language",
                     "Transcript",
                     "Title [NDNP]",
-                    "OCLC number"
+                    "OCLC number",
+                    "Pages_Transcript",
+                    "Directory Name",
+                    "File Name"
                 ],
             fe_chart_valuesToExcludeByOriginalKey:
             {
@@ -237,7 +243,10 @@ exports.Descriptions =
                     "Title [NDNP]",
                     "LCCN",
                     "Pages",
-                    "OCLC number"
+                    "OCLC number",
+                    "Directory Name",
+                    "File Name",
+                    "Pages_Transcript"
                 ],
             //
             //
