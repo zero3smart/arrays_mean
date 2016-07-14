@@ -192,7 +192,6 @@
 
         // Hide axis control item.
         function hideAxisItem(axis, item) {
-            console.log(axis, item);
             jQuery('ul.' + axis + '-axis-control li').each(function() {
                 if (this.innerText === item) {
                     this.style.display = 'none';

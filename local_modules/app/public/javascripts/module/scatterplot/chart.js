@@ -163,11 +163,17 @@ scatterplot.chart = function(data) {
         left : 45
     };
     /**
+     * View treshold.
+     * @private
+     * @member {Integer}
+     */
+    this._threshold = 500;
+    /**
      * Chart view.
      * @private
      * @member {scatterplot.view}
      */
-    this._view = new scatterplot.view.factory(this, 500);
+    this._view = new scatterplot.view.factory(this, this._threshold);
     /**
      * Current data filer.
      * @private
@@ -472,14 +478,18 @@ scatterplot.chart.prototype.update = function(data) {
     /*
      * Filter data.
      */
-//    console.log(this._filter);
     if (this._filter.length && this._filter[1] !== '') {
-//        console.log(this._filter);
         data = data.filter(function(d) {
             return d[self._filter[0]].toLowerCase().indexOf(self._filter[1]) >= 0;
         });
     }
-//    console.log(data.length);
+    /*
+     * Check current view actuality.
+     */
+    if (data.length > this._threshold && this._view instanceof scatterplot.view.standard ||
+        data.length <= this._threshold && this._view instanceof scatterplot.view.grouped) {
+        this._view = new scatterplot.view.factory(this, this._threshold, data);
+    }
     /*
      * Render chart content.
      */
