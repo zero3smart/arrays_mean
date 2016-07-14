@@ -92,7 +92,9 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     var importUID = persistableObjectTemplate.importUID;
     
     // Bulk for performance at volume
-    raw_row_objects_controller.UpsertWithManyPersistableObjectTemplates(parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, persistableObjectTemplate_primaryKey, persistableObjectTemplate.title, function(err, result)
+    //raw_row_objects_controller.UpsertWithManyPersistableObjectTemplates
+    raw_row_objects_controller.InsertManyPersistableObjectTemplates
+    (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, persistableObjectTemplate_primaryKey, persistableObjectTemplate.title, function(err, result)
     {
         if (err) {
             winston.error("❌  Error: An error while saving raw row objects: ", err)

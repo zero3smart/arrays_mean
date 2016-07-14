@@ -62,6 +62,7 @@ exports.Descriptions =
                         by: {
                             doing: import_processing.Ops.Join,
                             matchFn: import_processing.MatchFns.LocalContainsForeignString, // look for Demonym in Nationality, rather than Nationality in Demonym
+                            matchRegex: import_processing.MatchRegexs.RegexLocalContainsForeignString,
                             findingMatchOnFields: [ "Demonym 1", "Demonym 2", "Demonym 3" ],
                             ofOtherRawSrcUID: "countries_to_demonyms",
                             andOtherRawSrcImportRevision: 1,
@@ -77,6 +78,7 @@ exports.Descriptions =
                         by: {
                             doing: import_processing.Ops.Join,
                             matchFn: import_processing.MatchFns.LocalEqualsForeignString,
+                            matchRegex: import_processing.MatchRegexs.RegexLocalEqualsForeignString,
                             findingMatchOnFields: [ "Artist" ],
                             ofOtherRawSrcUID: "moma_artworks",
                             andOtherRawSrcImportRevision: 2,
@@ -391,6 +393,7 @@ exports.Descriptions =
                         by: {
                             doing: import_processing.Ops.Join,
                             matchFn: import_processing.MatchFns.LocalEqualsForeignString,
+                            //matchRegex: import_processing.MatchRegexs.RegexLocalEqualsForeignString,
                             findingMatchOnFields: [ "DisplayName" ],
                             ofOtherRawSrcUID: "moma_artists",
                             andOtherRawSrcImportRevision: 1,
@@ -404,6 +407,7 @@ exports.Descriptions =
                         by: {
                             doing: import_processing.Ops.Join,
                             matchFn: import_processing.MatchFns.LocalContainsForeignString, // look for Demonym in ArtistBio, rather than ArtistBio in Demonym
+                            //matchRegex: import_processing.MatchRegexs.RegexLocalContainsForeignString,
                             findingMatchOnFields: [ "Demonym 1", "Demonym 2", "Demonym 3" ],
                             ofOtherRawSrcUID: "countries_to_demonyms",
                             andOtherRawSrcImportRevision: 1,

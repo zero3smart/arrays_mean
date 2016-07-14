@@ -16,7 +16,9 @@
     ////////////////////////////////////////////////////////////////////////////////
     // Constants/Caches
     //
-    var pageSize = 250;
+    var pageSize = 100;
+    var timelineGroupSize = 20;
+    var timelineGroups = pageSize / timelineGroupSize;
     //
     // Prepare country geo data cache
     var __countries_geo_json_str = fs.readFileSync(__dirname + '/resources/countries.geo.json', 'utf8');
@@ -284,7 +286,7 @@
                 //
                 _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
             };
-            processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).exec(doneFn);
+            processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         }
         function _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
         {
@@ -1018,13 +1020,14 @@
         //
         var page = urlQuery.page;
         var pageNumber = page ? page : 1;
-        var skipNResults = pageSize * (Math.max(pageNumber, 1) - 1);
-        var limitToNResults = pageSize;
+        var skipNResults = timelineGroups * (Math.max(pageNumber, 1) - 1);
+        var limitToNResults = timelineGroups;
         //
         var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
         var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_timeline_defaultGroupByColumnName_humanReadable;
         var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable, dataSourceDescription);
-        var groupedResultsLimit = 20;
+        var groupedResultsLimit = timelineGroupSize;
+        var groupsLimit = timelineGroups;
         var groupByDateFormat;
         //
         var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
@@ -1059,6 +1062,57 @@
         var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
                           && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
         //
+        //
+        var wholeFilteredSet_aggregationOperators = [];
+        if (isSearchActive) {
+            var _orErrDesc = _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+            if (typeof _orErrDesc.err !== 'undefined') {
+                callback(_orErrDesc.err, null);
+
+                return;
+            }
+            wholeFilteredSet_aggregationOperators.push(_orErrDesc.matchOp);
+        }
+        if (isFilterActive) { // rules out undefined filterJSON
+            var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, "$and");
+            if (typeof _orErrDesc.err !== 'undefined') {
+                callback(_orErrDesc.err, null);
+
+                return;
+            }
+            wholeFilteredSet_aggregationOperators.push(_orErrDesc.matchOp);
+        }
+
+        var groupBySortFieldPath = "results.rowParams." + sortBy_realColumnName
+        var groupByColumnName = groupBy ? groupBy : defaultGroupByColumnName_humanReadable;
+        var groupByDuration;
+
+        switch(groupByColumnName) {
+            case 'Decade':
+                groupByDuration = moment.duration(10, 'years').asMilliseconds();
+                groupByDateFormat = "YYYY";
+                break;
+
+            case 'Year':
+                groupByDuration = moment.duration(1, 'years').asMilliseconds();
+                groupByDateFormat = "YYYY";
+                break;
+
+            case 'Month':
+                groupByDuration = moment.duration(1, 'months').asMilliseconds();
+                groupByDateFormat = "MMMM YYYY";
+                break;
+
+            case 'Day':
+                groupByDuration = moment.duration(1, 'days').asMilliseconds();
+                groupByDateFormat = "MMMM Do YYYY";
+                break;
+
+            default:
+                groupByDuration = moment.duration(1, 'years').asMilliseconds();
+                groupByDateFormat = "YYYY";
+        }
+
         // Now kick off the query work
         self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
         {
@@ -1096,41 +1150,47 @@
                     return;
                 }
                 //
-                _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName);
+                _proceedTo_countWholeSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName);
             });
         }
-        function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
+        function _proceedTo_countWholeSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
         {
-            var groupBySortFieldPath = "results.rowParams." + sortBy_realColumnName
-            var groupByColumnName = groupBy ? groupBy : defaultGroupByColumnName_humanReadable;
-            var groupByDuration;
+            var countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
+                { // Count
+                    $group: {
+                        // _id: 1,
+                        _id: { 
+                            "$subtract": [
+                                { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("0000-01-01") ] },
+                                { "$mod": [
+                                    { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("0000-01-01") ] },
+                                    groupByDuration
+                                ]}
+                            ]
+                        },
+                        count: { $sum: 1 }
+                   }
+                }
+            ]);
+            var doneFn = function(err, results)
+            {
+                if (err) {
+                    callback(err, null);
 
-            switch(groupByColumnName) {
-                case 'Decade':
-                    groupByDuration = moment.duration(10, 'years').asMilliseconds();
-                    groupByDateFormat = "YYYY";
-                    break;
-
-                case 'Year':
-                    groupByDuration = moment.duration(1, 'years').asMilliseconds();
-                    groupByDateFormat = "YYYY";
-                    break;
-
-                case 'Month':
-                    groupByDuration = moment.duration(1, 'months').asMilliseconds();
-                    groupByDateFormat = "MMMM YYYY";
-                    break;
-
-                case 'Day':
-                    groupByDuration = moment.duration(1, 'days').asMilliseconds();
-                    groupByDateFormat = "MMMM Do YYYY";
-                    break;
-
-                default:
-                    groupByDuration = moment.duration(1, 'years').asMilliseconds();
-                    groupByDateFormat = "YYYY";
-            }
-
+                    return;
+                }
+                var nonpagedCount = 0;
+                if (results == undefined || results == null || results.length == 0) { // 0
+                } else {
+                    nonpagedCount = results[0].count;
+                }
+                //
+                _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
+            };
+            processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
+        }
+        function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
+        {
             
             var aggregationOperators = [];
             if (isSearchActive) {
@@ -1152,6 +1212,8 @@
                 aggregationOperators.push(_orErrDesc.matchOp);
             }
 
+            var sort = {};
+            sort[groupBySortFieldPath] = -1;
             aggregationOperators = aggregationOperators.concat(
             [
                 { $unwind: "$" + "rowParams." + sortBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
@@ -1182,11 +1244,11 @@
                     }
                 },
                 {
-                    $sort: { [groupBySortFieldPath] : -1 }
+                    $sort: sort
                 },
-                // {
-                //     $limit : 100 // so the chart can actually handle the number
-                // }
+                // Pagination
+                { $skip: skipNResults },
+                { $limit: groupsLimit }
             ]);
             //
             var doneFn = function(err, groupedResults)
@@ -1199,11 +1261,11 @@
                 if (groupedResults == undefined || groupedResults == null) {
                     groupedResults = [];
                 }
-                _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults);
+                _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, groupedResults);
             };
             processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         }
-        function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
+        function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, groupedResults)
         {
             var err = null;
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
@@ -1273,6 +1335,11 @@
                 sourceDocURL: sourceDocURL,
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
                 //
+                pageSize: pageSize < nonpagedCount ? pageSize : nonpagedCount,
+                onPageNum: pageNumber,
+                numPages: Math.ceil(nonpagedCount / pageSize),
+                nonpagedCount: nonpagedCount,
+                //
                 fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
                 humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
                 //
@@ -1308,8 +1375,10 @@
                 //
                 routePath_base: routePath_base,
                 routePath_withoutFilter: routePath_withoutFilter,
+                routePath_withoutPage: routePath_withoutPage,
                 routePath_withoutGroupBy: routePath_withoutGroupBy,
                 routePath_withoutSortBy: routePath_withoutSortBy,
+                routePath_withoutSortDir: routePath_withoutSortDir,
                 //
                 urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
                 urlQuery_forViewAllInDuration: urlQuery_forViewAllInDuration

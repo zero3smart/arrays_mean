@@ -387,7 +387,6 @@ exports.Descriptions =
                     "comics_items_19_name",
                     "comics_items_20_name",
                 ];
-                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics_length = eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics.length;
                 //
                 //
                 eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Series = "Series";
@@ -415,7 +414,6 @@ exports.Descriptions =
                     "series_items_19_name",
                     "series_items_20_name",
                 ];
-                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series_length = eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series.length;
                 //
                 //
                 eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Events = "Events";
@@ -443,7 +441,6 @@ exports.Descriptions =
                     "events_items_19_name",
                     "events_items_20_name",
                 ];
-                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events_length = eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events.length;
                 //
                 //
                 // generate a bulk operation for our merge field values operations that we're going to do
@@ -461,14 +458,14 @@ exports.Descriptions =
                 {
                     // Use this space to perform derivations and add update operations to batch operation in eachCtx
                     //
-                    mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Comics, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics_length);
-                    mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Series, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series_length);
-                    mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Events, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events_length);
+                    mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Comics, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics);
+                    mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Series, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series);
+                    mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Events, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events);
                     //
-                    function mergeManyFieldsIntoOne(generateFieldNamed, withValuesInFieldsNamed, withValuesInFieldsNamed_length) {
+                    function mergeManyFieldsIntoOne(generateFieldNamed, withValuesInFieldsNamed) {
                         var generatedArray = [];
                         //
-                        for (var i = 0 ; i < withValuesInFieldsNamed_length; i++) {
+                        for (var i = 0 ; i < withValuesInFieldsNamed.length; i++) {
                             var fieldName = withValuesInFieldsNamed[i];
                             var fieldValue = rowDoc["rowParams"][fieldName];
                             if (typeof fieldValue !== 'undefined' && fieldValue !== null && fieldValue !== "") {

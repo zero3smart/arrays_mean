@@ -5685,6 +5685,11 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 	border-radius: 4px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
+.timeline-link {
+	display: block;
+	width: 100%;
+	padding-bottom: 100%;
+}
 .timeline-image {
 	width: 100%;
 	height: auto;
