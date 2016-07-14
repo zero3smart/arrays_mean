@@ -167,7 +167,7 @@ scatterplot.chart = function(data) {
      * @private
      * @member {Integer}
      */
-    this._threshold = 500;
+    this._threshold = 300;
     /**
      * Chart view.
      * @private

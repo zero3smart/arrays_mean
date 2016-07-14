@@ -69,7 +69,15 @@ scatterplot.view.grouped.prototype._prepareData = function(data) {
                 radius : radiusScale(density)
             };
         }));
-    }, []);
+    }, []).sort(function(a, b) {
+        if (a.density < b.density) {
+            return 1;
+        } else if (a.density > b.density) {
+            return -1;
+        } else {
+            return 0;
+        }
+    });
 };
 
 
@@ -99,6 +107,7 @@ scatterplot.view.grouped.prototype.render = function(data) {
      * Select bubbles.
      */
     data = this._prepareData(data);
+    console.log(data);
     /*
      * Define chart columns and rows amount.
      */
