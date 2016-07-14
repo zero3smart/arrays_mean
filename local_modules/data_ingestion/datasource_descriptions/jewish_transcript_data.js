@@ -108,8 +108,10 @@ exports.Descriptions =
                     "Pages_CONTENTdm number",
                     "Pages_CONTENTdm file name",
                     "Pages_CONTENTdm file path",
-                    "Transcript"
-
+                    "Transcript",
+                    "Directory Name",
+                    "Digital Tech",
+                    "Language"
                 ],
             fe_displayTitleOverrides:
             {
