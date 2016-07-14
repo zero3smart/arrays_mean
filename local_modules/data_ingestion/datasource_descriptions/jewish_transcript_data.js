@@ -106,12 +106,14 @@ exports.Descriptions =
                     "Pages_Reference URL",
                     "Pages_CONTENTdm number",
                     "Pages_CONTENTdm file name",
-                    "Pages_CONTENTdm file path"
+                    "Pages_CONTENTdm file path",
+                    "Transcript"
 
                 ],
             fe_displayTitleOverrides:
-            { // these are to be tuples - the values must be unique as well
-
+            {
+                // these are to be tuples - the values must be unique as well
+                "Pages_Transcript" : "Transcript"
             },
             fe_filters_fabricatedFilters:
                 [
