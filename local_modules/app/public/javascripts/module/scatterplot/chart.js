@@ -157,10 +157,10 @@ scatterplot.chart = function(data) {
      * @member {Object}
      */
     this._margin = {
-        top : this._radius * 2,
+        top : this._radius * 3,
         right : this._radius,
-        bottom : 40,
-        left : 45
+        bottom : this._radius * 3,
+        left : this._radius * 3
     };
     /**
      * View treshold.
@@ -416,7 +416,7 @@ scatterplot.chart.prototype.update = function(data) {
     /*
      * Update x axis.
      */
-    var xBinLength = 200;
+    var xBinLength = 150;
     var xBinsAmount = Math.floor(this._innerWidth / xBinLength);
     xBinLength = this._innerWidth / xBinsAmount;
 
@@ -424,6 +424,8 @@ scatterplot.chart.prototype.update = function(data) {
     for (var i = xBinLength; i <= this._innerWidth; i += xBinLength) {
         xTicks.push(this._xScale.invert(i));
     }
+
+    xTicks[xTicks.length - 1] = this._xDomain[this._xDomain.length - 1];
 
     this._xAxis.ticks(xTicks.length)
         .tickValues(xTicks)
@@ -441,6 +443,8 @@ scatterplot.chart.prototype.update = function(data) {
     for (var i = this._innerHeight - yBinLength; i >= 0; i -= yBinLength) {
         yTicks.push(this._yScale.invert(i));
     }
+
+    yTicks[yTicks.length - 1] = this._yDomain[this._yDomain.length - 1];
 
     this._yAxis.ticks(yTicks.length)
         .tickValues(yTicks)

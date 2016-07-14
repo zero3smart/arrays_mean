@@ -26,6 +26,11 @@ scatterplot.view.grouped.prototype._prepareData = function(data) {
     var xTicks = chart._xAxis.tickValues();
     var yTicks = chart._yAxis.tickValues();
     /*
+     * Calculate axes intervals width.
+     */
+    var xStep = chart._innerWidth / xTicks.length;
+    var yStep = chart._innerHeight / yTicks.length;
+    /*
      * Generate density matrix filled with values.
      * The matrix rows and columns equals to the chart's rows and columns number.
      */
@@ -54,9 +59,10 @@ scatterplot.view.grouped.prototype._prepareData = function(data) {
     /*
      * Create radius scale function.
      */
+    var maxRadius = Math.min(xStep, yStep) / 2 + 20 + Math.min(chart._margin.top, chart._margin.right, chart._margin.bottom, chart._margin.left);
     var radiusScale = d3.scale.linear()
         .domain([0, 1, data.length])
-        .range([0, chart._radius, Math.min(this._chart._innerWidth, this._chart._innerHeight) / 2]);
+        .range([0, chart._radius, maxRadius]);
     /*
      * Return chart actual data.
      */
@@ -107,7 +113,6 @@ scatterplot.view.grouped.prototype.render = function(data) {
      * Select bubbles.
      */
     data = this._prepareData(data);
-    console.log(data);
     /*
      * Define chart columns and rows amount.
      */
