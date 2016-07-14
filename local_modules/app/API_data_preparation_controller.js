@@ -90,6 +90,7 @@
                     key: source_pKey,
                     sourceDoc: doc,
                     title: dataSourceDescription.title,
+                    brandColor: dataSourceDescription.brandColor,
                     description: dataSourceDescription.description,
                     urls: dataSourceDescription.urls,
                     arrayListed: default_listed,
@@ -389,6 +390,7 @@
                 //
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
+                brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
@@ -699,6 +701,7 @@
                 //
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
+                brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: sourceDocURL,
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
@@ -948,6 +951,7 @@
                 //
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
+                brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: sourceDocURL,
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
@@ -1326,6 +1330,7 @@
                 //
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
+                brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: sourceDocURL,
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
@@ -1533,6 +1538,7 @@
                 //
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
+                brandColor: dataSourceDescription.brandColor,
                 default_filterJSON: default_filterJSON,
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
                 //
@@ -1656,6 +1662,7 @@
                     //
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
+                    brandColor: dataSourceDescription.brandColor,
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
@@ -1887,6 +1894,7 @@
                 //
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
+                brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: sourceDocURL,
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
