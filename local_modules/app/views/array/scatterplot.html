@@ -104,8 +104,18 @@
                             </div><!-- .row -->
                         </div><!-- .container-fluid -->
 
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-sm-12">
+
+                                    <div id="scatterplot" class="scatterplot"></div>
+
+                                </div>
+                            </div><!-- .row -->
+                        </div><!-- .container-fluid -->
+
                         {% if isFilterActive %}
-                        <div class="filter-bar filter-bar-fixed-bottom">
+                        <div class="filter-bar">
                             <div class="container-fluid">
                                 {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
                                 {% for filterCol, filterVals in filterObj %}
@@ -120,16 +130,6 @@
                             </div>
                         </div>
                         {% endif %}
-
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-sm-12">
-
-                                    <div id="scatterplot" class="scatterplot"></div>
-
-                                </div>
-                            </div><!-- .row -->
-                        </div><!-- .container-fluid -->
 
                     </div><!-- .array-content -->
 
