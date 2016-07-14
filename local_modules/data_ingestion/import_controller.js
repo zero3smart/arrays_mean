@@ -215,6 +215,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     var columnNames = [];
     var parsed_rowObjectsById = {};
     var parsed_orderedRowObjectPrimaryKeys = [];
+    var cachedLines = '';
 
     var parser = function(columnNamesAndThenRowObject)
     {
@@ -277,9 +278,14 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
 
                 lineNr += 1;
 
-                parse(line, {delimiter: ',', relax: true, skip_empty_lines: true}, function(err, output) {
-                    if (err) return fn(err);
-                    if (!output || output.length == 0) return readStream.resume();
+                parse(cachedLines + line, {delimiter: ',', relax: true, skip_empty_lines: true}, function(err, output) {
+                    if (err || !output || output.length == 0) {
+                        //winston.info("❌  Error encountered during saving the line " + lineNr + " of document: ", sourceDocumentTitle);
+                        cachedLines = cachedLines + line;
+                        return readStream.resume();
+                    }
+
+                    cachedLines = '';
 
                     parser(output[0]);
 
@@ -356,6 +362,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
     var columnNames = [];
     var parsed_rowObjectsById = {};
     var parsed_orderedRowObjectPrimaryKeys = [];
+    var cachedLines = '';
 
     var parser = function(columnNamesAndThenRowObject)
     {
@@ -418,9 +425,14 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
 
                 lineNr += 1;
 
-                parse(line, {delimiter: '\t', relax: true, skip_empty_lines: true}, function(err, output) {
-                    if (err) return fn(err);
-                    if (!output || output.length == 0) return readStream.resume();
+                parse(cachedLines + line, {delimiter: '\t', relax: true, skip_empty_lines: true}, function(err, output) {
+                    if (err || !output || output.length == 0) {
+                        //winston.info("❌  Error encountered during saving the line " + lineNr + " of document: ", sourceDocumentTitle);
+                        cachedLines = cachedLines + line;
+                        return readStream.resume();
+                    }
+
+                    cachedLines = '';
 
                     parser(output[0]);
 
