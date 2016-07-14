@@ -180,6 +180,14 @@ scatterplot.chart = function(data) {
      * @member {String[]}
      */
     this._filter = [];
+    /*
+     * Set up window resize event handler.
+     */
+    var self = this;
+    window.onresize = function() {
+        self.resize();
+        self.update();
+    };
 }
 
 
