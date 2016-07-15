@@ -5615,7 +5615,7 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 /* @end Timeline Layout */
 /* @group Timeline */
 .timeline-list {
-	margin: 20px -5px 100px;
+	margin: 20px -5px 10px;
 	padding-left: 0;
 	list-style-type: none;
 }
