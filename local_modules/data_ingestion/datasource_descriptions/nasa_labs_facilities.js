@@ -50,7 +50,7 @@ exports.Descriptions =
                 choropleth: false,
                 chart: true,
                 scatterplot: false,
-                timeline: false
+                timeline: true
             },
             fe_excludeFields:
                 [
@@ -113,6 +113,35 @@ exports.Descriptions =
                     "Contact",
                     "Mail Stop",
                     "Phone"
-                ]
+                ],
+            //
+            //
+            fe_timeline_defaultGroupByColumnName_humanReadable: "Year",
+            fe_timeline_durationsAvailableForGroupBy:
+                [
+                    "Decade",
+                    "Year",
+                    "Month",
+                    "Day"
+                ],
+            fe_timeline_defaultSortByColumnName_humanReadable: "Record Date",
+            fe_timeline_fieldsNotAvailableAsSortByColumns:
+                [
+                    "Agency",
+                    "Center",
+                    "Center Search Status",
+                    "Facility",
+                    "Occupied",
+                    "Status",
+                    "URL Link",
+                    "Address",
+                    "City",
+                    "State",
+                    "ZIP",
+                    "Country",
+                    "Contact",
+                    "Mail Stop",
+                    "Phone"
+                ],
         }
-    ]
+    ];
