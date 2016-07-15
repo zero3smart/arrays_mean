@@ -2051,26 +2051,39 @@
             var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
             var realColumnName_path = "rowParams." + realColumnName;
             var realFilterValue = filterVal; // To finalize in case of override…
-            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
-            var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
-            if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
-                var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[filterVal];
-                if (typeof overrideValue === 'undefined') {
-                    var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
-                    winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
-                 } else {
-                     realFilterValue = overrideValue;
-                 }
+            // To coercion the date field into the valid date
+            var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+            var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
+                && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+            if (!isDate) {
+                var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+                var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
+                if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
+                    var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[filterVal];
+                    if (typeof overrideValue === 'undefined') {
+                        var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
+                        winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
+                    } else {
+                        realFilterValue = overrideValue;
+                    }
+                }
+                matchCondition = {};
+
+                // escape Mongo reserved characters in Mongo
+                realFilterValue = realFilterValue.split("(").join("\\(")
+                    .split(")").join("\\)")
+                    .split("+").join("\\+")
+                    .split("$").join("\\$");
+
+                matchCondition[realColumnName_path] = {$regex: realFilterValue, $options: "i"};
+            } else {
+                var filterDate = new Date(filterVal);
+                matchCondition = {};
+                if (!isNaN(filterDate.getTime())) { // Invalid Date
+                    realFilterValue = moment.utc(filterDate).toDate();
+                    matchCondition[realColumnName_path] = realFilterValue;
+                }
             }
-            matchCondition = { };
-
-            // escape Mongo reserved characters in Mongo
-            realFilterValue = realFilterValue.split("(").join("\\(")
-                                             .split(")").join("\\)")
-                                             .split("+").join("\\+")
-                                             .split("$").join("\\$");
-
-            matchCondition[realColumnName_path] = { $regex: realFilterValue, $options: "i" };
         }
         if (typeof matchCondition === 'undefined') {
             throw new Error("Undefined match condition");
@@ -2137,7 +2150,6 @@
     }
     //
     //
-    var moment = require('moment');
     var _defaultFormat = "MMMM Do, YYYY";
     var import_datatypes = require('../data_ingestion/import_datatypes');
     //
