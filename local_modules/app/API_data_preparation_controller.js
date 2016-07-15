@@ -1221,9 +1221,9 @@
                    $group: {
                         _id: { 
                             "$subtract": [
-                                { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("0000-01-01") ] },
+                                { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01") ] },
                                 { "$mod": [
-                                    { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("0000-01-01") ] },
+                                    { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01") ] },
                                     groupByDuration
                                 ]}
                             ]
