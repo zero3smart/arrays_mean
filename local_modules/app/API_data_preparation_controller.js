@@ -1161,14 +1161,13 @@
                         // _id: 1,
                         _id: { 
                             "$subtract": [
-                                { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("0000-01-01") ] },
+                                { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01") ] },
                                 { "$mod": [
-                                    { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("0000-01-01") ] },
+                                    { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01") ] },
                                     groupByDuration
                                 ]}
                             ]
-                        },
-                        count: { $sum: 1 }
+                        }
                    }
                 }
             ]);
@@ -1182,7 +1181,7 @@
                 var nonpagedCount = 0;
                 if (results == undefined || results == null || results.length == 0) { // 0
                 } else {
-                    nonpagedCount = results[0].count;
+                    nonpagedCount = results.length;
                 }
                 //
                 _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
@@ -1218,7 +1217,7 @@
             [
                 { $unwind: "$" + "rowParams." + sortBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
                 { // unique/grouping and summing stage
-                   $group: {
+                    $group: {
                         _id: { 
                             "$subtract": [
                                 { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01") ] },
@@ -1232,7 +1231,7 @@
                         endDate: { $max: "$" + "rowParams." + sortBy_realColumnName },
                         total: { $sum: 1 }, // the count
                         results: { $push: "$$ROOT" }
-                   }
+                    }
                 },
                 { // reformat
                     $project: {
@@ -1335,9 +1334,9 @@
                 sourceDocURL: sourceDocURL,
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
                 //
-                pageSize: pageSize < nonpagedCount ? pageSize : nonpagedCount,
+                pageSize: timelineGroups < nonpagedCount ? pageSize : nonpagedCount,
                 onPageNum: pageNumber,
-                numPages: Math.ceil(nonpagedCount / pageSize),
+                numPages: Math.ceil(nonpagedCount / timelineGroups),
                 nonpagedCount: nonpagedCount,
                 //
                 fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
