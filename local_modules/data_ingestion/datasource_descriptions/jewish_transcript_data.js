@@ -182,7 +182,10 @@ exports.Descriptions =
                     "Contributing Institution",
                     "Pages_Transcript",
                     "File Name",
-                    "Transcript"
+                    "Transcript",
+                    "Date modified",
+                    "Date created",
+                    "Date"
                 ],
             //
             //
