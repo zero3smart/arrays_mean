@@ -163,6 +163,14 @@ $(document).ready(function() {
         
         return false;
     });
+
+    /**
+     * Missing image fallback
+     */
+    $('.gallery-image, .timeline-image, .object-featured').error(function(){
+        $(this).attr('src', '/images/image-not-found.jpg');
+    });
+
 });
 
 /**
