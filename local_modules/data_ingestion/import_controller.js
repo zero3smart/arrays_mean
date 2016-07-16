@@ -216,6 +216,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     var parsed_rowObjectsById = {};
     var parsed_orderedRowObjectPrimaryKeys = [];
     var cachedLines = '';
+    var numberOfRows_inserted = 0;
 
     var parser = function(columnNamesAndThenRowObject)
     {
@@ -293,14 +294,17 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
                     if (lineNr % 1000 == 0) {
                         winston.info("🔁  Parsing " + lineNr + " rows in \"" + filename + "\"");
 
-                        var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys);
-                        stringDocumentObject.filename = filename;
-
-                        self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, function(err, record)
+                        // Bulk for performance at volume
+                        self.context.raw_row_objects_controller.InsertManyPersistableObjectTemplates
+                        (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function(err, record)
                         {
-                            if (err) return fn(err);
-                            winston.info("✅  Saved " + lineNr + " lines of document: ", record._id);
+                            if (err) {
+                                winston.error("❌  Error: An error while saving raw row objects: ", err);
+                                return fn(err);
+                            }
+                            winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
 
+                            numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
                             parsed_rowObjectsById = {};
                             parsed_orderedRowObjectPrimaryKeys = [];
 
@@ -322,20 +326,29 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
                 if (lineNr % 1000 == 0) {
 
                     winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
-                    return fn(null);
+                    var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
+                    stringDocumentObject.filename = filename;
+
+                    self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
 
                 } else {
 
-                    var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys);
-                    stringDocumentObject.filename = filename;
-
-                    self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, function(err, record)
+                    self.context.raw_row_objects_controller.InsertManyPersistableObjectTemplates
+                    (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function(err)
                     {
-                        if (err) return fn(err);
-                        winston.info("✅  Saved " + lineNr + " lines of document: ", record._id);
-                        return fn(null);
-                    });
+                        if (err) {
+                            winston.error("❌  Error: An error while saving raw row objects: ", err);
+                            return fn(err);
+                        };
+                        winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
 
+                        numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
+
+                        var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
+                        stringDocumentObject.filename = filename;
+
+                        self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
+                    });
                 }
             })
         );
@@ -363,6 +376,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
     var parsed_rowObjectsById = {};
     var parsed_orderedRowObjectPrimaryKeys = [];
     var cachedLines = '';
+    var numberOfRows_inserted = 0;
 
     var parser = function(columnNamesAndThenRowObject)
     {
@@ -440,14 +454,17 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
                     if (lineNr % 1000 == 0) {
                         winston.info("🔁  Parsing " + lineNr + " rows in \"" + filename + "\"");
 
-                        var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys);
-                        stringDocumentObject.filename = filename;
-
-                        self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, function(err, record)
+                        // Bulk for performance at volume
+                        self.context.raw_row_objects_controller.InsertManyPersistableObjectTemplates
+                        (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function(err, record)
                         {
-                            if (err) return fn(err);
-                            winston.info("✅  Saved " + lineNr + " lines of document: ", record._id);
+                            if (err) {
+                                winston.error("❌  Error: An error while saving raw row objects: ", err);
+                                return fn(err);
+                            }
+                            winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
 
+                            numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
                             parsed_rowObjectsById = {};
                             parsed_orderedRowObjectPrimaryKeys = [];
 
@@ -469,20 +486,29 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
                 if (lineNr % 1000 == 0) {
 
                     winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
-                    return fn(null);
+                    var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
+                    stringDocumentObject.filename = filename;
+
+                    self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
 
                 } else {
 
-                    var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys);
-                    stringDocumentObject.filename = filename;
-
-                    self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, function(err, record)
+                    self.context.raw_row_objects_controller.InsertManyPersistableObjectTemplates
+                    (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function(err, record)
                     {
-                        if (err) return fn(err);
-                        winston.info("✅  Saved " + lineNr + " lines of document: ", record._id);
-                        return fn(null);
-                    });
+                        if (err) {
+                            winston.error("❌  Error: An error while saving raw row objects: ", err);
+                            return fn(err);
+                        };
+                        winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
 
+                        numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
+
+                        var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
+                        stringDocumentObject.filename = filename;
+
+                        self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
+                    });
                 }
             })
         );
@@ -636,20 +662,13 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
     var dataSource_importRevision = dataSourceDescription.importRevision;    
     var dataSource_title = dataSourceDescription.title;
     //
-    var setupBefore_eachRowFn = dataSourceDescription.afterGeneratingProcessedRowObjects_setupBefore_eachRowFn;
-    // (eachCtx, cb) -> Void … cb: fn(err)
+    var eachRowFns_length = dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFns ? dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFns.length : 0;
     //
-    var eachRowFns = dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFns;
-    // [ (eachCtx, rowDoc, cb) -> Void ] … cb: fn(err)
-    //
-    var afterIterating_eachRowFn = dataSourceDescription.afterGeneratingProcessedRowObjects_afterIterating_eachRowFn;
-    // (erreachCtx, cb) -> Void … cb: fn(err)
-    //
-    winston.info("🔁  Performing " + (eachRowFns?eachRowFns.length:0) + " each-row operations for \"" + dataSource_title + "\"");
+    winston.info("🔁  Performing " + eachRowFns_length + " each-row operations for \"" + dataSource_title + "\"");
     //    
     var eachCtx = {};
-    if (setupBefore_eachRowFn != null && typeof setupBefore_eachRowFn !== 'undefined') {
-        setupBefore_eachRowFn(self.context, eachCtx, function(err)
+    if (dataSourceDescription.afterGeneratingProcessedRowObjects_setupBefore_eachRowFn) {
+        dataSourceDescription.afterGeneratingProcessedRowObjects_setupBefore_eachRowFn(self.context, eachCtx, function(err)
         {
             if (err) {
                 winston.error("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");
@@ -664,14 +683,14 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
     }
     function continueToIterations() 
     {
-        if (eachRowFns == null || typeof eachRowFns === 'undefined' || eachRowFns.length == 0) {
+        if (eachRowFns_length == 0) {
             continueToAfterIterating();
         } else {
             self.context.processed_row_objects_controller.EnumerateProcessedDataset(dataSource_uid, 
                                                                                     dataSource_importRevision,
             function(doc, eachCb)
             {
-                async.eachSeries(eachRowFns, function(eachRowFn, cb)
+                async.eachSeries(dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFns, function(eachRowFn, cb)
                 {
                     eachRowFn(self.context, eachCtx, doc, function(err)
                     {
@@ -696,8 +715,8 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
     }
     function continueToAfterIterating()
     {
-        if (afterIterating_eachRowFn != null && typeof afterIterating_eachRowFn !== 'undefined') {
-            afterIterating_eachRowFn(self.context, eachCtx, function(err)
+        if (dataSourceDescription.afterGeneratingProcessedRowObjects_afterIterating_eachRowFn) {
+            dataSourceDescription.afterGeneratingProcessedRowObjects_afterIterating_eachRowFn(self.context, eachCtx, function(err)
             {
                 if (err) {
                     winston.error("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");

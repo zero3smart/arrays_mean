@@ -348,12 +348,7 @@ exports.Descriptions =
             afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
             {
                 // Setup each ctx, such as the batch operation
-                // Setup each ctx, such as the batch operation
-                var srcDoc_uid = "marvel_character_database";
-                var srcDoc_importRevision = 1; // INSERT YOUR IMPORT REVISION
-                // An accessor factory function that just combines the values in a 
-                            
-                var srcDoc_pKey = appCtx.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(srcDoc_uid, srcDoc_importRevision);           
+                var srcDoc_pKey = appCtx.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(this.uid, this.importRevision);
                 var forThisDataSource_mongooseContext = appCtx.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(srcDoc_pKey);            
                 // ^ there is only one mongooseContext in raw_source_documents_controller because there is only one src docs collection,
                 // but there are many mongooseContexts derivable/in raw_row_objects_controller because there is one collection of processed row objects per src doc

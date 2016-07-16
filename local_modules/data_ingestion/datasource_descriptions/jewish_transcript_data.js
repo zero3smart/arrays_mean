@@ -258,11 +258,7 @@ exports.Descriptions =
             afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
             {
                 // Setup each ctx, such as the batch operation
-                var srcDoc_uid = "jewish_transcript_data";
-                var srcDoc_importRevision = 1; // INSERT YOUR IMPORT REVISION
-                // An accessor factory function that just combines the values in a
-
-                var srcDoc_pKey = appCtx.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(srcDoc_uid, srcDoc_importRevision);
+                var srcDoc_pKey = appCtx.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(this.uid, this.importRevision);
                 var forThisDataSource_mongooseContext = appCtx.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(srcDoc_pKey);
                 // ^ there is only one mongooseContext in raw_source_documents_controller because there is only one src docs collection,
                 // but there are many mongooseContexts derivable/in raw_row_objects_controller because there is one collection of processed row objects per src doc
@@ -296,6 +292,8 @@ exports.Descriptions =
                 var mergeRowsIntoFieldArray_bulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
                 // store it into the "each-row" context for access during the each row operations
                 eachCtx.mergeRowsIntoFieldArray_bulkOperation = mergeRowsIntoFieldArray_bulkOperation;
+                eachCtx.numberOfRows = 0;
+                eachCtx.cachedPages = [];
                 //
                 //
                 cb(null);
@@ -319,7 +317,7 @@ exports.Descriptions =
 
                                 var generatedArray = [];
                                 //
-                                appCtx.raw_row_objects_controller.CachedPages.forEach(function(rowDoc) {
+                                eachCtx.cachedPages.forEach(function(rowDoc) {
                                     var fieldValue = rowDoc["rowParams"][eachCtx.pageFields[i]];
                                     generatedArray.push(fieldValue);
 
@@ -342,11 +340,13 @@ exports.Descriptions =
                             eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
 
                             // Clear cache
-                            appCtx.raw_row_objects_controller.CachedPages = [];
+                            eachCtx.cachedPages = [];
+
+                            eachCtx.numberOfRows ++;
 
                         } else {
                             // Cache pages if it's a page
-                            appCtx.raw_row_objects_controller.CachedPages.push(rowDoc);
+                            eachCtx.cachedPages.push(rowDoc);
                         }
                         //
                         // finally, must call cb to advance
@@ -360,8 +360,9 @@ exports.Descriptions =
                 // Finished iterating … execute the batch operation
                 // cb(null);
 
-                // Skip if it's page row.
-                if (appCtx.raw_row_objects_controller.CachedPages.length > 0) return cb(null);
+                // Wrong format since the last row should not be page.
+                // if (eachCtx.cachedPages.length > 0) return cb(null);
+                var self = this;
 
                 // Finished iterating … execute the batch operation
                 var writeConcern =
@@ -369,14 +370,16 @@ exports.Descriptions =
                     upsert: true // might as well - but this is not necessary
                 };
                 eachCtx.mergeRowsIntoFieldArray_bulkOperation.execute(writeConcern, function(err, result)
-                    // changed from: bulkOperation.execute(writeConcern, function(err, result)
                 {
                     if (err) {
                         winston.error("❌ [" + (new Date()).toString() + "] Error while saving raw row objects: ", err);
                     } else {
                         winston.info("✅  [" + (new Date()).toString() + "] Saved raw row objects.");
                     }
-                    cb(err); // all done - must call DB
+                    // Update numberOfRows on the row source documents
+                    var srcDoc_pKey = appCtx.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(self.uid, self.importRevision);
+                    var updatedDocument = {primaryKey: srcDoc_pKey, numberOfRows: eachCtx.numberOfRows};
+                    appCtx.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(updatedDocument, cb);
                 });
             }
         }
