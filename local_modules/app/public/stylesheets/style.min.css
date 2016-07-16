@@ -5307,6 +5307,8 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	font-size: 24px;
 }
 .pagination > li > a:hover,
+.pagination > li > a:focus,
+.pagination > li > a:active,
 .pagination > li > .active {
 	background-color: transparent;
 	color: #4a4a4a;
