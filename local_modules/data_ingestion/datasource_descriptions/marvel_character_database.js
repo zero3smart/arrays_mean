@@ -310,6 +310,7 @@ exports.Descriptions =
                 "comics_available",
                 "description",
                 "name",
+                "modified"
             ],
             //
             //
