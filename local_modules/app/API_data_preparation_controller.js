@@ -399,6 +399,7 @@
                 onPageNum: pageNumber,
                 numPages: Math.ceil(nonpagedCount / pageSize),
                 nonpagedCount: nonpagedCount,
+                resultsOffset: (pageNumber - 1) * pageSize,
                 //
                 docs: docs,
                 //
