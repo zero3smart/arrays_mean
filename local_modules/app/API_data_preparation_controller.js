@@ -1596,6 +1596,23 @@
 
         var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
         //
+        var filterJSON = urlQuery.filterJSON;
+        var filterObj = {};
+        var isFilterActive = false;
+        if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
+            try {
+                filterObj = JSON.parse(filterJSON);
+                if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
+                    isFilterActive = true;
+                }
+            } catch (e) {
+                winston.error("❌  Error parsing filterJSON: ", filterJSON);
+                callback(e, null);
+
+                return;
+            }
+        }
+        //
         var err = null;
         //
         self._fetchedSourceDoc(sourceKey, function(err, sourceDoc)
@@ -1629,7 +1646,9 @@
                     brandColor: dataSourceDescription.brandColor,
                     sourceDoc: sourceDoc,
                     view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
-                    routePath_base: '/array/' + sourceKey + '/chart'
+                    routePath_base: '/array/' + sourceKey + '/scatterplot',
+                    filterObj: filterObj,
+                    isFilterActive: isFilterActive
                 });
             });
         });

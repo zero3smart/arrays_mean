@@ -117,15 +117,14 @@
                         {% if isFilterActive %}
                         <div class="filter-bar">
                             <div class="container-fluid">
-                                {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
                                 {% for filterCol, filterVals in filterObj %}
                                     {% for filterVal in filterVals %}
                                         {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true) %}
                                         {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                                        {% set routePath_withoutThisFilter = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString %}
+                                        {% set routePath_withoutThisFilter = routePath_base + "?filterJSON=" + filterJSONString %}
                                         {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}                  
-                                <!-- span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | safe }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span -->
-                                <span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | safe }} <a href="#" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
+                                <span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | safe }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
+                                <!-- span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | safe }} <a href="#" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span -->
                                     {% endfor %}
                                 {% endfor %}
                             </div>
@@ -158,6 +157,7 @@
         <script type="text/javascript" src="/javascripts/module/scatterplot/factory.js"></script>
         <script type="text/javascript" src="/javascripts/module/scatterplot/chart.js"></script>
         <script>
+        var metaData = {{ metaData | dump | safe }};
         // Define input data set.
         var scatterData = {{ documents | dump | safe }};
         // Render scatterplot.
@@ -224,7 +224,7 @@
 
         // Set search input handler.
         jQuery('input.search-input').on('input', function(event) {
-            scatterPlot.filterBy(jQuery('#search-by span').attr('data-field'), this.value)
+            scatterPlot.searchBy(jQuery('#search-by span').attr('data-field'), this.value)
                 .update();
         })
         </script>

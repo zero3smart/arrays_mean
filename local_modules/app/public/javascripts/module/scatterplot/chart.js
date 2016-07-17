@@ -175,11 +175,11 @@ scatterplot.chart = function(data) {
      */
     this._view = new scatterplot.view.factory(this, this._threshold);
     /**
-     * Current data filer.
+     * Current data search condition.
      * @private
      * @member {String[]}
      */
-    this._filter = [];
+    this._searchBy = [];
     /*
      * Set up window resize event handler.
      */
@@ -210,9 +210,9 @@ scatterplot.chart.prototype.setColor = function(color) {
  * @param {String} value
  * @return {scatterplot.chart}
  */
-scatterplot.chart.prototype.filterBy = function(key, value) {
+scatterplot.chart.prototype.searchBy = function(key, value) {
 
-    this._filter = [key, value];
+    this._searchBy = [key, value];
 
     return this;
 };
@@ -501,13 +501,17 @@ scatterplot.chart.prototype.update = function(data) {
     this._xLabelContainer.text(this._normalizeLabel(this._xLabel));
     this._yLabelContainer.text(this._normalizeLabel(this._yLabel));
     /*
-     * Filter data.
+     * Filter data by user search input.
      */
-    if (this._filter.length && this._filter[1] !== '') {
+    if (this._searchBy.length && this._searchBy[1] !== '') {
         data = data.filter(function(d) {
-            return d[self._filter[0]].toLowerCase().indexOf(self._filter[1]) >= 0;
+            return d[self._searchBy[0]].toLowerCase().indexOf(self._searchBy[1]) >= 0;
         });
     }
+    /*
+     * Apply filters defined as URL parameters.
+     */
+    data = this._applyFilters(data);
     /*
      * Check current view actuality.
      */
@@ -521,6 +525,93 @@ scatterplot.chart.prototype.update = function(data) {
     this._view.render(data);
 
     return this;
+};
+
+
+/**
+ * Apply user defined filters.
+ * @param {Object[]} data
+ * @return {Object[]}
+ */
+scatterplot.chart.prototype._applyFilters = function(data) {
+    /*
+     * Get current URL, parse it and return current filters as object.
+     */
+    var filters = location.search.substring(1).split('&').filter(function(str) {
+        return str.split('=')[0] === 'filterJSON';
+    }).map(function(str) {
+        var pair = str.split('=');
+        return JSON.parse(decodeURIComponent(pair[1]));
+    })[0];
+    /*
+     * 
+     */
+    var actualFilters = [];
+    /*
+     * Loop through filters.
+     */
+    for (var i in  filters) {
+        /*
+         * Loop through data source declared filters.
+         */
+        for (j = 0; j < metaData.fe_filters_fabricatedFilters.length; j ++) {
+            /*
+             * Check filters match.
+             */
+            if (metaData.fe_filters_fabricatedFilters[j].title === i) {
+                /*
+                 * Loop through filter choices. As i can understand each
+                 * data point should corresponds to all filter's choices.
+                 */
+                for (var k = 0; k < metaData.fe_filters_fabricatedFilters[j].choices.length; k ++) {
+                    /*
+                     * Get field to which filter should be applied.
+                     */
+                    var field = Object.keys(metaData.fe_filters_fabricatedFilters[j].choices[k].$match)[0]
+                    /*
+                     * Split and get field last part. This is actual key for our reduced data.
+                     */
+                    var key = field.split('.').pop();
+                    /*
+                     * Get condition statement. Actually there is no documentation how it should work, so
+                     * here is just one of the possible implementation.
+                     */
+                    var condition = metaData.fe_filters_fabricatedFilters[j].choices[k].$match[field].$exists;
+                    /*
+                     * Append filter function.
+                     */
+                    actualFilters.push(this._getFilter(key));
+                }
+            }
+        }
+    }
+    /*
+     * Loop through data set and apply filters to each data point.
+     */
+    data = data.filter(function(d) {
+        for (var i = 0; i < actualFilters.length; i ++) {
+            if (! actualFilters[i](d, i)) {
+                return false;
+            };
+        }
+
+        return true;
+    });
+
+    return data
+};
+
+
+/**
+ * Get filter function.
+ * @param {String} key
+ * @returns {Function}
+ */
+scatterplot.chart.prototype._getFilter = function(key) {
+
+    return function(d, i) {
+        return d[key] && ! /^\s*$/.test(d[key]);
+    }
 };
 
 
