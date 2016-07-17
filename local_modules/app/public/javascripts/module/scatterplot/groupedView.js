@@ -75,7 +75,9 @@ scatterplot.view.grouped.prototype._prepareData = function(data) {
                 radius : radiusScale(density)
             };
         }));
-    }, []).sort(function(a, b) {
+    }, []).filter(function(d) {
+        return d.radius > 0;
+    }).sort(function(a, b) {
         if (a.density < b.density) {
             return 1;
         } else if (a.density > b.density) {
@@ -122,7 +124,9 @@ scatterplot.view.grouped.prototype.render = function(data) {
      * Select bubbles.
      */
     var bubbles = chart._canvas.selectAll('circle.bubble')
-        .data(data);
+        .data(data, function(d, i) {
+            return d.i + 'x' + d.j;
+        });
     /*
      * Move existent bubbles.
      */
