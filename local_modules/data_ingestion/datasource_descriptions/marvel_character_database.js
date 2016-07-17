@@ -343,6 +343,14 @@ exports.Descriptions =
                 "Series",
                 "Events"
             ],
+            /**
+             * Scatterplot chart personal settings.
+             */
+            scatterplot: {
+                xField: 'stories_available',
+                yField: 'series_available',
+                search: ['name', 'description']
+            },
             //
             //
             // This is implemented but currently not used (it was built for scraping)

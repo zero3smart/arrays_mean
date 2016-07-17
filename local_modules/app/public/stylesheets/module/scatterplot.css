@@ -4,7 +4,6 @@
 }
 
 .scatterplot circle.bubble {
-	fill: orange;
 	stroke: #fff;
 	stroke-width: 1;
 }

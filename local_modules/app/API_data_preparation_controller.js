@@ -1600,28 +1600,31 @@
         //
         self._fetchedSourceDoc(sourceKey, function(err, sourceDoc)
         {
-            processedRowObjects_mongooseModel.find({}, function(err, characters)
+            processedRowObjects_mongooseModel.find({}, function(err, documents)
             {
-                var sampleDoc = characters[0];
-
+                /*
+                 * Get single document.
+                 */
+                var document = documents[0];
+                /*
+                 * Define numeric fields which may be used as scatterplot axes.
+                 */
                 var numericFields = [];
-                for (i in sampleDoc.rowParams) {
-                    if (! isNaN(parseFloat(sampleDoc.rowParams[i])) && isFinite(sampleDoc.rowParams[i]) && i !== 'id') {
+                /*
+                 * Loop through documents fields and get numeric fields.
+                 */
+                for (i in document.rowParams) {
+                    if (! isNaN(parseFloat(document.rowParams[i])) && isFinite(document.rowParams[i]) && i !== 'id') {
                         numericFields.push(i);
                     }
                 }
-
-                var searchableFields = ['stories_available', 'name', 'description'];
-
+                /*
+                 * Run callback function to finish action.
+                 */
                 callback(err, {
-                    characters: characters,
+                    documents: documents,
+                    metaData: dataSourceDescription,
                     renderableFields: numericFields,
-                    searchableFields: searchableFields,
-//                    xField: numericFields[Math.floor(Math.random() * numericFields.length)],
-//                    yField: numericFields[Math.floor(Math.random() * numericFields.length)],
-                    xField: 'stories_available',
-                    yField: 'series_available',
-                    arrayTitle: dataSourceDescription.title,
                     array_source_key: sourceKey,
                     brandColor: dataSourceDescription.brandColor,
                     sourceDoc: sourceDoc,

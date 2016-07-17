@@ -142,6 +142,7 @@ scatterplot.view.grouped.prototype.render = function(data) {
         .append('circle')
         .attr('class', 'bubble')
         .style('opacity', 0.5)
+        .style('fill', chart._color)
         .attr('cx', function(d, i) {
             return xStep * d.i + xStep / 2;
         }).attr('cy', function(d, i) {

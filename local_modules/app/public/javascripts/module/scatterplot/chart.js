@@ -192,6 +192,19 @@ scatterplot.chart = function(data) {
 
 
 /**
+ * Set chart color
+ * @param {String} color
+ * @returns {scatterplot.chart}
+ */
+scatterplot.chart.prototype.setColor = function(color) {
+
+    this._color = color;
+
+    return this;
+};
+
+
+/**
  * Filter data.
  * @param {String} key
  * @param {String} value
