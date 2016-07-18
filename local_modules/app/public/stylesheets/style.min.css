@@ -6086,7 +6086,6 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 	font-family: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 .scatterplot circle.bubble {
-	fill: orange;
 	stroke: #fff;
 	stroke-width: 1;
 }

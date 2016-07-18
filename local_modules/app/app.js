@@ -87,7 +87,7 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
             var existing_filterVals_length = existing_filterVals.length;
             for (var j = 0 ; j < existing_filterVals_length ; j++) {
                 var existing_filterVal = existing_filterVals[j];
-                var encoded_existing_filterVal = encodeURIComponent(existing_filterVal);
+                var encoded_existing_filterVal = typeof existing_filterVal === 'string' ? encodeURIComponent(existing_filterVal) : existing_filterVal;
                 filterVals.push(encoded_existing_filterVal); 
             }
             //
@@ -98,14 +98,26 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
         //
         if (isThisAnActiveFilter == false) { // do not push if active, since we'd want the effect of unsetting it
             var filterVals = filterObj[this_filterCol] || [];
-            if (filterVals.indexOf(this_filterVal) == -1) {
-                var encoded_this_filterVal = encodeURIComponent(this_filterVal);
-                filterVals.push(encoded_this_filterVal);
+            if (filterVals.indexOf(filterVal) == -1) {
+                var filterIsString = typeof this_filterCol === 'string';
+                var filterVal = filterIsString ? encodeURIComponent(this_filterVal) : this_filterVal;
+                filterVals.push(filterVal);
             }
             filterObj[this_filterCol] = filterVals; // in case it's not set yet
         }
         //
         return filterObj;
+    });
+    // Array views - Filter value to display
+    nunjucks_env.addFilter('filterValToDisplay', function(filterVal){
+        if (typeof filterVal === 'string')
+            return decodeURIComponent(filterVal);
+        var output = '';
+        if (filterVal.min != null)
+            output = filterVal.min + ' ~ ';
+        if (filterVal.max != null)
+            output = output + filterVal.max;
+        return output;
     });
 });
 //

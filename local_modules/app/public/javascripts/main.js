@@ -193,7 +193,7 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
         var existing_filterVals_length = existing_filterVals.length;
         for (var j = 0 ; j < existing_filterVals_length ; j++) {
             var existing_filterVal = existing_filterVals[j];
-            var encoded_existing_filterVal = existing_filterVal;
+            var encoded_existing_filterVal = typeof existing_filterVal === 'string' ? encodeURIComponent(existing_filterVal) : existing_filterVal;
             filterVals.push(encoded_existing_filterVal); 
         }
         //
@@ -205,8 +205,9 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
     if (isThisAnActiveFilter === false) { // do not push if active, since we'd want the effect of unsetting it
         var filterVals = filterObj[this_filterCol] || [];
         if (filterVals.indexOf(this_filterVal) == -1) {
-            var encoded_this_filterVal = this_filterVal;
-            filterVals.push(encoded_this_filterVal);
+            var filterIsString = typeof this_filterCol === 'string';
+            var filterVal = filterIsString ? encodeURIComponent(this_filterVal) : this_filterVal;
+            filterVals.push(filterVal);
         }
         filterObj[this_filterCol] = filterVals; // in case it's not set yet
     }

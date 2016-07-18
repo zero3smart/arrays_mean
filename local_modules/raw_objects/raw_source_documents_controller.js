@@ -23,7 +23,7 @@ constructor.prototype._init = function()
 };
 
 //
-constructor.prototype.New_templateForPersistableObject = function(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys)
+constructor.prototype.New_templateForPersistableObject = function(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows)
 {
     return {
         primaryKey: sourceDocumentRevisionKey,
@@ -31,7 +31,8 @@ constructor.prototype.New_templateForPersistableObject = function(sourceDocument
         importUID: importUID,
         revisionNumber: revisionNumber,
         parsed_rowObjectsById: parsed_rowObjectsById,
-        parsed_orderedRowObjectPrimaryKeys: parsed_orderedRowObjectPrimaryKeys
+        parsed_orderedRowObjectPrimaryKeys: parsed_orderedRowObjectPrimaryKeys,
+        numberOfRows: numberOfRows
     }
 };
 //
@@ -81,54 +82,32 @@ constructor.prototype.NewCustomPrimaryKeyStringWithComponents = function(dataSou
 //
 constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persistableObjectTemplate, fn)
 {
-    var self = this;
-    var persistableObjectTemplate_primaryKey = persistableObjectTemplate.primaryKey;
-    
-    var raw_row_objects_controller = self.context.raw_row_objects_controller;
-    var parsed_orderedRowObjectPrimaryKeys = persistableObjectTemplate.parsed_orderedRowObjectPrimaryKeys;
-    var parsed_rowObjectsById = persistableObjectTemplate.parsed_rowObjectsById;
-    var revisionNumber = persistableObjectTemplate.revisionNumber;
-    var numberOfRows = persistableObjectTemplate.numberOfRows;
-    var importUID = persistableObjectTemplate.importUID;
-    
-    // Bulk for performance at volume
-    //raw_row_objects_controller.UpsertWithManyPersistableObjectTemplates
-    raw_row_objects_controller.InsertManyPersistableObjectTemplates
-    (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, persistableObjectTemplate_primaryKey, persistableObjectTemplate.title, function(err, result)
+    winston.log("📡  [" + (new Date()).toString() + "] Going to save source document.");
+
+    var updatedDocument = {};
+    updatedDocument['primaryKey'] = persistableObjectTemplate.primaryKey;
+    if (persistableObjectTemplate.title) updatedDocument['title'] = persistableObjectTemplate.title;
+    if (persistableObjectTemplate.revisionNumber) updatedDocument['revisionNumber'] = persistableObjectTemplate.revisionNumber;
+    if (persistableObjectTemplate.importUID) updatedDocument['importUID'] = persistableObjectTemplate.importUID;
+    if (persistableObjectTemplate.numberOfRows) updatedDocument['numberOfRows'] = persistableObjectTemplate.numberOfRows;
+    updatedDocument['dateOfLastImport'] = new Date();
+
+    var findOneAndUpdate_queryParameters =
+    {
+        primaryKey: persistableObjectTemplate.primaryKey
+    };
+    RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {
+        $set: updatedDocument
+    }, {
+        new: true,
+        upsert: true
+    }, function(err, doc)
     {
         if (err) {
-            winston.error("❌  Error: An error while saving raw row objects: ", err)
-            
-            return // bail
+            winston.error("❌ [" + (new Date()).toString() + "] Error while updating a raw source document: ", err);
+        } else {
+            winston.info("✅  [" + (new Date()).toString() + "] Saved source document object with pKey \"" + persistableObjectTemplate.primaryKey + "\".");
         }
-        winston.log("📡  [" + (new Date()).toString() + "] Going to save source document.");
-        var persistableObjectTemplate_primaryKey = persistableObjectTemplate.primaryKey;
-        var updatedDocument = 
-        {
-            primaryKey: persistableObjectTemplate_primaryKey,
-            title: persistableObjectTemplate.title,
-            revisionNumber: revisionNumber,
-            importUID: importUID,
-            numberOfRows: (parsed_orderedRowObjectPrimaryKeys ? parsed_orderedRowObjectPrimaryKeys.length : 0),
-            dateOfLastImport: new Date()
-        };
-        var findOneAndUpdate_queryParameters = 
-        {
-            primaryKey: persistableObjectTemplate_primaryKey
-        };
-        RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {
-            $set: updatedDocument
-        }, {
-            new: true, 
-            upsert: true
-        }, function(err, doc)
-        {
-            if (err) {
-                winston.error("❌ [" + (new Date()).toString() + "] Error while updating a raw source document: ", err);
-            } else {
-                winston.info("✅  [" + (new Date()).toString() + "] Saved source document object with pKey \"" + persistableObjectTemplate_primaryKey + "\".");
-            }
-            fn(err, doc);
-        });
+        fn(err, doc);
     });
 };
