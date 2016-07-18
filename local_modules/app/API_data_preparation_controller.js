@@ -1719,7 +1719,14 @@
             var filterVals_length = filterVals.length;
             for (var j = 0 ; j < filterVals_length ; j++) {
                 var filterVal = filterVals[j];
-                var matchCondition = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
+                var matchCondition = {};
+                if (typeof filterVal === 'string') {
+                    matchCondition = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
+                } else if (filterVal.min !== null || filterVal.max !== null) {
+                    matchCondition = _activeFilterRange_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal.min, filterVal.max);
+                } else {
+                    // TODO - ERROR - Unexpected format
+                }
                 if (typeof matchCondition.err !== 'undefined') {
                     return { err: matchCondition.err };
                 }
@@ -1736,7 +1743,7 @@
 
         return { matchOp: matchOp };
     }
-
+    //
     function _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal)
     {
         var matchCondition = undefined;
@@ -1808,6 +1815,71 @@
                     realFilterValue = moment.utc(filterDate).toDate();
                     matchCondition[realColumnName_path] = realFilterValue;
                 }
+            }
+        }
+        if (typeof matchCondition === 'undefined') {
+            throw new Error("Undefined match condition");
+        }
+
+        return { matchCondition: matchCondition };
+    }
+    //
+    function _activeFilterRange_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterValMin, filterValMax)
+    {
+        var matchCondition = undefined;
+        var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
+        var realColumnName_path = "rowParams." + realColumnName;
+        var realFilterValueMin = filterValMin, realFilterValueMax = filterValMax; // To finalize in case of override…
+        // To coercion the date field into the valid date
+        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+        var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
+            && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+        if (!isDate) {
+            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+            var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
+            if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
+                var overrideValueMin = oneToOneOverrideWithValuesByTitle_forThisColumn[filterValMin];
+                if (typeof overrideValueMin === 'undefined') {
+                    var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterValMin " + filterValMin;
+                    winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
+                } else {
+                    realFilterValueMin = overrideValueMin;
+                }
+
+                var overrideValueMax = oneToOneOverrideWithValuesByTitle_forThisColumn[filterValMax];
+                if (typeof overrideValueMax === 'undefined') {
+                    var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterValMax " + filterValMax;
+                    winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
+                } else {
+                    realFilterValueMax = overrideValueMax;
+                }
+            }
+            matchCondition = {};
+
+            // escape Mongo reserved characters in Mongo
+            realFilterValueMin = realFilterValueMin.split("(").join("\\(")
+                .split(")").join("\\)")
+                .split("+").join("\\+")
+                .split("$").join("\\$");
+
+            realFilterValueMax = realFilterValueMax.split("(").join("\\(")
+                .split(")").join("\\)")
+                .split("+").join("\\+")
+                .split("$").join("\\$");
+
+            matchCondition[realColumnName_path] = {$gte: realFilterValueMin, $lt: realFilterValueMax};
+        } else {
+            matchCondition = {};
+            matchCondition[realColumnName_path] = {}
+            var filterDateMin = new Date(filterValMin);
+            if (!isNaN(filterDateMin.getTime())) { // Invalid Date
+                realFilterValueMin = moment.utc(filterDateMin).toDate();
+                matchCondition[realColumnName_path].$gte = realFilterValueMin;
+            }
+            var filterDateMax = new Date(filterValMax);
+            if (!isNaN(filterDateMax.getTime())) { // Invalid Date
+                realFilterValueMax = moment.utc(filterDateMax).toDate();
+                matchCondition[realColumnName_path].$lt = realFilterValueMax;
             }
         }
         if (typeof matchCondition === 'undefined') {
