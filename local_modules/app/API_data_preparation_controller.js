@@ -1879,7 +1879,7 @@
             var filterDateMax = new Date(filterValMax);
             if (!isNaN(filterDateMax.getTime())) { // Invalid Date
                 realFilterValueMax = moment.utc(filterDateMax).toDate();
-                matchCondition[realColumnName_path].$lt = realFilterValueMax;
+                matchCondition[realColumnName_path].$lte = realFilterValueMax;
             }
         }
         if (typeof matchCondition === 'undefined') {
