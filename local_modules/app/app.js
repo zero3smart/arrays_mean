@@ -42,7 +42,7 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
     // General/shared
     nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function(date)
     {
-        return moment(date).format("MMMM Do, YYYY")
+        return moment(date).format("MMMM Do, YYYY");
     });
     nunjucks_env.addFilter('dateFormat', function(date, format)
     {
@@ -58,7 +58,7 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
     });
     nunjucks_env.addFilter('isObjectEmpty', function(obj) 
     {
-        return Object.keys(obj).length == 0;
+        return Object.keys(obj).length === 0;
     });
     nunjucks_env.addFilter('alphaSortedArray', function(array) 
     {
@@ -91,12 +91,12 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
                 filterVals.push(encoded_existing_filterVal); 
             }
             //
-            if (filterVals.length != 0) {
+            if (filterVals.length !== 0) {
                 filterObj[existing_filterCol] = filterVals; // as it's not set yet
             }
         }
         //
-        if (isThisAnActiveFilter == false) { // do not push if active, since we'd want the effect of unsetting it
+        if (isThisAnActiveFilter === false) { // do not push if active, since we'd want the effect of unsetting it
             var filterVals = filterObj[this_filterCol] || [];
             if (filterVals.indexOf(filterVal) == -1) {
                 var filterIsString = typeof this_filterCol === 'string';
@@ -113,10 +113,10 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
         if (typeof filterVal === 'string')
             return decodeURIComponent(filterVal);
         var output = '';
-        if (filterVal.min != null)
-            output = filterVal.min + ' ~ ';
-        if (filterVal.max != null)
-            output = output + filterVal.max;
+        if (filterVal.min !== null)
+            output = moment(filterVal.min).format("MMMM Do, YYYY") + ' – ';
+        if (filterVal.max !== null)
+            output = output + moment(filterVal.max).format("MMMM Do, YYYY");
         return output;
     });
 });
