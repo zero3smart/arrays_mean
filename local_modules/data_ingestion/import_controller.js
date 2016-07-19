@@ -550,7 +550,7 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
             switch (by.doing) {
                 case import_processing.Ops.Join:
                 {
-                    /* var matchFn = by.matchFn;
+                    var matchFn = by.matchFn;
                     if (typeof matchFn === 'undefined' || matchFn == null) {
                         matchFn = import_processing.MatchFns.LocalEqualsForeignString;
                     }
@@ -568,8 +568,8 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
                      formingRelationship,
                      matchFn,
                      cb
-                     ); */
-                    var matchRegex = by.matchRegex;
+                     );
+                    /* var matchRegex = by.matchRegex;
                     if (typeof matchRegex === 'undefined' || matchRegex == null || matchRegex == import_processing.MatchFns.LocalEqualsForeignString)
                         self.context.processed_row_objects_controller.GenerateFieldsByJoining(
                             dataSource_uid,
@@ -600,7 +600,7 @@ constructor.prototype._dataSourcePostProcessingFunction = function(indexInList, 
                             formingRelationship,
                             matchRegex,
                             cb
-                        );
+                        ); */
                     break;
                 }
 
