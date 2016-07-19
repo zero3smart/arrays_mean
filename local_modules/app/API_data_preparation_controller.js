@@ -2036,11 +2036,9 @@
             var encodedVals = [];
             for (var j = 0 ; j < filterObj_key_vals_length ; j++) {
                 var filterObj_key_val = filterObj_key_vals[j];
-                if ( typeof filterObj_key_val === 'object')
-                    var encodedVal = filterObj_key_val
-                else
-                    var encodedVal = encodeURIComponent(filterObj_key_val);
-                encodedVals.push(encodedVal);
+                var filterIsString = typeof this_filterVal === 'string';
+                var filterVal = filterIsString ? encodeURIComponent(filterObj_key_val) : filterObj_key_val;
+                encodedVals.push(filterVal);
             }
             reconstructedURLEncodedFilterObjForFilterJSONString[filterObj_key] = encodedVals;
         }

@@ -99,10 +99,8 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
         if (isThisAnActiveFilter === false) { // do not push if active, since we'd want the effect of unsetting it
             var filterVals = filterObj[this_filterCol] || [];
             if (filterVals.indexOf(filterVal) == -1) {
-                var filterIsString = typeof this_filterCol === 'string';
-                var filterValIsObject = typeof this_filterVal === 'object';
+                var filterIsString = typeof this_filterVal === 'string';
                 var filterVal = filterIsString ? encodeURIComponent(this_filterVal) : this_filterVal;
-                filterVal = filterValIsObject ? this_filterVal : filterVal;
                 filterVals.push(filterVal);
             }
             filterObj[this_filterCol] = filterVals; // in case it's not set yet
