@@ -1879,7 +1879,7 @@
             var filterDateMax = new Date(filterValMax);
             if (!isNaN(filterDateMax.getTime())) { // Invalid Date
                 realFilterValueMax = moment.utc(filterDateMax).toDate();
-                matchCondition[realColumnName_path].$lt = realFilterValueMax;
+                matchCondition[realColumnName_path].$lte = realFilterValueMax;
             }
         }
         if (typeof matchCondition === 'undefined') {
@@ -2036,8 +2036,9 @@
             var encodedVals = [];
             for (var j = 0 ; j < filterObj_key_vals_length ; j++) {
                 var filterObj_key_val = filterObj_key_vals[j];
-                var encodedVal = encodeURIComponent(filterObj_key_val);
-                encodedVals.push(encodedVal);
+                var filterIsString = typeof this_filterVal === 'string';
+                var filterVal = filterIsString ? encodeURIComponent(filterObj_key_val) : filterObj_key_val;
+                encodedVals.push(filterVal);
             }
             reconstructedURLEncodedFilterObjForFilterJSONString[filterObj_key] = encodedVals;
         }

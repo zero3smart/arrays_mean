@@ -180,7 +180,8 @@ $(document).ready(function() {
 function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter) {
     var filterObj = {};
     var existing_filterCols = Object.keys(existing_filterObj);
-    for (var i = 0 ; i < existing_filterCols.length ; i++) {
+    var existing_filterCols_length = existing_filterCols.length;
+    for (var i = 0 ; i < existing_filterCols_length ; i++) {
         var existing_filterCol = existing_filterCols[i];
         if (existing_filterCol == this_filterCol) { 
             continue; // never push other active values of this is filter col is already active
@@ -204,8 +205,8 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
     //
     if (isThisAnActiveFilter === false) { // do not push if active, since we'd want the effect of unsetting it
         var filterVals = filterObj[this_filterCol] || [];
-        if (filterVals.indexOf(this_filterVal) == -1) {
-            var filterIsString = typeof this_filterCol === 'string';
+        if (filterVals.indexOf(filterVal) == -1) {
+            var filterIsString = typeof this_filterVal === 'string';
             var filterVal = filterIsString ? encodeURIComponent(this_filterVal) : this_filterVal;
             filterVals.push(filterVal);
         }

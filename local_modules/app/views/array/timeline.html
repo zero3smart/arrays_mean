@@ -168,7 +168,9 @@
                                                                     <li class="timeline-group-item">
                                                                         <div class="timeline-item timeline-view-all">
                                                                             {% set queryParamJoinChar = "?" %}
-                                                                            {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(sortBy_realColumnName, group.startDate, false) %}
+                                                                            {% set filterDateRange = {'min': group.startDate | dateFormat(''), 'max': group.endDate | dateFormat('') } %}
+                                                                            {% set sortByDateRange = sortBy if sortBy else defaultSortByColumnName_humanReadable %}
+                                                                            {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(sortByDateRange, filterDateRange, false) %}
                                                                             {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
                                                                             {% set urlForFilterValue = "/array/" + array_source_key +  "/gallery" + queryParamJoinChar + "filterJSON=" + filterJSONString %}
                                                                             <a href="{{ urlForFilterValue }}" class="timeline-view-all-link color-brand-hover">
