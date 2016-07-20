@@ -457,46 +457,43 @@ exports.Descriptions =
                 cb(null);
             },
             //
-            afterGeneratingProcessedRowObjects_eachRowFns:
-            [
-                function(appCtx, eachCtx, rowDoc, cb)
-                {
-                    // Use this space to perform derivations and add update operations to batch operation in eachCtx
+            afterGeneratingProcessedRowObjects_eachRowFn: function(appCtx, eachCtx, rowDoc, cb)
+            {
+                // Use this space to perform derivations and add update operations to batch operation in eachCtx
+                //
+                mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Comics, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics);
+                mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Series, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series);
+                mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Events, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events);
+                //
+                function mergeManyFieldsIntoOne(generateFieldNamed, withValuesInFieldsNamed) {
+                    var generatedArray = [];
                     //
-                    mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Comics, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics);
-                    mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Series, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series);
-                    mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Events, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events);
-                    //
-                    function mergeManyFieldsIntoOne(generateFieldNamed, withValuesInFieldsNamed) {
-                        var generatedArray = [];
-                        //
-                        for (var i = 0 ; i < withValuesInFieldsNamed.length; i++) {
-                            var fieldName = withValuesInFieldsNamed[i];
-                            var fieldValue = rowDoc["rowParams"][fieldName];
-                            if (typeof fieldValue !== 'undefined' && fieldValue !== null && fieldValue !== "") {
-                                generatedArray.push(fieldValue);
-                            }
+                    for (var i = 0 ; i < withValuesInFieldsNamed.length; i++) {
+                        var fieldName = withValuesInFieldsNamed[i];
+                        var fieldValue = rowDoc["rowParams"][fieldName];
+                        if (typeof fieldValue !== 'undefined' && fieldValue !== null && fieldValue !== "") {
+                            generatedArray.push(fieldValue);
                         }
-                        //
-                        //
-                        var persistableValue = generatedArray;                
-
-                        var updateFragment = { $addToSet: {} };
-                        updateFragment["$addToSet"]["rowParams." + generateFieldNamed] = { "$each": persistableValue };
-
-                        var bulkOperationQueryFragment = 
-                        {
-                            pKey: rowDoc.pKey, // the specific row
-                            srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
-                        };
-                        eachCtx.mergeFieldsValuesIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
                     }
                     //
-                    // finally, must call cb to advance
                     //
-                    cb(null);
+                    var persistableValue = generatedArray;
+
+                    var updateFragment = { $addToSet: {} };
+                    updateFragment["$addToSet"]["rowParams." + generateFieldNamed] = { "$each": persistableValue };
+
+                    var bulkOperationQueryFragment =
+                    {
+                        pKey: rowDoc.pKey, // the specific row
+                        srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
+                    };
+                    eachCtx.mergeFieldsValuesIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
                 }
-            ],
+                //
+                // finally, must call cb to advance
+                //
+                cb(null);
+            },
             //
             afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function(appCtx, eachCtx, cb)
             {

@@ -662,9 +662,7 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
     var dataSource_importRevision = dataSourceDescription.importRevision;    
     var dataSource_title = dataSourceDescription.title;
     //
-    var eachRowFns_length = dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFns ? dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFns.length : 0;
-    //
-    winston.info("🔁  Performing " + eachRowFns_length + " each-row operations for \"" + dataSource_title + "\"");
+    winston.info("🔁  Performing each-row operation for \"" + dataSource_title + "\"");
     //    
     var eachCtx = {};
     if (dataSourceDescription.afterGeneratingProcessedRowObjects_setupBefore_eachRowFn) {
@@ -683,23 +681,14 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
     }
     function continueToIterations() 
     {
-        if (eachRowFns_length == 0) {
+        if (!dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFn) {
             continueToAfterIterating();
         } else {
             self.context.processed_row_objects_controller.EnumerateProcessedDataset(dataSource_uid, 
                                                                                     dataSource_importRevision,
             function(doc, eachCb)
             {
-                async.eachSeries(dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFns, function(eachRowFn, cb)
-                {
-                    eachRowFn(self.context, eachCtx, doc, function(err)
-                    {
-                        cb(err);
-                    });
-                }, function(err)
-                {
-                    eachCb(err); // if err != null, the callback will be called just below in the errFn passed to EnumerateProcessedDataset
-                })
+                dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFn(self.context, eachCtx, doc, eachCb);
             },
             function(err)
             {

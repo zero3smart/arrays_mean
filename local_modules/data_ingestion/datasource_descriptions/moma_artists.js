@@ -443,15 +443,12 @@ exports.Descriptions =
             //     cb(null);
             // },
             // //
-            // afterGeneratingProcessedRowObjects_eachRowFns:
-            // [
-            //     function(appCtx, eachCtx, rowDoc, cb)
-            //     {
-            //         // console.log("A row", rowDoc)
-            //         // perform derivations and add update operations to batch operation in eachCtx
-            //         cb(null);
-            //     }
-            // ],
+            // afterGeneratingProcessedRowObjects_eachRowFn: function(appCtx, eachCtx, rowDoc, cb)
+            // {
+            //     // console.log("A row", rowDoc)
+            //     // perform derivations and add update operations to batch operation in eachCtx
+            //     cb(null);
+            // },
             // //
             // afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function(appCtx, eachCtx, cb)
             // {

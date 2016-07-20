@@ -256,6 +256,14 @@ exports.Descriptions =
                     "File Name",
                     "Pages_Transcript"
                 ],
+            importNestedObjectKeyField: "Title",
+            importFormat: import_datatypes.Import_formats.NestedField,
+            //importNestedObjectArrayLabel: 'nestedObjects',
+            importNestedObjectLabel_overrides: {
+                "Title": {
+                    "p": "Page "
+                }
+            },
             //
             //
             afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
@@ -302,37 +310,41 @@ exports.Descriptions =
                 cb(null);
             },
             //
-            afterGeneratingProcessedRowObjects_eachRowFns:
-                [
-                    function(appCtx, eachCtx, rowDoc, cb)
-                    {
-                        // Use this space to perform derivations and add update operations to batch operation in eachCtx
-                        //
-                        // Detect if the row is an issue or page by primary key - Identifier
-                        if (rowDoc.rowParams.Identifier && rowDoc.rowParams.Identifier != '') {
-                            // Issue
-                            // Apply to Merge the cached rows(Page) into one row(Issue)
-                            var updateFragment = {$pushAll: {}};
-                            var bulkOperationQueryFragment;
+            afterGeneratingProcessedRowObjects_eachRowFn: function(appCtx, eachCtx, rowDoc, cb)
+            {
+                // Use this space to perform derivations and add update operations to batch operation in eachCtx
+                //
+                // Detect if the row is an issue or page by it's primary key - Identifier
+                if (rowDoc.rowParams.Identifier && rowDoc.rowParams.Identifier != '') {
+                    // Issue
+                    var bulkOperationQueryFragment;
 
-                            for (var i = 0; i < eachCtx.pageFields.length; i ++) {
-                                var fieldName = eachCtx.prefixForPageFields + eachCtx.pageFields[i];
+                    // Apply to Merge the cached rows(Page) into one row(Issue)
+                    if (this.importFormat == import_datatypes.Import_formats.NestedObject) {
+                        var updateFragment = {$set: {}};
+                        var self = this;
+                        eachCtx.cachedPages.forEach(function (rowDoc) {
+                            for (var i = 0; i < eachCtx.pageFields.length; i++) {
+                                if (eachCtx.pageFields[i] == self.importNestedObjectKeyField) continue;
 
-                                var generatedArray = [];
-                                //
-                                eachCtx.cachedPages.forEach(function(rowDoc) {
-                                    var fieldValue = rowDoc["rowParams"][eachCtx.pageFields[i]];
-                                    generatedArray.push(fieldValue);
+                                var pageKey = rowDoc["rowParams"][self.importNestedObjectKeyField];
+                                var pageField = eachCtx.pageFields[i];
+                                if (self.importNestedObjectLabel_overrides) {
+                                    for (var key in self.importNestedObjectLabel_overrides.Title) {
+                                        var re = new RegExp(key,"i");
+                                        pageKey = pageKey.replace(re, self.importNestedObjectLabel_overrides.Title[key]);
+                                    }
 
-                                    bulkOperationQueryFragment =
-                                    {
-                                        pKey: rowDoc.pKey, // the specific row
-                                        srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
-                                    };
-                                    eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).remove();
-                                });
+                                    for (var key in self.importNestedObjectLabel_overrides[eachCtx.pageFields[i]]) {
+                                        var re = new RegExp(key,"i");
+                                        pageField = pageField.replace(re, self.importNestedObjectLabel_overrides[eachCtx.pageFields[i]][key]);
+                                    }
+                                }
+                                var fieldName = pageKey + "." + pageField;
+                                var fieldValue = rowDoc["rowParams"][eachCtx.pageFields[i]];
 
-                                updateFragment["$pushAll"]["rowParams." + fieldName] = generatedArray;
+                                var nestedObjectArrayLabel = self.importNestedObjectArrayLabel && self.importNestedObjectArrayLabel.length > 0 ? self.importNestedObjectArrayLabel : "nestedObjects";
+                                updateFragment["$set"]["rowParams." + nestedObjectArrayLabel + "." + fieldName] = fieldValue;
                             }
 
                             bulkOperationQueryFragment =
@@ -340,23 +352,56 @@ exports.Descriptions =
                                 pKey: rowDoc.pKey, // the specific row
                                 srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                             };
-                            eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+                            eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).remove();
+                        });
 
-                            // Clear cache
-                            eachCtx.cachedPages = [];
+                    } else if (this.importFormat == import_datatypes.Import_formats.NestedField || this.importFormat == null) {
+                        var updateFragment = {$pushAll: {}};
+                        for (var i = 0; i < eachCtx.pageFields.length; i++) {
+                            var fieldName = eachCtx.prefixForPageFields + eachCtx.pageFields[i];
 
-                            eachCtx.numberOfRows ++;
+                            var generatedArray = [];
+                            //
+                            eachCtx.cachedPages.forEach(function (rowDoc) {
+                                var fieldValue = rowDoc["rowParams"][eachCtx.pageFields[i]];
+                                generatedArray.push(fieldValue);
 
-                        } else {
-                            // Cache pages if it's a page
-                            eachCtx.cachedPages.push(rowDoc);
+                                bulkOperationQueryFragment =
+                                {
+                                    pKey: rowDoc.pKey, // the specific row
+                                    srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
+                                };
+                                eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).remove();
+                            });
+
+                            updateFragment["$pushAll"]["rowParams." + fieldName] = generatedArray;
                         }
-                        //
-                        // finally, must call cb to advance
-                        //
-                        cb(null);
                     }
-                ],
+
+                    if (Object.keys(updateFragment['$set']).length > 0) {
+                        bulkOperationQueryFragment =
+                        {
+                            pKey: rowDoc.pKey, // the specific row
+                            srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
+                        };
+
+                        eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+
+                        // Clear cache
+                        eachCtx.cachedPages = [];
+                    }
+
+                    eachCtx.numberOfRows ++;
+
+                } else {
+                    // Cache pages if it's a page
+                    eachCtx.cachedPages.push(rowDoc);
+                }
+                //
+                // finally, must call cb to advance
+                //
+                cb(null);
+            },
             //
             afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function(appCtx, eachCtx, cb)
             {
