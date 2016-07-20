@@ -221,7 +221,7 @@
                 .prop('innerText', text)
                 .attr('data-field', field);
             // Run search procedure.
-            scatterPlot.filterBy(field, jQuery('input.search-input').val())
+            scatterPlot.searchBy(field, jQuery('input.search-input').val())
                 .update();
         });
 

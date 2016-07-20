@@ -509,10 +509,6 @@ scatterplot.chart.prototype.update = function(data) {
         });
     }
     /*
-     * Apply filters defined as URL parameters.
-     */
-    data = this._applyFilters(data);
-    /*
      * Check current view actuality.
      */
     if (data.length > this._threshold && this._view instanceof scatterplot.view.standard ||
@@ -525,80 +521,6 @@ scatterplot.chart.prototype.update = function(data) {
     this._view.render(data);
 
     return this;
-};
-
-
-/**
- * Apply user defined filters.
- * @param {Object[]} data
- * @return {Object[]}
- */
-scatterplot.chart.prototype._applyFilters = function(data) {
-    /*
-     * Get current URL, parse it and return current filters as object.
-     */
-    var filters = location.search.substring(1).split('&').filter(function(str) {
-        return str.split('=')[0] === 'filterJSON';
-    }).map(function(str) {
-        var pair = str.split('=');
-        return JSON.parse(decodeURIComponent(pair[1]));
-    })[0];
-    /*
-     * 
-     */
-    var actualFilters = [];
-    /*
-     * Loop through filters.
-     */
-    for (var i in  filters) {
-        /*
-         * Loop through data source declared filters.
-         */
-        for (j = 0; j < metaData.fe_filters_fabricatedFilters.length; j ++) {
-            /*
-             * Check filters match.
-             */
-            if (metaData.fe_filters_fabricatedFilters[j].title === i) {
-                /*
-                 * Loop through filter choices. As i can understand each
-                 * data point should corresponds to all filter's choices.
-                 */
-                for (var k = 0; k < metaData.fe_filters_fabricatedFilters[j].choices.length; k ++) {
-                    /*
-                     * Get field to which filter should be applied.
-                     */
-                    var field = Object.keys(metaData.fe_filters_fabricatedFilters[j].choices[k].$match)[0]
-                    /*
-                     * Split and get field last part. This is actual key for our reduced data.
-                     */
-                    var key = field.split('.').pop();
-                    /*
-                     * Get condition statement. Actually there is no documentation how it should work, so
-                     * here is just one of the possible implementation.
-                     */
-                    var condition = metaData.fe_filters_fabricatedFilters[j].choices[k].$match[field].$exists;
-                    /*
-                     * Append filter function.
-                     */
-                    actualFilters.push(this._getFilter(key));
-                }
-            }
-        }
-    }
-    /*
-     * Loop through data set and apply filters to each data point.
-     */
-    data = data.filter(function(d) {
-        for (var i = 0; i < actualFilters.length; i ++) {
-            if (! actualFilters[i](d, i)) {
-                return false;
-            };
-        }
-
-        return true;
-    });
-
-    return data
 };
 
 
