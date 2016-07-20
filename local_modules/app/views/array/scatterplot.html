@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block bodyWrapper %}
-    <body class="array array-chart source-{{ array_source_key }} legend-open">
+    <body class="array array-scatterplot source-{{ array_source_key }} legend-open">
         <div id="page" class="site">
             {% set currentView = "scatterplot" %}
             {% include "../partials/header_bar_array.html" %}
@@ -34,9 +34,10 @@
 
                                     <div class="sort-bar clearfix">
 
-                                        <nav class="pull-left" role="navigation">
-                                            <div class="dropdown sort-control">
-                                                <a class="btn dropdown-toggle dropdown-toggle-button ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        <nav class="sort-bar-left pull-left" role="navigation">
+
+                                            <div class="dropdown sort-control sort-bar-6">
+                                                <a class="btn dropdown-toggle dropdown-toggle-button ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                                     Y-Axis <span class="sort-criteria color-brand-hover y-axis-field">{{ metaData.scatterplot.yField | replace(r/_/g, ' ') }}</span>
                                                 </a>
                                                 {% if renderableFields | length %}
@@ -48,8 +49,8 @@
                                                 </ul>
                                                 {% endif %}
                                             </div>
-                                            <div class="dropdown sort-control">
-                                                <a class="btn dropdown-toggle dropdown-toggle-button ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            <div class="dropdown sort-control sort-bar-6">
+                                                <a class="btn dropdown-toggle dropdown-toggle-button ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                                     X-Axis <span class="sort-criteria color-brand-hover x-axis-field">{{ metaData.scatterplot.xField | replace(r/_/g, ' ') }}</span>
                                                 </a>
                                                 {% if renderableFields | length %}
@@ -63,40 +64,42 @@
                                             </div>
                                         </nav>
 
-                                        <div class="pull-right">
-                                            <div class="sort-control visible-xs">
-                                                <div class="btn dropdown-toggle-button search-toggle">
-                                                    <span class="icon-search search-icon"></span>
-                                                </div>
-                                            </div>
-
-                                            <div class="mobile-search-popover">
-                                                <div class="dropdown-toggle-button-group" role="group">
-                                                    <div class="dropdown sort-control sort-control-left search-control">
-                                                        {% set searchColToOutput = metaData.scatterplot.search[0] if metaData.scatterplot.search else "Object Title" %}
-                                                        <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                                                            Search <span class="search-criteria color-brand-hover" data-field="{{ searchColToOutput }}">{{ searchColToOutput | replace(r/_/g, ' ') }}</span>
-                                                        </a>
-                                                        {% if metaData.scatterplot.search | length %}
-                                                        <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
-                                                            {% for colName in metaData.scatterplot.search %}
-                                                            <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-field="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
-                                                            {% endfor %}
-                                                        </ul>
-                                                        {% endif %}
+                                        <div class="sort-bar-right pull-right">
+                                            <form class="form-search">
+                                                <div class="sort-control visible-xs">
+                                                    <div class="btn dropdown-toggle-button search-toggle">
+                                                        <span class="icon-search search-icon color-brand-hover"></span>
                                                     </div>
-                                                    <div class="sort-control sort-control-right">
-                                                        <div class="dropdown-toggle">
-                                                            <input type="text" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="">
-                                                            <span class="icon-search search-icon hidden-xs"></span>
+                                                </div>
+
+                                                <div class="mobile-search-popover">
+                                                    <div class="dropdown-toggle-button-group" role="group">
+                                                        <div class="dropdown sort-control sort-control-left search-control">
+                                                            {% set searchColToOutput = metaData.scatterplot.search[0] if metaData.scatterplot.search else "Object Title" %}
+                                                            <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+                                                                Search <span class="search-criteria color-brand-hover" data-field="{{ searchColToOutput }}">{{ searchColToOutput | replace(r/_/g, ' ') }}</span>
+                                                            </a>
+                                                            {% if metaData.scatterplot.search | length %}
+                                                            <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+                                                                {% for colName in metaData.scatterplot.search %}
+                                                                <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-field="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="sort-control sort-control-right">
+                                                            <div class="dropdown-toggle">
+                                                                <input type="text" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="">
+                                                                <span class="icon-search search-icon hidden-xs"></span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
-                                                <span class="icon-legend" aria-hidden="true"></span>
-                                            </a>
+                                                <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
+                                                    <span class="icon-legend" aria-hidden="true"></span>
+                                                </a>
+                                            </form>
                                         </div>
 
                                     </div>
