@@ -257,7 +257,7 @@ exports.Descriptions =
                     "Pages_Transcript"
                 ],
             importNestedObjectKeyField: "Title",
-            importFormat: import_datatypes.Import_formats.NestedField,
+            //importFormat: import_datatypes.Import_formats.NestedField,
             //importNestedObjectArrayLabel: 'nestedObjects',
             importNestedObjectLabel_overrides: {
                 "Title": {
@@ -378,7 +378,7 @@ exports.Descriptions =
                         }
                     }
 
-                    if (Object.keys(updateFragment['$set']).length > 0) {
+                    if (updateFragment["$pushAll"] || (updateFragment['$set'] && Object.keys(updateFragment['$set']).length > 0)) {
                         bulkOperationQueryFragment =
                         {
                             pKey: rowDoc.pKey, // the specific row
