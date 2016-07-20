@@ -147,22 +147,15 @@
 	.mobile-search-popover.search-open {
 		position: absolute;
 		top: 0;
-		right: 35px;
+		right: 60px;
 		display: block;
-		width: calc(100vw - 80px);
+		width: calc(100vw - 105px);
 	}
 
-	.array-chart #page .search-toggle,
-	.array-choropleth #page .search-toggle {
+	#page .search-toggle {
 		display: inline-block;
 		padding-right: 10px;
 		padding-left: 10px;
-	}
-
-	.array-chart .mobile-search-popover.search-open,
-	.array-choropleth .mobile-search-popover.search-open {
-		right: 60px;
-		width: calc(100vw - 90px);
 	}
 
 	.dropdown-panel.search-open,

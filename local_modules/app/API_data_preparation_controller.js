@@ -1639,6 +1639,8 @@
                  * Run callback function to finish action.
                  */
                 callback(err, {
+                    env: process.env,
+                    
                     documents: documents,
                     metaData: dataSourceDescription,
                     renderableFields: numericFields,
