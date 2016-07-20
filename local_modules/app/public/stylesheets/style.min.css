@@ -4829,16 +4829,28 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	.dropdown-panel.search-open .search-icon {
 		display: none;
 	}
-
-	.group-by,
-	.map-by,
-	.sort-by {
-		overflow: hidden;
-		max-width: calc(100vw - 90px);
-		text-overflow: ellipsis;
-	}
 }
 /* @end Mobile Search */
+/* @group Mobile Sort Dropdowns */
+@media (max-width: 767px) {
+	.sort-bar-left {
+		position: absolute;
+		width: calc(100% - 45px);
+	}
+
+	.sort-bar-left .dropdown-toggle {
+		overflow-x: hidden;
+		width: 100%;
+		text-overflow: ellipsis;
+	}
+
+	.sort-bar-6 {
+		margin-right: -0.25em;
+		padding-right: 15px;
+		width: 50%;
+	}
+}
+/* @end Mobile Sort Dropdowns */
 /* @group Filter Bar */
 .filter-bar {
 	padding-top: 20px;

@@ -34,9 +34,9 @@
 
                                     <div class="sort-bar clearfix">
 
-                                        <nav class="pull-left" role="navigation">
+                                        <nav class="sort-bar-left pull-left" role="navigation">
 
-                                            <div class="dropdown sort-control">
+                                            <div class="dropdown sort-control sort-bar-6">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                                     Y-Axis <span class="sort-criteria color-brand-hover y-axis-field">{{ metaData.scatterplot.yField | replace(r/_/g, ' ') }}</span>
                                                 </a>
@@ -49,7 +49,7 @@
                                                 </ul>
                                                 {% endif %}
                                             </div>
-                                            <div class="dropdown sort-control">
+                                            <div class="dropdown sort-control sort-bar-6">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                                     X-Axis <span class="sort-criteria color-brand-hover x-axis-field">{{ metaData.scatterplot.xField | replace(r/_/g, ' ') }}</span>
                                                 </a>
@@ -64,7 +64,7 @@
                                             </div>
                                         </nav>
 
-                                        <div class="pull-right">
+                                        <div class="sort-bar-right pull-right">
                                             <form class="form-search">
                                                 <div class="sort-control visible-xs">
                                                     <div class="btn dropdown-toggle-button search-toggle">
