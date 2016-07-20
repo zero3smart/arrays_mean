@@ -27,6 +27,9 @@ exports.Descriptions =
         // Production - Visible - MoMA dataset
         {
             filename: "MoMA_Artists_v1_jy.csv",
+            fe_views: {
+                scatterplot: false
+            },
             fileEncoding: "utf8", // the default
             uid: "moma_artists",
             importRevision: 1,
@@ -205,6 +208,9 @@ exports.Descriptions =
         },
         {
             filename: "MoMA_Artworks_v2_jy.csv",
+            fe_views: {
+                scatterplot: false
+            },
             fileEncoding: "utf8", // the default
             uid: "moma_artworks",
             importRevision: 2,

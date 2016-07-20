@@ -75,7 +75,7 @@ exports.Descriptions =
                 gallery: true,
                 choropleth: false,
                 chart: true,
-                scatterplot: true,
+                scatterplot: false,
                 timeline: true
             },
             fe_excludeFields:
