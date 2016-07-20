@@ -114,7 +114,7 @@ In order to add them (and to support both local development and production deplo
 
 See this Doc for information on the data import framework capabilities.
 
-[Arrays Server - Data Source Import documentation](https://docs.google.com/document/d/1wi93hWu-XtDxxbGrXZqZa0iQmXBV1f-MApUFt_R31eA)
+[Arrays Server - Data Source Import documentation](https://docs.google.com/document/d/1v4L14gCiEI1_z5sqOVC2RFNZVgtGC--pvEf8yN9y-rU/edit#heading=h.qi2u6fyf9xdo)
 
 
 ---------------------
