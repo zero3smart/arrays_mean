@@ -286,6 +286,7 @@
                 //
                 _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
             };
+            console.log(JSON.stringify(wholeFilteredSet_aggregationOperators))
             processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         }
         function _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
@@ -1559,7 +1560,11 @@
             callback(null, data);
         }
     }
-    //
+    /**
+     * Scatterplot view action handler.
+     * @param {Object} urlQuery - URL params
+     * @param {Function} callback
+     */
     constructor.prototype.BindDataFor_array_scatterplot = function(urlQuery, callback)
     {
         var self = this;
@@ -1568,34 +1573,34 @@
         var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(
             sourceKey, self.context.raw_source_documents_controller
         );
-        /*
-         * TODO: Here is bug. "Internal Server Error" shown when dataSourceDescription not found.
-         */
+
         if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
             callback(new Error("No data source with that source pkey " + sourceKey), null);
             return;
         }
-        /*
-         * TODO: Here is the same problem when view not found.
-         */
+
         if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != null && dataSourceDescription.fe_views.chart === false) {
             callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
             return;
         }
-        /*
-         * TODO: And here i believe as well.
-         */
+
         var fe_visible = dataSourceDescription.fe_visible;
         if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
             callback(new Error("That data source was set to be not visible: " + sourceKey), null);
             return;
         }
-
+        /*
+         * Get somewhat mongoose context.
+         */
         var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller
             .Lazy_Shared_ProcessedRowObject_MongooseContext(sourceKey);
-
+        /*
+         * Stash somewhat model reference.
+         */
         var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
-        //
+        /*
+         * Process URL filterJSON param.
+         */
         var filterJSON = urlQuery.filterJSON;
         var filterObj = {};
         var isFilterActive = false;
@@ -1607,17 +1612,24 @@
                 }
             } catch (e) {
                 winston.error("❌  Error parsing filterJSON: ", filterJSON);
-                callback(e, null);
-
-                return;
+                return callback(e, null);
             }
         }
-        //
-        var err = null;
-        //
+        /*
+         * Process parsed filterJSON param and prepare $match - https://docs.mongodb.com/manual/reference/operator/aggregation/match/ -
+         * statement. May return error instead required statement... and i can't say that understand that logic full. But in that case
+         * we just will create empty $match statement which acceptable for all documents from data source.
+         */
+        var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, "$and");
+        if (_orErrDesc.err) {
+            _orErrDesc.matchOp = { $match : {} };
+        }
+        /*
+         * Run finalyze procedure with request to mongoDB function as parameter.
+         */
         self._fetchedSourceDoc(sourceKey, function(err, sourceDoc)
         {
-            processedRowObjects_mongooseModel.find({}, function(err, documents)
+            processedRowObjects_mongooseModel.aggregate(_orErrDesc.matchOp).allowDiskUse(true).exec(function(err, documents)
             {
                 /*
                  * Get single document.
@@ -1628,7 +1640,7 @@
                  */
                 var numericFields = [];
                 /*
-                 * Loop through documents fields and get numeric fields.
+                 * Loop through document's fields and get numeric fields.
                  */
                 for (i in document.rowParams) {
                     if (! isNaN(parseFloat(document.rowParams[i])) && isFinite(document.rowParams[i]) && i !== 'id') {
@@ -1640,7 +1652,6 @@
                  */
                 callback(err, {
                     env: process.env,
-                    
                     documents: documents,
                     metaData: dataSourceDescription,
                     renderableFields: numericFields,
