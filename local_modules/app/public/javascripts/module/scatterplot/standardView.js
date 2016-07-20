@@ -42,7 +42,7 @@ scatterplot.view.standard.prototype.render = function(data) {
             return chart._xScale(chart._xAccessor.call(undefined, d))
         }).attr('cy', function(d) {
             return chart._yScale(chart._yAccessor.call(undefined, d))
-        });
+        }).attr('r', chart._radius);
     /*
      * Render new bubbles.
      */
