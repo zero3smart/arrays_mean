@@ -190,18 +190,16 @@ scatterplot.view.grouped.prototype.showTooltip = function(bubble, data) {
     /*
      * Evaluate intervals depending on data provided. Remove spaces.
      */
-    var xInterval = String(((data.i - 1) in xTicks ? d3.round(xTicks[data.i - 1], 1) : 0) + ' - ' + d3.round(xTicks[data.i], 1))
-        .replace(new RegExp(' ', 'g'), '');
-    var yInterval = String(((yTicks.length - data.j - 2) in yTicks ? d3.round(yTicks[yTicks.length - data.j - 2], 1) : 0) + ' - ' + d3.round(yTicks[yTicks.length - data.j - 1], 1))
-        .replace(new RegExp(' ', 'g'), '');
+    var xInterval = String(((data.i - 1) in xTicks ? d3.round(xTicks[data.i - 1]) : 0) + ' &ndash; ' + d3.round(xTicks[data.i]));
+    var yInterval = String(((yTicks.length - data.j - 2) in yTicks ? d3.round(yTicks[yTicks.length - data.j - 2]) : 0) + ' &ndash; ' + d3.round(yTicks[yTicks.length - data.j - 1]));
     /*
      * Show tooltip.
      */
     this._tooltip.setContent(
         '<div class="scatterplot-tooltip-container">' +
             '<div class="scatterplot-tooltip-title">' +
-                '<div>X: ' + xInterval + ' ' + chart._xLabel.replace('_', ' ') + '</div>' +
-                '<div>Y: ' + yInterval + ' ' + chart._yLabel.replace('_', ' ') + '</div>' +
+                '<div>X: ' + xInterval + ' ' + chart._xLabel.replace(new RegExp('_', 'g'), ' ') + '</div>' +
+                '<div>Y: ' + yInterval + ' ' + chart._yLabel.replace(new RegExp('_', 'g'), ' ') + '</div>' +
             '</div>' +
             '<div class="scatterplot-tooltip-content">' + data.density + ' Characters</div>' +
         '</div>')
