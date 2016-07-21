@@ -1635,43 +1635,49 @@
             _orErrDesc.matchOps = [{ $match : {} }];
         }
         /*
-         * Run finalyze procedure with request to mongoDB function as parameter.
+         * Run chain of functions to collect necessary data.
          */
-        self._fetchedSourceDoc(sourceKey, function(err, sourceDoc)
-        {
-            processedRowObjects_mongooseModel.aggregate(_orErrDesc.matchOps).allowDiskUse(true).exec(function(err, documents)
-            {
+        self._fetchedSourceDoc(sourceKey, function(err, sourceDoc) {
+            /*
+             * Run query to mongo to obtain all rows which satisfy to specified filters set.
+             */
+            processedRowObjects_mongooseModel.aggregate(_orErrDesc.matchOps).allowDiskUse(true).exec(function(err, documents) {
                 /*
-                 * Get single document.
+                 * Get single/sample document.
                  */
-                var document = documents[0];
+                var sampleDoc = documents[0];
                 /*
-                 * Define numeric fields which may be used as scatterplot axes.
+                 * Go deeper - collect data for filter's sidebar.
                  */
-                var numericFields = [];
-                /*
-                 * Loop through document's fields and get numeric fields.
-                 */
-                for (i in document.rowParams) {
-                    if (! isNaN(parseFloat(document.rowParams[i])) && isFinite(document.rowParams[i]) && i !== 'id') {
-                        numericFields.push(i);
+                _topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName) {
+                    /*
+                     * Define numeric fields which may be used as scatterplot axes.
+                     * Then loop through document's fields and get numeric.
+                     */
+                    var numericFields = [];
+                    for (i in sampleDoc.rowParams) {
+                        if (! isNaN(parseFloat(sampleDoc.rowParams[i])) && isFinite(sampleDoc.rowParams[i]) && i !== 'id') {
+                            numericFields.push(i);
+                        }
                     }
-                }
-                /*
-                 * Run callback function to finish action.
-                 */
-                callback(err, {
-                    env: process.env,
-                    documents: documents,
-                    metaData: dataSourceDescription,
-                    renderableFields: numericFields,
-                    array_source_key: sourceKey,
-                    brandColor: dataSourceDescription.brandColor,
-                    sourceDoc: sourceDoc,
-                    view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
-                    routePath_base: '/array/' + sourceKey + '/scatterplot',
-                    filterObj: filterObj,
-                    isFilterActive: isFilterActive
+                    /*
+                     * Run callback function to finish action.
+                     */
+                    callback(err, {
+                        env: process.env,
+                        documents: documents,
+                        metaData: dataSourceDescription,
+                        renderableFields: numericFields,
+                        array_source_key: sourceKey,
+                        brandColor: dataSourceDescription.brandColor,
+                        uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+                        sourceDoc: sourceDoc,
+                        view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+                        routePath_base: '/array/' + sourceKey + '/scatterplot',
+                        routePath_withoutFilter: '/array/' + sourceKey + '/scatterplot',
+                        filterObj: filterObj,
+                        isFilterActive: isFilterActive
+                    });
                 });
             });
         });
