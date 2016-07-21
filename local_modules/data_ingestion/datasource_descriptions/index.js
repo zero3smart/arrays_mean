@@ -14,23 +14,13 @@ exports.GetDescriptions = function() {
     return descriptions;
 }
 
-exports.GetDescriptionsToSetup = function(datasources) {
-    if (!datasources || datasources.length == 0)
-        datasources = require('./default.js').Datasources;
+exports.GetDescriptionsToSetup = function(files) {
+    if (!files || files.length == 0)
+        files = require('./default.js').Datasources;
 
     var descriptions = [];
-    datasources.forEach(function(datasource){
-        if (typeof datasource === 'string') {
-            descriptions = descriptions.concat(require('./' + datasource).Descriptions);
-
-        } else if (datasource && datasource.file != null) {
-
-            var descs = require('./' + datasource.file).Descriptions;
-            descs.forEach(function(desc){
-                desc.importFormat = datasource.importFormat;
-                descriptions.push(desc);
-            });
-        }
+    files.forEach(function(file){
+        descriptions = descriptions.concat(require('./' + file).Descriptions);
     });
 
     return descriptions;

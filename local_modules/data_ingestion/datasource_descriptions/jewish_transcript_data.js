@@ -256,14 +256,6 @@ exports.Descriptions =
                     "File Name",
                     "Pages_Transcript"
                 ],
-            importNestedObjectKeyField: "Title",
-            //importFormat: import_datatypes.Import_formats.NestedField,
-            //importNestedObjectArrayLabel: 'nestedObjects',
-            importNestedObjectLabel_overrides: {
-                "Title": {
-                    "p": "Page "
-                }
-            },
             //
             //
             afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
@@ -320,32 +312,15 @@ exports.Descriptions =
                     var bulkOperationQueryFragment;
 
                     // Apply to Merge the cached rows(Page) into one row(Issue)
-                    if (this.importFormat == import_datatypes.Import_formats.NestedObject) {
-                        var updateFragment = {$set: {}};
-                        var self = this;
+                    var updateFragment = {$pushAll: {}};
+                    for (var i = 0; i < eachCtx.pageFields.length; i++) {
+                        var fieldName = eachCtx.prefixForPageFields + eachCtx.pageFields[i];
+
+                        var generatedArray = [];
+                        //
                         eachCtx.cachedPages.forEach(function (rowDoc) {
-                            for (var i = 0; i < eachCtx.pageFields.length; i++) {
-                                if (eachCtx.pageFields[i] == self.importNestedObjectKeyField) continue;
-
-                                var pageKey = rowDoc["rowParams"][self.importNestedObjectKeyField];
-                                var pageField = eachCtx.pageFields[i];
-                                if (self.importNestedObjectLabel_overrides) {
-                                    for (var key in self.importNestedObjectLabel_overrides.Title) {
-                                        var re = new RegExp(key,"i");
-                                        pageKey = pageKey.replace(re, self.importNestedObjectLabel_overrides.Title[key]);
-                                    }
-
-                                    for (var key in self.importNestedObjectLabel_overrides[eachCtx.pageFields[i]]) {
-                                        var re = new RegExp(key,"i");
-                                        pageField = pageField.replace(re, self.importNestedObjectLabel_overrides[eachCtx.pageFields[i]][key]);
-                                    }
-                                }
-                                var fieldName = pageKey + "." + pageField;
-                                var fieldValue = rowDoc["rowParams"][eachCtx.pageFields[i]];
-
-                                var nestedObjectArrayLabel = self.importNestedObjectArrayLabel && self.importNestedObjectArrayLabel.length > 0 ? self.importNestedObjectArrayLabel : "nestedObjects";
-                                updateFragment["$set"]["rowParams." + nestedObjectArrayLabel + "." + fieldName] = fieldValue;
-                            }
+                            var fieldValue = rowDoc["rowParams"][eachCtx.pageFields[i]];
+                            generatedArray.push(fieldValue);
 
                             bulkOperationQueryFragment =
                             {
@@ -355,30 +330,10 @@ exports.Descriptions =
                             eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).remove();
                         });
 
-                    } else if (this.importFormat == import_datatypes.Import_formats.NestedField || this.importFormat == null) {
-                        var updateFragment = {$pushAll: {}};
-                        for (var i = 0; i < eachCtx.pageFields.length; i++) {
-                            var fieldName = eachCtx.prefixForPageFields + eachCtx.pageFields[i];
-
-                            var generatedArray = [];
-                            //
-                            eachCtx.cachedPages.forEach(function (rowDoc) {
-                                var fieldValue = rowDoc["rowParams"][eachCtx.pageFields[i]];
-                                generatedArray.push(fieldValue);
-
-                                bulkOperationQueryFragment =
-                                {
-                                    pKey: rowDoc.pKey, // the specific row
-                                    srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
-                                };
-                                eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).remove();
-                            });
-
-                            updateFragment["$pushAll"]["rowParams." + fieldName] = generatedArray;
-                        }
+                        updateFragment["$pushAll"]["rowParams." + fieldName] = generatedArray;
                     }
 
-                    if (updateFragment["$pushAll"] || (updateFragment['$set'] && Object.keys(updateFragment['$set']).length > 0)) {
+                    if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {
                         bulkOperationQueryFragment =
                         {
                             pKey: rowDoc.pKey, // the specific row

@@ -6,14 +6,6 @@ module.exports.DataSource_formats =
     TSV: "tsv"
 };
 
-// Data import format
-
-module.exports.Import_formats =
-{
-    NestedField: "nested_field",
-    NestedObject: "nested_object"
-};
-
 // See "import_MVP_DB_seed" for example of how to use all this
 
 module.exports.Coercion_ops = // For convenience

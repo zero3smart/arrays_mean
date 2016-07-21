@@ -1,10 +1,10 @@
 var import_types = require('./import_datatypes');
 
 exports.GetDatasources = function() {
-    var datasourceObj = [];
+    //var datasourceObj = [];
     var commandArgs = process.argv.slice(2);
 
-    // Parsing
+    /* // Parsing
     // - "-f moma_artists marvel_character_database -i nested_object nested"
     // - "-f moma_artists marvel_character_database"
 
@@ -32,7 +32,7 @@ exports.GetDatasources = function() {
             file: files[i],
             importFormat: format
         });
-    }
+    } */
 
-    return datasourceObj;
+    return commandArgs;
 }
