@@ -77,6 +77,7 @@ exports.Descriptions =
                 scatterplot: false,
                 timeline: true
             },
+            fe_nestedObject_prefix: 'Pages_',
             fe_excludeFields:
                 [
                     "Identifier",
@@ -292,7 +293,6 @@ exports.Descriptions =
                     'CONTENTdm file name',
                     'CONTENTdm file path'
                 ];
-                eachCtx.prefixForPageFields = 'Pages_';
                 //
                 //
                 // generate a bulk operation for our merge field values operations that we're going to do
@@ -319,7 +319,7 @@ exports.Descriptions =
                     // Apply to Merge the cached rows(Page) into one row(Issue)
                     var updateFragment = {$pushAll: {}};
                     for (var i = 0; i < eachCtx.pageFields.length; i++) {
-                        var fieldName = eachCtx.prefixForPageFields + eachCtx.pageFields[i];
+                        var fieldName = self.fe_nestedObject_prefix + eachCtx.pageFields[i];
 
                         var generatedArray = [];
                         //

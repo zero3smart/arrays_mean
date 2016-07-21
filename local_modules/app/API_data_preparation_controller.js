@@ -16,7 +16,7 @@
     ////////////////////////////////////////////////////////////////////////////////
     // Constants/Caches
     //
-    var pageSize = 100;
+    var pageSize = 200;
     var timelineGroupSize = 20;
     var timelineGroups = pageSize / timelineGroupSize;
     //
@@ -286,7 +286,6 @@
                 //
                 _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
             };
-            console.log(JSON.stringify(wholeFilteredSet_aggregationOperators))
             processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         }
         function _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
@@ -298,21 +297,32 @@
             sortOpParams.size = -sortDirection;
             sortOpParams[sortBy_realColumnName_path] = sortDirection;
 
-            var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
-                { $project: {
-                    _id: 1,
-                    pKey: 1,
-                    srcDocPKey: 1,
-                    rowIdxInDoc: 1,
-                    rowParams: 1, // include the rowParams field
-                    size: {
-                        $cond: {
-                            if: { $isArray: "$" + sortBy_realColumnName_path },
-                            then: { $size: "$" + sortBy_realColumnName_path }, // gets the number of items in the array
-                            else: 0
-                        }
+            var projects = { $project: {
+                _id: 1,
+                pKey: 1,
+                srcDocPKey: 1,
+                rowIdxInDoc: 1,
+                //rowParams: 1, // include the rowParams field
+                size: {
+                    $cond: {
+                        if: { $isArray: "$" + sortBy_realColumnName_path },
+                        then: { $size: "$" + sortBy_realColumnName_path }, // gets the number of items in the array
+                        else: 0
                     }
-                }},
+                }
+            }};
+
+            // Exclude the nested pages fields to reduce the amount of data returned
+            var rowParamsFieldsWithoutPages = {};
+            var rowParamsfields = Object.keys(sampleDoc.rowParams);
+            rowParamsfields.forEach(function(rowParamsField) {
+                if (rowParamsField.indexOf(dataSourceDescription.fe_nestedObject_prefix) === -1) {
+                    projects['$project']['rowParams.' + rowParamsField] = 1;
+                }
+            });
+
+            var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
+                projects,
                 // Sort (before pagination):
                 { $sort: sortOpParams },
                 // Pagination
