@@ -59,7 +59,6 @@ exports.Descriptions =
                  }*/
             },
             fe_listed: true,
-            fe_displayTitleOverrides: {}, // this is needed to not through an error
             //
             fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
             {
@@ -256,6 +255,11 @@ exports.Descriptions =
                     "File Name",
                     "Pages_Transcript"
                 ],
+            fe_nestedObjectValueOverrides: {
+                'Pages_Title': {
+                    'p': 'Page '
+                }
+            },
             //
             //
             afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
@@ -306,6 +310,7 @@ exports.Descriptions =
             {
                 // Use this space to perform derivations and add update operations to batch operation in eachCtx
                 //
+                var self = this;
                 // Detect if the row is an issue or page by it's primary key - Identifier
                 if (rowDoc.rowParams.Identifier && rowDoc.rowParams.Identifier != '') {
                     // Issue
@@ -320,6 +325,14 @@ exports.Descriptions =
                         //
                         eachCtx.cachedPages.forEach(function (rowDoc) {
                             var fieldValue = rowDoc["rowParams"][eachCtx.pageFields[i]];
+                            // Replace with the pattern listed on the overrides if needed
+                            if (self.fe_nestedObjectValueOverrides[fieldName]) {
+                                var keys = Object.keys(self.fe_nestedObjectValueOverrides[fieldName]);
+                                keys.forEach(function(key) {
+                                    var re = new RegExp(key, 'i');
+                                    fieldValue = fieldValue.replace(re, self.fe_nestedObjectValueOverrides[fieldName][key])
+                                });
+                            }
                             generatedArray.push(fieldValue);
 
                             bulkOperationQueryFragment =
