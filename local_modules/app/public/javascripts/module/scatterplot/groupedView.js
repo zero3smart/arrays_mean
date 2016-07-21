@@ -152,16 +152,14 @@ scatterplot.view.grouped.prototype.render = function(data) {
         }).attr('cy', function(d, i) {
             return yStep * d.j + yStep / 2;
         }).attr('r', 0)
-        .transition()
+        .on('mouseover', function(d) {
+            chart._bubbleMouseOverEventHandler(this, d);
+        }).on('mouseout', function(d) {
+            chart._bubbleMouseOutEventHandler(this);
+        }).transition()
         .duration(1000)
         .attr('r', function(d) {
             return d.radius;
-        }).each('end', function(d, i) {
-            d3.select(this).on('mouseover', function(d) {
-                chart._bubbleMouseOverEventHandler(this, d);
-            }).on('mouseout', function(d) {
-                chart._bubbleMouseOutEventHandler(this);
-            });
         });
     /*
      * Remove absent bubbles.
