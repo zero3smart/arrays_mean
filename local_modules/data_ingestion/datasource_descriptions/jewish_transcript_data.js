@@ -48,6 +48,25 @@ exports.Descriptions =
                     do: import_datatypes.Coercion_ops.ToStringTrim
                 },
 
+                'Pages_Date': {
+                    do: import_datatypes.Coercion_ops.ToDate,
+                    opts: {
+                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
+                    }
+                },
+                'Pages_Date created': {
+                    do: import_datatypes.Coercion_ops.ToDate,
+                    opts: {
+                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
+                    }
+                },
+                'Pages_Date modified': {
+                    do: import_datatypes.Coercion_ops.ToDate,
+                    opts: {
+                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
+                    }
+                },
+
                 /*'Pages': {
                  do: import_datatypes.Coercion_ops.ToInteger
                  },
@@ -94,6 +113,8 @@ exports.Descriptions =
                     "CONTENTdm number",
                     "CONTENTdm file name",
                     "CONTENTdm file path",
+                    "Date created",
+                    "Date modified",
                     "Pages_Title",
                     "Pages_Date",
                     "Pages_Decade",
@@ -102,8 +123,6 @@ exports.Descriptions =
                     "Pages_Volume/Issue",
                     "Pages_Type",
                     "Pages_Local Type",
-                    "Pages_Date created",
-                    "Pages_Date modified",
                     "Pages_Reference URL",
                     "Pages_CONTENTdm number",
                     "Pages_CONTENTdm file name",
@@ -116,7 +135,9 @@ exports.Descriptions =
             fe_displayTitleOverrides:
             {
                 // these are to be tuples - the values must be unique as well
-                "Pages_Transcript" : "Transcript"
+                "Pages_Transcript" : "Transcript",
+                "Pages_Date created": "Date created",
+                "Pages_Date modified": "Date modified"
             },
             fe_filters_fabricatedFilters:
                 [
