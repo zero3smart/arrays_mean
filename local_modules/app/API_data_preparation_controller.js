@@ -313,7 +313,6 @@
             }};
 
             // Exclude the nested pages fields to reduce the amount of data returned
-            var rowParamsFieldsWithoutPages = {};
             var rowParamsfields = Object.keys(sampleDoc.rowParams);
             rowParamsfields.forEach(function(rowParamsField) {
                 if (rowParamsField.indexOf(dataSourceDescription.fe_nestedObject_prefix) === -1) {
@@ -1225,8 +1224,25 @@
 
             var sort = {};
             sort[groupBySortFieldPath] = -1;
+
+            var projects = { $project: {
+                _id: 1,
+                pKey: 1,
+                srcDocPKey: 1,
+                rowIdxInDoc: 1
+            }};
+
+            // Exclude the nested pages fields to reduce the amount of data returned
+            var rowParamsfields = Object.keys(sampleDoc.rowParams);
+            rowParamsfields.forEach(function(rowParamsField) {
+                if (rowParamsField == sortBy_realColumnName || rowParamsField.indexOf(dataSourceDescription.fe_nestedObject_prefix) === -1) {
+                    projects['$project']['rowParams.' + rowParamsField] = 1;
+                }
+            });
+
             aggregationOperators = aggregationOperators.concat(
             [
+                projects,
                 { $unwind: "$" + "rowParams." + sortBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
                 { // unique/grouping and summing stage
                     $group: {
@@ -1248,10 +1264,10 @@
                 { // reformat
                     $project: {
                         _id: 0,
-                        startDate: "$startDate",
-                        endDate: "$endDate",
+                        startDate: 1,
+                        endDate: 1,
                         total: 1,
-                        results: { $slice: ["$results", groupedResultsLimit] }
+                        results: {$slice: ["$results", groupedResultsLimit]}
                     }
                 },
                 {
@@ -1261,6 +1277,8 @@
                 { $skip: skipNResults },
                 { $limit: groupsLimit }
             ]);
+
+            console.log('---- %j', aggregationOperators);
             //
             var doneFn = function(err, groupedResults)
             {

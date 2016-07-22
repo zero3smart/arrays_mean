@@ -168,6 +168,29 @@ exports.Descriptions =
                 ],
             //
             //
+            fe_timeline_defaultGroupByColumnName_humanReadable: "Decade",
+            fe_timeline_durationsAvailableForGroupBy:
+            [
+                "Decade",
+                "Year",
+                "Month",
+                "Day"
+            ],
+            fe_timeline_defaultSortByColumnName_humanReadable: "Date of Birth",
+            fe_timeline_fieldsNotAvailableAsSortByColumns:
+            [
+                "DisplayName",
+                "Bio",
+                "Artworks", // it's an array of doc ids
+                "Code",
+                "Nationality",
+                "DisplayDate",
+                "Wiki QID",
+                "ULAN",
+                "Country of Origin"
+            ],
+            //
+            //
             fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function(rowObject)
             {
                 var gender = rowObject.rowParams["Code"];
@@ -388,6 +411,34 @@ exports.Descriptions =
                     "Classification",
                     "Department",
                     "Medium"
+                ],
+            //
+            //
+            fe_timeline_defaultGroupByColumnName_humanReadable: "Decade",
+            fe_timeline_durationsAvailableForGroupBy:
+                [
+                    "Decade",
+                    "Year",
+                    "Month",
+                    "Day"
+                ],
+            fe_timeline_defaultSortByColumnName_humanReadable: "Date",
+            fe_timeline_fieldsNotAvailableAsSortByColumns:
+                [
+                    "Title",
+                    "Artist",
+                    "ArtistBio",
+                    "Artist Gender",
+                    "Medium",
+                    "Dimensions",
+                    "CreditLine",
+                    "MoMANumber",
+                    "URL",
+                    "CuratorApproved",
+                    "Classification",
+                    "Department",
+                    "Medium",
+                    "Country of Origin"
                 ],
             //
             //
