@@ -1687,7 +1687,6 @@
                  * Get single/sample document.
                  */
                 var sampleDoc = documents[0];
-//                console.log(sampleDoc);
                 /*
                  * Go deeper - collect data for filter's sidebar.
                  */
@@ -1720,9 +1719,11 @@
                         filterObj: filterObj,
                         isFilterActive: isFilterActive,
                         urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
-                        searchCol: searchCol,
-                        searchQ: searchQ,
-                        colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription)
+                        searchCol: searchCol || '',
+                        searchQ: searchQ || '',
+                        colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                        filterJSON_nonURIEncodedVals: filterJSON,
+                        filterJSON: filterJSON_uriEncodedVals
                     });
                 });
             });
