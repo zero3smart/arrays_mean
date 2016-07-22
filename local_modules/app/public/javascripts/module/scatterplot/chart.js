@@ -491,7 +491,7 @@ scatterplot.chart.prototype.update = function(data) {
     this._xAxisContainer.selectAll('text')
         .attr('x', xBinLength / - 2)
         .text(function(d, i) {
-            return ((i - 1) in xTicks ? d3.round(xTicks[i - 1], 1) : 0) + ' - ' + d3.round(d, 1);
+            return ((i - 1) in xTicks ? d3.round(xTicks[i - 1], 1) : 0) + ' – ' + d3.round(d, 1);
         })
     /*
      * Update y axis and extend ticks.
@@ -504,7 +504,7 @@ scatterplot.chart.prototype.update = function(data) {
         .attr('y', - this._axesHeight / 2)
         .attr('x', - yBinLength / 2)
         .text(function(d, i) {
-            return ((i - 1) in yTicks ? d3.round(yTicks[i - 1], 1) : 0) + ' - ' + d3.round(d, 1);
+            return ((i - 1) in yTicks ? d3.round(yTicks[i - 1], 1) : 0) + ' – ' + d3.round(d, 1);
         });
     /*
      * Update axes labels.
