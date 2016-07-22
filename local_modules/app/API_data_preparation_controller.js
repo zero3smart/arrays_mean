@@ -1652,7 +1652,6 @@
          */
         if (isFilterActive) {
             appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
-            console.log('filter', appendQuery)
             urlQuery_forSwitchingViews = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
         }
 
@@ -1665,7 +1664,6 @@
          */
         if (isSearchActive) {
             appendQuery = "searchCol=" + urlQuery.searchCol + "&" + "searchQ=" + urlQuery.searchQ;
-            console.log('search', appendQuery)
             urlQuery_forSwitchingViews = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
         }
         /*
@@ -1689,6 +1687,7 @@
                  * Get single/sample document.
                  */
                 var sampleDoc = documents[0];
+//                console.log(sampleDoc);
                 /*
                  * Go deeper - collect data for filter's sidebar.
                  */
@@ -1720,7 +1719,10 @@
                         routePath_withoutFilter: '/array/' + sourceKey + '/scatterplot',
                         filterObj: filterObj,
                         isFilterActive: isFilterActive,
-                        urlQuery_forSwitchingViews: urlQuery_forSwitchingViews
+                        urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
+                        searchCol: searchCol,
+                        searchQ: searchQ,
+                        colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription)
                     });
                 });
             });

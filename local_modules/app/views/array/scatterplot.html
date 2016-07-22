@@ -75,13 +75,13 @@
                                                 <div class="mobile-search-popover">
                                                     <div class="dropdown-toggle-button-group" role="group">
                                                         <div class="dropdown sort-control sort-control-left search-control">
-                                                            {% set searchColToOutput = metaData.scatterplot.search[0] if metaData.scatterplot.search else "Object Title" %}
+                                                            {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
                                                             <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                                                                Search <span class="search-criteria color-brand-hover" data-field="{{ searchColToOutput }}">{{ searchColToOutput | replace(r/_/g, ' ') }}</span>
+                                                                Search <span class="search-criteria color-brand-hover" data-field="{{ searchColToOutput }}">{{ searchColToOutput }}</span>
                                                             </a>
-                                                            {% if metaData.scatterplot.search | length %}
+                                                            {% if colNames_orderedForSortByDropdown | length %}
                                                             <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
-                                                                {% for colName in metaData.scatterplot.search %}
+                                                                {% for colName in colNames_orderedForSortByDropdown %}
                                                                 <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-field="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
                                                                 {% endfor %}
                                                             </ul>
@@ -89,7 +89,7 @@
                                                         </div>
                                                         <div class="sort-control sort-control-right">
                                                             <div class="dropdown-toggle">
-                                                                <input type="text" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="">
+                                                                <input type="text" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ }}">
                                                                 <span class="icon-search search-icon hidden-xs"></span>
                                                             </div>
                                                         </div>
@@ -167,12 +167,13 @@
         var scatterPlot = new scatterplot.chart(scatterData.map(function(d) {
             d.rowParams.id = d._id;
             return d.rowParams;
-        })).setXAccessor(function(d) {
+        }), metaData).setXAccessor(function(d) {
             return d['{{ metaData.scatterplot.xField }}']
         }, '{{ metaData.scatterplot.xField }}')
         .setYAccessor(function(d) {
             return d['{{ metaData.scatterplot.yField }}'];
         }, '{{ metaData.scatterplot.yField }}')
+        .searchBy({{ searchCol | dump | safe }}, {{ searchQ | dump | safe }})
         .setColor('{{ metaData.brandColor }}')
         .render('#scatterplot');
 
