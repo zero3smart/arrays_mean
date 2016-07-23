@@ -428,6 +428,30 @@ scatterplot.chart.prototype.setYAccessor = function(yAccessor, yLabel) {
 
 
 /**
+ * Evaluate data extent.
+ * @private
+ * @param {Object[]} data
+ * @param {Function} accessor
+ * @returns [Number]
+ */
+scatterplot.chart.prototype._getDomain = function(data, accessor) {
+    /*
+     * Get data extent using accessor.
+     */
+    var domain = d3.extent(data, accessor);
+    /*
+     * If domain has no range - simulate it as 10% interval from the value.
+     */
+    if (domain[0] === domain[1]) {
+        domain[0] = domain[0] * 0.9;
+        domain[1] = domain[1] * 1.1;
+    }
+
+    return domain;
+};
+
+
+/**
  * Update chart.
  * @public
  * @param {Object[]} [data]
@@ -443,89 +467,6 @@ scatterplot.chart.prototype.update = function(data) {
      */
     var self = this;
     /*
-     * Calculate x domain.
-     */
-    this._xDomain = d3.extent(data, function(d) {
-        return Number(self._xAccessor.call(undefined, d));
-    });
-    /*
-     * Calculate y domain.
-     */
-    this._yDomain = d3.extent(data, function(d) {
-        return Number(self._yAccessor.call(undefined, d));
-    });
-    /*
-     * Update scale functions.
-     */
-    this._xScale.domain(this._xDomain);
-    this._yScale.domain(this._yDomain);
-    /*
-     * Update x axis.
-     */
-    var xBinLength = 150;
-    var xBinsAmount = Math.floor(this._innerWidth / xBinLength);
-    xBinLength = this._innerWidth / xBinsAmount;
-
-    var xTicks = [];
-    for (var i = xBinLength; i <= this._innerWidth; i += xBinLength) {
-        xTicks.push(this._xScale.invert(i));
-    }
-
-    xTicks[xTicks.length - 1] = this._xDomain[this._xDomain.length - 1];
-
-    this._xAxis.ticks(xTicks.length)
-        .tickValues(xTicks)
-        .tickFormat(function(d) {
-            return d3.round(d, 1);
-        });
-    /*
-     * Update y axis.
-     */
-    var yBinLength = 150;
-    var yBinsAmount = Math.ceil(this._innerHeight / yBinLength);
-    yBinLength = this._innerHeight / yBinsAmount;
-
-    var yTicks = [];
-    for (var i = this._innerHeight - yBinLength; i >= 0; i -= yBinLength) {
-        yTicks.push(this._yScale.invert(i));
-    }
-
-    yTicks[yTicks.length - 1] = this._yDomain[this._yDomain.length - 1];
-
-    this._yAxis.ticks(yTicks.length)
-        .tickValues(yTicks)
-        .tickFormat(function(d) {
-            return d3.round(d, 1);
-        });
-    /*
-     * Update x axis and extend ticks.
-     */
-    this._xAxisContainer.call(this._xAxis);
-    this._xAxisContainer.selectAll('line').attr('y1', this._axesHeight);
-    this._xAxisContainer.selectAll('text')
-        .attr('x', xBinLength / - 2)
-        .text(function(d, i) {
-            return ((i - 1) in xTicks ? d3.round(xTicks[i - 1], 1) : 0) + ' – ' + d3.round(d, 1);
-        })
-    /*
-     * Update y axis and extend ticks.
-     */
-    this._yAxisContainer.call(this._yAxis);
-    this._yAxisContainer.selectAll('line').attr('x1', - this._axesHeight);
-    this._yAxisContainer.selectAll('text')
-        .style('text-anchor', 'middle')
-        .attr('transform', 'rotate(-90)')
-        .attr('y', - this._axesHeight / 2)
-        .attr('x', - yBinLength / 2)
-        .text(function(d, i) {
-            return ((i - 1) in yTicks ? d3.round(yTicks[i - 1], 1) : 0) + ' – ' + d3.round(d, 1);
-        });
-    /*
-     * Update axes labels.
-     */
-    this._xLabelContainer.text(this._normalizeLabel(this._xLabel));
-    this._yLabelContainer.text(this._normalizeLabel(this._yLabel));
-    /*
      * Filter data by user search input.
      */
     if (this._searchBy.length && this._searchBy[1] !== '') {
@@ -537,6 +478,94 @@ scatterplot.chart.prototype.update = function(data) {
             }
         });
     }
+    /*
+     * Evaluate data x and y extent.
+     */
+    this._xDomain = this._getDomain(data, this._xAccessor);
+    this._yDomain = this._getDomain(data, this._yAccessor);
+    /*
+     * Update scale functions.
+     */
+    this._xScale.domain(this._xDomain);
+    this._yScale.domain(this._yDomain);
+    /*
+     * Update x axis.
+     */
+    var xBinLength = 150;
+    var xBinsAmount = Math.floor(this._innerWidth / xBinLength);
+    var min = d3.min(this._xScale.range());
+    var max = d3.max(this._xScale.range());
+    var xBinLength = (max - min) / (xBinsAmount - 1);
+
+    var xTicks = [];
+    for (var i = min; i <= max; i += xBinLength) {
+        xTicks.push(this._xScale.invert(i));
+    }
+
+    this._xAxis.ticks(xTicks.length)
+        .tickValues(xTicks)
+        .tickFormat(function(d) {
+            return d3.round(d, 1);
+        });
+    /*
+     * Update y axis.
+     */
+    var yBinLength = 100;
+    var yBinsAmount = Math.ceil(this._innerHeight / yBinLength);
+    var min = d3.min(this._yScale.range());
+    var max = d3.max(this._yScale.range());
+    var yBinLength = (max - min) / (yBinsAmount - 1);
+
+    var yTicks = [];
+    for (var i = min; i <= max; i += yBinLength) {
+        yTicks.push(this._yScale.invert(i));
+    }
+
+    this._yAxis.ticks(yTicks.length)
+        .tickValues(yTicks.reverse())
+        .tickFormat(function(d) {
+            return d3.round(d, 1);
+        });
+    /*
+     * Update x axis and extend ticks.
+     */
+    this._xAxisContainer.call(this._xAxis);
+    this._xAxisContainer.selectAll('line').attr('y1', this._axesHeight);
+    /*
+     * Remove x axis first tick only once.
+     */
+    if (this._xAxisContainer.selectAll('text').size() === xTicks.length) {
+        this._xAxisContainer.select('text').remove();
+    }
+    this._xAxisContainer.selectAll('text')
+        .attr('x', xBinLength / - 2)
+        .text(function(d, i) {
+            return d3.round(xTicks[i], 1) + ' – ' + d3.round(d, 1);
+        })
+    /*
+     * Update y axis and extend ticks.
+     */
+    this._yAxisContainer.call(this._yAxis);
+    this._yAxisContainer.selectAll('line').attr('x1', - this._axesHeight);
+    /*
+     * Remove y axis last tick only once.
+     */
+    if (this._yAxisContainer.selectAll('text').size() === yTicks.length) {
+        this._yAxisContainer.select('text').remove();
+    }
+    this._yAxisContainer.selectAll('text')
+        .style('text-anchor', 'middle')
+        .attr('transform', 'rotate(-90)')
+        .attr('y', - this._axesHeight / 2)
+        .attr('x', - yBinLength / 2)
+        .text(function(d, i) {
+            return d3.round(yTicks[i], 1) + ' – ' + d3.round(d, 1);
+        });
+    /*
+     * Update axes labels.
+     */
+    this._xLabelContainer.text(this._normalizeLabel(this._xLabel));
+    this._yLabelContainer.text(this._normalizeLabel(this._yLabel));
     /*
      * Check current view actuality.
      */

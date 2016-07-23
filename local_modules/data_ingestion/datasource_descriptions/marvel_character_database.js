@@ -366,7 +366,7 @@ exports.Descriptions =
             ],
             fe_scatterplot_defaults: {
                 xAxisField: 'Comics',
-                yAxisField: 'Series',
+                yAxisField: 'Series'
             },
             //
             //

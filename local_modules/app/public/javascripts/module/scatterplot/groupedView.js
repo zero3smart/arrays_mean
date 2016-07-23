@@ -23,8 +23,8 @@ scatterplot.view.grouped.prototype._prepareData = function(data) {
     /*
      * Get axes ticks.
      */
-    var xTicks = chart._xAxis.tickValues();
-    var yTicks = chart._yAxis.tickValues();
+    var xTicks = chart._xAxis.tickValues().slice(1);
+    var yTicks = chart._yAxis.tickValues().slice(1);
     /*
      * Calculate axes intervals width.
      */
@@ -104,8 +104,8 @@ scatterplot.view.grouped.prototype.render = function(data) {
     /*
      * Get axes ticks.
      */
-    var xTicks = chart._xAxis.tickValues();
-    var yTicks = chart._yAxis.tickValues();
+    var xTicks = chart._xAxis.tickValues().slice(1);
+    var yTicks = chart._yAxis.tickValues().slice(1);
     /*
      * Calculate axes intervals width.
      */
@@ -183,8 +183,8 @@ scatterplot.view.grouped.prototype.showTooltip = function(bubble, data) {
     /*
      * Get axes ticks values.
      */
-    var xTicks = chart._xAxis.tickValues();
-    var yTicks = chart._yAxis.tickValues();
+    var xTicks = chart._xAxis.tickValues().slice(1);;
+    var yTicks = chart._yAxis.tickValues().slice(1);;
     /*
      * Evaluate intervals depending on data provided. Remove spaces.
      */
