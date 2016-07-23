@@ -1,14 +1,21 @@
 /**
  * @constructor
- * @param {Object[]}
+ * @param {Object[]} data
+ * @param {Object} metaData
  */
-scatterplot.chart = function(data) {
+scatterplot.chart = function(data, metaData) {
     /**
      * Chart data.
      * @private
      * @member {Object[]}
      */
     this._data = data;
+    /**
+     * Chart meta data.
+     * @private
+     * @member {Object}
+     */
+    this._metaData = metaData;
     /**
      * Chart bubble's radius.
      * @private
@@ -211,6 +218,10 @@ scatterplot.chart.prototype.setColor = function(color) {
  * @return {scatterplot.chart}
  */
 scatterplot.chart.prototype.searchBy = function(key, value) {
+
+    if (key in this._metaData.fe_scatterplot_fieldsMap) {
+        key = this._metaData.fe_scatterplot_fieldsMap[key];
+    }
 
     this._searchBy = [key, value];
 
@@ -480,7 +491,7 @@ scatterplot.chart.prototype.update = function(data) {
     this._xAxisContainer.selectAll('text')
         .attr('x', xBinLength / - 2)
         .text(function(d, i) {
-            return ((i - 1) in xTicks ? d3.round(xTicks[i - 1], 1) : 0) + ' - ' + d3.round(d, 1);
+            return ((i - 1) in xTicks ? d3.round(xTicks[i - 1], 1) : 0) + ' – ' + d3.round(d, 1);
         })
     /*
      * Update y axis and extend ticks.
@@ -493,7 +504,7 @@ scatterplot.chart.prototype.update = function(data) {
         .attr('y', - this._axesHeight / 2)
         .attr('x', - yBinLength / 2)
         .text(function(d, i) {
-            return ((i - 1) in yTicks ? d3.round(yTicks[i - 1], 1) : 0) + ' - ' + d3.round(d, 1);
+            return ((i - 1) in yTicks ? d3.round(yTicks[i - 1], 1) : 0) + ' – ' + d3.round(d, 1);
         });
     /*
      * Update axes labels.
@@ -505,7 +516,11 @@ scatterplot.chart.prototype.update = function(data) {
      */
     if (this._searchBy.length && this._searchBy[1] !== '') {
         data = data.filter(function(d) {
-            return d[self._searchBy[0]].toLowerCase().indexOf(self._searchBy[1]) >= 0;
+            if (Array.isArray(d[self._searchBy[0]])) {
+                return d[self._searchBy[0]].some(function(d) { return d.toLowerCase().indexOf(self._searchBy[1]) >= 0 })
+            } else {
+                return d[self._searchBy[0]].toLowerCase().indexOf(self._searchBy[1]) >= 0;
+            }
         });
     }
     /*

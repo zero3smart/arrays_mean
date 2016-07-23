@@ -358,13 +358,15 @@ exports.Descriptions =
                 "Series",
                 "Events"
             ],
+            fe_scatterplot_fieldsMap : {
+                'Object Title' : 'name'
+            },
             /**
              * Scatterplot chart personal settings.
              */
             scatterplot: {
                 xField: 'stories_available',
-                yField: 'series_available',
-                search: ['name', 'description']
+                yField: 'series_available'
             },
             //
             //

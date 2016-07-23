@@ -56,16 +56,13 @@ scatterplot.view.standard.prototype.render = function(data) {
         }).attr('cy', function(d) {
             return chart._yScale(chart._yAccessor.call(undefined, d))
         }).attr('r', 0)
-        .transition()
+        .on('mouseover', function(d) {
+            chart._bubbleMouseOverEventHandler(this, d);
+        }).on('mouseout', function(d) {
+            chart._bubbleMouseOutEventHandler(this);
+        }).transition()
         .duration(1000)
-        .attr('r', chart._radius)
-        .each('end', function(d) {
-            d3.select(this).on('mouseover', function(d) {
-                chart._bubbleMouseOverEventHandler(this, d);
-            }).on('mouseout', function(d) {
-                chart._bubbleMouseOutEventHandler(this);
-            });
-        });
+        .attr('r', chart._radius);
     /*
      * Remove absent bubbles.
      */

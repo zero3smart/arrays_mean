@@ -1588,7 +1588,7 @@
         }
     }
     /**
-     * Scatterplot view action handler.
+     * Scatterplot view action controller.
      * @param {Object} urlQuery - URL params
      * @param {Function} callback
      */
@@ -1642,6 +1642,29 @@
                 return callback(e, null);
             }
         }
+
+        var filterJSON_uriEncodedVals = _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
+        var urlQuery_forSwitchingViews  = "";
+        var appendQuery = "";
+        /*
+         * Check filter active and update composed URL params.
+         */
+        if (isFilterActive) {
+            appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
+            urlQuery_forSwitchingViews = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        }
+
+        var searchCol = urlQuery.searchCol;
+        var searchQ = urlQuery.searchQ;
+        var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != ""
+            && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";
+        /*
+         * Check search active and update composed URL params.
+         */
+        if (isSearchActive) {
+            appendQuery = "searchCol=" + urlQuery.searchCol + "&" + "searchQ=" + urlQuery.searchQ;
+            urlQuery_forSwitchingViews = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        }
         /*
          * Process parsed filterJSON param and prepare $match - https://docs.mongodb.com/manual/reference/operator/aggregation/match/ -
          * statement. May return error instead required statement... and i can't say that understand that logic full. But in that case
@@ -1693,7 +1716,13 @@
                         routePath_base: '/array/' + sourceKey + '/scatterplot',
                         routePath_withoutFilter: '/array/' + sourceKey + '/scatterplot',
                         filterObj: filterObj,
-                        isFilterActive: isFilterActive
+                        isFilterActive: isFilterActive,
+                        urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
+                        searchCol: searchCol || '',
+                        searchQ: searchQ || '',
+                        colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                        filterJSON_nonURIEncodedVals: filterJSON,
+                        filterJSON: filterJSON_uriEncodedVals
                     });
                 });
             });
