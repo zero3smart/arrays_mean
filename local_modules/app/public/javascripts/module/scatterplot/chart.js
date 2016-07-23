@@ -474,18 +474,31 @@ scatterplot.chart.prototype._getDomain = function(data, accessor) {
 };
 
 
+/**
+ * Get axis interval length.
+ * @private
+ * @param {Number} value - scale "max" size.
+ * @param {Number} size - value to scale
+ * @returns {Number}
+ */
 scatterplot.chart.prototype._getBinLength = function(value, size) {
 
     var scale = d3.scale.linear()
         .range([0, 15])
         .domain([0, value]);
 
-    return scale(size);
+    var length = scale(size);
+    if (length < 75) {
+        length = 75;
+    }
+
+    return length;
 };
 
 
 /**
  * Check enough size for axes.
+ * @private
  * @returns {Boolean}
  */
 scatterplot.chart.prototype._isMobileMode = function() {
