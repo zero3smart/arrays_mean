@@ -163,11 +163,12 @@ scatterplot.chart = function(data, metaData) {
      * @private
      * @member {Object}
      */
+    this._marginLeft = this._radius * 3;
     this._margin = {
         top : this._radius * 3,
         right : this._radius,
         bottom : this._radius * 3,
-        left : this._radius * 3
+        left : this._marginLeft
     };
     /**
      * View treshold.
@@ -321,6 +322,24 @@ scatterplot.chart.prototype.resize = function() {
     this._outerHeight = 400;
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
     /*
+     * Check mode and change left margin and hide axes labels if necessary.
+     */
+    if (this._isMobileMode()) {
+        this._margin.left = this._axesHeight + 1;
+        this._xLabelContainer.style('visibility', 'hidden')
+        this._yLabelContainer.style('visibility', 'hidden')
+    } else {
+        this._margin.left = this._marginLeft;
+        this._xLabelContainer.style('visibility', 'visible')
+        this._yLabelContainer.style('visibility', 'visible')
+    }
+    /*
+     * Recalculate inner width and shift canvas again.
+     * This is necessary if in code above (mobile check) was changes.
+     */
+    this._canvas.attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')');
+    this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
+    /*
      * Configure scale functions.
      */
     this._xScale.range([0, this._innerWidth]);
@@ -455,6 +474,26 @@ scatterplot.chart.prototype._getDomain = function(data, accessor) {
 };
 
 
+scatterplot.chart.prototype._getBinLength = function(value, size) {
+
+    var scale = d3.scale.linear()
+        .range([0, 15])
+        .domain([0, value]);
+
+    return scale(size);
+};
+
+
+/**
+ * Check enough size for axes.
+ * @returns {Boolean}
+ */
+scatterplot.chart.prototype._isMobileMode = function() {
+
+    return this._innerWidth < 300;
+};
+
+
 /**
  * Update chart.
  * @public
@@ -495,7 +534,7 @@ scatterplot.chart.prototype.update = function(data) {
     /*
      * Update x axis.
      */
-    var xBinLength = 150;
+    var xBinLength = this._getBinLength(100, this._innerWidth);
     var xBinsAmount = Math.floor(this._innerWidth / xBinLength);
     var min = d3.min(this._xScale.range());
     var max = d3.max(this._xScale.range());
@@ -514,7 +553,7 @@ scatterplot.chart.prototype.update = function(data) {
     /*
      * Update y axis.
      */
-    var yBinLength = 100;
+    var yBinLength = this._getBinLength(50, this._innerHeight);
     var yBinsAmount = Math.ceil(this._innerHeight / yBinLength);
     var min = d3.min(this._yScale.range());
     var max = d3.max(this._yScale.range());
