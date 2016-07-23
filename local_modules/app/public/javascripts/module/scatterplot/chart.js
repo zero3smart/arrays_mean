@@ -385,8 +385,10 @@ scatterplot.chart.prototype.setXAccessor= function(xAccessor, xLabel) {
             var value = xAccessor(d);
             if (Array.isArray(value)) {
                 return value.length;
-            } else {
+            } else if (Number(value) == value) {
                 return Number(value);
+            } else {
+                return 1;
             }
         };
     }
@@ -413,8 +415,10 @@ scatterplot.chart.prototype.setYAccessor = function(yAccessor, yLabel) {
             var value = yAccessor(d);
             if (Array.isArray(value)) {
                 return value.length;
-            } else {
+            } else if (Number(value) == value) {
                 return Number(value);
+            } else {
+                return 1;
             }
         };
     }
