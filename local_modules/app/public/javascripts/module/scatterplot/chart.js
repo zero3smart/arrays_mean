@@ -381,7 +381,14 @@ scatterplot.chart.prototype._normalizeLabel = function(label) {
 scatterplot.chart.prototype.setXAccessor= function(xAccessor, xLabel) {
 
     if (xAccessor) {
-        this._xAccessor = xAccessor;
+        this._xAccessor = function(d) {
+            var value = xAccessor(d);
+            if (Array.isArray(value)) {
+                return value.length;
+            } else {
+                return Number(value);
+            }
+        };
     }
 
     if (xLabel) {
@@ -402,7 +409,14 @@ scatterplot.chart.prototype.setXAccessor= function(xAccessor, xLabel) {
 scatterplot.chart.prototype.setYAccessor = function(yAccessor, yLabel) {
 
     if (yAccessor) {
-        this._yAccessor = yAccessor;
+        this._yAccessor = function(d) {
+            var value = yAccessor(d);
+            if (Array.isArray(value)) {
+                return value.length;
+            } else {
+                return Number(value);
+            }
+        };
     }
 
     if (yLabel) {

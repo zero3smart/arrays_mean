@@ -38,7 +38,7 @@
 
                                             <div class="dropdown sort-control sort-bar-6">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    Y-Axis <span class="sort-criteria color-brand-hover y-axis-field">{{ metaData.scatterplot.yField | replace(r/_/g, ' ') }}</span>
+                                                    Y-Axis <span class="sort-criteria color-brand-hover y-axis-field">{{ metaData.fe_scatterplot_defaults.yAxisField | replace(r/_/g, ' ') }}</span>
                                                 </a>
                                                 {% if renderableFields | length %}
                                                 <ul class="dropdown-menu axis-control y-axis-control" aria-labelledby="type">
@@ -51,7 +51,7 @@
                                             </div>
                                             <div class="dropdown sort-control sort-bar-6">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    X-Axis <span class="sort-criteria color-brand-hover x-axis-field">{{ metaData.scatterplot.xField | replace(r/_/g, ' ') }}</span>
+                                                    X-Axis <span class="sort-criteria color-brand-hover x-axis-field">{{ metaData.fe_scatterplot_defaults.xAxisField | replace(r/_/g, ' ') }}</span>
                                                 </a>
                                                 {% if renderableFields | length %}
                                                 <ul class="dropdown-menu axis-control x-axis-control" aria-labelledby="type">
@@ -173,11 +173,11 @@
             d.rowParams.id = d._id;
             return d.rowParams;
         }), metaData).setXAccessor(function(d) {
-            return d['{{ metaData.scatterplot.xField }}']
-        }, '{{ metaData.scatterplot.xField }}')
+            return d['{{ metaData.fe_scatterplot_defaults.xAxisField }}']
+        }, '{{ metaData.fe_scatterplot_defaults.xAxisField }}')
         .setYAccessor(function(d) {
-            return d['{{ metaData.scatterplot.yField }}'];
-        }, '{{ metaData.scatterplot.yField }}')
+            return d['{{ metaData.fe_scatterplot_defaults.yAxisField }}'];
+        }, '{{ metaData.fe_scatterplot_defaults.yAxisField }}')
         .searchBy({{ searchCol | dump | safe }}, {{ searchQ | dump | safe }})
         .setColor('{{ metaData.brandColor }}')
         .render('#scatterplot');
@@ -213,8 +213,8 @@
         }
 
         // Hide axis controls initial values.
-        hideAxisItem('x', '{{ metaData.scatterplot.yField | replace(r/_/g, ' ') }}');
-        hideAxisItem('y', '{{ metaData.scatterplot.xField | replace(r/_/g, ' ') }}');
+        hideAxisItem('x', '{{ metaData.fe_scatterplot_defaults.yAxisField | replace(r/_/g, ' ') }}');
+        hideAxisItem('y', '{{ metaData.fe_scatterplot_defaults.xAxisField | replace(r/_/g, ' ') }}');
 
         // Set up search dropdown click handler.
         jQuery('ul.search-dropdown-menu a').click(function(e) {

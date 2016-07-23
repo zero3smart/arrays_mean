@@ -361,12 +361,12 @@ exports.Descriptions =
             fe_scatterplot_fieldsMap : {
                 'Object Title' : 'name'
             },
-            /**
-             * Scatterplot chart personal settings.
-             */
-            scatterplot: {
-                xField: 'stories_available',
-                yField: 'series_available'
+            fe_scatterplot_fieldsNotAvailable: [
+                'Last Modified'
+            ],
+            fe_scatterplot_defaults: {
+                xAxisField: 'Comics',
+                yAxisField: 'Series',
             },
             //
             //

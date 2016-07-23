@@ -1691,12 +1691,22 @@
                  */
                 _topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName) {
                     /*
-                     * Define numeric fields which may be used as scatterplot axes.
-                     * Then loop through document's fields and get numeric.
+                     * Define numeric fields list which may be used as scatterplot axes.
+                     * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.
                      */
-                    var numericFields = [];
+                    var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription).filter(function(i) {
+                        return dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) == -1;
+                    });
+                    /*
+                     * Then loop through document's fields and get numeric.
+                     * Also checking they are not in fe_scatterplot_fieldsNotAvailable config option.
+                     */
                     for (i in sampleDoc.rowParams) {
-                        if (! isNaN(parseFloat(sampleDoc.rowParams[i])) && isFinite(sampleDoc.rowParams[i]) && i !== 'id') {
+                        if (! (! isNaN(parseFloat(sampleDoc.rowParams[i])) && isFinite(sampleDoc.rowParams[i]) && i !== 'id')) {
+                            continue;
+                        } else if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) >= 0) {
+                            continue;
+                        } else {
                             numericFields.push(i);
                         }
                     }
