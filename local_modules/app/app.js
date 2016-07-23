@@ -113,9 +113,14 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
         if (typeof filterVal === 'string')
             return decodeURIComponent(filterVal);
         var output = '';
-        if (filterVal.min !== null)
-            output = moment(filterVal.min).format("MMMM Do, YYYY") + ' – ';
-        if (filterVal.max !== null)
+        if (!isNaN(filterVal.min))
+            output = filterVal.min;
+        else if (filterVal.min !== null)
+            output = output + moment(filterVal.min).format("MMMM Do, YYYY");
+        output = output + ' – ';
+        if (!isNaN(filterVal.max))
+            output = output + filterVal.max;
+        else if (filterVal.max !== null)
             output = output + moment(filterVal.max).format("MMMM Do, YYYY");
         return output;
     });

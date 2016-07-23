@@ -24,10 +24,21 @@ exports.Descriptions =
                     opts: {
                         format: "YYYY-MM-DD" // e.g. "2009-03-21"
                     }
+                },
+                comics_available: {
+                    do: import_datatypes.Coercion_ops.ToInteger
+                },
+                stories_available: {
+                    do: import_datatypes.Coercion_ops.ToInteger
+                },
+                series_available: {
+                    do: import_datatypes.Coercion_ops.ToInteger
+                },
+                events_available: {
+                    do: import_datatypes.Coercion_ops.ToInteger
                 }
             },
             fe_listed: true,
-            fe_displayTitleOverrides: {}, // this is needed to not through an error
             //
             fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
             {
@@ -259,7 +270,11 @@ exports.Descriptions =
             { // these are to be tuples - the values must be unique as well
                 "name": "Name",
                 "description": "Description",
-                "modified": "Last Modified"
+                "modified": "Last Modified",
+                "series_available": "Series Available",
+                "comics_available": "Comics Available",
+                "stories_available": "Stories Available",
+                "events_available": "Events Available"
             },
             fe_filters_fabricatedFilters:
             [

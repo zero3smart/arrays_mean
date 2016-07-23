@@ -219,7 +219,6 @@
             }
             wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
         }
-        console.log('--------%j', wholeFilteredSet_aggregationOperators);
         //
         // Now kick off the query work
         self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
