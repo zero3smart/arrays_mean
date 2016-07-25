@@ -9,7 +9,7 @@ var dotenv_config =
 };
 require('dotenv').config(dotenv_config);
 //
-var datasources = require('./command_parser').GetDatasources();
+var datasources = require('./cmd_parser').GetDatasources();
 var dataSourceDescriptions = require('./datasource_descriptions').GetDescriptionsToSetup(datasources);
 //
 //
@@ -17,4 +17,4 @@ var dataSourceDescriptions = require('./datasource_descriptions').GetDescription
 //
 var context = require('./import_context').NewHydratedContext();
 // And initiate import
-context.import_controller._Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
+context.import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
