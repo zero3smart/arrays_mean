@@ -71,13 +71,6 @@ In order to add them (and to support both local development and production deplo
 * [Arrays - Server - .env.production](https://docs.google.com/document/d/1d1IoAHgGPB4bwWGaYprtBFSVoLEcoEuw4WdruUt-v9k/)
 * [Arrays - Server - .env.development](https://docs.google.com/document/d/15-SkjQHqznSMOWevEH6yZvshdNqMzN4RErMhOPFz3jc/)
 
-##### VI. (Not necessary as of this edit) Installing git submodules
-
-1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
-2. Execute `git submodule init` and then `git submodule update`.
-3. (Optional) Recursively checkout 'develop' on nested submodules.
-
-
 #### iii. Signing into Google Cloud Platform
 
 1. Download the archive file and extract: https://cloud.google.com/sdk/docs/quickstart-mac-os-x
@@ -85,13 +78,29 @@ In order to add them (and to support both local development and production deplo
 3. Run `gcloud init`
 
 
-#### iv. Seeding the local database with MVP CSV content
+#### iv. Seeding the local database
 
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
-2. Execute [`bin/_dev_MVP_DB_seed`](bin/_dev_MVP_DB_seed)
-(Note: Unless your data import description specifies any custom each-row operations, you can kill the DB seed during the image scraping stage on dev as it takes a long time and you probably don't need to scrape all the images in your dev environment.)
-3. Execute [`bin/_dev_postImportCaching`](bin/_dev_postImportCaching)
+2. Configure datasets to batch import in [`data_ingestion/datasource_descriptions/default.js`](local_modules/data_ingestion/datasource_descriptions/default.js)
+3. Execute [`bin/_dev_MVP_DB_seed`](bin/_dev_MVP_DB_seed) to import all datasets configured in `default.js`
+4. Execute [`bin/__dev_postImportCaching`](bin/__dev_postImportCaching) -- Needed for generating the sidebar filters cache
 
+##### Importing one dataset at a time
+1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
+2. Execute [`bin/_dev_MVP_DB_seed marvel_character_database`](bin/_dev_MVP_DB_seed) where `marvel_character_database` is the file name to import from the `data_ingestion/datasource_description/` directory. `marvel_character_database.js` is also acceptable.
+3. These parameters can be applied to all the binary commands in the `/bin` directory
+  * bin/_start_dev_postImportCaching
+  * bin/__dev_postImportCaching
+  * bin/__DEVELOPMENT__MVP_DB_seed__enterImageScrapingDirectly
+  * bin/__dev_MVP_DB_seed__enterImageScrapingDirectly
+  * Etc.
+4. Except for:
+  * _runUntilSuccess_DEVELOPMENT__MVP_DB_seed__enterImageScrapingDirectly
+  * _runUntilSuccess_PRODUCTION__MVP_DB_seed__enterImageScrapingDirectly 
+  * Start_dev_app
+  * _start_dev_MoMA_canned_questions
+  * _prod_MoMA_canned_questions
+5. Execute [`bin/__dev_postImportCaching`](bin/__dev_postImportCaching) to re-generate sidebar filters cache
 
 #### v. Running the front-end web server locally
 
@@ -105,7 +114,7 @@ In order to add them (and to support both local development and production deplo
 
 See this Doc for information on the data import framework capabilities.
 
-[Arrays Server - Data Source Import documentation](https://docs.google.com/document/d/1wi93hWu-XtDxxbGrXZqZa0iQmXBV1f-MApUFt_R31eA)
+[Arrays Server - Data Source Import documentation](https://docs.google.com/document/d/1v4L14gCiEI1_z5sqOVC2RFNZVgtGC--pvEf8yN9y-rU/edit#heading=h.qi2u6fyf9xdo)
 
 
 ---------------------

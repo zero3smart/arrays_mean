@@ -1,14 +1,21 @@
 /**
  * @constructor
- * @param {Object[]}
+ * @param {Object[]} data
+ * @param {Object} metaData
  */
-scatterplot.chart = function(data) {
+scatterplot.chart = function(data, metaData) {
     /**
      * Chart data.
      * @private
      * @member {Object[]}
      */
     this._data = data;
+    /**
+     * Chart meta data.
+     * @private
+     * @member {Object}
+     */
+    this._metaData = metaData;
     /**
      * Chart bubble's radius.
      * @private
@@ -156,11 +163,12 @@ scatterplot.chart = function(data) {
      * @private
      * @member {Object}
      */
+    this._marginLeft = this._radius * 3;
     this._margin = {
         top : this._radius * 3,
         right : this._radius,
         bottom : this._radius * 3,
-        left : this._radius * 3
+        left : this._marginLeft
     };
     /**
      * View treshold.
@@ -211,6 +219,10 @@ scatterplot.chart.prototype.setColor = function(color) {
  * @return {scatterplot.chart}
  */
 scatterplot.chart.prototype.searchBy = function(key, value) {
+
+    if (key in this._metaData.fe_scatterplot_fieldsMap) {
+        key = this._metaData.fe_scatterplot_fieldsMap[key];
+    }
 
     this._searchBy = [key, value];
 
@@ -310,6 +322,24 @@ scatterplot.chart.prototype.resize = function() {
     this._outerHeight = 400;
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
     /*
+     * Check mode and change left margin and hide axes labels if necessary.
+     */
+    if (this._isMobileMode()) {
+        this._margin.left = this._axesHeight + 1;
+        this._xLabelContainer.style('visibility', 'hidden')
+        this._yLabelContainer.style('visibility', 'hidden')
+    } else {
+        this._margin.left = this._marginLeft;
+        this._xLabelContainer.style('visibility', 'visible')
+        this._yLabelContainer.style('visibility', 'visible')
+    }
+    /*
+     * Recalculate inner width and shift canvas again.
+     * This is necessary if in code above (mobile check) was changes.
+     */
+    this._canvas.attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')');
+    this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
+    /*
      * Configure scale functions.
      */
     this._xScale.range([0, this._innerWidth]);
@@ -370,7 +400,16 @@ scatterplot.chart.prototype._normalizeLabel = function(label) {
 scatterplot.chart.prototype.setXAccessor= function(xAccessor, xLabel) {
 
     if (xAccessor) {
-        this._xAccessor = xAccessor;
+        this._xAccessor = function(d) {
+            var value = xAccessor(d);
+            if (Array.isArray(value)) {
+                return value.length;
+            } else if (Number(value) == value) {
+                return Number(value);
+            } else {
+                return 1;
+            }
+        };
     }
 
     if (xLabel) {
@@ -391,7 +430,16 @@ scatterplot.chart.prototype.setXAccessor= function(xAccessor, xLabel) {
 scatterplot.chart.prototype.setYAccessor = function(yAccessor, yLabel) {
 
     if (yAccessor) {
-        this._yAccessor = yAccessor;
+        this._yAccessor = function(d) {
+            var value = yAccessor(d);
+            if (Array.isArray(value)) {
+                return value.length;
+            } else if (Number(value) == value) {
+                return Number(value);
+            } else {
+                return 1;
+            }
+        };
     }
 
     if (yLabel) {
@@ -399,6 +447,63 @@ scatterplot.chart.prototype.setYAccessor = function(yAccessor, yLabel) {
     }
 
     return this;
+};
+
+
+/**
+ * Evaluate data extent.
+ * @private
+ * @param {Object[]} data
+ * @param {Function} accessor
+ * @returns [Number]
+ */
+scatterplot.chart.prototype._getDomain = function(data, accessor) {
+    /*
+     * Get data extent using accessor.
+     */
+    var domain = d3.extent(data, accessor);
+    /*
+     * If domain has no range - simulate it as 10% interval from the value.
+     */
+    if (domain[0] === domain[1]) {
+        domain[0] = domain[0] * 0.9;
+        domain[1] = domain[1] * 1.1;
+    }
+
+    return domain;
+};
+
+
+/**
+ * Get axis interval length.
+ * @private
+ * @param {Number} value - scale "max" size.
+ * @param {Number} size - value to scale
+ * @returns {Number}
+ */
+scatterplot.chart.prototype._getBinLength = function(value, size) {
+
+    var scale = d3.scale.linear()
+        .range([0, 15])
+        .domain([0, value]);
+
+    var length = scale(size);
+    if (length < 75) {
+        length = 75;
+    }
+
+    return length;
+};
+
+
+/**
+ * Check enough size for axes.
+ * @private
+ * @returns {Boolean}
+ */
+scatterplot.chart.prototype._isMobileMode = function() {
+
+    return this._innerWidth < 300;
 };
 
 
@@ -418,17 +523,22 @@ scatterplot.chart.prototype.update = function(data) {
      */
     var self = this;
     /*
-     * Calculate x domain.
+     * Filter data by user search input.
      */
-    this._xDomain = d3.extent(data, function(d) {
-        return Number(self._xAccessor.call(undefined, d));
-    });
+    if (this._searchBy.length && this._searchBy[1] !== '') {
+        data = data.filter(function(d) {
+            if (Array.isArray(d[self._searchBy[0]])) {
+                return d[self._searchBy[0]].some(function(d) { return d.toLowerCase().indexOf(self._searchBy[1]) >= 0 })
+            } else {
+                return d[self._searchBy[0]].toLowerCase().indexOf(self._searchBy[1]) >= 0;
+            }
+        });
+    }
     /*
-     * Calculate y domain.
+     * Evaluate data x and y extent.
      */
-    this._yDomain = d3.extent(data, function(d) {
-        return Number(self._yAccessor.call(undefined, d));
-    });
+    this._xDomain = this._getDomain(data, this._xAccessor);
+    this._yDomain = this._getDomain(data, this._yAccessor);
     /*
      * Update scale functions.
      */
@@ -437,16 +547,16 @@ scatterplot.chart.prototype.update = function(data) {
     /*
      * Update x axis.
      */
-    var xBinLength = 150;
+    var xBinLength = this._getBinLength(100, this._innerWidth);
     var xBinsAmount = Math.floor(this._innerWidth / xBinLength);
-    xBinLength = this._innerWidth / xBinsAmount;
+    var min = d3.min(this._xScale.range());
+    var max = d3.max(this._xScale.range());
+    var xBinLength = (max - min) / (xBinsAmount - 1);
 
     var xTicks = [];
-    for (var i = xBinLength; i <= this._innerWidth; i += xBinLength) {
+    for (var i = min; i <= max; i += xBinLength) {
         xTicks.push(this._xScale.invert(i));
     }
-
-    xTicks[xTicks.length - 1] = this._xDomain[this._xDomain.length - 1];
 
     this._xAxis.ticks(xTicks.length)
         .tickValues(xTicks)
@@ -456,19 +566,19 @@ scatterplot.chart.prototype.update = function(data) {
     /*
      * Update y axis.
      */
-    var yBinLength = 150;
+    var yBinLength = this._getBinLength(50, this._innerHeight);
     var yBinsAmount = Math.ceil(this._innerHeight / yBinLength);
-    yBinLength = this._innerHeight / yBinsAmount;
+    var min = d3.min(this._yScale.range());
+    var max = d3.max(this._yScale.range());
+    var yBinLength = (max - min) / (yBinsAmount - 1);
 
     var yTicks = [];
-    for (var i = this._innerHeight - yBinLength; i >= 0; i -= yBinLength) {
+    for (var i = min; i <= max; i += yBinLength) {
         yTicks.push(this._yScale.invert(i));
     }
 
-    yTicks[yTicks.length - 1] = this._yDomain[this._yDomain.length - 1];
-
     this._yAxis.ticks(yTicks.length)
-        .tickValues(yTicks)
+        .tickValues(yTicks.reverse())
         .tickFormat(function(d) {
             return d3.round(d, 1);
         });
@@ -477,41 +587,41 @@ scatterplot.chart.prototype.update = function(data) {
      */
     this._xAxisContainer.call(this._xAxis);
     this._xAxisContainer.selectAll('line').attr('y1', this._axesHeight);
+    /*
+     * Remove x axis first tick only once.
+     */
+    if (this._xAxisContainer.selectAll('text').size() === xTicks.length) {
+        this._xAxisContainer.select('text').remove();
+    }
     this._xAxisContainer.selectAll('text')
         .attr('x', xBinLength / - 2)
         .text(function(d, i) {
-            return ((i - 1) in xTicks ? d3.round(xTicks[i - 1], 1) : 0) + ' - ' + d3.round(d, 1);
+            return d3.round(xTicks[i], 1) + ' – ' + d3.round(d, 1);
         })
     /*
      * Update y axis and extend ticks.
      */
     this._yAxisContainer.call(this._yAxis);
     this._yAxisContainer.selectAll('line').attr('x1', - this._axesHeight);
+    /*
+     * Remove y axis last tick only once.
+     */
+    if (this._yAxisContainer.selectAll('text').size() === yTicks.length) {
+        this._yAxisContainer.select('text').remove();
+    }
     this._yAxisContainer.selectAll('text')
         .style('text-anchor', 'middle')
         .attr('transform', 'rotate(-90)')
         .attr('y', - this._axesHeight / 2)
         .attr('x', - yBinLength / 2)
         .text(function(d, i) {
-            return ((i - 1) in yTicks ? d3.round(yTicks[i - 1], 1) : 0) + ' - ' + d3.round(d, 1);
+            return d3.round(yTicks[i], 1) + ' – ' + d3.round(d, 1);
         });
     /*
      * Update axes labels.
      */
     this._xLabelContainer.text(this._normalizeLabel(this._xLabel));
     this._yLabelContainer.text(this._normalizeLabel(this._yLabel));
-    /*
-     * Filter data by user search input.
-     */
-    if (this._searchBy.length && this._searchBy[1] !== '') {
-        data = data.filter(function(d) {
-            return d[self._searchBy[0]].toLowerCase().indexOf(self._searchBy[1]) >= 0;
-        });
-    }
-    /*
-     * Apply filters defined as URL parameters.
-     */
-    data = this._applyFilters(data);
     /*
      * Check current view actuality.
      */
@@ -525,80 +635,6 @@ scatterplot.chart.prototype.update = function(data) {
     this._view.render(data);
 
     return this;
-};
-
-
-/**
- * Apply user defined filters.
- * @param {Object[]} data
- * @return {Object[]}
- */
-scatterplot.chart.prototype._applyFilters = function(data) {
-    /*
-     * Get current URL, parse it and return current filters as object.
-     */
-    var filters = location.search.substring(1).split('&').filter(function(str) {
-        return str.split('=')[0] === 'filterJSON';
-    }).map(function(str) {
-        var pair = str.split('=');
-        return JSON.parse(decodeURIComponent(pair[1]));
-    })[0];
-    /*
-     * 
-     */
-    var actualFilters = [];
-    /*
-     * Loop through filters.
-     */
-    for (var i in  filters) {
-        /*
-         * Loop through data source declared filters.
-         */
-        for (j = 0; j < metaData.fe_filters_fabricatedFilters.length; j ++) {
-            /*
-             * Check filters match.
-             */
-            if (metaData.fe_filters_fabricatedFilters[j].title === i) {
-                /*
-                 * Loop through filter choices. As i can understand each
-                 * data point should corresponds to all filter's choices.
-                 */
-                for (var k = 0; k < metaData.fe_filters_fabricatedFilters[j].choices.length; k ++) {
-                    /*
-                     * Get field to which filter should be applied.
-                     */
-                    var field = Object.keys(metaData.fe_filters_fabricatedFilters[j].choices[k].$match)[0]
-                    /*
-                     * Split and get field last part. This is actual key for our reduced data.
-                     */
-                    var key = field.split('.').pop();
-                    /*
-                     * Get condition statement. Actually there is no documentation how it should work, so
-                     * here is just one of the possible implementation.
-                     */
-                    var condition = metaData.fe_filters_fabricatedFilters[j].choices[k].$match[field].$exists;
-                    /*
-                     * Append filter function.
-                     */
-                    actualFilters.push(this._getFilter(key));
-                }
-            }
-        }
-    }
-    /*
-     * Loop through data set and apply filters to each data point.
-     */
-    data = data.filter(function(d) {
-        for (var i = 0; i < actualFilters.length; i ++) {
-            if (! actualFilters[i](d, i)) {
-                return false;
-            };
-        }
-
-        return true;
-    });
-
-    return data
 };
 
 

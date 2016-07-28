@@ -48,6 +48,25 @@ exports.Descriptions =
                     do: import_datatypes.Coercion_ops.ToStringTrim
                 },
 
+                'Pages_Date': {
+                    do: import_datatypes.Coercion_ops.ToDate,
+                    opts: {
+                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
+                    }
+                },
+                'Pages_Date created': {
+                    do: import_datatypes.Coercion_ops.ToDate,
+                    opts: {
+                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
+                    }
+                },
+                'Pages_Date modified': {
+                    do: import_datatypes.Coercion_ops.ToDate,
+                    opts: {
+                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
+                    }
+                },
+
                 /*'Pages': {
                  do: import_datatypes.Coercion_ops.ToInteger
                  },
@@ -59,7 +78,6 @@ exports.Descriptions =
                  }*/
             },
             fe_listed: true,
-            fe_displayTitleOverrides: {}, // this is needed to not through an error
             //
             fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
             {
@@ -75,9 +93,10 @@ exports.Descriptions =
                 gallery: true,
                 choropleth: false,
                 chart: true,
-                scatterplot: true,
+                scatterplot: false,
                 timeline: true
             },
+            fe_nestedObject_prefix: 'Pages_',
             fe_excludeFields:
                 [
                     "Identifier",
@@ -94,6 +113,8 @@ exports.Descriptions =
                     "CONTENTdm number",
                     "CONTENTdm file name",
                     "CONTENTdm file path",
+                    "Date created",
+                    "Date modified",
                     "Pages_Title",
                     "Pages_Date",
                     "Pages_Decade",
@@ -102,8 +123,6 @@ exports.Descriptions =
                     "Pages_Volume/Issue",
                     "Pages_Type",
                     "Pages_Local Type",
-                    "Pages_Date created",
-                    "Pages_Date modified",
                     "Pages_Reference URL",
                     "Pages_CONTENTdm number",
                     "Pages_CONTENTdm file name",
@@ -116,7 +135,9 @@ exports.Descriptions =
             fe_displayTitleOverrides:
             {
                 // these are to be tuples - the values must be unique as well
-                "Pages_Transcript" : "Transcript"
+                "Pages_Transcript" : "Transcript",
+                "Pages_Date created": "Date created",
+                "Pages_Date modified": "Date modified"
             },
             fe_filters_fabricatedFilters:
                 [
@@ -256,6 +277,11 @@ exports.Descriptions =
                     "File Name",
                     "Pages_Transcript"
                 ],
+            fe_nestedObjectValueOverrides: {
+                'Pages_Title': {
+                    'p': 'Page '
+                }
+            },
             //
             //
             afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
@@ -288,7 +314,6 @@ exports.Descriptions =
                     'CONTENTdm file name',
                     'CONTENTdm file path'
                 ];
-                eachCtx.prefixForPageFields = 'Pages_';
                 //
                 //
                 // generate a bulk operation for our merge field values operations that we're going to do
@@ -302,61 +327,70 @@ exports.Descriptions =
                 cb(null);
             },
             //
-            afterGeneratingProcessedRowObjects_eachRowFns:
-                [
-                    function(appCtx, eachCtx, rowDoc, cb)
-                    {
-                        // Use this space to perform derivations and add update operations to batch operation in eachCtx
+            afterGeneratingProcessedRowObjects_eachRowFn: function(appCtx, eachCtx, rowDoc, cb)
+            {
+                // Use this space to perform derivations and add update operations to batch operation in eachCtx
+                //
+                var self = this;
+                // Detect if the row is an issue or page by it's primary key - Identifier
+                if (rowDoc.rowParams.Identifier && rowDoc.rowParams.Identifier != '') {
+                    // Issue
+                    var bulkOperationQueryFragment;
+
+                    // Apply to Merge the cached rows(Page) into one row(Issue)
+                    var updateFragment = {$pushAll: {}};
+                    for (var i = 0; i < eachCtx.pageFields.length; i++) {
+                        var fieldName = self.fe_nestedObject_prefix + eachCtx.pageFields[i];
+
+                        var generatedArray = [];
                         //
-                        // Detect if the row is an issue or page by primary key - Identifier
-                        if (rowDoc.rowParams.Identifier && rowDoc.rowParams.Identifier != '') {
-                            // Issue
-                            // Apply to Merge the cached rows(Page) into one row(Issue)
-                            var updateFragment = {$pushAll: {}};
-                            var bulkOperationQueryFragment;
-
-                            for (var i = 0; i < eachCtx.pageFields.length; i ++) {
-                                var fieldName = eachCtx.prefixForPageFields + eachCtx.pageFields[i];
-
-                                var generatedArray = [];
-                                //
-                                eachCtx.cachedPages.forEach(function(rowDoc) {
-                                    var fieldValue = rowDoc["rowParams"][eachCtx.pageFields[i]];
-                                    generatedArray.push(fieldValue);
-
-                                    bulkOperationQueryFragment =
-                                    {
-                                        pKey: rowDoc.pKey, // the specific row
-                                        srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
-                                    };
-                                    eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).remove();
+                        eachCtx.cachedPages.forEach(function (rowDoc) {
+                            var fieldValue = rowDoc["rowParams"][eachCtx.pageFields[i]];
+                            // Replace with the pattern listed on the overrides if needed
+                            if (self.fe_nestedObjectValueOverrides[fieldName]) {
+                                var keys = Object.keys(self.fe_nestedObjectValueOverrides[fieldName]);
+                                keys.forEach(function(key) {
+                                    var re = new RegExp(key, 'i');
+                                    fieldValue = fieldValue.replace(re, self.fe_nestedObjectValueOverrides[fieldName][key])
                                 });
-
-                                updateFragment["$pushAll"]["rowParams." + fieldName] = generatedArray;
                             }
+                            generatedArray.push(fieldValue);
 
                             bulkOperationQueryFragment =
                             {
                                 pKey: rowDoc.pKey, // the specific row
                                 srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                             };
-                            eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+                            eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).remove();
+                        });
 
-                            // Clear cache
-                            eachCtx.cachedPages = [];
-
-                            eachCtx.numberOfRows ++;
-
-                        } else {
-                            // Cache pages if it's a page
-                            eachCtx.cachedPages.push(rowDoc);
-                        }
-                        //
-                        // finally, must call cb to advance
-                        //
-                        cb(null);
+                        updateFragment["$pushAll"]["rowParams." + fieldName] = generatedArray;
                     }
-                ],
+
+                    if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {
+                        bulkOperationQueryFragment =
+                        {
+                            pKey: rowDoc.pKey, // the specific row
+                            srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
+                        };
+
+                        eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+
+                        // Clear cache
+                        eachCtx.cachedPages = [];
+                    }
+
+                    eachCtx.numberOfRows ++;
+
+                } else {
+                    // Cache pages if it's a page
+                    eachCtx.cachedPages.push(rowDoc);
+                }
+                //
+                // finally, must call cb to advance
+                //
+                cb(null);
+            },
             //
             afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function(appCtx, eachCtx, cb)
             {

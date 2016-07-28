@@ -24,10 +24,21 @@ exports.Descriptions =
                     opts: {
                         format: "YYYY-MM-DD" // e.g. "2009-03-21"
                     }
+                },
+                comics_available: {
+                    do: import_datatypes.Coercion_ops.ToInteger
+                },
+                stories_available: {
+                    do: import_datatypes.Coercion_ops.ToInteger
+                },
+                series_available: {
+                    do: import_datatypes.Coercion_ops.ToInteger
+                },
+                events_available: {
+                    do: import_datatypes.Coercion_ops.ToInteger
                 }
             },
             fe_listed: true,
-            fe_displayTitleOverrides: {}, // this is needed to not through an error
             //
             fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
             {
@@ -259,7 +270,11 @@ exports.Descriptions =
             { // these are to be tuples - the values must be unique as well
                 "name": "Name",
                 "description": "Description",
-                "modified": "Last Modified"
+                "modified": "Last Modified",
+                "series_available": "Series Available",
+                "comics_available": "Comics Available",
+                "stories_available": "Stories Available",
+                "events_available": "Events Available"
             },
             fe_filters_fabricatedFilters:
             [
@@ -343,13 +358,15 @@ exports.Descriptions =
                 "Series",
                 "Events"
             ],
-            /**
-             * Scatterplot chart personal settings.
-             */
-            scatterplot: {
-                xField: 'stories_available',
-                yField: 'series_available',
-                search: ['name', 'description']
+            fe_scatterplot_fieldsMap : {
+                'Object Title' : 'name'
+            },
+            fe_scatterplot_fieldsNotAvailable: [
+                'Last Modified'
+            ],
+            fe_scatterplot_defaults: {
+                xAxisField: 'Comics',
+                yAxisField: 'Series'
             },
             //
             //
@@ -457,46 +474,43 @@ exports.Descriptions =
                 cb(null);
             },
             //
-            afterGeneratingProcessedRowObjects_eachRowFns:
-            [
-                function(appCtx, eachCtx, rowDoc, cb)
-                {
-                    // Use this space to perform derivations and add update operations to batch operation in eachCtx
+            afterGeneratingProcessedRowObjects_eachRowFn: function(appCtx, eachCtx, rowDoc, cb)
+            {
+                // Use this space to perform derivations and add update operations to batch operation in eachCtx
+                //
+                mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Comics, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics);
+                mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Series, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series);
+                mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Events, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events);
+                //
+                function mergeManyFieldsIntoOne(generateFieldNamed, withValuesInFieldsNamed) {
+                    var generatedArray = [];
                     //
-                    mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Comics, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics);
-                    mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Series, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series);
-                    mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Events, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events);
-                    //
-                    function mergeManyFieldsIntoOne(generateFieldNamed, withValuesInFieldsNamed) {
-                        var generatedArray = [];
-                        //
-                        for (var i = 0 ; i < withValuesInFieldsNamed.length; i++) {
-                            var fieldName = withValuesInFieldsNamed[i];
-                            var fieldValue = rowDoc["rowParams"][fieldName];
-                            if (typeof fieldValue !== 'undefined' && fieldValue !== null && fieldValue !== "") {
-                                generatedArray.push(fieldValue);
-                            }
+                    for (var i = 0 ; i < withValuesInFieldsNamed.length; i++) {
+                        var fieldName = withValuesInFieldsNamed[i];
+                        var fieldValue = rowDoc["rowParams"][fieldName];
+                        if (typeof fieldValue !== 'undefined' && fieldValue !== null && fieldValue !== "") {
+                            generatedArray.push(fieldValue);
                         }
-                        //
-                        //
-                        var persistableValue = generatedArray;                
-
-                        var updateFragment = { $addToSet: {} };
-                        updateFragment["$addToSet"]["rowParams." + generateFieldNamed] = { "$each": persistableValue };
-
-                        var bulkOperationQueryFragment = 
-                        {
-                            pKey: rowDoc.pKey, // the specific row
-                            srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
-                        };
-                        eachCtx.mergeFieldsValuesIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
                     }
                     //
-                    // finally, must call cb to advance
                     //
-                    cb(null);
+                    var persistableValue = generatedArray;
+
+                    var updateFragment = { $addToSet: {} };
+                    updateFragment["$addToSet"]["rowParams." + generateFieldNamed] = { "$each": persistableValue };
+
+                    var bulkOperationQueryFragment =
+                    {
+                        pKey: rowDoc.pKey, // the specific row
+                        srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
+                    };
+                    eachCtx.mergeFieldsValuesIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
                 }
-            ],
+                //
+                // finally, must call cb to advance
+                //
+                cb(null);
+            },
             //
             afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function(appCtx, eachCtx, cb)
             {

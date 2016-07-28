@@ -16,7 +16,7 @@
     ////////////////////////////////////////////////////////////////////////////////
     // Constants/Caches
     //
-    var pageSize = 100;
+    var pageSize = 200;
     var timelineGroupSize = 20;
     var timelineGroups = pageSize / timelineGroupSize;
     //
@@ -208,16 +208,16 @@
 
                 return;
             }
-            wholeFilteredSet_aggregationOperators.push(_orErrDesc.matchOp);
+            wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
         }
         if (isFilterActive) { // rules out undefined filterJSON
-            var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, "$and");
+            var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
             if (typeof _orErrDesc.err !== 'undefined') {
                 callback(_orErrDesc.err, null);
 
                 return;
             }
-            wholeFilteredSet_aggregationOperators.push(_orErrDesc.matchOp);
+            wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
         }
         //
         // Now kick off the query work
@@ -297,21 +297,30 @@
             sortOpParams.size = -sortDirection;
             sortOpParams[sortBy_realColumnName_path] = sortDirection;
 
-            var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
-                { $project: {
-                    _id: 1,
-                    pKey: 1,
-                    srcDocPKey: 1,
-                    rowIdxInDoc: 1,
-                    rowParams: 1, // include the rowParams field
-                    size: {
-                        $cond: {
-                            if: { $isArray: "$" + sortBy_realColumnName_path },
-                            then: { $size: "$" + sortBy_realColumnName_path }, // gets the number of items in the array
-                            else: 0
-                        }
+            var projects = { $project: {
+                _id: 1,
+                pKey: 1,
+                srcDocPKey: 1,
+                rowIdxInDoc: 1,
+                size: {
+                    $cond: {
+                        if: { $isArray: "$" + sortBy_realColumnName_path },
+                        then: { $size: "$" + sortBy_realColumnName_path }, // gets the number of items in the array
+                        else: 0
                     }
-                }},
+                }
+            }};
+
+            // Exclude the nested pages fields to reduce the amount of data returned
+            var rowParamsfields = Object.keys(sampleDoc.rowParams);
+            rowParamsfields.forEach(function(rowParamsField) {
+                if (rowParamsField.indexOf(dataSourceDescription.fe_nestedObject_prefix) === -1) {
+                    projects['$project']['rowParams.' + rowParamsField] = 1;
+                }
+            });
+
+            var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
+                projects,
                 // Sort (before pagination):
                 { $sort: sortOpParams },
                 // Pagination
@@ -550,16 +559,16 @@
 
                     return;
                 }
-                aggregationOperators.push(_orErrDesc.matchOp);
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
             }
             if (isFilterActive) { // rules out undefined filterCol
-                var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, "$and");
+                var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
                 if (typeof _orErrDesc.err !== 'undefined') {
                     callback(_orErrDesc.err, null);
 
                     return;
                 }
-                aggregationOperators.push(_orErrDesc.matchOp);
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
             }
             aggregationOperators = aggregationOperators.concat(
             [
@@ -847,16 +856,16 @@
 
                     return;
                 }
-                aggregationOperators.push(_orErrDesc.matchOp);
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
             }
             if (isFilterActive) { // rules out undefined filterCol
-                var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, "$and");
+                var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
                 if (typeof _orErrDesc.err !== 'undefined') {
                     callback(_orErrDesc.err, null);
 
                     return;
                 }
-                aggregationOperators.push(_orErrDesc.matchOp);
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
             }
             aggregationOperators = aggregationOperators.concat(
             [
@@ -1072,16 +1081,16 @@
 
                 return;
             }
-            wholeFilteredSet_aggregationOperators.push(_orErrDesc.matchOp);
+            wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
         }
         if (isFilterActive) { // rules out undefined filterJSON
-            var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, "$and");
+            var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
             if (typeof _orErrDesc.err !== 'undefined') {
                 callback(_orErrDesc.err, null);
 
                 return;
             }
-            wholeFilteredSet_aggregationOperators.push(_orErrDesc.matchOp);
+            wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
         }
 
         var groupBySortFieldPath = "results.rowParams." + sortBy_realColumnName
@@ -1200,22 +1209,39 @@
 
                     return;
                 }
-                aggregationOperators.push(_orErrDesc.matchOp);
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
             }
             if (isFilterActive) { // rules out undefined filterCol
-                var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, "$and");
+                var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
                 if (typeof _orErrDesc.err !== 'undefined') {
                     callback(_orErrDesc.err, null);
 
                     return;
                 }
-                aggregationOperators.push(_orErrDesc.matchOp);
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
             }
 
             var sort = {};
             sort[groupBySortFieldPath] = -1;
+
+            var projects = { $project: {
+                _id: 1,
+                pKey: 1,
+                srcDocPKey: 1,
+                rowIdxInDoc: 1
+            }};
+
+            // Exclude the nested pages fields to reduce the amount of data returned
+            var rowParamsfields = Object.keys(sampleDoc.rowParams);
+            rowParamsfields.forEach(function(rowParamsField) {
+                if (rowParamsField == sortBy_realColumnName || rowParamsField.indexOf(dataSourceDescription.fe_nestedObject_prefix) === -1) {
+                    projects['$project']['rowParams.' + rowParamsField] = 1;
+                }
+            });
+
             aggregationOperators = aggregationOperators.concat(
             [
+                projects,
                 { $unwind: "$" + "rowParams." + sortBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
                 { // unique/grouping and summing stage
                     $group: {
@@ -1237,10 +1263,10 @@
                 { // reformat
                     $project: {
                         _id: 0,
-                        startDate: "$startDate",
-                        endDate: "$endDate",
+                        startDate: 1,
+                        endDate: 1,
                         total: 1,
-                        results: { $slice: ["$results", groupedResultsLimit] }
+                        results: {$slice: ["$results", groupedResultsLimit]}
                     }
                 },
                 {
@@ -1250,6 +1276,8 @@
                 { $skip: skipNResults },
                 { $limit: groupsLimit }
             ]);
+
+            console.log('---- %j', aggregationOperators);
             //
             var doneFn = function(err, groupedResults)
             {
@@ -1559,7 +1587,11 @@
             callback(null, data);
         }
     }
-    //
+    /**
+     * Scatterplot view action controller.
+     * @param {Object} urlQuery - URL params
+     * @param {Function} callback
+     */
     constructor.prototype.BindDataFor_array_scatterplot = function(urlQuery, callback)
     {
         var self = this;
@@ -1568,34 +1600,34 @@
         var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(
             sourceKey, self.context.raw_source_documents_controller
         );
-        /*
-         * TODO: Here is bug. "Internal Server Error" shown when dataSourceDescription not found.
-         */
+
         if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
             callback(new Error("No data source with that source pkey " + sourceKey), null);
             return;
         }
-        /*
-         * TODO: Here is the same problem when view not found.
-         */
+
         if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != null && dataSourceDescription.fe_views.chart === false) {
             callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
             return;
         }
-        /*
-         * TODO: And here i believe as well.
-         */
+
         var fe_visible = dataSourceDescription.fe_visible;
         if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
             callback(new Error("That data source was set to be not visible: " + sourceKey), null);
             return;
         }
-
+        /*
+         * Get somewhat mongoose context.
+         */
         var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller
             .Lazy_Shared_ProcessedRowObject_MongooseContext(sourceKey);
-
+        /*
+         * Stash somewhat model reference.
+         */
         var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
-        //
+        /*
+         * Process URL filterJSON param.
+         */
         var filterJSON = urlQuery.filterJSON;
         var filterObj = {};
         var isFilterActive = false;
@@ -1607,50 +1639,101 @@
                 }
             } catch (e) {
                 winston.error("❌  Error parsing filterJSON: ", filterJSON);
-                callback(e, null);
-
-                return;
+                return callback(e, null);
             }
         }
-        //
-        var err = null;
-        //
-        self._fetchedSourceDoc(sourceKey, function(err, sourceDoc)
-        {
-            processedRowObjects_mongooseModel.find({}, function(err, documents)
-            {
+
+        var filterJSON_uriEncodedVals = _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
+        var urlQuery_forSwitchingViews  = "";
+        var appendQuery = "";
+        /*
+         * Check filter active and update composed URL params.
+         */
+        if (isFilterActive) {
+            appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
+            urlQuery_forSwitchingViews = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        }
+
+        var searchCol = urlQuery.searchCol;
+        var searchQ = urlQuery.searchQ;
+        var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != ""
+            && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";
+        /*
+         * Check search active and update composed URL params.
+         */
+        if (isSearchActive) {
+            appendQuery = "searchCol=" + urlQuery.searchCol + "&" + "searchQ=" + urlQuery.searchQ;
+            urlQuery_forSwitchingViews = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        }
+        /*
+         * Process parsed filterJSON param and prepare $match - https://docs.mongodb.com/manual/reference/operator/aggregation/match/ -
+         * statement. May return error instead required statement... and i can't say that understand that logic full. But in that case
+         * we just will create empty $match statement which acceptable for all documents from data source.
+         */
+        var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+        if (_orErrDesc.err) {
+            _orErrDesc.matchOps = [{ $match : {} }];
+        }
+        /*
+         * Run chain of functions to collect necessary data.
+         */
+        self._fetchedSourceDoc(sourceKey, function(err, sourceDoc) {
+            /*
+             * Run query to mongo to obtain all rows which satisfy to specified filters set.
+             */
+            processedRowObjects_mongooseModel.aggregate(_orErrDesc.matchOps).allowDiskUse(true).exec(function(err, documents) {
                 /*
-                 * Get single document.
+                 * Get single/sample document.
                  */
-                var document = documents[0];
+                var sampleDoc = documents[0];
                 /*
-                 * Define numeric fields which may be used as scatterplot axes.
+                 * Go deeper - collect data for filter's sidebar.
                  */
-                var numericFields = [];
-                /*
-                 * Loop through documents fields and get numeric fields.
-                 */
-                for (i in document.rowParams) {
-                    if (! isNaN(parseFloat(document.rowParams[i])) && isFinite(document.rowParams[i]) && i !== 'id') {
-                        numericFields.push(i);
+                _topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName) {
+                    /*
+                     * Define numeric fields list which may be used as scatterplot axes.
+                     * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.
+                     */
+                    var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription).filter(function(i) {
+                        return dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) == -1;
+                    });
+                    /*
+                     * Then loop through document's fields and get numeric.
+                     * Also checking they are not in fe_scatterplot_fieldsNotAvailable config option.
+                     */
+                    for (i in sampleDoc.rowParams) {
+                        if (! (! isNaN(parseFloat(sampleDoc.rowParams[i])) && isFinite(sampleDoc.rowParams[i]) && i !== 'id')) {
+                            continue;
+                        } else if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) >= 0) {
+                            continue;
+                        } else {
+                            numericFields.push(i);
+                        }
                     }
-                }
-                /*
-                 * Run callback function to finish action.
-                 */
-                callback(err, {
-                    env: process.env,
-                    
-                    documents: documents,
-                    metaData: dataSourceDescription,
-                    renderableFields: numericFields,
-                    array_source_key: sourceKey,
-                    brandColor: dataSourceDescription.brandColor,
-                    sourceDoc: sourceDoc,
-                    view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
-                    routePath_base: '/array/' + sourceKey + '/scatterplot',
-                    filterObj: filterObj,
-                    isFilterActive: isFilterActive
+                    /*
+                     * Run callback function to finish action.
+                     */
+                    callback(err, {
+                        env: process.env,
+                        documents: documents,
+                        metaData: dataSourceDescription,
+                        renderableFields: numericFields,
+                        array_source_key: sourceKey,
+                        brandColor: dataSourceDescription.brandColor,
+                        uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+                        sourceDoc: sourceDoc,
+                        view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+                        routePath_base: '/array/' + sourceKey + '/scatterplot',
+                        routePath_withoutFilter: '/array/' + sourceKey + '/scatterplot',
+                        filterObj: filterObj,
+                        isFilterActive: isFilterActive,
+                        urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
+                        searchCol: searchCol || '',
+                        searchQ: searchQ || '',
+                        colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                        filterJSON_nonURIEncodedVals: filterJSON,
+                        filterJSON: filterJSON_uriEncodedVals
+                    });
                 });
             });
         });
@@ -1705,7 +1788,7 @@
     //
     //
     //
-    function _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, mongoDBLogicalOperator)
+    function _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj)
     {
         var filterCols = Object.keys(filterObj);
         var filterCols_length = filterCols.length;
@@ -1721,18 +1804,18 @@
             var filterVals_length = filterVals.length;
             for (var j = 0 ; j < filterVals_length ; j++) {
                 var filterVal = filterVals[j];
-                var matchCondition = {};
+                var matchConditions = {};
                 if (typeof filterVal === 'string') {
-                    matchCondition = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
+                    matchConditions = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
                 } else if (filterVal.min !== null || filterVal.max !== null) {
-                    matchCondition = _activeFilterRange_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal.min, filterVal.max);
+                    matchConditions = _activeFilterRange_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal.min, filterVal.max);
                 } else {
                     // TODO - ERROR - Unexpected format
                 }
-                if (typeof matchCondition.err !== 'undefined') {
-                    return { err: matchCondition.err };
+                if (typeof matchConditions.err !== 'undefined') {
+                    return { err: matchConditions.err };
                 }
-                conditions.push(matchCondition.matchCondition);
+                conditions = conditions.concat(matchConditions.matchConditions);
             }
         }
         if (conditions.length == 0) {
@@ -1740,15 +1823,13 @@
 
             return { err: new Error("No match conditions in multifilter despite filterObj") };
         }
-        var matchOp = { $match: {} };
-        matchOp["$match"]["" + (mongoDBLogicalOperator || "$and")] = conditions;
 
-        return { matchOp: matchOp };
+        return { matchOps: conditions };
     }
     //
     function _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal)
     {
-        var matchCondition = undefined;
+        var matchConditions = undefined;
         var isAFabricatedFilter = false; // finalize
         if (dataSourceDescription.fe_filters_fabricatedFilters) {
             var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
@@ -1764,7 +1845,7 @@
                         var choice = choices[j];
                         if (choice.title === filterVal) {
                             foundChoice = true;
-                            matchCondition = choice["$match"];
+                            matchConditions = [{$match: choice["$match"]}];
 
                             break; // found the applicable filter choice
                         }
@@ -1777,9 +1858,9 @@
                 }
             }
         }
-        if (isAFabricatedFilter == true) { // already obtained matchCondition just above
-            if (typeof matchCondition === 'undefined') {
-                return { err: new Error("Unexpectedly missing matchCondition given fabricated filter…" + JSON.stringify(urlQuery)) };
+        if (isAFabricatedFilter == true) { // already obtained matchConditions just above
+            if (typeof matchConditions === 'undefined') {
+                return { err: new Error("Unexpectedly missing matchConditions given fabricated filter…" + JSON.stringify(urlQuery)) };
             }
         } else {
             var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
@@ -1801,34 +1882,32 @@
                         realFilterValue = overrideValue;
                     }
                 }
-                matchCondition = {};
 
+                // We need to consider that the search column might be array
                 // escape Mongo reserved characters in Mongo
                 realFilterValue = realFilterValue.split("(").join("\\(")
                     .split(")").join("\\)")
                     .split("+").join("\\+")
                     .split("$").join("\\$");
 
-                matchCondition[realColumnName_path] = {$regex: realFilterValue, $options: "i"};
+                matchConditions = _activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, realFilterValue).matchOps;
+
             } else {
                 var filterDate = new Date(filterVal);
-                matchCondition = {};
                 if (!isNaN(filterDate.getTime())) { // Invalid Date
-                    realFilterValue = moment.utc(filterDate).toDate();
-                    matchCondition[realColumnName_path] = realFilterValue;
+                    matchConditions = _activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, filterDate).matchOps;
                 }
             }
         }
-        if (typeof matchCondition === 'undefined') {
+        if (typeof matchConditions === 'undefined') {
             throw new Error("Undefined match condition");
         }
 
-        return { matchCondition: matchCondition };
+        return { matchConditions: matchConditions };
     }
     //
     function _activeFilterRange_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterValMin, filterValMax)
     {
-        var matchCondition = undefined;
         var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
         var realColumnName_path = "rowParams." + realColumnName;
         var realFilterValueMin = filterValMin, realFilterValueMax = filterValMax; // To finalize in case of override…
@@ -1844,6 +1923,7 @@
                 if (typeof overrideValueMin === 'undefined') {
                     var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterValMin " + filterValMin;
                     winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
+                    throw new Error("Undefined match condition");
                 } else {
                     realFilterValueMin = overrideValueMin;
                 }
@@ -1852,52 +1932,81 @@
                 if (typeof overrideValueMax === 'undefined') {
                     var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterValMax " + filterValMax;
                     winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
+                    throw new Error("Undefined match condition");
                 } else {
                     realFilterValueMax = overrideValueMax;
                 }
             }
-            matchCondition = {};
-
-            // escape Mongo reserved characters in Mongo
-            realFilterValueMin = realFilterValueMin.split("(").join("\\(")
-                .split(")").join("\\)")
-                .split("+").join("\\+")
-                .split("$").join("\\$");
-
-            realFilterValueMax = realFilterValueMax.split("(").join("\\(")
-                .split(")").join("\\)")
-                .split("+").join("\\+")
-                .split("$").join("\\$");
-
-            matchCondition[realColumnName_path] = {$gte: realFilterValueMin, $lt: realFilterValueMax};
         } else {
-            matchCondition = {};
-            matchCondition[realColumnName_path] = {}
             var filterDateMin = new Date(filterValMin);
-            if (!isNaN(filterDateMin.getTime())) { // Invalid Date
-                realFilterValueMin = moment.utc(filterDateMin).toDate();
-                matchCondition[realColumnName_path].$gte = realFilterValueMin;
+            if (!isNaN(filterDateMin.getTime())) {
+                var offsetMins = filterDateMin.getTimezoneOffset();
+                realFilterValueMin = moment(filterDateMin).subtract(offsetMins, 'minutes').toDate();
+            } else {
+                throw new Error('Invalid date');
             }
             var filterDateMax = new Date(filterValMax);
-            if (!isNaN(filterDateMax.getTime())) { // Invalid Date
-                realFilterValueMax = moment.utc(filterDateMax).toDate();
-                matchCondition[realColumnName_path].$lte = realFilterValueMax;
+            if (!isNaN(filterDateMax.getTime())) {
+                var offsetMins = filterDateMax.getTimezoneOffset();
+                realFilterValueMax = moment(filterDateMax).subtract(offsetMins, 'minutes').toDate();
+            } else {
+                throw new Error('Invalid date');
             }
         }
-        if (typeof matchCondition === 'undefined') {
-            throw new Error("Undefined match condition");
-        }
 
-        return { matchCondition: matchCondition };
+        // We need to consider that the search column is array
+        var unwindOp = { $unwind: '$' + realColumnName_path };
+        var matchOp = { $match: {} };
+        matchOp["$match"][realColumnName_path] = {$gte: realFilterValueMin, $lt: realFilterValueMax};
+        var groupOp = {
+            $group: {
+                _id: '$_id',
+                pKey: {'$first': '$pKey'},
+                srcDocPKey: {'$first': '$srcDocPKey'},
+                rowIdxInDoc: {'$first': '$rowIdxInDoc'},
+                rowParams: {'$first': '$rowParams'}
+            }
+        };
+
+        return { matchConditions: [unwindOp, matchOp, groupOp] };
     }
     //
     function _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ)
     { // returns dictionary with err or matchOp
-        var realColumnName_path = "rowParams." + importedDataPreparation.RealColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
-        var matchOp = { $match: {} };
-        matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: "i" };
+        var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
+        var realColumnName_path = "rowParams." + realColumnName;
 
-        return { matchOp: matchOp };
+        // We need to consider that the search column is array
+        var unwindOp = { $unwind: '$' + realColumnName_path };
+        var matchOp = { $match: {} };
+        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+        var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
+            && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+        if (!isDate) {
+            matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: "i" };
+        } else {
+            var searchDate = new Date(searchQ);
+            var realSearchValue;
+            if (!isNaN(searchDate.getTime())) {
+                var offsetMins = searchDate.getTimezoneOffset();
+                realSearchValue = moment(searchDate).subtract(offsetMins, 'minutes').toDate();
+            } else { // Invalid Date
+                return { err: 'Invalid Date' };
+            }
+            matchOp["$match"][realColumnName_path] = { $eq: realSearchValue };
+        }
+
+        var groupOp = {
+            $group: {
+                _id: '$_id',
+                pKey: {'$first': '$pKey'},
+                srcDocPKey: {'$first': '$srcDocPKey'},
+                rowIdxInDoc: {'$first': '$rowIdxInDoc'},
+                rowParams: {'$first': '$rowParams'}
+            }
+        };
+
+        return { matchOps: [unwindOp, matchOp, groupOp] };
     }
     //
     function _topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, callback)

@@ -91,7 +91,7 @@ var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private fo
             moment.parseTwoDigitYear = replacement_parseTwoDigitYear_fn;
         }
         // Parse
-        var aMoment = moment(inString, dateFormatString);
+        var aMoment = moment.utc(inString, dateFormatString);
         if (aMoment.isValid() == false) {
             console.warn("⚠️  The date \"" + inString + "\" cannot be parsed with the format string \"" + dateFormatString + "\". Returning null.");
             

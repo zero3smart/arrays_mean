@@ -38,26 +38,26 @@
 
                                             <div class="dropdown sort-control sort-bar-6">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    Y-Axis <span class="sort-criteria color-brand-hover y-axis-field">{{ metaData.scatterplot.yField | replace(r/_/g, ' ') }}</span>
+                                                    Y-Axis <span class="sort-criteria color-brand-hover y-axis-field">{{ metaData.fe_scatterplot_defaults.yAxisField | replace(r/_/g, ' ') }}</span>
                                                 </a>
                                                 {% if renderableFields | length %}
                                                 <ul class="dropdown-menu axis-control y-axis-control" aria-labelledby="type">
                                                     {% for colName in renderableFields %}
                                                     <!-- li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li -->
-                                                    <li class="background-color-brand-hover"><a href="#" data-axis="y" data-field="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
+                                                    <li class="background-color-brand-hover"><a href="#" data-axis="y" data-colname="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
                                                     {% endfor %}
                                                 </ul>
                                                 {% endif %}
                                             </div>
                                             <div class="dropdown sort-control sort-bar-6">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    X-Axis <span class="sort-criteria color-brand-hover x-axis-field">{{ metaData.scatterplot.xField | replace(r/_/g, ' ') }}</span>
+                                                    X-Axis <span class="sort-criteria color-brand-hover x-axis-field">{{ metaData.fe_scatterplot_defaults.xAxisField | replace(r/_/g, ' ') }}</span>
                                                 </a>
                                                 {% if renderableFields | length %}
                                                 <ul class="dropdown-menu axis-control x-axis-control" aria-labelledby="type">
                                                     {% for colName in renderableFields %}
                                                     <!-- li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li -->
-                                                    <li class="background-color-brand-hover"><a href="#" data-axis="x" data-field="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
+                                                    <li class="background-color-brand-hover"><a href="#" data-axis="x" data-colname="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
                                                     {% endfor %}
                                                 </ul>
                                                 {% endif %}
@@ -65,7 +65,7 @@
                                         </nav>
 
                                         <div class="sort-bar-right pull-right">
-                                            <form class="form-search">
+                                            <form action="{{ routePath_base }}" method="get" class="form-search">
                                                 <div class="sort-control visible-xs">
                                                     <div class="btn dropdown-toggle-button search-toggle">
                                                         <span class="icon-search search-icon color-brand-hover"></span>
@@ -75,21 +75,22 @@
                                                 <div class="mobile-search-popover">
                                                     <div class="dropdown-toggle-button-group" role="group">
                                                         <div class="dropdown sort-control sort-control-left search-control">
-                                                            {% set searchColToOutput = metaData.scatterplot.search[0] if metaData.scatterplot.search else "Object Title" %}
+                                                            {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
                                                             <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                                                                Search <span class="search-criteria color-brand-hover" data-field="{{ searchColToOutput }}">{{ searchColToOutput | replace(r/_/g, ' ') }}</span>
+                                                                Search <span class="search-criteria color-brand-hover" data-colname="{{ searchColToOutput }}">{{ searchColToOutput }}</span>
                                                             </a>
-                                                            {% if metaData.scatterplot.search | length %}
+                                                            <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
+                                                            {% if colNames_orderedForSortByDropdown | length %}
                                                             <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
-                                                                {% for colName in metaData.scatterplot.search %}
-                                                                <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-field="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
+                                                                {% for colName in colNames_orderedForSortByDropdown %}
+                                                                <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
                                                                 {% endfor %}
                                                             </ul>
                                                             {% endif %}
                                                         </div>
                                                         <div class="sort-control sort-control-right">
                                                             <div class="dropdown-toggle">
-                                                                <input type="text" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="">
+                                                                <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ }}">
                                                                 <span class="icon-search search-icon hidden-xs"></span>
                                                             </div>
                                                         </div>
@@ -99,6 +100,10 @@
                                                 <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
                                                     <span class="icon-legend" aria-hidden="true"></span>
                                                 </a>
+
+                                                {% if filterJSON %}
+                                                    <input type="hidden" name="filterJSON" value="{{ filterJSON_nonURIEncodedVals }}"> {# it will get re-encoded #}
+                                                {% endif %}
                                             </form>
                                         </div>
 
@@ -167,12 +172,13 @@
         var scatterPlot = new scatterplot.chart(scatterData.map(function(d) {
             d.rowParams.id = d._id;
             return d.rowParams;
-        })).setXAccessor(function(d) {
-            return d['{{ metaData.scatterplot.xField }}']
-        }, '{{ metaData.scatterplot.xField }}')
+        }), metaData).setXAccessor(function(d) {
+            return d['{{ metaData.fe_scatterplot_defaults.xAxisField }}']
+        }, '{{ metaData.fe_scatterplot_defaults.xAxisField }}')
         .setYAccessor(function(d) {
-            return d['{{ metaData.scatterplot.yField }}'];
-        }, '{{ metaData.scatterplot.yField }}')
+            return d['{{ metaData.fe_scatterplot_defaults.yAxisField }}'];
+        }, '{{ metaData.fe_scatterplot_defaults.yAxisField }}')
+        .searchBy({{ searchCol | dump | safe }}, {{ searchQ | dump | safe }})
         .setColor('{{ metaData.brandColor }}')
         .render('#scatterplot');
 
@@ -181,7 +187,7 @@
             // Get item text.
             var text = this.innerText;
             // Get item field.
-            var field = this.getAttribute('data-field');
+            var field = this.getAttribute('data-colname');
             // Get field's axis.
             var axis = this.getAttribute('data-axis');
             // Update dropdown current text.
@@ -207,27 +213,27 @@
         }
 
         // Hide axis controls initial values.
-        hideAxisItem('x', '{{ metaData.scatterplot.yField | replace(r/_/g, ' ') }}');
-        hideAxisItem('y', '{{ metaData.scatterplot.xField | replace(r/_/g, ' ') }}');
+        hideAxisItem('x', '{{ metaData.fe_scatterplot_defaults.yAxisField | replace(r/_/g, ' ') }}');
+        hideAxisItem('y', '{{ metaData.fe_scatterplot_defaults.xAxisField | replace(r/_/g, ' ') }}');
 
         // Set up search dropdown click handler.
         jQuery('ul.search-dropdown-menu a').click(function(e) {
             // Get item text.
             var text = this.innerText;
             // Get item field.
-            var field = this.getAttribute('data-field');
+            var field = this.getAttribute('data-colname');
             // Update search form.
             jQuery('#search-by span')
                 .prop('innerText', text)
-                .attr('data-field', field);
+                .attr('data-colname', field);
             // Run search procedure.
-            scatterPlot.filterBy(field, jQuery('input.search-input').val())
+            scatterPlot.searchBy(field, jQuery('input.search-input').val())
                 .update();
         });
 
         // Set search input handler.
         jQuery('input.search-input').on('input', function(event) {
-            scatterPlot.searchBy(jQuery('#search-by span').attr('data-field'), this.value)
+            scatterPlot.searchBy(jQuery('#search-by span').attr('data-colname'), this.value)
                 .update();
         })
         </script>

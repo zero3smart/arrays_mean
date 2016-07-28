@@ -27,6 +27,9 @@ exports.Descriptions =
         // Production - Visible - MoMA dataset
         {
             filename: "MoMA_Artists_v1_jy.csv",
+            fe_views: {
+                scatterplot: false
+            },
             fileEncoding: "utf8", // the default
             uid: "moma_artists",
             importRevision: 1,
@@ -165,6 +168,29 @@ exports.Descriptions =
                 ],
             //
             //
+            fe_timeline_defaultGroupByColumnName_humanReadable: "Decade",
+            fe_timeline_durationsAvailableForGroupBy:
+            [
+                "Decade",
+                "Year",
+                "Month",
+                "Day"
+            ],
+            fe_timeline_defaultSortByColumnName_humanReadable: "Date of Birth",
+            fe_timeline_fieldsNotAvailableAsSortByColumns:
+            [
+                "DisplayName",
+                "Bio",
+                "Artworks", // it's an array of doc ids
+                "Code",
+                "Nationality",
+                "DisplayDate",
+                "Wiki QID",
+                "ULAN",
+                "Country of Origin"
+            ],
+            //
+            //
             fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function(rowObject)
             {
                 var gender = rowObject.rowParams["Code"];
@@ -205,6 +231,9 @@ exports.Descriptions =
         },
         {
             filename: "MoMA_Artworks_v2_jy.csv",
+            fe_views: {
+                scatterplot: false
+            },
             fileEncoding: "utf8", // the default
             uid: "moma_artworks",
             importRevision: 2,
@@ -385,6 +414,34 @@ exports.Descriptions =
                 ],
             //
             //
+            fe_timeline_defaultGroupByColumnName_humanReadable: "Decade",
+            fe_timeline_durationsAvailableForGroupBy:
+                [
+                    "Decade",
+                    "Year",
+                    "Month",
+                    "Day"
+                ],
+            fe_timeline_defaultSortByColumnName_humanReadable: "Date",
+            fe_timeline_fieldsNotAvailableAsSortByColumns:
+                [
+                    "Title",
+                    "Artist",
+                    "ArtistBio",
+                    "Artist Gender",
+                    "Medium",
+                    "Dimensions",
+                    "CreditLine",
+                    "MoMANumber",
+                    "URL",
+                    "CuratorApproved",
+                    "Classification",
+                    "Department",
+                    "Medium",
+                    "Country of Origin"
+                ],
+            //
+            //
             afterImportingAllSources_generate:
                 [
                     {
@@ -443,15 +500,12 @@ exports.Descriptions =
             //     cb(null);
             // },
             // //
-            // afterGeneratingProcessedRowObjects_eachRowFns:
-            // [
-            //     function(appCtx, eachCtx, rowDoc, cb)
-            //     {
-            //         // console.log("A row", rowDoc)
-            //         // perform derivations and add update operations to batch operation in eachCtx
-            //         cb(null);
-            //     }
-            // ],
+            // afterGeneratingProcessedRowObjects_eachRowFn: function(appCtx, eachCtx, rowDoc, cb)
+            // {
+            //     // console.log("A row", rowDoc)
+            //     // perform derivations and add update operations to batch operation in eachCtx
+            //     cb(null);
+            // },
             // //
             // afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function(appCtx, eachCtx, cb)
             // {
