@@ -209,3 +209,29 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChoropl
     return available_keys;
 }
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChoroplethMapByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChoroplethMapByDropdown;
+//
+function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown(sampleRowObject, dataSourceDescription)
+{
+    var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
+    // add in "Object Title" so we use the same machinery as the hand-specified ones
+    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
+    //
+    var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
+    var keys_length = keys.length;
+    var available_keys = [];
+    for (var i = 0 ; i < keys_length ; i++) {
+        var key = keys[i];
+        if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable) {
+            if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(key) !== -1) {
+                continue;
+            }
+        }
+        var displayTitleForKey = fe_displayTitleOverrides[key];
+        var humanReadable_key = displayTitleForKey || key;
+        available_keys.push(humanReadable_key);
+    }
+    
+    return available_keys;
+}
+module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown;
+//

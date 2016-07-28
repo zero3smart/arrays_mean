@@ -1694,14 +1694,14 @@
                      * Define numeric fields list which may be used as scatterplot axes.
                      * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.
                      */
-                    var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription).filter(function(i) {
+                    var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown(sampleDoc, dataSourceDescription).filter(function(i) {
                         return dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) == -1;
                     });
                     /*
                      * Then loop through document's fields and get numeric.
                      * Also checking they are not in fe_scatterplot_fieldsNotAvailable config option.
                      */
-                    for (i in sampleDoc.rowParams) {
+                    /*for (i in sampleDoc.rowParams) {
                         if (! (! isNaN(parseFloat(sampleDoc.rowParams[i])) && isFinite(sampleDoc.rowParams[i]) && i !== 'id')) {
                             continue;
                         } else if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) >= 0) {
@@ -1709,7 +1709,7 @@
                         } else {
                             numericFields.push(i);
                         }
-                    }
+                    }*/
                     /*
                      * Run callback function to finish action.
                      */
