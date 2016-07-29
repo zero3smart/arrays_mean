@@ -1527,7 +1527,7 @@
             var idxOf_objTitle = colNames_sansObjectTitle.indexOf(importedDataPreparation.HumanReadableColumnName_objectTitle);
             colNames_sansObjectTitle.splice(idxOf_objTitle, 1);
             //
-            var alphaSorted_colNames_sansObjectTitle = colNames_sansObjectTitle.sort();
+            var alphaSorted_colNames_sansObjectTitle = colNames_sansObjectTitle;
             //
             var designatedOriginalImageField = dataSourceDescription.fe_designatedFields.originalImageURL;
             var hasDesignatedOriginalImageField = designatedOriginalImageField ? true : false;

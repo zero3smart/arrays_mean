@@ -117,9 +117,27 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, 
             rowParams_keys[indexOfOriginalKey] = displayTitleForKey; // replace with display title
         }
     }
-    
+
+    // First sort alphabetically
+    rowParams_keys.sort();
+
+    // Then sort by custom order if defined
+    var fe_fieldDisplayOrder = dataSourceDescription.fe_fieldDisplayOrder;
+    if (fe_fieldDisplayOrder) {
+        var rowParams_keys_customSorted = [];
+        for (i = 0; i < fe_fieldDisplayOrder.length; i++) {
+            var index = rowParams_keys.indexOf(fe_fieldDisplayOrder[i]);
+            if (index > -1) {
+                rowParams_keys.splice(index, 1);
+                rowParams_keys_customSorted.push(fe_fieldDisplayOrder[i]);
+            }
+        }
+
+        rowParams_keys = rowParams_keys_customSorted.concat(rowParams_keys);
+    }
+
     return rowParams_keys;
-};
+}
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject = _humanReadableFEVisibleColumnNamesWithSampleRowObject;
 //
 function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleRowObject, dataSourceDescription)
