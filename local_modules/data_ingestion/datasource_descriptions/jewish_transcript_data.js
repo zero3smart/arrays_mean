@@ -8,11 +8,11 @@ var import_processing = require('../import_processing');
 exports.Descriptions =
     [
         {
-            filename: "Jewish_Transcript_Data.tsv",
+            filename: "Jewish_Transcript_Data_v3.csv",
             fileEncoding: "utf8", // default
             uid: "jewish_transcript_data",
             importRevision: 1,
-            format: import_datatypes.DataSource_formats.TSV,
+            format: import_datatypes.DataSource_formats.CSV,
             title: "The Jewish Transcript",
             brandColor: "#6699CC",
             urls: [ "http://cdm16118.contentdm.oclc.org/cdm/landingpage/collection/p16118coll10" ],
@@ -22,19 +22,19 @@ exports.Descriptions =
                 'Date': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
-                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
+                        format: "MM/DD/YYYY" // e.g. "2009-03-21"
                     }
                 },
                 'Date created': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
-                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
+                        format: "MM/DD/YY" // e.g. "2009-03-21"
                     }
                 },
                 'Date modified': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
-                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
+                        format: "MM/DD/YY" // e.g. "2009-03-21"
                     }
                 },
 
@@ -86,8 +86,8 @@ exports.Descriptions =
             fe_designatedFields:
             {
                 objectTitle: "Title",
-                originalImageURL: "CONTENTdm file path",
-                //medThumbImageURL: "thumb_small"  Not Available?
+                originalImageURL: "FullSize",
+                medThumbImageURL: "Thumbnail" 
             },
             fe_views: {
                 gallery: true,
@@ -113,8 +113,6 @@ exports.Descriptions =
                     "CONTENTdm number",
                     "CONTENTdm file name",
                     "CONTENTdm file path",
-                    "Date created",
-                    "Date modified",
                     "Pages_Title",
                     "Pages_Date",
                     "Pages_Decade",
@@ -123,21 +121,33 @@ exports.Descriptions =
                     "Pages_Volume/Issue",
                     "Pages_Type",
                     "Pages_Local Type",
+                    "Pages_Date created",
+                    "Pages_Date modified",
                     "Pages_Reference URL",
                     "Pages_CONTENTdm number",
                     "Pages_CONTENTdm file name",
                     "Pages_CONTENTdm file path",
+                    "Pages_FullSize",
+                    "Pages_Thumbnail",
+                    "Image",
                     "Transcript",
                     "Directory Name",
                     "Digital Tech",
-                    "Language"
+                    "Language",
+                    "Date Modified",
+                    "Date Created",
+                    "Pages",
+                    "Pages_Image",
+                    "FullSize",
+                    "Thumbnail",
+                    "LCCN"
                 ],
             fe_displayTitleOverrides:
             {
                 // these are to be tuples - the values must be unique as well
                 "Pages_Transcript" : "Transcript",
-                "Pages_Date created": "Date created",
-                "Pages_Date modified": "Date modified"
+                //"Pages_Date created": "Date created",
+                //"Pages_Date modified": "Date modified"
             },
             fe_filters_fabricatedFilters:
                 [
@@ -178,7 +188,7 @@ exports.Descriptions =
             //
             fe_filters_default:
             {
-                "Image": [ "Has image" ]
+                //all have images
             },
             fe_filters_fieldsNotAvailable:
                 [
@@ -206,7 +216,9 @@ exports.Descriptions =
                     "Transcript",
                     "Date modified",
                     "Date created",
-                    "Date"
+                    "Date",
+                    "Pages_Thumbnail",
+                    "Pages_FullSize"
                 ],
             //
             //
@@ -231,7 +243,13 @@ exports.Descriptions =
                     "OCLC number",
                     "Pages_Transcript",
                     "Directory Name",
-                    "File Name"
+                    "File Name",
+                    "Transcript",
+                    "Date modified",
+                    "Date created",
+                    "Date",
+                    "Pages_Thumbnail",
+                    "Pages_FullSize"
                 ],
             fe_chart_valuesToExcludeByOriginalKey:
             {
@@ -312,7 +330,9 @@ exports.Descriptions =
                     'Reference URL',
                     'CONTENTdm number',
                     'CONTENTdm file name',
-                    'CONTENTdm file path'
+                    'CONTENTdm file path',
+                    'FullSize',
+                    'Thumbnail'
                 ];
                 //
                 //
