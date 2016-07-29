@@ -149,6 +149,33 @@ exports.Descriptions =
                 //"Pages_Date created": "Date created",
                 //"Pages_Date modified": "Date modified"
             },
+            fe_fieldDisplayOrder:
+                [
+                    'Catalog Title',
+                    'Collection',
+                    'Contributing Institution',
+                    'Creator',
+                    'Date',
+                    'Date Labeled',
+                    'Date created',
+                    'Date modified',
+                    'Decade',
+                    'Description',
+                    'File Name',
+                    'Issue',
+                    'LCCN',
+                    'OCLC number',
+                    'Pages',
+                    'Physical Measurements',
+                    'Publisher',
+                    'Publisher Location (NDNP)',
+                    'Rights and Reproduction',
+                    'Source',
+                    'Subjects',
+                    'Title [NDNP]',
+                    'Transcript',
+                    'Volume'
+                ],
             fe_filters_fabricatedFilters:
                 [
                     {
