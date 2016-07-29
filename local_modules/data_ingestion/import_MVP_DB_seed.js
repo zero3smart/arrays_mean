@@ -9,7 +9,7 @@ var dotenv_config =
 };
 require('dotenv').config(dotenv_config);
 //
-var datasources = require('./command_parser').GetDatasources();
+var datasources = require('./cmd_parser').GetDatasources();
 var dataSourceDescriptions = require('./datasource_descriptions').GetDescriptionsToSetup(datasources);
 //
 //
