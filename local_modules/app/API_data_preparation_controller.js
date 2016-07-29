@@ -1277,7 +1277,6 @@
                 { $limit: groupsLimit }
             ]);
 
-            console.log('---- %j', aggregationOperators);
             //
             var doneFn = function(err, groupedResults)
             {
@@ -2147,7 +2146,7 @@
             var encodedVals = [];
             for (var j = 0 ; j < filterObj_key_vals_length ; j++) {
                 var filterObj_key_val = filterObj_key_vals[j];
-                var filterIsString = typeof this_filterVal === 'string';
+                var filterIsString = typeof filterObj_key_val === 'string';
                 var filterVal = filterIsString ? encodeURIComponent(filterObj_key_val) : filterObj_key_val;
                 encodedVals.push(filterVal);
             }
