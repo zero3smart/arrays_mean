@@ -319,10 +319,6 @@ exports.Descriptions =
             },
             fe_filters_fieldsNotAvailable:
             [
-                "events_available",
-                "series_available",
-                "stories_available",
-                "comics_available",
                 "description",
                 "name",
                 "modified"
@@ -362,7 +358,9 @@ exports.Descriptions =
                 'Object Title' : 'name'
             },
             fe_scatterplot_fieldsNotAvailable: [
-                'Last Modified'
+                "description",
+                "name",
+                "modified"
             ],
             fe_scatterplot_defaults: {
                 xAxisField: 'Comics',

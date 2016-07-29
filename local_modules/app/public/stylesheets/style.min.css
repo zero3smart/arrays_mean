@@ -4840,14 +4840,14 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 
 	.sort-bar-left .dropdown-toggle {
 		overflow-x: hidden;
-		width: 100%;
+		max-width: 100%;
 		text-overflow: ellipsis;
 	}
 
 	.sort-bar-6 {
 		margin-right: -0.25em;
 		padding-right: 15px;
-		width: 50%;
+		max-width: 50%;
 	}
 }
 /* @end Mobile Sort Dropdowns */
