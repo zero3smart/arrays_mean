@@ -2052,6 +2052,29 @@
                 }
             }
             //
+            // Now insert keyword filters
+            if (dataSourceDescription.fe_filters_keywordFilters) {
+                var keywordFilters_length = dataSourceDescription.fe_filters_keywordFilters.length;
+                for (var i = 0 ; i < keywordFilters_length ; i++) {
+                    var keywordFilter = dataSourceDescription.fe_filters_keywordFilters[i];
+                    var choices = keywordFilter.choices;
+                    var choices_length = choices.length;
+                    var values = [];
+                    for (var j = 0 ; j < choices_length ; j++) {
+                        var choice = choices[j];
+                        values.push(choice);
+                    }
+                    if (typeof uniqueFieldValuesByFieldName[keywordFilter.title] !== 'undefined') {
+                        var errStr = 'Unexpectedly already-existent filter for the keyword filter title ' + keywordFilter.title;
+                        winston.error("❌  " + errStr);
+                        callback(new Error(errStr), null);
+
+                        return;
+                    }
+                    uniqueFieldValuesByFieldName[keywordFilter.title] = values;
+                }
+            }
+            //
             callback(null, uniqueFieldValuesByFieldName);
         });
     }

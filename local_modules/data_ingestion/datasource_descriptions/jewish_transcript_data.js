@@ -212,6 +212,35 @@ exports.Descriptions =
                 _all: [ "", null ]
             },
             //
+            fe_filters_keywordFilters:
+                [
+                    {
+                        title: "Transcript",
+                        choices: [
+                            'community',
+                            'petition',
+                            'president',
+                            'immigration',
+                            'development',
+                            'judgement',
+                            'university',
+                            'committee',
+                            'complaint',
+                            'power',
+                            'national',
+                            'proposed',
+                            'against',
+                            'amendment',
+                            'resolution',
+                            'protest',
+                            'war',
+                            'olympic',
+                            'conference',
+                            'world'
+                        ]
+                    }
+                ],
+            //
             //
             fe_filters_default:
             {
