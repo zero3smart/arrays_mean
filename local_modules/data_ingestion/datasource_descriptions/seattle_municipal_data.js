@@ -78,7 +78,8 @@ exports.Descriptions =
                 choropleth: false,
                 chart: true,
                 scatterplot: true,
-                timeline: true
+                timeline: true,
+                keywordFrequency: true
             },
             fe_excludeFields:
                 [
