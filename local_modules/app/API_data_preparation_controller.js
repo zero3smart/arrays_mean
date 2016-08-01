@@ -219,6 +219,8 @@
             }
             wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
         }
+
+        // console.log("--- %j", wholeFilteredSet_aggregationOperators);
         //
         // Now kick off the query work
         self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
@@ -1954,20 +1956,25 @@
         }
 
         // We need to consider that the search column is array
-        var unwindOp = { $unwind: '$' + realColumnName_path };
-        var matchOp = { $match: {} };
-        matchOp["$match"][realColumnName_path] = {$gte: realFilterValueMin, $lt: realFilterValueMax};
-        var groupOp = {
-            $group: {
-                _id: '$_id',
-                pKey: {'$first': '$pKey'},
-                srcDocPKey: {'$first': '$srcDocPKey'},
-                rowIdxInDoc: {'$first': '$rowIdxInDoc'},
-                rowParams: {'$first': '$rowParams'}
+        var projectOp = { $project: {
+            _id: 1,
+            pKey: 1,
+            srcDocPKey: 1,
+            rowIdxInDoc: 1,
+            rowParams: 1,
+            matchingField: {
+                $cond: {
+                    if: { $isArray: "$" + realColumnName_path },
+                    then: { $size: "$" + realColumnName_path }, // gets the number of items in the array
+                    else: "$" + realColumnName_path
+                }
             }
-        };
+        }};
 
-        return { matchConditions: [unwindOp, matchOp, groupOp] };
+        var matchOp = { $match: {} };
+        matchOp["$match"]["matchingField"] = {$gte: realFilterValueMin, $lte: realFilterValueMax};
+
+        return { matchConditions: [projectOp, matchOp] };
     }
     //
     function _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ)
