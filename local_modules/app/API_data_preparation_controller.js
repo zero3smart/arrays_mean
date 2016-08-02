@@ -1417,7 +1417,7 @@
         }
     };
     //
-    constructor.prototype.BindDataFor_array_keywordFrequency = function(urlQuery, callback)
+    constructor.prototype.BindDataFor_array_wordCloud = function(urlQuery, callback)
     {
         var self = this;
         // urlQuery keys:
@@ -1448,8 +1448,8 @@
         var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
         //
         var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
-        var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_keywordFrequency_defaultGroupByColumnName_humanReadable;
-        var keywords = dataSourceDescription.fe_keywordFrequency_keywords;
+        var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_wordCloud_defaultGroupByColumnName_humanReadable;
+        var keywords = dataSourceDescription.fe_wordCloud_keywords;
         //
         var filterJSON = urlQuery.filterJSON;
         var filterObj = {};
@@ -1625,7 +1625,7 @@
         function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
         {
             var err = null;
-            var routePath_base              = "/array/" + source_pKey + "/keyword-frequency";
+            var routePath_base              = "/array/" + source_pKey + "/word-cloud";
             var routePath_withoutFilter     = routePath_base;
             var routePath_withoutGroupBy    = routePath_base;
             var urlQuery_forSwitchingViews  = "";
@@ -1679,7 +1679,7 @@
                 isSearchActive: isSearchActive,
                 //
                 defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-                colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForKeywordFrequencyGroupByDropdown(sampleDoc, dataSourceDescription),
+                colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForwordCloudGroupByDropdown(sampleDoc, dataSourceDescription),
                 colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                 //
                 routePath_base: routePath_base,

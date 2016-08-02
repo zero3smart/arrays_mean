@@ -352,8 +352,8 @@ exports.Descriptions =
                 ],
             //
             //
-            fe_keywordFrequency_defaultGroupByColumnName_humanReadable: "Transcript",
-            fe_keywordFrequency_fieldsNotAvailableAsGroupByColumns:
+            fe_wordCloud_defaultGroupByColumnName_humanReadable: "Transcript",
+            fe_wordCloud_fieldsNotAvailableAsGroupByColumns:
                 [
                     "Title",
                     "Identifier",
@@ -385,8 +385,8 @@ exports.Descriptions =
                     "Issue",
                     "Physical Measurements"
                 ],
-            // fe_keywordFrequency_defaultSortByColumnName_humanReadable: "Results",
-            fe_keywordFrequency_keywords:
+            // fe_wordCloud_defaultSortByColumnName_humanReadable: "Results",
+            fe_wordCloud_keywords:
                 [
                     'community',
                     'petition',

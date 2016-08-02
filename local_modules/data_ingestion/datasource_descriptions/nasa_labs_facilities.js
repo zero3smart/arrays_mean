@@ -51,7 +51,7 @@ exports.Descriptions =
                 chart: true,
                 scatterplot: false,
                 timeline: true,
-                keywordFrequency: false
+                wordCloud: false
             },
             fe_excludeFields:
                 [

@@ -1,7 +1,7 @@
 /* @override 
-	http://localhost:9080/stylesheets/module/keyword-frequency.css */
+	http://localhost:9080/stylesheets/module/word-cloud.css */
 
-.keyword-frequency-list {
+.word-cloud-list {
 	margin-bottom: 0;
 	padding-top: 30px;
 	padding-bottom: 90px;
@@ -9,14 +9,14 @@
 	list-style-type: none;
 }
 
-.keyword-frequency-item {
+.word-cloud-item {
 	display: inline-block;
 	margin-right: 15px;
 	margin-bottom: 15px;
 	vertical-align: bottom;
 }
 
-.keyword-frequency-link {
+.word-cloud-link {
 	display: block;
 	padding: 10px 20px;
 	border-width: 1px;
@@ -27,8 +27,8 @@
 	font-size: 24px;
 }
 
-.keyword-frequency-link:hover,
-.keyword-frequency-link:focus,
-.keyword-frequency-link:active {
+.word-cloud-link:hover,
+.word-cloud-link:focus,
+.word-cloud-link:active {
 	text-decoration: none;
 }

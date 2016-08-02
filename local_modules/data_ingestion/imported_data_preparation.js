@@ -253,7 +253,7 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatter
 }
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown;
 //
-function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForKeywordFrequencyGroupByDropdown(sampleRowObject, dataSourceDescription)
+function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForwordCloudGroupByDropdown(sampleRowObject, dataSourceDescription)
 {
     var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
     // add in "Object Title" so we use the same machinery as the hand-specified ones
@@ -264,8 +264,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForKeyword
     var available_keys = [];
     for (var i = 0 ; i < keys_length ; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_keywordFrequency_fieldsNotAvailableAsGroupByColumns) {
-            if (dataSourceDescription.fe_keywordFrequency_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_wordCloud_fieldsNotAvailableAsGroupByColumns) {
+            if (dataSourceDescription.fe_wordCloud_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
                 continue;
             }
         }
@@ -276,5 +276,5 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForKeyword
     
     return available_keys;
 }
-module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForKeywordFrequencyGroupByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForKeywordFrequencyGroupByDropdown;
+module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForwordCloudGroupByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForwordCloudGroupByDropdown;
 //

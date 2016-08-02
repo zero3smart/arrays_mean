@@ -359,7 +359,7 @@
     },
     {
       "uid": "7251999992b4c7af9b59576e18c8d868",
-      "css": "keyword-frequency",
+      "css": "word-cloud",
       "code": 59417,
       "src": "custom_icons",
       "selected": true,
@@ -368,7 +368,7 @@
         "width": 1000
       },
       "search": [
-        "keyword-frequency"
+        "word-cloud"
       ]
     }
   ]

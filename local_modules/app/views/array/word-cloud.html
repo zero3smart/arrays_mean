@@ -7,9 +7,9 @@
 {% endblock %}
 
 {% block bodyWrapper %}
-    <body class="array array-keyword-frequency source-{{ array_source_key }} legend-open">
+    <body class="array array-word-cloud source-{{ array_source_key }} legend-open">
         <div id="page" class="site">
-            {% set currentView = "keyword-frequency" %}
+            {% set currentView = "word-cloud" %}
             {% include "../partials/header_bar_array.html" %}
             {% include "../partials/sidebar_filter.html" %}
 
@@ -134,14 +134,14 @@
                                 
                                     {% if groupedResults | length %}
                                         {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
-                                        <ul class="keyword-frequency-list">
+                                        <ul class="word-cloud-list">
                                         {% for result in groupedResults %}
                                             {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(defaultGroupByColumnName_humanReadable, result._id, false) %}
                                             {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
                                             {% set urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString %}
-                                            <li class="keyword-frequency-item">
-                                                <a href="{{ urlForFilterValue }}" class="keyword-frequency-link border-color-brand-hover has-tooltip" data-tooltip-key="{{ result._id }}" data-tooltip-value="{{ result.value }}">
-                                                    <span class="keyword-frequency-label color-brand" style="font-size: {{ (result.value - minGroupedResultsValue) / (maxGroupedResultsValue - minGroupedResultsValue) * 500 + 100 | round() }}%">{{ result._id }}</span>
+                                            <li class="word-cloud-item">
+                                                <a href="{{ urlForFilterValue }}" class="word-cloud-link border-color-brand-hover has-tooltip" data-tooltip-key="{{ result._id }}" data-tooltip-value="{{ result.value }}">
+                                                    <span class="word-cloud-label color-brand" style="font-size: {{ (result.value - minGroupedResultsValue) / (maxGroupedResultsValue - minGroupedResultsValue) * 500 + 100 | round() }}%">{{ result._id }}</span>
                                                 </a>
                                             </li>
                                         {% endfor %}

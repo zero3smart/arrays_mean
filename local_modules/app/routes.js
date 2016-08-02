@@ -150,7 +150,7 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
         var query = url_parts.query;
         self.__render_array_timeline(req, res, source_key, query);
     });
-    app.get('/array/:source_key/keyword-frequency', _ensureWWW, function(req, res)
+    app.get('/array/:source_key/word-cloud', _ensureWWW, function(req, res)
     {
         var source_key = req.params.source_key;
         if (source_key === null || typeof source_key === 'undefined' || source_key === "") {
@@ -160,7 +160,7 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
         }
         var url_parts = url.parse(req.url, true);
         var query = url_parts.query;
-        self.__render_array_keywordFrequency(req, res, source_key, query);
+        self.__render_array_wordCloud(req, res, source_key, query);
     });
 };
 constructor.prototype.__render_array_gallery = function(req, res, source_key, query)
@@ -243,12 +243,12 @@ constructor.prototype.__render_array_timeline = function(req, res, source_key, q
         res.render('array/timeline', bindData);
     });
 };
-constructor.prototype.__render_array_keywordFrequency = function(req, res, source_key, query)
+constructor.prototype.__render_array_wordCloud = function(req, res, source_key, query)
 {
     var self = this;
     var context = self.context;
     query.source_key = source_key;
-    context.API_data_preparation_controller.BindDataFor_array_keywordFrequency(query, function(err, bindData)
+    context.API_data_preparation_controller.BindDataFor_array_wordCloud(query, function(err, bindData)
     {
         if (err) {
             winston.error("❌  Error getting bind data for Array keyword frequency: ", err);
@@ -256,7 +256,7 @@ constructor.prototype.__render_array_keywordFrequency = function(req, res, sourc
             
             return;
         }
-        res.render('array/keyword-frequency', bindData);
+        res.render('array/word-cloud', bindData);
     });
 };
 //

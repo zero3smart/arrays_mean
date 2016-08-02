@@ -10,9 +10,9 @@ var $tooltipValue = $('<span class="tooltip-value"></span>').appendTo($tooltip);
 /**
  * Tooltip behavior on mouse hover
  */
-var $keywordFrequencyLink = $('.keyword-frequency-link.has-tooltip');
+var $wordCloudLink = $('.word-cloud-link.has-tooltip');
 
-$keywordFrequencyLink.each(function(i) {
+$wordCloudLink.each(function(i) {
 	var $this = $(this);
 
 	$this.on('mouseover', function() {
