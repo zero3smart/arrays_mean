@@ -80,6 +80,7 @@ exports.Descriptions =
             {
                 if (this.dataset_uid && typeof this.dataset_uid === 'string')
                     return this.dataset_uid + "-" + rowIndex + "-" + rowObject["Identifier"];
+
                 return "" + rowIndex + "-" + rowObject["Identifier"];
             },
             fe_designatedFields:
@@ -95,7 +96,6 @@ exports.Descriptions =
                 scatterplot: false,
                 timeline: true
             },
-            fe_nestedObject_prefix: 'Pages_',
             fe_excludeFields:
                 [
                     "Identifier",
@@ -350,10 +350,34 @@ exports.Descriptions =
                     "File Name",
                     "Pages_Transcript"
                 ],
+
+            fe_nestedObject_prefix: 'Pages_',
+            // specify (and cache/store) an operating spec for the row merge operation
+            fe_nestedObjectFields: [
+                'Title',
+                'Date',
+                'Decade',
+                'Volume',
+                'Issue',
+                'Volume/Issue',
+                'Type',
+                'Local Type',
+                'Transcript',
+                'Date created',
+                'Date modified',
+                'Reference URL',
+                'CONTENTdm number',
+                'CONTENTdm file name',
+                'CONTENTdm file path',
+                'FullSize',
+                'Thumbnail'
+            ],
+            fe_nestedObjectFieldOverrides: {
+            },
+            fe_criteria_nestedObject: function(rowDoc) {
+                return !rowDoc.rowParams.Identifier || rowDoc.rowParams.Identifier == '';
+            },
             fe_nestedObjectValueOverrides: {
-                'Pages_Title': {
-                    'p': 'Page '
-                }
             },
             //
             //
@@ -368,27 +392,6 @@ exports.Descriptions =
                 var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.Model.model;
                 var forThisDataSource_nativeCollection = forThisDataSource_mongooseContext.Model.collection;
 
-
-                // specify (and cache/store) an operating spec for the row merge operation
-                eachCtx.pageFields = [
-                    'Title',
-                    'Date',
-                    'Decade',
-                    'Volume',
-                    'Issue',
-                    'Volume/Issue',
-                    'Type',
-                    'Local Type',
-                    'Transcript',
-                    'Date created',
-                    'Date modified',
-                    'Reference URL',
-                    'CONTENTdm number',
-                    'CONTENTdm file name',
-                    'CONTENTdm file path',
-                    'FullSize',
-                    'Thumbnail'
-                ];
                 //
                 //
                 // generate a bulk operation for our merge field values operations that we're going to do
@@ -409,19 +412,21 @@ exports.Descriptions =
                 //
                 var self = this;
                 // Detect if the row is an issue or page by it's primary key - Identifier
-                if (rowDoc.rowParams.Identifier && rowDoc.rowParams.Identifier != '') {
+                if (!this.fe_criteria_nestedObject(rowDoc)) {
                     // Issue
                     var bulkOperationQueryFragment;
 
                     // Apply to Merge the cached rows(Page) into one row(Issue)
                     var updateFragment = {$pushAll: {}};
-                    for (var i = 0; i < eachCtx.pageFields.length; i++) {
-                        var fieldName = self.fe_nestedObject_prefix + eachCtx.pageFields[i];
+
+                    for (var i = 0; i < self.fe_nestedObjectFields.length; i++) {
+
+                        var fieldName = self.fe_nestedObjectFields[i];
 
                         var generatedArray = [];
                         //
                         eachCtx.cachedPages.forEach(function (rowDoc) {
-                            var fieldValue = rowDoc["rowParams"][eachCtx.pageFields[i]];
+                            var fieldValue = rowDoc["rowParams"][fieldName];
                             // Replace with the pattern listed on the overrides if needed
                             if (self.fe_nestedObjectValueOverrides[fieldName]) {
                                 var keys = Object.keys(self.fe_nestedObjectValueOverrides[fieldName]);
@@ -440,7 +445,10 @@ exports.Descriptions =
                             eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).remove();
                         });
 
-                        updateFragment["$pushAll"]["rowParams." + fieldName] = generatedArray;
+                        if (self.fe_nestedObjectFieldOverrides[fieldName])
+                            fieldName = self.fe_nestedObjectFieldOverrides[fieldName];
+
+                        updateFragment["$pushAll"]["rowParams." + self.fe_nestedObject_prefix + fieldName] = generatedArray;
                     }
 
                     if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {

@@ -118,7 +118,6 @@ constructor.prototype.IncreaseNumberOfRawRows = function(pKey, numberOfRows, fn)
 {
     winston.log("📡  [" + (new Date()).toString() + "] Going to increase the number of raw rows in the source document.");
 
-    console.log('numberOfRows:', numberOfRows);
     var findOneAndUpdate_queryParameters =
     {
         primaryKey: pKey
