@@ -786,6 +786,7 @@ constructor.prototype.EnumerateProcessedDataset
         } else {
             for (var opt in query_optl) { query[opt] = query_optl[opt]; };
         }
+
         nativeCollection_ofTheseProcessedRowObjects.find(query, {sort: {_id: 1}}, function(err, cursor)
         {
             if (err) { // No cursor yet so we do not call closeCursorAndReturnWithErr(err)

@@ -9,7 +9,7 @@ exports.Descriptions =
     [
         {
             schemaname: "transcript_schema.js",
-            filename: "Jewish_Transcript_Data_v3.csv",
+            filename: "Jewish_Transcript_Data_v3_s.csv",
             dataset_uid: "jewish",
             fileEncoding: "utf8", // default
             format: import_datatypes.DataSource_formats.CSV,

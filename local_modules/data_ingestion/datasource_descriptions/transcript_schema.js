@@ -395,6 +395,7 @@ exports.Descriptions =
                 var mergeRowsIntoFieldArray_bulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
                 // store it into the "each-row" context for access during the each row operations
                 eachCtx.mergeRowsIntoFieldArray_bulkOperation = mergeRowsIntoFieldArray_bulkOperation;
+                eachCtx.numberOfInsertedRows = 0;
                 eachCtx.numberOfRows = 0;
                 eachCtx.cachedPages = [];
                 //
@@ -455,12 +456,13 @@ exports.Descriptions =
                         eachCtx.cachedPages = [];
                     }
 
-                    eachCtx.numberOfRows ++;
+                    eachCtx.numberOfInsertedRows ++;
 
                 } else {
                     // Cache pages if it's a page
                     eachCtx.cachedPages.push(rowDoc);
                 }
+                eachCtx.numberOfRows ++;
                 //
                 // finally, must call cb to advance
                 //
@@ -491,7 +493,7 @@ exports.Descriptions =
 
                     // Update numberOfRows on the row source documents
                     var srcDoc_pKey = appCtx.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(self.uid, self.importRevision);
-                    appCtx.raw_source_documents_controller.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfRows, cb);
+                    appCtx.raw_source_documents_controller.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows, cb);
                 });
             }
         }

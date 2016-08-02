@@ -7,21 +7,13 @@ exports.Descriptions =
     [
         {
             schemaname: "transcript_schema.js",
-            filename: "Municipal_News_Data_v5.csv",
+            filename: "Municipal_News_Data_v5_s.csv",
             fileEncoding: "utf8", // default
             dataset_uid: "municipal",
             format: import_datatypes.DataSource_formats.CSV,
             urls: [ "http://cdm16118.contentdm.oclc.org/cdm/landingpage/collection/p16118coll7" ],
             description: "The Municipal League of Seattle was organized on May 23, 1910 with a mission of informing and involving its members and the public in civic issues.",
             // Special coercion scheme
-            raw_rowObjects_coercionScheme: {
-                'Date': {
-                    do: import_datatypes.Coercion_ops.ToDate,
-                    opts: {
-                        format: "MM-DD-YYYY" // e.g. "03-21-2009"
-                    }
-                }
-            },
             raw_rowObjects_mismatchScheme:
             {
                 // Substitute
