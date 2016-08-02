@@ -140,7 +140,7 @@
                                             {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
                                             {% set urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString %}
                                             <li class="keyword-frequency-item">
-                                                <a href="{{ urlForFilterValue }}" class="keyword-frequency-link border-color-brand-hover">
+                                                <a href="{{ urlForFilterValue }}" class="keyword-frequency-link border-color-brand-hover has-tooltip" data-tooltip-key="{{ result._id }}" data-tooltip-value="{{ result.value }}">
                                                     <span class="keyword-frequency-label color-brand" style="font-size: {{ (result.value - minGroupedResultsValue) / (maxGroupedResultsValue - minGroupedResultsValue) * 500 + 100 | round() }}%">{{ result._id }}</span>
                                                 </a>
                                             </li>
@@ -168,6 +168,7 @@
         <script type="text/javascript" src="/javascripts/lib/sharrre/jquery.sharrre.js"></script>
 
         <script type="text/javascript" src="/javascripts/main.js"></script>
+        <script type="text/javascript" src="/javascripts/module/word-cloud.js"></script>
 
         {% include "../partials/survicate.html" %}
     </body>
