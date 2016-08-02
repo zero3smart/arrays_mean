@@ -358,6 +358,65 @@ exports.Descriptions =
             },
             //
             //
+            fe_keywordFrequency_defaultGroupByColumnName_humanReadable: "Transcript",
+            fe_keywordFrequency_fieldsNotAvailableAsGroupByColumns:
+                [
+                    "Title",
+                    "Identifier",
+                    "Subjects",
+                    "Creator",
+                    "Date Labeled",
+                    "Publisher",
+                    "Publisher Location (NDNP)",
+                    "Collection",
+                    "Contributing Institution",
+                    "Rights and Reproduction",
+                    "Source",
+                    "Digital Tech",
+                    "Language",
+                    "Title [NDNP]",
+                    "OCLC number",
+                    "Directory Name",
+                    "File Name",
+                    "Transcript",
+                    "Date modified",
+                    "Date created",
+                    "Date",
+                    "Pages_Thumbnail",
+                    "Pages_FullSize",
+                    "Catalog Title",
+                    "Description",
+                    "Decade",
+                    "Volume",
+                    "Issue",
+                    "Physical Measurements"
+                ],
+            // fe_keywordFrequency_defaultSortByColumnName_humanReadable: "Results",
+            fe_keywordFrequency_keywords:
+                [
+                    'community',
+                    'petition',
+                    'president',
+                    'immigration',
+                    'development',
+                    'judgement',
+                    'university',
+                    'committee',
+                    'complaint',
+                    'power',
+                    'national',
+                    'proposed',
+                    'against',
+                    'amendment',
+                    'resolution',
+                    'protest',
+                    'war',
+                    'olympic',
+                    'conference',
+                    'world'
+                ],
+            //
+            //
             afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
             {
                 // Setup each ctx, such as the batch operation

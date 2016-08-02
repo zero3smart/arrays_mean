@@ -1448,7 +1448,8 @@
         var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
         //
         var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
-        var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_chart_defaultGroupByColumnName_humanReadable;
+        var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_keywordFrequency_defaultGroupByColumnName_humanReadable;
+        var keywords = dataSourceDescription.fe_keywordFrequency_keywords;
         //
         var filterJSON = urlQuery.filterJSON;
         var filterObj = {};
@@ -1540,27 +1541,36 @@
                 }
                 aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
             }
+
+            var groupBy_realColumnName_path = "rowParams." + groupBy_realColumnName;
             aggregationOperators = aggregationOperators.concat(
             [
-                { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
-                { // unique/grouping and summing stage
+                { $unwind: "$" + groupBy_realColumnName_path }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                {
+                    $match: {
+                        [groupBy_realColumnName_path]: {
+                            $regex: keywords[5], $options: "i"
+                        }
+                    }
+                },
+                {
                     $group: {
-                        _id: "$" + "rowParams." + groupBy_realColumnName,
+                        _id: "$" + groupBy_realColumnName_path,
                         value: { $sum: 1 } // the count
                     }
                 },
-                { // reformat
+                {
                     $project: {
                         _id: 0,
                         label: "$_id",
                         value: 1
                     }
                 },
-                { // priotize by incidence, since we're $limit-ing below
+                {
                     $sort : { value : -1 }
                 },
                 {
-                    $limit : 100 // so the chart can actually handle the number
+                    $limit : 10
                 }
             ]);
             //
@@ -1574,85 +1584,15 @@
                 if (groupedResults == undefined || groupedResults == null) {
                     groupedResults = [];
                 }
-                var finalizedButNotCoalesced_groupedResults = [];
-                groupedResults.forEach(function(el, i, arr)
-                {
-                    var originalVal = el.label;
-                    //
-                    var fe_chart_valuesToExcludeByOriginalKey = dataSourceDescription.fe_chart_valuesToExcludeByOriginalKey;
-                    if (fe_chart_valuesToExcludeByOriginalKey != null && typeof fe_chart_valuesToExcludeByOriginalKey !== 'undefined') {
-                        if (fe_chart_valuesToExcludeByOriginalKey._all) {
-                            if (fe_chart_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
-                                return; // do not push to list
-                            }
-                        }
-                        var illegalValuesForThisKey = fe_chart_valuesToExcludeByOriginalKey[groupBy_realColumnName];
-                        if (illegalValuesForThisKey) {
-                            if (illegalValuesForThisKey.indexOf(originalVal) !== -1) {
-                                return; // do not push to list
-                            }
-                        }
-                    }
-                    //
-                    var displayableVal = originalVal;
-                    if (originalVal == null) {
-                        displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
-                    } else if (originalVal === "") {
-                        displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
-                    } else {
-                        displayableVal = _reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, groupBy_realColumnName, dataSourceDescription);
-                    }
-                    finalizedButNotCoalesced_groupedResults.push({
-                        value: el.value,
-                        label: displayableVal
-                    });
-                });
-                var finalized_groupedResults = [];
-                var summedValuesByLowercasedLabels = {};
-                var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
-                finalizedButNotCoalesced_groupedResults.forEach(function(el, i, arr)
-                {
-                    var label = el.label;
-                    var value = el.value;
-                    var label_toLowerCased = label.toLowerCase();
-                    //
-                    var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
-                    var new_valueSum = existing_valueSum + value;
-                    summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
-                    //
-                    var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] || { label: '', value: -1 };
-                    if (existing_titleWithMostMatchesAndMatchCount.value < value) {
-                        var new_titleWithMostMatchesAndMatchCount = { label: label, value: value };
-                        titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
-                    }
-                });
-                var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
-                lowercasedLabels.forEach(function(key, i, arr)
-                {
-                    var summedValue = summedValuesByLowercasedLabels[key];
-                    var reconstitutedDisplayableTitle = key;
-                    var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[key];
-                    if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
-                        winston.error("❌  This should never be undefined.");
-                        callback(new Error('Unexpectedly undefined title with most matches'), null);
-
-                        return;
-                    } else {
-                        reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
-                    }
-                    finalized_groupedResults.push({
-                        value: summedValue,
-                        label: reconstitutedDisplayableTitle
-                    });
-                });
-                _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, finalized_groupedResults);
+                
+                _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults);
             };
             processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         }
         function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
         {
             var err = null;
-            var routePath_base              = "/array/" + source_pKey + "/chart";
+            var routePath_base              = "/array/" + source_pKey + "/keyword-frequency";
             var routePath_withoutFilter     = routePath_base;
             var routePath_withoutGroupBy    = routePath_base;
             var urlQuery_forSwitchingViews  = "";
@@ -1701,7 +1641,7 @@
                 isSearchActive: isSearchActive,
                 //
                 defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-                colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription),
+                colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForKeywordFrequencyGroupByDropdown(sampleDoc, dataSourceDescription),
                 colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                 //
                 routePath_base: routePath_base,
