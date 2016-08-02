@@ -172,8 +172,9 @@ constructor.prototype._postProcess = function(indexInList, dataSourceDescription
 {
     var self = this;
     var dataSource_uid = dataSourceDescription.uid;
-    var dataSource_importRevision = dataSourceDescription.importRevision;    
+    var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.title;
+    var dataset_uid = dataSourceDescription.dataset_uid;
 
     winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
     //
@@ -185,6 +186,7 @@ constructor.prototype._postProcess = function(indexInList, dataSourceDescription
         dataSource_uid,
         dataSource_importRevision,
         dataSource_title,
+        dataset_uid,
         function(err)
         {
             if (err) {
@@ -252,6 +254,7 @@ constructor.prototype._proceedToScrapeImagesAndRemainderOfPostProcessing = funct
             self.context.processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSourceDescription.uid,
                 dataSourceDescription.importRevision,
                 dataSourceDescription.title,
+                dataSourceDescription.dataset_uid,
                 description.htmlSourceAtURLInField,
                 description.imageSrcSetInSelector,
                 description.prependToImageURLs || "",
@@ -280,6 +283,7 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_importRevision = dataSourceDescription.importRevision;    
     var dataSource_title = dataSourceDescription.title;
+    var dataset_uid = dataSourceDescription.dataset_uid;
     //
     winston.info("🔁  Performing each-row operation for \"" + dataSource_title + "\"");
     //    
@@ -308,6 +312,7 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
             self.context.processed_row_objects_controller.EnumerateProcessedDataset(
                 dataSource_uid,
                 dataSource_importRevision,
+                dataset_uid,
                 function(doc, eachCb) {
                     dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFn(self.context, eachCtx, doc, eachCb);
                 },

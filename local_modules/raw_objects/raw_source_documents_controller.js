@@ -89,7 +89,8 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     if (persistableObjectTemplate.title) updatedDocument['title'] = persistableObjectTemplate.title;
     if (persistableObjectTemplate.revisionNumber) updatedDocument['revisionNumber'] = persistableObjectTemplate.revisionNumber;
     if (persistableObjectTemplate.importUID) updatedDocument['importUID'] = persistableObjectTemplate.importUID;
-    if (persistableObjectTemplate.numberOfRows) updatedDocument['numberOfRows'] = persistableObjectTemplate.numberOfRows;
+    var numberOfRows = 0;
+    if (persistableObjectTemplate.numberOfRows) numberOfRows = persistableObjectTemplate.numberOfRows;
     updatedDocument['dateOfLastImport'] = new Date();
 
     var findOneAndUpdate_queryParameters =
@@ -97,9 +98,9 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
         primaryKey: persistableObjectTemplate.primaryKey
     };
     RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {
-        $set: updatedDocument
+        $set: updatedDocument,
+        $inc: {numberOfRows: persistableObjectTemplate.numberOfRows}
     }, {
-        new: true,
         upsert: true
     }, function(err, doc)
     {
@@ -107,6 +108,31 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
             winston.error("❌ [" + (new Date()).toString() + "] Error while updating a raw source document: ", err);
         } else {
             winston.info("✅  [" + (new Date()).toString() + "] Saved source document object with pKey \"" + persistableObjectTemplate.primaryKey + "\".");
+        }
+        fn(err, doc);
+    });
+};
+
+//
+constructor.prototype.IncreaseNumberOfRawRows = function(pKey, numberOfRows, fn)
+{
+    winston.log("📡  [" + (new Date()).toString() + "] Going to increase the number of raw rows in the source document.");
+
+    var findOneAndUpdate_queryParameters =
+    {
+        primaryKey: pKey
+    };
+    RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {
+        $set: {dateOfLastImport: new Date()},
+        $inc: {numberOfRows: numberOfRows},
+    }, {
+        upsert: true
+    }, function(err, doc)
+    {
+        if (err) {
+            winston.error("❌ [" + (new Date()).toString() + "] Error while increasing the number of raw rows in a raw source document: ", err);
+        } else {
+            winston.info("✅  [" + (new Date()).toString() + "] Increased the number of raw rows in a source document object with pKey \"" + pKey + "\".");
         }
         fn(err, doc);
     });

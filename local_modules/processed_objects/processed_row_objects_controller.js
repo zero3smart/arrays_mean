@@ -78,6 +78,7 @@ constructor.prototype.InsertProcessedDatasetFromRawRowObjects
     = function(dataSource_uid,
                dataSource_importRevision,
                dataSource_title,
+               dataset_uid,
                callback)
 {
     var self = this;
@@ -94,17 +95,13 @@ constructor.prototype.InsertProcessedDatasetFromRawRowObjects
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
 
         var updateDocs = [];
-        mongooseModel_ofRawRowObjectsBeingProcessed.find({}, function(err, rowObjects){
+        var datasetQuery = dataset_uid ? { pKey: { $regex: "^"+dataset_uid+"-" } } : {};
+        mongooseModel_ofRawRowObjectsBeingProcessed.find(datasetQuery, function(err, rowObjects){
             if (err) {
                 winston.error("❌ [" + (new Date()).toString() + "] Error while saving processed row objects: ", err);
                 return callback(err);
             }
             rowObjects.forEach(function(doc) {
-                var bulkOperationQueryFragment =
-                {
-                    pKey: doc._doc.pKey,
-                    srcDocPKey: doc._doc.srcDocPKey
-                };
                 updateDocs.push({insertOne: {document: doc._doc}});
             });
 
@@ -756,6 +753,7 @@ constructor.prototype.GenerateFieldsByJoining_comparingWithMatchRegex
 constructor.prototype.EnumerateProcessedDataset
     = function(dataSource_uid,
                dataSource_importRevision,
+               dataset_uid,
                eachFn,
                errFn,
                completeFn,
@@ -779,12 +777,16 @@ constructor.prototype.EnumerateProcessedDataset
         var numberOfDocumentsFoundButNotYetProcessed = 0;
         var numDocs = 0;
         //
-        var query;
+        var query = {};
+        if (dataset_uid && typeof dataset_uid === 'string' && dataset_uid != '') {
+            query = { pKey: { $regex: "^"+dataset_uid+"-" } };
+        }
         if (query_optl == null || typeof query_optl === 'undefined') {
             query = {};
         } else {
-            query = query_optl;
+            for (var opt in query_optl) { query[opt] = query_optl[opt]; };
         }
+
         nativeCollection_ofTheseProcessedRowObjects.find(query, {sort: {_id: 1}}, function(err, cursor)
         {
             if (err) { // No cursor yet so we do not call closeCursorAndReturnWithErr(err)
@@ -866,6 +868,7 @@ constructor.prototype.GenerateImageURLFieldsByScraping
     = function(dataSource_uid,
                dataSource_importRevision,
                dataSource_title,
+               dataset_uid,
                htmlSourceAtURLInField, 
                imageSrcSetInSelector, 
                prependToImageURLs,
@@ -885,7 +888,8 @@ constructor.prototype.GenerateImageURLFieldsByScraping
         var mongooseContext = self.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel = mongooseContext.Model;
         //
-        mongooseModel.find({}, function(err, docs)
+        var datasetQuery = dataset_uid ? { pKey: { $regex: "^"+dataset_uid+"-" } } : {};
+        mongooseModel.find(datasetQuery, function(err, docs)
         { // this returns all docs in memory but at least it's simple to iterate them synchronously
             var concurrencyLimit = 15; // at a time
             async.eachLimit(docs, concurrencyLimit, function(doc, eachCb)

@@ -16,6 +16,11 @@ module.exports.Coercion_ops = // For convenience
     ToFloat: "ToFloat",
     ToDate: "ToDate"
 };
+module.exports.Mismatich_ops =
+{
+    ToField: "ToField", // substitute
+    ToDrop: "ToDrop" // drop if necessory
+};
 //
 module.exports.Coercion_optionsPacks = // For convenience
 {

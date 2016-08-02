@@ -508,6 +508,28 @@ scatterplot.chart.prototype._isMobileMode = function() {
 
 
 /**
+ * Generate axis ticks.
+ * @private
+ * @param {Number} binLength
+ * @param {Function} scale
+ * @returns {Array}
+ */
+scatterplot.chart.prototype._getTicks = function(binLength, scale) {
+
+    var ticks = [];
+
+    var min = d3.min(scale.range());
+    var max = d3.max(scale.range());
+
+    for (var i = min; i <= max; i += binLength) {
+        ticks.push(scale.invert(i));
+    }
+
+    return ticks;
+};
+
+
+/**
  * Update chart.
  * @public
  * @param {Object[]} [data]
@@ -545,38 +567,58 @@ scatterplot.chart.prototype.update = function(data) {
     this._xScale.domain(this._xDomain);
     this._yScale.domain(this._yDomain);
     /*
-     * Update x axis.
+     * Evaluate amount of ticks and intervals size.
      */
     var xBinLength = this._getBinLength(100, this._innerWidth);
     var xBinsAmount = Math.floor(this._innerWidth / xBinLength);
     var min = d3.min(this._xScale.range());
     var max = d3.max(this._xScale.range());
     var xBinLength = (max - min) / (xBinsAmount - 1);
+    /*
+     * Get ticks values.
+     */
+    var xTicks = this._getTicks(xBinLength, this._xScale);
+    /*
+     * Recalculate ticks if data range less than intervals amount.
+     */
+    if (xBinsAmount - 1 > xTicks[xTicks.length - 1] - xTicks[0]) {
+        xBinsAmount = Math.ceil(xTicks[xTicks.length - 1] - xTicks[0] + 1);
+        xBinLength = (max - min) / (xBinsAmount - 1);
 
-    var xTicks = [];
-    for (var i = min; i <= max; i += xBinLength) {
-        xTicks.push(this._xScale.invert(i));
+        xTicks = this._getTicks(xBinLength, this._xScale);
     }
-
+    /*
+     * Update x axis.
+     */
     this._xAxis.ticks(xTicks.length)
         .tickValues(xTicks)
         .tickFormat(function(d) {
             return d3.round(d, 1);
         });
     /*
-     * Update y axis.
+     * Evaluate amount of ticks and intervals size.
      */
     var yBinLength = this._getBinLength(50, this._innerHeight);
     var yBinsAmount = Math.ceil(this._innerHeight / yBinLength);
     var min = d3.min(this._yScale.range());
     var max = d3.max(this._yScale.range());
     var yBinLength = (max - min) / (yBinsAmount - 1);
+    /*
+     * Get ticks values.
+     */
+    var yTicks = this._getTicks(yBinLength, this._yScale);
+    /*
+     * Recalculate ticks if data range less than intervals amount.
+     */
+    if (yBinsAmount - 1 > yTicks[0] - yTicks[yTicks.length - 1]) {
+        yBinsAmount = Math.ceil(yTicks[0] - yTicks[yTicks.length - 1] + 1);
+        yBinLength = (max - min) / (yBinsAmount - 1);
 
-    var yTicks = [];
-    for (var i = min; i <= max; i += yBinLength) {
-        yTicks.push(this._yScale.invert(i));
+        yTicks = this._getTicks(yBinLength, this._yScale);
     }
-
+    /*
+     * Update y axis.
+     */
     this._yAxis.ticks(yTicks.length)
         .tickValues(yTicks.reverse())
         .tickFormat(function(d) {

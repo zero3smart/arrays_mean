@@ -116,11 +116,6 @@ scatterplot.view.grouped.prototype.render = function(data) {
      */
     data = this._prepareData(data);
     /*
-     * Define chart columns and rows amount.
-     */
-    var columns = this._densityMatrix.length;
-    var rows = this._densityMatrix[0].length;
-    /*
      * Select bubbles.
      */
     var bubbles = chart._canvas.selectAll('circle.bubble')
@@ -140,10 +135,60 @@ scatterplot.view.grouped.prototype.render = function(data) {
             return d.radius;
         });
     /*
+     * Get URL params as object.
+     */
+    var params = JSON.parse('{"' + decodeURI(location.search.substring(1))
+        .replace(/"/g, '\\"')
+        .replace(/&/g, '","')
+        .replace(/=/g,'":"') + '"}');
+    /*
+     * Parse filterJSON string to object or add empty if not provided.
+     */
+    if (params.filterJSON) {
+        params.filterJSON = JSON.parse(params.filterJSON);
+    } else {
+        params.filterJSON = {};
+    }
+    /*
      * Render new bubbles.
      */
     bubbles.enter()
-        .append('circle')
+        .append('a')
+        .attr('xlink:href', function(d, i) {
+            /*
+             * Add x axis filed params.
+             */
+            params.filterJSON[chart._xLabel] = [{
+                min : (d.i - 1) in xTicks ? d3.round(xTicks[d.i - 1]) : 0,
+                max : d3.round(xTicks[d.i])
+            }];
+            /*
+             * Add y axis filed params.
+             */
+            params.filterJSON[chart._yLabel] = [{
+                min : (yTicks.length - d.j - 2) in yTicks ? d3.round(yTicks[yTicks.length - d.j - 2]) : 0,
+                max : d3.round(yTicks[yTicks.length - d.j - 1])
+            }];
+            /*
+             * Complose bubble URL.
+             */
+            var urlParams = '';
+            for (var key in params) {
+                if (urlParams != '') {
+                    urlParams += '&';
+                }
+
+                if (typeof params[key] === 'object') {
+                    urlParams += key + '=' + JSON.stringify(params[key]);
+                } else {
+                    urlParams += key + '=' + params[key];
+                }
+            }
+            /*
+             * Return bubble URL.
+             */
+            return location.pathname + '?' + urlParams;
+        }).append('circle')
         .attr('class', 'bubble')
         .style('opacity', 0.5)
         .style('fill', chart._color)
@@ -183,8 +228,8 @@ scatterplot.view.grouped.prototype.showTooltip = function(bubble, data) {
     /*
      * Get axes ticks values.
      */
-    var xTicks = chart._xAxis.tickValues().slice(1);;
-    var yTicks = chart._yAxis.tickValues().slice(1);;
+    var xTicks = chart._xAxis.tickValues().slice(1);
+    var yTicks = chart._yAxis.tickValues().slice(1);
     /*
      * Evaluate intervals depending on data provided. Remove spaces.
      */
