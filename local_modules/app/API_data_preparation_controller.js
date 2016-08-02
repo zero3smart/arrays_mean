@@ -18,7 +18,7 @@
     //
     var pageSize = 200;
     var timelineGroupSize = 20;
-    var timelineGroups = pageSize / timelineGroupSize;
+    var timelineGroups = pageSize / timelineGroupSize * 2;
     //
     // Prepare country geo data cache
     var __countries_geo_json_str = fs.readFileSync(__dirname + '/resources/countries.geo.json', 'utf8');
