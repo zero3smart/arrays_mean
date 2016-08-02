@@ -12,7 +12,7 @@ exports.Descriptions =
             importRevision: 1,
             title: "Seattle Public Library Special Collections",
             brandColor: "#6699CC",
-            urls: [ "http://cdm16118.contentdm.oclc.org/cdm/landingpage/collection/p16118coll10" ],
+            urls: [ "http://www.spl.org/library-collection/special-collections" ],
             description: "Founded by Herman Horowitz in 1924, The Jewish Transcript documents the daily life of the Jewish community in Seattle as well as local and international events from the 1920's to present day.",
             raw_rowObjects_coercionScheme:
             {
