@@ -1542,38 +1542,6 @@
                 aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
             }
 
-            var groupBy_realColumnName_path = "rowParams." + groupBy_realColumnName;
-            aggregationOperators = aggregationOperators.concat(
-            [
-                { $unwind: "$" + groupBy_realColumnName_path }, // requires MongoDB 3.2, otherwise throws an error if non-array
-                {
-                    $match: {
-                        [groupBy_realColumnName_path]: {
-                            $regex: keywords[5], // Search for they keyword "judgement", should be 26 results
-                            $options: "i"
-                        }
-                    }
-                },
-                {
-                    $group: {
-                        _id: "$" + groupBy_realColumnName_path,
-                        value: { $sum: 1 } // the count
-                    }
-                },
-                {
-                    $project: {
-                        _id: 0,
-                        label: "$_id",
-                        value: 1
-                    }
-                },
-                {
-                    $sort : { value : -1 }
-                },
-                {
-                    $limit : 10
-                }
-            ]);
             //
             var doneFn = function(err, groupedResults)
             {
@@ -1585,10 +1553,74 @@
                 if (groupedResults == undefined || groupedResults == null) {
                     groupedResults = [];
                 }
-                
+
                 _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults);
             };
-            processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
+
+            var groupBy_realColumnName_path = "rowParams." + groupBy_realColumnName;
+            var groupedResults = [];
+            async.eachSeries(
+                keywords,
+                function(keyword, eachCb) {
+                    var eachAggregationOperators = aggregationOperators.concat(
+                        [
+                            { $unwind: "$" + groupBy_realColumnName_path }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                            {
+                                $match: {
+                                    [groupBy_realColumnName_path]: {
+                                        $regex: keyword, // Search for they keyword "judgement", should be 26 results
+                                        $options: "i"
+                                    }
+                                }
+                            },
+                            {
+                                $group: {
+                                    _id: "$_id"
+                                }
+                            },
+                            {
+                                $group: {
+                                    _id: null,
+                                    value: { $sum: 1 } // the count
+                                }
+                            }
+                        ]);
+
+                    //
+                    var eachDoneFn = function(err, results)
+                    {
+                        if (err) {
+                            callback(err, null);
+
+                            return;
+                        }
+                        if (results == undefined || results == null) {
+                            results = [];
+                        }
+                        results.forEach(function(result){
+                            result._id = keyword;
+                            groupedResults.push(result);
+                        });
+                        eachCb();
+                    };
+
+                    processedRowObjects_mongooseModel.aggregate(eachAggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(eachDoneFn);
+
+                    // For benchmarking...
+                    winston.info("✅ [" + (new Date()).toString() + "] Querying for the keyword:", keyword);
+                },
+                function(err) {
+                    if (err) {
+                        winston.info("❌ [" + (new Date()).toString() + "] Error encountered during aggregating:", err);
+                    } else {
+                        winston.info("✅ [" + (new Date()).toString() + "] Queried all the keywords - size: ", keywords.length);
+                    }
+                    groupedResults.sort(function(a, b){
+                        return b.value - a.value;
+                    });
+                    doneFn(err, groupedResults);
+                }
+            );
         }
         function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
         {
