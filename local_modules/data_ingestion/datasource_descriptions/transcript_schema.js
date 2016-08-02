@@ -197,7 +197,7 @@ exports.Descriptions =
                             {
                                 title: "Has description",
                                 $match: {
-                                    "rowParams.description": {
+                                    "rowParams.Description": {
                                         $exists: true,
                                         $nin: [ "", null ]
                                     }
