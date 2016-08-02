@@ -13,9 +13,22 @@
 	display: inline-block;
 	margin-right: 15px;
 	margin-bottom: 15px;
+	vertical-align: bottom;
+}
+
+.keyword-frequency-link {
+	display: block;
 	padding: 10px 20px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: transparent;
 	border-radius: 4px;
 	box-shadow: var(--box-shadow);
-	vertical-align: bottom;
 	font-size: 24px;
+}
+
+.keyword-frequency-link:hover,
+.keyword-frequency-link:focus,
+.keyword-frequency-link:active {
+	text-decoration: none;
 }
