@@ -1549,7 +1549,8 @@
                 {
                     $match: {
                         [groupBy_realColumnName_path]: {
-                            $regex: keywords[5], $options: "i"
+                            $regex: keywords[5], // Search for they keyword "judgement", should be 26 results
+                            $options: "i"
                         }
                     }
                 },
