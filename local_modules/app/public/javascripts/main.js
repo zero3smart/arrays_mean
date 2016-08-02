@@ -167,8 +167,14 @@ $(document).ready(function() {
     /**
      * Missing image fallback
      */
-    $('.gallery-image, .timeline-image, .object-featured').error(function(){
-        $(this).attr('src', '/images/image-not-found.jpg');
+    // Small
+    $('.gallery-image, .timeline-image').error(function(){
+        $(this).attr('src', '/images/image-not-found-sm.png');
+    });
+
+    // Large
+    $('.object-featured').error(function(){
+        $(this).attr('src', '/images/image-not-found-lg.png');
     });
 
 });
