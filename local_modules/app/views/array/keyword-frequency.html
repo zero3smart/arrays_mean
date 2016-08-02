@@ -128,9 +128,19 @@
                             <div class="row">
                                 <div class="col-sm-12">
 
+                                    {# {{ groupedResults | dump }} #}
+
+                                    {# max: {{ maxGroupedResultsValue }} #}
                                 
-                                    {{ groupedResults | dump }}
-                                
+                                    {% if groupedResults | length %}
+                                        <ul class="keyword-frequency-list">
+                                        {% for result in groupedResults %}
+                                            <li class="keyword-frequency-item">
+                                                <span class="keyword-frequency-label color-brand" style="font-size: {{ result.value / maxGroupedResultsValue * 600 + 100 | round() }}%">{{ result._id }}</span>
+                                            </li>
+                                        {% endfor %}
+                                        </ul>
+                                    {% endif %}
 
                                 </div>
                             </div><!-- .row -->

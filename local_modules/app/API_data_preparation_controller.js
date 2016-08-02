@@ -1648,6 +1648,8 @@
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
+            var maxGroupedResultsValue = Math.max.apply(Math, groupedResults.map(function(o){ return o.value; }));
+            //
             var data =
             {
                 env: process.env,
@@ -1660,6 +1662,7 @@
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
                 //
                 groupedResults: groupedResults,
+                maxGroupedResultsValue: maxGroupedResultsValue,
                 groupBy: groupBy,
                 //
                 filterObj: filterObj,

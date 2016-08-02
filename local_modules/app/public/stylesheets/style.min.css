@@ -6110,5 +6110,22 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 	font-weight: 600;
 	font-size: 16px;
 }
+/* @override 
+	http://localhost:9080/stylesheets/module/keyword-frequency.css */
+.keyword-frequency-list {
+	margin-bottom: 0;
+	padding-left: 0;
+	list-style-type: none;
+}
+.keyword-frequency-item {
+	display: inline-block;
+	margin-right: 15px;
+	margin-bottom: 15px;
+	padding: 10px 20px;
+	border-radius: 4px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	vertical-align: bottom;
+	font-size: 24px;
+}
 /* @end Module */
 /*# sourceMappingURL=style.min.css.map */
