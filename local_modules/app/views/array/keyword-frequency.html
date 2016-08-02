@@ -136,7 +136,7 @@
                                         <ul class="keyword-frequency-list">
                                         {% for result in groupedResults %}
                                             <li class="keyword-frequency-item">
-                                                <span class="keyword-frequency-label color-brand" style="font-size: {{ result.value / maxGroupedResultsValue * 500 + 100 | round() }}%">{{ result._id }}</span>
+                                                <span class="keyword-frequency-label color-brand" style="font-size: {{ (result.value - minGroupedResultsValue) / (maxGroupedResultsValue - minGroupedResultsValue) * 500 + 100 | round() }}%">{{ result._id }}</span>
                                             </li>
                                         {% endfor %}
                                         </ul>

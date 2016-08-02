@@ -6114,6 +6114,8 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 	http://localhost:9080/stylesheets/module/keyword-frequency.css */
 .keyword-frequency-list {
 	margin-bottom: 0;
+	padding-top: 30px;
+	padding-bottom: 30px;
 	padding-left: 0;
 	list-style-type: none;
 }

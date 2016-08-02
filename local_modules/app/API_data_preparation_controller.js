@@ -1648,6 +1648,7 @@
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
+            var minGroupedResultsValue = Math.min.apply(Math, groupedResults.map(function(o){ return o.value; }));
             var maxGroupedResultsValue = Math.max.apply(Math, groupedResults.map(function(o){ return o.value; }));
             //
             var data =
@@ -1662,6 +1663,7 @@
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
                 //
                 groupedResults: groupedResults,
+                minGroupedResultsValue: minGroupedResultsValue,
                 maxGroupedResultsValue: maxGroupedResultsValue,
                 groupBy: groupBy,
                 //
