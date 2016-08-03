@@ -26,6 +26,11 @@ scatterplot.view.grouped.prototype._prepareData = function(data) {
     var xTicks = chart._xAxis.tickValues().slice(1);
     var yTicks = chart._yAxis.tickValues().slice(1);
     /*
+     * Round the tick values
+     */
+    xTicks = xTicks.map(Math.round);
+    yTicks = yTicks.map(Math.round);
+    /*
      * Calculate axes intervals width.
      */
     var xStep = chart._innerWidth / xTicks.length;
@@ -40,6 +45,7 @@ scatterplot.view.grouped.prototype._prepareData = function(data) {
     /*
      * Populate density matrix.
      */
+    var count = 0;
     data.forEach(function(d) {
         /*
          * Get x and y values of the data point.
@@ -106,6 +112,11 @@ scatterplot.view.grouped.prototype.render = function(data) {
      */
     var xTicks = chart._xAxis.tickValues().slice(1);
     var yTicks = chart._yAxis.tickValues().slice(1);
+    /*
+     * Round the tick values
+     */
+    xTicks = xTicks.map(Math.round);
+    yTicks = yTicks.map(Math.round);
     /*
      * Calculate axes intervals width.
      */
@@ -230,6 +241,11 @@ scatterplot.view.grouped.prototype.showTooltip = function(bubble, data) {
      */
     var xTicks = chart._xAxis.tickValues().slice(1);
     var yTicks = chart._yAxis.tickValues().slice(1);
+    /*
+     * Round the tick values
+     */
+    xTicks = xTicks.map(Math.round);
+    yTicks = yTicks.map(Math.round);
     /*
      * Evaluate intervals depending on data provided. Remove spaces.
      */
