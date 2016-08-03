@@ -1550,77 +1550,38 @@
 
                     return;
                 }
-                if (groupedResults == undefined || groupedResults == null) {
-                    groupedResults = [];
-                }
 
-                _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults);
+                var newResults = [];
+                var result = groupedResults[0];
+                var keys = Object.keys(result);
+                keys.forEach(function(key) {
+                    if (key != '_id') {
+                        newResults.push({_id: key, value: result[key]});
+                    }
+                });
+
+                newResults.sort(function(a, b){
+                    return b.value - a.value;
+                });
+
+                _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, newResults);
             };
 
             var groupBy_realColumnName_path = "rowParams." + groupBy_realColumnName;
-            var groupedResults = [];
-            async.eachSeries(
-                keywords,
-                function(keyword, eachCb) {
-                    var eachAggregationOperators = aggregationOperators.concat(
-                        [
-                            { $unwind: "$" + groupBy_realColumnName_path }, // requires MongoDB 3.2, otherwise throws an error if non-array
-                            {
-                                $match: {
-                                    [groupBy_realColumnName_path]: {
-                                        $regex: keyword, // Search for they keyword "judgement", should be 26 results
-                                        $options: "i"
-                                    }
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: "$_id"
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: null,
-                                    value: { $sum: 1 } // the count
-                                }
-                            }
-                        ]);
-
-                    //
-                    var eachDoneFn = function(err, results)
-                    {
-                        if (err) {
-                            callback(err, null);
-
-                            return;
-                        }
-                        if (results == undefined || results == null) {
-                            results = [];
-                        }
-                        results.forEach(function(result){
-                            result._id = keyword;
-                            groupedResults.push(result);
-                        });
-                        eachCb();
-                    };
-
-                    processedRowObjects_mongooseModel.aggregate(eachAggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(eachDoneFn);
-
-                    // For benchmarking...
-                    winston.info("✅ [" + (new Date()).toString() + "] Querying for the keyword:", keyword);
-                },
-                function(err) {
-                    if (err) {
-                        winston.info("❌ [" + (new Date()).toString() + "] Error encountered during aggregating:", err);
-                    } else {
-                        winston.info("✅ [" + (new Date()).toString() + "] Queried all the keywords - size: ", keywords.length);
+            var groupOps_keywords = { _id: null };
+            keywords.forEach(function(keyword) {
+                groupOps_keywords[keyword] = {
+                    $sum: {
+                        $cond: [
+                            "$wordExistence." + groupBy_realColumnName + "." + keyword, 1, 0
+                        ]
                     }
-                    groupedResults.sort(function(a, b){
-                        return b.value - a.value;
-                    });
-                    doneFn(err, groupedResults);
                 }
-            );
+            });
+            aggregationOperators = aggregationOperators.concat([
+                { $group: groupOps_keywords }
+            ]);
+            processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         }
         function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
         {

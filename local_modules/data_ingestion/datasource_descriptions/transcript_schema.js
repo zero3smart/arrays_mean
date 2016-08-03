@@ -87,7 +87,7 @@ exports.Descriptions =
             {
                 objectTitle: "Title",
                 originalImageURL: "FullSize",
-                medThumbImageURL: "Thumbnail" 
+                medThumbImageURL: "Thumbnail"
             },
             fe_views: {
                 gallery: true,
@@ -510,7 +510,46 @@ exports.Descriptions =
                         updateFragment["$pushAll"]["rowParams." + self.fe_nestedObject_prefix + fieldName] = generatedArray;
                     }
 
-                    if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {
+                    // Cache for the word cloud if any
+                    if (self.fe_wordCloud_defaultGroupByColumnName_humanReadable) {
+                        var realFieldName = self.fe_wordCloud_defaultGroupByColumnName_humanReadable;
+                        var fe_displayTitleOverrides = self.fe_displayTitleOverrides || {};
+                        var originalKeys = Object.keys(fe_displayTitleOverrides);
+                        for (var i = 0 ; i < originalKeys.length ; i++) {
+                            var overrideTitle = fe_displayTitleOverrides[originalKeys[i]];
+                            if (overrideTitle === self.fe_wordCloud_defaultGroupByColumnName_humanReadable) {
+                                realFieldName = originalKeys[i];
+                                break;
+                            }
+                        }
+
+                        var fieldValues = [];
+                        if (rowDoc["rowParams." + realFieldName] != null) {
+                            if (Array.isArray(rowDoc["rowParams." + realFieldName])) {
+                                fieldValues = rowDoc["rowParams." + realFieldName];
+                            } else {
+                                fieldValues.push(rowDoc["rowParams." + realFieldName]);
+                            }
+                        } else if (updateFragment["$pushAll"]["rowParams." + realFieldName] != null) {
+                            fieldValues = updateFragment["$pushAll"]["rowParams." + realFieldName];
+                        }
+
+                        updateFragment["$set"] = {};
+
+                        self.fe_wordCloud_keywords.forEach(function(keyword){
+                            var existence = false;
+                            fieldValues.forEach(function(fieldValue) {
+                                if (fieldValue.toLowerCase().indexOf(keyword) != -1) {
+                                    existence = true;
+                                }
+                            });
+
+                            updateFragment["$set"]["wordExistence." + realFieldName + "." + keyword] = existence;
+                        });
+                    }
+
+                    // Insert the nested object into the main row
+                    if ((updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) || updateFragment["$set"]) {
                         bulkOperationQueryFragment =
                         {
                             pKey: rowDoc.pKey, // the specific row
