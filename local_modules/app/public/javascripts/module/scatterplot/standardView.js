@@ -83,8 +83,8 @@ scatterplot.view.standard.prototype.showTooltip = function(bubble, data) {
 
     this._tooltip.setContent(
         '<div class="scatterplot-tooltip-container">' +
-            '<div class="scatterplot-tooltip-image" style="background-image:url(' + data.thumb_small + ')"></div>' +
-            '<div class="scatterplot-tooltip-title">' + data.name + '</div>' +
+            '<div class="scatterplot-tooltip-image" style="background-image:url(' + data[chart._metaData.fe_designatedFields.medThumbImageURL] + ')"></div>' +
+            '<div class="scatterplot-tooltip-title">' + data[chart._metaData.fe_designatedFields.objectTitle] + '</div>' +
             '<div class="scatterplot-tooltip-content">' +
             chart._xAccessor(data) + ' ' + chart._xLabel.replace('_', ' ') + ', ' +
             chart._yAccessor(data) + ' ' + chart._yLabel.replace('_', ' ') +
