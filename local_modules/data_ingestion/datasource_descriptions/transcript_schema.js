@@ -197,7 +197,7 @@ exports.Descriptions =
                             {
                                 title: "Has description",
                                 $match: {
-                                    "rowParams.description": {
+                                    "rowParams.Description": {
                                         $exists: true,
                                         $nin: [ "", null ]
                                     }
@@ -349,6 +349,65 @@ exports.Descriptions =
                     "Directory Name",
                     "File Name",
                     "Pages_Transcript"
+                ],
+            //
+            //
+            fe_wordCloud_defaultGroupByColumnName_humanReadable: "Transcript",
+            fe_wordCloud_fieldsNotAvailableAsGroupByColumns:
+                [
+                    "Title",
+                    "Identifier",
+                    "Subjects",
+                    "Creator",
+                    "Date Labeled",
+                    "Publisher",
+                    "Publisher Location (NDNP)",
+                    "Collection",
+                    "Contributing Institution",
+                    "Rights and Reproduction",
+                    "Source",
+                    "Digital Tech",
+                    "Language",
+                    "Title [NDNP]",
+                    "OCLC number",
+                    "Directory Name",
+                    "File Name",
+                    "Transcript",
+                    "Date modified",
+                    "Date created",
+                    "Date",
+                    "Pages_Thumbnail",
+                    "Pages_FullSize",
+                    "Catalog Title",
+                    "Description",
+                    "Decade",
+                    "Volume",
+                    "Issue",
+                    "Physical Measurements"
+                ],
+            // fe_wordCloud_defaultSortByColumnName_humanReadable: "Results",
+            fe_wordCloud_keywords:
+                [
+                    'community',
+                    'petition',
+                    'president',
+                    'immigration',
+                    'development',
+                    'judgement',
+                    'university',
+                    'committee',
+                    'complaint',
+                    'power',
+                    // 'national',
+                    // 'proposed',
+                    // 'against',
+                    // 'amendment',
+                    // 'resolution',
+                    // 'protest',
+                    // 'war',
+                    // 'olympic',
+                    // 'conference',
+                    // 'world'
                 ],
 
             fe_nestedObject_prefix: 'Pages_',

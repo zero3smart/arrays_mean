@@ -54,7 +54,8 @@ exports.Descriptions =
                 gallery: true,
                 choropleth: false,
                 chart: true,
-                timeline: true
+                timeline: true,
+                wordCloud: false
             },
             fe_excludeFields: 
             [

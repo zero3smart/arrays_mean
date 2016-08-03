@@ -52,4 +52,4 @@ exports.Descriptions =
                 return !rowDoc.rowParams.Title || rowDoc.rowParams.Title == '';
             },
         }
-    ]
+    ];

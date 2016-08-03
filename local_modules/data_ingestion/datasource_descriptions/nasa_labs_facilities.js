@@ -50,7 +50,8 @@ exports.Descriptions =
                 choropleth: false,
                 chart: true,
                 scatterplot: false,
-                timeline: true
+                timeline: true,
+                wordCloud: false
             },
             fe_excludeFields:
                 [
