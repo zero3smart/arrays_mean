@@ -220,7 +220,6 @@
             wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
         }
 
-        // console.log("--- %j", wholeFilteredSet_aggregationOperators);
         //
         // Now kick off the query work
         self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
@@ -1581,6 +1580,7 @@
             aggregationOperators = aggregationOperators.concat([
                 { $group: groupOps_keywords }
             ]);
+
             processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         }
         function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
@@ -2244,7 +2244,8 @@
                 pKey: {'$first': '$pKey'},
                 srcDocPKey: {'$first': '$srcDocPKey'},
                 rowIdxInDoc: {'$first': '$rowIdxInDoc'},
-                rowParams: {'$first': '$rowParams'}
+                rowParams: {'$first': '$rowParams'},
+                wordExistence: {'$first': '$wordExistence'}
             }
         };
 
