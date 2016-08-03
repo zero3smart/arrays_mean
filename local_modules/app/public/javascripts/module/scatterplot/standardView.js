@@ -47,6 +47,12 @@ scatterplot.view.standard.prototype.render = function(data) {
      * Render new bubbles.
      */
     bubbles.enter()
+        .append('a')
+        .attr('xlink:href', function(d, i) {
+            var routeArray = location.pathname.split('/');
+            routeArray.pop(); // Remove last segment of url
+            return routeArray.join('/') + '/' + d.id;
+        })
         .append('circle')
         .attr('class', 'bubble')
         .style('opacity', 0.5)
