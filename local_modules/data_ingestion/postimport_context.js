@@ -25,6 +25,11 @@ var context_object_instantiation_descriptions =
         module_path: __dirname + "/../questions/questions_controller",
         instance_key: "questions_controller",
         options: {}
+    },
+    {
+        module_path: __dirname + "/cache_keywords_controller",
+        instance_key: "cache_keywords_controller",
+        options: {}
     }
 ];
 function NewHydratedContext() 

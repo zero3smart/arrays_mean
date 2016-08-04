@@ -385,7 +385,6 @@ exports.Descriptions =
                     "Issue",
                     "Physical Measurements"
                 ],
-            // fe_wordCloud_defaultSortByColumnName_humanReadable: "Results",
             fe_wordCloud_keywords:
                 [
                     'community',
@@ -447,8 +446,6 @@ exports.Descriptions =
                 var forThisDataSource_mongooseContext = appCtx.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(srcDoc_pKey);
                 // ^ there is only one mongooseContext in raw_source_documents_controller because there is only one src docs collection,
                 // but there are many mongooseContexts derivable/in raw_row_objects_controller because there is one collection of processed row objects per src doc
-                var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.Model.modelName;
-                var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.Model.model;
                 var forThisDataSource_nativeCollection = forThisDataSource_mongooseContext.Model.collection;
 
                 //
@@ -510,46 +507,8 @@ exports.Descriptions =
                         updateFragment["$pushAll"]["rowParams." + self.fe_nestedObject_prefix + fieldName] = generatedArray;
                     }
 
-                    // Cache for the word cloud if any
-                    if (self.fe_wordCloud_defaultGroupByColumnName_humanReadable) {
-                        var realFieldName = self.fe_wordCloud_defaultGroupByColumnName_humanReadable;
-                        var fe_displayTitleOverrides = self.fe_displayTitleOverrides || {};
-                        var originalKeys = Object.keys(fe_displayTitleOverrides);
-                        for (var i = 0 ; i < originalKeys.length ; i++) {
-                            var overrideTitle = fe_displayTitleOverrides[originalKeys[i]];
-                            if (overrideTitle === self.fe_wordCloud_defaultGroupByColumnName_humanReadable) {
-                                realFieldName = originalKeys[i];
-                                break;
-                            }
-                        }
-
-                        var fieldValues = [];
-                        if (rowDoc["rowParams." + realFieldName] != null) {
-                            if (Array.isArray(rowDoc["rowParams." + realFieldName])) {
-                                fieldValues = rowDoc["rowParams." + realFieldName];
-                            } else {
-                                fieldValues.push(rowDoc["rowParams." + realFieldName]);
-                            }
-                        } else if (updateFragment["$pushAll"]["rowParams." + realFieldName] != null) {
-                            fieldValues = updateFragment["$pushAll"]["rowParams." + realFieldName];
-                        }
-
-                        updateFragment["$set"] = {};
-
-                        self.fe_wordCloud_keywords.forEach(function(keyword){
-                            var existence = false;
-                            fieldValues.forEach(function(fieldValue) {
-                                if (fieldValue.toLowerCase().indexOf(keyword) != -1) {
-                                    existence = true;
-                                }
-                            });
-
-                            updateFragment["$set"]["wordExistence." + realFieldName + "." + keyword] = existence;
-                        });
-                    }
-
                     // Insert the nested object into the main row
-                    if ((updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) || updateFragment["$set"]) {
+                    if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {
                         bulkOperationQueryFragment =
                         {
                             pKey: rowDoc.pKey, // the specific row

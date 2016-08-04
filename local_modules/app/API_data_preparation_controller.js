@@ -1545,18 +1545,14 @@
             var doneFn = function(err, groupedResults)
             {
                 if (err) {
-                    callback(err, null);
-
-                    return;
+                    return callback(err, null);
                 }
 
-                var newResults = [];
                 var result = groupedResults[0];
-                var keys = Object.keys(result);
-                keys.forEach(function(key) {
-                    if (key != '_id') {
-                        newResults.push({_id: key, value: result[key]});
-                    }
+                var newResults = keywords.map(function(keyword) {
+                    var obj = {_id: keyword, value: 0};
+                    if (result && result[keyword]) obj.value = result[keyword];
+                    return obj;
                 });
 
                 newResults.sort(function(a, b){
@@ -1581,6 +1577,7 @@
                 { $group: groupOps_keywords }
             ]);
 
+            console.log('----- %j', groupOps_keywords);
             processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         }
         function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
