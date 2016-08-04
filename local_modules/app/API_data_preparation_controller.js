@@ -1577,7 +1577,6 @@
                 { $group: groupOps_keywords }
             ]);
 
-            console.log('----- %j', groupOps_keywords);
             processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         }
         function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
