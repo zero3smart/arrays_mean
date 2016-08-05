@@ -1820,6 +1820,28 @@
             callback(null, data);
         }
     }
+    
+    
+    /**
+     * Scatterplot view action controller.
+     * @param {Object} urlQuery - URL params
+     * @param {Function} callback
+     */
+    constructor.prototype.BindDataFor_array_linechart = function(urlQuery, callback)
+    {
+        var self = this;
+        /*
+         * Run callback function to finish action.
+         */
+        callback(null, {
+            metaData: {}
+        });
+    }
+
+    
+    
+    
+    
     /**
      * Scatterplot view action controller.
      * @param {Object} urlQuery - URL params

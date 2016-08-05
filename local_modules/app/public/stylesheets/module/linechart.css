@@ -1,0 +1,8 @@
+.linechart .y-axis path {
+	visibility: hidden;
+}
+
+.linechart .line {
+	fill: none;
+	stroke-width: 2;
+}

@@ -6110,6 +6110,13 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 	font-weight: 600;
 	font-size: 16px;
 }
+.linechart .y-axis path {
+	visibility: hidden;
+}
+.linechart .line {
+	fill: none;
+	stroke-width: 2;
+}
 /* @override 
 	http://localhost:9080/stylesheets/module/word-cloud.css */
 .word-cloud-list {
