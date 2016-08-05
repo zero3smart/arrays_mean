@@ -6140,15 +6140,27 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 	margin-bottom: 15px;
 	vertical-align: bottom;
 }
+.word-cloud-item {
+	font-size: 12px;
+}
 .word-cloud-link {
 	display: block;
-	padding: 10px 20px;
+	padding: 5px 15px;
 	border-width: 1px;
 	border-style: solid;
 	border-color: transparent;
 	border-radius: 4px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	font-size: 24px;
+}
+@media (min-width: 768px) {
+	.word-cloud-item {
+		font-size: 18px;
+	}
+}
+@media (min-width: 1280px) {
+	.word-cloud-item {
+		font-size: 24px;
+	}
 }
 .word-cloud-link:hover,
 .word-cloud-link:focus,

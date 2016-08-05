@@ -141,7 +141,7 @@
                                             {% set urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString %}
                                             <li class="word-cloud-item">
                                                 <a href="{{ urlForFilterValue }}" class="word-cloud-link border-color-brand-hover has-tooltip" data-tooltip-key="{{ result._id }}" data-tooltip-value="{{ result.value }}">
-                                                    <span class="word-cloud-label color-brand" style="font-size: {{ (result.value - minGroupedResultsValue) / (maxGroupedResultsValue - minGroupedResultsValue) * 500 + 100 | round() }}%">{{ result._id }}</span>
+                                                    <span class="word-cloud-label color-brand" style="font-size: {{ (result.value - minGroupedResultsValue) / (maxGroupedResultsValue - minGroupedResultsValue) * 350 + 100 | round() }}%">{{ result._id }}</span>
                                                 </a>
                                             </li>
                                         {% endfor %}
