@@ -171,6 +171,9 @@
         var limitToNResults = pageSize;
         //
         var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
+        var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_gallery_defaultSortByColumnName_humanReadable;
+        var sortBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy ? sortBy : defaultSortByColumnName_humanReadable, dataSourceDescription);
+
         var sortDir = urlQuery.sortDir;
         var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
         //
@@ -291,8 +294,6 @@
         }
         function _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
         {
-            var sortBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy ? sortBy : importedDataPreparation.HumanReadableColumnName_objectTitle,
-                                                                                                          dataSourceDescription);
             var sortBy_realColumnName_path = "rowParams." + sortBy_realColumnName;
             var sortOpParams = {};
             sortOpParams.size = -sortDirection;
@@ -421,6 +422,7 @@
                 //
                 sortBy: sortBy,
                 sortDir: sortDir,
+                defaultSortByColumnName_humanReadable: defaultSortByColumnName_humanReadable,
                 colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                 //
                 filterObj: filterObj,
