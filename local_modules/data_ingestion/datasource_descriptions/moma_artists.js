@@ -138,7 +138,7 @@ exports.Descriptions =
                 "Nationality" : [ "NULL", "Nationality unknown", "nationality unknown", "Nationality Unknown" ]
             },
             //
-            fe_gallery_defaultSortByColumnName_humanReadable: "Nationality",
+            fe_gallery_defaultSortByColumnName_humanReadable: "Object Title",
             //
             fe_chart_defaultGroupByColumnName_humanReadable: "Nationality",
             fe_chart_fieldsNotAvailableAsGroupByColumns:
@@ -380,7 +380,7 @@ exports.Descriptions =
             },
             //
             //
-            fe_gallery_defaultSortByColumnName_humanReadable: "Artist Gender",
+            fe_gallery_defaultSortByColumnName_humanReadable: "Object Title",
             //
             //
             fe_chart_defaultGroupByColumnName_humanReadable: "Artist Gender",

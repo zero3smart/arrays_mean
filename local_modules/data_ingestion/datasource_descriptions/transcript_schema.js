@@ -277,7 +277,7 @@ exports.Descriptions =
                 ],
             //
             //
-            fe_gallery_defaultSortByColumnName_humanReadable: "Decade",
+            fe_gallery_defaultSortByColumnName_humanReadable: "Date",
             //
             //
             fe_chart_defaultGroupByColumnName_humanReadable: "Decade",
