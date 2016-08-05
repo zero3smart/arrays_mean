@@ -277,6 +277,9 @@ exports.Descriptions =
                 ],
             //
             //
+            fe_gallery_defaultSortByColumnName_humanReadable: "Decade",
+            //
+            //
             fe_chart_defaultGroupByColumnName_humanReadable: "Decade",
             fe_chart_fieldsNotAvailableAsGroupByColumns:
                 [
