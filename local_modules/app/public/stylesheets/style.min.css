@@ -6113,9 +6113,17 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 .linechart .y-axis path {
 	visibility: hidden;
 }
-.linechart .line {
+.linechart svg.viewport .line {
 	fill: none;
 	stroke-width: 2;
+}
+.linechart svg.navigation .line {
+    fill: none;
+    stroke-width: 1;
+}
+.brush .extent {
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
 }
 /* @override 
 	http://localhost:9080/stylesheets/module/word-cloud.css */
