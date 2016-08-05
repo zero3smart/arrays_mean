@@ -42,7 +42,11 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
     // General/shared
     nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function(date)
     {
-        return moment(date).format("MMMM Do, YYYY")
+        return moment(date).format("MMMM Do, YYYY");
+    });
+    nunjucks_env.addFilter('dateFormat', function(date, format)
+    {
+        return format !== null ? moment(date).format(format) : moment(date).format("MMMM Do, YYYY");
     });
     nunjucks_env.addFilter('isArray', function(val) 
     {
@@ -54,7 +58,7 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
     });
     nunjucks_env.addFilter('isObjectEmpty', function(obj) 
     {
-        return Object.keys(obj).length == 0;
+        return Object.keys(obj).length === 0;
     });
     nunjucks_env.addFilter('alphaSortedArray', function(array) 
     {
@@ -83,25 +87,42 @@ nunjucks.setup(nunjucks_config, app).then(function(nunjucks_env)
             var existing_filterVals_length = existing_filterVals.length;
             for (var j = 0 ; j < existing_filterVals_length ; j++) {
                 var existing_filterVal = existing_filterVals[j];
-                var encoded_existing_filterVal = encodeURIComponent(existing_filterVal);
+                var encoded_existing_filterVal = typeof existing_filterVal === 'string' ? encodeURIComponent(existing_filterVal) : existing_filterVal;
                 filterVals.push(encoded_existing_filterVal); 
             }
             //
-            if (filterVals.length != 0) {
+            if (filterVals.length !== 0) {
                 filterObj[existing_filterCol] = filterVals; // as it's not set yet
             }
         }
         //
-        if (isThisAnActiveFilter == false) { // do not push if active, since we'd want the effect of unsetting it
+        if (isThisAnActiveFilter === false) { // do not push if active, since we'd want the effect of unsetting it
             var filterVals = filterObj[this_filterCol] || [];
-            if (filterVals.indexOf(this_filterVal) == -1) {
-                var encoded_this_filterVal = encodeURIComponent(this_filterVal);
-                filterVals.push(encoded_this_filterVal);
+            if (filterVals.indexOf(filterVal) == -1) {
+                var filterIsString = typeof this_filterVal === 'string';
+                var filterVal = filterIsString ? encodeURIComponent(this_filterVal) : this_filterVal;
+                filterVals.push(filterVal);
             }
             filterObj[this_filterCol] = filterVals; // in case it's not set yet
         }
         //
         return filterObj;
+    });
+    // Array views - Filter value to display
+    nunjucks_env.addFilter('filterValToDisplay', function(filterVal){
+        if (typeof filterVal === 'string')
+            return decodeURIComponent(filterVal);
+        var output = '';
+        if (!isNaN(filterVal.min))
+            output = filterVal.min;
+        else if (filterVal.min !== null)
+            output = output + moment(filterVal.min).format("MMMM Do, YYYY");
+        output = output + ' – ';
+        if (!isNaN(filterVal.max))
+            output = output + filterVal.max;
+        else if (filterVal.max !== null)
+            output = output + moment(filterVal.max).format("MMMM Do, YYYY");
+        return output;
     });
 });
 //

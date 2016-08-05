@@ -35,6 +35,16 @@
                                             <input type="radio" name="source_key" value="{{ source.key }}" class="hidden">
                                             <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
                                             <div class="panel panel-default panel-source source-{{ source.key }}">
+                                                {% if source.brandColor %}
+                                                    <style scoped>
+                                                        .source-{{ source.key }} .color-brand,
+                                                        .source-{{ source.key }} a.color-brand:hover,
+                                                        .source-{{ source.key }} a.color-brand:focus,
+                                                        .source-{{ source.key }} a.color-brand:active {
+                                                            color: {{ source.brandColor }};
+                                                        }
+                                                    </style>
+                                                {% endif %}
                                                 <div class="panel-body border-top-color-brand">
                                                     <h2 class="panel-body-title">{{ source.title }}</h2>
                                                     <div class="panel-body-meta">

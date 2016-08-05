@@ -2,7 +2,8 @@
 
 module.exports.DataSource_formats = 
 {
-    CSV: "csv"
+    CSV: "csv",
+    TSV: "tsv"
 };
 
 // See "import_MVP_DB_seed" for example of how to use all this
@@ -10,9 +11,15 @@ module.exports.DataSource_formats =
 module.exports.Coercion_ops = // For convenience
 {
     ProxyExisting: "ProxyExisting", // do nothing - "pass-through"
+    ToStringTrim: "ToStringTrim",
     ToInteger: "ToInteger",
     ToFloat: "ToFloat",
     ToDate: "ToDate"
+};
+module.exports.Mismatich_ops =
+{
+    ToField: "ToField", // substitute
+    ToDrop: "ToDrop" // drop if necessory
 };
 //
 module.exports.Coercion_optionsPacks = // For convenience
@@ -32,6 +39,11 @@ var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private fo
     ProxyExisting: function(inString, options) 
     {
         return inString;
+    },
+    ToStringTrim: function(inString, options) 
+    {
+        // Trim space characters from either side of string
+        return inString.trim();
     },
     ToInteger: function(inString, options) 
     {
@@ -84,7 +96,7 @@ var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private fo
             moment.parseTwoDigitYear = replacement_parseTwoDigitYear_fn;
         }
         // Parse
-        var aMoment = moment(inString, dateFormatString);
+        var aMoment = moment.utc(inString, dateFormatString);
         if (aMoment.isValid() == false) {
             console.warn("⚠️  The date \"" + inString + "\" cannot be parsed with the format string \"" + dateFormatString + "\". Returning null.");
             

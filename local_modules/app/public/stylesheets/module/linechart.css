@@ -1,0 +1,18 @@
+.linechart .y-axis path {
+	visibility: hidden;
+}
+
+.linechart svg.viewport .line {
+	fill: none;
+	stroke-width: 2;
+}
+
+.linechart svg.navigation .line {
+    fill: none;
+    stroke-width: 1;
+}
+
+.brush .extent {
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
+}

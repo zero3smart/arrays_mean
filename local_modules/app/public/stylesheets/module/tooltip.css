@@ -1,0 +1,107 @@
+/* @override 
+	http://localhost:9080/stylesheets/module/tooltip.css */
+
+/* @group Global Tooltip */
+
+.global-tooltip {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	display: none;
+	padding: 10px 15px;
+	max-width: 450px;
+	border-color: #eeeeee;
+	border-radius: 4px;
+	background-color: #ffffff;
+	box-shadow: var(--box-shadow);
+	font-family: var(--font-family-calibre);
+	transform: translate(-50%, -100%);
+}
+
+.global-tooltip:after,
+.global-tooltip:before {
+	position: absolute;
+	top: 100%;
+	right: 50%;
+	width: 0;
+	height: 0;
+	border: solid transparent;
+	content: " ";
+	pointer-events: none;
+}
+
+.global-tooltip:after {
+	margin-right: -10px;
+	border-width: 10px;
+	border-color: rgba(255, 255, 255, 0);
+	border-top-color: #ffffff;
+}
+
+.global-tooltip:before {
+	margin-right: -11px;
+	border-width: 11px;
+	border-color: rgba(238, 238, 238, 0);
+	border-top-color: #eeeeee;
+}
+
+.tooltip-key,
+.tooltip-value {
+	display: block;
+	text-align: left;
+	font-size: 17px;
+	line-height: 20px;
+}
+
+.tooltip-key {
+	color: var(--color-text-med);
+	font-weight: 600;
+}
+
+.tooltip-value {
+	color: #a8a8a8;
+	font-weight: normal;
+}
+
+/* @end Global Tooltip */
+
+/* @group Scatterplot Tooltip */
+
+div.arrays-co-tooltip {
+	position: absolute;
+	border-radius: 3px;
+	visibility: hidden;
+	box-shadow: 0.1em 0.1em 0.2em lightgrey, -0.05em -0.05em 0.1em lightgrey;
+	z-index: 1050;
+}
+
+
+div.arrays-co-tooltip .scatterplot-tooltip-container {
+	width: 220px;
+	overflow: hidden;
+}
+
+div.arrays-co-tooltip .scatterplot-tooltip-image {
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	width: 220px;
+	height: 200px;
+	background-position: center;
+}
+
+div.arrays-co-tooltip .scatterplot-tooltip-title {
+	font-size: 1.2em;
+	font-weight: 600;
+	line-height: 95%;
+	color: #4a4a4a;
+	padding: 0.2em 0.5em 0.1em 0.5em;
+}
+
+div.arrays-co-tooltip .scatterplot-tooltip-content {
+	font-size: 1.2em;
+	line-height: 95%;
+	padding: 0 0.5em 0.5em 0.5em;
+	color: #c9c9c9;
+}
+
+/* @end Scatterplot Tooltip */

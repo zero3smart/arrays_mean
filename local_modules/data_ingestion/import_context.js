@@ -7,6 +7,11 @@ var context_object_instantiation_descriptions =
         options: {}
     },
     {
+        module_path: __dirname + "/import_raw_objects_controller",
+        instance_key: "import_raw_objects_controller",
+        options: {}
+    },
+    {
         module_path: __dirname + "/../raw_objects/raw_source_documents_controller",
         instance_key: "raw_source_documents_controller",
         options: {}
@@ -24,6 +29,11 @@ var context_object_instantiation_descriptions =
     {
         module_path: __dirname + "/../questions/questions_controller",
         instance_key: "questions_controller",
+        options: {}
+    },
+    {
+        module_path: __dirname + "/cache_keywords_controller",
+        instance_key: "cache_keywords_controller",
         options: {}
     }
 ];

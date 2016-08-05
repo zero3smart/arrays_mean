@@ -1,1 +1,1 @@
-NODE_ENV=production node local_modules/data_ingestion/postimport_MVP_caching.js
+NODE_ENV=production node local_modules/data_ingestion/postimport_MVP_caching.js $@

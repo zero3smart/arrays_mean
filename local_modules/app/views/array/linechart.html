@@ -1,0 +1,168 @@
+{% extends "../shared/shared_layout.html" %}
+
+{% block headSuffix %}
+    <title>Arrays - {{ metaData.title }}</title>
+    
+    
+{% endblock %}
+
+{% block bodyWrapper %}
+    <body class="array array-scatterplot source-{{ array_source_key }} legend-open">
+        <div id="page" class="site">
+            {% set currentView = "scatterplot" %}
+            {% include "../partials/header_bar_array.html" %}
+            {% include "../partials/sidebar_filter.html" %}
+
+            <div id="content" class="site-content">
+
+                <section class="array">
+
+                    <header class="array-header header-shadow array-header-small clearfix">
+                        <div class="container-fluid">
+                            <h1 class="array-title">{{ metaData.title }}</h1>
+                            <div class="array-meta">
+                                {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                            </div>
+                        </div>
+                    </header><!-- .array-header -->
+
+                    <div class="array-content">
+
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-sm-12">
+
+                                    <div class="sort-bar clearfix">
+
+                                        <nav class="sort-bar-left pull-left" role="navigation">
+
+                                            <div class="dropdown sort-control sort-bar-6">
+                                                <a class="btn dropdown-toggle dropdown-toggle-button ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    Keywords <span class="sort-criteria color-brand-hover y-axis-field">777</span>
+                                                </a>
+                                                {% if renderableFields | length %}
+                                                <ul class="dropdown-menu axis-control y-axis-control" aria-labelledby="type">
+                                                </ul>
+                                                {% endif %}
+                                            </div>
+                                        </nav>
+
+                                        <div class="sort-bar-right pull-right">
+                                            <form action="{{ routePath_base }}" method="get" class="form-search">
+                                                <div class="sort-control visible-xs">
+                                                    <div class="btn dropdown-toggle-button search-toggle">
+                                                        <span class="icon-search search-icon color-brand-hover"></span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mobile-search-popover">
+                                                    <div class="dropdown-toggle-button-group" role="group">
+                                                        <div class="dropdown sort-control sort-control-left search-control">
+                                                            {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
+                                                            <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+                                                                Search <span class="search-criteria color-brand-hover" data-colname="{{ searchColToOutput }}">{{ searchColToOutput }}</span>
+                                                            </a>
+                                                            <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
+                                                            {% if colNames_orderedForSortByDropdown | length %}
+                                                            <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+                                                                {% for colName in colNames_orderedForSortByDropdown %}
+                                                                <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="sort-control sort-control-right">
+                                                            <div class="dropdown-toggle">
+                                                                <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ }}">
+                                                                <span class="icon-search search-icon hidden-xs"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
+                                                    <span class="icon-legend" aria-hidden="true"></span>
+                                                </a>
+
+                                                {% if filterJSON %}
+                                                    <input type="hidden" name="filterJSON" value="{{ filterJSON_nonURIEncodedVals }}"> {# it will get re-encoded #}
+                                                {% endif %}
+                                            </form>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div><!-- .row -->
+                        </div><!-- .container-fluid -->
+
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-sm-12">
+
+                                    <div id="linechart" class="scatterplot linechart"></div>
+
+                                </div>
+                            </div><!-- .row -->
+                        </div><!-- .container-fluid -->
+
+                        {% if isFilterActive %}
+                        <div class="filter-bar">
+                            <div class="container-fluid">
+                                {% for filterCol, filterVals in filterObj %}
+                                    {% for filterVal in filterVals %}
+                                        {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true) %}
+                                        {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
+                                        {% set routePath_withoutThisFilter = routePath_base + "?filterJSON=" + filterJSONString %}
+                                        {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}                  
+                                <span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | filterValToDisplay }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
+                                <!-- span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | safe }} <a href="#" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span -->
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                    </div><!-- .array-content -->
+
+                </section>
+
+            </div><!-- #content -->
+
+        </div><!-- #page -->
+
+        {% include "../partials/modal.html" %}
+
+        <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+
+        <script type="text/javascript" src="/javascripts/lib/bootstrap/bootstrap.js"></script>
+        <script type="text/javascript" src="/javascripts/lib/sharrre/jquery.sharrre.js"></script>
+
+        <script type="text/javascript" src="/javascripts/lib/d3/d3.js"></script>
+
+        <script type="text/javascript" src="/javascripts/main.js"></script>
+        <script type="text/javascript" src="/javascripts/tooltip.js"></script>
+        <script type="text/javascript" src="/javascripts/module/scatterplot/main.js"></script>
+        <script type="text/javascript" src="/javascripts/module/linechart/main.js"></script>
+        <script type="text/javascript" src="/javascripts/module/linechart/viewport.js"></script>
+        <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
+        <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
+        <script>
+        d3.csv('/javascripts/module/linechart/Pubmed_Keyword_SystemsBiology.csv', function(error, data) {
+            if (error) {
+                throw new Error("Can't load data file: " + JSON.stringify(error));
+            }
+
+            data = data.map(function(row) {
+                row.count = Number(row.count);
+                row.year = new Date(row.year);
+                return row;
+            });
+
+            var lineChart = new linechart.chart([data])
+                .render("#linechart");
+        })
+        </script>
+
+    {% include "../partials/survicate.html" %}
+    </body>
+{% endblock %}

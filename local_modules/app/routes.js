@@ -114,6 +114,30 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
         var query = url_parts.query;
         self.__render_array_chart(req, res, source_key, query);
     });
+    app.get('/array/:source_key/linechart', _ensureWWW, function(req, res)
+            {
+                var source_key = req.params.source_key;
+                if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
+                    res.status(403).send("Bad Request - source_key missing")
+                    
+                    return;
+                }
+                var url_parts = url.parse(req.url, true);
+                var query = url_parts.query;
+                self.__render_array_linechart(req, res, source_key, query);
+            });
+    app.get('/array/:source_key/scatterplot', _ensureWWW, function(req, res)
+            {
+                var source_key = req.params.source_key;
+                if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
+                    res.status(403).send("Bad Request - source_key missing")
+                    
+                    return;
+                }
+                var url_parts = url.parse(req.url, true);
+                var query = url_parts.query;
+                self.__render_array_scatterplot(req, res, source_key, query);
+            });
     app.get('/array/:source_key/choropleth', _ensureWWW, function(req, res)
     {
         var source_key = req.params.source_key;
@@ -125,6 +149,30 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
         var url_parts = url.parse(req.url, true);
         var query = url_parts.query;
         self.__render_array_choropleth(req, res, source_key, query);
+    });
+    app.get('/array/:source_key/timeline', _ensureWWW, function(req, res)
+    {
+        var source_key = req.params.source_key;
+        if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
+            res.status(403).send("Bad Request - source_key missing")
+            
+            return;
+        }
+        var url_parts = url.parse(req.url, true);
+        var query = url_parts.query;
+        self.__render_array_timeline(req, res, source_key, query);
+    });
+    app.get('/array/:source_key/word-cloud', _ensureWWW, function(req, res)
+    {
+        var source_key = req.params.source_key;
+        if (source_key === null || typeof source_key === 'undefined' || source_key === "") {
+            res.status(403).send("Bad Request - source_key missing");
+            
+            return;
+        }
+        var url_parts = url.parse(req.url, true);
+        var query = url_parts.query;
+        self.__render_array_wordCloud(req, res, source_key, query);
     });
 };
 constructor.prototype.__render_array_gallery = function(req, res, source_key, query)
@@ -159,6 +207,38 @@ constructor.prototype.__render_array_chart = function(req, res, source_key, quer
         res.render('array/chart', bindData);
     });
 };
+constructor.prototype.__render_array_linechart = function(req, res, source_key, query)
+{
+    var self = this;
+    var context = self.context;
+    query.source_key = source_key;
+    context.API_data_preparation_controller.BindDataFor_array_linechart(query, function(err, bindData)
+    {
+        if (err) {
+            winston.error("❌  Error getting bind data for Array linechart: ", err);
+            self._renderBindDataError(err, req, res);
+            
+            return;
+        }
+        res.render('array/linechart', bindData);
+    });
+};
+constructor.prototype.__render_array_scatterplot = function(req, res, source_key, query)
+{
+    var self = this;
+    var context = self.context;
+    query.source_key = source_key;
+    context.API_data_preparation_controller.BindDataFor_array_scatterplot(query, function(err, bindData)
+    {
+        if (err) {
+            winston.error("❌  Error getting bind data for Array scatterplot: ", err);
+            self._renderBindDataError(err, req, res);
+            
+            return;
+        }
+        res.render('array/scatterplot', bindData);
+    });
+};
 constructor.prototype.__render_array_choropleth = function(req, res, source_key, query)
 {
     var self = this;
@@ -173,6 +253,38 @@ constructor.prototype.__render_array_choropleth = function(req, res, source_key,
             return;
         }
         res.render('array/choropleth', bindData);
+    });
+};
+constructor.prototype.__render_array_timeline = function(req, res, source_key, query)
+{
+    var self = this;
+    var context = self.context;
+    query.source_key = source_key;
+    context.API_data_preparation_controller.BindDataFor_array_timeline(query, function(err, bindData)
+    {
+        if (err) {
+            winston.error("❌  Error getting bind data for Array timeline: ", err);
+            self._renderBindDataError(err, req, res);
+            
+            return;
+        }
+        res.render('array/timeline', bindData);
+    });
+};
+constructor.prototype.__render_array_wordCloud = function(req, res, source_key, query)
+{
+    var self = this;
+    var context = self.context;
+    query.source_key = source_key;
+    context.API_data_preparation_controller.BindDataFor_array_wordCloud(query, function(err, bindData)
+    {
+        if (err) {
+            winston.error("❌  Error getting bind data for Array keyword frequency: ", err);
+            self._renderBindDataError(err, req, res);
+            
+            return;
+        }
+        res.render('array/word-cloud', bindData);
     });
 };
 //

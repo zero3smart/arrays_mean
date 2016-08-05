@@ -1,3 +1,43 @@
+{% if brandColor %}
+    <style scoped>
+        .color-brand,
+        a.color-brand:hover,
+        a.color-brand:focus,
+        a.color-brand:active,
+        .sidebar-filter-toggle .color-brand {
+        	color: {{ brandColor }};
+        }
+
+        .color-brand-hover:hover,
+        .dropdown-toggle:hover .color-brand-hover,
+        .open .color-brand-hover,
+        .search-toggle:hover .color-brand-hover,
+		.search-toggle.search-active .color-brand-hover {
+        	color: {{ brandColor }};
+        }
+
+        .background-color-brand,
+        #page .background-color-brand-hover:hover,
+        #page .background-color-brand-hover:focus,
+        #page .background-color-brand-hover:active,
+        #page .background-color-brand-hover > a:hover,
+        #page .background-color-brand-hover > a:focus,
+        #page .background-color-brand-hover > a:active ,
+        #page .background-color-brand-hover.active > a {
+        	background-color: {{ brandColor }};
+        }
+
+        .border-color-brand,
+        .border-color-brand-hover:hover {
+        	border-color: {{ brandColor }};
+        }
+
+        .border-top-color-brand {
+        	border-top-color: {{ brandColor }};
+        }
+    </style>
+{% endif %}
+
 <!-- Fixed navbar -->
 <nav class="navbar navbar-default navbar-fixed-top background-color-brand">
 	<div class="container-fluid container-full-width">
@@ -21,7 +61,16 @@
 						{% endif %}
 						{% if view_visibility.chart != false %}
 						<li class="background-color-brand-hover menu-item-chart {{ "active" if currentView == "chart" }}"><a href="/array/{{ array_source_key }}/chart{{ urlQuery_forSwitchingViews }}"><span class="icon-chart color-brand" aria-hidden="true"></span> Chart</a></li>
-						{% endif %}	
+						{% endif %}
+						{% if view_visibility.timeline != false %}
+						<li class="background-color-brand-hover menu-item-timeline {{ "active" if currentView == "timeline" }}"><a href="/array/{{ array_source_key }}/timeline{{ urlQuery_forSwitchingViews }}"><span class="icon-timeline color-brand" aria-hidden="true"></span> Timeline</a></li>
+						{% endif %}
+                        {% if view_visibility.scatterplot != false %}
+                        <li class="background-color-brand-hover menu-item-scatterplot {{ "active" if currentView == "scatterplot" }}"><a href="/array/{{ array_source_key }}/scatterplot{{ urlQuery_forSwitchingViews }}"><span class="icon-scatterplot color-brand" aria-hidden="true"></span> Scatterplot</a></li>
+                        {% endif %}
+                        {% if view_visibility.wordCloud != false %}
+                        <li class="background-color-brand-hover menu-item-word-cloud {{ "active" if currentView == "word-cloud" }}"><a href="/array/{{ array_source_key }}/word-cloud{{ urlQuery_forSwitchingViews }}"><span class="icon-word-cloud color-brand" aria-hidden="true"></span> Word cloud</a></li>
+                        {% endif %}
 					</ul>
 				</li>
 			</ul>

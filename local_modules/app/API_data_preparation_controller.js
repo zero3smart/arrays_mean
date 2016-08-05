@@ -5,9 +5,10 @@
     //
     var winston = require('winston');
     var async = require('async');
+    var moment = require('moment');
     var fs = require('fs');
     //
-    var dataSourceDescriptions = require('../data_ingestion/MVP_datasource_descriptions').Descriptions;
+    var dataSourceDescriptions = require('../data_ingestion/datasource_descriptions').GetDescriptions();
     var importedDataPreparation = require('../data_ingestion/imported_data_preparation');
     var cached_values_model = require('../cached_values/cached_values_model');
     //
@@ -15,7 +16,9 @@
     ////////////////////////////////////////////////////////////////////////////////
     // Constants/Caches
     //
-    var pageSize = 250;
+    var pageSize = 200;
+    var timelineGroupSize = 20;
+    var timelineGroups = pageSize / timelineGroupSize * 2;
     //
     // Prepare country geo data cache
     var __countries_geo_json_str = fs.readFileSync(__dirname + '/resources/countries.geo.json', 'utf8');
@@ -67,11 +70,13 @@
             var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription, self.context.raw_source_documents_controller);
             self._fetchedSourceDoc(source_pKey, function(err, doc)
             {
-                if (err) {
-                    callback(err, null);
+                if (err)
+                    return callback(err, null);
 
-                    return;
-                }
+                // Should be null If we have not installed the datasource yet.
+                if (!doc)
+                    return cb(err, {});
+
                 var default_filterJSON = undefined;
                 if (typeof dataSourceDescription.fe_filters_default !== 'undefined') {
                     default_filterJSON = JSON.stringify(dataSourceDescription.fe_filters_default || {}); // "|| {}" for safety
@@ -85,6 +90,7 @@
                     key: source_pKey,
                     sourceDoc: doc,
                     title: dataSourceDescription.title,
+                    brandColor: dataSourceDescription.brandColor,
                     description: dataSourceDescription.description,
                     urls: dataSourceDescription.urls,
                     arrayListed: default_listed,
@@ -165,6 +171,9 @@
         var limitToNResults = pageSize;
         //
         var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
+        var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_gallery_defaultSortByColumnName_humanReadable;
+        var sortBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy ? sortBy : defaultSortByColumnName_humanReadable, dataSourceDescription);
+
         var sortDir = urlQuery.sortDir;
         var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
         //
@@ -202,17 +211,18 @@
 
                 return;
             }
-            wholeFilteredSet_aggregationOperators.push(_orErrDesc.matchOp);
+            wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
         }
         if (isFilterActive) { // rules out undefined filterJSON
-            var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, "$and");
+            var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
             if (typeof _orErrDesc.err !== 'undefined') {
                 callback(_orErrDesc.err, null);
 
                 return;
             }
-            wholeFilteredSet_aggregationOperators.push(_orErrDesc.matchOp);
+            wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
         }
+
         //
         // Now kick off the query work
         self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
@@ -280,32 +290,39 @@
                 //
                 _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
             };
-            processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).exec(doneFn);
+            processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         }
         function _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
         {
-            var sortBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy ? sortBy : importedDataPreparation.HumanReadableColumnName_objectTitle,
-                                                                                                          dataSourceDescription);
             var sortBy_realColumnName_path = "rowParams." + sortBy_realColumnName;
             var sortOpParams = {};
             sortOpParams.size = -sortDirection;
             sortOpParams[sortBy_realColumnName_path] = sortDirection;
 
-            var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
-                { $project: {
-                    _id: 1,
-                    pKey: 1,
-                    srcDocPKey: 1,
-                    rowIdxInDoc: 1,
-                    rowParams: 1, // include the rowParams field
-                    size: {
-                        $cond: {
-                            if: { $isArray: "$" + sortBy_realColumnName_path },
-                            then: { $size: "$" + sortBy_realColumnName_path }, // gets the number of items in the array
-                            else: 0
-                        }
+            var projects = { $project: {
+                _id: 1,
+                pKey: 1,
+                srcDocPKey: 1,
+                rowIdxInDoc: 1,
+                size: {
+                    $cond: {
+                        if: { $isArray: "$" + sortBy_realColumnName_path },
+                        then: { $size: "$" + sortBy_realColumnName_path }, // gets the number of items in the array
+                        else: 0
                     }
-                }},
+                }
+            }};
+
+            // Exclude the nested pages fields to reduce the amount of data returned
+            var rowParamsfields = Object.keys(sampleDoc.rowParams);
+            rowParamsfields.forEach(function(rowParamsField) {
+                if (rowParamsField.indexOf(dataSourceDescription.fe_nestedObject_prefix) === -1) {
+                    projects['$project']['rowParams.' + rowParamsField] = 1;
+                }
+            });
+
+            var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
+                projects,
                 // Sort (before pagination):
                 { $sort: sortOpParams },
                 // Pagination
@@ -384,6 +401,7 @@
                 //
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
+                brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
@@ -392,6 +410,7 @@
                 onPageNum: pageNumber,
                 numPages: Math.ceil(nonpagedCount / pageSize),
                 nonpagedCount: nonpagedCount,
+                resultsOffset: (pageNumber - 1) * pageSize,
                 //
                 docs: docs,
                 //
@@ -403,6 +422,7 @@
                 //
                 sortBy: sortBy,
                 sortDir: sortDir,
+                defaultSortByColumnName_humanReadable: defaultSortByColumnName_humanReadable,
                 colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                 //
                 filterObj: filterObj,
@@ -542,16 +562,16 @@
 
                     return;
                 }
-                aggregationOperators.push(_orErrDesc.matchOp);
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
             }
             if (isFilterActive) { // rules out undefined filterCol
-                var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, "$and");
+                var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
                 if (typeof _orErrDesc.err !== 'undefined') {
                     callback(_orErrDesc.err, null);
 
                     return;
                 }
-                aggregationOperators.push(_orErrDesc.matchOp);
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
             }
             aggregationOperators = aggregationOperators.concat(
             [
@@ -694,6 +714,7 @@
                 //
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
+                brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: sourceDocURL,
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
@@ -838,16 +859,16 @@
 
                     return;
                 }
-                aggregationOperators.push(_orErrDesc.matchOp);
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
             }
             if (isFilterActive) { // rules out undefined filterCol
-                var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, "$and");
+                var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
                 if (typeof _orErrDesc.err !== 'undefined') {
                     callback(_orErrDesc.err, null);
 
                     return;
                 }
-                aggregationOperators.push(_orErrDesc.matchOp);
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
             }
             aggregationOperators = aggregationOperators.concat(
             [
@@ -943,6 +964,7 @@
                 //
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
+                brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: sourceDocURL,
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
@@ -972,6 +994,656 @@
                 routePath_base: routePath_base,
                 routePath_withoutFilter: routePath_withoutFilter,
                 routePath_withoutMapBy: routePath_withoutMapBy,
+                //
+                urlQuery_forSwitchingViews: urlQuery_forSwitchingViews
+            };
+            callback(err, data);
+        }
+    };
+    //
+    constructor.prototype.BindDataFor_array_timeline = function(urlQuery, callback)
+    {
+        var self = this;
+        // urlQuery keys:
+            // source_key
+            // groupBy
+            // filterJSON
+            // searchQ
+            // searchCol
+        var source_pKey = urlQuery.source_key;
+        var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
+        if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
+            callback(new Error("No data source with that source pkey " + source_pKey), null);
+
+            return;
+        }
+        if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.timeline != null && dataSourceDescription.fe_views.timeline === false) {
+            callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+
+            return;
+        }
+        var fe_visible = dataSourceDescription.fe_visible;
+        if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
+            callback(new Error("That data source was set to be not visible: " + source_pKey), null);
+
+            return;
+        }
+        var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+        var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
+        //
+        var page = urlQuery.page;
+        var pageNumber = page ? page : 1;
+        var skipNResults = timelineGroups * (Math.max(pageNumber, 1) - 1);
+        var limitToNResults = timelineGroups;
+        //
+        var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
+        var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_timeline_defaultGroupByColumnName_humanReadable;
+        var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable, dataSourceDescription);
+        var groupedResultsLimit = timelineGroupSize;
+        var groupsLimit = timelineGroups;
+        var groupByDateFormat;
+        //
+        var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
+        var sortDir = urlQuery.sortDir;
+        var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
+        var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_timeline_defaultSortByColumnName_humanReadable;
+        var sortBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy ? sortBy : defaultSortByColumnName_humanReadable, dataSourceDescription);
+        //
+        var filterJSON = urlQuery.filterJSON;
+        var filterObj = {};
+        var isFilterActive = false;
+        if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
+            try {
+                filterObj = JSON.parse(filterJSON);
+                if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
+                    isFilterActive = true;
+                } else {
+                    filterObj = {}; // must replace it to prevent errors below
+                }
+            } catch (e) {
+                winston.error("❌  Error parsing filterJSON: ", filterJSON);
+                callback(e, null);
+
+                return;
+            }
+        }
+        // We must re-URI-encode the filter vals since they get decoded
+        var filterJSON_uriEncodedVals = _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
+        //
+        var searchCol = urlQuery.searchCol;
+        var searchQ = urlQuery.searchQ;
+        var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
+                          && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
+        //
+        //
+        var wholeFilteredSet_aggregationOperators = [];
+        if (isSearchActive) {
+            var _orErrDesc = _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+            if (typeof _orErrDesc.err !== 'undefined') {
+                callback(_orErrDesc.err, null);
+
+                return;
+            }
+            wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
+        }
+        if (isFilterActive) { // rules out undefined filterJSON
+            var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+            if (typeof _orErrDesc.err !== 'undefined') {
+                callback(_orErrDesc.err, null);
+
+                return;
+            }
+            wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
+        }
+
+        var groupBySortFieldPath = "results.rowParams." + sortBy_realColumnName
+        var groupByColumnName = groupBy ? groupBy : defaultGroupByColumnName_humanReadable;
+        var groupByDuration;
+
+        switch(groupByColumnName) {
+            case 'Decade':
+                groupByDuration = moment.duration(10, 'years').asMilliseconds();
+                groupByDateFormat = "YYYY";
+                break;
+
+            case 'Year':
+                groupByDuration = moment.duration(1, 'years').asMilliseconds();
+                groupByDateFormat = "YYYY";
+                break;
+
+            case 'Month':
+                groupByDuration = moment.duration(1, 'months').asMilliseconds();
+                groupByDateFormat = "MMMM YYYY";
+                break;
+
+            case 'Day':
+                groupByDuration = moment.duration(1, 'days').asMilliseconds();
+                groupByDateFormat = "MMMM Do YYYY";
+                break;
+
+            default:
+                groupByDuration = moment.duration(1, 'years').asMilliseconds();
+                groupByDateFormat = "YYYY";
+        }
+
+        // Now kick off the query work
+        self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
+        {
+            if (err) {
+                callback(err, null);
+
+                return;
+            }
+            _proceedTo_obtainSampleDocument(sourceDoc);
+        });
+        function _proceedTo_obtainSampleDocument(sourceDoc)
+        {
+            processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
+            {
+                if (err) {
+                    callback(err, null);
+
+                    return;
+                }
+                if (sampleDoc == null) {
+                    callback(new Error('Unexpectedly missing sample document - wrong data source UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+
+                    return;
+                }
+                _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc);
+            });
+        }
+        function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc)
+        {
+            _topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName)
+            {
+                if (err) {
+                    callback(err, null);
+
+                    return;
+                }
+                //
+                _proceedTo_countWholeSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName);
+            });
+        }
+        function _proceedTo_countWholeSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
+        {
+            var countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
+                { // Count
+                    $group: {
+                        // _id: 1,
+                        _id: { 
+                            "$subtract": [
+                                { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01") ] },
+                                { "$mod": [
+                                    { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01") ] },
+                                    groupByDuration
+                                ]}
+                            ]
+                        }
+                   }
+                }
+            ]);
+            var doneFn = function(err, results)
+            {
+                if (err) {
+                    callback(err, null);
+
+                    return;
+                }
+                var nonpagedCount = 0;
+                if (results == undefined || results == null || results.length == 0) { // 0
+                } else {
+                    nonpagedCount = results.length;
+                }
+                //
+                _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
+            };
+            processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
+        }
+        function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
+        {
+            
+            var aggregationOperators = [];
+            if (isSearchActive) {
+                var _orErrDesc = _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+                if (typeof _orErrDesc.err !== 'undefined') {
+                    callback(_orErrDesc.err, null);
+
+                    return;
+                }
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
+            }
+            if (isFilterActive) { // rules out undefined filterCol
+                var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+                if (typeof _orErrDesc.err !== 'undefined') {
+                    callback(_orErrDesc.err, null);
+
+                    return;
+                }
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
+            }
+
+            var sort = {};
+            sort[groupBySortFieldPath] = -1;
+
+            var projects = { $project: {
+                _id: 1,
+                pKey: 1,
+                srcDocPKey: 1,
+                rowIdxInDoc: 1
+            }};
+
+            // Exclude the nested pages fields to reduce the amount of data returned
+            var rowParamsfields = Object.keys(sampleDoc.rowParams);
+            rowParamsfields.forEach(function(rowParamsField) {
+                if (rowParamsField == sortBy_realColumnName || rowParamsField.indexOf(dataSourceDescription.fe_nestedObject_prefix) === -1) {
+                    projects['$project']['rowParams.' + rowParamsField] = 1;
+                }
+            });
+
+            aggregationOperators = aggregationOperators.concat(
+            [
+                projects,
+                { $unwind: "$" + "rowParams." + sortBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                { // unique/grouping and summing stage
+                    $group: {
+                        _id: { 
+                            "$subtract": [
+                                { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01") ] },
+                                { "$mod": [
+                                    { "$subtract": [ "$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01") ] },
+                                    groupByDuration
+                                ]}
+                            ]
+                        },
+                        startDate: { $min: "$" + "rowParams." + sortBy_realColumnName },
+                        endDate: { $max: "$" + "rowParams." + sortBy_realColumnName },
+                        total: { $sum: 1 }, // the count
+                        results: { $push: "$$ROOT" }
+                    }
+                },
+                { // reformat
+                    $project: {
+                        _id: 0,
+                        startDate: 1,
+                        endDate: 1,
+                        total: 1,
+                        results: {$slice: ["$results", groupedResultsLimit]}
+                    }
+                },
+                {
+                    $sort: sort
+                },
+                // Pagination
+                { $skip: skipNResults },
+                { $limit: groupsLimit }
+            ]);
+
+            //
+            var doneFn = function(err, groupedResults)
+            {
+                if (err) {
+                    callback(err, null);
+
+                    return;
+                }
+                if (groupedResults == undefined || groupedResults == null) {
+                    groupedResults = [];
+                }
+                _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, groupedResults);
+            };
+            processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
+        }
+        function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, groupedResults)
+        {
+            var err = null;
+            var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
+            var routePath_base              = "/array/" + source_pKey + "/timeline";
+            var routePath_withoutFilter     = routePath_base;
+            var routePath_withoutPage       = routePath_base;
+            var routePath_withoutGroupBy    = routePath_base;
+            var routePath_withoutSortBy     = routePath_base;
+            var routePath_withoutSortDir    = routePath_base;
+            var urlQuery_forSwitchingViews  = "";
+            var urlQuery_forViewAllInDuration = routePath_base;
+            if (groupBy !== undefined && groupBy != null && groupBy !== "") {
+                var appendQuery = "groupBy=" + groupBy;
+                routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+                routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
+                routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
+                routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
+            }
+            if (sortBy !== undefined && sortBy != null && sortBy !== "") {
+                var appendQuery = "sortBy=" + sortBy;
+                routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+                routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+                routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
+                routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
+            }
+            if (sortDir !== undefined && sortDir != null && sortDir !== "") {
+                var appendQuery = "sortDir=" + sortDir;
+                routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,        appendQuery, routePath_base);
+                routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,          appendQuery, routePath_base);
+                routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,        appendQuery, routePath_base);
+                routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+            }
+            if (page !== undefined && page != null && page !== "") {
+                var appendQuery = "page=" + page;
+                routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
+                routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
+                routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+            }
+            if (isFilterActive) {
+                var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
+                routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+                routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
+                routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
+                routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
+                urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+            }
+            if (isSearchActive) {
+                var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
+                routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+                routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+                routePath_withoutPage       = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
+                routePath_withoutSortBy     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
+                routePath_withoutSortDir    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
+                urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+            }
+            var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+            //
+            var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+            //
+            var data =
+            {
+                env: process.env,
+                //
+                arrayTitle: dataSourceDescription.title,
+                array_source_key: source_pKey,
+                brandColor: dataSourceDescription.brandColor,
+                sourceDoc: sourceDoc,
+                sourceDocURL: sourceDocURL,
+                view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+                //
+                pageSize: timelineGroups < nonpagedCount ? pageSize : nonpagedCount,
+                onPageNum: pageNumber,
+                numPages: Math.ceil(nonpagedCount / timelineGroups),
+                nonpagedCount: nonpagedCount,
+                //
+                fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
+                humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
+                //
+                hasThumbs: hasThumbs,
+                fieldKey_medThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.medThumbImageURL : undefined,
+                //
+                groupedResults: groupedResults,
+                groupBy: groupBy,
+                groupBy_realColumnName: groupBy_realColumnName,
+                groupedResultsLimit: groupedResultsLimit,
+                groupByDateFormat: groupByDateFormat,
+                //
+                sortBy: sortBy,
+                sortDir: sortDir,
+                defaultSortByColumnName_humanReadable: defaultSortByColumnName_humanReadable,
+                sortBy_realColumnName: sortBy_realColumnName,
+                colNames_orderedForTimelineSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelineSortByDropdown(sampleDoc, dataSourceDescription),
+                colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                //
+                filterObj: filterObj,
+                filterJSON_nonURIEncodedVals: filterJSON,
+                filterJSON: filterJSON_uriEncodedVals,
+                isFilterActive: isFilterActive,
+                uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+                truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
+                //
+                searchQ: searchQ,
+                searchCol: searchCol,
+                isSearchActive: isSearchActive,
+                //
+                defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
+                colNames_orderedForGroupByDropdown: dataSourceDescription.fe_timeline_durationsAvailableForGroupBy ? dataSourceDescription.fe_timeline_durationsAvailableForGroupBy : {},
+                //
+                routePath_base: routePath_base,
+                routePath_withoutFilter: routePath_withoutFilter,
+                routePath_withoutPage: routePath_withoutPage,
+                routePath_withoutGroupBy: routePath_withoutGroupBy,
+                routePath_withoutSortBy: routePath_withoutSortBy,
+                routePath_withoutSortDir: routePath_withoutSortDir,
+                //
+                urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
+                urlQuery_forViewAllInDuration: urlQuery_forViewAllInDuration
+            };
+            callback(err, data);
+        }
+    };
+    //
+    constructor.prototype.BindDataFor_array_wordCloud = function(urlQuery, callback)
+    {
+        var self = this;
+        // urlQuery keys:
+            // source_key
+            // groupBy
+            // filterJSON
+            // searchQ
+            // searchCol
+        var source_pKey = urlQuery.source_key;
+        var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
+        if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
+            callback(new Error("No data source with that source pkey " + source_pKey), null);
+
+            return;
+        }
+        if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != null && dataSourceDescription.fe_views.chart === false) {
+            callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+
+            return;
+        }
+        var fe_visible = dataSourceDescription.fe_visible;
+        if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
+            callback(new Error("That data source was set to be not visible: " + source_pKey), null);
+
+            return;
+        }
+        var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+        var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
+        //
+        var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
+        var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_wordCloud_defaultGroupByColumnName_humanReadable;
+        var keywords = dataSourceDescription.fe_wordCloud_keywords;
+        //
+        var filterJSON = urlQuery.filterJSON;
+        var filterObj = {};
+        var isFilterActive = false;
+        if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
+            try {
+                filterObj = JSON.parse(filterJSON);
+                if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
+                    isFilterActive = true;
+                } else {
+                    filterObj = {}; // must replace it to prevent errors below
+                }
+            } catch (e) {
+                winston.error("❌  Error parsing filterJSON: ", filterJSON);
+                callback(e, null);
+
+                return;
+            }
+        }
+        // We must re-URI-encode the filter vals since they get decoded
+        var filterJSON_uriEncodedVals = _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
+        //
+        var searchCol = urlQuery.searchCol;
+        var searchQ = urlQuery.searchQ;
+        var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
+                          && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
+        //
+        // Now kick off the query work
+        self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
+        {
+            if (err) {
+                callback(err, null);
+
+                return;
+            }
+            _proceedTo_obtainSampleDocument(sourceDoc);
+        });
+        function _proceedTo_obtainSampleDocument(sourceDoc)
+        {
+            processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
+            {
+                if (err) {
+                    callback(err, null);
+
+                    return;
+                }
+                if (sampleDoc == null) {
+                    callback(new Error('Unexpectedly missing sample document - wrong data source UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+
+                    return;
+                }
+                _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc);
+            });
+        }
+        function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc)
+        {
+            _topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName)
+            {
+                if (err) {
+                    callback(err, null);
+
+                    return;
+                }
+                //
+                _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName);
+            });
+        }
+        function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
+        {
+            var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
+                                                                                                           dataSourceDescription);
+            //
+            var aggregationOperators = [];
+            if (isSearchActive) {
+                var _orErrDesc = _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+                if (typeof _orErrDesc.err !== 'undefined') {
+                    callback(_orErrDesc.err, null);
+
+                    return;
+                }
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
+            }
+            if (isFilterActive) { // rules out undefined filterCol
+                var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+                if (typeof _orErrDesc.err !== 'undefined') {
+                    callback(_orErrDesc.err, null);
+
+                    return;
+                }
+                aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
+            }
+
+            //
+            var doneFn = function(err, groupedResults)
+            {
+                if (err) {
+                    return callback(err, null);
+                }
+
+                var result = groupedResults[0];
+                var newResults = keywords.map(function(keyword) {
+                    var obj = {_id: keyword, value: 0};
+                    if (result && result[keyword]) obj.value = result[keyword];
+                    return obj;
+                });
+
+                newResults.sort(function(a, b){
+                    return b.value - a.value;
+                });
+
+                _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, newResults);
+            };
+
+            var groupBy_realColumnName_path = "rowParams." + groupBy_realColumnName;
+            var groupOps_keywords = { _id: null };
+            keywords.forEach(function(keyword) {
+                groupOps_keywords[keyword] = {
+                    $sum: {
+                        $cond: [
+                            "$wordExistence." + groupBy_realColumnName + "." + keyword, 1, 0
+                        ]
+                    }
+                }
+            });
+            aggregationOperators = aggregationOperators.concat([
+                { $group: groupOps_keywords }
+            ]);
+
+            processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
+        }
+        function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
+        {
+            var err = null;
+            var routePath_base              = "/array/" + source_pKey + "/word-cloud";
+            var routePath_withoutFilter     = routePath_base;
+            var routePath_withoutGroupBy    = routePath_base;
+            var urlQuery_forSwitchingViews  = "";
+            if (groupBy !== undefined && groupBy != null && groupBy !== "") {
+                var appendQuery = "groupBy=" + groupBy;
+                routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+            }
+            if (isFilterActive) {
+                var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
+                routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+                urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+            }
+            if (isSearchActive) {
+                var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
+                routePath_withoutFilter     = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+                routePath_withoutGroupBy    = _routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
+                urlQuery_forSwitchingViews  = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+            }
+            var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+            //
+            var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+            //
+            var minGroupedResultsValue = Math.min.apply(Math, groupedResults.map(function(o){ return o.value; }));
+            var maxGroupedResultsValue = Math.max.apply(Math, groupedResults.map(function(o){ return o.value; }));
+            //
+            var data =
+            {
+                env: process.env,
+                //
+                arrayTitle: dataSourceDescription.title,
+                array_source_key: source_pKey,
+                brandColor: dataSourceDescription.brandColor,
+                sourceDoc: sourceDoc,
+                sourceDocURL: sourceDocURL,
+                view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+                //
+                groupedResults: groupedResults,
+                minGroupedResultsValue: minGroupedResultsValue,
+                maxGroupedResultsValue: maxGroupedResultsValue,
+                groupBy: groupBy,
+                //
+                filterObj: filterObj,
+                filterJSON_nonURIEncodedVals: filterJSON,
+                filterJSON: filterJSON_uriEncodedVals,
+                isFilterActive: isFilterActive,
+                uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+                truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
+                //
+                searchQ: searchQ,
+                searchCol: searchCol,
+                isSearchActive: isSearchActive,
+                //
+                defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
+                colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForwordCloudGroupByDropdown(sampleDoc, dataSourceDescription),
+                colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                //
+                routePath_base: routePath_base,
+                routePath_withoutFilter: routePath_withoutFilter,
+                routePath_withoutGroupBy: routePath_withoutGroupBy,
                 //
                 urlQuery_forSwitchingViews: urlQuery_forSwitchingViews
             };
@@ -1090,7 +1762,7 @@
             var idxOf_objTitle = colNames_sansObjectTitle.indexOf(importedDataPreparation.HumanReadableColumnName_objectTitle);
             colNames_sansObjectTitle.splice(idxOf_objTitle, 1);
             //
-            var alphaSorted_colNames_sansObjectTitle = colNames_sansObjectTitle.sort();
+            var alphaSorted_colNames_sansObjectTitle = colNames_sansObjectTitle;
             //
             var designatedOriginalImageField = dataSourceDescription.fe_designatedFields.originalImageURL;
             var hasDesignatedOriginalImageField = designatedOriginalImageField ? true : false;
@@ -1130,6 +1802,7 @@
                 //
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
+                brandColor: dataSourceDescription.brandColor,
                 default_filterJSON: default_filterJSON,
                 view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
                 //
@@ -1149,7 +1822,179 @@
             callback(null, data);
         }
     }
-    //
+    
+    
+    /**
+     * Scatterplot view action controller.
+     * @param {Object} urlQuery - URL params
+     * @param {Function} callback
+     */
+    constructor.prototype.BindDataFor_array_linechart = function(urlQuery, callback)
+    {
+        var self = this;
+        /*
+         * Run callback function to finish action.
+         */
+        callback(null, {
+            metaData: {}
+        });
+    }
+
+    
+    
+    
+    
+    /**
+     * Scatterplot view action controller.
+     * @param {Object} urlQuery - URL params
+     * @param {Function} callback
+     */
+    constructor.prototype.BindDataFor_array_scatterplot = function(urlQuery, callback)
+    {
+        var self = this;
+
+        var sourceKey = urlQuery.source_key;
+        var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(
+            sourceKey, self.context.raw_source_documents_controller
+        );
+
+        if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
+            callback(new Error("No data source with that source pkey " + sourceKey), null);
+            return;
+        }
+
+        if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != null && dataSourceDescription.fe_views.chart === false) {
+            callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+            return;
+        }
+
+        var fe_visible = dataSourceDescription.fe_visible;
+        if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
+            callback(new Error("That data source was set to be not visible: " + sourceKey), null);
+            return;
+        }
+        /*
+         * Get somewhat mongoose context.
+         */
+        var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller
+            .Lazy_Shared_ProcessedRowObject_MongooseContext(sourceKey);
+        /*
+         * Stash somewhat model reference.
+         */
+        var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
+        /*
+         * Process URL filterJSON param.
+         */
+        var filterJSON = urlQuery.filterJSON;
+        var filterObj = {};
+        var isFilterActive = false;
+        if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
+            try {
+                filterObj = JSON.parse(filterJSON);
+                if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
+                    isFilterActive = true;
+                }
+            } catch (e) {
+                winston.error("❌  Error parsing filterJSON: ", filterJSON);
+                return callback(e, null);
+            }
+        }
+
+        var filterJSON_uriEncodedVals = _new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
+        var urlQuery_forSwitchingViews  = "";
+        var appendQuery = "";
+        /*
+         * Check filter active and update composed URL params.
+         */
+        if (isFilterActive) {
+            appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
+            urlQuery_forSwitchingViews = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        }
+
+        var searchCol = urlQuery.searchCol;
+        var searchQ = urlQuery.searchQ;
+        var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != ""
+            && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";
+        /*
+         * Check search active and update composed URL params.
+         */
+        if (isSearchActive) {
+            appendQuery = "searchCol=" + urlQuery.searchCol + "&" + "searchQ=" + urlQuery.searchQ;
+            urlQuery_forSwitchingViews = _urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        }
+        /*
+         * Process parsed filterJSON param and prepare $match - https://docs.mongodb.com/manual/reference/operator/aggregation/match/ -
+         * statement. May return error instead required statement... and i can't say that understand that logic full. But in that case
+         * we just will create empty $match statement which acceptable for all documents from data source.
+         */
+        var _orErrDesc = _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+        if (_orErrDesc.err) {
+            _orErrDesc.matchOps = [{ $match : {} }];
+        }
+        /*
+         * Run chain of functions to collect necessary data.
+         */
+        self._fetchedSourceDoc(sourceKey, function(err, sourceDoc) {
+            /*
+             * Run query to mongo to obtain all rows which satisfy to specified filters set.
+             */
+            processedRowObjects_mongooseModel.aggregate(_orErrDesc.matchOps).allowDiskUse(true).exec(function(err, documents) {
+                /*
+                 * Get single/sample document.
+                 */
+                var sampleDoc = documents[0];
+                /*
+                 * Go deeper - collect data for filter's sidebar.
+                 */
+                _topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName) {
+                    /*
+                     * Define numeric fields list which may be used as scatterplot axes.
+                     * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.
+                     */
+                    var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown(sampleDoc, dataSourceDescription).filter(function(i) {
+                        return dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) == -1;
+                    });
+                    /*
+                     * Then loop through document's fields and get numeric.
+                     * Also checking they are not in fe_scatterplot_fieldsNotAvailable config option.
+                     */
+                    /*for (i in sampleDoc.rowParams) {
+                        if (! (! isNaN(parseFloat(sampleDoc.rowParams[i])) && isFinite(sampleDoc.rowParams[i]) && i !== 'id')) {
+                            continue;
+                        } else if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) >= 0) {
+                            continue;
+                        } else {
+                            numericFields.push(i);
+                        }
+                    }*/
+                    /*
+                     * Run callback function to finish action.
+                     */
+                    callback(err, {
+                        env: process.env,
+                        documents: documents,
+                        metaData: dataSourceDescription,
+                        renderableFields: numericFields,
+                        array_source_key: sourceKey,
+                        brandColor: dataSourceDescription.brandColor,
+                        uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+                        sourceDoc: sourceDoc,
+                        view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+                        routePath_base: '/array/' + sourceKey + '/scatterplot',
+                        routePath_withoutFilter: '/array/' + sourceKey + '/scatterplot',
+                        filterObj: filterObj,
+                        isFilterActive: isFilterActive,
+                        urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
+                        searchCol: searchCol || '',
+                        searchQ: searchQ || '',
+                        colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                        filterJSON_nonURIEncodedVals: filterJSON,
+                        filterJSON: filterJSON_uriEncodedVals
+                    });
+                });
+            });
+        });
+    }
     //
     constructor.prototype._fetchedSourceDoc = function(source_pKey, callback)
     {
@@ -1161,11 +2006,13 @@
                 //
                 return;
             }
-            if (doc == null) {
+            // In case we might have some datasources to be installed, but not installed yet.
+            // It should return null, which should not be buggy
+            /* if (doc == null) {
                 callback(new Error('Unexpectedly missing source document - wrong source document pKey? source_pKey: ' + source_pKey), null);
                 //
                 return;
-            }
+            } */
             //
             callback(null, doc);
         });
@@ -1198,7 +2045,7 @@
     //
     //
     //
-    function _activeFilter_matchOp_orErrDescription_fromMultiFilterWithLogicalOperator(dataSourceDescription, filterObj, mongoDBLogicalOperator)
+    function _activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj)
     {
         var filterCols = Object.keys(filterObj);
         var filterCols_length = filterCols.length;
@@ -1214,11 +2061,18 @@
             var filterVals_length = filterVals.length;
             for (var j = 0 ; j < filterVals_length ; j++) {
                 var filterVal = filterVals[j];
-                var matchCondition = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
-                if (typeof matchCondition.err !== 'undefined') {
-                    return { err: matchCondition.err };
+                var matchConditions = {};
+                if (typeof filterVal === 'string') {
+                    matchConditions = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
+                } else if (filterVal.min !== null || filterVal.max !== null) {
+                    matchConditions = _activeFilterRange_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal.min, filterVal.max);
+                } else {
+                    // TODO - ERROR - Unexpected format
                 }
-                conditions.push(matchCondition.matchCondition);
+                if (typeof matchConditions.err !== 'undefined') {
+                    return { err: matchConditions.err };
+                }
+                conditions = conditions.concat(matchConditions.matchConditions);
             }
         }
         if (conditions.length == 0) {
@@ -1226,15 +2080,13 @@
 
             return { err: new Error("No match conditions in multifilter despite filterObj") };
         }
-        var matchOp = { $match: {} };
-        matchOp["$match"]["" + (mongoDBLogicalOperator || "$and")] = conditions;
 
-        return { matchOp: matchOp };
+        return { matchOps: conditions };
     }
-
+    //
     function _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal)
     {
-        var matchCondition = undefined;
+        var matchConditions = undefined;
         var isAFabricatedFilter = false; // finalize
         if (dataSourceDescription.fe_filters_fabricatedFilters) {
             var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
@@ -1250,7 +2102,7 @@
                         var choice = choices[j];
                         if (choice.title === filterVal) {
                             foundChoice = true;
-                            matchCondition = choice["$match"];
+                            matchConditions = [{$match: choice["$match"]}];
 
                             break; // found the applicable filter choice
                         }
@@ -1263,49 +2115,161 @@
                 }
             }
         }
-        if (isAFabricatedFilter == true) { // already obtained matchCondition just above
-            if (typeof matchCondition === 'undefined') {
-                return { err: new Error("Unexpectedly missing matchCondition given fabricated filter…" + JSON.stringify(urlQuery)) };
+        if (isAFabricatedFilter == true) { // already obtained matchConditions just above
+            if (typeof matchConditions === 'undefined') {
+                return { err: new Error("Unexpectedly missing matchConditions given fabricated filter…" + JSON.stringify(urlQuery)) };
             }
         } else {
             var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
             var realColumnName_path = "rowParams." + realColumnName;
             var realFilterValue = filterVal; // To finalize in case of override…
-            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
-            var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
-            if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
-                var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[filterVal];
-                if (typeof overrideValue === 'undefined') {
-                    var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
-                    winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
-                 } else {
-                     realFilterValue = overrideValue;
-                 }
+            // To coercion the date field into the valid date
+            var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+            var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
+                && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+            if (!isDate) {
+                var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+                var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
+                if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
+                    var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[filterVal];
+                    if (typeof overrideValue === 'undefined') {
+                        var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
+                        winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
+                    } else {
+                        realFilterValue = overrideValue;
+                    }
+                }
+
+                // We need to consider that the search column might be array
+                // escape Mongo reserved characters in Mongo
+                realFilterValue = realFilterValue.split("(").join("\\(")
+                    .split(")").join("\\)")
+                    .split("+").join("\\+")
+                    .split("$").join("\\$");
+
+                matchConditions = _activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, realFilterValue).matchOps;
+
+            } else {
+                var filterDate = new Date(filterVal);
+                if (!isNaN(filterDate.getTime())) { // Invalid Date
+                    matchConditions = _activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, filterDate).matchOps;
+                }
             }
-            matchCondition = { };
-
-            // escape Mongo reserved characters in Mongo
-            realFilterValue = realFilterValue.split("(").join("\\(")
-                                             .split(")").join("\\)")
-                                             .split("+").join("\\+")
-                                             .split("$").join("\\$");
-
-            matchCondition[realColumnName_path] = { $regex: realFilterValue, $options: "i" };
         }
-        if (typeof matchCondition === 'undefined') {
+        if (typeof matchConditions === 'undefined') {
             throw new Error("Undefined match condition");
         }
 
-        return { matchCondition: matchCondition };
+        return { matchConditions: matchConditions };
+    }
+    //
+    function _activeFilterRange_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterValMin, filterValMax)
+    {
+        var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
+        var realColumnName_path = "rowParams." + realColumnName;
+        var realFilterValueMin = filterValMin, realFilterValueMax = filterValMax; // To finalize in case of override…
+        // To coercion the date field into the valid date
+        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+        var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
+            && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+        if (!isDate) {
+            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+            var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
+            if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
+                var overrideValueMin = oneToOneOverrideWithValuesByTitle_forThisColumn[filterValMin];
+                if (typeof overrideValueMin === 'undefined') {
+                    var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterValMin " + filterValMin;
+                    winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
+                    throw new Error("Undefined match condition");
+                } else {
+                    realFilterValueMin = overrideValueMin;
+                }
+
+                var overrideValueMax = oneToOneOverrideWithValuesByTitle_forThisColumn[filterValMax];
+                if (typeof overrideValueMax === 'undefined') {
+                    var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterValMax " + filterValMax;
+                    winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
+                    throw new Error("Undefined match condition");
+                } else {
+                    realFilterValueMax = overrideValueMax;
+                }
+            }
+        } else {
+            var filterDateMin = new Date(filterValMin);
+            if (!isNaN(filterDateMin.getTime())) {
+                var offsetMins = filterDateMin.getTimezoneOffset();
+                realFilterValueMin = moment(filterDateMin).subtract(offsetMins, 'minutes').toDate();
+            } else {
+                throw new Error('Invalid date');
+            }
+            var filterDateMax = new Date(filterValMax);
+            if (!isNaN(filterDateMax.getTime())) {
+                var offsetMins = filterDateMax.getTimezoneOffset();
+                realFilterValueMax = moment(filterDateMax).subtract(offsetMins, 'minutes').toDate();
+            } else {
+                throw new Error('Invalid date');
+            }
+        }
+
+        // We need to consider that the search column is array
+        var projectOp = { $project: {
+            _id: 1,
+            pKey: 1,
+            srcDocPKey: 1,
+            rowIdxInDoc: 1,
+            rowParams: 1,
+            matchingField: {
+                $cond: {
+                    if: { $isArray: "$" + realColumnName_path },
+                    then: { $size: "$" + realColumnName_path }, // gets the number of items in the array
+                    else: "$" + realColumnName_path
+                }
+            }
+        }};
+
+        var matchOp = { $match: {} };
+        matchOp["$match"]["matchingField"] = {$gte: realFilterValueMin, $lte: realFilterValueMax};
+
+        return { matchConditions: [projectOp, matchOp] };
     }
     //
     function _activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ)
     { // returns dictionary with err or matchOp
-        var realColumnName_path = "rowParams." + importedDataPreparation.RealColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
-        var matchOp = { $match: {} };
-        matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: "i" };
+        var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
+        var realColumnName_path = "rowParams." + realColumnName;
 
-        return { matchOp: matchOp };
+        // We need to consider that the search column is array
+        var unwindOp = { $unwind: '$' + realColumnName_path };
+        var matchOp = { $match: {} };
+        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+        var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
+            && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+        if (!isDate) {
+            matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: "i" };
+        } else {
+            var searchDate = new Date(searchQ);
+            var realSearchValue;
+            if (!isNaN(searchDate.getTime())) {
+                var offsetMins = searchDate.getTimezoneOffset();
+                realSearchValue = moment(searchDate).subtract(offsetMins, 'minutes').toDate();
+            } else { // Invalid Date
+                return { err: 'Invalid Date' };
+            }
+            matchOp["$match"][realColumnName_path] = { $eq: realSearchValue };
+        }
+
+        var groupOp = {
+            $group: {
+                _id: '$_id',
+                pKey: {'$first': '$pKey'},
+                srcDocPKey: {'$first': '$srcDocPKey'},
+                rowIdxInDoc: {'$first': '$rowIdxInDoc'},
+                rowParams: {'$first': '$rowParams'},
+                wordExistence: {'$first': '$wordExistence'}
+            }
+        };
+
+        return { matchOps: [unwindOp, matchOp, groupOp] };
     }
     //
     function _topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, callback)
@@ -1352,12 +2316,34 @@
                 }
             }
             //
+            // Now insert keyword filters
+            if (dataSourceDescription.fe_filters_keywordFilters) {
+                var keywordFilters_length = dataSourceDescription.fe_filters_keywordFilters.length;
+                for (var i = 0 ; i < keywordFilters_length ; i++) {
+                    var keywordFilter = dataSourceDescription.fe_filters_keywordFilters[i];
+                    var choices = keywordFilter.choices;
+                    var choices_length = choices.length;
+                    var values = [];
+                    for (var j = 0 ; j < choices_length ; j++) {
+                        var choice = choices[j];
+                        values.push(choice);
+                    }
+                    if (typeof uniqueFieldValuesByFieldName[keywordFilter.title] !== 'undefined') {
+                        var errStr = 'Unexpectedly already-existent filter for the keyword filter title ' + keywordFilter.title;
+                        winston.error("❌  " + errStr);
+                        callback(new Error(errStr), null);
+
+                        return;
+                    }
+                    uniqueFieldValuesByFieldName[keywordFilter.title] = values;
+                }
+            }
+            //
             callback(null, uniqueFieldValuesByFieldName);
         });
     }
     //
     //
-    var moment = require('moment');
     var _defaultFormat = "MMMM Do, YYYY";
     var import_datatypes = require('../data_ingestion/import_datatypes');
     //
@@ -1447,8 +2433,9 @@
             var encodedVals = [];
             for (var j = 0 ; j < filterObj_key_vals_length ; j++) {
                 var filterObj_key_val = filterObj_key_vals[j];
-                var encodedVal = encodeURIComponent(filterObj_key_val);
-                encodedVals.push(encodedVal);
+                var filterIsString = typeof filterObj_key_val === 'string';
+                var filterVal = filterIsString ? encodeURIComponent(filterObj_key_val) : filterObj_key_val;
+                encodedVals.push(filterVal);
             }
             reconstructedURLEncodedFilterObjForFilterJSONString[filterObj_key] = encodedVals;
         }
