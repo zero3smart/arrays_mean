@@ -1,14 +1,19 @@
 /**
  * @constructor
  * @param {Object[]} data
+ * @param {linechart.viewport}
  */
-linechart.navigation = function(data) {
+linechart.navigation = function(data, viewport) {
     /**
      * Chart data.
      * @private
      * @member {Object[]}
      */
     this._data = data;
+    /**
+     * 
+     */
+    this._viewport = viewport;
     /**
      * Chart container.
      * @private
@@ -128,9 +133,31 @@ linechart.navigation = function(data) {
 }
 
 
+/**
+ * Brush event handler.
+ * @private
+ * @returns
+ */
 linechart.navigation.prototype._brushEventHandler = function() {
 
-    console.log('_brushEventHandler');
+    if (this._brush.empty()) {
+        return this._viewport.update(this._data);
+    }
+
+    var extent = this._brush.extent();
+
+    var min = extent[0];
+    var max = extent[1];
+
+    var data = this._data.map(function(series) {
+        return series    .filter(function(d) {
+            if (d.year >= min && d.year <= max) {
+                return true;
+            }
+        })
+    })
+
+    this._viewport.update(data);
 };
 
 

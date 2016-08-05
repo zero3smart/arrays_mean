@@ -16,7 +16,7 @@ linechart.chart = function(data) {
     /**
      * 
      */
-    this._navigation = new linechart.navigation(this._data);
+    this._navigation = new linechart.navigation(this._data, this._viewport);
 }
 
 

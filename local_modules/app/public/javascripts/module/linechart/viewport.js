@@ -256,7 +256,7 @@ linechart.viewport.prototype.update = function(data) {
     /*
      * Get x extent.
      */
-    this._xDomain = d3.extent(this._data[0], function(d) {
+    this._xDomain = d3.extent(data[0], function(d) {
         return d.year;
     });
     /*
