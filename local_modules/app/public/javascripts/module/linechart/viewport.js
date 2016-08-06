@@ -6,7 +6,7 @@ linechart.viewport = function(data) {
     /**
      * Chart data.
      * @private
-     * @member {Object[]}
+     * @member {Object[][]}
      */
     this._data = data;
     /**
@@ -239,6 +239,21 @@ linechart.viewport.prototype.resize = function() {
 
 
 /**
+ * Get y extent.
+ * @private
+ * @return {Number}
+ */
+linechart.viewport.prototype._getYDomain = function() {
+
+    return [0, this._data.reduce(function(maxValue, dataSet) {
+        return Math.max(maxValue, d3.max(dataSet.map(function(d) {
+            return d.count;
+        })));
+    }, 0)];
+};
+
+
+/**
  * Update chart.
  * @public
  * @param {Object[]} [data]
@@ -262,9 +277,7 @@ linechart.viewport.prototype.update = function(data) {
     /*
      * Get y extent.
      */
-    this._yDomain = [0, d3.max(this._data[0], function(d) {
-        return d.count;
-    })];
+    this._yDomain = this._getYDomain(data);
     /*
      * Update scale functions.
      */
