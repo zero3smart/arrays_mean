@@ -79,7 +79,7 @@ exports.Descriptions =
             },
             //
             //
-            fe_gallery_defaultSortByColumnName_humanReadable: "Agency",
+            fe_gallery_defaultSortByColumnName_humanReadable: "Object Title",
             //
             //
             fe_chart_defaultGroupByColumnName_humanReadable: "Agency",

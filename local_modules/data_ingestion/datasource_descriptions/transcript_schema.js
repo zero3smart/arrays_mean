@@ -151,29 +151,24 @@ exports.Descriptions =
             fe_fieldDisplayOrder:
                 [
                     'Catalog Title',
-                    'Collection',
-                    'Contributing Institution',
-                    'Creator',
-                    'Date',
-                    'Date Labeled',
-                    'Date created',
-                    'Date modified',
-                    'Decade',
-                    'Description',
-                    'File Name',
+                    'Volume',
                     'Issue',
-                    'LCCN',
-                    'OCLC number',
-                    'Pages',
-                    'Physical Measurements',
+                    'Date',
+                    'Year',
+                    'Decade',
+                    'Creator',
                     'Publisher',
-                    'Publisher Location (NDNP)',
-                    'Rights and Reproduction',
-                    'Source',
                     'Subjects',
-                    'Title [NDNP]',
+                    'Physical Measurements',
+                    'Source',
                     'Transcript',
-                    'Volume'
+                    'Rights and Reproduction',
+                    'Title [NDNP]',
+                    'Publisher Location (NDNP)',
+                    'Contributing Institution',
+                    'Collection',
+                    'Date created',
+                    'Date modified'
                 ],
             fe_filters_fabricatedFilters:
                 [
@@ -277,7 +272,7 @@ exports.Descriptions =
                 ],
             //
             //
-            fe_gallery_defaultSortByColumnName_humanReadable: "Decade",
+            fe_gallery_defaultSortByColumnName_humanReadable: "Date",
             //
             //
             fe_chart_defaultGroupByColumnName_humanReadable: "Decade",
