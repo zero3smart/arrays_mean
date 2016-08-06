@@ -78,6 +78,7 @@ linechart.viewport = function(data) {
      */
     this._yAxis = d3.svg.axis()
         .scale(this._yScale)
+        .tickPadding(25)
         .orient('left');
     /**
      * Chart x axis container.
@@ -121,7 +122,7 @@ linechart.viewport = function(data) {
         top : 25,
         right : 0,
         bottom : 20,
-        left : 45
+        left : 60
     };
     /*
      * Set up window resize event handler.

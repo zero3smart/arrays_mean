@@ -120,7 +120,7 @@ linechart.navigation = function(data, viewport) {
         top : 25,
         right : 0,
         bottom : 20,
-        left : 45
+        left : 0
     };
     /*
      * Set up window resize event handler.
