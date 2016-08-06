@@ -139,24 +139,40 @@ linechart.navigation = function(data, viewport) {
  * @returns
  */
 linechart.navigation.prototype._brushEventHandler = function() {
-
+    /*
+     * Restore viewport if brush empty.
+     */
     if (this._brush.empty()) {
         return this._viewport.update(this._data);
     }
-
+    /*
+     * Get brush extent and put them into separate variables.
+     */
     var extent = this._brush.extent();
-
     var min = extent[0];
     var max = extent[1];
-
+    /*
+     * Filter data depending on extent.
+     */
     var data = this._data.map(function(series) {
-        return series    .filter(function(d) {
+        return series.filter(function(d) {
             if (d.year >= min && d.year <= max) {
                 return true;
             }
         })
-    })
-
+    });
+    /*
+     * Update brush side panels sizes.
+     */
+    this._leftSide.attr('x', 0)
+        .attr('width', this._xScale(min))
+        .attr('stroke-dasharray', '0 ' + this._xScale(min) + ' ' + this._innerHeight + ' ' + (this._xScale(min) + this._innerHeight));
+    this._rightSide.attr('x', this._xScale(max))
+        .attr('width', this._xScale(this._xScale.domain()[1]))
+        .attr('stroke-dasharray', '0 ' + (this._xScale(this._xScale.domain()[1]) * 2 + this._innerHeight) + ' ' + this._innerHeight);
+    /*
+     * Update viewport.
+     */
     this._viewport.update(data);
 };
 
@@ -194,7 +210,7 @@ linechart.navigation.prototype.render = function(container) {
     this._xAxisContainer = this._canvas.append('g')
         .attr('class', 'axis x-axis');
     /*
-     * Render empty line.
+     * Render empty lines.
      */
     this._line = this._canvas.selectAll('path.line')
         .data(this._data)
@@ -204,7 +220,20 @@ linechart.navigation.prototype.render = function(container) {
     /*
      * Append brush container.
      */
-    this._brushContainer = this._canvas.append('g')
+    var brushContainer = this._canvas.append('g');
+    /*
+     * Append brush side panels.
+     */
+    this._leftSide = brushContainer.append('rect')
+        .attr('class', 'brush-background')
+        .attr('y', 0);
+    this._rightSide = brushContainer.append('rect')
+        .attr('class', 'brush-background')
+        .attr('y', 0);
+    /*
+     * Append brush.
+     */
+    this._brushContainer = brushContainer.append('g')
         .attr('class', 'x brush');
     /*
      * Set up chart dimension.
@@ -266,6 +295,11 @@ linechart.navigation.prototype.resize = function() {
     this._brushContainer.call(this._brush)
         .selectAll('rect')
         .attr('height', this._innerHeight);
+    /*
+     * Move brush background.
+     */
+    this._leftSide.attr('height', this._innerHeight);
+    this._rightSide.attr('height', this._innerHeight);
 
     return this;
 };

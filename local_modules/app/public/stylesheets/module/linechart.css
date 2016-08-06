@@ -12,7 +12,22 @@
     stroke-width: 1;
 }
 
-.brush .extent {
+.linechart .brush-background {
     fill-opacity: .125;
+    stroke: #c3c3c3;
+    stroke-width: 2;
+    shape-rendering: crispEdges;
+}
+
+.linechart .brush-handle {
+    fill: #c3c3c3;
+    stroke: #fff;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+.linechart .brush .extent {
+    fill: #fff;
+    fill-opacity: 0;
     shape-rendering: crispEdges;
 }
