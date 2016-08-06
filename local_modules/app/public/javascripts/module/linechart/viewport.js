@@ -278,7 +278,8 @@ linechart.viewport.prototype.update = function(data) {
     /*
      * Update lines.
      */
-    this._line.attr("d", this._lineGenerator)
+    this._line.data(data)
+        .attr("d", this._lineGenerator)
         .style('stroke', function(d, i) {
             return self._colors[i];
         });
