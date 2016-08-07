@@ -148,10 +148,19 @@ scatterplot.view.grouped.prototype.render = function(data) {
     /*
      * Get URL params as object.
      */
-    var params = JSON.parse('{"' + decodeURI(location.search.substring(1))
-        .replace(/"/g, '\\"')
-        .replace(/&/g, '","')
-        .replace(/=/g,'":"') + '"}');
+    var params = {};
+    try {
+        params = JSON.parse('{"' + decodeURI(location.search.substring(1))
+            .replace(/"/g, '\\"')
+            .replace(/&/g, '","')
+            .replace(/=/g,'":"') + '"}');
+    } catch (e) {
+        /*
+         * Do nothing here just print warning message.
+         * We can't parse URL so treat that as no filterJSON provided.
+         */
+        console.warn('Can\'t parse URL params');
+    }
     /*
      * Parse filterJSON string to object or add empty if not provided.
      */
