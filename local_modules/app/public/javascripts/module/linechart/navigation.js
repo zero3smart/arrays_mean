@@ -104,7 +104,15 @@ linechart.navigation = function(data, viewport) {
             return self._yScale(d.count);
         });
     /**
-     * 
+     * X axis height.
+     * @private
+     * @member {Integer}
+     */
+    this._xAxisHeight = 20;
+    /**
+     * d3.js brush.
+     * @private
+     * @member {Function}
      */
     this._brush = d3.svg.brush()
         .x(self._xScale)
@@ -162,14 +170,18 @@ linechart.navigation.prototype._brushEventHandler = function() {
         })
     });
     /*
+     * Define brush height.
+     */
+    var brushHeight = this._innerHeight + this._xAxisHeight;
+    /*
      * Update brush side panels sizes.
      */
     this._leftSide.attr('x', 0)
         .attr('width', this._xScale(min))
-        .attr('stroke-dasharray', '0 ' + this._xScale(min) + ' ' + this._innerHeight + ' ' + (this._xScale(min) + this._innerHeight));
+        .attr('stroke-dasharray', '0 ' + this._xScale(min) + ' ' + brushHeight + ' ' + (this._xScale(min) + brushHeight));
     this._rightSide.attr('x', this._xScale(max))
         .attr('width', this._xScale(this._xScale.domain()[1]))
-        .attr('stroke-dasharray', '0 ' + (this._xScale(this._xScale.domain()[1]) * 2 + this._innerHeight) + ' ' + this._innerHeight);
+        .attr('stroke-dasharray', '0 ' + (this._xScale(this._xScale.domain()[1]) * 2 + brushHeight) + ' ' + brushHeight);
     /*
      * Update viewport.
      */
@@ -236,6 +248,13 @@ linechart.navigation.prototype.render = function(container) {
     this._brushContainer = brushContainer.append('g')
         .attr('class', 'x brush');
     /*
+     * Append x axis bottom border line.
+     */
+    this._xAxisBorder = this._xAxisContainer.append('line')
+        .attr('x1', - this._xAxisHeight)
+        .attr('y1', this._xAxisHeight)
+        .attr('y2', this._xAxisHeight);
+    /*
      * Set up chart dimension.
      */
     this.resize();
@@ -290,6 +309,11 @@ linechart.navigation.prototype.resize = function() {
      */
     this._xAxisContainer.attr('transform', 'translate(0, ' + this._innerHeight + ')');
     /*
+     * Extent x axis ticks down.
+     */
+    this._xAxisContainer.selectAll('line')
+        .attr('y1', this._xAxisHeight);
+    /*
      * Resize brush.
      */
     this._brushContainer.call(this._brush)
@@ -298,8 +322,12 @@ linechart.navigation.prototype.resize = function() {
     /*
      * Move brush background.
      */
-    this._leftSide.attr('height', this._innerHeight);
-    this._rightSide.attr('height', this._innerHeight);
+    this._leftSide.attr('height', this._innerHeight + this._xAxisHeight);
+    this._rightSide.attr('height', this._innerHeight + this._xAxisHeight);
+    /*
+     * Change x axis bottom border length.
+     */
+    this._xAxisBorder.attr('x2', this._innerWidth);
 
     return this;
 };
@@ -360,6 +388,16 @@ linechart.navigation.prototype.update = function(data) {
     this._line.attr('d', this._lineGenerator)
         .style('stroke', function(d, i) {
             return self._colors[i];
+        });
+    /*
+     * Update x axis labels.
+     */
+    var xTicks = this._xScale.ticks(this._xAxis.ticks()[0]);
+    var xStep = this._xScale(xTicks[1]) - this._xScale(xTicks[0]);
+    this._xAxisContainer.selectAll('text')
+        .attr('x', xStep / 2)
+        .text(function() {
+            return '\'' + d3.select(this).text().slice(2);
         });
 
     return this;
