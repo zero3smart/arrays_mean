@@ -41,7 +41,7 @@ exports.Descriptions =
             fe_views: {
                 gallery: true,
                 choropleth: false,
-                chart: false,
+                chart: true,
                 timeline: true,
                 wordCloud: false,
                 scatterplot: false,
@@ -93,8 +93,10 @@ exports.Descriptions =
                     "Application Number",
                     "Assignee",
                     "Issuing Authority",
-                    "Country Meeting Name",
-                    "Conference Name Court",
+                    "Country",
+                    "Meeting Name",
+                    "Conference Name",
+                    "Court",
                     "References",
                     "Reporter",
                     "Legal Status",
@@ -176,11 +178,24 @@ exports.Descriptions =
             fe_gallery_defaultSortByColumnName_humanReadable: "Object Title",
             //
             //
-            fe_chart_defaultGroupByColumnName_humanReadable: "Comics",
+            fe_chart_defaultGroupByColumnName_humanReadable: "Category",
             fe_chart_fieldsNotAvailableAsGroupByColumns:
                 [
-                    "name",
-                    "description",
+                    "Title",
+                    "DOI",
+                    "Url",
+                    "Abstract Note",
+                    "Date",
+                    "Pages",
+                    "Short Title",
+                    "Language",
+                    "Rights",
+                    "Extra",
+                    "Notes",
+                    "File Attachments",
+                    "Link Attachments",
+                    "Manual Tags",
+                    "Automatic Tags"
                 ],
             fe_chart_valuesToExcludeByOriginalKey:
             {
