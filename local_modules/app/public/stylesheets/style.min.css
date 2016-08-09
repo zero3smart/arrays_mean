@@ -6181,4 +6181,39 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 	text-decoration: none;
 }
 /* @end Module */
+/* @group Clients */
+/* @override 
+	http://localhost:9080/stylesheets/clients/isb.css */
+[class^="icon-tile-isb-"] {
+	display: inline-block;
+	min-width: 120px;
+	min-height: 120px;
+	width: 120px;
+	height: 120px;
+}
+.icon-tile-isb-brain {
+	background-image: url(/images/clients/isb/brain.svg);
+}
+.icon-tile-isb-cancers {
+	background-image: url(/images/clients/isb/cancer.svg);
+}
+.icon-tile-isb-cell-dynamics {
+	background-image: url(/images/clients/isb/cell.svg);
+}
+.icon-tile-isb-computational-biology {
+	background-image: url(/images/clients/isb/compbio.svg);
+}
+.icon-tile-isb-environment {
+	background-image: url(/images/clients/isb/environment.svg);
+}
+.icon-tile-isb-infectious-disease {
+	background-image: url(/images/clients/isb/infectious.svg);
+}
+.icon-tile-isb-p4-medicine {
+	background-image: url(/images/clients/isb/p4med.svg);
+}
+.icon-tile-isb-proteomics {
+	background-image: url(/images/clients/isb/proteometrics.svg);
+}
+/* @end Clients */
 /*# sourceMappingURL=style.min.css.map */

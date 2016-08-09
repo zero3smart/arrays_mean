@@ -169,9 +169,36 @@ exports.Descriptions =
             //
             fe_filters_oneToOneOverrideWithValuesByTitleByFieldName:
             {
-                // "Language": {
-                //     "Eng": "Eng"
-                // }
+                "Item Type": {
+                    "Book": "book",
+                    "Book Section": "bookSection",
+                    "Conference Paper": "conferencePaper",
+                    "Journal Article": "journalArticle",
+                }
+            },
+            //
+            //
+            fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function(rowObject)
+            {
+                var category = rowObject.rowParams["Category"];
+                var iconSpanClass = undefined;
+                if (typeof category === 'undefined' || category === null || category === "") {
+                    iconSpanClass = "icon-tile-null";
+                } else {
+                    var lowerCasedCategory = category.toLowerCase().replace(' ', '-');
+                    if (lowerCasedCategory.length) {
+                        iconSpanClass = "icon-tile-isb-" + lowerCasedCategory;
+                    } else {
+                        winston.warn("⚠️  Unrecognized non-NULL lowercased category: ", gender + ". Defaulting.");
+                    }
+                }
+                //
+                if (typeof iconSpanClass === 'undefined') { // if for some reason…
+                    winston.warn("⚠️  Unable to derive icon span class for artist with no image in fe_galleryItem_htmlForIconFromRowObjWhenMissingImage. Using default of 'null' icon.");
+                    iconSpanClass = "icon-tile-null";
+                }
+                //
+                return '<span class="' + iconSpanClass + '"></span>';
             },
             //
             //

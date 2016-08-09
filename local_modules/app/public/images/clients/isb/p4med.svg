@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="120px" height="120px" viewBox="0 0 120 120" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>p4med</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <circle id="path-1" cx="60" cy="60" r="60"></circle>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="120" height="120" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="p4med">
+            <g id="Group-31-Copy">
+                <use id="Oval-3" stroke="#7A00F6" mask="url(#mask-2)" stroke-width="8" xlink:href="#path-1"></use>
+                <g id="Group-15" transform="translate(30.000000, 24.000000)">
+                    <g id="Group-14">
+                        <g id="Group-13">
+                            <g id="Group-10">
+                                <g id="Group-12">
+                                    <path d="M0,3.99017859 C0,1.7864638 1.79535615,0 4,0 L8,0 L8,32.0098214 C8,34.2135362 6.20464385,36 4,36 C1.790861,36 0,34.2147544 0,32.0098214 L0,3.99017859 Z M40,24 C46.627417,24 52,18.627417 52,12 C52,5.372583 46.627417,0 40,0 C40,0 40,24 40,24 Z M36,0 L40,0 L40,24 L36,24 L36,0 Z M24,64 C30.627417,64 36,58.627417 36,52 C36,45.372583 30.627417,40 24,40 C24,40 24,64 24,64 Z M20,40 L24,40 L24,64 L20,64 L20,40 Z M40,43.9901786 C40,41.7864638 41.7953562,40 44,40 L48,40 L48,72.0098214 C48,74.2135362 46.2046438,76 44,76 C41.790861,76 40,74.2147544 40,72.0098214 L40,43.9901786 Z" id="Combined-Shape" fill="#BC7FFA"></path>
+                                    <path d="M12,24 C18.627417,24 24,18.627417 24,12 C24,5.372583 18.627417,0 12,0 C12,0 12,24 12,24 Z M8,0 L12,0 L12,24 L8,24 L8,0 Z M28,3.99017859 C28,1.7864638 29.7953562,0 32,0 L36,0 L36,32.0098214 C36,34.2135362 34.2046438,36 32,36 C29.790861,36 28,34.2147544 28,32.0098214 L28,3.99017859 Z M12,43.9901786 C12,41.7864638 13.7953562,40 16,40 L20,40 L20,72.0098214 C20,74.2135362 18.2046438,76 16,76 C13.790861,76 12,74.2147544 12,72.0098214 L12,43.9901786 Z M52,64 C58.627417,64 64,58.627417 64,52 C64,45.372583 58.627417,40 52,40 C52,40 52,64 52,64 Z M48,40 L52,40 L52,64 L48,64 L48,40 Z" id="Combined-Shape" fill="#7A00F6"></path>
+                                    <g id="Group-11" transform="translate(10.000000, 8.000000)"></g>
+                                </g>
+                            </g>
+                        </g>
+                        <path d="M8,8 L12,8 L12,16 L8,16 L8,8 Z M12,16 C14.209139,16 16,14.209139 16,12 C16,9.790861 14.209139,8 12,8 C12,8 12,16 12,16 Z" id="Combined-Shape" fill="#FFFFFF"></path>
+                    </g>
+                    <g id="Group-14-Copy" transform="translate(36.000000, 8.000000)">
+                        <g id="Group-13" transform="translate(2.000000, 0.000000)">
+                            <g id="Group-10">
+                                <g id="Group-12">
+                                    <g id="Group-11"></g>
+                                </g>
+                            </g>
+                        </g>
+                        <path d="M0,0 L4,0 L4,8 L0,8 L0,0 Z M4,8 C6.209139,8 8,6.209139 8,4 C8,1.790861 6.209139,0 4,0 C4.00000001,0 4,8 4,8 Z" id="Combined-Shape" fill="#FFFFFF"></path>
+                    </g>
+                    <g id="Group-14-Copy-3" transform="translate(20.000000, 48.000000)">
+                        <g id="Group-13" transform="translate(2.000000, 0.000000)">
+                            <g id="Group-10">
+                                <g id="Group-12">
+                                    <g id="Group-11"></g>
+                                </g>
+                            </g>
+                        </g>
+                        <path d="M0,0 L4,0 L4,8 L0,8 L0,0 Z M4,8 C6.209139,8 8,6.209139 8,4 C8,1.790861 6.209139,0 4,0 C4.00000001,0 4,8 4,8 Z" id="Combined-Shape" fill="#FFFFFF"></path>
+                    </g>
+                    <g id="Group-14-Copy-4" transform="translate(48.000000, 48.000000)">
+                        <g id="Group-13" transform="translate(2.000000, 0.000000)">
+                            <g id="Group-10">
+                                <g id="Group-12">
+                                    <g id="Group-11"></g>
+                                </g>
+                            </g>
+                        </g>
+                        <path d="M0,0 L4,0 L4,8 L0,8 L0,0 Z M4,8 C6.209139,8 8,6.209139 8,4 C8,1.790861 6.209139,0 4,0 C4.00000001,0 4,8 4,8 Z" id="Combined-Shape" fill="#FFFFFF"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
