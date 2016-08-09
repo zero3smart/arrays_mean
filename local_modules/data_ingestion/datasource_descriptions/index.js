@@ -8,7 +8,11 @@ exports.GetDescriptions = function() {
             if (/^\./.test(file)) return;
             if (file == 'index.js' || file == 'default.js') return;
 
-            descriptions = descriptions.concat(require('./' + file).Descriptions);
+            require('./' + file).Descriptions.forEach(function(desc) {
+                if (desc.schemaname == null) {
+                    descriptions.push(desc);
+                }
+            });
         });
 
     return descriptions;

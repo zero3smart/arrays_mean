@@ -28,6 +28,11 @@
 @import url('module/tooltip.css');
 @import url('module/splash.css');
 @import url('module/scatterplot.css');
+@import url('module/linechart.css');
 @import url('module/word-cloud.css');
 @import url('module/tooltip.css');
 /* @end Module */
+
+/* @group Clients */
+@import url('clients/isb.css');
+/* @end Clients */

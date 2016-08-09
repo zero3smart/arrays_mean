@@ -100,7 +100,11 @@ In order to add them (and to support both local development and production deplo
   * Start_dev_app
   * _start_dev_MoMA_canned_questions
   * _prod_MoMA_canned_questions
-5. Execute [`bin/__dev_postImportCaching`](bin/__dev_postImportCaching) to re-generate sidebar filters cache
+5. Execute [`bin/__dev_postImportCaching`](bin/__dev_postImportCaching) to re-generate sidebar filters cache, re-cache the keywords
+
+##### Caching the keywords directly
+1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
+2. Execute [`bin/_dev_MVP_DB_cache_keywords jewish_transcript_data`](bin/_dev_MVP_DB_cache_keywords)
 
 #### v. Running the front-end web server locally
 

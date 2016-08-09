@@ -87,7 +87,7 @@ exports.Descriptions =
             {
                 objectTitle: "Title",
                 originalImageURL: "FullSize",
-                medThumbImageURL: "Thumbnail" 
+                medThumbImageURL: "Thumbnail"
             },
             fe_views: {
                 gallery: true,
@@ -151,29 +151,24 @@ exports.Descriptions =
             fe_fieldDisplayOrder:
                 [
                     'Catalog Title',
-                    'Collection',
-                    'Contributing Institution',
-                    'Creator',
-                    'Date',
-                    'Date Labeled',
-                    'Date created',
-                    'Date modified',
-                    'Decade',
-                    'Description',
-                    'File Name',
+                    'Volume',
                     'Issue',
-                    'LCCN',
-                    'OCLC number',
-                    'Pages',
-                    'Physical Measurements',
+                    'Date',
+                    'Year',
+                    'Decade',
+                    'Creator',
                     'Publisher',
-                    'Publisher Location (NDNP)',
-                    'Rights and Reproduction',
-                    'Source',
                     'Subjects',
-                    'Title [NDNP]',
+                    'Physical Measurements',
+                    'Source',
                     'Transcript',
-                    'Volume'
+                    'Rights and Reproduction',
+                    'Title [NDNP]',
+                    'Publisher Location (NDNP)',
+                    'Contributing Institution',
+                    'Collection',
+                    'Date created',
+                    'Date modified'
                 ],
             fe_filters_fabricatedFilters:
                 [
@@ -275,6 +270,9 @@ exports.Descriptions =
                     "Pages_Thumbnail",
                     "Pages_FullSize"
                 ],
+            //
+            //
+            fe_gallery_defaultSortByColumnName_humanReadable: "Date",
             //
             //
             fe_chart_defaultGroupByColumnName_humanReadable: "Decade",
@@ -385,7 +383,6 @@ exports.Descriptions =
                     "Issue",
                     "Physical Measurements"
                 ],
-            // fe_wordCloud_defaultSortByColumnName_humanReadable: "Results",
             fe_wordCloud_keywords:
                 [
                     'community',
@@ -398,16 +395,16 @@ exports.Descriptions =
                     'committee',
                     'complaint',
                     'power',
-                    // 'national',
-                    // 'proposed',
-                    // 'against',
-                    // 'amendment',
-                    // 'resolution',
-                    // 'protest',
-                    // 'war',
-                    // 'olympic',
-                    // 'conference',
-                    // 'world'
+                    'national',
+                    'proposed',
+                    'against',
+                    'amendment',
+                    'resolution',
+                    'protest',
+                    'war',
+                    'olympic',
+                    'conference',
+                    'world'
                 ],
 
             fe_nestedObject_prefix: 'Pages_',
@@ -447,8 +444,6 @@ exports.Descriptions =
                 var forThisDataSource_mongooseContext = appCtx.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(srcDoc_pKey);
                 // ^ there is only one mongooseContext in raw_source_documents_controller because there is only one src docs collection,
                 // but there are many mongooseContexts derivable/in raw_row_objects_controller because there is one collection of processed row objects per src doc
-                var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.Model.modelName;
-                var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.Model.model;
                 var forThisDataSource_nativeCollection = forThisDataSource_mongooseContext.Model.collection;
 
                 //
@@ -510,6 +505,7 @@ exports.Descriptions =
                         updateFragment["$pushAll"]["rowParams." + self.fe_nestedObject_prefix + fieldName] = generatedArray;
                     }
 
+                    // Insert the nested object into the main row
                     if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {
                         bulkOperationQueryFragment =
                         {

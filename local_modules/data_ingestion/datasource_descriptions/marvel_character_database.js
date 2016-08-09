@@ -55,7 +55,8 @@ exports.Descriptions =
                 choropleth: false,
                 chart: true,
                 timeline: true,
-                wordCloud: false
+                wordCloud: false,
+                scatterplot: false
             },
             fe_excludeFields: 
             [
@@ -324,6 +325,9 @@ exports.Descriptions =
                 "name",
                 "modified"
             ],
+            //
+            //
+            fe_gallery_defaultSortByColumnName_humanReadable: "Object Title",
             //
             //
             fe_chart_defaultGroupByColumnName_humanReadable: "Comics",

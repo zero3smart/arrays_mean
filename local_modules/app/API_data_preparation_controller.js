@@ -171,6 +171,9 @@
         var limitToNResults = pageSize;
         //
         var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
+        var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_gallery_defaultSortByColumnName_humanReadable;
+        var sortBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy ? sortBy : defaultSortByColumnName_humanReadable, dataSourceDescription);
+
         var sortDir = urlQuery.sortDir;
         var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
         //
@@ -220,7 +223,6 @@
             wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
         }
 
-        // console.log("--- %j", wholeFilteredSet_aggregationOperators);
         //
         // Now kick off the query work
         self._fetchedSourceDoc(source_pKey, function(err, sourceDoc)
@@ -292,8 +294,6 @@
         }
         function _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
         {
-            var sortBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy ? sortBy : importedDataPreparation.HumanReadableColumnName_objectTitle,
-                                                                                                          dataSourceDescription);
             var sortBy_realColumnName_path = "rowParams." + sortBy_realColumnName;
             var sortOpParams = {};
             sortOpParams.size = -sortDirection;
@@ -422,6 +422,7 @@
                 //
                 sortBy: sortBy,
                 sortDir: sortDir,
+                defaultSortByColumnName_humanReadable: defaultSortByColumnName_humanReadable,
                 colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                 //
                 filterObj: filterObj,
@@ -1546,81 +1547,39 @@
             var doneFn = function(err, groupedResults)
             {
                 if (err) {
-                    callback(err, null);
-
-                    return;
-                }
-                if (groupedResults == undefined || groupedResults == null) {
-                    groupedResults = [];
+                    return callback(err, null);
                 }
 
-                _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults);
+                var result = groupedResults[0];
+                var newResults = keywords.map(function(keyword) {
+                    var obj = {_id: keyword, value: 0};
+                    if (result && result[keyword]) obj.value = result[keyword];
+                    return obj;
+                });
+
+                newResults.sort(function(a, b){
+                    return b.value - a.value;
+                });
+
+                _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, newResults);
             };
 
             var groupBy_realColumnName_path = "rowParams." + groupBy_realColumnName;
-            var groupedResults = [];
-            async.eachSeries(
-                keywords,
-                function(keyword, eachCb) {
-                    var eachAggregationOperators = aggregationOperators.concat(
-                        [
-                            { $unwind: "$" + groupBy_realColumnName_path }, // requires MongoDB 3.2, otherwise throws an error if non-array
-                            {
-                                $match: {
-                                    [groupBy_realColumnName_path]: {
-                                        $regex: keyword, // Search for they keyword "judgement", should be 26 results
-                                        $options: "i"
-                                    }
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: "$_id"
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: null,
-                                    value: { $sum: 1 } // the count
-                                }
-                            }
-                        ]);
-
-                    //
-                    var eachDoneFn = function(err, results)
-                    {
-                        if (err) {
-                            callback(err, null);
-
-                            return;
-                        }
-                        if (results == undefined || results == null) {
-                            results = [];
-                        }
-                        results.forEach(function(result){
-                            result._id = keyword;
-                            groupedResults.push(result);
-                        });
-                        eachCb();
-                    };
-
-                    processedRowObjects_mongooseModel.aggregate(eachAggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(eachDoneFn);
-
-                    // For benchmarking...
-                    winston.info("✅ [" + (new Date()).toString() + "] Querying for the keyword:", keyword);
-                },
-                function(err) {
-                    if (err) {
-                        winston.info("❌ [" + (new Date()).toString() + "] Error encountered during aggregating:", err);
-                    } else {
-                        winston.info("✅ [" + (new Date()).toString() + "] Queried all the keywords - size: ", keywords.length);
+            var groupOps_keywords = { _id: null };
+            keywords.forEach(function(keyword) {
+                groupOps_keywords[keyword] = {
+                    $sum: {
+                        $cond: [
+                            "$wordExistence." + groupBy_realColumnName + "." + keyword, 1, 0
+                        ]
                     }
-                    groupedResults.sort(function(a, b){
-                        return b.value - a.value;
-                    });
-                    doneFn(err, groupedResults);
                 }
-            );
+            });
+            aggregationOperators = aggregationOperators.concat([
+                { $group: groupOps_keywords }
+            ]);
+
+            processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         }
         function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
         {
@@ -1863,6 +1822,28 @@
             callback(null, data);
         }
     }
+    
+    
+    /**
+     * Scatterplot view action controller.
+     * @param {Object} urlQuery - URL params
+     * @param {Function} callback
+     */
+    constructor.prototype.BindDataFor_array_linechart = function(urlQuery, callback)
+    {
+        var self = this;
+        /*
+         * Run callback function to finish action.
+         */
+        callback(null, {
+            metaData: {}
+        });
+    }
+
+    
+    
+    
+    
     /**
      * Scatterplot view action controller.
      * @param {Object} urlQuery - URL params
@@ -2283,7 +2264,8 @@
                 pKey: {'$first': '$pKey'},
                 srcDocPKey: {'$first': '$srcDocPKey'},
                 rowIdxInDoc: {'$first': '$rowIdxInDoc'},
-                rowParams: {'$first': '$rowParams'}
+                rowParams: {'$first': '$rowParams'},
+                wordExistence: {'$first': '$wordExistence'}
             }
         };
 

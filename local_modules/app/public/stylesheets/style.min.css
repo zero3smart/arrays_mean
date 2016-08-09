@@ -6110,6 +6110,34 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 	font-weight: 600;
 	font-size: 16px;
 }
+.linechart .y-axis path {
+	visibility: hidden;
+}
+.linechart svg.viewport .line {
+	fill: none;
+	stroke-width: 2;
+}
+.linechart svg.navigation .line {
+    fill: none;
+    stroke-width: 1;
+}
+.linechart .brush-background {
+    fill-opacity: .125;
+    stroke: #c3c3c3;
+    stroke-width: 2;
+    shape-rendering: crispEdges;
+}
+.linechart .brush-handle {
+    fill: #c3c3c3;
+    stroke: #fff;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+.linechart .brush .extent {
+    fill: #fff;
+    fill-opacity: 0;
+    shape-rendering: crispEdges;
+}
 /* @override 
 	http://localhost:9080/stylesheets/module/word-cloud.css */
 .word-cloud-list {
@@ -6125,15 +6153,27 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 	margin-bottom: 15px;
 	vertical-align: bottom;
 }
+.word-cloud-item {
+	font-size: 12px;
+}
 .word-cloud-link {
 	display: block;
-	padding: 10px 20px;
+	padding: 5px 15px;
 	border-width: 1px;
 	border-style: solid;
 	border-color: transparent;
 	border-radius: 4px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	font-size: 24px;
+}
+@media (min-width: 768px) {
+	.word-cloud-item {
+		font-size: 18px;
+	}
+}
+@media (min-width: 1280px) {
+	.word-cloud-item {
+		font-size: 24px;
+	}
 }
 .word-cloud-link:hover,
 .word-cloud-link:focus,
@@ -6141,4 +6181,39 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 	text-decoration: none;
 }
 /* @end Module */
+/* @group Clients */
+/* @override 
+	http://localhost:9080/stylesheets/clients/isb.css */
+[class^="icon-tile-isb-"] {
+	display: inline-block;
+	min-width: 120px;
+	min-height: 120px;
+	width: 120px;
+	height: 120px;
+}
+.icon-tile-isb-brain {
+	background-image: url(/images/clients/isb/brain.svg);
+}
+.icon-tile-isb-cancers {
+	background-image: url(/images/clients/isb/cancer.svg);
+}
+.icon-tile-isb-cell-dynamics {
+	background-image: url(/images/clients/isb/cell.svg);
+}
+.icon-tile-isb-computational-biology {
+	background-image: url(/images/clients/isb/compbio.svg);
+}
+.icon-tile-isb-environment {
+	background-image: url(/images/clients/isb/environment.svg);
+}
+.icon-tile-isb-infectious-disease {
+	background-image: url(/images/clients/isb/infectious.svg);
+}
+.icon-tile-isb-p4-medicine {
+	background-image: url(/images/clients/isb/p4med.svg);
+}
+.icon-tile-isb-proteomics {
+	background-image: url(/images/clients/isb/proteometrics.svg);
+}
+/* @end Clients */
 /*# sourceMappingURL=style.min.css.map */

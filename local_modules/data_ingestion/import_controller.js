@@ -350,5 +350,24 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
         }
     }
 }
-
+//
+constructor.prototype.CacheKeywords_dataSourceDescriptions = function(dataSourceDescriptions)
+{
+    var self = this;
+    async.eachSeries(
+        dataSourceDescriptions,
+        function(dataSourceDescription, eachCb) {
+            self.context.cache_keywords_controller.cacheKeywords_fromDataSourceDescription(dataSourceDescription, eachCb);
+        },
+        function(err) {
+            if (err) {
+                winston.info("❌  Error encountered during cache keywords:", err);
+                process.exit(1); // error code
+            } else {
+                winston.info("✅  Caching keywords done.");
+                process.exit(0); // all good
+            }
+        }
+    );
+};
 module.exports = constructor;
