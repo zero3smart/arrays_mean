@@ -1,7 +1,7 @@
 {% extends "../shared/shared_layout.html" %}
 
 {% block headSuffix %}
-    <title>Arrays - {{ metaData.title }}</title>
+    <title>Arrays - {{ arrayTitle }}</title>
     
     
 {% endblock %}
@@ -9,7 +9,7 @@
 {% block bodyWrapper %}
     <body class="array array-scatterplot source-{{ array_source_key }} legend-open">
         <div id="page" class="site">
-            {% set currentView = "scatterplot" %}
+            {% set currentView = "line-graph" %}
             {% include "../partials/header_bar_array.html" %}
             {% include "../partials/sidebar_filter.html" %}
 
@@ -19,7 +19,7 @@
 
                     <header class="array-header header-shadow array-header-small clearfix">
                         <div class="container-fluid">
-                            <h1 class="array-title">{{ metaData.title }}</h1>
+                            <h1 class="array-title">{{ arrayTitle }}</h1>
                             <div class="array-meta">
                                 {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
                             </div>
