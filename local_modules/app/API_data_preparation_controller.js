@@ -1845,7 +1845,7 @@
 
             return;
         }
-        if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != null && dataSourceDescription.fe_views.chart === false) {
+        if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.lineGraph != null && dataSourceDescription.fe_views.lineGraph === false) {
             callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
 
             return;
@@ -1860,7 +1860,7 @@
         var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
         //
         var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
-        var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_chart_defaultGroupByColumnName_humanReadable;
+        var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultGroupByColumnName_humanReadable;
         //
         var filterJSON = urlQuery.filterJSON;
         var filterObj = {};
@@ -2053,8 +2053,8 @@
                         reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
                     }
                     finalized_groupedResults.push({
-                        value: summedValue,
-                        label: reconstitutedDisplayableTitle
+                        count: summedValue,
+                        year: reconstitutedDisplayableTitle
                     });
                 });
                 _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, finalized_groupedResults);
@@ -2064,7 +2064,7 @@
         function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
         {
             var err = null;
-            var routePath_base              = "/array/" + source_pKey + "/chart";
+            var routePath_base              = "/array/" + source_pKey + "/line-graph";
             var routePath_withoutFilter     = routePath_base;
             var routePath_withoutGroupBy    = routePath_base;
             var urlQuery_forSwitchingViews  = "";
@@ -2113,7 +2113,7 @@
                 isSearchActive: isSearchActive,
                 //
                 defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-                colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription),
+                colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForLineGraphGroupByDropdown(sampleDoc, dataSourceDescription),
                 colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                 //
                 routePath_base: routePath_base,

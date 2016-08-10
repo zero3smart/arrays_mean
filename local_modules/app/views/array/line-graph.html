@@ -36,6 +36,20 @@
 
                                         <nav class="sort-bar-left pull-left" role="navigation">
 
+                                            <div class="dropdown sort-control">
+                                                <a class="btn dropdown-toggle dropdown-toggle-button ui-label group-by" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                    Chart By <span class="sort-criteria color-brand-hover">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
+                                                </a>
+                                                {% if colNames_orderedForGroupByDropdown | length %}
+                                                <ul class="dropdown-menu" aria-labelledby="group-by">
+                                                    {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
+                                                    {% for colName in colNames_orderedForGroupByDropdown %}
+                                                    <li class="background-color-brand-hover"><a href="{{ routePath_withoutGroupBy }}{{ groupBy_queryParamJoinChar }}groupBy={{ colName }}">{{ colName }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                                {% endif %}
+                                            </div>
+
                                             <div class="dropdown sort-control sort-bar-6">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                                     Keywords <span class="sort-criteria color-brand-hover y-axis-field">777</span>
@@ -94,6 +108,18 @@
                                 </div>
                             </div><!-- .row -->
                         </div><!-- .container-fluid -->
+
+                        <script type="text/javascript">
+                            var graphData = [];
+                            graphData[0] = {{ groupedResults | dump | safe }};
+
+                            console.log(graphData);
+
+                            var filterObj = {{ filterObj | dump | safe }};
+                            var routePath_withoutFilter = '{{ routePath_withoutFilter }}';
+                            var routePath_base = '{{ routePath_base }}';
+                            var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
+                        </script>
 
                         <div class="container-fluid">
                             <div class="row">
@@ -166,7 +192,7 @@
               });
           }
 
-        d3.csv('/javascripts/module/linechart/Pubmed_Keyword_SystemsBiology.csv', function(error, series) {
+        /*d3.csv('/javascripts/module/linechart/Pubmed_Keyword_SystemsBiology.csv', function(error, series) {
             if (error) {
                 throw new Error("Can't load data file: " + JSON.stringify(error));
             }
@@ -189,7 +215,10 @@
 
             var lineChart = new linechart.chart(data)
                 .render("#linechart");
-        })
+        })*/
+
+        var lineChart = new linechart.chart(graphData)
+            .render("#linechart");
         </script>
 
     {% include "../partials/survicate.html" %}
