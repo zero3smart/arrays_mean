@@ -222,6 +222,7 @@
             }
             wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
         }
+        // console.log("----%j", wholeFilteredSet_aggregationOperators);
 
         //
         // Now kick off the query work
@@ -2150,10 +2151,7 @@
                 matchConditions = _activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, realFilterValue).matchOps;
 
             } else {
-                var filterDate = new Date(filterVal);
-                if (!isNaN(filterDate.getTime())) { // Invalid Date
-                    matchConditions = _activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, filterDate).matchOps;
-                }
+                matchConditions = _activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, filterVal).matchOps;
             }
         }
         if (typeof matchConditions === 'undefined') {
@@ -2195,17 +2193,15 @@
                 }
             }
         } else {
-            var filterDateMin = new Date(filterValMin);
-            if (!isNaN(filterDateMin.getTime())) {
-                var offsetMins = filterDateMin.getTimezoneOffset();
-                realFilterValueMin = moment(filterDateMin).subtract(offsetMins, 'minutes').toDate();
+            var filterDateMin = moment(filterValMin);
+            if (filterDateMin.isValid()) {
+                realFilterValueMin = filterDateMin.utc().startOf('day').toDate();
             } else {
                 throw new Error('Invalid date');
             }
-            var filterDateMax = new Date(filterValMax);
-            if (!isNaN(filterDateMax.getTime())) {
-                var offsetMins = filterDateMax.getTimezoneOffset();
-                realFilterValueMax = moment(filterDateMax).subtract(offsetMins, 'minutes').toDate();
+            var filterDateMax = moment(filterValMax);
+            if (filterDateMax.isValid()) {
+                realFilterValueMax = filterDateMax.utc().startOf('day').toDate();
             } else {
                 throw new Error('Invalid date');
             }
@@ -2247,11 +2243,10 @@
         if (!isDate) {
             matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: "i" };
         } else {
-            var searchDate = new Date(searchQ);
+            var searchDate = moment.utc(searchQ);
             var realSearchValue;
-            if (!isNaN(searchDate.getTime())) {
-                var offsetMins = searchDate.getTimezoneOffset();
-                realSearchValue = moment(searchDate).subtract(offsetMins, 'minutes').toDate();
+            if (searchDate.isValid()) {
+                realSearchValue = searchDate.utc().startOf('day').toDate();
             } else { // Invalid Date
                 return { err: 'Invalid Date' };
             }
@@ -2384,7 +2379,7 @@
                     if (dateFormat == null) { // still null? use default
                         dateFormat = _defaultFormat;
                     }
-                    displayableVal = moment(originalVal).format(dateFormat);
+                    displayableVal = moment.utc(originalVal).format(dateFormat);
                 } else { // nothing to do? (no other types yet)
                 }
             } else { // nothing to do?
