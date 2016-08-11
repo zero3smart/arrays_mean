@@ -15,6 +15,53 @@ scatterplot.view.grouped = function(chart) {
 scatterplot.view.grouped.prototype = Object.create(scatterplot.view.main.prototype);
 
 
+/**
+ * Get value interval index.
+ * @private
+ * @param {Number} value
+ * @param {Numbers} intervals
+ * @returns {Integer}
+ */
+scatterplot.view.grouped.prototype._getGroupIndex = function(value, intervals) {
+    /*
+     * Define group number/counter.
+     */
+    var i;
+    /*
+     * Define first interval left and right border.
+     */
+    var right;
+    var left = 0;
+    /*
+     * Get interval's max value.
+     */
+    var max = d3.max(intervals);
+    /*
+     * Loop through interval and find value group number.
+     */
+    for (i = 0; i < intervals.length; i ++) {
+        /*
+         * Get interval right border.
+         */
+        right = intervals[i];
+        /*
+         * Check value within interval.
+         */
+        if (value == max && value >= left && value <= right) {
+            break;
+        } else if (value >= left && value < right) {
+            break;
+        }
+        /*
+         * Update left border.
+         */
+        left = right;
+    }
+
+    return i;
+};
+
+
 scatterplot.view.grouped.prototype._prepareData = function(data) {
     /*
      * Definde reference to the chart.
@@ -55,19 +102,27 @@ scatterplot.view.grouped.prototype._prepareData = function(data) {
         /*
          * Find corresponding x and y indexes within x and y ticks.
          */
-        var xIndex = d3.bisectLeft(xTicks, x);
-        var yIndex = yTicks.length - 1 - d3.bisectLeft(yTicks, y);
+        // var xIndex = d3.bisectLeft(xTicks, x);
+        // var yIndex = yTicks.length - 1 - d3.bisectLeft(yTicks, y);
+        var xIndex = this._getGroupIndex(x, xTicks);
+        var yIndex = yTicks.length - 1 - this._getGroupIndex(y, yTicks);
         /*
          * Increment corresponding element of density matrix.
          */
         this._densityMatrix[xIndex][yIndex] ++;
     }, this);
     /*
+     * Find biggest group value.
+     */
+    var maxGroup = this._densityMatrix.reduce(function(max, row) {
+        return Math.max(max, d3.max(row)); 
+    }, 0);
+    /*
      * Create radius scale function.
      */
     var maxRadius = Math.min(xStep, yStep) / 2 + 20 + Math.min(chart._margin.top, chart._margin.right, chart._margin.bottom, chart._margin.left);
     var radiusScale = d3.scale.linear()
-        .domain([0, 1, data.length])
+        .domain([0, 1, maxGroup])
         .range([0, chart._radius, maxRadius]);
     /*
      * Return chart actual data.
