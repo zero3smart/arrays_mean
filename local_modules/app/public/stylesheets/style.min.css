@@ -4841,8 +4841,11 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	}
 
 	.sort-bar-left .dropdown-toggle {
-		overflow-x: hidden;
 		max-width: 100%;
+	}
+	
+	.dropdown-toggle-label {
+		overflow-x: hidden;
 		text-overflow: ellipsis;
 	}
 
@@ -5534,6 +5537,28 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 .dropdown-toggle-button-group .dropdown-toggle {
 	padding: 15px 20px;
 }
+.sort-control .dropdown-toggle-button-has-caret {
+	padding-right: 0;
+}
+.sort-control .dropdown-toggle-button-has-caret:before {
+	position: relative;
+	display: block;
+	float: right;
+	margin-top: -15px;
+	margin-bottom: -15px;
+	padding-top: 16px;
+	padding-right: 23px;
+	padding-left: 23px;
+	width: 52px;
+	height: 52px;
+	border-radius: 0 4px 4px 0;
+	background-color: #fafafa;
+	content: "▾";
+	font-size: 14px;
+}
+.sort-control .dropdown-toggle-button-has-caret .dropdown-toggle-label {
+	margin-right: 65px;
+}
 .sort-control .dropdown-toggle-button:hover,
 .sort-control .dropdown-toggle-button:focus,
 .sort-control .dropdown-toggle-button:active {
@@ -6181,4 +6206,39 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 	text-decoration: none;
 }
 /* @end Module */
+/* @group Clients */
+/* @override 
+	http://localhost:9080/stylesheets/clients/isb.css */
+[class^="icon-tile-isb-"] {
+	display: inline-block;
+	min-width: 120px;
+	min-height: 120px;
+	width: 120px;
+	height: 120px;
+}
+.icon-tile-isb-brain {
+	background-image: url(/images/clients/isb/brain.svg);
+}
+.icon-tile-isb-cancers {
+	background-image: url(/images/clients/isb/cancer.svg);
+}
+.icon-tile-isb-cell-dynamics {
+	background-image: url(/images/clients/isb/cell.svg);
+}
+.icon-tile-isb-computational-biology {
+	background-image: url(/images/clients/isb/compbio.svg);
+}
+.icon-tile-isb-environment {
+	background-image: url(/images/clients/isb/environment.svg);
+}
+.icon-tile-isb-infectious-disease {
+	background-image: url(/images/clients/isb/infectious.svg);
+}
+.icon-tile-isb-p4-medicine {
+	background-image: url(/images/clients/isb/p4med.svg);
+}
+.icon-tile-isb-proteomics {
+	background-image: url(/images/clients/isb/proteometrics.svg);
+}
+/* @end Clients */
 /*# sourceMappingURL=style.min.css.map */

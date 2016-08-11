@@ -71,6 +71,9 @@
                         {% if view_visibility.wordCloud != false %}
                         <li class="background-color-brand-hover menu-item-word-cloud {{ "active" if currentView == "word-cloud" }}"><a href="/array/{{ array_source_key }}/word-cloud{{ urlQuery_forSwitchingViews }}"><span class="icon-word-cloud color-brand" aria-hidden="true"></span> Word cloud</a></li>
                         {% endif %}
+                        {% if view_visibility.lineGraph != false %}
+                        <li class="background-color-brand-hover menu-item-line-graph {{ "active" if currentView == "line-graph" }}"><a href="/array/{{ array_source_key }}/line-graph{{ urlQuery_forSwitchingViews }}"><span class="icon-chart color-brand" aria-hidden="true"></span> Line graph</a></li>
+                        {% endif %}
 					</ul>
 				</li>
 			</ul>
