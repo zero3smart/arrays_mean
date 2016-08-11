@@ -45,7 +45,7 @@ exports.Descriptions =
                 timeline: true,
                 wordCloud: false,
                 scatterplot: false,
-                linechart: true
+                lineGraph: true
             },
             fe_excludeFields: 
                 [
@@ -268,6 +268,38 @@ exports.Descriptions =
                     "Conference Name",
                     "Court",
                     "Category"
-                ]
+                ],
+            //
+            //
+            fe_lineGraph_defaultGroupByColumnName_humanReadable: "Publication Year",
+            fe_lineGraph_fieldsNotAvailableAsGroupByColumns:
+                [
+                    "Title",
+                    "DOI",
+                    "Url",
+                    "Abstract Note",
+                    "Date",
+                    "Pages",
+                    "Short Title",
+                    "Language",
+                    "Rights",
+                    "Extra",
+                    "Notes",
+                    "File Attachments",
+                    "Link Attachments",
+                    "Manual Tags",
+                    "Automatic Tags",
+                    "Item Type",
+                    "Author",
+                    "Publication Title",
+                    "ISSN",
+                    "Issue",
+                    "Volume",
+                    "Journal Abbreviation",
+                    "Publisher",
+                    "Library Catalog",
+                    "Category"
+                ],
+            fe_lineGraph_defaultKeywordsColumnName_humanReadable: "Category"
         }
     ];

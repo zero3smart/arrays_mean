@@ -4841,8 +4841,11 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	}
 
 	.sort-bar-left .dropdown-toggle {
-		overflow-x: hidden;
 		max-width: 100%;
+	}
+	
+	.dropdown-toggle-label {
+		overflow-x: hidden;
 		text-overflow: ellipsis;
 	}
 
@@ -5533,6 +5536,28 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 .sort-control .dropdown-toggle-button,
 .dropdown-toggle-button-group .dropdown-toggle {
 	padding: 15px 20px;
+}
+.sort-control .dropdown-toggle-button-has-caret {
+	padding-right: 0;
+}
+.sort-control .dropdown-toggle-button-has-caret:before {
+	position: relative;
+	display: block;
+	float: right;
+	margin-top: -15px;
+	margin-bottom: -15px;
+	padding-top: 16px;
+	padding-right: 23px;
+	padding-left: 23px;
+	width: 52px;
+	height: 52px;
+	border-radius: 0 4px 4px 0;
+	background-color: #fafafa;
+	content: "▾";
+	font-size: 14px;
+}
+.sort-control .dropdown-toggle-button-has-caret .dropdown-toggle-label {
+	margin-right: 65px;
 }
 .sort-control .dropdown-toggle-button:hover,
 .sort-control .dropdown-toggle-button:focus,

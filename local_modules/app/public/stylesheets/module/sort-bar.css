@@ -207,8 +207,11 @@
 	}
 
 	.sort-bar-left .dropdown-toggle {
-		overflow-x: hidden;
 		max-width: 100%;
+	}
+	
+	.dropdown-toggle-label {
+		overflow-x: hidden;
 		text-overflow: ellipsis;
 	}
 

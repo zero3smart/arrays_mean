@@ -36,8 +36,10 @@
                                     <nav class="pull-left" role="navigation">
 
                                         <div class="dropdown sort-control">
-                                            <a class="btn dropdown-toggle dropdown-toggle-button ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                Map by <span class="sort-criteria color-brand-hover">{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}</span>
+                                            <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                <div class="dropdown-toggle-label">
+                                                    Map by <span class="sort-criteria color-brand-hover">{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}</span>
+                                                </div>
                                             </a>
                                             {% if colNames_orderedForMapByDropdown | length %}
                                             <ul class="dropdown-menu" aria-labelledby="type">
