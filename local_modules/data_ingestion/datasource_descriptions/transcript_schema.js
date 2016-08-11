@@ -94,7 +94,8 @@ exports.Descriptions =
                 choropleth: false,
                 chart: true,
                 scatterplot: false,
-                timeline: true
+                timeline: true,
+                lineGraph: false
             },
             fe_excludeFields:
                 [
