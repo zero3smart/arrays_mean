@@ -55,7 +55,9 @@
                                             <div class="dropdown sort-control sort-bar-6">
                                                 <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                                     <div class="dropdown-toggle-label">
-                                                        Keywords <span class="sort-criteria color-brand-hover y-axis-field">777</span>
+                                                        <div class="dropdown-toggle-label">
+                                                            <span class="sort-criteria color-brand-hover y-axis-field">{{ defaultKeywordsColumnName_humanReadable }}</span>
+                                                        </div>
                                                     </div>
                                                 </a>
                                                 {% if renderableFields | length %}

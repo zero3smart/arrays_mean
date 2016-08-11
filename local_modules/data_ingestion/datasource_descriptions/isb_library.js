@@ -300,9 +300,6 @@ exports.Descriptions =
                     "Library Catalog",
                     "Category"
                 ],
-            fe_chart_valuesToExcludeByOriginalKey:
-            {
-                _all: [ "", null, "NULL", "(not specified)", "NA" ],
-            },
+            fe_lineGraph_defaultKeywordsColumnName_humanReadable: "Category"
         }
     ];
