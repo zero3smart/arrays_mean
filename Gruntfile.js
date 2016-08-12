@@ -32,7 +32,7 @@ module.exports = function(grunt) {
     // },
 
     jshint: {
-      files: ['Gruntfile.js', 'local_modules/app/public/javascripts/**/*.js'],
+      files: ['Gruntfile.js', 'app/public/javascripts/**/*.js'],
       options: {
         // curly: true,
         // eqeqeq: true,
@@ -67,28 +67,28 @@ module.exports = function(grunt) {
         tasks: ['jshint:gruntfile']
       },
       css : {
-        files : ['local_modules/app/public/stylesheets/**/*.css', '!local_modules/app/public/stylesheets/style.min.css'],
+        files : ['app/public/stylesheets/**/*.css', '!app/public/stylesheets/style.min.css'],
         options : {
           livereload : true
         },
         tasks: ['postcss']
       },
       sass: {
-        files: ['local_modules/app/public/stylesheets/scss/**/*.scss'],
+        files: ['app/public/stylesheets/scss/**/*.scss'],
         options: {
           livereload: true
         },
         tasks: ['sass', 'postcss']
       },
       js : {
-        files : ['local_modules/app/public/javascripts/**/*.js', '!local_modules/app/public/javascripts/main.min.js', '!local_modules/app/public/javascripts/lib/**/*.js'],
+        files : ['app/public/javascripts/**/*.js', '!app/public/javascripts/main.min.js', '!app/public/javascripts/lib/**/*.js'],
         // tasks : ['jshint'],
         options : {
           livereload : true
         }
       },
       html : {
-        files : ['local_modules/app/views/**/*.html'],
+        files : ['app/views/**/*.html'],
         options : {
           livereload : true
         }
@@ -106,25 +106,25 @@ module.exports = function(grunt) {
         expand: true,
         cwd: 'bower_components/d3',
         src: 'd3.js',
-        dest: 'local_modules/app/public/javascripts/lib/d3'
+        dest: 'app/public/javascripts/lib/d3'
       },
       worldGeoJson: {
         expand: true,
         cwd: 'bower_components/world.geo.json',
         src: 'countries.geo.json',
-        dest: 'local_modules/app/public/data/lib/world.geo.json'
+        dest: 'app/public/data/world.geo.json'
       },
       sharrre: {
         expand: true,
         cwd: 'bower_components/sharrre',
         src: 'jquery.sharrre.js',
-        dest: 'local_modules/app/public/javascripts/lib/sharrre'
+        dest: 'app/public/javascripts/lib/sharrre'
       },
       scrollmagic: {
         expand: true,
         cwd: 'bower_components/scrollmagic/scrollmagic/uncompressed',
         src: 'ScrollMagic.js',
-        dest: 'local_modules/app/public/javascripts/lib/scrollmagic'
+        dest: 'app/public/javascripts/lib/scrollmagic'
       }
     },
 
@@ -134,7 +134,7 @@ module.exports = function(grunt) {
           // sourceMap: true
         },
         files: {
-          'local_modules/app/public/stylesheets/base/bootstrap.css': 'local_modules/app/public/stylesheets/scss/bootstrap.scss'
+          'app/public/stylesheets/base/bootstrap.css': 'app/public/stylesheets/scss/bootstrap.scss'
         }
       }
     },
@@ -165,8 +165,8 @@ module.exports = function(grunt) {
         ]
       },
       dist: {
-        src: 'local_modules/app/public/stylesheets/style.css',
-        dest: 'local_modules/app/public/stylesheets/style.min.css'
+        src: 'app/public/stylesheets/style.css',
+        dest: 'app/public/stylesheets/style.min.css'
       }
     },
   });

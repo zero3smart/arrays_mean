@@ -8,9 +8,9 @@
     "node": ">=0.12.7"
   },
   "scripts": {
-    "start": "node local_modules/app/app.js",
-    "monitor": "nodemon local_modules/app/app.js",
-    "deploy": "gcloud preview app deploy app.yaml"
+    "start": "node app/app.js",
+    "monitor": "nodemon app/app.js",
+    "deploy": "gcloud preview app deploy config/app.yaml"
   },
   "dependencies": {
     "async": "^1.5.2",
