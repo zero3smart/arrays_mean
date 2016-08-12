@@ -112,3 +112,6 @@ Temporary Items
 ### Eclipse IDE ###
 .project
 .settings
+
+### temporary ###
+tmp/
