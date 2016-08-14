@@ -31,3 +31,7 @@
     fill-opacity: 0;
     shape-rendering: crispEdges;
 }
+
+.linechart svg.viewport circle.data-point {
+    fill: transparent;
+}

@@ -5825,6 +5825,19 @@ div.arrays-co-tooltip {
 	box-shadow: 0.1em 0.1em 0.2em lightgrey, -0.05em -0.05em 0.1em lightgrey;
 	z-index: 1050;
 }
+div.arrays-co-tooltip .nowrap {
+	white-space: nowrap;
+}
+div.arrays-co-tooltip .default-tooltip-content {
+    padding: 0.5em;
+}
+div.arrays-co-tooltip .line-graph-tooltip-circle {
+	width: 10px;
+	height: 10px;
+	border-radius: 5px;
+	float: left;
+	margin: 7px;
+}
 div.arrays-co-tooltip .scatterplot-tooltip-container {
 	width: 220px;
 	overflow: hidden;
@@ -6162,6 +6175,9 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
     fill: #fff;
     fill-opacity: 0;
     shape-rendering: crispEdges;
+}
+.linechart svg.viewport circle.data-point {
+    fill: transparent;
 }
 /* @override 
 	http://localhost:9080/stylesheets/module/word-cloud.css */

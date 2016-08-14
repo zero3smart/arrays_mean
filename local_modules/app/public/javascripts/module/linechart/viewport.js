@@ -120,10 +120,16 @@ linechart.viewport = function(data) {
      */
     this._margin = {
         top : 25,
-        right : 0,
+        right : 10,
         bottom : 20,
         left : 60
     };
+    /**
+     * Chart tooltip.
+     * @private
+     * @member {Tooltip}
+     */
+    this._tooltip = new Tooltip();
     /*
      * Set up window resize event handler.
      */
@@ -142,6 +148,10 @@ linechart.viewport = function(data) {
  * @returns {linechart.viewport}
  */
 linechart.viewport.prototype.render = function(container) {
+    /*
+     * Stash reference to this object.
+     */
+    var self = this;
     /*
      * Select chart container.
      */
@@ -173,13 +183,21 @@ linechart.viewport.prototype.render = function(container) {
     this._yAxisContainer = this._canvas.append('g')
         .attr('class', 'axis y-axis');
     /*
-     * Render empty line.
+     * Render line's containers.
      */
-    this._line = this._canvas.selectAll('path.line')
+    this._series = this._canvas.selectAll('g.series')
         .data(this._data)
         .enter()
-        .append('path')
-        .attr('class', 'line');
+        .append('g')
+        .attr('class', 'series');
+    /*
+     * Render empty line.
+     */
+    this._lines = this._series.append('path')
+        .attr('class', 'line')
+        .style('stroke', function(d, i) {
+            return self._colors[i];
+        });
     /*
      * Set up chart dimension.
      */
@@ -290,13 +308,45 @@ linechart.viewport.prototype.update = function(data) {
     this._xAxisContainer.call(this._xAxis);
     this._yAxisContainer.call(this._yAxis);
     /*
-     * Update lines.
+     * Update series.
      */
-    this._line.data(data)
-        .attr("d", this._lineGenerator)
-        .style('stroke', function(d, i) {
-            return self._colors[i];
+    this._series.data(data)
+    /*
+     * Move lines.
+     */
+    this._lines.attr("d", this._lineGenerator);
+    /*
+     * Update circles.
+     */
+    var circles = this._series.selectAll('circle.data-point')
+        .data(function (d) {
+            return d;
         });
+    /*
+     * Enter new circles.
+     */
+    circles.enter()
+        .append('circle')
+        .attr('class', 'data-point')
+        .attr('cx', function (d) {
+            return self._xScale(d.year);
+        }).attr('cy', function (d) {
+            return self._yScale(d.count);
+        }).attr('r', 5)
+        .on('mouseenter', function(d, i, j) {
+            d3.select(this).style('fill', self._colors[j]);
+            self._tooltip.setContent(
+                '<div class="default-tooltip-content">' +
+                    '<div class="line-graph-tooltip-circle" style="background-color:' + self._colors[j] + ';"></div>' +
+                    '<div class="scatterplot-tooltip-title nowrap">Something: ' + d.count + ' Occurences</div>' +
+                '</div>')
+                .setPosition('top')
+                .show(this);
+
+        }).on('mouseout', function(d, i, j) {
+            d3.select(this).style('fill', null);
+            self._tooltip.hide();
+        })
 
     return this;
 };

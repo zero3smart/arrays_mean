@@ -75,6 +75,21 @@ div.arrays-co-tooltip {
 	z-index: 1050;
 }
 
+div.arrays-co-tooltip .nowrap {
+	white-space: nowrap;
+}
+
+div.arrays-co-tooltip .default-tooltip-content {
+    padding: 0.5em;
+}
+
+div.arrays-co-tooltip .line-graph-tooltip-circle {
+	width: 10px;
+	height: 10px;
+	border-radius: 5px;
+	float: left;
+	margin: 7px;
+}
 
 div.arrays-co-tooltip .scatterplot-tooltip-container {
 	width: 220px;
