@@ -324,6 +324,10 @@ linechart.viewport.prototype.update = function(data) {
     var circles = this._series.selectAll('circle.data-point')
         .data(function (d) {
             return d;
+        }).attr('cx', function (d) {
+            return self._xScale(d.year);
+        }).attr('cy', function (d) {
+            return self._yScale(d.count);
         });
     /*
      * Enter new circles.
@@ -349,7 +353,7 @@ linechart.viewport.prototype.update = function(data) {
         }).on('mouseout', function(d, i, j) {
             d3.select(this).style('fill', null);
             self._tooltip.hide();
-        })
+        });
 
     return this;
 };
