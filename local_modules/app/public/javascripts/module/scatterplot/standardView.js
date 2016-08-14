@@ -53,8 +53,14 @@ scatterplot.view.standard.prototype.render = function(data) {
              * Prepare filterJSON with search params corresponding to that objects set.
              */
             var filterJSON = {};
-            filterJSON[chart._xLabel] = [chart._xAccessor(d).toString()];
-            filterJSON[chart._yLabel] = [chart._yAccessor(d).toString()];
+            filterJSON[chart._xLabel] = [{
+                min: chart._xAccessor(d),
+                max: chart._xAccessor(d)
+            }];
+            filterJSON[chart._yLabel] = [{
+                min: chart._yAccessor(d),
+                max: chart._yAccessor(d)
+            }];
             /*
              * Generate URL to gallery with prepared filterJSON.
              */
