@@ -49,9 +49,22 @@ scatterplot.view.standard.prototype.render = function(data) {
     bubbles.enter()
         .append('a')
         .attr('xlink:href', function(d, i) {
-            var routeArray = location.pathname.split('/');
-            routeArray.pop(); // Remove last segment of url
-            return routeArray.join('/') + '/' + d.id;
+            /*
+             * Prepare filterJSON with search params corresponding to that objects set.
+             */
+            var filterJSON = {};
+            filterJSON[chart._xLabel] = [chart._xAccessor(d).toString()];
+            filterJSON[chart._yLabel] = [chart._yAccessor(d).toString()];
+            /*
+             * Generate URL to gallery with prepared filterJSON.
+             */
+            var uri = URI(location.href)
+                .segment(2, 'gallery')
+                .search('?filterJSON=' + JSON.stringify(filterJSON));
+            /*
+             * Return URL string.
+             */
+            return uri.href();
         })
         .append('circle')
         .attr('class', 'bubble')
