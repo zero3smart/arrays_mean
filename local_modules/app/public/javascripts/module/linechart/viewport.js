@@ -312,9 +312,10 @@ linechart.viewport.prototype.update = function(data) {
      */
     this._series.data(data)
     /*
-     * Move lines.
+     * Update and move lines.
      */
-    this._lines.attr("d", this._lineGenerator);
+    this._lines.data(data)
+        .attr("d", this._lineGenerator);
     /*
      * Update circles.
      */

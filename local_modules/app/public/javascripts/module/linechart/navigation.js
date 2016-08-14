@@ -180,7 +180,7 @@ linechart.navigation.prototype._brushEventHandler = function() {
         .attr('width', this._xScale(min))
         .attr('stroke-dasharray', '0 ' + this._xScale(min) + ' ' + brushHeight + ' ' + (this._xScale(min) + brushHeight));
     this._rightSide.attr('x', this._xScale(max))
-        .attr('width', this._xScale(this._xScale.domain()[1]))
+        .attr('width', this._xScale.range()[1] - this._xScale(max))
         .attr('stroke-dasharray', '0 ' + (this._xScale(this._xScale.domain()[1]) * 2 + brushHeight) + ' ' + brushHeight);
     /*
      * Update viewport.
@@ -251,7 +251,6 @@ linechart.navigation.prototype.render = function(container) {
      * Append x axis bottom border line.
      */
     this._xAxisBorder = this._xAxisContainer.append('line')
-        .attr('x1', - this._xAxisHeight)
         .attr('y1', this._xAxisHeight)
         .attr('y2', this._xAxisHeight);
     /*
@@ -395,7 +394,7 @@ linechart.navigation.prototype.update = function(data) {
     var xTicks = this._xScale.ticks(this._xAxis.ticks()[0]);
     var xStep = this._xScale(xTicks[1]) - this._xScale(xTicks[0]);
     this._xAxisContainer.selectAll('text')
-        .attr('x', xStep / 2)
+        .attr('x', - xStep / 2)
         .text(function() {
             return '\'' + d3.select(this).text().slice(2);
         });

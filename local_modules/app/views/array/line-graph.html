@@ -200,7 +200,7 @@
               });
         }
 
-        graphData = graphData.concat(stream_layers(2, graphData[0].length, .1).map(function(series) {
+/*         graphData = graphData.concat(stream_layers(2, graphData[0].length, .1).map(function(series) {
             return series.map(function(d, i) {
                 return {
                     count: d * 100,
@@ -208,7 +208,7 @@
                 }
             });
         }));
-
+ */
         var lineChart = new linechart.chart(graphData)
             .render("#linechart");
         </script>
