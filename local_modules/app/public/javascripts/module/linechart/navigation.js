@@ -126,7 +126,7 @@ linechart.navigation = function(data, viewport) {
      */
     this._margin = {
         top : 25,
-        right : 0,
+        right : 15,
         bottom : 20,
         left : 0
     };

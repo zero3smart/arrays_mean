@@ -120,7 +120,7 @@ linechart.viewport = function(data) {
      */
     this._margin = {
         top : 25,
-        right : 10,
+        right : 15,
         bottom : 20,
         left : 60
     };

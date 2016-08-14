@@ -154,7 +154,7 @@ scatterplot.chart = function(data, metaData) {
     this._marginLeft = this._radius * 3;
     this._margin = {
         top : this._radius * 3,
-        right : this._radius,
+        right : this._radius * 2,
         bottom : this._radius * 3,
         left : this._marginLeft
     };
