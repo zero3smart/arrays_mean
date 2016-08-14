@@ -134,10 +134,10 @@ linechart.navigation = function(data, viewport) {
      * Set up window resize event handler.
      */
     var self = this;
-    window.onresize = function() {
+    d3.select(window).on('resize.line-graph-navigation', function() {
         self.resize();
         self.update();
-    };
+    });
 }
 
 

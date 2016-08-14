@@ -134,10 +134,10 @@ linechart.viewport = function(data) {
      * Set up window resize event handler.
      */
     var self = this;
-    window.onresize = function() {
+    d3.select(window).on('resize.line-graph-viewport', function() {
         self.resize();
         self.update();
-    };
+    });
 }
 
 
@@ -282,7 +282,9 @@ linechart.viewport.prototype.update = function(data) {
     /*
      * Use current data if not provided.
      */
-    data = data || this._data;
+    if (data) {
+        this._data = data;
+    }
     /*
      * Stash reference to this object.
      */
@@ -290,13 +292,13 @@ linechart.viewport.prototype.update = function(data) {
     /*
      * Get x extent.
      */
-    this._xDomain = d3.extent(data[0], function(d) {
+    this._xDomain = d3.extent(this._data[0], function(d) {
         return d.year;
     });
     /*
      * Get y extent.
      */
-    this._yDomain = this._getYDomain(data);
+    this._yDomain = this._getYDomain(this._data);
     /*
      * Update scale functions.
      */
@@ -310,11 +312,11 @@ linechart.viewport.prototype.update = function(data) {
     /*
      * Update series.
      */
-    this._series.data(data)
+    this._series.data(this._data)
     /*
      * Update and move lines.
      */
-    this._lines.data(data)
+    this._lines.data(this._data)
         .attr("d", this._lineGenerator);
     /*
      * Update circles.
