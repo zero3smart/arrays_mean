@@ -12,8 +12,8 @@ exports.Descriptions =
             importRevision: 1,
             title: "Seattle Public Library Special Collections",
             brandColor: "#6699CC",
-            urls: [ "http://www.spl.org/library-collection/special-collections" ],
-            description: "Founded by Herman Horowitz in 1924, The Jewish Transcript documents the daily life of the Jewish community in Seattle as well as local and international events from the 1920's to present day.",
+            urls: [ "http://cdm16118.contentdm.oclc.org/cdm/" ],
+            description: "This collection features issues of two local Seattle publications: the Municipal News, started in 1911, and The Jewish Transcript, started in 1924. The Municipal News documents the social, political, economic, and cultural history of Seattle and King County over the past century while The Jewish Transcript documents the daily life of the Jewish community in Seattle as well as local and international events from the 1920’s to present day.",
             raw_rowObjects_coercionScheme:
             {
                 'Date': {

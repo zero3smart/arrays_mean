@@ -15,8 +15,8 @@ exports.Descriptions =
             format: import_datatypes.DataSource_formats.CSV,
             title: "HTC Demographics",
             brandColor: "#03A678",
-            urls: [ "http://cdm16118.contentdm.oclc.org/cdm/" ],
-            description: "This collection features issues of two local Seattle publications: the Municipal News, started in 1911, and The Jewish Transcript, started in 1924. The Municipal News documents the social, political, economic, and cultural history of Seattle and King County over the past century while The Jewish Transcript documents the daily life of the Jewish community in Seattle as well as local and international events from the 1920’s to present day.",
+            urls: [ "--" ],
+            description: "--",
             fe_displayTitleOverrides: {
 
             }, // this is needed to not through an error
