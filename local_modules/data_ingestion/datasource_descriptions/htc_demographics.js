@@ -17,6 +17,7 @@ exports.Descriptions =
             brandColor: "#03A678",
             urls: [ "--" ],
             description: "--",
+            fe_listed: false,
             fe_displayTitleOverrides: {
 
             }, // this is needed to not through an error
