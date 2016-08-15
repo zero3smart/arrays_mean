@@ -1762,7 +1762,6 @@
             // ^ to finalize:
             var idxOf_objTitle = colNames_sansObjectTitle.indexOf(importedDataPreparation.HumanReadableColumnName_objectTitle);
             if (idxOf_objTitle >= 0) {
-                console.log('splice');
                 colNames_sansObjectTitle.splice(idxOf_objTitle, 1);
             }
             //
