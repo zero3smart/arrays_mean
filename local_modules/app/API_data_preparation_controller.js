@@ -1761,7 +1761,10 @@
             var colNames_sansObjectTitle = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject(rowObject, dataSourceDescription);
             // ^ to finalize:
             var idxOf_objTitle = colNames_sansObjectTitle.indexOf(importedDataPreparation.HumanReadableColumnName_objectTitle);
-            colNames_sansObjectTitle.splice(idxOf_objTitle, 1);
+            if (idxOf_objTitle >= 0) {
+                console.log('splice');
+                colNames_sansObjectTitle.splice(idxOf_objTitle, 1);
+            }
             //
             var alphaSorted_colNames_sansObjectTitle = colNames_sansObjectTitle;
             //
