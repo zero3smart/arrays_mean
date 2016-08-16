@@ -23,7 +23,7 @@ var app = express();
 // Set up application runtime object graph
 //
 var context = require('./app_context').NewHydratedContext(app);
-module.exports = context; // access app at context.app
+// module.exports = context; // access app at context.app
 //
 //
 // Configure app

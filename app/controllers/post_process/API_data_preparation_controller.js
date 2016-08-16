@@ -132,6 +132,14 @@ constructor.prototype.BindDataFor_datasetsListing = function(callback)
 //
 constructor.prototype.PageSize = function() { return pageSize; };
 //
+// populate the each types of the view.
+constructor.prototype.BindDataFor_array = function(urlQuery, strViewType, callback) {
+    camelCaseViewType = strViewType.replace( /-([a-z])/ig, function( all, letter ) {
+        return letter.toUpperCase();
+    });
+    this['BindDataFor_array_' + camelCaseViewType](urlQuery, callback);
+};
+//
 //
 constructor.prototype.BindDataFor_array_gallery = function(urlQuery, callback)
 {
