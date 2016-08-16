@@ -1,1 +1,1 @@
-NODE_ENV=development nodemon local_modules/data_ingestion/postimport_MVP_caching.js $@
+NODE_ENV=development nodemon app/controllers/import_cache/postimport_MVP_caching.js $@

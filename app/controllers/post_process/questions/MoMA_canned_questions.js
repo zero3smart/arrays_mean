@@ -1,6 +1,6 @@
 //
 //
-var dotenv_path = __dirname + "/../../.env." + process.env.NODE_ENV;
+var dotenv_path = __dirname + "/../../../../config/env/.env." + process.env.NODE_ENV;
 var dotenv_config =
 {
     path: dotenv_path

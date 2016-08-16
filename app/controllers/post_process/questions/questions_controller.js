@@ -1,8 +1,6 @@
 var async = require('async');
 var winston = require('winston');
 //
-var mongoose_client = require('../mongoose_client/mongoose_client');
-//
 //
 ////////////////////////////////////////////////////////////////////////////////
 //

@@ -1,6 +1,6 @@
 var moment = require('moment');
 
-model.exports = function(nunjucks_env)
+module.exports = function(nunjucks_env)
 {
     nunjucks_env.addFilter('comma', require('nunjucks-comma-filter'));
     // General/shared

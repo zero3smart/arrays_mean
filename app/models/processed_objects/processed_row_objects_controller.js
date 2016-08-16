@@ -32,7 +32,7 @@ constructor.prototype.New_templateForPersistableObject = function(rowObject_prim
     };
 }
 //
-var mongoose_client = require('../mongoose_client/mongoose_client');
+var mongoose_client = require('../../../lib/mongoose_client/mongoose_client');
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 //
@@ -862,7 +862,7 @@ constructor.prototype.EnumerateProcessedDataset
 var xray = require('x-ray');
 var xray_instance = xray();
 //
-var image_hosting = require('./googlecloudstorage-image_hosting');
+var image_hosting = require('../../../lib/image_process/googlecloudstorage-image_hosting');
 //
 constructor.prototype.GenerateImageURLFieldsByScraping 
     = function(dataSource_uid,

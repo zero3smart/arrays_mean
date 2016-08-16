@@ -1,5 +1,5 @@
 var winston = require('winston');
-var mongoose_client = require('../mongoose_client/mongoose_client');
+var mongoose_client = require('../../../../lib/mongoose_client/mongoose_client');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,6 +54,7 @@ constructor.prototype.cacheKeywords_fromDataSourceDescription = function(dataSou
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
         //
         var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();
+        var needToUpdate = false;
 
         self.context.processed_row_objects_controller.EnumerateProcessedDataset(
             dataSource_uid,
@@ -91,6 +92,7 @@ constructor.prototype.cacheKeywords_fromDataSourceDescription = function(dataSou
                 };
 
                 bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+                if (!needToUpdate) needToUpdate = true;
 
                 eachCb();
             },
@@ -100,18 +102,22 @@ constructor.prototype.cacheKeywords_fromDataSourceDescription = function(dataSou
             },
             function () {
                 // Finished iterating … execute the batch operation
-                var writeConcern =
-                {
-                    upsert: true // might as well - but this is not necessary
-                };
-                bulkOperation_ofTheseProcessedRowObjects.execute(writeConcern, function (err, result) {
-                    if (err) {
-                        winston.error("❌  Error while caching keywords: ", err);
-                    } else {
-                        winston.info("✅  Cached keywords.");
-                    }
-                    callback(err);
-                });
+                if (needToUpdate) {
+                    var writeConcern =
+                    {
+                        upsert: true // might as well - but this is not necessary
+                    };
+                    bulkOperation_ofTheseProcessedRowObjects.execute(writeConcern, function (err, result) {
+                        if (err) {
+                            winston.error("❌  Error while caching keywords: ", err);
+                        } else {
+                            winston.info("✅  Cached keywords.");
+                        }
+                        callback(err);
+                    });
+                } else {
+                    callback();
+                }
             },
             {}
         );

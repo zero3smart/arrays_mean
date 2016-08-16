@@ -1,1 +1,1 @@
-NODE_ENV=production node local_modules/questions/MoMA_canned_questions.js
+NODE_ENV=production node app/controllers/pre_process/questions/MoMA_canned_questions.js

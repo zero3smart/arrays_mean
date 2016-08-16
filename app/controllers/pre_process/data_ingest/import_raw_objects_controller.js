@@ -4,7 +4,7 @@ var es = require('event-stream');
 var async = require('async');
 var winston = require('winston');
 
-var import_datatypes = require('./import_datatypes');
+var import_datatypes = require('../../../datasources/utils/import_datatypes');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
 {
     var self = this;
     //
-    var CSV_resources_path_prefix = __dirname + "/resources";
+    var CSV_resources_path_prefix = __dirname + "/../../../datasources/resources";
     var filename = csvDescription.filename;
     var fileEncoding = csvDescription.fileEncoding || 'utf8';
     var revisionNumber = csvDescription.importRevision;

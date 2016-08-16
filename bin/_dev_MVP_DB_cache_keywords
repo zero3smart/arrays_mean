@@ -1,1 +1,1 @@
-NODE_ENV=development node local_modules/data_ingestion/cache_MVP_DB_keywords.js $@
+NODE_ENV=development node app/controllers/pre_process/import_cache/cache_MVP_DB_keywords.js $@

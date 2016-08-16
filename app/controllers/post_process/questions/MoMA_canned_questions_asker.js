@@ -2,14 +2,13 @@
 //
 var async = require('async');
 var moment = require('moment');
-var mongoose_client = require('../mongoose_client/mongoose_client');
+var mongoose_client = require('../../../../lib/mongoose_client/mongoose_client');
 var winston = require('winston');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
 // Set up application runtime object graph
 //
-var context = require('./canned_questions_context').NewHydratedContext();
 var MoMA_question_implementations = require('./MoMA_canned_question_implementations');
 //
 //

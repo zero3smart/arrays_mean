@@ -1,4 +1,4 @@
-var import_types = require('./import_datatypes');
+var import_types = require('../../datasources/utils/import_datatypes');
 
 exports.GetDatasources = function() {
     //var datasourceObj = [];

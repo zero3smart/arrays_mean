@@ -36,7 +36,7 @@ constructor.prototype.New_templateForPersistableObject = function(sourceDocument
     }
 };
 //
-var mongoose_client = require('../mongoose_client/mongoose_client');
+var mongoose_client = require('../../../lib/mongoose_client/mongoose_client');
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 //

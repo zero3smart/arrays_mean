@@ -6,7 +6,7 @@ var fs = require('fs');
 var parse = require('csv-parse');
 var winston = require('winston');
 
-var imported_data_preparation = require('./imported_data_preparation')
+var imported_data_preparation = require('../../../datasources/utils/imported_data_preparation')
 //
 //
 //
@@ -186,7 +186,7 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                     srcDocPKey: dataSourceRevision_pKey,
                     limitedUniqValsByHumanReadableColName: uniqueFieldValuesByFieldName
                 };
-                var cached_values_model = require('../cached_values/cached_values_model');
+                var cached_values_model = require('../../../models/cached_values_model');
                 cached_values_model.MongooseModel.findOneAndUpdate({ srcDocPKey: dataSourceRevision_pKey }, persistableDoc, {
                     upsert: true,
                     new: true

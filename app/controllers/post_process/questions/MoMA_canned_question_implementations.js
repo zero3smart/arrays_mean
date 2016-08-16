@@ -6,15 +6,15 @@ var moment = require('moment');
 ////////////////////////////////////////////////////////////////////////////////
 // Set up application runtime object graph
 //
-var context = require('./canned_questions_context').NewHydratedContext();
+var context = require('../../../app_context').NewHydratedContext();
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
 // Define constants
 //
-var artistsSrcDocUID = "moma_artists_csv";
+var artistsSrcDocUID = "moma_artists";
 var artistsSrcDocRevNumber = 1;
-var artworksSrcDocUID = "moma_artworks_csv";
+var artworksSrcDocUID = "moma_artworks";
 var artworksSrcDocRevNumber = 2;
 
 //
@@ -187,7 +187,7 @@ function CountOf_ArtworksWhere_ArtistCodeIs(codeValue, fn)
     var artworks_mongooseScheme = artworks_mongooseContext.forThisDataSource_RawRowObject_scheme;
     artworks_mongooseScheme.index({ "rowParams.Artist": 1 }, { unique: false });
 
-    context.questions_controller.FieldValuesOf_RawRowObjectsInSrcDoc_WhereFieldValueIs("rowParams.Artist", artists_srcDoc_primaryKeyString, "rowParams.Code", codeValue, function(err, values)
+    context.questions_controller.FieldValuesOf_RawRowObjectsInSrcDoc_WhereFieldValueIsExactly("rowParams.Artist", artists_srcDoc_primaryKeyString, "rowParams.Code", codeValue, function(err, values)
     {
         if (err) {
             fn(err, null);

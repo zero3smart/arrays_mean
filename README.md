@@ -4,9 +4,9 @@
 
 ### Basic repository contents:
 
-1. Front-end web server application at [`local_modules/app`](local_modules/app), including front-end publicly hosted assets at [`local_modules/app/public`](local_modules/app/public)
+1. Front-end web server application at [`app/post_process`](app/post_process), including front-end publicly hosted assets at [`app/public`](app/public)
 
-2. Database seeding and post-import caching for MVP via CSV import at [`local_modules/data_ingestion`](local_modules/data_ingestion)
+2. Database seeding and post-import caching for MVP via CSV import at [`app/pre_process`](app/pre_process)
 
 
 ---------------------
@@ -81,7 +81,7 @@ In order to add them (and to support both local development and production deplo
 #### iv. Seeding the local database
 
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
-2. Configure datasets to batch import in [`data_ingestion/datasource_descriptions/default.js`](local_modules/data_ingestion/datasource_descriptions/default.js)
+2. Configure datasets to batch import in [`app/datasources/descriptions/default.js`](app/pre_process/datasource_descriptions/default.js)
 3. Execute [`bin/_dev_MVP_DB_seed`](bin/_dev_MVP_DB_seed) to import all datasets configured in `default.js`
 4. Execute [`bin/__dev_postImportCaching`](bin/__dev_postImportCaching) -- Needed for generating the sidebar filters cache
 

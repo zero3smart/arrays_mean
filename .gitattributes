@@ -1,1 +1,1 @@
-users/johndoe@domain.com/uploads/datasources/resources/Municipal_News_Data_v5.csv filter=lfs diff=lfs merge=lfs -text
+app/datasources/resources/Municipal_News_Data_v5.csv filter=lfs diff=lfs merge=lfs -text
