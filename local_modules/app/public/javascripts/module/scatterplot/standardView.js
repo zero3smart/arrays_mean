@@ -103,7 +103,15 @@ scatterplot.view.standard.prototype.render = function(data) {
                 /*
                  * Prepare filterJSON with search params corresponding to that objects set.
                  */
-                var filterJSON = {};
+                var filterJSON;
+                if (uri.search(true).filterJSON) {
+                    filterJSON = JSON.parse(uri.search(true).filterJSON);
+                } else {
+                    filterJSON = {};
+                }
+                /*
+                 * Prepare filterJSON with search params corresponding to that objects set.
+                 */
                 filterJSON[chart._xLabel] = [{
                     min: chart._xAccessor(d),
                     max: chart._xAccessor(d)
