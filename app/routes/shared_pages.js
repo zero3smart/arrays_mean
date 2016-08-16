@@ -36,7 +36,10 @@ module.exports = function(context) {
                 var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud'];
                 if (viewTypes.indexOf(viewType) !== -1) {
                     query.source_key = source_key;
-                    context.API_data_preparation_controller.BindDataFor_array(query, viewType, function(err, bindData)
+                    var camelCaseViewType = viewType.replace( /-([a-z])/ig, function( all, letter ) {
+                        return letter.toUpperCase();
+                    });
+                    context['array_' + camelCaseViewType + '_controller'].BindDataFor_array(query, function(err, bindData)
                     {
                         if (err) {
                             winston.error("❌  Error getting bind data for Array gallery: ", err);
@@ -58,22 +61,6 @@ module.exports = function(context) {
                     return;
                 }
 
-                context.API_data_preparation_controller.BindDataFor_array_objectDetails(source_key, rowObjectId, function(err, bindData)
-                {
-                    if (err) {
-                        winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err);
-                        res.status(500).send(err.response || 'Internal Server Error');
-
-                        return;
-                    }
-                    if (bindData == null) { // 404
-                        res.status(404).send(err.response || 'Not Found');
-
-                        return;
-                    }
-                    bindData.referer = req.headers.referer;
-                    res.render('object/show', bindData);
-                });
 
             } else {
                 res.status(500).send("Internal Server Error");

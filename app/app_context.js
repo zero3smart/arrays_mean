@@ -27,8 +27,48 @@ var context_object_instantiation_descriptions =
         options: {}
     },
     {
-        module_path: __dirname + "/controllers/post_process/API_data_preparation_controller",
-        instance_key: "API_data_preparation_controller",
+        module_path: __dirname + "/controllers/post_process/data_preparation/create",
+        instance_key: "data_preparation_create_controller",
+        options: {}
+    },
+    {
+        module_path: __dirname + "/controllers/post_process/data_preparation/gallery",
+        instance_key: "array_gallery_controller",
+        options: {}
+    },
+    {
+        module_path: __dirname + "/controllers/post_process/data_preparation/chart",
+        instance_key: "array_chart_controller",
+        options: {}
+    },
+    {
+        module_path: __dirname + "/controllers/post_process/data_preparation/timeline",
+        instance_key: "array_timeline_controller",
+        options: {}
+    },
+    {
+        module_path: __dirname + "/controllers/post_process/data_preparation/wordCloud",
+        instance_key: "array_wordCloud_controller",
+        options: {}
+    },
+    {
+        module_path: __dirname + "/controllers/post_process/data_preparation/lineGraph",
+        instance_key: "array_lineGraph_controller",
+        options: {}
+    },
+    {
+        module_path: __dirname + "/controllers/post_process/data_preparation/scatterplot",
+        instance_key: "array_scatterplot_controller",
+        options: {}
+    },
+    {
+        module_path: __dirname + "/controllers/post_process/data_preparation/choropleth",
+        instance_key: "array_choropleth_controller",
+        options: {}
+    },
+    {
+        module_path: __dirname + "/controllers/post_process/data_preparation/object_details",
+        instance_key: "object_details_controller",
         options: {}
     },
     {

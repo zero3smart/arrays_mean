@@ -1,6 +1,5 @@
 var winston = require('winston');
 var url = require('url');
-var fs = require('fs');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,13 +28,13 @@ constructor.prototype.MountRoutes = function()
     var self = this;
     self._mountRoutes_ensureWWW();
 
-    fs
-        .readdirSync(__dirname)
-        .forEach(function (file) {
-            if (/^\./.test(file)) return;
-            if (file == 'index.js') return;
-            require('./' + file)(self.context);
-        });
+    // View endpoints
+    require('./homepage')(self.context);
+    require('./array')(self.context);
+    require('./monitoring')(self.context);
+    require('./object')(self.context);
+    require('./shared_pages')(self.context);
+    require('./jsonAPI_share')(self.context);
 
     self._mountRoutes_errorHandling();
 };

@@ -5,7 +5,7 @@ module.exports = function(context) {
 
     app.get('/array/create', function(req, res)
     {
-        context.API_data_preparation_controller.BindDataFor_datasetsListing(function(err, bindData)
+        context.data_preparation_create_controller.BindDataFor_datasetsListing(function(err, bindData)
         {
             if (err) {
                 winston.error("❌  Error getting bind data for Array create: ", err);
@@ -33,7 +33,10 @@ module.exports = function(context) {
             var query = url_parts.query;
 
             query.source_key = source_key;
-            context.API_data_preparation_controller.BindDataFor_array(query, viewType, function(err, bindData)
+            var camelCaseViewType = viewType.replace( /-([a-z])/ig, function( all, letter ) {
+                return letter.toUpperCase();
+            });
+            context['array_' + camelCaseViewType + '_controller'].BindDataFor_array(query, function(err, bindData)
             {
                 if (err) {
                     winston.error("❌  Error getting bind data for Array gallery: ", err);
