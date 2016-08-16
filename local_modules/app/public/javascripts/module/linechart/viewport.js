@@ -344,8 +344,14 @@ linechart.viewport.prototype.update = function(data) {
             d3.select(this).style('fill', self._colors[j]);
             self._tooltip.setContent(
                 '<div class="default-tooltip-content">' +
-                    '<div class="line-graph-tooltip-circle" style="background-color:' + self._colors[j] + ';"></div>' +
-                    '<div class="scatterplot-tooltip-title nowrap">Something: ' + d.count + ' Occurences</div>' +
+                    '<ul class="line-graph-list">' +
+                        '<li class="legend-list-item">' +
+                            '<div class="line-graph-item-container">' +
+                                '<span style="background-color: ' + self._colors[j] + ';" class="item-marker"></span>' +
+                                '<span>Something: ' + d.count + ' Occurences</span>' +
+                            '</div>' +
+                        '</li>' +
+                    '</ul>' +
                 '</div>')
                 .setPosition('top')
                 .show(this);
