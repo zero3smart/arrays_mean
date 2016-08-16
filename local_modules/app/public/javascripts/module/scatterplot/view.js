@@ -1,7 +1,8 @@
 /**
  * Scatterplot view abstract class.
  * @public
- * @constructor
+ * @abstract
+ * @class
  */
 scatterplot.view.main = function(chart) {
     /**
@@ -22,6 +23,7 @@ scatterplot.view.main = function(chart) {
 /**
  * Render view.
  * @public
+ * @abstract
  * @param {Object[]} data
  */
 scatterplot.view.main.prototype.render = function(data) {
@@ -31,8 +33,24 @@ scatterplot.view.main.prototype.render = function(data) {
 
 
 /**
+ * Get bubbles distrubution matrix.
+ * @public
+ * @abstract
+ * @param {Object[]} data
+ * @param {Number[]} xTicks
+ * @param {Number[]} yTicks
+ * @return {Integer[][]|Object}
+ */
+scatterplot.view.main.prototype.getDensityMatrix = function(data, xTicks, yTicks) {
+
+    throw new Error('scatterplot.view#getDensityMatrix not implemented!');
+};
+
+
+/**
  * Show tooltip.
  * @public
+ * @abstract
  * @param {SVGElement} bubble
  * @param {Object} data
  */
