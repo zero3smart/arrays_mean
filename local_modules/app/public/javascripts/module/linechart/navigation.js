@@ -273,6 +273,10 @@ linechart.navigation.prototype.render = function(container) {
  */
 linechart.navigation.prototype.resize = function() {
     /*
+     * Get brush extent before we redraw charts.
+     */
+    var extent = this._brush.extent();
+    /*
      * Get container dimensions.
      */
     var dimension = this._container.node().getBoundingClientRect();
@@ -349,6 +353,22 @@ linechart.navigation.prototype.resize = function() {
      */
     this._leftSide.attr('height', this._innerHeight + this._xAxisHeight - 1);
     this._rightSide.attr('height', this._innerHeight + this._xAxisHeight - 1);
+    /*
+     * Update brush using previously saved extent.
+     */
+    this._brushContainer.call(this._brush.extent(extent));
+    /*
+     * Resize brush gate's leafs.
+     */
+    if (! this._brush.empty()) {
+        var extent = this._brush.extent();
+        var min = extent[0];
+        var max = extent[1];
+        this._leftSide.attr('x', 1)
+            .attr('width', this._xScale(min));
+        this._rightSide.attr('x', this._xScale(max))
+            .attr('width', this._xScale.range()[1] - this._xScale(max) - 1);
+    }
     /*
      * Change x axis bottom border length.
      */
