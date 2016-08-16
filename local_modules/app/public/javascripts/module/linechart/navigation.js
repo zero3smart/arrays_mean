@@ -176,12 +176,10 @@ linechart.navigation.prototype._brushEventHandler = function() {
     /*
      * Update brush side panels sizes.
      */
-    this._leftSide.attr('x', 0)
-        .attr('width', this._xScale(min))
-        .attr('stroke-dasharray', '0 ' + this._xScale(min) + ' ' + brushHeight + ' ' + (this._xScale(min) + brushHeight));
+    this._leftSide.attr('x', 1)
+        .attr('width', this._xScale(min));
     this._rightSide.attr('x', this._xScale(max))
-        .attr('width', this._xScale.range()[1] - this._xScale(max))
-        .attr('stroke-dasharray', '0 ' + (this._xScale(this._xScale.domain()[1]) * 2 + brushHeight) + ' ' + brushHeight);
+        .attr('width', this._xScale.range()[1] - this._xScale(max) - 1);
     /*
      * Update viewport.
      */
@@ -321,8 +319,8 @@ linechart.navigation.prototype.resize = function() {
     /*
      * Move brush background.
      */
-    this._leftSide.attr('height', this._innerHeight + this._xAxisHeight);
-    this._rightSide.attr('height', this._innerHeight + this._xAxisHeight);
+    this._leftSide.attr('height', this._innerHeight + this._xAxisHeight - 1);
+    this._rightSide.attr('height', this._innerHeight + this._xAxisHeight - 1);
     /*
      * Change x axis bottom border length.
      */

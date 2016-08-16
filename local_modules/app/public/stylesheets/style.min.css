@@ -6191,7 +6191,7 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 .linechart .brush-background {
     fill-opacity: .125;
     stroke: #c3c3c3;
-    stroke-width: 2;
+    stroke-width: 1;
     shape-rendering: crispEdges;
 }
 .linechart .brush-handle {
