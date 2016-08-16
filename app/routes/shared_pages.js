@@ -1,4 +1,5 @@
 var url = require('url');
+var winston = require('winston');
 
 module.exports = function(context) {
     var app = context.app;

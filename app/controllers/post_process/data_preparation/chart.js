@@ -6,8 +6,8 @@ var fs = require('fs');
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var cached_values_model = require('../../../models/cached_values_model');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
-var config = require('../config');
-var functions = require('../functions');
+var config = new require('../config')();
+var functions = new require('../functions')();
 
 var constructor = function(options, context) {
     var self = this;

@@ -1,7 +1,5 @@
 var async = require('async');
 
-var config = require('../config');
-var functions = require('../functions');
 var dataSourceDescriptions = require('../../../datasources/descriptions').GetDescriptions();
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 

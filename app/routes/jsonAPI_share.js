@@ -1,4 +1,5 @@
 var url = require('url');
+var winston = require('winston');
 
 module.exports = function(context) {
     var app = context.app;
@@ -32,7 +33,7 @@ module.exports = function(context) {
 
             return matches[1];
         }
-        if (/^\/array\/.*\/(gallery|chart|choropleth)/g.test(pathname) == true) {
+        if (/^\/array\/.*\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|choropleth)/g.test(pathname) == true) {
             pageType = "array_view";
             //
             if (/^\/array\/.*\/gallery/g.test(pathname) == true) {
@@ -41,14 +42,17 @@ module.exports = function(context) {
                 viewType_orNull = "chart";
             } else if (/^\/array\/.*\/choropleth/g.test(pathname) == true) {
                 viewType_orNull = "choropleth";
-            } else {
-                // this will not happen unless the if above changes and this if structure does not get updated
-                res.status(500).send("Internal Server Error");
-
-                return;
+            } else if (/^\/array\/.*\/timeline/g.test(pathname) == true) {
+                viewType_orNull = "timeline";
+            } else if (/^\/array\/.*\/word-cloud/g.test(pathname) == true) {
+                viewType_orNull = "word-cloud";
+            } else if (/^\/array\/.*\/scatterplot/g.test(pathname) == true) {
+                viewType_orNull = "scatterplot";
+            } else if (/^\/array\/.*\/line-graph/g.test(pathname) == true) {
+                viewType_orNull = "line-graph";
             }
             //
-            source_key = _stringFromPathNameWithRegEx(/^\/array\/(.*)\/(gallery|chart|choropleth)/g);
+            source_key = _stringFromPathNameWithRegEx(/^\/array\/(.*)\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|line-graph)/g);
         } else if (/^\/array\/.*\/.*/g.test(pathname) == true) {
             pageType = "object_details";
             //

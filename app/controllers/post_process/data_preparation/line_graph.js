@@ -1,13 +1,8 @@
 var winston = require('winston');
-var async = require('async');
-var moment = require('moment');
-var fs = require('fs');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
-var cached_values_model = require('../../../models/cached_values_model');
-var import_datatypes = require('../../../datasources/utils/import_datatypes');
-var config = require('../config');
-var functions = require('../functions');
+var config = new require('../config')();
+var functions = new require('../functions')();
 
 var constructor = function(options, context) {
     var self = this;
@@ -17,7 +12,11 @@ var constructor = function(options, context) {
     return self;
 };
 
-//
+/**
+ * Line Graph view action controller.
+ * @param {Object} urlQuery - URL params
+ * @param {Function} callback
+ */
 constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 {
     var self = this;
@@ -34,7 +33,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 
         return;
     }
-    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != null && dataSourceDescription.fe_views.chart === false) {
+    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.lineGraph != null && dataSourceDescription.fe_views.lineGraph === false) {
         callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
 
         return;
@@ -49,8 +48,9 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
     var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
-    var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_wordCloud_defaultGroupByColumnName_humanReadable;
-    var keywords = dataSourceDescription.fe_wordCloud_keywords;
+    var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultGroupByColumnName_humanReadable;
+    //
+    var defaultKeywordsColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultKeywordsColumnName_humanReadable;
     //
     var filterJSON = urlQuery.filterJSON;
     var filterObj = {};
@@ -139,49 +139,119 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             }
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
-
+        aggregationOperators = aggregationOperators.concat(
+            [
+                { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                { // unique/grouping and summing stage
+                    $group: {
+                        _id: "$" + "rowParams." + groupBy_realColumnName,
+                        value: { $sum: 1 } // the count
+                    }
+                },
+                { // reformat
+                    $project: {
+                        _id: 0,
+                        label: "$_id",
+                        value: 1
+                    }
+                },
+                { // priotize by incidence, since we're $limit-ing below
+                    $sort : { value : -1 }
+                },
+                {
+                    $limit : 100 // so the chart can actually handle the number
+                }
+            ]);
         //
         var doneFn = function(err, groupedResults)
         {
             if (err) {
-                return callback(err, null);
+                callback(err, null);
+
+                return;
             }
-
-            var result = groupedResults[0];
-            var newResults = keywords.map(function(keyword) {
-                var obj = {_id: keyword, value: 0};
-                if (result && result[keyword]) obj.value = result[keyword];
-                return obj;
-            });
-
-            newResults.sort(function(a, b){
-                return b.value - a.value;
-            });
-
-            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, newResults);
-        };
-
-        var groupBy_realColumnName_path = "rowParams." + groupBy_realColumnName;
-        var groupOps_keywords = { _id: null };
-        keywords.forEach(function(keyword) {
-            groupOps_keywords[keyword] = {
-                $sum: {
-                    $cond: [
-                        "$wordExistence." + groupBy_realColumnName + "." + keyword, 1, 0
-                    ]
+            if (groupedResults == undefined || groupedResults == null) {
+                groupedResults = [];
+            }
+            var finalizedButNotCoalesced_groupedResults = [];
+            groupedResults.forEach(function(el, i, arr)
+            {
+                var originalVal = el.label;
+                //
+                var fe_chart_valuesToExcludeByOriginalKey = dataSourceDescription.fe_chart_valuesToExcludeByOriginalKey;
+                if (fe_chart_valuesToExcludeByOriginalKey != null && typeof fe_chart_valuesToExcludeByOriginalKey !== 'undefined') {
+                    if (fe_chart_valuesToExcludeByOriginalKey._all) {
+                        if (fe_chart_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
+                            return; // do not push to list
+                        }
+                    }
+                    var illegalValuesForThisKey = fe_chart_valuesToExcludeByOriginalKey[groupBy_realColumnName];
+                    if (illegalValuesForThisKey) {
+                        if (illegalValuesForThisKey.indexOf(originalVal) !== -1) {
+                            return; // do not push to list
+                        }
+                    }
                 }
-            }
-        });
-        aggregationOperators = aggregationOperators.concat([
-            { $group: groupOps_keywords }
-        ]);
+                //
+                var displayableVal = originalVal;
+                if (originalVal == null) {
+                    displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
+                } else if (originalVal === "") {
+                    displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
+                } else {
+                    displayableVal = functions._reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, groupBy_realColumnName, dataSourceDescription);
+                }
+                finalizedButNotCoalesced_groupedResults.push({
+                    value: el.value,
+                    label: displayableVal
+                });
+            });
+            var finalized_groupedResults = [];
+            var summedValuesByLowercasedLabels = {};
+            var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
+            finalizedButNotCoalesced_groupedResults.forEach(function(el, i, arr)
+            {
+                var label = el.label;
+                var value = el.value;
+                var label_toLowerCased = label.toLowerCase();
+                //
+                var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
+                var new_valueSum = existing_valueSum + value;
+                summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
+                //
+                var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] || { label: '', value: -1 };
+                if (existing_titleWithMostMatchesAndMatchCount.value < value) {
+                    var new_titleWithMostMatchesAndMatchCount = { label: label, value: value };
+                    titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
+                }
+            });
+            var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
+            lowercasedLabels.forEach(function(key, i, arr)
+            {
+                var summedValue = summedValuesByLowercasedLabels[key];
+                var reconstitutedDisplayableTitle = key;
+                var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[key];
+                if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
+                    winston.error("❌  This should never be undefined.");
+                    callback(new Error('Unexpectedly undefined title with most matches'), null);
 
+                    return;
+                } else {
+                    reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
+                }
+                finalized_groupedResults.push({
+                    count: summedValue,
+                    year: reconstitutedDisplayableTitle
+                });
+            });
+            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, finalized_groupedResults);
+        };
         processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
     }
     function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
     {
         var err = null;
-        var routePath_base              = "/array/" + source_pKey + "/word-cloud";
+        var routePath_base              = "/array/" + source_pKey + "/line-graph";
         var routePath_withoutFilter     = routePath_base;
         var routePath_withoutGroupBy    = routePath_base;
         var urlQuery_forSwitchingViews  = "";
@@ -204,9 +274,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         //
         var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
         //
-        var minGroupedResultsValue = Math.min.apply(Math, groupedResults.map(function(o){ return o.value; }));
-        var maxGroupedResultsValue = Math.max.apply(Math, groupedResults.map(function(o){ return o.value; }));
-        //
         var data =
         {
             env: process.env,
@@ -219,8 +286,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
             //
             groupedResults: groupedResults,
-            minGroupedResultsValue: minGroupedResultsValue,
-            maxGroupedResultsValue: maxGroupedResultsValue,
             groupBy: groupBy,
             //
             filterObj: filterObj,
@@ -235,8 +300,10 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             isSearchActive: isSearchActive,
             //
             defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-            colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForwordCloudGroupByDropdown(sampleDoc, dataSourceDescription),
+            colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForLineGraphGroupByDropdown(sampleDoc, dataSourceDescription),
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+            //
+            defaultKeywordsColumnName_humanReadable: defaultKeywordsColumnName_humanReadable,
             //
             routePath_base: routePath_base,
             routePath_withoutFilter: routePath_withoutFilter,
@@ -246,6 +313,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         };
         callback(err, data);
     }
-};
+}
 
 module.exports = constructor;

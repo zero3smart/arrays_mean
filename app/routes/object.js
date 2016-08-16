@@ -1,3 +1,5 @@
+var winston = require('winston');
+
 module.exports = function(context) {
     var app = context.app;
 

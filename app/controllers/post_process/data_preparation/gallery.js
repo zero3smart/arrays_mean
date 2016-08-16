@@ -1,13 +1,8 @@
 var winston = require('winston');
-var async = require('async');
-var moment = require('moment');
-var fs = require('fs');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
-var cached_values_model = require('../../../models/cached_values_model');
-var import_datatypes = require('../../../datasources/utils/import_datatypes');
-var config = require('../config');
-var functions = require('../functions');
+var config = new require('../config')();
+var functions = new require('../functions')();
 
 var constructor = function(options, context) {
     var self = this;
@@ -215,9 +210,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         var doneFn = function(err, docs)
         {
             if (err) {
-                callback(err, null);
-
-                return;
+                return callback(err, null);
             }
             if (docs == undefined || docs == null || docs.length == 0) {
                 docs = [];

@@ -47,12 +47,12 @@ var context_object_instantiation_descriptions =
         options: {}
     },
     {
-        module_path: __dirname + "/controllers/post_process/data_preparation/wordCloud",
+        module_path: __dirname + "/controllers/post_process/data_preparation/word_cloud",
         instance_key: "array_wordCloud_controller",
         options: {}
     },
     {
-        module_path: __dirname + "/controllers/post_process/data_preparation/lineGraph",
+        module_path: __dirname + "/controllers/post_process/data_preparation/line_graph",
         instance_key: "array_lineGraph_controller",
         options: {}
     },
