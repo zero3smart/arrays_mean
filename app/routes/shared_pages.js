@@ -62,6 +62,22 @@ module.exports = function(context) {
                     return;
                 }
 
+                context.object_details_controller.BindDataFor_array(source_key, rowObjectId, function(err, bindData)
+                {
+                    if (err) {
+                        winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err);
+                        res.status(500).send(err.response || 'Internal Server Error');
+
+                        return;
+                    }
+                    if (bindData == null) { // 404
+                        res.status(404).send(err.response || 'Not Found');
+
+                        return;
+                    }
+                    bindData.referer = req.headers.referer;
+                    res.render('object/show', bindData);
+                });
 
             } else {
                 res.status(500).send("Internal Server Error");
