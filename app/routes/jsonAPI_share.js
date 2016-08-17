@@ -98,20 +98,4 @@ module.exports = function(context) {
             res.json({ share_url: share_url });
         }
     });
-
-    //
-    var asker = require('../controllers/post_process/questions/MoMA_canned_questions_asker');
-    //
-    app.get(apiURLPrefix + 'DEBUG_MoMA', function(req, res)
-    {
-        asker.Ask(function(err, results)
-        {
-            if (err) {
-                res.json({ ok: 0, err: err });
-
-                return;
-            }
-            res.json({ ok: 1, results: results });
-        });
-    });
 }

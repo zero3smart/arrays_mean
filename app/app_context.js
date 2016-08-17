@@ -75,11 +75,6 @@ var context_object_instantiation_descriptions =
         module_path: __dirname + "/controllers/post_process/shared_pages/shared_pages_controller",
         instance_key: "shared_pages_controller",
         options: {}
-    },
-    {
-        module_path: __dirname + "/controllers/post_process/questions/questions_controller",
-        instance_key: "questions_controller",
-        options: {}
     }
 ];
 function NewHydratedContext(app) 

@@ -31,7 +31,7 @@ var constructor = function(options, context) {
 };
 
 //
-constructor.prototype.BindDataFor_array_choropleth = function(urlQuery, callback)
+constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 {
     var self = this;
     // urlQuery keys:
