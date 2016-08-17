@@ -1,8 +1,7 @@
 //
 var winston = require('winston');
 //
-var import_datatypes = require('../import_datatypes');
-var import_processing = require('../import_processing');
+var import_datatypes = require('../utils/import_datatypes');
 //
 //
 exports.Descriptions =
