@@ -111,18 +111,6 @@ scatterplot.chart = function(data, metaData) {
      */
     this._yAxisContainer = undefined;
     /**
-     * X axis bottom border.
-     * @private
-     * @param {Selection}
-     */
-    this._xAxisBorder = undefined;
-    /**
-     * Y axis left border.
-     * @private
-     * @param {Selection}
-     */
-    this._yAxisBorder = undefined;
-    /**
      * Chart x label container.
      * @private
      * @member {Selection}
@@ -166,7 +154,7 @@ scatterplot.chart = function(data, metaData) {
     this._marginLeft = this._radius * 3;
     this._margin = {
         top : this._radius * 3,
-        right : this._radius,
+        right : this._radius * 2,
         bottom : this._radius * 3,
         left : this._marginLeft
     };
@@ -261,19 +249,11 @@ scatterplot.chart.prototype.render = function(selector) {
      */
     this._xAxisContainer = this._canvas.append('g')
         .attr('class', 'axis x-axis');
-    this._xAxisBorder = this._xAxisContainer.append('line')
-        .attr('x1', - this._axesHeight)
-        .attr('y1', this._axesHeight)
-        .attr('y2', this._axesHeight);
     /*
      * Append y axis container.
      */
     this._yAxisContainer = this._canvas.append('g')
         .attr('class', 'axis y-axis');
-    this._yAxisBorder = this._yAxisContainer.append('line')
-        .attr('x1', - this._axesHeight)
-        .attr('y1', 0)
-        .attr('x2', - this._axesHeight);
     /*
      * Append x lable container
      */
@@ -352,13 +332,8 @@ scatterplot.chart.prototype.resize = function() {
     /*
      * Update grid.
      */
-    this._xAxis.tickSize(- this._innerHeight, this._axesHeight);
-    this._yAxis.tickSize(- this._innerWidth, this._axesHeight);
-    /*
-     * Update axes borders.
-     */
-    this._xAxisBorder.attr('x2', this._innerWidth);
-    this._yAxisBorder.attr('y2', this._innerHeight + this._axesHeight);
+    this._xAxis.tickSize(- this._innerHeight, 0);
+    this._yAxis.tickSize(- this._innerWidth, 0);
     /*
      * Move x axis corresponding with chart height.
      */
@@ -628,37 +603,15 @@ scatterplot.chart.prototype.update = function(data) {
      * Update x axis and extend ticks.
      */
     this._xAxisContainer.call(this._xAxis);
-    this._xAxisContainer.selectAll('line').attr('y1', this._axesHeight);
-    /*
-     * Remove x axis first tick only once.
-     */
-    if (this._xAxisContainer.selectAll('text').size() === xTicks.length) {
-        this._xAxisContainer.select('text').remove();
-    }
-    this._xAxisContainer.selectAll('text')
-        .attr('x', xBinLength / - 2)
-        .text(function(d, i) {
-            return d3.round(xTicks[i], 0) + ' – ' + d3.round(d, 0);
-        })
     /*
      * Update y axis and extend ticks.
      */
-    this._yAxisContainer.call(this._yAxis);
-    this._yAxisContainer.selectAll('line').attr('x1', - this._axesHeight);
-    /*
-     * Remove y axis last tick only once.
-     */
-    if (this._yAxisContainer.selectAll('text').size() === yTicks.length) {
-        this._yAxisContainer.select('text').remove();
-    }
-    this._yAxisContainer.selectAll('text')
+    this._yAxisContainer.call(this._yAxis)
+        .selectAll('text')
         .style('text-anchor', 'middle')
         .attr('transform', 'rotate(-90)')
         .attr('y', - this._axesHeight / 2)
-        .attr('x', - yBinLength / 2)
-        .text(function(d, i) {
-            return d3.round(yTicks[i], 0) + ' – ' + d3.round(d, 0);
-        });
+        .attr('x', 0);
     /*
      * Update axes labels.
      */

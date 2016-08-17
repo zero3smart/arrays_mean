@@ -126,18 +126,18 @@ linechart.navigation = function(data, viewport) {
      */
     this._margin = {
         top : 25,
-        right : 0,
-        bottom : 20,
+        right : 15,
+        bottom : 30,
         left : 0
     };
     /*
      * Set up window resize event handler.
      */
     var self = this;
-    window.onresize = function() {
+    d3.select(window).on('resize.line-graph-navigation', function() {
         self.resize();
         self.update();
-    };
+    });
 }
 
 
@@ -151,6 +151,8 @@ linechart.navigation.prototype._brushEventHandler = function() {
      * Restore viewport if brush empty.
      */
     if (this._brush.empty()) {
+        this._leftSide.attr('width', 0);
+        this._rightSide.attr('width', 0);
         return this._viewport.update(this._data);
     }
     /*
@@ -176,12 +178,10 @@ linechart.navigation.prototype._brushEventHandler = function() {
     /*
      * Update brush side panels sizes.
      */
-    this._leftSide.attr('x', 0)
-        .attr('width', this._xScale(min))
-        .attr('stroke-dasharray', '0 ' + this._xScale(min) + ' ' + brushHeight + ' ' + (this._xScale(min) + brushHeight));
+    this._leftSide.attr('x', 1)
+        .attr('width', this._xScale(min));
     this._rightSide.attr('x', this._xScale(max))
-        .attr('width', this._xScale(this._xScale.domain()[1]))
-        .attr('stroke-dasharray', '0 ' + (this._xScale(this._xScale.domain()[1]) * 2 + brushHeight) + ' ' + brushHeight);
+        .attr('width', this._xScale.range()[1] - this._xScale(max) - 1);
     /*
      * Update viewport.
      */
@@ -251,7 +251,6 @@ linechart.navigation.prototype.render = function(container) {
      * Append x axis bottom border line.
      */
     this._xAxisBorder = this._xAxisContainer.append('line')
-        .attr('x1', - this._xAxisHeight)
         .attr('y1', this._xAxisHeight)
         .attr('y2', this._xAxisHeight);
     /*
@@ -273,6 +272,10 @@ linechart.navigation.prototype.render = function(container) {
  * @returns {linechart.navigation}
  */
 linechart.navigation.prototype.resize = function() {
+    /*
+     * Get brush extent before we redraw charts.
+     */
+    var extent = this._brush.extent();
     /*
      * Get container dimensions.
      */
@@ -316,14 +319,56 @@ linechart.navigation.prototype.resize = function() {
     /*
      * Resize brush.
      */
-    this._brushContainer.call(this._brush)
-        .selectAll('rect')
-        .attr('height', this._innerHeight);
+    this._brushContainer.call(this._brush);
+    this._brushContainer.selectAll('rect')
+        .attr('height', this._innerHeight + this._xAxisHeight);
+    /*
+     * Render brush handles.
+     */
+    if (this._brushContainer.selectAll('.resize circle.handle').size() == 0) {
+        this._brushContainer.selectAll('.resize')
+            .append('rect')
+            .attr('class', 'handle')
+            .attr('x', -1)
+            .attr('y', 0)
+            .attr('width', 2)
+            .attr('height', this._innerHeight + this._xAxisHeight);
+        this._brushContainer.selectAll('.resize')
+            .append('circle')
+            .attr('class', 'handle')
+            .attr('r', 7);
+    }
+    /*
+     * Move handles.
+     */
+    this._brushContainer.selectAll('circle.handle')
+        .attr('cy', this._innerHeight + this._xAxisHeight);
+    /*
+     * Change rectangled handle height.
+     */
+    this._brushContainer.selectAll('.resize rect')
+        .attr('height', this._innerHeight + this._xAxisHeight);
     /*
      * Move brush background.
      */
-    this._leftSide.attr('height', this._innerHeight + this._xAxisHeight);
-    this._rightSide.attr('height', this._innerHeight + this._xAxisHeight);
+    this._leftSide.attr('height', this._innerHeight + this._xAxisHeight - 1);
+    this._rightSide.attr('height', this._innerHeight + this._xAxisHeight - 1);
+    /*
+     * Update brush using previously saved extent.
+     */
+    this._brushContainer.call(this._brush.extent(extent));
+    /*
+     * Resize brush gate's leafs.
+     */
+    if (! this._brush.empty()) {
+        var extent = this._brush.extent();
+        var min = extent[0];
+        var max = extent[1];
+        this._leftSide.attr('x', 1)
+            .attr('width', this._xScale(min));
+        this._rightSide.attr('x', this._xScale(max))
+            .attr('width', this._xScale.range()[1] - this._xScale(max) - 1);
+    }
     /*
      * Change x axis bottom border length.
      */
@@ -395,7 +440,7 @@ linechart.navigation.prototype.update = function(data) {
     var xTicks = this._xScale.ticks(this._xAxis.ticks()[0]);
     var xStep = this._xScale(xTicks[1]) - this._xScale(xTicks[0]);
     this._xAxisContainer.selectAll('text')
-        .attr('x', xStep / 2)
+        .attr('x', - xStep / 2)
         .text(function() {
             return '\'' + d3.select(this).text().slice(2);
         });

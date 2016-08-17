@@ -62,6 +62,51 @@ scatterplot.view.grouped.prototype._getGroupIndex = function(value, intervals) {
 };
 
 
+/**
+ * @override
+ */
+scatterplot.view.grouped.prototype.getDensityMatrix = function(data, xTicks, yTicks) {
+    /*
+     * Definde reference to the chart.
+     */
+    var chart = this._chart;
+    /*
+     * Generate density matrix filled with values.
+     * The matrix rows and columns equals to the chart's rows and columns number.
+     */
+    var densityMatrix = xTicks.map(function() {
+        return Array.apply(null, Array(yTicks.length)).map(Number.prototype.valueOf, 0);
+    });
+    /*
+     * Populate density matrix.
+     */
+    data.forEach(function(d) {
+        /*
+         * Get x and y values of the data point.
+         */
+        var x = Number(chart._xAccessor(d));
+        var y = Number(chart._yAccessor(d));
+        /*
+         * Find corresponding x and y indexes within x and y ticks.
+         */
+        var xIndex = this._getGroupIndex(x, xTicks);
+        var yIndex = yTicks.length - 1 - this._getGroupIndex(y, yTicks);
+        /*
+         * Increment corresponding element of density matrix.
+         */
+        densityMatrix[xIndex][yIndex] ++;
+    }, this);
+
+    return densityMatrix;
+};
+
+
+/**
+ * Prepare data for representation.
+ * @private
+ * @param {Object[]} data
+ * @returns
+ */
 scatterplot.view.grouped.prototype._prepareData = function(data) {
     /*
      * Definde reference to the chart.
@@ -86,48 +131,24 @@ scatterplot.view.grouped.prototype._prepareData = function(data) {
      * Generate density matrix filled with values.
      * The matrix rows and columns equals to the chart's rows and columns number.
      */
-    this._densityMatrix = xTicks.map(function() {
-        return Array.apply(null, Array(yTicks.length)).map(Number.prototype.valueOf,0);
-    });
-    /*
-     * Populate density matrix.
-     */
-    var count = 0;
-    data.forEach(function(d) {
-        /*
-         * Get x and y values of the data point.
-         */
-        var x = Number(chart._xAccessor(d));
-        var y = Number(chart._yAccessor(d));
-        /*
-         * Find corresponding x and y indexes within x and y ticks.
-         */
-        // var xIndex = d3.bisectLeft(xTicks, x);
-        // var yIndex = yTicks.length - 1 - d3.bisectLeft(yTicks, y);
-        var xIndex = this._getGroupIndex(x, xTicks);
-        var yIndex = yTicks.length - 1 - this._getGroupIndex(y, yTicks);
-        /*
-         * Increment corresponding element of density matrix.
-         */
-        this._densityMatrix[xIndex][yIndex] ++;
-    }, this);
+    var densityMatrix = this.getDensityMatrix(data, xTicks, yTicks);
     /*
      * Find biggest group value.
      */
-    var maxGroup = this._densityMatrix.reduce(function(max, row) {
+    var maxGroup = densityMatrix.reduce(function(max, row) {
         return Math.max(max, d3.max(row)); 
     }, 0);
     /*
      * Create radius scale function.
      */
-    var maxRadius = Math.min(xStep, yStep) / 2 + 20 + Math.min(chart._margin.top, chart._margin.right, chart._margin.bottom, chart._margin.left);
+    var maxRadius = Math.min(xStep, yStep) / 2 + Math.min(chart._margin.top, chart._margin.right, chart._margin.bottom, chart._margin.left);
     var radiusScale = d3.scale.linear()
         .domain([0, 1, maxGroup])
         .range([0, chart._radius, maxRadius]);
     /*
      * Return chart actual data.
      */
-    return this._densityMatrix.reduce(function(columns, column, i) {
+    return densityMatrix.reduce(function(columns, column, i) {
         return columns.concat(column.map(function(density, j) {
             return {
                 i : i,

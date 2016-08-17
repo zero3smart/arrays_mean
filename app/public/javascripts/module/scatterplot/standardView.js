@@ -18,6 +18,39 @@ scatterplot.view.standard.prototype = Object.create(scatterplot.view.main.protot
 /**
  * @override
  */
+scatterplot.view.standard.prototype.getDensityMatrix = function(data) {
+    /*
+     * Definde reference to the chart.
+     */
+    var chart = this._chart;
+
+    var xValues = [];
+    var yValues = [];
+
+    var densityMatrix = {};
+
+    data.forEach(function(d) {
+        xValue = Number(chart._xAccessor(d));
+        yValue = Number(chart._yAccessor(d));
+
+        if (! densityMatrix[xValue]) {
+            densityMatrix[xValue] = {};
+        }
+
+        if (densityMatrix[xValue][yValue]) {
+            densityMatrix[xValue][yValue] ++;
+        } else {
+            densityMatrix[xValue][yValue] = 1;
+        }
+    });
+
+    return densityMatrix;
+}
+
+
+/**
+ * @override
+ */
 scatterplot.view.standard.prototype.render = function(data) {
     /*
      * Definde reference to the chart.
@@ -46,14 +79,58 @@ scatterplot.view.standard.prototype.render = function(data) {
     /*
      * Render new bubbles.
      */
+    var densityMatrix = this.getDensityMatrix(data);
     bubbles.enter()
         .append('a')
         .attr('xlink:href', function(d, i) {
-            var routeArray = location.pathname.split('/');
-            routeArray.pop(); // Remove last segment of url
-            return routeArray.join('/') + '/' + d.id;
-        })
-        .append('circle')
+            /*
+             * Create new URI object from current location.
+             */
+            var uri = URI(location.href);
+            /*
+             * Object x and y values.
+             */
+            var x = chart._xAccessor.call(undefined, d);
+            var y = chart._yAccessor.call(undefined, d);
+            /*
+             * Check point density. If density equals to 1 set direct link to the object page.
+             * Otherwise set link to set of objects on gallery view.
+             */
+            if (densityMatrix[x][y] === 1) {
+                var uri = uri.segment(2, d.id)
+                    .search('');
+            } else {
+                /*
+                 * Prepare filterJSON with search params corresponding to that objects set.
+                 */
+                var filterJSON;
+                if (uri.search(true).filterJSON) {
+                    filterJSON = JSON.parse(uri.search(true).filterJSON);
+                } else {
+                    filterJSON = {};
+                }
+                /*
+                 * Prepare filterJSON with search params corresponding to that objects set.
+                 */
+                filterJSON[chart._xLabel] = [{
+                    min: chart._xAccessor(d),
+                    max: chart._xAccessor(d)
+                }];
+                filterJSON[chart._yLabel] = [{
+                    min: chart._yAccessor(d),
+                    max: chart._yAccessor(d)
+                }];
+                /*
+                 * Generate URL to gallery with prepared filterJSON.
+                 */
+                var uri = uri.segment(2, 'gallery')
+                    .search('?filterJSON=' + JSON.stringify(filterJSON));
+            }
+            /*
+             * Return URL string.
+             */
+            return uri.href();
+        }).append('circle')
         .attr('class', 'bubble')
         .style('opacity', 0.5)
         .style('fill', chart._color)
