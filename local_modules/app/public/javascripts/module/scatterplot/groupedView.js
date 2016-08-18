@@ -16,53 +16,6 @@ scatterplot.view.grouped.prototype = Object.create(scatterplot.view.main.prototy
 
 
 /**
- * Get value interval index.
- * @private
- * @param {Number} value
- * @param {Numbers} intervals
- * @returns {Integer}
- */
-scatterplot.view.grouped.prototype._getGroupIndex = function(value, intervals) {
-    /*
-     * Define group number/counter.
-     */
-    var i;
-    /*
-     * Define first interval left and right border.
-     */
-    var right;
-    var left = 0;
-    /*
-     * Get interval's max value.
-     */
-    var max = d3.max(intervals);
-    /*
-     * Loop through interval and find value group number.
-     */
-    for (i = 0; i < intervals.length; i ++) {
-        /*
-         * Get interval right border.
-         */
-        right = intervals[i];
-        /*
-         * Check value within interval.
-         */
-        if (value == max && value >= left && value <= right) {
-            break;
-        } else if (value >= left && value < right) {
-            break;
-        }
-        /*
-         * Update left border.
-         */
-        left = right;
-    }
-
-    return i;
-};
-
-
-/**
  * @override
  */
 scatterplot.view.grouped.prototype.getDensityMatrix = function(data, xTicks, yTicks) {
@@ -71,33 +24,20 @@ scatterplot.view.grouped.prototype.getDensityMatrix = function(data, xTicks, yTi
      */
     var chart = this._chart;
     /*
-     * Generate density matrix filled with values.
-     * The matrix rows and columns equals to the chart's rows and columns number.
+     * Get data x and y values.
      */
-    var densityMatrix = xTicks.map(function() {
-        return Array.apply(null, Array(yTicks.length)).map(Number.prototype.valueOf, 0);
+    var xValues = data.map(function(d) {
+        return Number(chart._xAccessor(d));
+    });
+    var yValues = data.map(function(d) {
+        return Number(chart._yAccessor(d));
     });
     /*
-     * Populate density matrix.
+     * Get density matrix.
      */
-    data.forEach(function(d) {
-        /*
-         * Get x and y values of the data point.
-         */
-        var x = Number(chart._xAccessor(d));
-        var y = Number(chart._yAccessor(d));
-        /*
-         * Find corresponding x and y indexes within x and y ticks.
-         */
-        var xIndex = this._getGroupIndex(x, xTicks);
-        var yIndex = yTicks.length - 1 - this._getGroupIndex(y, yTicks);
-        /*
-         * Increment corresponding element of density matrix.
-         */
-        densityMatrix[xIndex][yIndex] ++;
-    }, this);
-
-    return densityMatrix;
+    return new GroupingAlgorithm()
+        .setUp(xValues, xTicks, yValues, yTicks)
+        .execute();
 };
 
 
