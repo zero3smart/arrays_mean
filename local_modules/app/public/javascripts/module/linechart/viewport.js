@@ -348,7 +348,7 @@ linechart.viewport.prototype.update = function(data) {
                         '<li class="legend-list-item">' +
                             '<div class="line-graph-item-container">' +
                                 '<span style="background-color: ' + self._colors[j] + ';" class="item-marker"></span>' +
-                                '<span>Something: ' + d.count + ' Occurences</span>' +
+                                '<span>' + d.label + ': ' + d.count + ' Occurences</span>' +
                             '</div>' +
                         '</li>' +
                     '</ul>' +

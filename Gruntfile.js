@@ -125,6 +125,12 @@ module.exports = function(grunt) {
         cwd: 'bower_components/scrollmagic/scrollmagic/uncompressed',
         src: 'ScrollMagic.js',
         dest: 'local_modules/app/public/javascripts/lib/scrollmagic'
+      },
+      lodash: {
+        expand: true,
+        cwd: 'bower_components/lodash/dist/',
+        src: '*',
+        dest: 'local_modules/app/public/javascripts/lib/lodash'
       }
     },
 
