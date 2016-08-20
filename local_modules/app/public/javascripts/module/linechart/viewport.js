@@ -122,7 +122,7 @@ linechart.viewport = function(data) {
         top : 25,
         right : 15,
         bottom : 20,
-        left : 60
+        left : 70
     };
     /**
      * Chart tooltip.
@@ -138,7 +138,10 @@ linechart.viewport = function(data) {
         self.resize();
         self.update();
     });
-}
+};
+
+
+linechart.viewport.prototype = Object.create(linechart.base.prototype);
 
 
 /**
@@ -258,21 +261,6 @@ linechart.viewport.prototype.resize = function() {
 
 
 /**
- * Get y extent.
- * @private
- * @return {Number}
- */
-linechart.viewport.prototype._getYDomain = function() {
-
-    return [0, this._data.reduce(function(maxValue, dataSet) {
-        return Math.max(maxValue, d3.max(dataSet.map(function(d) {
-            return d.count;
-        })));
-    }, 0)];
-};
-
-
-/**
  * Update chart.
  * @public
  * @param {Object[]} [data]
@@ -292,13 +280,11 @@ linechart.viewport.prototype.update = function(data) {
     /*
      * Get x extent.
      */
-    this._xDomain = d3.extent(this._data[0], function(d) {
-        return d.year;
-    });
+    this._xDomain = this._getXDomain();
     /*
      * Get y extent.
      */
-    this._yDomain = this._getYDomain(this._data);
+    this._yDomain = this._getYDomain();
     /*
      * Update scale functions.
      */

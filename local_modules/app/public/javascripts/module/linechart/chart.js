@@ -1,4 +1,5 @@
 /**
+ * Line focus chart.
  * @constructor
  * @param {Object[]} data
  */
@@ -10,11 +11,15 @@ linechart.chart = function(data) {
      */
     this._data = data;
     /**
-     * 
+     * Chart main part.
+     * @private
+     * @member {linechart.viewport}
      */
     this._viewport = new linechart.viewport(this._data);
     /**
-     * 
+     * Chart navigation part.
+     * @private
+     * @member {linechart.navigation}
      */
     this._navigation = new linechart.navigation(this._data, this._viewport);
 }

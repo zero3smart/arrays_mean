@@ -11,7 +11,9 @@ linechart.navigation = function(data, viewport) {
      */
     this._data = data;
     /**
-     * 
+     * Chart to upadte.
+     * @private
+     * @member {linechart.viewport}
      */
     this._viewport = viewport;
     /**
@@ -144,7 +146,10 @@ linechart.navigation = function(data, viewport) {
         self.resize();
         self.update();
     });
-}
+};
+
+
+linechart.navigation.prototype = Object.create(linechart.base.prototype);
 
 
 /**
@@ -380,21 +385,6 @@ linechart.navigation.prototype.resize = function() {
 
 
 /**
- * Get y extent.
- * @private
- * @return {Number}
- */
-linechart.navigation.prototype._getYDomain = function() {
-
-    return [0, this._data.reduce(function(maxValue, dataSet) {
-        return Math.max(maxValue, d3.max(dataSet.map(function(d) {
-            return d.count;
-        })));
-    }, 0)];
-};
-
-
-/**
  * Update chart.
  * @public
  * @param {Object[]} [data]
@@ -412,9 +402,7 @@ linechart.navigation.prototype.update = function(data) {
     /*
      * Get x extent.
      */
-    this._xDomain = d3.extent(this._data[0], function(d) {
-        return d.year;
-    });
+    this._xDomain = this._getXDomain();
     /*
      * Get y extent.
      */
