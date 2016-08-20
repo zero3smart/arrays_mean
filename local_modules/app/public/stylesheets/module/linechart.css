@@ -1,3 +1,7 @@
+linechart svg .axis line, .linechart svg .axis path {
+    shape-rendering: crispEdges;
+}
+
 .linechart .y-axis path {
 	visibility: hidden;
 }

@@ -6171,6 +6171,9 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 	font-weight: 600;
 	font-size: 16px;
 }
+linechart svg .axis line, .linechart svg .axis path {
+    shape-rendering: crispEdges;
+}
 .linechart .y-axis path {
 	visibility: hidden;
 }
