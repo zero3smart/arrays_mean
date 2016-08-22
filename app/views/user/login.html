@@ -1,13 +1,13 @@
-{% extends "../shared/shared_layout.html" %}
+{% extends "../homepage/homepage.html" %}
 
-{% block bodyWrapper %}
+{% block loginWrapper %}
     <script src="https://cdn.auth0.com/js/lock/10.0/lock.min.js"></script>
 
     <div id="root" style="width: 280px; margin: 40px auto; padding: 10px;"></div>
 
     <script>
-        var lock = new Auth0Lock('#{env.AUTH0_CLIENT_ID}', '#{env.AUTH0_DOMAIN}',{ auth: {
-            redirectUrl: '#{env.AUTH0_CALLBACK_URL}'
+        var lock = new Auth0Lock('{{env.AUTH0_CLIENT_ID}}', '{{env.AUTH0_DOMAIN}}',{ auth: {
+            redirectUrl: '{{env.AUTH0_CALLBACK_URL}}'
             , responseType: 'code'
             , params: {
                 scope: 'openid name email'

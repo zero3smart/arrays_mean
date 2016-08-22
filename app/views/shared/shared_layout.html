@@ -30,8 +30,11 @@
         mixpanel.init("{{ env.MIXPANEL_TOKEN }}");</script><!-- end Mixpanel -->
             
     </head>
+
     {% block bodyWrapper %}
-        Body
+    {% endblock %}
+
+    {% block loginWrapper %}}
     {% endblock %}
 
     {% if env.FE_LIVERELOAD == "true" %}
