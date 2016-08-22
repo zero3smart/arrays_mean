@@ -162,7 +162,9 @@ exports.Descriptions =
                     "Rights",
                     "Short Title",
                     "Url",
-                    "Language"
+                    "Language",
+                    "Publication Title",
+                    "Date"
                 ],
             //
             //
