@@ -29,6 +29,7 @@ constructor.prototype.MountRoutes = function()
     self._mountRoutes_ensureWWW();
 
     // View endpoints
+    require('./auth')(self.context);
     require('./homepage')(self.context);
     require('./array')(self.context);
     require('./monitoring')(self.context);

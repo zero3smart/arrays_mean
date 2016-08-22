@@ -1,9 +1,10 @@
 var winston = require('winston');
+var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 
 module.exports = function(context) {
     var app = context.app;
 
-    app.get('/array/:source_key/:object_id', function(req, res)
+    app.get('/array/:source_key/:object_id', ensureLoggedIn, function(req, res)
     {
         var source_key = req.params.source_key;
         if (source_key == null || typeof source_key === 'undefined' || source_key == "") {

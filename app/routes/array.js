@@ -1,10 +1,11 @@
 var url = require('url');
 var winston = require('winston');
+var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 
 module.exports = function(context) {
     var app = context.app;
 
-    app.get('/array/create', function(req, res)
+    app.get('/array/create', ensureLoggedIn, function(req, res)
     {
         context.data_preparation_create_controller.BindDataFor_datasetsListing(function(err, bindData)
         {
@@ -21,7 +22,7 @@ module.exports = function(context) {
     var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud'];
 
     viewTypes.forEach(function(viewType) {
-        app.get('/array/:source_key/' + viewType, function(req, res)
+        app.get('/array/:source_key/' + viewType, ensureLoggedIn, function(req, res)
         {
             var source_key = req.params.source_key;
             if (source_key == null || typeof source_key === 'undefined' || source_key == "") {

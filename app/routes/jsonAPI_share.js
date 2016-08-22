@@ -1,5 +1,6 @@
 var url = require('url');
 var winston = require('winston');
+var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 
 module.exports = function(context) {
     var app = context.app;
@@ -8,7 +9,7 @@ module.exports = function(context) {
     var apiURLPrefix = '/' + apiVersion + '/';
 
     //
-    app.post(apiURLPrefix + 'share', function(req, res)
+    app.post(apiURLPrefix + 'share', ensureLoggedIn, function(req, res)
     {
         var urlContainingShareParams = req.body.url;
         if (typeof urlContainingShareParams === 'undefined' || urlContainingShareParams == null || urlContainingShareParams == "") {

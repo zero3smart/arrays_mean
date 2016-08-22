@@ -16,7 +16,36 @@ require('dotenv').config(dotenv_config);
 var path = require('path');
 var express = require('express');
 var winston = require('winston');
-var moment = require("moment"); 
+var Auth0Strategy = require('passport-auth0');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var passport = require('passport');
+var session = require('express-session');
+
+// This will configure Passport to use Auth0
+var strategy = new Auth0Strategy({
+    domain:       process.env.AUTH0_DOMAIN,
+    clientID:     process.env.AUTH0_CLIENT_ID,
+    clientSecret: process.env.AUTH0_CLIENT_SECRET,
+    callbackURL:  process.env.AUTH0_CALLBACK_URL || 'http://localhost:9080/callback'
+}, function(accessToken, refreshToken, extraParams, profile, done) {
+    // accessToken is the token to call Auth0 API (not needed in the most cases)
+    // extraParams.id_token has the JSON Web Token
+    // profile has all the information from the user
+    return done(null, profile);
+});
+
+passport.use(strategy);
+
+// we can use this section to keep a smaller payload
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+    done(null, user);
+});
+
 var app = express();
 //
 //
@@ -42,13 +71,20 @@ nunjucks.setup(nunjucks_config, app).then(require('./nunjucks/filters'));
 app.use(context.logging.requestLogger);
 app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
 app.use(express.static(path.join(__dirname, '/public')));
-var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false })); // application/x-www-form-urlencoded
 app.use(bodyParser.json()); // application/JSON
 app.use(require('compression')());
 app.set('trust proxy', true);
 var helmet = require('helmet');
 app.use(helmet.xframe());
+app.use(cookieParser());
+app.use(session({
+    secret: 'asdfwfwefosdiofjo10293',
+    resave: true,
+    saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 //
 //
 var mongoose_client = require('../lib/mongoose_client/mongoose_client');
