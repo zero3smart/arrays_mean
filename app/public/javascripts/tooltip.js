@@ -27,7 +27,7 @@ function Tooltip() {
      * @member {'top'|'right'|'bottom'|'left'}
      */
     this._position = 'left';
-};
+}
 
 
 /**
@@ -55,7 +55,7 @@ Tooltip.prototype.hide = function() {
     }
 
     return this;
-}
+};
 
 
 /**

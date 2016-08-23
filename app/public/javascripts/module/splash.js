@@ -9,7 +9,7 @@ $(function() {
 	S: 6
 	*/
 
-	var letter_1 = []
+	var letter_1 = [];
 	letter_1[0] = "/images/letters/letters_a1.png";
 	letter_1[1] = "/images/letters/letters_a2.png";
 	letter_1[2] = "/images/letters/letters_a3.png";
@@ -19,7 +19,7 @@ $(function() {
 	letter_1[6] = "/images/letters/letters_a7.png";
 	letter_1[7] = "/images/letters/letters_a8.png";
 
-	var letter_2 = []
+	var letter_2 = [];
 	letter_2[0] = "/images/letters/letters_r1.png";
 	letter_2[1] = "/images/letters/letters_r2.png";
 	letter_2[2] = "/images/letters/letters_r3.png";
@@ -29,7 +29,7 @@ $(function() {
 	letter_2[6] = "/images/letters/letters_r7.png";
 	letter_2[7] = "/images/letters/letters_r8.png";
 
-	var letter_3 = []
+	var letter_3 = [];
 	letter_3[0] = "/images/letters/letters_r1.png";
 	letter_3[1] = "/images/letters/letters_r2.png";
 	letter_3[2] = "/images/letters/letters_r3.png";
@@ -39,7 +39,7 @@ $(function() {
 	letter_3[6] = "/images/letters/letters_r7.png";
 	letter_3[7] = "/images/letters/letters_r8.png";
 
-	var letter_4 = []
+	var letter_4 = [];
 	letter_4[0] = "/images/letters/letters_a1.png";
 	letter_4[1] = "/images/letters/letters_a2.png";
 	letter_4[2] = "/images/letters/letters_a3.png";
@@ -49,7 +49,7 @@ $(function() {
 	letter_4[6] = "/images/letters/letters_a7.png";
 	letter_4[7] = "/images/letters/letters_a8.png";
 
-	var letter_5 = []
+	var letter_5 = [];
 	letter_5[0] = "/images/letters/letters_y1.png";
 	letter_5[1] = "/images/letters/letters_y2.png";
 	letter_5[2] = "/images/letters/letters_y3.png";
@@ -59,7 +59,7 @@ $(function() {
 	letter_5[6] = "/images/letters/letters_y7.png";
 	letter_5[7] = "/images/letters/letters_y8.png";
 
-	var letter_6 = []
+	var letter_6 = [];
 	letter_6[0] = "/images/letters/letters_s1.png";
 	letter_6[1] = "/images/letters/letters_s2.png";
 	letter_6[2] = "/images/letters/letters_s3.png";
@@ -81,10 +81,9 @@ $(function() {
 
 	function swapImage(id, letter_array) {
 		var shape = Math.floor(Math.random() * 2); // 50% change to get a shape or letter
-		if (shape == 0) {
-		    var r = 0;
-		} else {
-		    var r = Math.floor(Math.random() * (letter_array.length) + 1);
+		var r = 0;
+		if (shape !== 0) {
+		    r = Math.floor(Math.random() * (letter_array.length) + 1);
 		}
 	    var src = letter_array[r];
 	    $(id).attr("src", src);

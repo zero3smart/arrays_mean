@@ -187,6 +187,7 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
     var filterObj = {};
     var existing_filterCols = Object.keys(existing_filterObj);
     var existing_filterCols_length = existing_filterCols.length;
+    var filterVals;
     for (var i = 0 ; i < existing_filterCols_length ; i++) {
         var existing_filterCol = existing_filterCols[i];
         if (existing_filterCol == this_filterCol) { 
@@ -195,7 +196,7 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
         }
         var existing_filterVals = existing_filterObj[existing_filterCol];
         //
-        var filterVals = [];
+        filterVals = [];
         //
         var existing_filterVals_length = existing_filterVals.length;
         for (var j = 0 ; j < existing_filterVals_length ; j++) {
@@ -210,7 +211,7 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
     }
     //
     if (isThisAnActiveFilter === false) { // do not push if active, since we'd want the effect of unsetting it
-        var filterVals = filterObj[this_filterCol] || [];
+        filterVals = filterObj[this_filterCol] || [];
         if (filterVals.indexOf(filterVal) == -1) {
             var filterIsString = typeof this_filterVal === 'string';
             var filterVal = filterIsString ? encodeURIComponent(this_filterVal) : this_filterVal;

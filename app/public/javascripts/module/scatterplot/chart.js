@@ -127,13 +127,13 @@ scatterplot.chart = function(data, metaData) {
      * @private
      * @member {Function}
      */
-    this._xAccessor = function(d) { return d['x']; }
+    this._xAccessor = function(d) { return d.x; };
     /**
      * Data y accessor.
      * @private
      * @member {Function}
      */
-    this._yAccessor = function(d) { return d['y']; }
+    this._yAccessor = function(d) { return d.y; };
     /**
      * X axis label.
      * @private
@@ -184,7 +184,7 @@ scatterplot.chart = function(data, metaData) {
         self.resize();
         self.update();
     };
-}
+};
 
 
 /**
@@ -306,12 +306,12 @@ scatterplot.chart.prototype.resize = function() {
      */
     if (this._isMobileMode()) {
         this._margin.left = this._axesHeight + 1;
-        this._xLabelContainer.style('visibility', 'hidden')
-        this._yLabelContainer.style('visibility', 'hidden')
+        this._xLabelContainer.style('visibility', 'hidden');
+        this._yLabelContainer.style('visibility', 'hidden');
     } else {
         this._margin.left = this._marginLeft;
-        this._xLabelContainer.style('visibility', 'visible')
-        this._yLabelContainer.style('visibility', 'visible')
+        this._xLabelContainer.style('visibility', 'visible');
+        this._yLabelContainer.style('visibility', 'visible');
     }
     /*
      * Recalculate inner width and shift canvas again.
@@ -525,7 +525,7 @@ scatterplot.chart.prototype.update = function(data) {
     if (this._searchBy.length && this._searchBy[1] !== '') {
         data = data.filter(function(d) {
             if (Array.isArray(d[self._searchBy[0]])) {
-                return d[self._searchBy[0]].some(function(d) { return d.toLowerCase().indexOf(self._searchBy[1]) >= 0 })
+                return d[self._searchBy[0]].some(function(d) { return d.toLowerCase().indexOf(self._searchBy[1]) >= 0; });
             } else {
                 return d[self._searchBy[0]].toLowerCase().indexOf(self._searchBy[1]) >= 0;
             }
@@ -548,7 +548,7 @@ scatterplot.chart.prototype.update = function(data) {
     var xBinsAmount = Math.floor(this._innerWidth / xBinLength);
     var min = d3.min(this._xScale.range());
     var max = d3.max(this._xScale.range());
-    var xBinLength = (max - min) / (xBinsAmount - 1);
+    xBinLength = (max - min) / (xBinsAmount - 1);
     /*
      * Get ticks values.
      */
@@ -575,9 +575,9 @@ scatterplot.chart.prototype.update = function(data) {
      */
     var yBinLength = this._getBinLength(50, this._innerHeight);
     var yBinsAmount = Math.ceil(this._innerHeight / yBinLength);
-    var min = d3.min(this._yScale.range());
-    var max = d3.max(this._yScale.range());
-    var yBinLength = (max - min) / (yBinsAmount - 1);
+    min = d3.min(this._yScale.range());
+    max = d3.max(this._yScale.range());
+    yBinLength = (max - min) / (yBinsAmount - 1);
     /*
      * Get ticks values.
      */
@@ -642,7 +642,7 @@ scatterplot.chart.prototype._getFilter = function(key) {
 
     return function(d, i) {
         return d[key] && ! /^\s*$/.test(d[key]);
-    }
+    };
 };
 
 

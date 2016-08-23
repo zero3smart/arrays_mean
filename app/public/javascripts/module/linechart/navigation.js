@@ -11,7 +11,9 @@ linechart.navigation = function(data, viewport) {
      */
     this._data = data;
     /**
-     * 
+     * Chart to upadte.
+     * @private
+     * @member {linechart.viewport}
      */
     this._viewport = viewport;
     /**
@@ -120,6 +122,12 @@ linechart.navigation = function(data, viewport) {
             self._brushEventHandler();
         });
     /**
+     * Brush handle radius.
+     * @private
+     * @member {Integer}
+     */
+    this._brushHandleRadius = 7;
+    /**
      * Chart margins.
      * @private
      * @member {Object}
@@ -128,17 +136,19 @@ linechart.navigation = function(data, viewport) {
         top : 25,
         right : 15,
         bottom : 30,
-        left : 0
+        left : this._brushHandleRadius
     };
     /*
      * Set up window resize event handler.
      */
-    var self = this;
     d3.select(window).on('resize.line-graph-navigation', function() {
         self.resize();
         self.update();
     });
-}
+};
+
+
+linechart.navigation.prototype = Object.create(linechart.base.prototype);
 
 
 /**
@@ -151,8 +161,7 @@ linechart.navigation.prototype._brushEventHandler = function() {
      * Restore viewport if brush empty.
      */
     if (this._brush.empty()) {
-        this._leftSide.attr('width', 0);
-        this._rightSide.attr('width', 0);
+        this._resetBrush();
         return this._viewport.update(this._data);
     }
     /*
@@ -169,7 +178,7 @@ linechart.navigation.prototype._brushEventHandler = function() {
             if (d.year >= min && d.year <= max) {
                 return true;
             }
-        })
+        });
     });
     /*
      * Define brush height.
@@ -246,7 +255,21 @@ linechart.navigation.prototype.render = function(container) {
      * Append brush.
      */
     this._brushContainer = brushContainer.append('g')
-        .attr('class', 'x brush');
+        .attr('class', 'x brush')
+        .call(this._brush);
+    /*
+     * Render brush handles.
+     */
+    this._brushContainer.selectAll('.resize')
+        .append('rect')
+        .attr('class', 'handle')
+        .attr('x', -1)
+        .attr('y', 0)
+        .attr('width', 2);
+    this._brushContainer.selectAll('.resize')
+        .append('circle')
+        .attr('class', 'handle')
+        .attr('r', this._brushHandleRadius);
     /*
      * Append x axis bottom border line.
      */
@@ -257,10 +280,6 @@ linechart.navigation.prototype.render = function(container) {
      * Set up chart dimension.
      */
     this.resize();
-    /*
-     * Populate with data.
-     */
-    this.update();
 
     return this;
 };
@@ -322,22 +341,8 @@ linechart.navigation.prototype.resize = function() {
     this._brushContainer.call(this._brush);
     this._brushContainer.selectAll('rect')
         .attr('height', this._innerHeight + this._xAxisHeight);
-    /*
-     * Render brush handles.
-     */
-    if (this._brushContainer.selectAll('.resize circle.handle').size() == 0) {
-        this._brushContainer.selectAll('.resize')
-            .append('rect')
-            .attr('class', 'handle')
-            .attr('x', -1)
-            .attr('y', 0)
-            .attr('width', 2)
-            .attr('height', this._innerHeight + this._xAxisHeight);
-        this._brushContainer.selectAll('.resize')
-            .append('circle')
-            .attr('class', 'handle')
-            .attr('r', 7);
-    }
+    this._brushContainer.selectAll('rect.handle')
+        .attr('height', this._innerHeight + this._xAxisHeight);
     /*
      * Move handles.
      */
@@ -361,7 +366,7 @@ linechart.navigation.prototype.resize = function() {
      * Resize brush gate's leafs.
      */
     if (! this._brush.empty()) {
-        var extent = this._brush.extent();
+        extent = this._brush.extent();
         var min = extent[0];
         var max = extent[1];
         this._leftSide.attr('x', 1)
@@ -375,21 +380,6 @@ linechart.navigation.prototype.resize = function() {
     this._xAxisBorder.attr('x2', this._innerWidth);
 
     return this;
-};
-
-
-/**
- * Get y extent.
- * @private
- * @return {Number}
- */
-linechart.navigation.prototype._getYDomain = function() {
-
-    return [0, this._data.reduce(function(maxValue, dataSet) {
-        return Math.max(maxValue, d3.max(dataSet.map(function(d) {
-            return d.count;
-        })));
-    }, 0)];
 };
 
 
@@ -411,9 +401,7 @@ linechart.navigation.prototype.update = function(data) {
     /*
      * Get x extent.
      */
-    this._xDomain = d3.extent(this._data[0], function(d) {
-        return d.year;
-    });
+    this._xDomain = this._getXDomain();
     /*
      * Get y extent.
      */
@@ -445,5 +433,30 @@ linechart.navigation.prototype.update = function(data) {
             return '\'' + d3.select(this).text().slice(2);
         });
 
+    if (this._brush.empty()) {
+        this._resetBrush();
+    }
+
     return this;
+};
+
+
+/**
+ * Reset brush.
+ * @private
+ */
+linechart.navigation.prototype._resetBrush = function() {
+    /*
+     * Reset brush gate leafs.
+     */
+    this._leftSide.attr('width', 0);
+    this._rightSide.attr('width', 0);
+    /*
+     * Set input domain as brush extent.
+     */
+    this._brush.extent(this._xScale.domain());
+    /*
+     * Resize brush.
+     */
+    this._brushContainer.call(this._brush);
 };

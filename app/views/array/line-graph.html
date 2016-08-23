@@ -118,6 +118,7 @@
                         <script type="text/javascript">
                             var graphData = [];
                             graphData[0] = {{ groupedResults | dump | safe }}.map(function(row) {
+                                row.label = "{{ arrayTitle }}";
                                 row.count = Number(row.count);
                                 row.year = new Date(row.year);
                                 return row;
@@ -167,6 +168,7 @@
         {% include "../partials/modal.html" %}
 
         <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="/javascripts/lib/lodash/lodash.js"></script>
 
         <script type="text/javascript" src="/javascripts/lib/bootstrap/bootstrap.js"></script>
         <script type="text/javascript" src="/javascripts/lib/sharrre/jquery.sharrre.js"></script>
@@ -177,6 +179,7 @@
         <script type="text/javascript" src="/javascripts/tooltip.js"></script>
         <script type="text/javascript" src="/javascripts/module/scatterplot/main.js"></script>
         <script type="text/javascript" src="/javascripts/module/linechart/main.js"></script>
+        <script type="text/javascript" src="/javascripts/module/linechart/base.js"></script>
         <script type="text/javascript" src="/javascripts/module/linechart/viewport.js"></script>
         <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
         <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
@@ -209,8 +212,46 @@
             });
         }));
  */
-        var lineChart = new linechart.chart(graphData)
-            .render("#linechart");
+        if ("{{ array_source_key }}" == "isb_library-r1") {
+
+            // Only do this for ISB data
+            d3.csv('/javascripts/module/linechart/Keyword_Frequency_Data_20160819_v2.csv', function(error, series) {
+                if (error) {
+                    throw new Error("Can't load data file: " + JSON.stringify(error));
+                }
+
+                // Group series by keyword
+                var groupedSeriesObj = _.groupBy(series, "Keyword");
+
+                // Save groups to array of objects
+                var groupedSeriesArray = [];
+                for (var key in groupedSeriesObj) {
+                    groupedSeriesArray.push(groupedSeriesObj[key]);
+                }
+
+                var data = [];
+                data.push(groupedSeriesArray.map(function(row) {
+                    row.map(function(row2) {
+                        row2.label = row2.Keyword;
+                        row2.count = Number(row2['Number of Publications']);
+                        row2.year = new Date(row2.Year);
+                        return row2;
+                    })
+                }));
+
+                // Merge data from DB into custom data
+                groupedSeriesArray.push(graphData[0]);
+
+                var lineChart = new linechart.chart(groupedSeriesArray)
+                    .render("#linechart");
+            });
+        } else {
+
+            // Do this for all other data besides ISB
+            var lineChart = new linechart.chart(graphData)
+                .render("#linechart");
+        }
+
         </script>
 
     {% include "../partials/survicate.html" %}

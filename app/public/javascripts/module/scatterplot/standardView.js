@@ -9,7 +9,7 @@ scatterplot.view.standard = function(chart) {
      * Call parent class constructor.
      */
     scatterplot.view.main.call(this, chart);
-}
+};
 
 
 scatterplot.view.standard.prototype = Object.create(scatterplot.view.main.prototype);
@@ -38,14 +38,15 @@ scatterplot.view.standard.prototype.getDensityMatrix = function(data) {
         }
 
         if (densityMatrix[xValue][yValue]) {
-            densityMatrix[xValue][yValue] ++;
+            densityMatrix[xValue][yValue].density ++;
         } else {
-            densityMatrix[xValue][yValue] = 1;
+            d.density = 1;
+            densityMatrix[xValue][yValue] = d;
         }
     });
 
     return densityMatrix;
-}
+};
 
 
 /**
@@ -56,11 +57,21 @@ scatterplot.view.standard.prototype.render = function(data) {
      * Definde reference to the chart.
      */
     var chart = this._chart;
+
+    var chartData = [];
+    var densityMatrix = this.getDensityMatrix(data);
+
+    for (var i in densityMatrix) {
+        for (var j in densityMatrix[i]) {
+            chartData.push(densityMatrix[i][j]);
+        }
+    }
+
     /*
      * Select bubbles.
      */
     var bubbles = chart._canvas.selectAll('circle.bubble')
-        .data(data.map(function(d) {
+        .data(chartData.map(function(d) {
             d.radius = chart._radius;
             return d;
         }), function(d) {
@@ -72,14 +83,13 @@ scatterplot.view.standard.prototype.render = function(data) {
     bubbles.transition()
         .duration(1000)
         .attr('cx', function(d) {
-            return chart._xScale(chart._xAccessor.call(undefined, d))
+            return chart._xScale(chart._xAccessor(d));
         }).attr('cy', function(d) {
-            return chart._yScale(chart._yAccessor.call(undefined, d))
+            return chart._yScale(chart._yAccessor(d));
         }).attr('r', chart._radius);
     /*
      * Render new bubbles.
      */
-    var densityMatrix = this.getDensityMatrix(data);
     bubbles.enter()
         .append('a')
         .attr('xlink:href', function(d, i) {
@@ -90,14 +100,14 @@ scatterplot.view.standard.prototype.render = function(data) {
             /*
              * Object x and y values.
              */
-            var x = chart._xAccessor.call(undefined, d);
-            var y = chart._yAccessor.call(undefined, d);
+            var x = chart._xAccessor(d);
+            var y = chart._yAccessor(d);
             /*
              * Check point density. If density equals to 1 set direct link to the object page.
              * Otherwise set link to set of objects on gallery view.
              */
-            if (densityMatrix[x][y] === 1) {
-                var uri = uri.segment(2, d.id)
+            if (densityMatrix[x][y].density === 1) {
+                uri = uri.segment(2, d.id)
                     .search('');
             } else {
                 /*
@@ -123,7 +133,7 @@ scatterplot.view.standard.prototype.render = function(data) {
                 /*
                  * Generate URL to gallery with prepared filterJSON.
                  */
-                var uri = uri.segment(2, 'gallery')
+                uri = uri.segment(2, 'gallery')
                     .search('?filterJSON=' + JSON.stringify(filterJSON));
             }
             /*
@@ -135,9 +145,9 @@ scatterplot.view.standard.prototype.render = function(data) {
         .style('opacity', 0.5)
         .style('fill', chart._color)
         .attr('cx', function(d) {
-            return chart._xScale(chart._xAccessor.call(undefined, d))
+            return chart._xScale(chart._xAccessor.call(undefined, d));
         }).attr('cy', function(d) {
-            return chart._yScale(chart._yAccessor.call(undefined, d))
+            return chart._yScale(chart._yAccessor.call(undefined, d));
         }).attr('r', 0)
         .on('mouseover', function(d) {
             chart._bubbleMouseOverEventHandler(this, d);
@@ -161,18 +171,44 @@ scatterplot.view.standard.prototype.render = function(data) {
  * @override
  */
 scatterplot.view.standard.prototype.showTooltip = function(bubble, data) {
-
+    /*
+     * Stash reference to the chart.
+     */
     var chart = this._chart;
-
-    this._tooltip.setContent(
-        '<div class="scatterplot-tooltip-container">' +
-            '<div class="scatterplot-tooltip-image" style="background-image:url(' + data[chart._metaData.fe_designatedFields.medThumbImageURL] + ')"></div>' +
-            '<div class="scatterplot-tooltip-title">' + data[chart._metaData.fe_designatedFields.objectTitle] + '</div>' +
-            '<div class="scatterplot-tooltip-content">' +
-            chart._xAccessor(data) + ' ' + chart._xLabel.replace('_', ' ') + ', ' +
-            chart._yAccessor(data) + ' ' + chart._yLabel.replace('_', ' ') +
+    /*
+     * Open tooltip's main container.
+     */
+    var content = '<div class="scatterplot-tooltip-container">';
+    /*
+     * Append image if there is only one character.
+     */
+    if (data.density === 1) {
+        content += '<div class="scatterplot-tooltip-image" style="background-image:url(' + data[chart._metaData.fe_designatedFields.medThumbImageURL] + ')"></div>' +
+        '<div class="scatterplot-tooltip-title">' + data[chart._metaData.fe_designatedFields.objectTitle] + '</div>';
+    }
+    /*
+     * Open tooltip's text container.
+     */
+    content += '<div class="scatterplot-tooltip-content">';
+    /*
+     * If there is more than one character include density information.
+     */
+    if (data.density > 1) {
+        content += '<div>' + data.density + ' Characters</div>';
+    }
+    /*
+     * Append common information.
+     */
+    content += '<div>' +
+                chart._xAccessor(data) + ' ' + chart._xLabel.replace('_', ' ') + ', ' +
+                chart._yAccessor(data) + ' ' + chart._yLabel.replace('_', ' ') +
             '</div>' +
-        '</div>')
+        '</div>' +
+    '</div>';
+    /*
+     * Set up and show tooltip.
+     */
+    this._tooltip.setContent(content)
         .setPosition('top')
         .setOffset(chart._radius / 2)
         .show(bubble);
