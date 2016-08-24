@@ -1,170 +1,154 @@
-{% extends "../shared/shared_layout.html" %}
+{% extends "../layout/homepage.html" %}
 
 {% block headSuffix %}
     <title>Arrays</title>
-    
-    
 {% endblock %}
 
-{% block bodyWrapper %}
-    <body class="home splash">
-        <div id="page" class="site">
+{% block content %}
+    <div id="primary" class="content-area">
+    <main id="main" class="site-main" role="main">
 
-            <div id="content" class="site-content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
+                    <!--<div class="splash-logo">
+                        <img src="/images/arrays-logo-color-shapes.svg" class="img-responsive" alt="Arrays logo" />
+                    </div>-->
 
-                <div id="primary" class="content-area">
-                    <main id="main" class="site-main" role="main">
+                    <div class="splash-logo-letters">
+                        <img id="letter_1" class="letter" src="/images/letters/letters_a1.png"><img id="letter_2" class="letter" src="/images/letters/letters_r1.png"><img id="letter_3" class="letter" src="/images/letters/letters_r1.png"><img id="letter_4" class="letter" src="/images/letters/letters_a1.png"><img id="letter_5" class="letter" src="/images/letters/letters_y1.png"><img id="letter_6" class="letter" src="/images/letters/letters_s1.png">
+                    </div>
+                </div>
+            </div><!-- .row -->
 
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
-                                    <!--<div class="splash-logo">
-                                        <img src="/images/arrays-logo-color-shapes.svg" class="img-responsive" alt="Arrays logo" />
-                                    </div>-->
-                                    
-                                    <div class="splash-logo-letters">
-                                    	<img id="letter_1" class="letter" src="/images/letters/letters_a1.png"><img id="letter_2" class="letter" src="/images/letters/letters_r1.png"><img id="letter_3" class="letter" src="/images/letters/letters_r1.png"><img id="letter_4" class="letter" src="/images/letters/letters_a1.png"><img id="letter_5" class="letter" src="/images/letters/letters_y1.png"><img id="letter_6" class="letter" src="/images/letters/letters_s1.png">
-                                    </div>
-                                </div>
-                            </div><!-- .row -->
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
+                    <h1 class="splash-intro text-center">Arrays is the simple, visual browser for large collections of data to help you form new insights and make better decisions.</h1>
+                </div>
+            </div><!-- .row -->
 
-                            <div class="row">
-                                <div class="col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
-                                    <h1 class="splash-intro text-center">Arrays is the simple, visual browser for large collections of data to help you form new insights and make better decisions.</h1>
-                                </div>
-                            </div><!-- .row -->
+            <div class="row">
+                <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-2 col-md-3 col-md-offset-3">
+                    <a href="/array/create" class="btn btn-block btn-splash">Explore the demo</a>
+                </div>
+                <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-md-3 col-sm-offset-0">
+                    <a href="http://eepurl.com/bX4NAT" class="btn btn-block btn-splash" target="_blank">Sign up for updates</a>
+                </div>
+            </div><!-- .row -->
 
-                            <div class="row">
-                                <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-sm-offset-2 col-md-3 col-md-offset-3">
-                                    <a href="/array/create" class="btn btn-block btn-splash">Explore the demo</a>
-                                </div>
-                                <div class="col-xs-10 col-xs-offset-1 col-sm-4 col-md-3 col-sm-offset-0">
-                                    <a href="http://eepurl.com/bX4NAT" class="btn btn-block btn-splash" target="_blank">Sign up for updates</a>
-                                </div>
-                            </div><!-- .row -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="splash-devices">
+                        <img src="/images/splash/arrays-devices.jpg" class="img-responsive" alt="The Arrays app running on a Macbook, iPad, and iPhone" />
+                    </div>
+                </div>
+            </div><!-- .row -->
 
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="splash-devices">
-                                        <img src="/images/splash/arrays-devices.jpg" class="img-responsive" alt="The Arrays app running on a Macbook, iPad, and iPhone" />
-                                    </div>
-                                </div>
-                            </div><!-- .row -->
+            <div class="row">
+                <div class="col-sm-6 col-md-5 col-md-offset-1">
+                    <div class="splash-benefits">
+                        <h2 class="splash-benefits-title">Gain new perspective.</h2>
+                        <p class="splash-benefits-description">Arrays offers multiple ways of looking at datasets, from making connections between individual records to seeing information in the aggregate.</p>
+                    </div>
+                </div>
 
-                            <div class="row">
-                                <div class="col-sm-6 col-md-5 col-md-offset-1">
-                                    <div class="splash-benefits">
-                                        <h2 class="splash-benefits-title">Gain new perspective.</h2>
-                                        <p class="splash-benefits-description">Arrays offers multiple ways of looking at datasets, from making connections between individual records to seeing information in the aggregate.</p>
-                                    </div>
-                                </div>
+                <div class="col-sm-6 col-md-5">
+                    <div class="splash-benefits">
+                        <h2 class="splash-benefits-title">Share data-driven stories.</h2>
+                        <p class="splash-benefits-description">Arrays lets you share your collections and insights in a compelling, interactive presentation.</p>
+                    </div>
+                </div>
+            </div><!-- .row -->
 
-                                <div class="col-sm-6 col-md-5">
-                                    <div class="splash-benefits">
-                                        <h2 class="splash-benefits-title">Share data-driven stories.</h2>
-                                        <p class="splash-benefits-description">Arrays lets you share your collections and insights in a compelling, interactive presentation.</p>
-                                    </div>
-                                </div>
-                            </div><!-- .row -->
+            <div class="row">
+                <div class="col-sm-6 col-md-5 col-md-offset-1">
+                    <div class="splash-benefits">
+                        <h2 class="splash-benefits-title">Get the full picture.</h2>
+                        <p class="splash-benefits-description">Combine multiple datasets to provide context and add detail. Enrich the data further by editing and adding your notes.</p>
+                    </div>
+                </div>
 
-                            <div class="row">
-                                <div class="col-sm-6 col-md-5 col-md-offset-1">
-                                    <div class="splash-benefits">
-                                        <h2 class="splash-benefits-title">Get the full picture.</h2>
-                                        <p class="splash-benefits-description">Combine multiple datasets to provide context and add detail. Enrich the data further by editing and adding your notes.</p>
-                                    </div>
-                                </div>
+                <div class="col-sm-6 col-md-5">
+                    <div class="splash-benefits">
+                        <h2 class="splash-benefits-title">Built for humans.</h2>
+                        <p class="splash-benefits-description">Arrays is designed with the everyday user in mind. Upload projects and start exploring your data immediately.</p>
+                    </div>
+                </div>
+            </div><!-- .row -->
 
-                                <div class="col-sm-6 col-md-5">
-                                    <div class="splash-benefits">
-                                        <h2 class="splash-benefits-title">Built for humans.</h2>
-                                        <p class="splash-benefits-description">Arrays is designed with the everyday user in mind. Upload projects and start exploring your data immediately.</p>
-                                    </div>
-                                </div>
-                            </div><!-- .row -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="splash-macbook">
+                        <img src="/images/splash/arrays-macbook.jpg" class="img-responsive" alt="The Arrays app running on a Macbook showing the choropleth view" />
+                    </div>
+                </div>
+            </div><!-- .row -->
 
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="splash-macbook">
-                                        <img src="/images/splash/arrays-macbook.jpg" class="img-responsive" alt="The Arrays app running on a Macbook showing the choropleth view" />
-                                    </div>
-                                </div>
-                            </div><!-- .row -->
+            <div class="row">
+                <div class="col-sm-12">
+                    <h2 class="splash-scenarios-title text-center">Arrays will support the following scenarios:</h2>
+                </div>
+                <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
+                    <ul class="splash-scenarios-list">
+                        <li class="splash-scenarios-list-item">Create an <strong>interactive product inventory</strong> for your business.</li>
+                        <li class="splash-scenarios-list-item">Give your staff a single place to go for easy access to <strong>mission-critical documents</strong>.</li>
+                        <li class="splash-scenarios-list-item">Merge a list of conference attendees with information from LinkedIn to create a <strong>custom CRM database</strong>.</li>
+                        <li class="splash-scenarios-list-item">Chart your <strong>personal health data</strong> from your doc and self-tracking to get a better picture of your health.</li>
+                        <li class="splash-scenarios-list-item"><strong>Track campaign financing</strong> among all the candidates for the 2016 presidential and local elections.</li>
+                        <li class="splash-scenarios-list-item">Combine the <strong>digital collections data</strong> from several museums to create a more complete picture of art historical movements.</li>
+                        <li class="splash-scenarios-list-item">&hellip;And <strong>many more</strong>!</li>
+                    </ul>
+                </div>
+            </div><!-- .row -->
 
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <h2 class="splash-scenarios-title text-center">Arrays will support the following scenarios:</h2>
-                                </div>
-                                <div class="col-sm-12 col-sm-offset-0 col-md-10 col-md-offset-1">
-                                    <ul class="splash-scenarios-list">
-                                        <li class="splash-scenarios-list-item">Create an <strong>interactive product inventory</strong> for your business.</li>
-                                        <li class="splash-scenarios-list-item">Give your staff a single place to go for easy access to <strong>mission-critical documents</strong>.</li>
-                                        <li class="splash-scenarios-list-item">Merge a list of conference attendees with information from LinkedIn to create a <strong>custom CRM database</strong>.</li>
-                                        <li class="splash-scenarios-list-item">Chart your <strong>personal health data</strong> from your doc and self-tracking to get a better picture of your health.</li>
-                                        <li class="splash-scenarios-list-item"><strong>Track campaign financing</strong> among all the candidates for the 2016 presidential and local elections.</li>
-                                        <li class="splash-scenarios-list-item">Combine the <strong>digital collections data</strong> from several museums to create a more complete picture of art historical movements.</li>
-                                        <li class="splash-scenarios-list-item">&hellip;And <strong>many more</strong>!</li>
-                                    </ul>
-                                </div>
-                            </div><!-- .row -->
+        </div><!-- .container-fluid -->
 
-                        </div><!-- .container-fluid -->
+    </main><!-- #main -->
+</div><!-- #primary -->
+{% endblock %}
 
-                    </main><!-- #main -->
-                </div><!-- #primary -->
+{% block footer %}
+    <div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-10 col-sm-offset-1">
+            <h2 class="splash-footer-intro text-center">Arrays is currently in alpha development. Explore our public pre-release <a href="/array/create">here</a> and sign up below to help us shape the product with your feedback.</h2>
+        </div>
+    </div><!-- .row -->
 
-            </div><!-- #content -->
-
-            <footer id="colophon" class="site-footer background-color-brand" role="contentinfo">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-sm-10 col-sm-offset-1">
-                            <h2 class="splash-footer-intro text-center">Arrays is currently in alpha development. Explore our public pre-release <a href="/array/create">here</a> and sign up below to help us shape the product with your feedback.</h2>
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <div class="site-newsletter">
+                <form class="form-horizontal" action="//schemadesign.us6.list-manage.com/subscribe/post?u=2fd33cc7443569e2872629af8&amp;id=91145c5717" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+                    <div class="form-group">
+                        <div class="col-sm-7 col-xs-8">
+                            <input type="email" class="form-control input-lg input-subscribe required email" id="input-subscribe" placeholder="Your email address" value="" name="EMAIL" id="mce-EMAIL">
+                            <div id="mce-responses" class="clear">
+                                <div class="response" id="mce-error-response" style="display:none"></div>
+                                <div class="response" id="mce-success-response" style="display:none"></div>
+                            </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+                            <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_2fd33cc7443569e2872629af8_91145c5717" tabindex="-1" value=""></div>
                         </div>
-                    </div><!-- .row -->
-
-                    <div class="row">
-                        <div class="col-sm-8 col-sm-offset-2">
-                            <div class="site-newsletter">
-                                <form class="form-horizontal" action="//schemadesign.us6.list-manage.com/subscribe/post?u=2fd33cc7443569e2872629af8&amp;id=91145c5717" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-                                    <div class="form-group">
-                                        <div class="col-sm-7 col-xs-8">
-                                            <input type="email" class="form-control input-lg input-subscribe required email" id="input-subscribe" placeholder="Your email address" value="" name="EMAIL" id="mce-EMAIL">
-                                             <div id="mce-responses" class="clear">
-                                                 <div class="response" id="mce-error-response" style="display:none"></div>
-                                                 <div class="response" id="mce-success-response" style="display:none"></div>
-                                             </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-                                            <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_2fd33cc7443569e2872629af8_91145c5717" tabindex="-1" value=""></div>
-                                        </div>
-                                        <div class="col-sm-5 col-xs-4">
-                                            <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="btn btn-lg btn-submit btn-inverse color-brand btn-block">
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
+                        <div class="col-sm-5 col-xs-4">
+                            <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="btn btn-lg btn-submit btn-inverse color-brand btn-block">
                         </div>
-                    </div><!-- .row -->
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div><!-- .row -->
 
-                    <div class="row">
-                        <div class="col-sm-4 col-sm-offset-4 col-xs-6 col-xs-offset-3">
-                            <h1 class="site-title splash-footer-logo"><span class="sr-only">Arrays</span><img src="/images/arrays-logo.svg" class="img-responsive site-logo" alt="Arrays logo" /></h1>
-                        </div>
-                    </div><!-- .row -->
+    <div class="row">
+        <div class="col-sm-4 col-sm-offset-4 col-xs-6 col-xs-offset-3">
+            <h1 class="site-title splash-footer-logo"><span class="sr-only">Arrays</span><img src="/images/arrays-logo.svg" class="img-responsive site-logo" alt="Arrays logo" /></h1>
+        </div>
+    </div><!-- .row -->
 
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="site-info">
-                            &copy; 2016 Arrays, LLC &bull; Alpha Release &bull; <a href="mailto:{{ 'Arrays<info@arrays.com>' | urlencode }}">info@arrays.com</a> <a href="https://www.facebook.com/arraysapp/" target="_blank"><span class="icon-facebook" aria-hidden="true"></span></a> <a href="https://twitter.com/arraysapp" target="_blank"><span class="icon-twitter" aria-hidden="true"></span></a> <a href="https://www.instagram.com/arraysapp/" target="_blank"><span class="icon-instagram" aria-hidden="true"></span></a>
-                            </div>
-                        </div>
-                    </div><!-- .row -->
-                </div><!-- .container-fluid -->
-            </footer><!-- #colophon -->
-        </div><!-- #page -->
-        
-        <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
-        
-        <script type="text/javascript" src="/javascripts/main.js"></script>
-        <script type="text/javascript" src="/javascripts/module/splash.js"></script>
-    </body>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="site-info">
+                &copy; 2016 Arrays, LLC &bull; Alpha Release &bull; <a href="mailto:{{ 'Arrays<info@arrays.com>' | urlencode }}">info@arrays.com</a> <a href="https://www.facebook.com/arraysapp/" target="_blank"><span class="icon-facebook" aria-hidden="true"></span></a> <a href="https://twitter.com/arraysapp" target="_blank"><span class="icon-twitter" aria-hidden="true"></span></a> <a href="https://www.instagram.com/arraysapp/" target="_blank"><span class="icon-instagram" aria-hidden="true"></span></a>
+            </div>
+        </div>
+    </div><!-- .row -->
+</div><!-- .container-fluid -->
 {% endblock %}

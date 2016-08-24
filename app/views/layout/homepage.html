@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+    <head>
+        {% include "../partials/base_header.html" %}
+
+        {% block headSuffix %}{% endblock %}
+    </head>
+
+    <body class="home splash">
+        <div id="page" class="site">
+
+            <div id="content" class="site-content">
+                {% block content %}{% endblock %}
+            </div><!-- #content -->
+
+            <footer id="colophon" class="site-footer background-color-brand" role="contentinfo">
+                {% block footer %}{% endblock %}
+            </footer><!-- #colophon -->
+        </div><!-- #page -->
+
+        {% include "../partials/auth.html" %}
+
+        <script type="text/javascript" src="/javascripts/main.js"></script>
+        <script type="text/javascript" src="/javascripts/module/splash.js"></script>
+    </body>
+
+    {% if env.FE_LIVERELOAD == "true" %}
+    <script src="//localhost:35729/livereload.js"></script>
+    {% endif %}
+</html>

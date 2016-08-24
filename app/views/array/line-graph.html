@@ -1,217 +1,201 @@
-{% extends "../shared/shared_layout.html" %}
+{% extends "../layout/array.html" %}
 
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
-    
-    
 {% endblock %}
 
-{% block bodyWrapper %}
-    <body class="array array-scatterplot source-{{ array_source_key }} legend-open">
-        <div id="page" class="site">
-            {% set currentView = "line-graph" %}
-            {% include "../partials/header_bar_array.html" %}
-            {% include "../partials/sidebar_filter.html" %}
+{% set currentView = "scatterplot" %}
 
-            <div id="content" class="site-content">
+{% block content %}
+    <section class="array">
 
-                <section class="array">
+        <header class="array-header header-shadow array-header-small clearfix">
+            <div class="container-fluid">
+                <h1 class="array-title">{{ arrayTitle }}</h1>
+                <div class="array-meta">
+                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                </div>
+            </div>
+        </header><!-- .array-header -->
 
-                    <header class="array-header header-shadow array-header-small clearfix">
-                        <div class="container-fluid">
-                            <h1 class="array-title">{{ arrayTitle }}</h1>
-                            <div class="array-meta">
-                                {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
-                            </div>
-                        </div>
-                    </header><!-- .array-header -->
+        <div class="array-content">
 
-                    <div class="array-content">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-sm-12">
 
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-sm-12">
+                                        <div class="sort-bar clearfix">
 
-                                    <div class="sort-bar clearfix">
+                                            <nav class="sort-bar-left pull-left" role="navigation">
 
-                                        <nav class="sort-bar-left pull-left" role="navigation">
-
-                                            <div class="dropdown sort-control">
-                                                <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label group-by" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    <div class="dropdown-toggle-label">
-                                                        Chart By <span class="sort-criteria color-brand-hover">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
-                                                    </div>
-                                                </a>
-                                                {% if colNames_orderedForGroupByDropdown | length %}
-                                                <ul class="dropdown-menu" aria-labelledby="group-by">
-                                                    {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
-                                                    {% for colName in colNames_orderedForGroupByDropdown %}
-                                                    <li class="background-color-brand-hover"><a href="{{ routePath_withoutGroupBy }}{{ groupBy_queryParamJoinChar }}groupBy={{ colName }}">{{ colName }}</a></li>
-                                                    {% endfor %}
-                                                </ul>
-                                                {% endif %}
-                                            </div>
-
-                                            <div class="dropdown sort-control sort-bar-6">
-                                                <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    <div class="dropdown-toggle-label">
+                                                <div class="dropdown sort-control">
+                                                    <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label group-by" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                                         <div class="dropdown-toggle-label">
-                                                            <span class="sort-criteria color-brand-hover y-axis-field">{{ defaultKeywordsColumnName_humanReadable }}</span>
+                                                            Chart By <span class="sort-criteria color-brand-hover">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
                                                         </div>
-                                                    </div>
-                                                </a>
-                                                {% if renderableFields | length %}
-                                                <ul class="dropdown-menu axis-control y-axis-control" aria-labelledby="type">
-                                                </ul>
-                                                {% endif %}
-                                            </div>
-                                        </nav>
-
-                                        <div class="sort-bar-right pull-right">
-                                            <form action="{{ routePath_base }}" method="get" class="form-search">
-                                                <div class="sort-control visible-xs">
-                                                    <div class="btn dropdown-toggle-button search-toggle">
-                                                        <span class="icon-search search-icon color-brand-hover"></span>
-                                                    </div>
+                                                    </a>
+                                                    {% if colNames_orderedForGroupByDropdown | length %}
+                                                    <ul class="dropdown-menu" aria-labelledby="group-by">
+                                                        {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
+                                                        {% for colName in colNames_orderedForGroupByDropdown %}
+                                                        <li class="background-color-brand-hover"><a href="{{ routePath_withoutGroupBy }}{{ groupBy_queryParamJoinChar }}groupBy={{ colName }}">{{ colName }}</a></li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                    {% endif %}
                                                 </div>
 
-                                                <div class="mobile-search-popover">
-                                                    <div class="dropdown-toggle-button-group" role="group">
-                                                        <div class="dropdown sort-control sort-control-left search-control">
-                                                            {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
-                                                            <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                                                                Search <span class="search-criteria color-brand-hover" data-colname="{{ searchColToOutput }}">{{ searchColToOutput }}</span>
-                                                            </a>
-                                                            <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
-                                                            {% if colNames_orderedForSortByDropdown | length %}
-                                                            <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
-                                                                {% for colName in colNames_orderedForSortByDropdown %}
-                                                                <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
-                                                                {% endfor %}
-                                                            </ul>
-                                                            {% endif %}
+                                                <div class="dropdown sort-control sort-bar-6">
+                                                    <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                        <div class="dropdown-toggle-label">
+                                                            <div class="dropdown-toggle-label">
+                                                                <span class="sort-criteria color-brand-hover y-axis-field">{{ defaultKeywordsColumnName_humanReadable }}</span>
+                                                            </div>
                                                         </div>
-                                                        <div class="sort-control sort-control-right">
-                                                            <div class="dropdown-toggle">
-                                                                <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ }}">
-                                                                <span class="icon-search search-icon hidden-xs"></span>
+                                                    </a>
+                                                    {% if renderableFields | length %}
+                                                    <ul class="dropdown-menu axis-control y-axis-control" aria-labelledby="type">
+                                                    </ul>
+                                                    {% endif %}
+                                                </div>
+                                            </nav>
+
+                                            <div class="sort-bar-right pull-right">
+                                                <form action="{{ routePath_base }}" method="get" class="form-search">
+                                                    <div class="sort-control visible-xs">
+                                                        <div class="btn dropdown-toggle-button search-toggle">
+                                                            <span class="icon-search search-icon color-brand-hover"></span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mobile-search-popover">
+                                                        <div class="dropdown-toggle-button-group" role="group">
+                                                            <div class="dropdown sort-control sort-control-left search-control">
+                                                                {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
+                                                                <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+                                                                    Search <span class="search-criteria color-brand-hover" data-colname="{{ searchColToOutput }}">{{ searchColToOutput }}</span>
+                                                                </a>
+                                                                <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
+                                                                {% if colNames_orderedForSortByDropdown | length %}
+                                                                <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+                                                                    {% for colName in colNames_orderedForSortByDropdown %}
+                                                                    <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
+                                                                    {% endfor %}
+                                                                </ul>
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="sort-control sort-control-right">
+                                                                <div class="dropdown-toggle">
+                                                                    <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ }}">
+                                                                    <span class="icon-search search-icon hidden-xs"></span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                                <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
-                                                    <span class="icon-legend" aria-hidden="true"></span>
-                                                </a>
+                                                    <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
+                                                        <span class="icon-legend" aria-hidden="true"></span>
+                                                    </a>
 
-                                                {% if filterJSON %}
-                                                    <input type="hidden" name="filterJSON" value="{{ filterJSON_nonURIEncodedVals }}"> {# it will get re-encoded #}
-                                                {% endif %}
-                                            </form>
+                                                    {% if filterJSON %}
+                                                        <input type="hidden" name="filterJSON" value="{{ filterJSON_nonURIEncodedVals }}"> {# it will get re-encoded #}
+                                                    {% endif %}
+                                                </form>
+                                            </div>
+
                                         </div>
+                                    </div>
+                                </div><!-- .row -->
+                            </div><!-- .container-fluid -->
+
+                            <script type="text/javascript">
+                                var graphData = [];
+                                graphData[0] = {{ groupedResults | dump | safe }}.map(function(row) {
+                                    row.label = "{{ arrayTitle }}";
+                                    row.count = Number(row.count);
+                                    row.year = new Date(row.year);
+                                    return row;
+                                });
+
+                                var filterObj = {{ filterObj | dump | safe }};
+                                var routePath_withoutFilter = '{{ routePath_withoutFilter }}';
+                                var routePath_base = '{{ routePath_base }}';
+                                var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
+                            </script>
+
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-sm-12">
+
+                                        <div id="linechart" class="scatterplot linechart"></div>
 
                                     </div>
-                                </div>
-                            </div><!-- .row -->
-                        </div><!-- .container-fluid -->
+                                </div><!-- .row -->
+                            </div><!-- .container-fluid -->
 
-                        <script type="text/javascript">
-                            var graphData = [];
-                            graphData[0] = {{ groupedResults | dump | safe }}.map(function(row) {
-                                row.label = "{{ arrayTitle }}";
-                                row.count = Number(row.count);
-                                row.year = new Date(row.year);
-                                return row;
-                            });
-
-                            var filterObj = {{ filterObj | dump | safe }};
-                            var routePath_withoutFilter = '{{ routePath_withoutFilter }}';
-                            var routePath_base = '{{ routePath_base }}';
-                            var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
-                        </script>
-
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-sm-12">
-
-                                    <div id="linechart" class="scatterplot linechart"></div>
-
-                                </div>
-                            </div><!-- .row -->
-                        </div><!-- .container-fluid -->
-
-                        {% if isFilterActive %}
-                        <div class="filter-bar">
-                            <div class="container-fluid">
-                                {% for filterCol, filterVals in filterObj %}
-                                    {% for filterVal in filterVals %}
-                                        {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true) %}
-                                        {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                                        {% set routePath_withoutThisFilter = routePath_base + "?filterJSON=" + filterJSONString %}
-                                        {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}                  
-                                <span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | filterValToDisplay }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
-                                <!-- span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | safe }} <a href="#" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span -->
+                            {% if isFilterActive %}
+                            <div class="filter-bar">
+                                <div class="container-fluid">
+                                    {% for filterCol, filterVals in filterObj %}
+                                        {% for filterVal in filterVals %}
+                                            {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true) %}
+                                            {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
+                                            {% set routePath_withoutThisFilter = routePath_base + "?filterJSON=" + filterJSONString %}
+                                            {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}
+                                    <span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | filterValToDisplay }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
+                                    <!-- span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | safe }} <a href="#" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span -->
+                                        {% endfor %}
                                     {% endfor %}
-                                {% endfor %}
+                                </div>
                             </div>
-                        </div>
-                        {% endif %}
+                            {% endif %}
 
-                    </div><!-- .array-content -->
+                        </div><!-- .array-content -->
 
-                </section>
+    </section>
+{% endblock %}
 
-            </div><!-- #content -->
+{% block inlineScript %}
+    {{ super() }}
 
-        </div><!-- #page -->
+    <script type="text/javascript" src="/javascripts/lib/lodash/lodash.js"></script>
+    <script type="text/javascript" src="/javascripts/lib/d3/d3.js"></script>
 
-        {% include "../partials/modal.html" %}
-
-        <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
-        <script type="text/javascript" src="/javascripts/lib/lodash/lodash.js"></script>
-
-        <script type="text/javascript" src="/javascripts/lib/bootstrap/bootstrap.js"></script>
-        <script type="text/javascript" src="/javascripts/lib/sharrre/jquery.sharrre.js"></script>
-
-        <script type="text/javascript" src="/javascripts/lib/d3/d3.js"></script>
-
-        <script type="text/javascript" src="/javascripts/main.js"></script>
-        <script type="text/javascript" src="/javascripts/tooltip.js"></script>
-        <script type="text/javascript" src="/javascripts/module/scatterplot/main.js"></script>
-        <script type="text/javascript" src="/javascripts/module/linechart/main.js"></script>
-        <script type="text/javascript" src="/javascripts/module/linechart/base.js"></script>
-        <script type="text/javascript" src="/javascripts/module/linechart/viewport.js"></script>
-        <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
-        <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
-        <script>
+    <script type="text/javascript" src="/javascripts/tooltip.js"></script>
+    <script type="text/javascript" src="/javascripts/module/scatterplot/main.js"></script>
+    <script type="text/javascript" src="/javascripts/module/linechart/main.js"></script>
+    <script type="text/javascript" src="/javascripts/module/linechart/base.js"></script>
+    <script type="text/javascript" src="/javascripts/module/linechart/viewport.js"></script>
+    <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
+    <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
+    <script>
         function stream_layers(n, m, o) {
             if (arguments.length < 3) o = 0;
             function bump(a) {
-              var x = 1 / (.1 + Math.random()),
-                  y = 2 * Math.random() - .5,
-                  z = 10 / (.1 + Math.random());
-              for (var i = 0; i < m; i++) {
-                var w = (i / m - y) * z;
-                a[i] += x * Math.exp(-w * w);
-              }
+                var x = 1 / (.1 + Math.random()),
+                        y = 2 * Math.random() - .5,
+                        z = 10 / (.1 + Math.random());
+                for (var i = 0; i < m; i++) {
+                    var w = (i / m - y) * z;
+                    a[i] += x * Math.exp(-w * w);
+                }
             }
             return d3.range(n).map(function() {
                 var a = [], i;
                 for (i = 0; i < m; i++) a[i] = o + o * Math.random();
                 for (i = 0; i < 5; i++) bump(a);
                 return a;
-              });
+            });
         }
 
-/*         graphData = graphData.concat(stream_layers(2, graphData[0].length, .1).map(function(series) {
-            return series.map(function(d, i) {
-                return {
-                    count: d * 100,
-                    year: graphData[0][i].year
-                }
-            });
-        }));
- */
+        /*         graphData = graphData.concat(stream_layers(2, graphData[0].length, .1).map(function(series) {
+         return series.map(function(d, i) {
+         return {
+         count: d * 100,
+         year: graphData[0][i].year
+         }
+         });
+         }));
+         */
         if ("{{ array_source_key }}" == "isb_library-r1") {
 
             // Only do this for ISB data
@@ -243,17 +227,14 @@
                 groupedSeriesArray.push(graphData[0]);
 
                 var lineChart = new linechart.chart(groupedSeriesArray)
-                    .render("#linechart");
+                        .render("#linechart");
             });
         } else {
 
             // Do this for all other data besides ISB
             var lineChart = new linechart.chart(graphData)
-                .render("#linechart");
+                    .render("#linechart");
         }
 
-        </script>
-
-    {% include "../partials/survicate.html" %}
-    </body>
+    </script>
 {% endblock %}

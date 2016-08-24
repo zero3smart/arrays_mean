@@ -1,304 +1,287 @@
-{% extends "../shared/shared_layout.html" %}
+{% extends "../layout/array.html" %}
 
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
-    
-    
 {% endblock %}
 
-{% block bodyWrapper %}
-    <body class="array array-timeline source-{{ array_source_key }}">
-        <div id="page" class="site">
-            {% set currentView = "timeline" %}
-            {% include "../partials/header_bar_array.html" %}
-            {% include "../partials/sidebar_filter.html" %}
+{% set currentView = "timeline" %}
 
-            <div id="content" class="site-content">
+{% block content %}
+    <section class="array">
 
-                <section class="array">
+        <header class="array-header header-shadow array-header-small clearfix">
+            <div class="container-fluid">
+                <h1 class="array-title">{{ arrayTitle }}</h1>
+                <div class="array-meta">
+                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                </div>
+            </div>
+        </header><!-- .array-header -->
 
-                    <header class="array-header header-shadow array-header-small clearfix">
-                        <div class="container-fluid">
-                            <h1 class="array-title">{{ arrayTitle }}</h1>
-                            <div class="array-meta">
-                                {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
-                            </div>
-                        </div>
-                    </header><!-- .array-header -->
+        <div id="array-controls" class="array-controls">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
 
-                    <div id="array-controls" class="array-controls">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-sm-12">
+                        <div class="sort-bar clearfix">
 
-                                    <div class="sort-bar clearfix">
+                            <nav class="sort-bar-left pull-left" role="navigation">
 
-                                        <nav class="sort-bar-left pull-left" role="navigation">
-
-                                            <div class="dropdown sort-control sort-bar-6">
-                                                <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label group-by" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    <div class="dropdown-toggle-label">
-                                                        Group By <span class="sort-criteria color-brand-hover">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
-                                                    </div>
-                                                </a>
-                                                {% if colNames_orderedForGroupByDropdown | length %}
-                                                <ul class="dropdown-menu" aria-labelledby="group-by">
-                                                    {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
-                                                    {% for colName in colNames_orderedForGroupByDropdown %}
-                                                    <li class="background-color-brand-hover"><a href="{{ routePath_withoutGroupBy }}{{ groupBy_queryParamJoinChar }}groupBy={{ colName }}">{{ colName }}</a></li>
-                                                    {% endfor %}
-                                                </ul>
-                                                {% endif %}
-                                            </div>
-
-                                            <div class="dropdown sort-control sort-bar-6">
-                                                <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label order-by" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                    <div class="dropdown-toggle-label">
-                                                        Sort By <span class="sort-criteria color-brand-hover">{{ sortBy if sortBy else defaultSortByColumnName_humanReadable }}</span>
-                                                    </div>
-                                                </a>
-                                                {% if colNames_orderedForTimelineSortByDropdown | length %}
-                                                <ul class="dropdown-menu" aria-labelledby="sort-by">
-                                                    {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
-                                                    {% for colName in colNames_orderedForTimelineSortByDropdown %}
-                                                    <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortBy }}{{ sortBy_queryParamJoinChar }}sortBy={{ colName }}">{{ colName }}</a></li>
-                                                    {% endfor %}
-                                                </ul>
-                                                {% endif %}
-                                            </div>
-                                        </nav>
-
-                                        <div class="sort-bar-right pull-right">
-                                            <form action="{{ routePath_base }}" method="get" class="form-search">
-                                                <div class="sort-control visible-xs">
-                                                    <div class="btn dropdown-toggle-button search-toggle">
-                                                        <span class="icon-search search-icon color-brand-hover"></span>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="mobile-search-popover">
-                                                    <div class="dropdown-toggle-button-group" role="group">
-                                                        <div class="dropdown sort-control sort-control-left search-control">
-                                                            {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
-                                                            
-                                                            <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                                                                Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
-                                                            </a>
-                                                            <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
-                                                            {% if colNames_orderedForSortByDropdown | length %}
-                                                            <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
-                                                                {% for colName in colNames_orderedForSortByDropdown %}
-                                                                <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
-                                                                {% endfor %}
-                                                            </ul>
-                                                            {% endif %}
-                                                        </div>
-
-                                                        <div class="sort-control sort-control-right">
-                                                            <div class="dropdown-toggle">
-                                                                <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ if searchQ else "" }}">
-                                                                <span class="icon-search search-icon hidden-xs"></span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {% if sortBy %}
-                                                    <input type="hidden" name="sortBy" value="{{ sortBy }}">
-                                                {% endif %}
-                                                {% if sortDir %}
-                                                    <input type="hidden" name="sortDir" value="{{ sortDir }}">
-                                                {% endif %}
-                                                {% if filterJSON %}
-                                                    <input type="hidden" name="filterJSON" value="{{ filterJSON_nonURIEncodedVals }}"> {# it will get re-encoded #}
-                                                {% endif %}
-                                            </form>
+                                <div class="dropdown sort-control sort-bar-6">
+                                    <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label group-by" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        <div class="dropdown-toggle-label">
+                                            Group By <span class="sort-criteria color-brand-hover">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
                                         </div>
+                                    </a>
+                                    {% if colNames_orderedForGroupByDropdown | length %}
+                                    <ul class="dropdown-menu" aria-labelledby="group-by">
+                                        {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
+                                        {% for colName in colNames_orderedForGroupByDropdown %}
+                                        <li class="background-color-brand-hover"><a href="{{ routePath_withoutGroupBy }}{{ groupBy_queryParamJoinChar }}groupBy={{ colName }}">{{ colName }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                                </div>
 
+                                <div class="dropdown sort-control sort-bar-6">
+                                    <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label order-by" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        <div class="dropdown-toggle-label">
+                                            Sort By <span class="sort-criteria color-brand-hover">{{ sortBy if sortBy else defaultSortByColumnName_humanReadable }}</span>
+                                        </div>
+                                    </a>
+                                    {% if colNames_orderedForTimelineSortByDropdown | length %}
+                                    <ul class="dropdown-menu" aria-labelledby="sort-by">
+                                        {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
+                                        {% for colName in colNames_orderedForTimelineSortByDropdown %}
+                                        <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortBy }}{{ sortBy_queryParamJoinChar }}sortBy={{ colName }}">{{ colName }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% endif %}
+                                </div>
+                            </nav>
+
+                            <div class="sort-bar-right pull-right">
+                                <form action="{{ routePath_base }}" method="get" class="form-search">
+                                    <div class="sort-control visible-xs">
+                                        <div class="btn dropdown-toggle-button search-toggle">
+                                            <span class="icon-search search-icon color-brand-hover"></span>
+                                        </div>
                                     </div>
 
-                                </div>
-                            </div><!-- .row -->
-                        </div>
-                    </div>
+                                    <div class="mobile-search-popover">
+                                        <div class="dropdown-toggle-button-group" role="group">
+                                            <div class="dropdown sort-control sort-control-left search-control">
+                                                {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
 
-                    <div class="array-content">
+                                                <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
+                                                    Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
+                                                </a>
+                                                <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
+                                                {% if colNames_orderedForSortByDropdown | length %}
+                                                <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
+                                                    {% for colName in colNames_orderedForSortByDropdown %}
+                                                    <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
+                                                    {% endfor %}
+                                                </ul>
+                                                {% endif %}
+                                            </div>
 
-                        <div class="timeline-container">
+                                            <div class="sort-control sort-control-right">
+                                                <div class="dropdown-toggle">
+                                                    <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ if searchQ else "" }}">
+                                                    <span class="icon-search search-icon hidden-xs"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                            {% if isFilterActive %}
-                            <div class="filter-bar filter-bar-fixed-bottom">
-                                <div class="container-fluid">
-                                    {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
-                                    {% for filterCol, filterVals in filterObj %}
-                                        {% for filterVal in filterVals %}
-                                            {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true) %}
-                                            {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                                            {% set routePath_withoutThisFilter = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString %}
-                                            {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}                  
-                                    <span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | filterValToDisplay }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
-                                        {% endfor %}
-                                    {% endfor %}
-                                </div>
+                                    {% if sortBy %}
+                                        <input type="hidden" name="sortBy" value="{{ sortBy }}">
+                                    {% endif %}
+                                    {% if sortDir %}
+                                        <input type="hidden" name="sortDir" value="{{ sortDir }}">
+                                    {% endif %}
+                                    {% if filterJSON %}
+                                        <input type="hidden" name="filterJSON" value="{{ filterJSON_nonURIEncodedVals }}"> {# it will get re-encoded #}
+                                    {% endif %}
+                                </form>
                             </div>
-                            {% endif %}
 
-                            <div class="container-fluid">
-                                <div class="row">
-                                    <div class="col-sm-12">
+                        </div>
 
-                                    <div class="timeline">
+                    </div>
+                </div><!-- .row -->
+            </div>
+        </div>
 
-                                    {# <pre>{{ groupedResults | dump | safe }}</pre> #}
+        <div class="array-content">
 
-                                    {# {{ sortBy_realColumnName }} #}
-                                    {# {{ groupBy_realColumnName }} #}
+            <div class="timeline-container">
 
-                                        {% if groupedResults | length %}
-                                            <ul class="timeline-list">
-                                                {% for group in groupedResults %}
-                                                    {% if group.results | length %}
-                                                        <li class="timeline-group">
-                                                            <span class="timeline-group-label">{{ group.startDate | dateFormat(groupByDateFormat) }}{% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}&ndash;{{ group.endDate | dateFormat(groupByDateFormat) }}{% endif %}</span>
-                                                            <ul class="timeline-group-list">
-                                                                {% for doc in group.results %}
-                                                                    {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}
-                                                                        {% include "../partials/timeline_item_image.html" %}
-                                                                    {% else %}
-                                                                        {% include "../partials/timeline_item_text.html" %}
-                                                                    {% endif %}
-                                                                {% endfor %}
-                                                                {% if groupedResultsLimit < group.total %}
-                                                                    <li class="timeline-group-item">
-                                                                        <div class="timeline-item timeline-view-all">
-                                                                            {% set queryParamJoinChar = "?" %}
-                                                                            {% set filterDateRange = {'min': group.startDate | dateFormat(''), 'max': group.endDate | dateFormat('') } %}
-                                                                            {% set sortByDateRange = sortBy if sortBy else defaultSortByColumnName_humanReadable %}
-                                                                            {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(sortByDateRange, filterDateRange, false) %}
-                                                                            {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                                                                            {% set urlForFilterValue = "/array/" + array_source_key +  "/gallery" + queryParamJoinChar + "filterJSON=" + filterJSONString %}
-                                                                            <a href="{{ urlForFilterValue }}" class="timeline-view-all-link color-brand-hover">
-                                                                                <span class="timeline-view-all-label">View all</span>
-                                                                                <span class="timeline-view-all-count">{{ group.total }}</span>
-                                                                            </a>
-                                                                        </div>
-                                                                    </li>
-                                                                {% endif %}
-                                                            </ul>
+                {% if isFilterActive %}
+                <div class="filter-bar filter-bar-fixed-bottom">
+                    <div class="container-fluid">
+                        {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
+                        {% for filterCol, filterVals in filterObj %}
+                            {% for filterVal in filterVals %}
+                                {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true) %}
+                                {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
+                                {% set routePath_withoutThisFilter = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString %}
+                                {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}
+                        <span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | filterValToDisplay }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+
+                        <div class="timeline">
+
+                        {# <pre>{{ groupedResults | dump | safe }}</pre> #}
+
+                        {# {{ sortBy_realColumnName }} #}
+                        {# {{ groupBy_realColumnName }} #}
+
+                            {% if groupedResults | length %}
+                                <ul class="timeline-list">
+                                    {% for group in groupedResults %}
+                                        {% if group.results | length %}
+                                            <li class="timeline-group">
+                                                <span class="timeline-group-label">{{ group.startDate | dateFormat(groupByDateFormat) }}{% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}&ndash;{{ group.endDate | dateFormat(groupByDateFormat) }}{% endif %}</span>
+                                                <ul class="timeline-group-list">
+                                                    {% for doc in group.results %}
+                                                        {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}
+                                                            {% include "../partials/timeline_item_image.html" %}
+                                                        {% else %}
+                                                            {% include "../partials/timeline_item_text.html" %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    {% if groupedResultsLimit < group.total %}
+                                                        <li class="timeline-group-item">
+                                                            <div class="timeline-item timeline-view-all">
+                                                                {% set queryParamJoinChar = "?" %}
+                                                                {% set filterDateRange = {'min': group.startDate | dateFormat(''), 'max': group.endDate | dateFormat('') } %}
+                                                                {% set sortByDateRange = sortBy if sortBy else defaultSortByColumnName_humanReadable %}
+                                                                {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(sortByDateRange, filterDateRange, false) %}
+                                                                {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
+                                                                {% set urlForFilterValue = "/array/" + array_source_key +  "/gallery" + queryParamJoinChar + "filterJSON=" + filterJSONString %}
+                                                                <a href="{{ urlForFilterValue }}" class="timeline-view-all-link color-brand-hover">
+                                                                    <span class="timeline-view-all-label">View all</span>
+                                                                    <span class="timeline-view-all-count">{{ group.total }}</span>
+                                                                </a>
+                                                            </div>
                                                         </li>
                                                     {% endif %}
-                                                {% endfor %}
-                                            </ul>
+                                                </ul>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+
+                        </div><!-- .timeline -->
+
+                        {% set lastPage = numPages | int %}
+                        {% set currentPage = onPageNum | int %}
+
+                        {% set showAlwaysFirstAndLast = true %}
+                        {% set paging_queryParamJoinChar = "?" if routePath_withoutPage == routePath_base else "&" %}
+
+                        {% if lastPage > 1 %}
+
+                            {# the number of first and last pages to be displayed #}
+                            {% set extremePagesLimit = 3 %}
+
+                            {# the number of pages that are displayed around the active page #}
+                            {% set nearbyPagesLimit = 2 %}
+
+                            <nav class="gallery-pagination">
+                                <ul class="pagination">
+                                    {% if currentPage > 1 %}
+                                        <li>
+                                            <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage - 1 }}" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+
+                                        {% for i in range(1, extremePagesLimit) -%}
+                                            {% if ( i < currentPage - nearbyPagesLimit ) %}
+                                                <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
+                                            {% endif %}
+                                        {%- endfor %}
+
+                                        {% if extremePagesLimit + 1 < currentPage - nearbyPagesLimit %}
+                                            <li><span>&hellip;</span></li>
                                         {% endif %}
 
-                                    </div><!-- .timeline -->
-
-                                    {% set lastPage = numPages | int %}
-                                    {% set currentPage = onPageNum | int %}
-
-                                    {% set showAlwaysFirstAndLast = true %}
-                                    {% set paging_queryParamJoinChar = "?" if routePath_withoutPage == routePath_base else "&" %}
-
-                                    {% if lastPage > 1 %}
-
-                                        {# the number of first and last pages to be displayed #}
-                                        {% set extremePagesLimit = 3 %}
-
-                                        {# the number of pages that are displayed around the active page #}
-                                        {% set nearbyPagesLimit = 2 %}
-
-                                        <nav class="gallery-pagination">
-                                            <ul class="pagination">
-                                                {% if currentPage > 1 %}
-                                                    <li>
-                                                        <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage - 1 }}" aria-label="Previous">
-                                                            <span aria-hidden="true">&laquo;</span>
-                                                        </a>
-                                                    </li>
-
-                                                    {% for i in range(1, extremePagesLimit) -%}
-                                                        {% if ( i < currentPage - nearbyPagesLimit ) %}
-                                                            <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
-                                                        {% endif %}
-                                                    {%- endfor %}
-
-                                                    {% if extremePagesLimit + 1 < currentPage - nearbyPagesLimit %}
-                                                        <li><span>&hellip;</span></li>
-                                                    {% endif %}
-
-                                                    {% for i in range(currentPage-nearbyPagesLimit, currentPage) -%}
-                                                        {% if ( i > 0 ) %}
-                                                            <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
-                                                        {% endif %}
-                                                    {%- endfor %}
-                                                {% elif showAlwaysFirstAndLast %}
-                                                    <li class="disabled">
-                                                        <a onclick="return false;" href="#" aria-label="Previous">
-                                                            <span aria-hidden="true">&laquo;</span>
-                                                        </a>
-                                                    </li>
-                                                {% endif %}
-
-                                                <li><a onclick="return false;" href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage }}" class="active">{{ currentPage }}</a></li>
-
-                                                {% if currentPage < lastPage %}
-                                                    {% for i in range(currentPage+1, currentPage + 1 + nearbyPagesLimit) -%}
-                                                        {% if ( i <= lastPage ) %}
-                                                            <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
-                                                        {% endif %}
-                                                    {%- endfor %}
-
-                                                    {% if  (lastPage - extremePagesLimit) > (currentPage + nearbyPagesLimit) %}
-                                                        <li><span>&hellip;</span></li>
-                                                    {% endif %}
-
-                                                    {% for i in range(lastPage - extremePagesLimit+1, lastPage+1) -%}
-                                                        {% if ( i > currentPage + nearbyPagesLimit ) %}
-                                                            <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
-                                                        {% endif %}
-                                                    {%- endfor %}
-
-                                                    <li>
-                                                        <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage + 1 }}" aria-label="Next">
-                                                            <span aria-hidden="true">&raquo;</span>
-                                                        </a>
-                                                    </li>
-                                                {% elif showAlwaysFirstAndLast %}
-                                                    <li class="disabled">
-                                                        <a onclick="return false;" href="#" aria-label="Next">
-                                                            <span aria-hidden="true">&raquo;</span>
-                                                        </a>
-                                                    </li>
-                                                {% endif %}
-                                            </ul>
-                                        </nav>
+                                        {% for i in range(currentPage-nearbyPagesLimit, currentPage) -%}
+                                            {% if ( i > 0 ) %}
+                                                <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
+                                            {% endif %}
+                                        {%- endfor %}
+                                    {% elif showAlwaysFirstAndLast %}
+                                        <li class="disabled">
+                                            <a onclick="return false;" href="#" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
                                     {% endif %}
 
-                                    </div>
-                                </div><!-- .row -->
-                            </div><!-- .container-fluid -->
+                                    <li><a onclick="return false;" href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage }}" class="active">{{ currentPage }}</a></li>
 
-                        </div><!-- .chart-container -->
+                                    {% if currentPage < lastPage %}
+                                        {% for i in range(currentPage+1, currentPage + 1 + nearbyPagesLimit) -%}
+                                            {% if ( i <= lastPage ) %}
+                                                <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
+                                            {% endif %}
+                                        {%- endfor %}
 
-                    </div><!-- .array-content -->
+                                        {% if  (lastPage - extremePagesLimit) > (currentPage + nearbyPagesLimit) %}
+                                            <li><span>&hellip;</span></li>
+                                        {% endif %}
 
-                </section>
+                                        {% for i in range(lastPage - extremePagesLimit+1, lastPage+1) -%}
+                                            {% if ( i > currentPage + nearbyPagesLimit ) %}
+                                                <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
+                                            {% endif %}
+                                        {%- endfor %}
 
-            </div><!-- #content -->
+                                        <li>
+                                            <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage + 1 }}" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    {% elif showAlwaysFirstAndLast %}
+                                        <li class="disabled">
+                                            <a onclick="return false;" href="#" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
 
-        </div><!-- #page -->
+                        </div>
+                    </div><!-- .row -->
+                </div><!-- .container-fluid -->
 
-        {% include "../partials/modal.html" %}
+            </div><!-- .chart-container -->
 
-        <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
-        
-        <script type="text/javascript" src="/javascripts/lib/bootstrap/bootstrap.js"></script>
-        <script type="text/javascript" src="/javascripts/lib/sharrre/jquery.sharrre.js"></script>
-        <script type="text/javascript" src="/javascripts/lib/scrollmagic/ScrollMagic.js"></script>
-        <script type="text/javascript" src="/javascripts/main.js"></script>
-        <script type="text/javascript" src="/javascripts/module/gallery.js"></script>
-        <script type="text/javascript" src="/javascripts/module/timeline.js"></script>
+        </div><!-- .array-content -->
 
-        {% include "../partials/survicate.html" %}
-    </body>
+    </section>
+{% endblock %}
+
+
+{% block inlineScript %}
+    {{ super() }}
+
+    <script type="text/javascript" src="/javascripts/lib/scrollmagic/ScrollMagic.js"></script>
+    <script type="text/javascript" src="/javascripts/module/gallery.js"></script>
+    <script type="text/javascript" src="/javascripts/module/timeline.js"></script>
 {% endblock %}

@@ -1,20 +1,11 @@
-{% extends "../shared/shared_layout.html" %}
+{% extends "../layout/object.html" %}
 
 {% block headSuffix %}
     <title>Arrays - {{ rowObject.rowParams[fieldKey_objectTitle] }}</title>
-    
-    
 {% endblock %}
 
-{% block bodyWrapper %}
-    <body class="object-show source-{{ array_source_key }}">
-        <div id="page" class="site">
-            {% include "../partials/header_bar_objectDetails.html" %}
-            {% include "../partials/sidebar_filter.html" %}
-
-            <div id="content" class="site-content">
-
-                <div class="container-fluid">
+{% block content %}
+    <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-8 col-sm-offset-2">
 
@@ -84,20 +75,8 @@
                         </div>
                     </div><!-- .row -->
                 </div>
+{% endblock %}
 
-            </div><!-- #content -->
-
-            {% include "../partials/footer.html" %}
-        </div><!-- #page -->
-
-        {% include "../partials/modal.html" %}
-
-        <script src="https://code.jquery.com/jquery-2.2.2.min.js" integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=" crossorigin="anonymous"></script>
-        
-        <script type="text/javascript" src="/javascripts/lib/bootstrap/bootstrap.js"></script>
-        <script type="text/javascript" src="/javascripts/lib/sharrre/jquery.sharrre.js"></script>
-        <script type="text/javascript" src="/javascripts/main.js"></script>
-
-        {% include "../partials/survicate.html" %}
-    </body>
+{% block footer %}
+{% include "../partials/footer.html" %}
 {% endblock %}
