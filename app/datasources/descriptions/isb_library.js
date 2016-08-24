@@ -142,7 +142,7 @@ exports.Descriptions =
             //
             fe_filters_default:
             {
-                // "Abstract Note": [ "Has Abstract Note" ]
+                "Abstract Note": [ "Has Abstract Note" ]
             },
             fe_filters_fieldsNotAvailable:
                 [
