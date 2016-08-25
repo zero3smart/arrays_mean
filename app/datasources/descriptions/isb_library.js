@@ -12,7 +12,7 @@ exports.Descriptions =
             uid: "isb_library",
             importRevision: 1,
             format: import_datatypes.DataSource_formats.CSV,
-            title: "Institute for Systems Biology",
+            title: "Institute for Systems Biology111",
             // brandColor: "#4A4A4A",
             urls: [ "" ],
             description: "Institute for Systems Biology",
