@@ -1,5 +1,6 @@
 {% extends "../layout/array.html" %}
-{% import "../partials/dropdowns.html" as dropdowns %}
+{% import "../partials/dropdown.html" as dropdown %}
+{% import "../partials/search.html" as search %}
 
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
@@ -30,7 +31,7 @@
                             <nav class="pull-left" role="navigation">
                                 {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
                                 {{
-                                dropdowns.default(
+                                dropdown.default(
                                     'Chart By',
                                     groupBy if groupBy else defaultGroupByColumnName_humanReadable,
                                     colNames_orderedForGroupByDropdown,
@@ -42,50 +43,17 @@
                             </nav>
 
                             <div class="pull-right">
-                                <form action="{{ routePath_base }}" method="get" class="form-search">
-                                    <div class="sort-control visible-xs">
-                                        <div class="btn dropdown-toggle-button search-toggle">
-                                            <span class="icon-search search-icon color-brand-hover"></span>
-                                        </div>
-                                    </div>
-
-                                    <div class="mobile-search-popover">
-                                        <div class="dropdown-toggle-button-group" role="group">
-                                            <div class="dropdown sort-control sort-control-left search-control">
-                                                {% set searchColToOutput = searchCol if searchCol else "Object Title" %}
-
-                                                <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                                                    Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
-                                                </a>
-                                                <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
-                                                {% if colNames_orderedForSortByDropdown | length %}
-                                                <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
-                                                    {% for colName in colNames_orderedForSortByDropdown %}
-                                                    <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
-                                                    {% endfor %}
-                                                </ul>
-                                                {% endif %}
-                                            </div>
-
-                                            <div class="sort-control sort-control-right">
-                                                <div class="dropdown-toggle">
-                                                    <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ if searchQ else "" }}">
-                                                    <span class="icon-search search-icon hidden-xs"></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {% if sortBy %}
-                                        <input type="hidden" name="sortBy" value="{{ sortBy }}">
-                                    {% endif %}
-                                    {% if sortDir %}
-                                        <input type="hidden" name="sortDir" value="{{ sortDir }}">
-                                    {% endif %}
-                                    {% if filterJSON %}
-                                        <input type="hidden" name="filterJSON" value="{{ filterJSON_nonURIEncodedVals }}"> {# it will get re-encoded #}
-                                    {% endif %}
-                                </form>
+                                {{
+                                search.panel(
+                                    routePath_base,
+                                    searchCol if searchCol else "Object Title",
+                                    colNames_orderedForSortByDropdown,
+                                    searchQ if searchQ else "",
+                                    sortBy,
+                                    sortDir,
+                                    filterJSON_nonURIEncodedVals
+                                )
+                                }}
 
                                 <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
                                     <span class="icon-legend" aria-hidden="true"></span>
