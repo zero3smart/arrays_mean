@@ -2,7 +2,7 @@
 
 {% import "../partials/dropdown.html" as dropdown %}
 {% import "../partials/search.html" as search %}
-
+{% import "../partials/filter.html" as filter %}
 
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
@@ -69,20 +69,17 @@
                 </div><!-- .container-fluid -->
 
                 {% if isFilterActive %}
-                <div class="filter-bar filter-bar-fixed-bottom">
-                    <div class="container-fluid">
-                        {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
-                        {% for filterCol, filterVals in filterObj %}
-                            {% for filterVal in filterVals %}
-                                {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true) %}
-                                {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                                {% set routePath_withoutThisFilter = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString %}
-                                {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}
-                        <span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | filterValToDisplay }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
-                            {% endfor %}
-                        {% endfor %}
-                    </div>
-                </div>
+                    {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
+                    {{
+                    filter.default(
+                        routePath_withoutFilter + queryParamJoinChar,
+                        routePath_withoutFilter,
+                        filterObj,
+                        truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
+                        false,
+                        'filter-bar-fixed-bottom'
+                    )
+                    }}
                 {% endif %}
 
                 <script type="text/javascript">

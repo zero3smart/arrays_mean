@@ -1,6 +1,9 @@
 {% extends "../layout/array.html" %}
+
 {% import "../partials/dropdown.html" as dropdown %}
 {% import "../partials/search.html" as search %}
+{% import "../partials/filter.html" as filter %}
+{% import "../partials/pagination.html" as pagination %}
 
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
@@ -65,19 +68,16 @@
                         </div>
 
                         {% if isFilterActive %}
-                        <div class="filter-bar">
-                            <span class="filter-label ui-label">Filters:</span>
-                                {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
-                                {% for filterCol, filterVals in filterObj %}
-                                    {% for filterVal in filterVals %}
-                                        {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true) %}
-                                        {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                                        {% set routePath_withoutThisFilter = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString %}
-                                        {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}
-                                <span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | filterValToDisplay }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
-                                    {% endfor %}
-                                {% endfor %}
-                        </div>
+                            {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
+                            {{
+                            filter.default(
+                                routePath_withoutFilter + queryParamJoinChar,
+                                routePath_withoutFilter,
+                                filterObj,
+                                truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
+                                true
+                            )
+                            }}
                         {% endif %}
 
                     </div>
@@ -109,83 +109,18 @@
 
                         {% set lastPage = numPages | int %}
                         {% set currentPage = onPageNum | int %}
-
-                        {% set showAlwaysFirstAndLast = true %}
                         {% set paging_queryParamJoinChar = "?" if routePath_withoutPage == routePath_base else "&" %}
 
                         {% if lastPage > 1 %}
-
-                            {# the number of first and last pages to be displayed #}
-                            {% set extremePagesLimit = 3 %}
-
-                            {# the number of pages that are displayed around the active page #}
-                            {% set nearbyPagesLimit = 2 %}
-
-                            <nav class="gallery-pagination">
-                                <ul class="pagination">
-                                    {% if currentPage > 1 %}
-                                        <li>
-                                            <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage - 1 }}" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-
-                                        {% for i in range(1, extremePagesLimit) -%}
-                                            {% if ( i < currentPage - nearbyPagesLimit ) %}
-                                                <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
-                                            {% endif %}
-                                        {%- endfor %}
-
-                                        {% if extremePagesLimit + 1 < currentPage - nearbyPagesLimit %}
-                                            <li><span>&hellip;</span></li>
-                                        {% endif %}
-
-                                        {% for i in range(currentPage-nearbyPagesLimit, currentPage) -%}
-                                            {% if ( i > 0 ) %}
-                                                <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
-                                            {% endif %}
-                                        {%- endfor %}
-                                    {% elif showAlwaysFirstAndLast %}
-                                        <li class="disabled">
-                                            <a onclick="return false;" href="#" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-                                    {% endif %}
-
-                                    <li><a onclick="return false;" href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage }}" class="active">{{ currentPage }}</a></li>
-
-                                    {% if currentPage < lastPage %}
-                                        {% for i in range(currentPage+1, currentPage + 1 + nearbyPagesLimit) -%}
-                                            {% if ( i <= lastPage ) %}
-                                                <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
-                                            {% endif %}
-                                        {%- endfor %}
-
-                                        {% if  (lastPage - extremePagesLimit) > (currentPage + nearbyPagesLimit) %}
-                                            <li><span>&hellip;</span></li>
-                                        {% endif %}
-
-                                        {% for i in range(lastPage - extremePagesLimit+1, lastPage+1) -%}
-                                            {% if ( i > currentPage + nearbyPagesLimit ) %}
-                                                <li><a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ i }}">{{ i }}</a></li>
-                                            {% endif %}
-                                        {%- endfor %}
-
-                                        <li>
-                                            <a href="{{ routePath_withoutPage }}{{ paging_queryParamJoinChar }}page={{ currentPage + 1 }}" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                    {% elif showAlwaysFirstAndLast %}
-                                        <li class="disabled">
-                                            <a onclick="return false;" href="#" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                    {% endif %}
-                                </ul>
-                            </nav>
+                        <nav class="gallery-pagination">
+                            {{
+                            pagination.default(
+                                routePath_withoutPage + paging_queryParamJoinChar,
+                                lastPage,
+                                currentPage
+                            )
+                            }}
+                        </nav>
                         {% endif %}
 
                     </div>
