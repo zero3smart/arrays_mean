@@ -1,4 +1,5 @@
 {% extends "../layout/array.html" %}
+{% import "../partials/dropdowns.html" as dropdowns %}
 
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
@@ -27,37 +28,25 @@
 
                             <nav class="sort-bar-left pull-left" role="navigation">
 
-                                <div class="dropdown sort-control sort-bar-6">
-                                    <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label group-by" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        <div class="dropdown-toggle-label">
-                                            Group By <span class="sort-criteria color-brand-hover">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
-                                        </div>
-                                    </a>
-                                    {% if colNames_orderedForGroupByDropdown | length %}
-                                    <ul class="dropdown-menu" aria-labelledby="group-by">
-                                        {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
-                                        {% for colName in colNames_orderedForGroupByDropdown %}
-                                        <li class="background-color-brand-hover"><a href="{{ routePath_withoutGroupBy }}{{ groupBy_queryParamJoinChar }}groupBy={{ colName }}">{{ colName }}</a></li>
-                                        {% endfor %}
-                                    </ul>
-                                    {% endif %}
-                                </div>
+                                {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
+                                {{
+                                dropdowns.sortbar(
+                                    'Group By',
+                                    groupBy if groupBy else defaultGroupByColumnName_humanReadable,
+                                    colNames_orderedForGroupByDropdown,
+                                    routePath_withoutGroupBy + groupBy_queryParamJoinChar + 'groupBy='
+                                )
+                                }}
 
-                                <div class="dropdown sort-control sort-bar-6">
-                                    <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label order-by" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        <div class="dropdown-toggle-label">
-                                            Sort By <span class="sort-criteria color-brand-hover">{{ sortBy if sortBy else defaultSortByColumnName_humanReadable }}</span>
-                                        </div>
-                                    </a>
-                                    {% if colNames_orderedForTimelineSortByDropdown | length %}
-                                    <ul class="dropdown-menu" aria-labelledby="sort-by">
-                                        {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
-                                        {% for colName in colNames_orderedForTimelineSortByDropdown %}
-                                        <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortBy }}{{ sortBy_queryParamJoinChar }}sortBy={{ colName }}">{{ colName }}</a></li>
-                                        {% endfor %}
-                                    </ul>
-                                    {% endif %}
-                                </div>
+                                {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
+                                {{
+                                dropdowns.sortbar(
+                                    'Sort By',
+                                    sortBy if sortBy else defaultSortByColumnName_humanReadable,
+                                    colNames_orderedForTimelineSortByDropdown,
+                                    routePath_withoutSortBy + sortBy_queryParamJoinChar + 'sortBy='
+                                )
+                                }}
                             </nav>
 
                             <div class="sort-bar-right pull-right">

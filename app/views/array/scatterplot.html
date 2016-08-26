@@ -1,4 +1,5 @@
 {% extends "../layout/array.html" %}
+{% import "../partials/dropdowns.html" as dropdowns %}
 
 {% block headSuffix %}
     <title>Arrays - {{ metaData.title }}</title>
@@ -27,37 +28,23 @@
                         <div class="sort-bar clearfix">
 
                             <nav class="sort-bar-left pull-left" role="navigation">
+                                {{
+                                dropdowns.axis(
+                                    'y',
+                                    'Y-Axis',
+                                    metaData.fe_scatterplot_defaults.yAxisField,
+                                    renderableFields
+                                )
+                                }}
 
-                                <div class="dropdown sort-control sort-bar-6">
-                                    <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        <div class="dropdown-toggle-label">
-                                            Y-Axis <span class="sort-criteria color-brand-hover y-axis-field">{{ metaData.fe_scatterplot_defaults.yAxisField | replace(r/_/g, ' ') }}</span>
-                                        </div>
-                                    </a>
-                                    {% if renderableFields | length %}
-                                    <ul class="dropdown-menu axis-control y-axis-control" aria-labelledby="type">
-                                        {% for colName in renderableFields %}
-                                        <!-- li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li -->
-                                        <li class="background-color-brand-hover"><a href="#" data-axis="y" data-colname="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
-                                        {% endfor %}
-                                    </ul>
-                                    {% endif %}
-                                </div>
-                                <div class="dropdown sort-control sort-bar-6">
-                                    <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label group-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        <div class="dropdown-toggle-label">
-                                            X-Axis <span class="sort-criteria color-brand-hover x-axis-field">{{ metaData.fe_scatterplot_defaults.xAxisField | replace(r/_/g, ' ') }}</span>
-                                        </div>
-                                    </a>
-                                    {% if renderableFields | length %}
-                                    <ul class="dropdown-menu axis-control x-axis-control" aria-labelledby="type">
-                                        {% for colName in renderableFields %}
-                                        <!-- li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li -->
-                                        <li class="background-color-brand-hover"><a href="#" data-axis="x" data-colname="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
-                                        {% endfor %}
-                                    </ul>
-                                    {% endif %}
-                                </div>
+                                {{
+                                dropdowns.axis(
+                                    'x',
+                                    'X-Axis',
+                                    metaData.fe_scatterplot_defaults.xAxisField,
+                                    renderableFields
+                                )
+                                }}
                             </nav>
 
                             <div class="sort-bar-right pull-right">

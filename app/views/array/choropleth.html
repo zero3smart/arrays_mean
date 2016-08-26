@@ -1,4 +1,5 @@
 {% extends "../layout/array.html" %}
+{% import "../partials/dropdowns.html" as dropdowns %}
 
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
@@ -27,33 +28,15 @@
                     <div class="sort-bar clearfix">
 
                         <nav class="pull-left" role="navigation">
-
-                            <div class="dropdown sort-control">
-                                <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label map-by" type="button" id="type" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                    <div class="dropdown-toggle-label">
-                                        Map by <span class="sort-criteria color-brand-hover">{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}</span>
-                                    </div>
-                                </a>
-                                {% if colNames_orderedForMapByDropdown | length %}
-                                <ul class="dropdown-menu" aria-labelledby="type">
-                                    {% set mapBy_queryParamJoinChar = "?" if routePath_withoutMapBy == routePath_base else "&" %}
-                                    {% for colName in colNames_orderedForMapByDropdown %}
-                                    <li class="background-color-brand-hover"><a href="{{ routePath_withoutMapBy }}{{ mapBy_queryParamJoinChar }}mapBy={{ colName }}">{{ colName }}</a></li>
-                                    {% endfor %}
-                                </ul>
-                                {% endif %}
-                            </div>
-                            <!--
-                            <div class="dropdown sort-control">
-                                <a class="btn dropdown-toggle ui-label" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                    Scale: <span class="sort-criteria color-brand-hover">Uniform</span>
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="group-by">
-                                    <li><a href="#">Uniform</a></li>
-                                    <li><a href="#">Uniform</a></li>
-                                </ul>
-                            </div>
-                            -->
+                            {% set mapBy_queryParamJoinChar = "?" if routePath_withoutMapBy == routePath_base else "&" %}
+                            {{
+                            dropdowns.default(
+                                'Map By',
+                                mapBy if mapBy else defaultMapByColumnName_humanReadable,
+                                colNames_orderedForMapByDropdown,
+                                routePath_withoutMapBy + mapBy_queryParamJoinChar + 'mapBy='
+                            )
+                            }}
                         </nav>
 
                         <div class="pull-right">

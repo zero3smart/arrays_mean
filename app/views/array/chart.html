@@ -1,10 +1,12 @@
-{% set currentView = "chart" %}
+{% import "../partials/dropdowns.html" as dropdowns %}
 
 {% extends "../layout/array.html" %}
 
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
 {% endblock %}
+
+{% set currentView = "chart" %}
 
 {% block content %}
     <section class="array">
@@ -29,22 +31,16 @@
                             <div class="sort-bar clearfix">
 
                                 <nav class="pull-left" role="navigation">
-
-                                    <div class="dropdown sort-control">
-                                        <a class="btn dropdown-toggle dropdown-toggle-button dropdown-toggle-button-has-caret ui-label group-by" type="button" id="group-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                            <div class="dropdown-toggle-label">
-                                                Chart By <span class="sort-criteria color-brand-hover">{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}</span>
-                                            </div>
-                                        </a>
-                                        {% if colNames_orderedForGroupByDropdown | length %}
-                                        <ul class="dropdown-menu" aria-labelledby="group-by">
-                                            {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
-                                            {% for colName in colNames_orderedForGroupByDropdown %}
-                                            <li class="background-color-brand-hover"><a href="{{ routePath_withoutGroupBy }}{{ groupBy_queryParamJoinChar }}groupBy={{ colName }}">{{ colName }}</a></li>
-                                            {% endfor %}
-                                        </ul>
-                                        {% endif %}
-                                    </div>
+                                    {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
+                                    {{
+                                    dropdowns.default
+                                        (
+                                            "Chart By",
+                                            groupBy if groupBy else defaultGroupByColumnName_humanReadable,
+                                            colNames_orderedForGroupByDropdown,
+                                            routePath_withoutGroupBy + groupBy_queryParamJoinChar + 'groupBy='
+                                        )
+                                    }}
                                 </nav>
 
                                 <div class="pull-right">

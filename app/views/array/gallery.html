@@ -1,4 +1,5 @@
 {% extends "../layout/array.html" %}
+{% import "../partials/dropdowns.html" as dropdowns %}
 
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
@@ -32,19 +33,17 @@
                                     {% endif %}
                                 </div>
 
-                                <div class="dropdown sort-control">
-                                    <a class="btn dropdown-toggle ui-label sort-by" id="sort-by" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        Sort By <span class="sort-criteria color-brand-hover">{{ sortBy if sortBy else defaultSortByColumnName_humanReadable }}</span>
-                                    </a>
-                                    {% if colNames_orderedForSortByDropdown | length %}
-                                    <ul class="dropdown-menu" aria-labelledby="sort-by">
-                                        {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
-                                        {% for colName in colNames_orderedForSortByDropdown %}
-                                        <li class="background-color-brand-hover"><a href="{{ routePath_withoutSortBy }}{{ sortBy_queryParamJoinChar }}sortBy={{ colName }}">{{ colName }}</a></li>
-                                        {% endfor %}
-                                    </ul>
-                                    {% endif %}
-                                </div>
+                                {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
+                                {{
+                                dropdowns.default(
+                                    'Sort By',
+                                    sortBy if sortBy else defaultSortByColumnName_humanReadable,
+                                    colNames_orderedForSortByDropdown,
+                                    routePath_withoutSortBy + sortBy_queryParamJoinChar + 'sortBy=',
+                                    false,
+                                    false
+                                )
+                                }}
 
                             </nav>
 
