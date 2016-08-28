@@ -1,0 +1,104 @@
+{% extends "../layout/array.html" %}
+
+{% import "../partials/dropdown.html" as dropdown %}
+{% import "../partials/search.html" as search %}
+{% import "../partials/filter.html" as filter %}
+
+{% block headSuffix %}
+    <title>Arrays - {{ arrayTitle }}</title>
+    
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.css' rel='stylesheet' />
+{% endblock %}
+
+{% set currentView = "choropleth" %}
+
+{% block content %}
+    <section class="array">
+
+        <header class="array-header header-shadow array-header-small clearfix">
+            <div class="container-fluid">
+                <h1 class="array-title">{{ arrayTitle }}</h1>
+                <div class="array-meta">
+                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                </div>
+            </div>
+        </header><!-- .array-header -->
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+
+                    <div class="sort-bar clearfix">
+
+                        <nav class="pull-left" role="navigation">
+                            {% set mapBy_queryParamJoinChar = "?" if routePath_withoutMapBy == routePath_base else "&" %}
+                            {{
+                            dropdown.default(
+                                'Map By',
+                                mapBy if mapBy else defaultMapByColumnName_humanReadable,
+                                colNames_orderedForMapByDropdown,
+                                routePath_withoutMapBy + mapBy_queryParamJoinChar + 'mapBy='
+                            )
+                            }}
+                        </nav>
+
+                        <div class="pull-right">
+                            {{
+                            search.panel(
+                                routePath_base,
+                                searchCol if searchCol else "Object Title",
+                                colNames_orderedForSortByDropdown,
+                                searchQ if searchQ else "",
+                                sortBy,
+                                sortDir,
+                                filterJSON_nonURIEncodedVals
+                            )
+                            }}
+                        </div>
+
+                    </div>
+
+                </div>
+            </div><!-- .row -->
+        </div><!-- .container-fluid -->
+
+        {% if isFilterActive %}
+            {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
+            {{
+            filter.default(
+                routePath_withoutFilter + queryParamJoinChar,
+                routePath_withoutFilter,
+                filterObj,
+                truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
+                false,
+                'filter-bar-fixed-bottom'
+            )
+            }}
+        {% endif %}
+
+        <script type="text/javascript">
+            var templateOutput_topValue = {{ highestValue if highestValue else 0 }};
+            var geoData = {{ featureCollection | dump | safe }};
+
+            var filterObj = {{ filterObj | dump | safe }};
+            var routePath_withoutFilter = '{{ routePath_withoutFilter }}';
+            var routePath_base = '{{ routePath_base }}';
+            var mapBy = '{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}';
+        </script>
+
+        <div class="array-content">
+
+            <div id="map"></div>
+
+        </div>
+
+    </section>
+{% endblock %}
+
+{% block inlineScript %}
+    {{ super() }}
+
+    {# <script type="text/javascript" src="/javascripts/lib/mapbox-gl-js/mapbox-gl.js"></script> #}
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.js'></script>
+    <script type="text/javascript" src="/javascripts/module/choropleth.js"></script>
+{% endblock %}

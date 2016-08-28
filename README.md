@@ -4,9 +4,9 @@
 
 ### Basic repository contents:
 
-1. Front-end web server application at [`local_modules/app`](local_modules/app), including front-end publicly hosted assets at [`local_modules/app/public`](local_modules/app/public)
+1. Front-end web server application at [`app`](app), including front-end publicly hosted assets at [`app/public`](app/public)
 
-2. Database seeding and post-import caching for MVP via CSV import at [`local_modules/data_ingestion`](local_modules/data_ingestion)
+2. Database seeding and post-import caching for MVP via CSV import at [`app/controllers/pre_process`](app/controllers/pre_process)
 
 
 ---------------------
@@ -66,7 +66,7 @@
 
 Environment-related secrets such as the production password database are not committed to this repository as a security-related best practice.
 
-In order to add them (and to support both local development and production deployment) you need to create two files named ".env.development" and ".env.production" in the root directory of this repository at `arrays-server-js/.env*` and then fill them respectively with the content of the following Google Docs:
+In order to add them (and to support both local development and production deployment) you need to create two files named ".env.development" and ".env.production" in 'config/env/' of this repository at `arrays/env/.env*` and then fill them respectively with the content of the following Google Docs:
 
 * [Arrays - Server - .env.production](https://docs.google.com/document/d/1d1IoAHgGPB4bwWGaYprtBFSVoLEcoEuw4WdruUt-v9k/)
 * [Arrays - Server - .env.development](https://docs.google.com/document/d/15-SkjQHqznSMOWevEH6yZvshdNqMzN4RErMhOPFz3jc/)
@@ -81,13 +81,14 @@ In order to add them (and to support both local development and production deplo
 #### iv. Seeding the local database
 
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
-2. Configure datasets to batch import in [`data_ingestion/datasource_descriptions/default.js`](local_modules/data_ingestion/datasource_descriptions/default.js)
+2. Configure datasets to batch import in [`app/datasources/descriptions/default.js`](app/datasources/descriptions/default.js)
 3. Execute [`bin/_dev_MVP_DB_seed`](bin/_dev_MVP_DB_seed) to import all datasets configured in `default.js`
 4. Execute [`bin/__dev_postImportCaching`](bin/__dev_postImportCaching) -- Needed for generating the sidebar filters cache
 
 ##### Importing one dataset at a time
+
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
-2. Execute [`bin/_dev_MVP_DB_seed marvel_character_database`](bin/_dev_MVP_DB_seed) where `marvel_character_database` is the file name to import from the `data_ingestion/datasource_description/` directory. `marvel_character_database.js` is also acceptable.
+2. Execute [`bin/_dev_MVP_DB_seed marvel_character_database`](bin/_dev_MVP_DB_seed) where `marvel_character_database` is the file name to import from the `app/datasources/descriptions/` directory. `marvel_character_database.js` is also acceptable.
 3. These parameters can be applied to all the binary commands in the `/bin` directory
   * bin/_start_dev_postImportCaching
   * bin/__dev_postImportCaching
@@ -98,9 +99,8 @@ In order to add them (and to support both local development and production deplo
   * _runUntilSuccess_DEVELOPMENT__MVP_DB_seed__enterImageScrapingDirectly
   * _runUntilSuccess_PRODUCTION__MVP_DB_seed__enterImageScrapingDirectly 
   * Start_dev_app
-  * _start_dev_MoMA_canned_questions
-  * _prod_MoMA_canned_questions
 5. Execute [`bin/__dev_postImportCaching`](bin/__dev_postImportCaching) to re-generate sidebar filters cache, re-cache the keywords
+6. Optional, Excute [`bin/_dev_MVP_DB_cache_keywords`] to update only the keywords caches if they were changed after installed.
 
 ##### Caching the keywords directly
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
@@ -163,4 +163,3 @@ See this Doc for information on the data import framework capabilities.
 If you find that image scraping during the MVP seed is failing after you're sure the initial pre-scraping import work has completed, you can run [`bin/_runUntilSuccess_PRODUCTION__MVP_DB_seed__enterImageScrapingDirectly`](_runUntilSuccess_PRODUCTION__MVP_DB_seed__enterImageScrapingDirectly) to continuously retry running the image scraping stage and all subsequent stages until it completes successfully.
 
 2. Execute [`bin/_PRODUCTION_postImportCaching`](bin/_PRODUCTION_postImportCaching)
-

@@ -1,0 +1,82 @@
+{% extends "../layout/object.html" %}
+
+{% block headSuffix %}
+    <title>Arrays - {{ rowObject.rowParams[fieldKey_objectTitle] }}</title>
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-8 col-sm-offset-2">
+
+                            <article id="object-id" class="object">
+                                <header class="object-header">
+                                    {% if hasOriginalImage %}
+                                    <img src="{{ rowObject.rowParams[fieldKey_originalImageURL] }}" class="object-featured img-responsive" />
+                                    {% endif %}
+                                    {% set objectTitle = rowObject.rowParams[fieldKey_objectTitle] %}
+                                    <h1 class="object-title">{{ objectTitle if objectTitle else "(Title not specified)" }}</h1>
+                                </header><!-- .object-header -->
+
+                                <div class="object-content">
+                                    <dl>
+                                    {% for columnName in ordered_colNames_sansObjectTitleAndImages %}
+                                        {% set htmlOverrideFn = fe_objectShow_customHTMLOverrideFnsByColumnName[columnName] %}
+                                        {% set columnValue = rowObject.rowParams[columnName] %}
+                                        {% if columnValue %}
+                                            {% if columnValue | isArray %}
+                                                {% if columnValue.length > 0 %}
+                                                    <dt>{{ columnName }}</dt>
+                                                    <dd>
+                                                    {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
+                                                    {% if columnValue | length %}
+                                                        <ul class="object-list">
+                                                        {% set sortedArray = columnValue | alphaSortedArray %}
+                                                        {% for arrayMember in sortedArray %}
+                                                            {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, arrayMember, false) %}
+                                                            {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
+                                                            {% if shouldLink %}
+                                                                <li class="object-list-item"><a href="/array/{{ array_source_key }}/gallery?filterJSON={{ filterJSONString }}" class="color-brand">{{ htmlOverrideFn(rowObject, arrayMember) | safe if htmlOverrideFn else arrayMember }}</a></li>
+                                                            {% else %}
+                                                                <li class="object-list-item">{{ htmlOverrideFn(rowObject, arrayMember) | safe if htmlOverrideFn else arrayMember }}</li>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                        </ul>
+                                                    {% endif %}
+                                                    </dd>
+                                                {% endif %}
+                                            {% else %}
+                                                <dt>{{ columnName }}</dt>
+                                                <dd>
+                                                {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
+                                                {% if shouldLink %}
+                                                    {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, columnValue, false) %}
+                                                    {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
+                                                
+                                                    <a href="/array/{{ array_source_key }}/gallery?filterJSON={{ filterJSONString }}" class="color-brand">
+                                                {% endif %}
+                                                        {{ htmlOverrideFn(rowObject, columnValue) | safe if htmlOverrideFn else columnValue }}
+                                                {% if shouldLink %}
+                                                    </a>
+                                                {% endif %}
+                                                </dd>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    </dl>
+
+                                </div><!-- .object-content -->
+
+                                <footer class="object-footer">
+    
+                                </footer><!-- .object-footer -->
+                            </article>
+
+                        </div>
+                    </div><!-- .row -->
+                </div>
+{% endblock %}
+
+{% block footer %}
+{% include "../partials/footer.html" %}
+{% endblock %}

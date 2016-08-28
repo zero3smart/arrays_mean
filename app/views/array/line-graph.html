@@ -1,0 +1,203 @@
+{% extends "../layout/array.html" %}
+
+{% import "../partials/dropdown.html" as dropdown %}
+{% import "../partials/search.html" as search %}
+{% import "../partials/filter.html" as filter %}
+
+{% block headSuffix %}
+    <title>Arrays - {{ arrayTitle }}</title>
+{% endblock %}
+
+{% set currentView = "scatterplot" %}
+
+{% block content %}
+    <section class="array">
+
+        <header class="array-header header-shadow array-header-small clearfix">
+            <div class="container-fluid">
+                <h1 class="array-title">{{ arrayTitle }}</h1>
+                <div class="array-meta">
+                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                </div>
+            </div>
+        </header><!-- .array-header -->
+
+        <div class="array-content">
+
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-sm-12">
+
+                                        <div class="sort-bar clearfix">
+
+                                            <nav class="sort-bar-left pull-left" role="navigation">
+                                                {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
+                                                {{
+                                                dropdown.default(
+                                                    'Chart By',
+                                                    groupBy if groupBy else defaultGroupByColumnName_humanReadable,
+                                                    colNames_orderedForGroupByDropdown,
+                                                    routePath_withoutGroupBy + groupBy_queryParamJoinChar + 'groupBy='
+                                                )
+                                                }}
+
+                                                {{
+                                                dropdown.axis(
+                                                    y,
+                                                    '',
+                                                    'Category',
+                                                    renderableFields
+                                                )
+                                                }}
+                                            </nav>
+
+                                            <div class="sort-bar-right pull-right">
+                                                {{
+                                                search.panel(
+                                                    routePath_base,
+                                                    searchCol if searchCol else "Object Title",
+                                                    colNames_orderedForSortByDropdown,
+                                                    searchQ if searchQ else "",
+                                                    sortBy,
+                                                    sortDir,
+                                                    filterJSON_nonURIEncodedVals
+                                                )
+                                                }}
+
+                                                <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
+                                                    <span class="icon-legend" aria-hidden="true"></span>
+                                                </a>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div><!-- .row -->
+                            </div><!-- .container-fluid -->
+
+                            <script type="text/javascript">
+                                var graphData = [];
+                                graphData[0] = {{ groupedResults | dump | safe }}.map(function(row) {
+                                    row.label = "{{ arrayTitle }}";
+                                    row.count = Number(row.count);
+                                    row.year = new Date(row.year);
+                                    return row;
+                                });
+
+                                var filterObj = {{ filterObj | dump | safe }};
+                                var routePath_withoutFilter = '{{ routePath_withoutFilter }}';
+                                var routePath_base = '{{ routePath_base }}';
+                                var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
+                            </script>
+
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-sm-12">
+
+                                        <div id="linechart" class="scatterplot linechart"></div>
+
+                                    </div>
+                                </div><!-- .row -->
+                            </div><!-- .container-fluid -->
+
+                            {% if isFilterActive %}
+                                {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
+                                {{
+                                filter.default(
+                                    routePath_withoutFilter + queryParamJoinChar,
+                                    routePath_withoutFilter,
+                                    filterObj,
+                                    truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
+                                    false
+                                )
+                                }}
+                            {% endif %}
+
+                        </div><!-- .array-content -->
+
+    </section>
+{% endblock %}
+
+{% block inlineScript %}
+    {{ super() }}
+
+    <script type="text/javascript" src="/javascripts/lib/lodash/lodash.js"></script>
+    <script type="text/javascript" src="/javascripts/lib/d3/d3.js"></script>
+
+    <script type="text/javascript" src="/javascripts/tooltip.js"></script>
+    <script type="text/javascript" src="/javascripts/module/scatterplot/main.js"></script>
+    <script type="text/javascript" src="/javascripts/module/linechart/main.js"></script>
+    <script type="text/javascript" src="/javascripts/module/linechart/base.js"></script>
+    <script type="text/javascript" src="/javascripts/module/linechart/viewport.js"></script>
+    <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
+    <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
+    <script>
+        function stream_layers(n, m, o) {
+            if (arguments.length < 3) o = 0;
+            function bump(a) {
+                var x = 1 / (.1 + Math.random()),
+                        y = 2 * Math.random() - .5,
+                        z = 10 / (.1 + Math.random());
+                for (var i = 0; i < m; i++) {
+                    var w = (i / m - y) * z;
+                    a[i] += x * Math.exp(-w * w);
+                }
+            }
+            return d3.range(n).map(function() {
+                var a = [], i;
+                for (i = 0; i < m; i++) a[i] = o + o * Math.random();
+                for (i = 0; i < 5; i++) bump(a);
+                return a;
+            });
+        }
+
+        /*         graphData = graphData.concat(stream_layers(2, graphData[0].length, .1).map(function(series) {
+         return series.map(function(d, i) {
+         return {
+         count: d * 100,
+         year: graphData[0][i].year
+         }
+         });
+         }));
+         */
+        if ("{{ array_source_key }}" == "isb_library-r1") {
+
+            // Only do this for ISB data
+            d3.csv('/javascripts/module/linechart/Keyword_Frequency_Data_20160819_v2.csv', function(error, series) {
+                if (error) {
+                    throw new Error("Can't load data file: " + JSON.stringify(error));
+                }
+
+                // Group series by keyword
+                var groupedSeriesObj = _.groupBy(series, "Keyword");
+
+                // Save groups to array of objects
+                var groupedSeriesArray = [];
+                for (var key in groupedSeriesObj) {
+                    groupedSeriesArray.push(groupedSeriesObj[key]);
+                }
+
+                var data = [];
+                data.push(groupedSeriesArray.map(function(row) {
+                    row.map(function(row2) {
+                        row2.label = row2.Keyword;
+                        row2.count = Number(row2['Number of Publications']);
+                        row2.year = new Date(row2.Year);
+                        return row2;
+                    })
+                }));
+
+                // Merge data from DB into custom data
+                groupedSeriesArray.push(graphData[0]);
+
+                var lineChart = new linechart.chart(groupedSeriesArray)
+                        .render("#linechart");
+            });
+        } else {
+
+            // Do this for all other data besides ISB
+            var lineChart = new linechart.chart(graphData)
+                    .render("#linechart");
+        }
+
+    </script>
+{% endblock %}

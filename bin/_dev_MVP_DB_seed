@@ -1,1 +1,1 @@
-NODE_ENV=development node local_modules/data_ingestion/import_MVP_DB_seed.js $@
+NODE_ENV=development node app/controllers/pre_process/data_ingest/import_MVP_DB_seed.js $@

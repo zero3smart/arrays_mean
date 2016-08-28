@@ -1,0 +1,23 @@
+{% macro default(routePath_base, routePath_withoutFilter, filterObj, truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill, label=false, customClassName='') %}
+<div class="filter-bar {{ customClassName }}">
+    {% if label %}
+    <span class="filter-label ui-label">Filters:</span>
+    {% else %}
+    <div class="container-fluid">
+    {% endif %}
+
+    {% for filterCol, filterVals in filterObj %}
+        {% for filterVal in filterVals %}
+            {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true) %}
+            {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
+            {% set routePath_withoutThisFilter = routePath_base + "filterJSON=" + filterJSONString %}
+            {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}
+            <span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | filterValToDisplay }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
+        {% endfor %}
+    {% endfor %}
+
+    {% if not label %}
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}
