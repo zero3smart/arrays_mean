@@ -77,6 +77,19 @@ constructor.prototype._mountRoutes_viewEndpoints_array = function()
     var self = this;
     var context = self.context;
     var app = context.app;
+    app.get('/test', _ensureWWW, function(req, res)
+    {
+        context.API_data_preparation_controller.BindDataFor_datasetsListing(function(err, bindData)
+        {
+            if (err) {
+                winston.error("❌  Error getting bind data for Array create: ", err);
+                self._renderBindDataError(err, req, res);
+            
+                return;
+            }
+            res.render('test/test', bindData);
+        });
+    });
     app.get('/array/create', _ensureWWW, function(req, res)
     {
         context.API_data_preparation_controller.BindDataFor_datasetsListing(function(err, bindData)
