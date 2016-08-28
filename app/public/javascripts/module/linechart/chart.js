@@ -22,6 +22,14 @@ linechart.chart = function(data) {
      * @member {linechart.navigation}
      */
     this._navigation = new linechart.navigation(this._data, this._viewport);
+    /*
+     * Set up window resize event handler.
+     */
+    var self = this;
+    d3.select(window).on('resize.line-graph', function() {
+        self.resize();
+        self.update();
+    });
 };
 
 
@@ -43,15 +51,13 @@ linechart.chart.prototype.render = function(selector) {
         throw new Error('Cannot find HTML element by "' + selector + '" selector');
     }
 
-    this._container.style('height', '400px');
-
-    var container = this._container.append('div')
+    this._viewportContainer = this._container.append('div')
         .style('height', '75%');
-    this._viewport.render(container);
+    this._viewport.render(this._viewportContainer);
 
-    container = this._container.append('div')
+    this._navContainer = this._container.append('div')
         .style('height', '25%');
-    this._navigation.render(container);
+    this._navigation.render(this._navContainer);
     /*
      * Set up chart size.
      */
@@ -71,7 +77,14 @@ linechart.chart.prototype.render = function(selector) {
  * @returns {linechart.chart}
  */
 linechart.chart.prototype.resize = function() {
-
+    /*
+     * Change chart's container height. But min height is 400px.
+     */
+    var height = Math.max(400, window.innerHeight - jQuery(this._container.node()).offset().top);
+    this._container.style('height', height + 'px');
+    /*
+     * Run each subchart resize procedure.
+     */
     this._viewport.resize();
     this._navigation.resize();
 

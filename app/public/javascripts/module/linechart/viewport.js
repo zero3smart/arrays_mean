@@ -130,13 +130,6 @@ linechart.viewport = function(data) {
      * @member {Tooltip}
      */
     this._tooltip = new Tooltip();
-    /*
-     * Set up window resize event handler.
-     */
-    d3.select(window).on('resize.line-graph-viewport', function() {
-        self.resize();
-        self.update();
-    });
 };
 
 

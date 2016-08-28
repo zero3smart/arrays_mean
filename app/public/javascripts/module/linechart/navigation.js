@@ -138,13 +138,6 @@ linechart.navigation = function(data, viewport) {
         bottom : 30,
         left : this._brushHandleRadius
     };
-    /*
-     * Set up window resize event handler.
-     */
-    d3.select(window).on('resize.line-graph-navigation', function() {
-        self.resize();
-        self.update();
-    });
 };
 
 
