@@ -12,7 +12,7 @@ exports.Descriptions =
             uid: "isb_library",
             importRevision: 1,
             format: import_datatypes.DataSource_formats.CSV,
-            title: "Institute for Systems Biology111",
+            title: "Institute for Systems Biology",
             // brandColor: "#4A4A4A",
             urls: [ "" ],
             description: "Institute for Systems Biology",
@@ -110,7 +110,9 @@ exports.Descriptions =
                     "Committee",
                     "History",
                     "Legislative Body",
-                    "Series"
+                    "Series",
+                    "Date",
+                    "Publication Title"
                 ],
             fe_displayTitleOverrides:
             { // these are to be tuples - the values must be unique as well
@@ -296,7 +298,6 @@ exports.Descriptions =
                     "ISSN",
                     "Issue",
                     "Volume",
-                    "Journal Abbreviation",
                     "Publisher",
                     "Library Catalog",
                     "Category"
