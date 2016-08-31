@@ -11,7 +11,7 @@ var constructor = function(options, context) {
     return self;
 };
 
-constructor.prototype.BindDataFor_datasetsListing = function(callback)
+constructor.prototype.BindDataFor_array_index = function(callback)
 {
     var self = this;
     var iterateeFn = async.ensureAsync(function(dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
