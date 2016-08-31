@@ -450,9 +450,17 @@ linechart.viewport.prototype.update = function(data) {
     this._xScale.domain(this._xDomain);
     this._yScale.domain(this._yDomain);
     /*
+     * Evaluate amount of required ticks to display only years.
+     */
+    var tickValues = _.uniq(this._xAxis.scale()
+        .ticks(this._xAxis.ticks()[0])
+        .map(function(d) {
+            return d.getFullYear();
+        }))
+    /*
      * Update chart axes.
      */
-    this._xAxisContainer.call(this._xAxis);
+    this._xAxisContainer.call(this._xAxis.ticks(tickValues.length));
     this._yAxisContainer.call(this._yAxis);
     /*
      * Update series.
