@@ -20,14 +20,44 @@ function Tooltip() {
      * @private
      * @param {Integer}
      */
-    this._offset = 5;
+    this._offset = {
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 5
+    };
     /**
      * Tooltip prefered position.
      * @private
      * @member {'top'|'right'|'bottom'|'left'}
      */
     this._position = 'left';
+    /**
+     * 
+     */
+    this._element = undefined;
+    /**
+     * 
+     */
+    this._width = undefined;
 }
+
+
+Tooltip.prototype.setWidth = function(width) {
+
+    this._width = width;
+    return this;
+};
+
+
+Tooltip.prototype.getWidth = function(deafultWidth) {
+
+    if (this._width) {
+        return this._width;
+    } else {
+        return deafultWidth;
+    }
+};
 
 
 /**
@@ -52,6 +82,7 @@ Tooltip.prototype.hide = function() {
 
     if (this._container && this._container.size() > 0) {
         this._container.remove();
+        this._container = undefined;
     }
 
     return this;
@@ -61,12 +92,20 @@ Tooltip.prototype.hide = function() {
 /**
  * Set offset.
  * @public
- * @param {Integer} offset
+ * @param {Object|Integer} offset
+ * @param {Integer} [value]
  * @returns {Tooltip}
  */
-Tooltip.prototype.setOffset = function(offset) {
+Tooltip.prototype.setOffset = function(offset, value) {
 
-    this._offset = offset;
+    if (offset instanceof Object) {
+        for (i in offset) {
+            this._offset[i] = offset[i];
+        }
+    } else {
+        this._offset[offset] = value;
+    }
+
     return this;
 };
 
@@ -85,13 +124,44 @@ Tooltip.prototype.setContent = function(content) {
 
 
 /**
+ * Append hidden tooltip container to the document body.
+ * @param element
+ * @returns {Tooltip}
+ */
+Tooltip.prototype.setOn = function(element) {
+    /*
+     * Stash current element.
+     */
+    this._element = element;
+    /*
+     * Append tooltip container to the document body.
+     */
+    if (! this._container) {
+        this._container = d3.select(document.body).append('div')
+            .attr('class', 'arrays-co-tooltip')
+            .style('background-color', '#fff');
+    }
+
+    return this;
+};
+
+
+/**
  * Show tooltip.
  * @param {HTMLElement|SVGElement} element
  * @returns {Tooltip}
  */
 Tooltip.prototype.show = function(element) {
     /*
-     * Get element dimansions.
+     * Use previously stashed element if not prvided.
+     */
+    element = element || this._element;
+    /*
+     * Stash current element.
+     */
+    this.setOn(element);
+    /*
+     * Get element dimensions.
      */
     var elementDimensions = element.getBoundingClientRect();
     /*
@@ -101,10 +171,14 @@ Tooltip.prototype.show = function(element) {
     /*
      * Append hidden content to the container.
      */
-    this._container = d3.select(document.body).append('div')
-        .attr('class', 'arrays-co-tooltip')
-        .style('background-color', '#fff')
-        .html(this._content);
+    this._container.html(this._content);
+    /*
+     * Set up width if defined.
+     */
+    var width = this.getWidth();
+    if (width) {
+        this._container.style('width', width + 'px');
+    }
     /*
      * Get tooltip dimensions.
      */
@@ -137,8 +211,8 @@ Tooltip.prototype._getLeftPosition = function(position, tooltipDimension, elemen
     /*
      * Evaluate tooltip x and y positions.
      */
-    var x = position.left - tooltipDimension.width - this._offset;
-    var y = position.top;
+    var x = position.left - tooltipDimension.width + this._offset.right - this._offset.left;
+    var y = position.top - this._offset.top;
     /*
      * Fix document height bottom violence.
      */
@@ -152,16 +226,10 @@ Tooltip.prototype._getLeftPosition = function(position, tooltipDimension, elemen
         y = 0;
     }
     /*
-     * 
-     */
-    //if (x + tooltipDimension.width > document.body.clientWidth) {
-    //    x = position.left + elementDimensions.width;
-    //}
-    /*
      * Fix document width left violence.
      */
     if (x < 0) {
-        x = position.left + elementDimensions.width + this._offset;
+        x = position.left + elementDimensions.width + this._offset.left;
     }
 
     return {
@@ -186,12 +254,12 @@ Tooltip.prototype._getTopPosition = function(position, tooltipDimension, element
      * Evaluate tooltip x and y positions.
      */
     var x = position.left - tooltipDimension.width / 2 + elementDimensions.width / 2;
-    var y = position.top - tooltipDimension.height - this._offset;
+    var y = position.top - tooltipDimension.height - this._offset.left;
     /*
      * Show tooltip at the bottom if y < 0 (beyond window top border).
      */
     if (y < 0) {
-        y = position.top + elementDimensions.height + this._offset;
+        y = position.top + elementDimensions.height + this._offset.left;
     }
     /*
      * Fix document width left violence.
@@ -223,9 +291,36 @@ Tooltip.prototype._getTopPosition = function(position, tooltipDimension, element
  * @param {DOMRect} elementDimensions
  * @returns {Object}
  */
-Tooltip.prototype._getRightPosition = function() {
+Tooltip.prototype._getRightPosition = function(position, tooltipDimension, elementDimensions) {
+    /*
+     * Evaluate tooltip x and y positions.
+     */
+    var x = position.left + elementDimensions.width + this._offset.right - this._offset.left;
+    var y = position.top - this._offset.top;
+    /*
+     * Fix document height bottom violence.
+     */
+    if (y + tooltipDimension.height > document.body.clientHeight) {
+        y -= y + tooltipDimension.height - document.body.clientHeight;
+    }
+    /*
+     * Fix document height top violence. 
+     */
+    if (y < 0) {
+        y = 0;
+    }
+    /*
+     * Fix document right left violence.
+     */
+    if (x + tooltipDimension.width > document.body.clientWidth) {
+        x = document.body.clientWidth - tooltipDimension.width;
+    }
 
-    throw new Error('Tooltip#_getRightPosition not implemented');
+    return {
+        'x' : x,
+        'y' : y
+    };
+
 };
 
 
@@ -239,7 +334,7 @@ Tooltip.prototype._getRightPosition = function() {
  * @param {DOMRect} elementDimensions
  * @returns {Object}
  */
-Tooltip.prototype._getBottomPosition = function() {
+Tooltip.prototype._getBottomPosition = function(position, tooltipDimension, elementDimensions) {
 
     throw new Error('Tooltip#_getBottomPosition not implemented');
 };

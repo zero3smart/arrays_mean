@@ -93,11 +93,19 @@ linechart.viewport = function(data) {
      */
     this._yAxisContainer = undefined;
     /**
+     * Date bisector.
+     * @private
+     * @member {Function}
+     */
+    this._bisectDate = d3.bisector(function(d) {
+        return d.year;
+    }).left;
+    /**
      * Lines color set.
      * @private
      * @member {String[]}
      */
-    this._colors = d3.scale.category10().range();
+    this._colors = d3.scale.category20().range();
     /*
      * Stash reference to this object.
      */
@@ -194,6 +202,20 @@ linechart.viewport.prototype.render = function(container) {
             return self._colors[i];
         });
     /*
+     * Append mouse events receiver.
+     */
+    this._receiver = this._canvas.append('rect')
+        .attr('x', 0)
+        .attr('y', 0)
+        .style('fill', 'transparent')
+        .on('mouseover', function() {
+            self._mouseEnterEventHandler();
+        }).on('mouseout', function() {
+            self._mouseOutEventHandler();
+        }).on('mousemove', function() {
+            self._mouseMoveEventHandler();
+        });
+    /*
      * Set up chart dimension.
      */
     this.resize();
@@ -203,6 +225,109 @@ linechart.viewport.prototype.render = function(container) {
     this.update();
 
     return this;
+};
+
+
+/**
+ * Viewport mouse enter event handler.
+ * @private
+ */
+linechart.viewport.prototype._mouseEnterEventHandler = function() {
+    /*
+     * Append tooltip to the document body.
+     */
+    this._tooltip.setOn(this._svg.node())
+        .setWidth(335)
+        .setOffset('top', - 10);
+};
+
+
+/**
+ * Viewport mouse out event handler.
+ * @private
+ */
+linechart.viewport.prototype._mouseOutEventHandler = function() {
+
+    this._tooltip.hide();
+};
+
+
+/**
+ * Viewport mouse move event handler.
+ * @private
+ */
+linechart.viewport.prototype._mouseMoveEventHandler = function() {
+    /*
+     * Stash reference to this object.
+     */
+    var self = this;
+    /*
+     * Get mouse coordinate relative to parent element.
+     */
+    var x = d3.mouse(this._receiver.node())[0];
+    /*
+     * Get date value under mouse pointer.
+     */
+    var date = this._xScale.invert(x);
+    /*
+     * Create series current values list.
+     */
+    var tooltipData = this._data.reduce(function(values, dataSet) {
+        /*
+         * Get nearest to x date's index.
+         */
+        var index = self._bisectDate(dataSet, date);
+        /*
+         * Push count into summary array, if any or zero otherwise.
+         */
+        if (index) {
+            values.push({
+                value : dataSet[index].count,
+                label : dataSet[0].label
+            });
+        } else {
+            values.push({
+                value : 0,
+                label : dataSet[0].label
+            });
+        }
+
+        return values;
+    }, []);
+    /*
+     * Change tooltip position.
+     */
+    if (x < this._innerWidth / 2) {
+      this._tooltip.setPosition('right')
+          .setOffset({
+              left : 335 + this._margin.right + 10,
+              right : 0
+          });
+    } else {
+        this._tooltip.setPosition('left')
+            .setOffset({
+                right : 335 + this._margin.left + 10,
+                left : 0
+            });
+    }
+    /*
+     * Update tooltip content.
+     */
+    this._tooltip.setContent(
+        '<div class="default-tooltip-content">' +
+            '<ul class="line-graph-list">' +
+            tooltipData.reduce(function(html, d, i) {
+                return html += 
+                '<li class="legend-list-item">' +
+                    '<div class="line-graph-item-container">' +
+                        '<span style="background-color: ' + self._colors[i] + ';" class="item-marker"></span>' +
+                        '<span>' + d.label + '</span><span style="float:right">' + d.value + '</span>' +
+                    '</div>' +
+                '</li>';
+            }, '') +
+            '</ul>' +
+        '</div>')
+        .show();
 };
 
 
@@ -229,6 +354,11 @@ linechart.viewport.prototype.resize = function() {
      */
     this._canvas.attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')');
     this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
+    /*
+     * Resize mouse events catcher.
+     */
+    this._receiver.attr('width', this._innerWidth)
+        .attr('height', this._innerHeight);
     /*
      * Configure scale functions.
      */
@@ -296,48 +426,6 @@ linechart.viewport.prototype.update = function(data) {
      */
     this._lines.data(this._data)
         .attr("d", this._lineGenerator);
-    /*
-     * Update circles.
-     */
-    var circles = this._series.selectAll('circle.data-point')
-        .data(function (d) {
-            return d;
-        }).attr('cx', function (d) {
-            return self._xScale(d.year);
-        }).attr('cy', function (d) {
-            return self._yScale(d.count);
-        });
-    /*
-     * Enter new circles.
-     */
-    circles.enter()
-        .append('circle')
-        .attr('class', 'data-point')
-        .attr('cx', function (d) {
-            return self._xScale(d.year);
-        }).attr('cy', function (d) {
-            return self._yScale(d.count);
-        }).attr('r', 5)
-        .on('mouseenter', function(d, i, j) {
-            d3.select(this).style('fill', self._colors[j]);
-            self._tooltip.setContent(
-                '<div class="default-tooltip-content">' +
-                    '<ul class="line-graph-list">' +
-                        '<li class="legend-list-item">' +
-                            '<div class="line-graph-item-container">' +
-                                '<span style="background-color: ' + self._colors[j] + ';" class="item-marker"></span>' +
-                                '<span>' + d.label + ': ' + d.count + ' Occurences</span>' +
-                            '</div>' +
-                        '</li>' +
-                    '</ul>' +
-                '</div>')
-                .setPosition('top')
-                .show(this);
-
-        }).on('mouseout', function(d, i, j) {
-            d3.select(this).style('fill', null);
-            self._tooltip.hide();
-        });
 
     return this;
 };
