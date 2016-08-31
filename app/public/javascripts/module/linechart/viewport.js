@@ -98,7 +98,7 @@ linechart.viewport = function(data) {
      * @member {Function}
      */
     this._bisectDate = d3.bisector(function(d) {
-        return d.year;
+        return d;
     }).left;
     /**
      * Lines color set.
@@ -249,6 +249,8 @@ linechart.viewport.prototype._mouseEnterEventHandler = function() {
 linechart.viewport.prototype._mouseOutEventHandler = function() {
 
     this._tooltip.hide();
+    this._series.selectAll('circle.data-point')
+        .remove();
 };
 
 
@@ -270,24 +272,23 @@ linechart.viewport.prototype._mouseMoveEventHandler = function() {
      */
     var date = this._xScale.invert(x);
     /*
+     * Get nearest to x date's index.
+     */
+    var index = self._bisectDate(this._datesDomain, date.getTime());
+    date = new Date(this._datesDomain[index]);
+    /*
      * Create series current values list.
      */
     var tooltipData = this._data.reduce(function(values, dataSet) {
         /*
-         * Get nearest to x date's index.
-         */
-        var index = self._bisectDate(dataSet, date);
-        /*
          * Push count into summary array, if any or zero otherwise.
          */
-        if (index) {
-            values.push({
-                value : dataSet[index].count,
-                label : dataSet[0].label
-            });
+        var dataPoint = _.find(dataSet, ['year', date]);
+        if (dataPoint) {
+            values.push(dataPoint);
         } else {
             values.push({
-                value : 0,
+                count : 0,
                 label : dataSet[0].label
             });
         }
@@ -311,6 +312,32 @@ linechart.viewport.prototype._mouseMoveEventHandler = function() {
             });
     }
     /*
+     * Update circles.
+     */
+    var circles = this._series.selectAll('circle.data-point')
+        .data(tooltipData, function(d) {
+            return d.label + d.year;
+        });
+    /*
+     * Remove old circles.
+     */
+    circles.exit().remove();
+    /*
+     * Render new circles.
+     */
+    circles.enter()
+        .append('circle')
+        .attr('class', 'data-point')
+        .attr('r', function(d) {
+            return d.count ? 5 : 0;
+        }).attr('cx', function (d) {
+            return d.year ? self._xScale(d.year) : 0;
+        }).attr('cy', function (d) {
+            return d.count ? self._yScale(d.count) : 0;
+        }).style('fill', function(d, i) {
+            return self._colors[i];
+        }).style('fill-opacity', 0.5);
+    /*
      * Update tooltip content.
      */
     this._tooltip.setContent(
@@ -321,7 +348,7 @@ linechart.viewport.prototype._mouseMoveEventHandler = function() {
                 '<li class="legend-list-item">' +
                     '<div class="line-graph-item-container">' +
                         '<span style="background-color: ' + self._colors[i] + ';" class="item-marker"></span>' +
-                        '<span>' + d.label + '</span><span style="float:right">' + d.value + '</span>' +
+                        '<span>' + d.label + '</span><span style="float:right">' + d.count + '</span>' +
                     '</div>' +
                 '</li>';
             }, '') +
@@ -394,6 +421,16 @@ linechart.viewport.prototype.update = function(data) {
      */
     if (data) {
         this._data = data;
+        /*
+         * Get all possible date values and sort them for future bisect function.
+         */
+        this._datesDomain = _.uniq(this._data.reduce(function(dates, dataSet) {
+            return dates.concat(dataSet.map(function(d) {
+                return d.year.getTime();
+            }));
+        }, [])).sort(function(a, b) {
+            return a - b;
+        });
     }
     /*
      * Stash reference to this object.
