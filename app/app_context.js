@@ -27,6 +27,11 @@ var context_object_instantiation_descriptions =
         options: {}
     },
     {
+        module_path: __dirname + "/models/shared_pages_controller",
+        instance_key: "shared_pages_controller",
+        options: {}
+    },
+    {
         module_path: __dirname + "/controllers/post_process/data_preparation/index",
         instance_key: "data_preparation_index_controller",
         options: {}
@@ -74,11 +79,6 @@ var context_object_instantiation_descriptions =
     {
         module_path: __dirname + "/controllers/post_process/data_preparation/object_details",
         instance_key: "object_details_controller",
-        options: {}
-    },
-    {
-        module_path: __dirname + "/controllers/post_process/shared_pages/shared_pages_controller",
-        instance_key: "shared_pages_controller",
         options: {}
     }
 ];
