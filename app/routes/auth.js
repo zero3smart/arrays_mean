@@ -21,6 +21,6 @@ module.exports = function(context) {
 
     app.get('/callback', passport.authenticate('auth0', { failureRedirect: '/' }), function(req, res)
     {
-        res.redirect(req.session.returnTo || '/array/create');
+        res.redirect(req.session.returnTo || '/array');
     });
 }

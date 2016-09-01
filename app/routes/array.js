@@ -7,15 +7,21 @@ module.exports = function(context) {
 
     app.get('/array/create', function(req, res)
     {
-        context.data_preparation_create_controller.BindDataFor_datasetsListing(function(err, bindData)
+        // Temporarily redirect to array index
+        res.redirect('/array');
+    });
+
+    app.get('/array', function(req, res)
+    {
+        context.data_preparation_index_controller.BindDataFor_array_index(function(err, bindData)
         {
             if (err) {
-                winston.error("❌  Error getting bind data for Array create: ", err);
+                winston.error("❌  Error getting bind data for Array index: ", err);
                 res.status(500).send(err.response || 'Internal Server Error');
 
                 return;
             }
-            res.render('array/create', bindData);
+            res.render('array/index', bindData);
         });
     });
 

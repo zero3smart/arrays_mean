@@ -9,7 +9,11 @@ linechart.chart = function(data) {
      * @private
      * @member {Object[]}
      */
-    this._data = data;
+    this._data = data.map(function(series) {
+        return series.sort(function(a, b) {
+            return a.year - b.year;
+        });
+    });
     /**
      * Chart main part.
      * @private

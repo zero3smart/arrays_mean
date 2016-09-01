@@ -131,34 +131,6 @@
     <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
     <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
     <script>
-        function stream_layers(n, m, o) {
-            if (arguments.length < 3) o = 0;
-            function bump(a) {
-                var x = 1 / (.1 + Math.random()),
-                        y = 2 * Math.random() - .5,
-                        z = 10 / (.1 + Math.random());
-                for (var i = 0; i < m; i++) {
-                    var w = (i / m - y) * z;
-                    a[i] += x * Math.exp(-w * w);
-                }
-            }
-            return d3.range(n).map(function() {
-                var a = [], i;
-                for (i = 0; i < m; i++) a[i] = o + o * Math.random();
-                for (i = 0; i < 5; i++) bump(a);
-                return a;
-            });
-        }
-
-        /*         graphData = graphData.concat(stream_layers(2, graphData[0].length, .1).map(function(series) {
-         return series.map(function(d, i) {
-         return {
-         count: d * 100,
-         year: graphData[0][i].year
-         }
-         });
-         }));
-         */
         if ("{{ array_source_key }}" == "isb_library-r1") {
 
             // Only do this for ISB data
@@ -176,15 +148,14 @@
                     groupedSeriesArray.push(groupedSeriesObj[key]);
                 }
 
-                var data = [];
-                data.push(groupedSeriesArray.map(function(row) {
+                groupedSeriesArray.map(function(row) {
                     row.map(function(row2) {
                         row2.label = row2.Keyword;
                         row2.count = Number(row2['Number of Publications']);
                         row2.year = new Date(row2.Year);
                         return row2;
                     })
-                }));
+                });
 
                 // Merge data from DB into custom data
                 groupedSeriesArray.push(graphData[0]);

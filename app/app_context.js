@@ -27,8 +27,8 @@ var context_object_instantiation_descriptions =
         options: {}
     },
     {
-        module_path: __dirname + "/controllers/post_process/data_preparation/create",
-        instance_key: "data_preparation_create_controller",
+        module_path: __dirname + "/controllers/post_process/data_preparation/index",
+        instance_key: "data_preparation_index_controller",
         options: {}
     },
     {
@@ -64,6 +64,11 @@ var context_object_instantiation_descriptions =
     {
         module_path: __dirname + "/controllers/post_process/data_preparation/choropleth",
         instance_key: "array_choropleth_controller",
+        options: {}
+    },
+    {
+        module_path: __dirname + "/controllers/post_process/data_preparation/team/show",
+        instance_key: "team_show_controller",
         options: {}
     },
     {

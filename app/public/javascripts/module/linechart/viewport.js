@@ -93,11 +93,19 @@ linechart.viewport = function(data) {
      */
     this._yAxisContainer = undefined;
     /**
+     * Date bisector.
+     * @private
+     * @member {Function}
+     */
+    this._bisectDate = d3.bisector(function(d) {
+        return d;
+    }).left;
+    /**
      * Lines color set.
      * @private
      * @member {String[]}
      */
-    this._colors = d3.scale.category10().range();
+    this._colors = d3.scale.category20().range();
     /*
      * Stash reference to this object.
      */
@@ -194,6 +202,27 @@ linechart.viewport.prototype.render = function(container) {
             return self._colors[i];
         });
     /*
+     * Render line pointer.
+     */
+    this._linePointer = this._canvas.append('line')
+        .attr('class', 'pointer')
+        .attr('y1', 0)
+        .style('display', 'none');
+    /*
+     * Append mouse events receiver.
+     */
+    this._receiver = this._canvas.append('rect')
+        .attr('x', 0)
+        .attr('y', 0)
+        .style('fill', 'transparent')
+        .on('mouseover', function() {
+            self._mouseEnterEventHandler();
+        }).on('mouseout', function() {
+            self._mouseOutEventHandler();
+        }).on('mousemove', function() {
+            self._mouseMoveEventHandler();
+        });
+    /*
      * Set up chart dimension.
      */
     this.resize();
@@ -203,6 +232,155 @@ linechart.viewport.prototype.render = function(container) {
     this.update();
 
     return this;
+};
+
+
+/**
+ * Viewport mouse enter event handler.
+ * @private
+ */
+linechart.viewport.prototype._mouseEnterEventHandler = function() {
+    /*
+     * Append tooltip to the document body.
+     */
+    this._tooltip.setOn(this._svg.node())
+        .setWidth(335)
+        .setOffset('top', - 10);
+    /*
+     * Show line pointer.
+     */
+    this._linePointer.style('display', null);
+};
+
+
+/**
+ * Viewport mouse out event handler.
+ * @private
+ */
+linechart.viewport.prototype._mouseOutEventHandler = function() {
+    /*
+     * Hide tooltip.
+     */
+    this._tooltip.hide();
+    /*
+     * Remove all circles from the series lines.
+     */
+    this._canvas.selectAll('circle.data-point')
+        .remove();
+    /*
+     * Hide line pointer.
+     */
+    this._linePointer.style('display', 'none');
+};
+
+
+/**
+ * Viewport mouse move event handler.
+ * @private
+ */
+linechart.viewport.prototype._mouseMoveEventHandler = function() {
+    /*
+     * Stash reference to this object.
+     */
+    var self = this;
+    /*
+     * Get mouse coordinate relative to parent element.
+     */
+    var x = d3.mouse(this._receiver.node())[0];
+    /*
+     * Get date value under mouse pointer.
+     */
+    var date = this._xScale.invert(x);
+    /*
+     * Get nearest to x date's index.
+     */
+    var index = self._bisectDate(this._datesDomain, date.getTime());
+    date = new Date(this._datesDomain[index]);
+    /*
+     * Create series current values list.
+     */
+    var tooltipData = this._data.reduce(function(values, dataSet) {
+        /*
+         * Push count into summary array, if any or zero otherwise.
+         */
+        var dataPoint = _.find(dataSet, ['year', date]);
+        if (dataPoint) {
+            values.push(dataPoint);
+        } else {
+            values.push({
+                count : 0,
+                label : dataSet[0].label
+            });
+        }
+
+        return values;
+    }, []);
+    /*
+     * Change tooltip position.
+     */
+    if (x < this._innerWidth / 2) {
+      this._tooltip.setPosition('right')
+          .setOffset({
+              left : 335 + this._margin.right + 10,
+              right : 0
+          });
+    } else {
+        this._tooltip.setPosition('left')
+            .setOffset({
+                right : 335 + this._margin.left + 10,
+                left : 0
+            });
+    }
+    /*
+     * Move line pointer.
+     */
+    this._linePointer.attr('y2', this._innerHeight)
+        .attr('x1', this._xScale(date))
+        .attr('x2', this._xScale(date));
+    /*
+     * Update circles.
+     */
+    var circles = this._canvas.selectAll('circle.data-point')
+        .data(tooltipData, function(d) {
+            return d.label + d.year;
+        });
+    /*
+     * Remove old circles.
+     */
+    circles.exit().remove();
+    /*
+     * Render new circles.
+     */
+    circles.enter()
+        .append('circle')
+        .attr('class', 'data-point')
+        .attr('r', function(d) {
+            return d.count ? 5 : 0;
+        }).attr('cx', function (d) {
+            return d.year ? self._xScale(d.year) : 0;
+        }).attr('cy', function (d) {
+            return d.count ? self._yScale(d.count) : 0;
+        }).style('fill', function(d, i) {
+            return self._colors[i];
+        });
+    /*
+     * Update tooltip content.
+     */
+    this._tooltip.setContent(
+        '<div class="default-tooltip-content">' +
+            '<ul class="line-graph-list">' +
+            tooltipData.reduce(function(html, d, i) {
+                return html += 
+                '<li class="legend-list-item">' +
+                    '<div class="line-graph-item-container">' +
+                        '<span style="background-color: ' + self._colors[i] + ';" class="item-marker"></span>' +
+                        '<span>' + d.label + '</span><span style="float:right">' + d.count + '</span>' +
+                    '</div>' +
+                '</li>';
+            }, '') +
+            '</ul>' +
+        '</div>')
+        .show();
 };
 
 
@@ -229,6 +407,11 @@ linechart.viewport.prototype.resize = function() {
      */
     this._canvas.attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')');
     this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
+    /*
+     * Resize mouse events catcher.
+     */
+    this._receiver.attr('width', this._innerWidth)
+        .attr('height', this._innerHeight);
     /*
      * Configure scale functions.
      */
@@ -264,6 +447,16 @@ linechart.viewport.prototype.update = function(data) {
      */
     if (data) {
         this._data = data;
+        /*
+         * Get all possible date values and sort them for future bisect function.
+         */
+        this._datesDomain = _.uniq(this._data.reduce(function(dates, dataSet) {
+            return dates.concat(dataSet.map(function(d) {
+                return d.year.getTime();
+            }));
+        }, [])).sort(function(a, b) {
+            return a - b;
+        });
     }
     /*
      * Stash reference to this object.
@@ -283,9 +476,17 @@ linechart.viewport.prototype.update = function(data) {
     this._xScale.domain(this._xDomain);
     this._yScale.domain(this._yDomain);
     /*
+     * Evaluate amount of required ticks to display only years.
+     */
+    var tickValues = _.uniq(this._xAxis.scale()
+        .ticks(this._xAxis.ticks()[0])
+        .map(function(d) {
+            return d.getFullYear();
+        }))
+    /*
      * Update chart axes.
      */
-    this._xAxisContainer.call(this._xAxis);
+    this._xAxisContainer.call(this._xAxis.ticks(tickValues.length));
     this._yAxisContainer.call(this._yAxis);
     /*
      * Update series.
@@ -296,48 +497,6 @@ linechart.viewport.prototype.update = function(data) {
      */
     this._lines.data(this._data)
         .attr("d", this._lineGenerator);
-    /*
-     * Update circles.
-     */
-    var circles = this._series.selectAll('circle.data-point')
-        .data(function (d) {
-            return d;
-        }).attr('cx', function (d) {
-            return self._xScale(d.year);
-        }).attr('cy', function (d) {
-            return self._yScale(d.count);
-        });
-    /*
-     * Enter new circles.
-     */
-    circles.enter()
-        .append('circle')
-        .attr('class', 'data-point')
-        .attr('cx', function (d) {
-            return self._xScale(d.year);
-        }).attr('cy', function (d) {
-            return self._yScale(d.count);
-        }).attr('r', 5)
-        .on('mouseenter', function(d, i, j) {
-            d3.select(this).style('fill', self._colors[j]);
-            self._tooltip.setContent(
-                '<div class="default-tooltip-content">' +
-                    '<ul class="line-graph-list">' +
-                        '<li class="legend-list-item">' +
-                            '<div class="line-graph-item-container">' +
-                                '<span style="background-color: ' + self._colors[j] + ';" class="item-marker"></span>' +
-                                '<span>' + d.label + ': ' + d.count + ' Occurences</span>' +
-                            '</div>' +
-                        '</li>' +
-                    '</ul>' +
-                '</div>')
-                .setPosition('top')
-                .show(this);
-
-        }).on('mouseout', function(d, i, j) {
-            d3.select(this).style('fill', null);
-            self._tooltip.hide();
-        });
 
     return this;
 };

@@ -11,6 +11,11 @@ linechart svg .axis line, .linechart svg .axis path {
 	stroke-width: 2;
 }
 
+.linechart svg.viewport line.pointer {
+    stroke: #c9c9c9;
+    stroke-width: 1;
+}
+
 .linechart svg.navigation .line {
     fill: none;
     stroke-width: 1;

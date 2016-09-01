@@ -33,6 +33,7 @@ constructor.prototype.MountRoutes = function()
     require('./auth')(self.context);
     require('./homepage')(self.context);
     require('./array')(self.context);
+    require('./team')(self.context);
     require('./monitoring')(self.context);
     require('./object')(self.context);
     require('./shared_pages')(self.context);
