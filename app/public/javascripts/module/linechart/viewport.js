@@ -10,6 +10,12 @@ linechart.viewport = function(data) {
      */
     this._data = data;
     /**
+     * Data set dates domain.
+     * @private
+     * @member {Integer[]}
+     */
+    this._datesDomain = this._getDatesDomain(data);
+    /**
      * Chart container.
      * @private
      * @member {Selection}
@@ -445,6 +451,18 @@ linechart.viewport.prototype.resize = function() {
 };
 
 
+linechart.viewport.prototype._getDatesDomain = function(data) {
+
+    return _.uniq(data.reduce(function(dates, dataSet) {
+        return dates.concat(dataSet.map(function(d) {
+            return d.year.getTime();
+        }));
+    }, [])).sort(function(a, b) {
+        return a - b;
+    });
+};
+
+
 /**
  * Update chart.
  * @public
@@ -460,13 +478,7 @@ linechart.viewport.prototype.update = function(data) {
         /*
          * Get all possible date values and sort them for future bisect function.
          */
-        this._datesDomain = _.uniq(this._data.reduce(function(dates, dataSet) {
-            return dates.concat(dataSet.map(function(d) {
-                return d.year.getTime();
-            }));
-        }, [])).sort(function(a, b) {
-            return a - b;
-        });
+        this._datesDomain = this._getDatesDomain(data);
     }
     /*
      * Stash reference to this object.
@@ -488,15 +500,13 @@ linechart.viewport.prototype.update = function(data) {
     /*
      * Evaluate amount of required ticks to display only years.
      */
-    var tickValues = _.uniq(this._xAxis.scale()
-        .ticks(this._xAxis.ticks()[0])
-        .map(function(d) {
-            return d.getFullYear();
-        }))
+    var datesDomainLength = this._datesDomain.length;
+    var xScaleTicksAmount = this._xScale.ticks().length;
+    var ticksAmount = datesDomainLength > xScaleTicksAmount ? xScaleTicksAmount : datesDomainLength;
     /*
      * Update chart axes.
      */
-    this._xAxisContainer.call(this._xAxis.ticks(tickValues.length));
+    this._xAxisContainer.call(this._xAxis.ticks(ticksAmount));
     this._yAxisContainer.call(this._yAxis);
     /*
      * Update series.
