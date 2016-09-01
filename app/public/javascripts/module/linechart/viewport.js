@@ -202,6 +202,13 @@ linechart.viewport.prototype.render = function(container) {
             return self._colors[i];
         });
     /*
+     * Render line pointer.
+     */
+    this._linePointer = this._canvas.append('line')
+        .attr('class', 'pointer')
+        .attr('y1', 0)
+        .style('display', 'none');
+    /*
      * Append mouse events receiver.
      */
     this._receiver = this._canvas.append('rect')
@@ -239,6 +246,10 @@ linechart.viewport.prototype._mouseEnterEventHandler = function() {
     this._tooltip.setOn(this._svg.node())
         .setWidth(335)
         .setOffset('top', - 10);
+    /*
+     * Show line pointer.
+     */
+    this._linePointer.style('display', null);
 };
 
 
@@ -247,10 +258,19 @@ linechart.viewport.prototype._mouseEnterEventHandler = function() {
  * @private
  */
 linechart.viewport.prototype._mouseOutEventHandler = function() {
-
+    /*
+     * Hide tooltip.
+     */
     this._tooltip.hide();
-    this._series.selectAll('circle.data-point')
+    /*
+     * Remove all circles from the series lines.
+     */
+    this._canvas.selectAll('circle.data-point')
         .remove();
+    /*
+     * Hide line pointer.
+     */
+    this._linePointer.style('display', 'none');
 };
 
 
@@ -312,9 +332,15 @@ linechart.viewport.prototype._mouseMoveEventHandler = function() {
             });
     }
     /*
+     * Move line pointer.
+     */
+    this._linePointer.attr('y2', this._innerHeight)
+        .attr('x1', this._xScale(date))
+        .attr('x2', this._xScale(date));
+    /*
      * Update circles.
      */
-    var circles = this._series.selectAll('circle.data-point')
+    var circles = this._canvas.selectAll('circle.data-point')
         .data(tooltipData, function(d) {
             return d.label + d.year;
         });
@@ -336,7 +362,7 @@ linechart.viewport.prototype._mouseMoveEventHandler = function() {
             return d.count ? self._yScale(d.count) : 0;
         }).style('fill', function(d, i) {
             return self._colors[i];
-        }).style('fill-opacity', 0.5);
+        });
     /*
      * Update tooltip content.
      */
