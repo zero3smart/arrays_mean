@@ -10,6 +10,7 @@ exports.Descriptions =
             filename: "ISB-Library_withCategories.csv",
             fileEncoding: "utf8", // default
             uid: "isb_library",
+            team_id: "isb",
             importRevision: 1,
             format: import_datatypes.DataSource_formats.CSV,
             title: "Institute for Systems Biology",

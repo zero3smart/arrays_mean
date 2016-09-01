@@ -67,6 +67,11 @@ var context_object_instantiation_descriptions =
         options: {}
     },
     {
+        module_path: __dirname + "/controllers/post_process/data_preparation/team/show",
+        instance_key: "team_show_controller",
+        options: {}
+    },
+    {
         module_path: __dirname + "/controllers/post_process/data_preparation/object_details",
         instance_key: "object_details_controller",
         options: {}
