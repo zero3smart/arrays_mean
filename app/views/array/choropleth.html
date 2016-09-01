@@ -31,13 +31,17 @@
                     <div class="sort-bar clearfix">
 
                         <nav class="pull-left" role="navigation">
-                            {% set mapBy_queryParamJoinChar = "?" if routePath_withoutMapBy == routePath_base else "&" %}
                             {{
                             dropdown.default(
                                 'Map By',
                                 mapBy if mapBy else defaultMapByColumnName_humanReadable,
                                 colNames_orderedForMapByDropdown,
-                                routePath_withoutMapBy + mapBy_queryParamJoinChar + 'mapBy='
+                                routePath_base | constructedRoutePath({
+                                    searchCol: searchCol,
+                                    searchQ: searchQ,
+                                    filterJSON: filterJSON,
+                                    mapBy: ''
+                                })
                             )
                             }}
                         </nav>
@@ -63,11 +67,13 @@
         </div><!-- .container-fluid -->
 
         {% if isFilterActive %}
-            {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
             {{
             filter.default(
-                routePath_withoutFilter + queryParamJoinChar,
-                routePath_withoutFilter,
+                routePath_base | constructedRoutePath({
+                    searchCol: searchCol,
+                    searchQ: searchQ,
+                    mapBy: mapBy
+                }),
                 filterObj,
                 truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
                 false,
@@ -81,7 +87,11 @@
             var geoData = {{ featureCollection | dump | safe }};
 
             var filterObj = {{ filterObj | dump | safe }};
-            var routePath_withoutFilter = '{{ routePath_withoutFilter }}';
+            var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath({
+                    searchCol: searchCol,
+                    searchQ: searchQ,
+                    mapBy: mapBy
+            }) }}";
             var routePath_base = '{{ routePath_base }}';
             var mapBy = '{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}';
         </script>

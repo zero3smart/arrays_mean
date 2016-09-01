@@ -31,13 +31,16 @@
                                         <div class="sort-bar clearfix">
 
                                             <nav class="sort-bar-left pull-left" role="navigation">
-                                                {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
                                                 {{
                                                 dropdown.default(
                                                     'Chart By',
                                                     groupBy if groupBy else defaultGroupByColumnName_humanReadable,
                                                     colNames_orderedForGroupByDropdown,
-                                                    routePath_withoutGroupBy + groupBy_queryParamJoinChar + 'groupBy='
+                                                    routePath_base | constructedRoutePath({
+                                                        searchCol: searchCol,
+                                                        searchQ: searchQ,
+                                                        filterJSON: filterJSON,
+                                                        groupBy: ''})
                                                 )
                                                 }}
 
@@ -84,7 +87,11 @@
                                 });
 
                                 var filterObj = {{ filterObj | dump | safe }};
-                                var routePath_withoutFilter = '{{ routePath_withoutFilter }}';
+                                var routePath_withoutFilter = '{{ routePath_base | constructedRoutePath({
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        groupBy: groupBy
+                                }) }}';
                                 var routePath_base = '{{ routePath_base }}';
                                 var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
                             </script>
@@ -100,11 +107,13 @@
                             </div><!-- .container-fluid -->
 
                             {% if isFilterActive %}
-                                {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
                                 {{
                                 filter.default(
-                                    routePath_withoutFilter + queryParamJoinChar,
-                                    routePath_withoutFilter,
+                                    routePath_base | constructedRoutePath({
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        groupBy: groupBy
+                                    }),
                                     filterObj,
                                     truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
                                     false

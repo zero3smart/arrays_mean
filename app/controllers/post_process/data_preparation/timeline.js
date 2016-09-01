@@ -310,57 +310,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         var err = null;
         var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
         var routePath_base              = "/array/" + source_pKey + "/timeline";
-        var routePath_withoutFilter     = routePath_base;
-        var routePath_withoutPage       = routePath_base;
-        var routePath_withoutGroupBy    = routePath_base;
-        var routePath_withoutSortBy     = routePath_base;
-        var routePath_withoutSortDir    = routePath_base;
-        var urlQuery_forSwitchingViews  = "";
-        var urlQuery_forViewAllInDuration = routePath_base;
-        if (groupBy !== undefined && groupBy != null && groupBy !== "") {
-            var appendQuery = "groupBy=" + groupBy;
-            routePath_withoutFilter     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
-            routePath_withoutPage       = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
-            routePath_withoutSortBy     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
-            routePath_withoutSortDir    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
-        }
-        if (sortBy !== undefined && sortBy != null && sortBy !== "") {
-            var appendQuery = "sortBy=" + sortBy;
-            routePath_withoutGroupBy    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
-            routePath_withoutFilter     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
-            routePath_withoutPage       = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
-            routePath_withoutSortDir    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
-        }
-        if (sortDir !== undefined && sortDir != null && sortDir !== "") {
-            var appendQuery = "sortDir=" + sortDir;
-            routePath_withoutFilter     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,        appendQuery, routePath_base);
-            routePath_withoutPage       = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,          appendQuery, routePath_base);
-            routePath_withoutSortBy     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,        appendQuery, routePath_base);
-            routePath_withoutGroupBy    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
-        }
-        if (page !== undefined && page != null && page !== "") {
-            var appendQuery = "page=" + page;
-            routePath_withoutSortBy     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
-            routePath_withoutSortDir    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
-            routePath_withoutGroupBy    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
-        }
-        if (isFilterActive) {
-            var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
-            routePath_withoutGroupBy    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
-            routePath_withoutPage       = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
-            routePath_withoutSortBy     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
-            routePath_withoutSortDir    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
-            urlQuery_forSwitchingViews  = functions._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
-        }
-        if (isSearchActive) {
-            var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
-            routePath_withoutFilter     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
-            routePath_withoutGroupBy    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
-            routePath_withoutPage       = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
-            routePath_withoutSortBy     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
-            routePath_withoutSortDir    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
-            urlQuery_forSwitchingViews  = functions._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
-        }
         var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
         //
         var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
@@ -414,15 +363,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
             colNames_orderedForGroupByDropdown: dataSourceDescription.fe_timeline_durationsAvailableForGroupBy ? dataSourceDescription.fe_timeline_durationsAvailableForGroupBy : {},
             //
-            routePath_base: routePath_base,
-            routePath_withoutFilter: routePath_withoutFilter,
-            routePath_withoutPage: routePath_withoutPage,
-            routePath_withoutGroupBy: routePath_withoutGroupBy,
-            routePath_withoutSortBy: routePath_withoutSortBy,
-            routePath_withoutSortDir: routePath_withoutSortDir,
-            //
-            urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
-            urlQuery_forViewAllInDuration: urlQuery_forViewAllInDuration
+            routePath_base: routePath_base
         };
         callback(err, data);
     }

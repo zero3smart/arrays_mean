@@ -230,43 +230,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         var err = null;
         var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
         var routePath_base              = "/array/" + source_pKey + "/gallery";
-        var routePath_withoutFilter     = routePath_base;
-        var routePath_withoutPage       = routePath_base;
-        var routePath_withoutSortBy     = routePath_base;
-        var routePath_withoutSortDir    = routePath_base;
-        var urlQuery_forSwitchingViews  = "";
-        if (sortBy !== undefined && sortBy != null && sortBy !== "") {
-            var appendQuery = "sortBy=" + sortBy;
-            routePath_withoutFilter     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
-            routePath_withoutPage       = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
-            routePath_withoutSortDir    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
-        }
-        if (sortDir !== undefined && sortDir != null && sortDir !== "") {
-            var appendQuery = "sortDir=" + sortDir;
-            routePath_withoutFilter     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,        appendQuery, routePath_base);
-            routePath_withoutPage       = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,          appendQuery, routePath_base);
-            routePath_withoutSortBy     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,        appendQuery, routePath_base);
-        }
-        if (page !== undefined && page != null && page !== "") {
-            var appendQuery = "page=" + page;
-            routePath_withoutSortBy     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
-            routePath_withoutSortDir    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
-        }
-        if (isFilterActive) {
-            var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
-            routePath_withoutPage       = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
-            routePath_withoutSortBy     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
-            routePath_withoutSortDir    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
-            urlQuery_forSwitchingViews  = functions._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
-        }
-        if (isSearchActive) {
-            var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
-            routePath_withoutFilter     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
-            routePath_withoutPage       = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
-            routePath_withoutSortBy     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
-            routePath_withoutSortDir    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
-            urlQuery_forSwitchingViews  = functions._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
-        }
         //
         var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
         //
@@ -314,12 +277,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             isSearchActive: isSearchActive,
             //
             routePath_base: routePath_base,
-            routePath_withoutFilter: routePath_withoutFilter,
-            routePath_withoutPage: routePath_withoutPage,
-            routePath_withoutSortBy: routePath_withoutSortBy,
-            routePath_withoutSortDir: routePath_withoutSortDir,
-            //
-            urlQuery_forSwitchingViews: urlQuery_forSwitchingViews
         };
         callback(err, data);
     }

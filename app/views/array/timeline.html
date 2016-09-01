@@ -32,23 +32,37 @@
 
                             <nav class="sort-bar-left pull-left" role="navigation">
 
-                                {% set groupBy_queryParamJoinChar = "?" if routePath_withoutGroupBy == routePath_base else "&" %}
                                 {{
                                 dropdown.sortbar(
                                     'Group By',
                                     groupBy if groupBy else defaultGroupByColumnName_humanReadable,
                                     colNames_orderedForGroupByDropdown,
-                                    routePath_withoutGroupBy + groupBy_queryParamJoinChar + 'groupBy='
+                                    routePath_base | constructedRoutePath({
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        filterJSON: filterJSON,
+                                        sortBy: sortBy,
+                                        sortDir: sortDir,
+                                        page: onPageNum if onPageNum != 1 else null,
+                                        groupBy: ''
+                                    })
                                 )
                                 }}
 
-                                {% set sortBy_queryParamJoinChar = "?" if routePath_withoutSortBy == routePath_base else "&" %}
                                 {{
                                 dropdown.sortbar(
                                     'Sort By',
                                     sortBy if sortBy else defaultSortByColumnName_humanReadable,
                                     colNames_orderedForTimelineSortByDropdown,
-                                    routePath_withoutSortBy + sortBy_queryParamJoinChar + 'sortBy='
+                                    routePath_base | constructedRoutePath({
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        filterJSON: filterJSON,
+                                        groupBy: groupBy,
+                                        sortDir: sortDir,
+                                        page: onPageNum if onPageNum != 1 else null,
+                                        sortBy: ''
+                                    })
                                 )
                                 }}
                             </nav>
@@ -79,11 +93,16 @@
             <div class="timeline-container">
 
                 {% if isFilterActive %}
-                    {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
                     {{
                     filter.default(
-                        routePath_withoutFilter + queryParamJoinChar,
-                        routePath_withoutFilter,
+                        routePath_base | constructedRoutePath({
+                            searchCol: searchCol,
+                            searchQ: searchQ,
+                            sortBy: sortBy,
+                            sortDir: sortDir,
+                            page: onPageNum if onPageNum != 1 else null,
+                            groupBy: groupBy
+                        }),
                         filterObj,
                         truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
                         false,
@@ -144,14 +163,19 @@
 
                         {% set lastPage = numPages | int %}
                         {% set currentPage = onPageNum | int %}
-                        {% set paging_queryParamJoinChar = "?" if routePath_withoutPage == routePath_base else "&" %}
-
                         {% if lastPage > 1 %}
 
                             <nav class="gallery-pagination">
                                 {{
                                 pagination.default(
-                                    routePath_withoutPage + paging_queryParamJoinChar,
+                                    routePath_base | constructedRoutePath({
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        filterJSON: filterJSON,
+                                        sortBy: sortBy,
+                                        sortDir: sortDir,
+                                        groupBy: groupBy
+                                    }),
                                     lastPage,
                                     currentPage
                                 )

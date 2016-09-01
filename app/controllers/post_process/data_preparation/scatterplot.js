@@ -149,7 +149,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                     sourceDoc: sourceDoc,
                     view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
                     routePath_base: '/array/' + sourceKey + '/scatterplot',
-                    routePath_withoutFilter: '/array/' + sourceKey + '/scatterplot',
                     filterObj: filterObj,
                     isFilterActive: isFilterActive,
                     urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,

@@ -251,24 +251,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     {
         var err = null;
         var routePath_base              = "/array/" + source_pKey + "/chart";
-        var routePath_withoutFilter     = routePath_base;
-        var routePath_withoutGroupBy    = routePath_base;
-        var urlQuery_forSwitchingViews  = "";
-        if (groupBy !== undefined && groupBy != null && groupBy !== "") {
-            var appendQuery = "groupBy=" + groupBy;
-            routePath_withoutFilter     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
-        }
-        if (isFilterActive) {
-            var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
-            routePath_withoutGroupBy    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
-            urlQuery_forSwitchingViews  = functions._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
-        }
-        if (isSearchActive) {
-            var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
-            routePath_withoutFilter     = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
-            routePath_withoutGroupBy    = functions._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutGroupBy,   appendQuery, routePath_base);
-            urlQuery_forSwitchingViews  = functions._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
-        }
         var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
         //
         var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
@@ -302,11 +284,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription),
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
-            routePath_base: routePath_base,
-            routePath_withoutFilter: routePath_withoutFilter,
-            routePath_withoutGroupBy: routePath_withoutGroupBy,
-            //
-            urlQuery_forSwitchingViews: urlQuery_forSwitchingViews
+            routePath_base: routePath_base
         };
         callback(err, data);
     }

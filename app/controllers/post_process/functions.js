@@ -20,7 +20,7 @@ var constructor = function() {
 
         return routePath_variation;
     };
-//
+    //
     self._urlQueryByAppendingQueryStringToExistingQueryString = function(existingQueryString, queryStringToAppend)
     {
         var newWholeQueryString = existingQueryString;
@@ -33,7 +33,7 @@ var constructor = function() {
 
         return newWholeQueryString;
     };
-//
+    //
     self._activeFilter_matchOp_orErrDescription_fromMultiFilter = function(dataSourceDescription, filterObj)
     {
         var filterCols = Object.keys(filterObj);
@@ -72,7 +72,7 @@ var constructor = function() {
 
         return { matchOps: conditions };
     };
-//
+    //
     self._activeFilter_matchCondition_orErrDescription = function(dataSourceDescription, filterCol, filterVal)
     {
         var matchConditions = undefined;
@@ -148,7 +148,7 @@ var constructor = function() {
 
         return { matchConditions: matchConditions };
     };
-//
+    //
     self._activeFilterRange_matchCondition_orErrDescription = function(dataSourceDescription, filterCol, filterValMin, filterValMax)
     {
         var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
@@ -216,7 +216,7 @@ var constructor = function() {
 
         return { matchConditions: [projectOp, matchOp] };
     };
-//
+    //
     self._activeSearch_matchOp_orErrDescription = function(dataSourceDescription, searchCol, searchQ)
     { // returns dictionary with err or matchOp
         var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
@@ -254,7 +254,7 @@ var constructor = function() {
 
         return { matchOps: [unwindOp, matchOp, groupOp] };
     };
-//
+    //
     self._topUniqueFieldValuesForFiltering = function(source_pKey, dataSourceDescription, sampleDoc, callback)
     {
         cached_values_model.MongooseModel.findOne({ srcDocPKey: source_pKey }, function(err, doc)
@@ -325,7 +325,7 @@ var constructor = function() {
             callback(null, uniqueFieldValuesByFieldName);
         });
     };
-//
+    //
     self._reverseDataTypeCoersionToMakeFEDisplayableValFrom = function(originalVal, key, dataSourceDescription)
     {
         var displayableVal = originalVal;
@@ -373,7 +373,7 @@ var constructor = function() {
         //
         return displayableVal;
     };
-//
+    //
     self._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = function (dataSourceDescription)
     {
         var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = {};
@@ -398,7 +398,7 @@ var constructor = function() {
 
         return truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill;
     };
-//
+    //
     self._new_reconstructedURLEncodedFilterObjAsFilterJSONString = function(filterObj)
     {
         var reconstructedURLEncodedFilterObjForFilterJSONString = {}; // to construct
@@ -421,6 +421,118 @@ var constructor = function() {
         var filterJSON_uriEncodedVals = JSON.stringify(reconstructedURLEncodedFilterObjForFilterJSONString);
 
         return filterJSON_uriEncodedVals;
+    }
+
+    //
+    self.buildFilterAggregation = function(urlQuery, dataSourceDescription, data) {
+        var filterJSON = urlQuery.filterJSON;
+        var filterObj = {};
+        var isFilterActive = false;
+        if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
+            try {
+                filterObj = JSON.parse(filterJSON);
+                if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
+                    isFilterActive = true;
+                } else {
+                    filterObj = {}; // must replace it to prevent errors below
+                }
+            } catch (e) {
+                winston.error("❌  Error parsing filterJSON: ", filterJSON);
+                return e;
+            }
+        }
+
+        var aggregationOperators = [];
+        // We must re-URI-encode the filter vals since they get decoded
+        var filterJSON_uriEncodedVals = self._new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
+
+        if (isFilterActive) { // rules out undefined filterJSON
+            var _orErrDesc = self._activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+            if (typeof _orErrDesc.err !== 'undefined') {
+                return _orErrDesc.err;
+            }
+            aggregationOperators = _orErrDesc.matchOps;
+        }
+
+        var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+
+        if (data === undefined) data = {};
+        data.filterObj = filterObj;
+        data.filterJSON_nonURIEncodedVals = filterJSON;
+        data.filterJSON = filterJSON_uriEncodedVals;
+        data.isFilterActive = isFilterActive;
+        data.uniqueFieldValuesByFieldName = uniqueFieldValuesByFieldName;
+        data.truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill;
+
+        if (isFilterActive) {
+            var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
+            routePath_withoutPage       = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
+            routePath_withoutSortBy     = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
+            routePath_withoutSortDir    = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
+            urlQuery_forSwitchingViews  = self._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        }
+        data.routePath_withoutFilter = routePath_withoutFilter;
+
+        return aggregationOperators;
+    }
+    //
+    self.buildSearchAggregation = function(urlQuery, dataSourceDescription, data) {
+        var aggregationOperators = [];
+
+        //
+        var searchCol = urlQuery.searchCol;
+        var searchQ = urlQuery.searchQ;
+        var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
+            && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
+
+        //
+        var aggregationOperators = [];
+        if (isSearchActive) {
+            var _orErrDesc = self._activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+            if (typeof _orErrDesc.err !== 'undefined') {
+                return _orErrDesc.err;
+            }
+            aggregationOperators = _orErrDesc.matchOps;
+        }
+
+        if (data === undefined) {
+            data = {};
+        }
+        //
+        data.searchQ = searchQ;
+        data.searchCol = searchCol;
+        data.isSearchActive = isSearchActive;
+
+        if (isSearchActive) {
+            var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
+            routePath_withoutFilter     = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
+            routePath_withoutPage       = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
+            routePath_withoutSortBy     = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
+            routePath_withoutSortDir    = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
+            urlQuery_forSwitchingViews  = self._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        }
+
+        return aggregationOperators;
+    }
+    //
+    self.buildSourceDocument = function()
+    {
+
+    }
+    //
+    self.buildSampleDocument = function()
+    {
+
+    }
+    //
+    self.countWholeSet = function()
+    {
+
+    }
+    //
+    self.buildPagedDocs = function()
+    {
+
     }
 
     return self;

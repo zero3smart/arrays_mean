@@ -88,4 +88,15 @@ module.exports = function(nunjucks_env)
             output = output + moment(filterVal.max).format("MMMM Do, YYYY");
         return output;
     });
+    // Array views - Filter route path
+    nunjucks_env.addFilter('constructedRoutePath', function(routePath_base, queryObj) {
+        var routePath = '';
+        for (var key in queryObj)
+            if (queryObj.hasOwnProperty(key) && queryObj[key] !== undefined) {
+                routePath += '&' + key + '=' + queryObj[key];
+            }
+
+        var joinChar = routePath_base.indexOf('?') !== -1 ? '&' : '?';
+        return routePath_base + joinChar + routePath.substr(1);
+    });
 };

@@ -84,11 +84,12 @@
             </div><!-- .container-fluid -->
 
             {% if isFilterActive %}
-                {% set queryParamJoinChar = "?" if routePath_withoutFilter == routePath_base else "&" %}
                 {{
                 filter.default(
-                    routePath_withoutFilter + queryParamJoinChar,
-                    routePath_withoutFilter,
+                    routePath_base | constructedRoutePath({
+                        searchCol: searchCol,
+                        searchQ: searchQ
+                    }),
                     filterObj,
                     truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
                     false

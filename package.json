@@ -18,6 +18,7 @@
   "dependencies": {
     "async": "^1.5.2",
     "babyparse": "^0.4.6",
+    "batch": "^0.5.3",
     "body-parser": "^1.15.0",
     "compression": "^1.6.1",
     "connect-ensure-login": "^0.1.1",
