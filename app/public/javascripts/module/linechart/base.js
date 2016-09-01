@@ -31,8 +31,11 @@ linechart.base.prototype._getXDomain = function() {
 linechart.base.prototype._getYDomain = function() {
 
     return [0, this._data.reduce(function(maxValue, dataSet) {
-        return Math.max(maxValue, d3.max(dataSet.map(function(d) {
+//        console.log(dataSet, d3.max(dataSet.map(function(d) {
+//            return d.count;
+//        })));
+        return Math.max(maxValue, dataSet.length ? d3.max(dataSet.map(function(d) {
             return d.count;
-        })));
+        })) : 0);
     }, 0)];
 };
