@@ -6,7 +6,7 @@ var config = new require('../config')();
 var functions = new require('../functions')();
 //
 // Prepare country geo data cache
-var __countries_geo_json_str = fs.readFileSync(__dirname + '/../../../public/data/countries.geo.json', 'utf8');
+var __countries_geo_json_str = fs.readFileSync(__dirname + '/../../../public/data/world.geo.json/countries.geo.json', 'utf8');
 var __countries_geo_json = JSON.parse(__countries_geo_json_str);
 var cache_countryGeometryByLowerCasedCountryName = {};
 var numCountries = __countries_geo_json.features.length;
