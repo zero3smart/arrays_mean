@@ -11,11 +11,17 @@ linechart.navigation = function(data, viewport) {
      */
     this._data = data;
     /**
+     * Time series names.
+     * @private
+     * @member {String[]}
+     */
+    this._labelsList = this._getLablesList(data);
+    /**
      * Chart to upadte.
      * @private
      * @member {linechart.viewport}
      */
-    this._viewport = viewport;
+    this._viewport = viewport.setLabels(this._labelsList);
     /**
      * Chart container.
      * @private
@@ -388,6 +394,10 @@ linechart.navigation.prototype.update = function(data) {
      */
     data = data || this._data;
     /*
+     * Update labels list.
+     */
+    this._viewport.setLabels(this._getLablesList(data));
+    /*
      * Stash reference to this object.
      */
     var self = this;
@@ -431,6 +441,21 @@ linechart.navigation.prototype.update = function(data) {
     }
 
     return this;
+};
+
+
+/**
+ * Extract list of data sets names.
+ * @private
+ * @param {Object[][]} data
+ * @returns {String[]}
+ */
+linechart.navigation.prototype._getLablesList = function(data) {
+
+    return data.reduce(function(list, dataSet) {
+        list.push(dataSet[0].label);
+        return list;
+    }, []);
 };
 
 
