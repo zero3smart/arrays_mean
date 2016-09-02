@@ -140,44 +140,7 @@
     <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
     <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
     <script>
-        if ("{{ array_source_key }}" == "isb_library-r1") {
-
-            // Only do this for ISB data
-            d3.csv('/javascripts/module/linechart/Keyword_Frequency_Data_20160819_v2.csv', function(error, series) {
-                if (error) {
-                    throw new Error("Can't load data file: " + JSON.stringify(error));
-                }
-
-                // Group series by keyword
-                var groupedSeriesObj = _.groupBy(series, "Keyword");
-
-                // Save groups to array of objects
-                var groupedSeriesArray = [];
-                for (var key in groupedSeriesObj) {
-                    groupedSeriesArray.push(groupedSeriesObj[key]);
-                }
-
-                groupedSeriesArray.map(function(row) {
-                    row.map(function(row2) {
-                        row2.label = row2.Keyword;
-                        row2.count = Number(row2['Number of Publications']);
-                        row2.year = new Date(row2.Year);
-                        return row2;
-                    })
-                });
-
-                // Merge data from DB into custom data
-                groupedSeriesArray.push(graphData[0]);
-
-                var lineChart = new linechart.chart(groupedSeriesArray)
-                        .render("#linechart");
-            });
-        } else {
-
-            // Do this for all other data besides ISB
-            var lineChart = new linechart.chart(graphData)
-                    .render("#linechart");
-        }
-
+        var lineChart = new linechart.chart(graphData)
+            .render("#linechart");
     </script>
 {% endblock %}
