@@ -1,0 +1,221 @@
+Word,Year,Count
+Proteomics,2015,6760
+Proteomics,2014,6427
+Proteomics,2013,5560
+Proteomics,2012,5568
+Proteomics,2011,5133
+Proteomics,2010,4682
+Proteomics,2009,4390
+Proteomics,2008,4046
+Proteomics,2007,3762
+Proteomics,2006,3522
+Proteomics,2005,3087
+Proteomics,2004,2417
+Proteomics,2003,1666
+Proteomics,2002,1040
+Proteomics,2001,519
+Proteomics,2000,219
+Proteomics,1999,59
+Proteomics,1998,22
+Proteomics,1997,1
+Bioinformatics,2015,24064
+Bioinformatics,2014,22322
+Bioinformatics,2013,17717
+Bioinformatics,2012,16609
+Bioinformatics,2011,15091
+Bioinformatics,2010,13463
+Bioinformatics,2009,12083
+Bioinformatics,2008,10906
+Bioinformatics,2007,9977
+Bioinformatics,2006,8901
+Bioinformatics,2005,8191
+Bioinformatics,2004,6424
+Bioinformatics,2003,4689
+Bioinformatics,2002,3284
+Bioinformatics,2001,2231
+Bioinformatics,2000,1505
+Bioinformatics,1999,834
+Bioinformatics,1998,679
+Bioinformatics,1997,344
+Bioinformatics,1996,301
+Bioinformatics,1995,196
+Computational Biology,2015,16359
+Computational Biology,2014,16380
+Computational Biology,2013,14222
+Computational Biology,2012,13690
+Computational Biology,2011,12422
+Computational Biology,2010,11255
+Computational Biology,2009,10359
+Computational Biology,2008,8746
+Computational Biology,2007,7735
+Computational Biology,2006,6984
+Computational Biology,2005,6470
+Computational Biology,2004,5032
+Computational Biology,2003,3560
+Computational Biology,2002,2635
+Computational Biology,2001,1897
+Computational Biology,2000,1245
+Computational Biology,1999,626
+Computational Biology,1998,546
+Computational Biology,1997,297
+Computational Biology,1996,273
+Computational Biology,1995,184
+Genome Wide Association Study,2015,3420
+Genome Wide Association Study,2014,3318
+Genome Wide Association Study,2013,3341
+Genome Wide Association Study,2012,3167
+Genome Wide Association Study,2011,3160
+Genome Wide Association Study,2010,2669
+Genome Wide Association Study,2009,1866
+Genome Wide Association Study,2008,572
+Genome Wide Association Study,2007,240
+Genome Wide Association Study,2006,135
+Genome Wide Association Study,2005,141
+Genome Wide Association Study,2004,71
+Genome Wide Association Study,2003,52
+Genome Wide Association Study,2002,38
+Genome Wide Association Study,2001,25
+Genome Wide Association Study,2000,18
+Genome Wide Association Study,1999,11
+Genome Wide Association Study,1998,8
+Genome Wide Association Study,1997,2
+Genome Wide Association Study,1996,4
+Genome Wide Association Study,1995,4
+Personalized Medicine ,2015,5332
+Personalized Medicine ,2014,4281
+Personalized Medicine ,2013,3119
+Personalized Medicine ,2012,2721
+Personalized Medicine ,2011,1962
+Personalized Medicine ,2010,1658
+Personalized Medicine ,2009,1017
+Personalized Medicine ,2008,748
+Personalized Medicine ,2007,622
+Personalized Medicine ,2006,462
+Personalized Medicine ,2005,450
+Personalized Medicine ,2004,392
+Personalized Medicine ,2003,324
+Personalized Medicine ,2002,288
+Personalized Medicine ,2001,234
+Personalized Medicine ,2000,200
+Personalized Medicine ,1999,222
+Personalized Medicine ,1998,241
+Personalized Medicine ,1997,196
+Personalized Medicine ,1996,189
+Personalized Medicine ,1995,173
+Systems Biology,2015,11955
+Systems Biology,2014,10153
+Systems Biology,2013,6879
+Systems Biology,2012,6424
+Systems Biology,2011,5773
+Systems Biology,2010,5242
+Systems Biology,2009,4703
+Systems Biology,2008,4181
+Systems Biology,2007,3665
+Systems Biology,2006,3115
+Systems Biology,2005,2821
+Systems Biology,2004,2297
+Systems Biology,2003,1859
+Systems Biology,2002,1688
+Systems Biology,2001,1373
+Systems Biology,2000,1246
+Systems Biology,1999,1095
+Systems Biology,1998,1062
+Systems Biology,1997,839
+Systems Biology,1996,769
+Systems Biology,1995,720
+Single Nucleotide Protein,2016,1343
+Single Nucleotide Protein,2015,5628
+Single Nucleotide Protein,2014,6105
+Single Nucleotide Protein,2013,5892
+Single Nucleotide Protein,2012,5474
+Single Nucleotide Protein,2011,4907
+Single Nucleotide Protein,2010,4271
+Single Nucleotide Protein,2009,3885
+Single Nucleotide Protein,2008,3310
+Single Nucleotide Protein,2007,2733
+Single Nucleotide Protein,2006,2266
+Single Nucleotide Protein,2005,1933
+Single Nucleotide Protein,2004,1486
+Single Nucleotide Protein,2003,1120
+Single Nucleotide Protein,2002,979
+Single Nucleotide Protein,2001,855
+Single Nucleotide Protein,2000,696
+Single Nucleotide Protein,1999,535
+Single Nucleotide Protein,1998,547
+Single Nucleotide Protein,1997,515
+Single Nucleotide Protein,1996,472
+Single Nucleotide Protein,1995,476
+Single Nucleotide Protein,1994,497
+Single Nucleotide Protein,1993,486
+Single Nucleotide Protein,1992,442
+Single Nucleotide Protein,1991,444
+Single Nucleotide Protein,1990,395
+Single Nucleotide Protein,1989,347
+Single Nucleotide Protein,1988,375
+Single Nucleotide Protein,1987,253
+Single Nucleotide Protein,1986,220
+Single Nucleotide Protein,1985,186
+Single Nucleotide Protein,1984,153
+Single Nucleotide Protein,1983,128
+Single Nucleotide Protein,1982,67
+Single Nucleotide Protein,1981,79
+Single Nucleotide Protein,1980,53
+Single Nucleotide Protein,1979,33
+Single Nucleotide Protein,1978,35
+Single Nucleotide Protein,1977,23
+Single Nucleotide Protein,1976,32
+Single Nucleotide Protein,1975,27
+Single Nucleotide Protein,1974,3
+Single Nucleotide Protein,1973,4
+Single Nucleotide Protein,1972,2
+Single Nucleotide Protein,1971,1
+Single Nucleotide Protein,1970,1
+Single Nucleotide Protein,1969,1
+Single Nucleotide Protein,1967,2
+Single Nucleotide Protein,1966,1
+Single Nucleotide Protein,1959,1
+SNP,2016,3263
+SNP,2015,4577
+SNP,2014,4342
+SNP,2013,4297
+SNP,2012,3958
+SNP,2011,3608
+SNP,2010,3181
+SNP,2009,2866
+SNP,2008,2408
+SNP,2007,2058
+SNP,2006,1545
+SNP,2005,1467
+SNP,2004,1088
+SNP,2003,834
+SNP,2002,729
+SNP,2001,518
+SNP,2000,396
+SNP,1999,297
+SNP,1998,247
+SNP,1997,220
+SNP,1996,220
+SNP,1995,204
+SNP,1994,139
+SNP,1993,99
+SNP,1992,84
+SNP,1991,54
+SNP,1990,49
+SNP,1989,46
+SNP,1988,20
+SNP,1987,24
+SNP,1986,16
+SNP,1985,21
+SNP,1984,20
+SNP,1983,16
+SNP,1982,19
+SNP,1981,16
+SNP,1980,14
+SNP,1979,13
+SNP,1978,18
+SNP,1977,8
+SNP,1976,7
+SNP,1975,4
+SNP,1973,1
+SNP,1971,1
+SNP,1969,1

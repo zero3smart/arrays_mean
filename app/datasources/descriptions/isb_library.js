@@ -13,9 +13,9 @@ exports.Descriptions =
             team_id: "isb",
             importRevision: 1,
             format: import_datatypes.DataSource_formats.CSV,
-            title: "Institute for Systems Biology",
+            title: "Articles Published by ISB since 2000",
             // brandColor: "#4A4A4A",
-            urls: [ "" ],
+            urls: [ "https://www.systemsbiology.org" ],
             description: "Institute for Systems Biology",
             raw_rowObjects_coercionScheme:
             {

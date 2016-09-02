@@ -1,6 +1,7 @@
 var async = require('async');
 
 var dataSourceDescriptions = require('../../../../datasources/descriptions').GetDescriptions();
+var teamDescriptions = require('../../../../datasources/teams').GetTeams();
 var importedDataPreparation = require('../../../../datasources/utils/imported_data_preparation');
 
 var constructor = function(options, context) {
@@ -11,7 +12,7 @@ var constructor = function(options, context) {
     return self;
 };
 
-constructor.prototype.BindDataFor_team_show = function(callback) {
+constructor.prototype.BindDataFor_team_show = function(urlQuery, callback) {
     var self = this;
 
     var iterateeFn = async.ensureAsync(function(dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
@@ -56,10 +57,21 @@ constructor.prototype.BindDataFor_team_show = function(callback) {
         var data = {
             env: process.env,
             
-            sources: sourceDescriptions
+            sources: sourceDescriptions,
+            team: team
         };
         callback(err, data);
     };
+
+    /**
+     * Get team description from team key
+     */
+    var team = undefined;
+    async.each(teamDescriptions, function(teamDescription, cb) {
+        if (teamDescription.id === urlQuery.team_key) {
+            team = teamDescription;
+        }
+    });
 
     /**
      * Show only arrays belonging to team with matching team_id

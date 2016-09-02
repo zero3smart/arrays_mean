@@ -30,7 +30,7 @@ module.exports = function(context) {
 
         query.team_key = team_key;
 
-        context.team_show_controller.BindDataFor_team_show(function(err, bindData) {
+        context.team_show_controller.BindDataFor_team_show(query, function(err, bindData) {
             if (err) {
                 winston.error("❌  Error getting bind data for Team show: ", err);
                 res.status(500).send(err.response || 'Internal Server Error');
