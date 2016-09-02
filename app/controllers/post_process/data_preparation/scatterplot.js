@@ -1,4 +1,5 @@
 var winston = require('winston');
+var Batch = require('batch');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var config = new require('../config')();
@@ -114,7 +115,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             /*
              * Go deeper - collect data for filter's sidebar.
              */
-            functions._topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName) {
+            functions._topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, function(err, uniqueFieldValuesByFieldName) {
                 /*
                  * Define numeric fields list which may be used as scatterplot axes.
                  * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.

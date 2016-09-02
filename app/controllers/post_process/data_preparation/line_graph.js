@@ -1,4 +1,5 @@
 var winston = require('winston');
+var Batch = require('batch');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var config = new require('../config')();
@@ -52,6 +53,11 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     //
     var defaultKeywordsColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultKeywordsColumnName_humanReadable;
     //
+    var routePath_base              = "/array/" + source_pKey + "/line-graph";
+    var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+    //
+    var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+    //
     var filterJSON = urlQuery.filterJSON;
     var filterObj = {};
     var isFilterActive = false;
@@ -77,66 +83,59 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     var searchQ = urlQuery.searchQ;
     var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
         && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
+
     //
-    self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, sourceDoc)
-    {
-        if (err) {
-            return callback(err, null);
-        }
-        _proceedTo_obtainSampleDocument(sourceDoc);
+    var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults = [];
+
+    var batch = new Batch();
+    batch.concurrency(1);
+
+    // Obtain source document
+    batch.push(function(done) {
+        self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
+            if (err) return done(err);
+
+            sourceDoc = _sourceDoc;
+            done();
+        });
     });
-    function _proceedTo_obtainSampleDocument(sourceDoc)
-    {
-        processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
-        {
-            if (err) {
-                callback(err, null);
 
-                return;
-            }
-            if (sampleDoc == null) {
-                callback(new Error('Unexpectedly missing sample document - wrong data source UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+    // Obtain sample document
+    batch.push(function(done) {
+        processedRowObjects_mongooseModel.findOne({}, function(err, _sampleDoc) {
+            if (err) return done(err);
 
-                return;
-            }
-            _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc);
+            sampleDoc = _sampleDoc;
+            done();
         });
-    }
-    function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc)
-    {
-        functions._topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName)
-        {
-            if (err) {
-                callback(err, null);
+    });
 
-                return;
-            }
-            //
-            _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName);
+    // Obtain Top Unique Field Values For Filtering
+    batch.push(function(done) {
+        functions._topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
+            if (err) return done(err);
+
+            uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
+            done();
         });
-    }
-    function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
-    {
+    });
+
+    // Obtain Grouped ResultSet
+    batch.push(function (done) {
         var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
             dataSourceDescription);
         //
         var aggregationOperators = [];
         if (isSearchActive) {
             var _orErrDesc = functions._activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
-            if (typeof _orErrDesc.err !== 'undefined') {
-                callback(_orErrDesc.err, null);
+            if (_orErrDesc.err) return done(_orErrDesc.err);
 
-                return;
-            }
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
         if (isFilterActive) { // rules out undefined filterCol
             var _orErrDesc = functions._activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
-            if (typeof _orErrDesc.err !== 'undefined') {
-                callback(_orErrDesc.err, null);
+            if (_orErrDesc.err) return done(_orErrDesc.err);
 
-                return;
-            }
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
         aggregationOperators = aggregationOperators.concat(
@@ -163,18 +162,13 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                 }
             ]);
         //
-        var doneFn = function(err, groupedResults)
+        var doneFn = function(err, _groupedResults)
         {
-            if (err) {
-                callback(err, null);
+            if (err) return done(err);
 
-                return;
-            }
-            if (groupedResults == undefined || groupedResults == null) {
-                groupedResults = [];
-            }
+            if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
             var finalizedButNotCoalesced_groupedResults = [];
-            groupedResults.forEach(function(el, i, arr)
+            _groupedResults.forEach(function(el, i, arr)
             {
                 var originalVal = el.label;
                 //
@@ -206,7 +200,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                     label: displayableVal
                 });
             });
-            var finalized_groupedResults = [];
             var summedValuesByLowercasedLabels = {};
             var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
             finalizedButNotCoalesced_groupedResults.forEach(function(el, i, arr)
@@ -239,22 +232,19 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                 } else {
                     reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
                 }
-                finalized_groupedResults.push({
+                groupedResults.push({
                     count: summedValue,
                     year: reconstitutedDisplayableTitle
                 });
             });
-            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, finalized_groupedResults);
+            done();
         };
         processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
-    }
-    function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
-    {
-        var err = null;
-        var routePath_base              = "/array/" + source_pKey + "/line-graph";
-        var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
-        //
-        var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+    });
+
+    batch.end(function(err) {
+        if (err) return callback(err);
+
         //
         var data =
         {
@@ -290,7 +280,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             routePath_base: routePath_base
         };
         callback(err, data);
-    }
+    });
 }
 
 module.exports = constructor;

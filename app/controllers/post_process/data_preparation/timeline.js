@@ -1,5 +1,6 @@
 var winston = require('winston');
 var moment = require('moment');
+var Batch = require('batch');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var config = new require('../config')();
@@ -61,6 +62,12 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
     var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_timeline_defaultSortByColumnName_humanReadable;
     var sortBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy ? sortBy : defaultSortByColumnName_humanReadable, dataSourceDescription);
+    //
+    var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
+    var routePath_base              = "/array/" + source_pKey + "/timeline";
+    var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+    //
+    var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //
     var filterJSON = urlQuery.filterJSON;
     var filterObj = {};
@@ -139,45 +146,43 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             groupByDateFormat = "YYYY";
     }
 
-    self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, sourceDoc)
-    {
-        if (err) {
-            return callback(err, null);
-        }
-        _proceedTo_obtainSampleDocument(sourceDoc);
+    var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount = 0, groupedResults = [];
+
+    var batch = new Batch();
+    batch.concurrency(1);
+
+    // Obtain source document
+    batch.push(function(done) {
+        self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
+            if (err) return done(err);
+
+            sourceDoc = _sourceDoc;
+            done();
+        });
     });
-    function _proceedTo_obtainSampleDocument(sourceDoc)
-    {
-        processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
-        {
-            if (err) {
-                callback(err, null);
 
-                return;
-            }
-            if (sampleDoc == null) {
-                callback(new Error('Unexpectedly missing sample document - wrong data source UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+    // Obtain sample document
+    batch.push(function(done) {
+        processedRowObjects_mongooseModel.findOne({}, function(err, _sampleDoc) {
+            if (err) return done(err);
 
-                return;
-            }
-            _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc);
+            sampleDoc = _sampleDoc;
+            done();
         });
-    }
-    function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc)
-    {
-        functions._topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName)
-        {
-            if (err) {
-                callback(err, null);
+    });
 
-                return;
-            }
-            //
-            _proceedTo_countWholeSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName);
+    // Obtain Top Unique Field Values For Filtering
+    batch.push(function(done) {
+        functions._topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
+            if (err) return done(err);
+
+            uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
+            done();
         });
-    }
-    function _proceedTo_countWholeSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
-    {
+    });
+
+    // Count whole set
+    batch.push(function(done) {
         var countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
             { // Count
                 $group: {
@@ -196,41 +201,29 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         ]);
         var doneFn = function(err, results)
         {
-            if (err) {
-                callback(err, null);
-
-                return;
-            }
-            var nonpagedCount = 0;
-            if (results == undefined || results == null || results.length == 0) { // 0
+            if (err) return done(err);
+            if (results == undefined || results == null) { // 0
             } else {
                 nonpagedCount = results.length;
             }
-            //
-            _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
+            done();
         };
         processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
-    }
-    function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
-    {
+    });
 
+    // Obtain Grouped results
+    batch.push(function(done) {
         var aggregationOperators = [];
         if (isSearchActive) {
             var _orErrDesc = functions._activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
-            if (typeof _orErrDesc.err !== 'undefined') {
-                callback(_orErrDesc.err, null);
+            if (_orErrDesc.err) return done(_orErrDesc.err);
 
-                return;
-            }
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
         if (isFilterActive) { // rules out undefined filterCol
             var _orErrDesc = functions._activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
-            if (typeof _orErrDesc.err !== 'undefined') {
-                callback(_orErrDesc.err, null);
+            if (_orErrDesc.err) return done(_orErrDesc.err, null);
 
-                return;
-            }
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
 
@@ -291,28 +284,21 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             ]);
 
         //
-        var doneFn = function(err, groupedResults)
+        var doneFn = function(err, _groupedResults)
         {
-            if (err) {
-                callback(err, null);
+            if (err) return done(err);
 
-                return;
-            }
-            if (groupedResults == undefined || groupedResults == null) {
-                groupedResults = [];
-            }
-            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, groupedResults);
+            groupedResults = _groupedResults;
+            if (groupedResults == undefined || groupedResults == null) groupedResults = [];
+
+            done();
         };
         processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
-    }
-    function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, groupedResults)
-    {
-        var err = null;
-        var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
-        var routePath_base              = "/array/" + source_pKey + "/timeline";
-        var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
-        //
-        var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+    });
+
+    batch.end(function(err) {
+        if (err) return callback(err);
+
         //
         var data =
         {
@@ -366,7 +352,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             routePath_base: routePath_base
         };
         callback(err, data);
-    }
+    });
 };
 
 module.exports = constructor;

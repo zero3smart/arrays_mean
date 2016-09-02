@@ -1,5 +1,5 @@
 var winston = require('winston');
-var async = require('async');
+var Batch = require('batch');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var config = new require('../config')();
@@ -26,78 +26,76 @@ constructor.prototype.BindDataFor_array = function(source_pKey, rowObject_id, ca
     }
     var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
-    var query =
-    {
-        _id: rowObject_id,
-        srcDocPKey: source_pKey
-    };
-    processedRowObjects_mongooseModel.findOne(query, function(err, rowObject)
-    {
-        if (err) {
-            callback(err, null);
 
-            return;
-        }
-        if (rowObject == null) {
-            callback(null, null);
+    var rowObject;
 
-            return;
-        }
-        _proceedTo_hydrateAllRelationships(rowObject);
+    var batch = new Batch()
+    batch.concurrency(1);
+
+    batch.push(function(done) {
+        var query =
+        {
+            _id: rowObject_id,
+            srcDocPKey: source_pKey
+        };
+        processedRowObjects_mongooseModel.findOne(query, function(err, _rowObject)
+        {
+            if (err) return done(err);
+
+            rowObject = _rowObject;
+            done();
+        });
     });
-    function _proceedTo_hydrateAllRelationships(rowObject)
-    {
+
+    batch.push(function(done) {
         var afterImportingAllSources_generate = dataSourceDescription.afterImportingAllSources_generate;
         if (typeof afterImportingAllSources_generate !== 'undefined') {
-            async.each(afterImportingAllSources_generate, function(afterImportingAllSources_generate_description, eachCB)
-            {
-                if (afterImportingAllSources_generate_description.relationship == true) {
-                    var by = afterImportingAllSources_generate_description.by;
-                    var relationshipSource_uid = by.ofOtherRawSrcUID;
-                    var relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
-                    var relationshipSource_pKey = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(relationshipSource_uid, relationshipSource_importRevision);
-                    var rowObjectsOfRelationship_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(relationshipSource_pKey);
-                    var rowObjectsOfRelationship_mongooseModel = rowObjectsOfRelationship_mongooseContext.Model;
-                    //
-                    var field = afterImportingAllSources_generate_description.field;
-                    var isSingular = afterImportingAllSources_generate_description.singular;
-                    var valueInDocAtField = rowObject.rowParams[field];
-                    var findQuery = {};
-                    if (isSingular == true) {
-                        findQuery._id = valueInDocAtField;
-                    } else {
-                        findQuery._id = { $in: valueInDocAtField };
-                    }
-                    rowObjectsOfRelationship_mongooseModel.find(findQuery, function(err, hydrationFetchResults)
-                    {
-                        if (err) {
-                            eachCB(err);
+            var batch = new Batch();
+            batch.concurrency(1);
 
-                            return;
-                        }
-                        var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
-                        rowObject.rowParams[field] = hydrationValue; // a doc or list of docs
+            afterImportingAllSources_generate.forEach(function(afterImportingAllSources_generate_description){
+                batch.push(function(done) {
+                    if (afterImportingAllSources_generate_description.relationship == true) {
+                        var by = afterImportingAllSources_generate_description.by;
+                        var relationshipSource_uid = by.ofOtherRawSrcUID;
+                        var relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
+                        var relationshipSource_pKey = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(relationshipSource_uid, relationshipSource_importRevision);
+                        var rowObjectsOfRelationship_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(relationshipSource_pKey);
+                        var rowObjectsOfRelationship_mongooseModel = rowObjectsOfRelationship_mongooseContext.Model;
                         //
-                        eachCB();
-                    });
-                } else {
-                    eachCB(); // nothing to hydrate
-                }
-            }, function(err)
-            {
-                if (err) {
-                    callback(err, null);
+                        var field = afterImportingAllSources_generate_description.field;
+                        var isSingular = afterImportingAllSources_generate_description.singular;
+                        var valueInDocAtField = rowObject.rowParams[field];
+                        var findQuery = {};
+                        if (isSingular == true) {
+                            findQuery._id = valueInDocAtField;
+                        } else {
+                            findQuery._id = { $in: valueInDocAtField };
+                        }
+                        rowObjectsOfRelationship_mongooseModel.find(findQuery, function(err, hydrationFetchResults)
+                        {
+                            if (err) return done(err);
 
-                    return;
-                }
-                _proceedTo_prepareDataAndCallBack(rowObject);
+                            var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
+                            rowObject.rowParams[field] = hydrationValue; // a doc or list of docs
+                            //
+                            done();
+                        });
+                    } else {
+                        done(); // nothing to hydrate
+                    }
+                });
             });
+
+            batch.end(done);
         } else {
-            _proceedTo_prepareDataAndCallBack(rowObject);
+            done();
         }
-    }
-    function _proceedTo_prepareDataAndCallBack(rowObject)
-    {
+    });
+
+    batch.end(function(err) {
+        if (err) return callback(err);
+
         //
         var fieldsNotToLinkAsGalleryFilter_byColName = {}; // we will translate any original keys to human-readable later
         var fe_filters_fieldsNotAvailable = dataSourceDescription.fe_filters_fieldsNotAvailable;
@@ -185,7 +183,7 @@ constructor.prototype.BindDataFor_array = function(source_pKey, rowObject_id, ca
             fe_objectShow_customHTMLOverrideFnsByColumnName: dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName || {}
         };
         callback(null, data);
-    }
+    });
 }
 
 module.exports = constructor;

@@ -1,4 +1,5 @@
 var winston = require('winston');
+var Batch = require('batch');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var config = new require('../config')();
@@ -57,6 +58,11 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     var sortDir = urlQuery.sortDir;
     var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
     //
+    var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
+    var routePath_base              = "/array/" + source_pKey + "/gallery";
+    //
+    var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+    //
     var filterJSON = urlQuery.filterJSON;
     var filterObj = {};
     var isFilterActive = false;
@@ -102,48 +108,44 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         }
         wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
     }
-    // console.log("----%j", wholeFilteredSet_aggregationOperators);
 
-    self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, sourceDoc)
-    {
-        if (err) {
-            return callback(err, null);
-        }
-        _proceedTo_obtainSampleDocument(sourceDoc);
+    var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount = 0, docs;
+
+    var batch = new Batch();
+    batch.concurrency(1);
+
+    // Obtain source document
+    batch.push(function(done) {
+        self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
+            if (err) return done(err);
+
+            sourceDoc = _sourceDoc;
+            done();
+        });
     });
-    function _proceedTo_obtainSampleDocument(sourceDoc)
-    {
-        processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
-        {
-            if (err) {
-                callback(err, null);
 
-                return;
-            }
-            if (sampleDoc == null) {
-                callback(new Error('Unexpectedly missing sample document - wrong data source UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+    // Obtain sample document
+    batch.push(function(done) {
+        processedRowObjects_mongooseModel.findOne({}, function(err, _sampleDoc) {
+            if (err) return done(err);
 
-                return;
-            }
-            //
-            _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc);
+            sampleDoc = _sampleDoc;
+            done();
         });
-    }
-    function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc)
-    {
-        functions._topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName)
-        {
-            if (err) {
-                callback(err, null);
+    });
 
-                return;
-            }
-            //
-            _proceedTo_countWholeSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName);
+    // Obtain Top Unique Field Values For Filtering
+    batch.push(function(done) {
+        functions._topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
+            if (err) return done(err);
+
+            uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
+            done();
         });
-    }
-    function _proceedTo_countWholeSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
-    {
+    });
+
+    // Count whole set
+    batch.push(function(done) {
         var countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
             { // Count
                 $group: {
@@ -154,23 +156,19 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         ]);
         var doneFn = function(err, results)
         {
-            if (err) {
-                callback(err, null);
+            if (err) return done(err);
 
-                return;
-            }
-            var nonpagedCount = 0;
             if (results == undefined || results == null || results.length == 0) { // 0
             } else {
                 nonpagedCount = results[0].count;
             }
-            //
-            _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount);
+            done();
         };
         processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
-    }
-    function _proceedTo_obtainPagedDocs(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount)
-    {
+    });
+
+    // Obtain Paged Docs
+    batch.push(function(done) {
         var sortBy_realColumnName_path = "rowParams." + sortBy_realColumnName;
         var sortOpParams = {};
         sortOpParams.size = -sortDirection;
@@ -207,16 +205,15 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             { $limit: limitToNResults }
         ]);
 
-        var doneFn = function(err, docs)
+        var doneFn = function(err, _docs)
         {
-            if (err) {
-                return callback(err, null);
-            }
-            if (docs == undefined || docs == null || docs.length == 0) {
+            if (err) return done(err);
+
+            docs = _docs;
+            if (docs == undefined || docs == null) {
                 docs = [];
             }
-            //
-            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs);
+            done();
         };
 
         // Next, get the full set of sorted results
@@ -224,14 +221,11 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             .aggregate(pagedDocs_aggregationOperators)
             .allowDiskUse(true)// or we will hit mem limit on some pages
             .exec(doneFn);
-    }
-    function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount, docs)
-    {
-        var err = null;
-        var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
-        var routePath_base              = "/array/" + source_pKey + "/gallery";
-        //
-        var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+    });
+
+    batch.end(function(err) {
+        if (err) return callback(err);
+
         //
         var data =
         {
@@ -278,8 +272,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             //
             routePath_base: routePath_base,
         };
-        callback(err, data);
-    }
+        callback(null, data);
+    });
 };
 
 module.exports = constructor;

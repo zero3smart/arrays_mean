@@ -1,4 +1,5 @@
 var winston = require('winston');
+var Batch = require('batch');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var config = new require('../config')();
@@ -47,6 +48,11 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_wordCloud_defaultGroupByColumnName_humanReadable;
     var keywords = dataSourceDescription.fe_wordCloud_keywords;
     //
+    var routePath_base              = "/array/" + source_pKey + "/word-cloud";
+    var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+    //
+    var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+    //
     var filterJSON = urlQuery.filterJSON;
     var filterObj = {};
     var isFilterActive = false;
@@ -72,88 +78,79 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     var searchQ = urlQuery.searchQ;
     var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
         && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
+
     //
-    self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, sourceDoc)
-    {
-        if (err) {
-            return callback(err, null);
-        }
-        _proceedTo_obtainSampleDocument(sourceDoc);
+    var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount = 0, groupedResults = [];
+
+    var batch = new Batch();
+    batch.concurrency(1);
+
+    // Obtain source document
+    batch.push(function(done) {
+        self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
+            if (err) return done(err);
+
+            sourceDoc = _sourceDoc;
+            done();
+        });
     });
-    function _proceedTo_obtainSampleDocument(sourceDoc)
-    {
-        processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
-        {
-            if (err) {
-                callback(err, null);
 
-                return;
-            }
-            if (sampleDoc == null) {
-                callback(new Error('Unexpectedly missing sample document - wrong data source UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+    // Obtain sample document
+    batch.push(function(done) {
+        processedRowObjects_mongooseModel.findOne({}, function(err, _sampleDoc) {
+            if (err) return done(err);
 
-                return;
-            }
-            _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc);
+            sampleDoc = _sampleDoc;
+            done();
         });
-    }
-    function _proceedTo_obtainTopUniqueFieldValuesForFiltering(sourceDoc, sampleDoc)
-    {
-        functions._topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, sampleDoc, function(err, uniqueFieldValuesByFieldName)
-        {
-            if (err) {
-                callback(err, null);
+    });
 
-                return;
-            }
-            //
-            _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName);
+    // Obtain Top Unique Field Values For Filtering
+    batch.push(function(done) {
+        functions._topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
+            if (err) return done(err);
+
+            uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
+            done();
         });
-    }
-    function _proceedTo_obtainGroupedResultSet(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName)
-    {
+    });
+
+    // Obtain grouped results
+    batch.push(function(done) {
         var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
             dataSourceDescription);
         //
         var aggregationOperators = [];
         if (isSearchActive) {
             var _orErrDesc = functions._activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
-            if (typeof _orErrDesc.err !== 'undefined') {
-                callback(_orErrDesc.err, null);
+            if (_orErrDesc.err) return done(_orErrDesc.err);
 
-                return;
-            }
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
         if (isFilterActive) { // rules out undefined filterCol
             var _orErrDesc = functions._activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
-            if (typeof _orErrDesc.err !== 'undefined') {
-                callback(_orErrDesc.err, null);
+            if (_orErrDesc.err) return done(_orErrDesc.err);
 
-                return;
-            }
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
 
         //
-        var doneFn = function(err, groupedResults)
+        var doneFn = function(err, _groupedResults)
         {
-            if (err) {
-                return callback(err, null);
-            }
+            if (err) return done(err);
 
-            var result = groupedResults[0];
-            var newResults = keywords.map(function(keyword) {
+            var result = _groupedResults[0];
+            groupedResults = keywords.map(function(keyword) {
                 var obj = {_id: keyword, value: 0};
                 if (result && result[keyword]) obj.value = result[keyword];
                 return obj;
             });
 
-            newResults.sort(function(a, b){
+            groupedResults.sort(function(a, b){
                 return b.value - a.value;
             });
 
-            _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, newResults);
+            done();
         };
 
         var groupBy_realColumnName_path = "rowParams." + groupBy_realColumnName;
@@ -172,14 +169,11 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         ]);
 
         processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
-    }
-    function _prepareDataAndCallBack(sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults)
-    {
-        var err = null;
-        var routePath_base              = "/array/" + source_pKey + "/word-cloud";
-        var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
-        //
-        var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+    });
+
+    batch.end(function (err) {
+        if (err) return callback(err);
+
         //
         var minGroupedResultsValue = Math.min.apply(Math, groupedResults.map(function(o){ return o.value; }));
         var maxGroupedResultsValue = Math.max.apply(Math, groupedResults.map(function(o){ return o.value; }));
@@ -218,7 +212,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             routePath_base: routePath_base
         };
         callback(err, data);
-    }
+    });
 };
 
 module.exports = constructor;

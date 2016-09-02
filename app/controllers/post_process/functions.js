@@ -255,7 +255,7 @@ var constructor = function() {
         return { matchOps: [unwindOp, matchOp, groupOp] };
     };
     //
-    self._topUniqueFieldValuesForFiltering = function(source_pKey, dataSourceDescription, sampleDoc, callback)
+    self._topUniqueFieldValuesForFiltering = function(source_pKey, dataSourceDescription, callback)
     {
         cached_values_model.MongooseModel.findOne({ srcDocPKey: source_pKey }, function(err, doc)
         {
@@ -424,7 +424,8 @@ var constructor = function() {
     }
 
     //
-    self.buildFilterAggregation = function(urlQuery, dataSourceDescription, data) {
+    self.buildFilterAggregation = function(urlQuery, dataSourceDescription, data)
+    {
         var filterJSON = urlQuery.filterJSON;
         var filterObj = {};
         var isFilterActive = false;
@@ -464,19 +465,11 @@ var constructor = function() {
         data.uniqueFieldValuesByFieldName = uniqueFieldValuesByFieldName;
         data.truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill;
 
-        if (isFilterActive) {
-            var appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
-            routePath_withoutPage       = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
-            routePath_withoutSortBy     = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
-            routePath_withoutSortDir    = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
-            urlQuery_forSwitchingViews  = self._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
-        }
-        data.routePath_withoutFilter = routePath_withoutFilter;
-
         return aggregationOperators;
     }
     //
-    self.buildSearchAggregation = function(urlQuery, dataSourceDescription, data) {
+    self.buildSearchAggregation = function(urlQuery, dataSourceDescription, data)
+    {
         var aggregationOperators = [];
 
         //
@@ -503,15 +496,6 @@ var constructor = function() {
         data.searchCol = searchCol;
         data.isSearchActive = isSearchActive;
 
-        if (isSearchActive) {
-            var appendQuery = "searchCol=" + searchCol + "&" + "searchQ=" + searchQ;
-            routePath_withoutFilter     = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutFilter,    appendQuery, routePath_base);
-            routePath_withoutPage       = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutPage,      appendQuery, routePath_base);
-            routePath_withoutSortBy     = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortBy,    appendQuery, routePath_base);
-            routePath_withoutSortDir    = self._routePathByAppendingQueryStringToVariationOfBase(routePath_withoutSortDir,   appendQuery, routePath_base);
-            urlQuery_forSwitchingViews  = self._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
-        }
-
         return aggregationOperators;
     }
     //
@@ -525,12 +509,12 @@ var constructor = function() {
 
     }
     //
-    self.countWholeSet = function()
+    self.buildTopUniqueFieldValuesForFiltering = function()
     {
 
     }
     //
-    self.buildPagedDocs = function()
+    self.countWholeSet = function()
     {
 
     }
