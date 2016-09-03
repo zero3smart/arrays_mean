@@ -66,7 +66,7 @@ constructor.prototype.BindDataFor_team_show = function(urlQuery, callback) {
     /**
      * Get team description from team key
      */
-    var team = undefined;
+    var team;
     async.each(teamDescriptions, function(teamDescription, cb) {
         if (teamDescription.id === urlQuery.team_key) {
             team = teamDescription;

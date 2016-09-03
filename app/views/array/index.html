@@ -23,43 +23,78 @@
                         </header>
 
                         {% for source in sources %}
-                        {% if source.arrayListed %}
-                        <div class="radio">
-                            <label>
-                                <input type="radio" name="source_key" value="{{ source.key }}" class="hidden">
-                                <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
-                                <div class="panel panel-default panel-source source-{{ source.key }}">
-                                    {% if source.brandColor %}
-                                        <style scoped>
-                                            .source-{{ source.key }} .color-brand,
-                                            .source-{{ source.key }} a.color-brand:hover,
-                                            .source-{{ source.key }} a.color-brand:focus,
-                                            .source-{{ source.key }} a.color-brand:active {
-                                                color: {{ source.brandColor }};
-                                            }
-                                        </style>
-                                    {% endif %}
-                                    <div class="panel-body border-top-color-brand">
-                                        <h2 class="panel-body-title">{{ source.title }}</h2>
-                                        <div class="panel-body-meta">
-                                            <div>
-                                                <a class="panel-view-array color-brand">View Array</a>
+                            {% if source.type == "array" %}
+
+                                {% if source.arrayListed %}
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="source_key" value="{{ source.key }}" class="hidden">
+                                        <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
+                                        <div class="panel panel-default panel-source source-{{ source.key }} js-panel-array">
+                                            {% if source.brandColor %}
+                                                <style scoped>
+                                                    .source-{{ source.key }} .color-brand,
+                                                    .source-{{ source.key }} a.color-brand:hover,
+                                                    .source-{{ source.key }} a.color-brand:focus,
+                                                    .source-{{ source.key }} a.color-brand:active {
+                                                        color: {{ source.brandColor }};
+                                                    }
+                                                </style>
+                                            {% endif %}
+                                            <div class="panel-body border-top-color-brand">
+                                                <h2 class="panel-body-title">{{ source.title }}</h2>
+                                                <div class="panel-body-meta">
+                                                    <div>
+                                                        <a class="panel-view-array color-brand">View Array</a>
+                                                    </div>
+                                                    {% set comma = joiner() %}
+                                                    {% for url in source.urls -%}
+                                                      {{ comma() }} <a href="{{ url }}" class="source-link" target="_blank">{{ url }}</a>
+                                                    {%- endfor %}
+                                                    <span class="source-divider hidden-xs"></span>
+                                                    <span class="source-count hidden-xs">{{ source.sourceDoc.numberOfRows | comma }} Record{{ "s" if source.sourceDoc.numberOfRows != 1 else "" }}</span>
+                                                    <span class="source-divider hidden-xs"></span>
+                                                    <span class="source-updated hidden-xs">Last Updated {{ source.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                                                </div>
+                                                <p class="panel-body-description">{{ source.description }}</p>
                                             </div>
-                                            {% set comma = joiner() %}
-                                            {% for url in source.urls -%}
-                                              {{ comma() }} <a href="{{ url }}" class="source-link" target="_blank">{{ url }}</a>
-                                            {%- endfor %}
-                                            <span class="source-divider hidden-xs"></span>
-                                            <span class="source-count hidden-xs">{{ source.sourceDoc.numberOfRows | comma }} Record{{ "s" if source.sourceDoc.numberOfRows != 1 else "" }}</span>
-                                            <span class="source-divider hidden-xs"></span>
-                                            <span class="source-updated hidden-xs">Last Updated {{ source.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
-                                        </div>
-                                        <p class="panel-body-description">{{ source.description }}</p>
-                                    </div>
-                                </div><!-- .panel -->
-                            </label>
-                        </div><!-- .radio -->
-                        {% endif %}
+                                        </div><!-- .panel -->
+                                    </label>
+                                </div><!-- .radio -->
+                                {% endif %}
+
+                            {% elif source.type == "team" %}
+
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="team_key" value="{{ source.key }}" class="hidden">
+                                        <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
+                                        <div class="panel panel-default panel-source team-{{ source.key }} js-panel-team">
+                                            {% if source.brandColor %}
+                                                <style scoped>
+                                                    .source-{{ source.key }} .color-brand,
+                                                    .source-{{ source.key }} a.color-brand:hover,
+                                                    .source-{{ source.key }} a.color-brand:focus,
+                                                    .source-{{ source.key }} a.color-brand:active {
+                                                        color: {{ source.brandColor }};
+                                                    }
+                                                </style>
+                                            {% endif %}
+                                            <div class="panel-body border-top-color-brand">
+                                                <h2 class="panel-body-title">{{ source.title }}</h2>
+                                                <div class="panel-body-meta">
+                                                    <div>
+                                                        <a class="panel-view-array color-brand">View Team</a>
+                                                    </div>
+                                                    <span class="source-count hidden-xs">{{ source.arrayCount | comma }} Array{{ "s" if source.arrayCount != 1 else "" }}</span>
+                                                </div>
+                                                <p class="panel-body-description">{{ source.description }}</p>
+                                            </div>
+                                        </div><!-- .panel -->
+                                    </label>
+                                </div><!-- .radio -->
+
+                            {% endif %}
                         {% endfor %}
                     </form>
                 </section>

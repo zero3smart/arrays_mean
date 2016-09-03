@@ -13,9 +13,9 @@ $(document).ready(function() {
     console.log('app loaded');
 
     /**
-     * Select source dataset click
+     * Select source dataset on click
      */
-    $('.panel-source').on('click', function(e) {
+    $('.js-panel-array').on('click', function(e) {
         e.preventDefault();
         var $parent = $(this).parent();
         var sourceKey = $parent.find("[name='source_key']").val();
@@ -24,6 +24,17 @@ $(document).ready(function() {
         if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
             href += "?filterJSON=" + default_filterJSON;
         }
+        window.location.href = href;
+    });
+
+    /**
+     * Select team on click
+     */
+    $('.js-panel-team').on('click', function(e) {
+        e.preventDefault();
+        var $parent = $(this).parent();
+        var sourceKey = $parent.find("[name='team_key']").val();
+        var href = '/team/' + sourceKey;
         window.location.href = href;
     });
 
