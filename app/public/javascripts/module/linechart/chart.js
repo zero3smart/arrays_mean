@@ -103,10 +103,6 @@ linechart.chart.prototype.resize = function() {
  * @returns {linechart.chart}
  */
 linechart.chart.prototype.update = function(data) {
-    /*
-     * Use current data if not provided.
-     */
-    data = data || this._data;
 
     this._viewport.update(data);
     this._navigation.update(data);

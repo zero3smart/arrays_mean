@@ -475,11 +475,13 @@ linechart.viewport.prototype.update = function(data) {
      */
     if (data) {
         this._data = data;
-        /*
-         * Get all possible date values and sort them for future bisect function.
-         */
-        this._datesDomain = this._getDatesDomain(data);
+    } else {
+        data = this._data;
     }
+    /*
+     * Get all possible date values and sort them for future bisect function.
+     */
+    this._datesDomain = this._getDatesDomain(data);
     /*
      * Stash reference to this object.
      */
@@ -487,7 +489,7 @@ linechart.viewport.prototype.update = function(data) {
     /*
      * Get x extent.
      */
-    this._xDomain = this._getXDomain();
+    this._xDomain = this._getXDomain(data);
     /*
      * Get y extent.
      */
@@ -511,11 +513,11 @@ linechart.viewport.prototype.update = function(data) {
     /*
      * Update series.
      */
-    this._series.data(this._data);
+    this._series.data(data);
     /*
      * Update and move lines.
      */
-    this._lines.data(this._data)
+    this._lines.data(data)
         .attr("d", this._lineGenerator);
 
     return this;
