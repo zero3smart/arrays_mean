@@ -120,6 +120,10 @@ scatterplot.view.grouped.prototype._prepareData = function(data) {
  */
 scatterplot.view.grouped.prototype.render = function(data) {
     /*
+     * Log data set size.
+     */
+    console.log(data.length + ' objects received')
+    /*
      * Definde reference to the chart.
      */
     var chart = this._chart;
