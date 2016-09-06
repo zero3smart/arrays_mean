@@ -100,7 +100,7 @@ GroupingAlgorithm.prototype.execute = function() {
          * Find corresponding x and y indexes within x and y ticks.
          */
         var xIndex = this._getGroupIndex(x, this._xTicks);
-        var yIndex = this._yTicks.length - 1 - this._getGroupIndex(y, this._yTicks);
+        var yIndex = this._getGroupIndex(y, this._yTicks);
         /*
          * Increment corresponding element of density matrix.
          */

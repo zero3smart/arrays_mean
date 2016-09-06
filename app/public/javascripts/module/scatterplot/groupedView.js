@@ -69,9 +69,13 @@ scatterplot.view.grouped.prototype._prepareData = function(data) {
     var yStep = chart._innerHeight / yTicks.length;
     /*
      * Generate density matrix filled with values.
-     * The matrix rows and columns equals to the chart's rows and columns number.
+     * The matrix rows and columns equals to the chart's rows and
+     * columns number after columns reversing.
      */
-    var densityMatrix = this.getDensityMatrix(data, xTicks, yTicks);
+    var densityMatrix = this.getDensityMatrix(data, xTicks, yTicks)
+        .map(function(column) {
+            return column.reverse();
+        })
     /*
      * Find biggest group value.
      */
