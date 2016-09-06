@@ -270,6 +270,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                     count: summedValue,
                     year: reconstitutedDisplayableTitle
                 });
+
+                console.log(finalizedButNotCoalesced_groupedResults);
             });
             done();
         };
