@@ -52,6 +52,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultGroupByColumnName_humanReadable;
     //
     var defaultKeywordsColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultKeywordsColumnName_humanReadable;
+    var keywordGroupBy = dataSourceDescription.fe_lineGraph_keywordGroupBy;
+    var keywordCountBy = dataSourceDescription.fe_lineGraph_keywordCountBy;
     //
     var routePath_base              = "/array/" + source_pKey + "/line-graph";
     var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
@@ -138,30 +140,62 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
-        aggregationOperators = aggregationOperators.concat(
-            [
-                { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
-                { // unique/grouping and summing stage
-                    $group: {
-                        _id: "$" + "rowParams." + groupBy_realColumnName,
-                        value: { $sum: 1 } // the count
+
+        if (typeof keywordCountBy !== 'undefined' && keywordCountBy !== null && keywordCountBy !== "") {
+
+            // Count by summing numeric field in group if option in datasource description is set
+            aggregationOperators = aggregationOperators.concat(
+                [
+                    { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                    {
+                        $group: {
+                            _id: "$" + "rowParams." + groupBy_realColumnName,
+                            value: { $sum: "$" + "rowParams." + keywordCountBy }
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            label: "$_id",
+                            value: 1
+                        }
+                    },
+                    {
+                        $sort: { value: -1 } // priotize by incidence, since we're $limit-ing below
+                    },
+                    {
+                        $limit: 100 // so the chart can actually handle the number
                     }
-                },
-                { // reformat
-                    $project: {
-                        _id: 0,
-                        label: "$_id",
-                        value: 1
+                ]);
+
+        } else {
+
+            // Count by number of records in filter group by default
+            aggregationOperators = aggregationOperators.concat(
+                [
+                    { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                    { // unique/grouping and summing stage
+                        $group: {
+                            _id: "$" + "rowParams." + groupBy_realColumnName,
+                            value: { $sum: 1 }
+                        }
+                    },
+                    { // reformat
+                        $project: {
+                            _id: 0,
+                            label: "$_id",
+                            value: 1
+                        }
+                    },
+                    { // priotize by incidence, since we're $limit-ing below
+                        $sort: { value: -1 }
+                    },
+                    {
+                        $limit: 100 // so the chart can actually handle the number
                     }
-                },
-                { // priotize by incidence, since we're $limit-ing below
-                    $sort : { value : -1 }
-                },
-                {
-                    $limit : 100 // so the chart can actually handle the number
-                }
-            ]);
-        //
+                ]);
+        }
+        
         var doneFn = function(err, _groupedResults)
         {
             if (err) return done(err);
@@ -281,6 +315,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         };
         callback(err, data);
     });
-}
+};
 
 module.exports = constructor;

@@ -24,6 +24,9 @@ exports.Descriptions =
                     opts: {
                         format: "YYYY" // e.g. "2009-03-21"
                     }
+                },
+                "Count": {
+                    do: import_datatypes.Coercion_ops.ToInteger
                 }
             },
             fe_listed: true,
@@ -157,6 +160,8 @@ exports.Descriptions =
                     "Word",
                     "Count"
                 ],
-            fe_lineGraph_defaultKeywordsColumnName_humanReadable: "Word"
+            fe_lineGraph_defaultKeywordsColumnName_humanReadable: "Word",
+            fe_lineGraph_keywordGroupBy: "Word",
+            fe_lineGraph_keywordCountBy: "Count"
         }
     ];
