@@ -270,11 +270,10 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                     count: summedValue,
                     year: reconstitutedDisplayableTitle
                 });
-
-                console.log(finalizedButNotCoalesced_groupedResults);
             });
             done();
         };
+
         processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
     });
 
