@@ -107,8 +107,6 @@ constructor.prototype.BindDataFor_array_index = function(callback) {
 
     });
 
-    console.log(feVisible_dataSourceDescriptions);
-
     async.map(feVisible_dataSourceDescriptions, iterateeFn, completionFn);
     //    ^ parallel execution, but ordered results
 };

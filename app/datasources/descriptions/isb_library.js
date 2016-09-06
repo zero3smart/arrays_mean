@@ -184,25 +184,33 @@ exports.Descriptions =
             //
             fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function(rowObject)
             {
-                var category = rowObject.rowParams["Categories"];
+                var categories = rowObject.rowParams["Categories"];
+                var categoryArray = categories.split(',');
+                var output = "";
                 var iconSpanClass = undefined;
-                if (typeof category === 'undefined' || category === null || category === "") {
+                if (typeof categories === 'undefined' || categories === null || categories === "") {
                     iconSpanClass = "icon-tile-null";
+                    output = '<span class="' + iconSpanClass + '"></span>';
                 } else {
-                    var lowerCasedCategory = category.toLowerCase().replace(' ', '-');
-                    if (lowerCasedCategory.length) {
-                        iconSpanClass = "icon-tile-isb-" + lowerCasedCategory;
-                    } else {
-                        winston.warn("⚠️  Unrecognized non-NULL lowercased category: ", gender + ". Defaulting.");
+                    for (var i = 0; i < categoryArray.length; i++) {
+                        var lowerCasedCategory = categoryArray[i].trim().toLowerCase().replace(' ', '-');
+
+                        if (lowerCasedCategory.length) {
+                            iconSpanClass = "icon-tile-isb-" + lowerCasedCategory;
+                        } else {
+                            winston.warn("⚠️  Unrecognized non-NULL lowercased category: ", categoryArray[i] + ". Defaulting.");
+                        }
+
+                        if (typeof iconSpanClass === 'undefined') { // if for some reason…
+                            winston.warn("⚠️  Unable to derive icon span class for artist with no image in fe_galleryItem_htmlForIconFromRowObjWhenMissingImage. Using default of 'null' icon.");
+                            iconSpanClass = "icon-tile-null";
+                        }
+                        
+                        output += '<span class="' + iconSpanClass + '"></span>';
                     }
                 }
-                //
-                if (typeof iconSpanClass === 'undefined') { // if for some reason…
-                    winston.warn("⚠️  Unable to derive icon span class for artist with no image in fe_galleryItem_htmlForIconFromRowObjWhenMissingImage. Using default of 'null' icon.");
-                    iconSpanClass = "icon-tile-null";
-                }
-                //
-                return '<span class="' + iconSpanClass + '"></span>';
+
+                return output;
             },
             //
             //
