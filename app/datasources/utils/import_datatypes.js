@@ -109,6 +109,46 @@ var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private fo
     }
 };
 //
+var fieldValueDataTypeCoercion_revertFunctionsByOperationName =  // Private for now
+{ // Note: We're assuming all in-values will be strings, so these are inStrings rather than inValues
+    ProxyExisting: function(inString, options)
+    {
+        return inString;
+    },
+    ToStringTrim: function(inString, options)
+    {
+        // Trim space characters from either side of string
+        return inString.trim();
+    },
+    ToInteger: function(intValue, options)
+    {
+        return intValue.toString();
+    },
+    ToFloat: function(floatValue, options)
+    {
+        return floatValue.toString();
+    },
+    ToDate: function(date, options)
+    {
+        // Now verify date parsing format string
+        var dateFormatString = options.format;
+        if (dateFormatString == "" || dateFormatString == null || typeof dateFormatString === 'undefined') {
+            console.error("❌  No format string with which to derive formatted date \"" + inString + "\". Returning undefined.");
+
+            return undefined;
+        }
+
+        if ( isNaN( date.getTime() ) ) {
+            // Invalid
+            return null;
+        } else {
+            var moment = require("moment"); // note, var not var as we're potentially replacing the parse two digit year method here every time
+
+            return moment.utc(date).format(dateFormatString);
+        }
+    }
+};
+//
 // Public: 
 module.exports.NewDataTypeCoercedValue = function(coercionSchemeForKey, rowValue)
 {
@@ -124,5 +164,22 @@ module.exports.NewDataTypeCoercedValue = function(coercionSchemeForKey, rowValue
     var operationFn = fieldValueDataTypeCoercion_coercionFunctionsByOperationName[operationName];
     var coercedValue = operationFn(rowValue, operationOptions);
     
+    return coercedValue;
+};
+// Public:
+module.exports.OriginalValue = function(coercionSchemeForKey, rowValue)
+{
+    var operationName = coercionSchemeForKey.do;
+    if (operationName == null || operationName == "" || typeof operationName === 'undefined') {
+        console.error("❌  Illegal, malformed, or missing operation name at key 'do' in coercion scheme."
+            + " Returning undefined.\ncoercionSchemeForKey:\n"
+            , coercionSchemeForKey);
+
+        return undefined;
+    }
+    var operationOptions = coercionSchemeForKey.opts;
+    var operationFn = fieldValueDataTypeCoercion_revertFunctionsByOperationName[operationName];
+    var coercedValue = operationFn(rowValue, operationOptions);
+
     return coercedValue;
 };

@@ -212,7 +212,7 @@ var constructor = function() {
         }};
 
         var matchOp = { $match: {} };
-        matchOp["$match"]["matchingField"] = {$gte: realFilterValueMin, $lte: realFilterValueMax};
+        matchOp["$match"]["matchingField"] = {$gte: realFilterValueMin, $lt: realFilterValueMax};
 
         return { matchConditions: [projectOp, matchOp] };
     };
