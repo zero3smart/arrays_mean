@@ -370,6 +370,20 @@
       "search": [
         "word-cloud"
       ]
+    },
+    {
+      "uid": "a35198d57eb17d95bfde7c01eae25843",
+      "css": "linegraph",
+      "code": 59418,
+      "src": "custom_icons",
+      "selected": true,
+      "svg": {
+        "path": "M875 791.7V875H125V125H208.3V791.7H875ZM850 420.8L833.3 475 541.7 395.8 333.3 612.5 291.7 570.8 529.2 333.3 529.2 333.3 850 420.8Z",
+        "width": 1000
+      },
+      "search": [
+        "linegraph"
+      ]
     }
   ]
 }
