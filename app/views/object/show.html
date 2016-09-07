@@ -14,6 +14,13 @@
                                     {% if hasOriginalImage %}
                                     <img src="{{ rowObject.rowParams[fieldKey_originalImageURL] }}" class="object-featured img-responsive" />
                                     {% endif %}
+
+                                    {% if fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}
+                                        <div class="object-header-icons">
+                                            {{ fe_galleryItem_htmlForIconFromRowObjWhenMissingImage(rowObject) | safe }}
+                                        </div>
+                                    {% endif %}
+
                                     {% set objectTitle = rowObject.rowParams[fieldKey_objectTitle] %}
                                     <h1 class="object-title">{{ objectTitle if objectTitle else "(Title not specified)" }}</h1>
                                 </header><!-- .object-header -->

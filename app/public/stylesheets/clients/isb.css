@@ -72,3 +72,11 @@
 }
 
 /* @end Quantity Queries */
+
+/* @group Object Show */
+
+.object-header-icons span {
+	margin-right: 15px;
+}
+
+/* @end Object Show */
