@@ -17,7 +17,7 @@ exports.Descriptions =
             // brandColor: "#4A4A4A",
             urls: [ "https://www.systemsbiology.org" ],
             description: "Institute for Systems Biology",
-            logo: "/images/teams/isb_library.png",
+            logo: "/images/teams/isb_library.jpg",
             raw_rowObjects_coercionScheme:
             {
                 'Publication Year': {
