@@ -20,7 +20,13 @@ $(document).ready(function() {
         var $parent = $(this).parent();
         var sourceKey = $parent.find("[name='source_key']").val();
         var default_filterJSON = $parent.find("[name='default_filterJSON']").val();
-        var href = '/array/' + sourceKey + '/gallery';
+        var default_view = $parent.find("[name='default_view']").val();
+        if (default_view === undefined || default_view == 'undefined' || default_view == '') {
+            default_view = 'gallery';
+        }
+        var words = default_view.split(/(?=[A-Z])/);
+        var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
+        var href = '/array/' + sourceKey + '/' + default_view_url;
         if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
             href += "?filterJSON=" + default_filterJSON;
         }

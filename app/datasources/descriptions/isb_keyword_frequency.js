@@ -42,7 +42,7 @@ exports.Descriptions =
                 // medThumbImageURL: "thumb_small"
             },
             fe_views: {
-                gallery: true,
+                gallery: false,
                 choropleth: false,
                 chart: false,
                 timeline: false,
@@ -50,6 +50,7 @@ exports.Descriptions =
                 scatterplot: false,
                 lineGraph: true
             },
+            fe_default_view: 'lineGraph',
             fe_excludeFields: 
                 [
                     

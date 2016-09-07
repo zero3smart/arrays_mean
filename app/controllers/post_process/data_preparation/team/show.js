@@ -37,6 +37,10 @@ constructor.prototype.BindDataFor_team_show = function(urlQuery, callback) {
                 if (dataSourceDescription.fe_listed === false) {
                     default_listed = false;
                 }
+                var default_view = 'gallery';
+                if (typeof dataSourceDescription.fe_default_view !== 'undefined') {
+                    default_view = dataSourceDescription.fe_default_view;
+                }
                 var sourceDescription = {
                     key: source_pKey,
                     sourceDoc: doc,
@@ -46,7 +50,8 @@ constructor.prototype.BindDataFor_team_show = function(urlQuery, callback) {
                     urls: dataSourceDescription.urls,
                     arrayListed: default_listed,
                     
-                    default_filterJSON: default_filterJSON
+                    default_filterJSON: default_filterJSON,
+                    default_view: default_view
                 };
                 cb(err, sourceDescription);
             });
