@@ -17,6 +17,7 @@ exports.Descriptions =
             // brandColor: "#4A4A4A",
             urls: [ "http://www.ncbi.nlm.nih.gov/pubmed" ],
             description: "Institute for Systems Biology",
+            logo: "/images/teams/isb_keyword_frequency.png",
             raw_rowObjects_coercionScheme:
             {
                 'Year': {

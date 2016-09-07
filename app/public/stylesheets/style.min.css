@@ -5121,6 +5121,16 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	width: 100%;
 	vertical-align: top;
 }
+.section-team-show .section-header {
+	margin-bottom: 30px;
+	padding-top: 30px;
+}
+.team-logo {
+
+}
+.team-array-logo {
+	margin: auto;
+}
 @media (min-width: 768px) {
 	.team-list-item {
 		display: inline-block;

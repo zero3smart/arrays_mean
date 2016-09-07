@@ -51,8 +51,10 @@ constructor.prototype.BindDataFor_team_show = function(urlQuery, callback) {
                     arrayListed: default_listed,
                     
                     default_filterJSON: default_filterJSON,
-                    default_view: default_view
+                    default_view: default_view,
+                    logo: dataSourceDescription.logo
                 };
+            console.log(dataSourceDescription.logo);
                 cb(err, sourceDescription);
             });
 

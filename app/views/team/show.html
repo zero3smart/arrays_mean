@@ -16,8 +16,12 @@
 
                         <header class="section-header">
                             <div class="row">
-                                <div class="col-sm-12">
+                                <div class="col-sm-12 text-center">
+                                    {% if team.logo %}
+                                    <img src="{{ team.logo }}" class="team-logo" alt="{{ team.title }}"/>
+                                    {% else %}
                                     <h2 class="section-title">{{ team.title }}</h2>
+                                    {% endif %}
                                 </div>
                             </div><!-- .row -->
                         </header>
@@ -44,6 +48,10 @@
                                                     }
                                                 </style>
                                             {% endif %}
+                                            {% if source.logo %}
+                                            <img src="{{ source.logo }}" class="team-array-logo img-responsive" />
+                                            {% endif %}
+
                                             <div class="panel-body border-top-color-brand">
                                                 <h2 class="panel-body-title">{{ source.title }}</h2>
                                                 <div class="panel-body-meta">
