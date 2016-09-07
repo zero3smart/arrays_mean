@@ -79,12 +79,32 @@
 
                             <script type="text/javascript">
                                 var graphData = [];
-                                graphData[0] = {{ groupedResults | dump | safe }}.map(function(row) {
-                                    row.label = "{{ arrayTitle }}";
-                                    row.count = Number(row.count);
-                                    row.year = new Date(row.year);
-                                    return row;
-                                });
+                                <!--  -->
+                                var groupedResultsByKeyword = {{ groupedResultsByKeyword | dump | safe }};
+
+                                if (Array.isArray(groupedResultsByKeyword)) {
+
+                                    graphData[0] = groupedResultsByKeyword.map(function(row) {
+                                        row.label = "{{ arrayTitle }}";
+                                        row.count = Number(row.count);
+                                        row.year = new Date(row.year);
+                                        return row;
+                                    });
+
+                                } else {
+
+                                    for (var keyword in groupedResultsByKeyword) {
+                                        if (groupedResultsByKeyword.hasOwnProperty(keyword)) {
+                                            graphData.push(groupedResultsByKeyword[keyword].map(function(row) {
+                                                row.label = keyword;
+                                                row.count = Number(row.count);
+                                                row.year = new Date(row.year);
+                                                return row;
+                                            }));
+                                        }
+                                    }
+
+                                }
 
                                 var filterObj = {{ filterObj | dump | safe }};
                                 var routePath_withoutFilter = '{{ routePath_base | constructedRoutePath({

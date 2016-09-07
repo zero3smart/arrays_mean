@@ -87,7 +87,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
 
     //
-    var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults = [];
+    var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResultsByKeyword = {};
 
     var batch = new Batch();
     batch.concurrency(1);
@@ -143,31 +143,63 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 
         if (typeof keywordCountBy !== 'undefined' && keywordCountBy !== null && keywordCountBy !== "") {
 
-            // Count by summing numeric field in group if option in datasource description is set
-            aggregationOperators = aggregationOperators.concat(
-                [
-                    { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
-                    {
-                        $group: {
-                            _id: "$" + "rowParams." + groupBy_realColumnName,
-                            value: { $sum: "$" + "rowParams." + keywordCountBy }
-                        }
-                    },
-                    {
-                        $project: {
-                            _id: 0,
-                            label: "$_id",
-                            value: 1
-                        }
-                    },
-                    {
-                        $sort: { value: -1 } // priotize by incidence, since we're $limit-ing below
-                    },
-                    {
-                        $limit: 100 // so the chart can actually handle the number
-                    }
-                ]);
+            if (typeof keywordGroupBy !== 'undefined' && keywordGroupBy !== null && keywordGroupBy !== "") {
+                var keywordGroupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(keywordGroupBy, dataSourceDescription);
 
+                aggregationOperators = aggregationOperators.concat(
+                    [
+                        { $unwind: "$" + "rowParams." + groupBy_realColumnName },
+                        { $unwind: "$" + "rowParams." + keywordGroupBy_realColumnName },
+                        {
+                            $group: {
+                                _id: {groupBy: "$" + "rowParams." + groupBy_realColumnName, keywordBy: "$" + "rowParams." + keywordGroupBy_realColumnName},
+                                value: { $sum: "$" + "rowParams." + keywordCountBy }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                label: "$_id.groupBy",
+                                keyword: "$_id.keywordBy",
+                                value: 1
+                            }
+                        },
+                        {
+                            $sort: { value: -1 } // priotize by incidence, since we're $limit-ing below
+                        },
+                        {
+                            $limit: 100 // so the chart can actually handle the number
+                        }
+                    ]);
+
+            } else {
+
+                // Count by summing numeric field in group if option in datasource description is set
+                aggregationOperators = aggregationOperators.concat(
+                    [
+                        { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                        {
+                            $group: {
+                                _id: "$" + "rowParams." + groupBy_realColumnName,
+                                value: { $sum: "$" + "rowParams." + keywordCountBy }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                label: "$_id",
+                                value: 1
+                            }
+                        },
+                        {
+                            $sort: { value: -1 } // priotize by incidence, since we're $limit-ing below
+                        },
+                        {
+                            $limit: 100 // so the chart can actually handle the number
+                        }
+                    ]);
+
+            }
         } else {
 
             // Count by number of records in filter group by default
@@ -196,81 +228,104 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                 ]);
         }
         
-        var doneFn = function(err, _groupedResults)
+        var doneFn = function(err, _multigroupedResults)
         {
             if (err) return done(err);
 
-            if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
-            var finalizedButNotCoalesced_groupedResults = [];
-            _groupedResults.forEach(function(el, i, arr)
-            {
-                var originalVal = el.label;
-                //
-                var fe_chart_valuesToExcludeByOriginalKey = dataSourceDescription.fe_chart_valuesToExcludeByOriginalKey;
-                if (fe_chart_valuesToExcludeByOriginalKey != null && typeof fe_chart_valuesToExcludeByOriginalKey !== 'undefined') {
-                    if (fe_chart_valuesToExcludeByOriginalKey._all) {
-                        if (fe_chart_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
-                            return; // do not push to list
-                        }
-                    }
-                    var illegalValuesForThisKey = fe_chart_valuesToExcludeByOriginalKey[groupBy_realColumnName];
-                    if (illegalValuesForThisKey) {
-                        if (illegalValuesForThisKey.indexOf(originalVal) !== -1) {
-                            return; // do not push to list
-                        }
-                    }
-                }
-                //
-                var displayableVal = originalVal;
-                if (originalVal == null) {
-                    displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
-                } else if (originalVal === "") {
-                    displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
-                } else {
-                    displayableVal = functions._reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, groupBy_realColumnName, dataSourceDescription);
-                }
-                finalizedButNotCoalesced_groupedResults.push({
-                    value: el.value,
-                    label: displayableVal
-                });
-            });
-            var summedValuesByLowercasedLabels = {};
-            var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
-            finalizedButNotCoalesced_groupedResults.forEach(function(el, i, arr)
-            {
-                var label = el.label;
-                var value = el.value;
-                var label_toLowerCased = label.toLowerCase();
-                //
-                var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
-                var new_valueSum = existing_valueSum + value;
-                summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
-                //
-                var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] || { label: '', value: -1 };
-                if (existing_titleWithMostMatchesAndMatchCount.value < value) {
-                    var new_titleWithMostMatchesAndMatchCount = { label: label, value: value };
-                    titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
-                }
-            });
-            var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
-            lowercasedLabels.forEach(function(key, i, arr)
-            {
-                var summedValue = summedValuesByLowercasedLabels[key];
-                var reconstitutedDisplayableTitle = key;
-                var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[key];
-                if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
-                    winston.error("❌  This should never be undefined.");
-                    callback(new Error('Unexpectedly undefined title with most matches'), null);
+            if (_multigroupedResults == undefined || _multigroupedResults == null) _multigroupedResults = [];
 
-                    return;
-                } else {
-                    reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
+            var _multigroupedResults_object = {};
+            _multigroupedResults.forEach(function(el) {
+                var keyword = el.keyword && el.keyword != '' ? el.keyword : 'default';
+                if (_multigroupedResults_object[keyword] === undefined) {
+                    _multigroupedResults_object[keyword] = [];
                 }
-                groupedResults.push({
-                    count: summedValue,
-                    year: reconstitutedDisplayableTitle
-                });
+                _multigroupedResults_object[keyword].push(el);
             });
+
+            for (var keyword in _multigroupedResults_object) {
+                if (_multigroupedResults_object.hasOwnProperty(keyword)) {
+                    var _groupedResults = _multigroupedResults_object[keyword];
+
+                    var finalizedButNotCoalesced_groupedResults = [];
+                    _groupedResults.forEach(function(el, i, arr)
+                    {
+                        var originalVal = el.label;
+                        //
+                        var fe_chart_valuesToExcludeByOriginalKey = dataSourceDescription.fe_chart_valuesToExcludeByOriginalKey;
+                        if (fe_chart_valuesToExcludeByOriginalKey != null && typeof fe_chart_valuesToExcludeByOriginalKey !== 'undefined') {
+                            if (fe_chart_valuesToExcludeByOriginalKey._all) {
+                                if (fe_chart_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
+                                    return; // do not push to list
+                                }
+                            }
+                            var illegalValuesForThisKey = fe_chart_valuesToExcludeByOriginalKey[groupBy_realColumnName];
+                            if (illegalValuesForThisKey) {
+                                if (illegalValuesForThisKey.indexOf(originalVal) !== -1) {
+                                    return; // do not push to list
+                                }
+                            }
+                        }
+                        //
+                        var displayableVal = originalVal;
+                        if (originalVal == null) {
+                            displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
+                        } else if (originalVal === "") {
+                            displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
+                        } else {
+                            displayableVal = functions._reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, groupBy_realColumnName, dataSourceDescription);
+                        }
+                        finalizedButNotCoalesced_groupedResults.push({
+                            value: el.value,
+                            label: displayableVal
+                        });
+                    });
+                    var summedValuesByLowercasedLabels = {};
+                    var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
+                    finalizedButNotCoalesced_groupedResults.forEach(function(el, i, arr)
+                    {
+                        var label = el.label;
+                        var value = el.value;
+                        var label_toLowerCased = label.toLowerCase();
+                        //
+                        var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
+                        var new_valueSum = existing_valueSum + value;
+                        summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
+                        //
+                        var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] || { label: '', value: -1 };
+                        if (existing_titleWithMostMatchesAndMatchCount.value < value) {
+                            var new_titleWithMostMatchesAndMatchCount = { label: label, value: value };
+                            titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
+                        }
+                    });
+                    var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
+                    var groupedResults = [];
+                    lowercasedLabels.forEach(function(key, i, arr)
+                    {
+                        var summedValue = summedValuesByLowercasedLabels[key];
+                        var reconstitutedDisplayableTitle = key;
+                        var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[key];
+                        if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
+                            winston.error("❌  This should never be undefined.");
+                            callback(new Error('Unexpectedly undefined title with most matches'), null);
+
+                            return;
+                        } else {
+                            reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
+                        }
+                        groupedResults.push({
+                            count: summedValue,
+                            year: reconstitutedDisplayableTitle
+                        });
+                    });
+
+                    if (keywordGroupBy)
+                        groupedResultsByKeyword[keyword] = groupedResults;
+                    else
+                        groupedResultsByKeyword = groupedResults;
+                }
+            }
+
             done();
         };
 
@@ -292,7 +347,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             sourceDocURL: sourceDocURL,
             view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
             //
-            groupedResults: groupedResults,
+            groupedResultsByKeyword: groupedResultsByKeyword,
             groupBy: groupBy,
             //
             filterObj: filterObj,
