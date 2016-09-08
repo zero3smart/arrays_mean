@@ -46,7 +46,7 @@ exports.Descriptions =
                 timeline: true,
                 wordCloud: false,
                 scatterplot: false,
-                lineGraph: true
+                lineGraph: false
             },
             fe_excludeFields: 
                 [
