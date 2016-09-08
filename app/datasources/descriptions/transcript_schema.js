@@ -280,6 +280,7 @@ exports.Descriptions =
                 [
                     "Title",
                     "Identifier",
+                    "Description",
                     "Subjects",
                     "Creator",
                     "Date Labeled",
