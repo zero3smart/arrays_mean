@@ -114,7 +114,8 @@ exports.Descriptions =
                     "Legislative Body",
                     "Series",
                     "Date",
-                    "Publication Title"
+                    "Publication Title",
+                    "Journal Abbreviation"
                 ],
             fe_displayTitleOverrides:
             { // these are to be tuples - the values must be unique as well
