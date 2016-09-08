@@ -4,6 +4,7 @@
 // Imports
 //
 var dataSourceDescriptions = require('../descriptions').GetDescriptions();
+var teamDescriptions = require('../teams').GetTeams();
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,6 +41,20 @@ function _dataSourceDescriptionWithPKey(source_pKey, raw_source_documents_contro
     return null;
 };
 module.exports.DataSourceDescriptionWithPKey = _dataSourceDescriptionWithPKey;
+//
+function _teamDescription(team_key)
+{
+    var teamDescriptions_length = teamDescriptions.length;
+    for (var i = 0 ; i < teamDescriptions_length ; i++) {
+        var teamDescription = teamDescriptions[i];
+        if (teamDescription.id === team_key) {
+            return teamDescription;
+        }
+    }
+    
+    return null;
+}
+module.exports.TeamDescription = _teamDescription;
 //
 function _realColumnNameFromHumanReadableColumnName(humanReadableColumnName, dataSourceDescription)
 {

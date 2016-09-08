@@ -18,6 +18,9 @@ constructor.prototype.BindDataFor_array = function(source_pKey, rowObject_id, ca
 {
     var self = this;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
+
+    var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
+
     var fe_visible = dataSourceDescription.fe_visible;
     if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
         callback(new Error("That data source was set to be not visible: " + source_pKey), null);
@@ -165,6 +168,7 @@ constructor.prototype.BindDataFor_array = function(source_pKey, rowObject_id, ca
             //
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
+            team: team,
             brandColor: dataSourceDescription.brandColor,
             default_filterJSON: default_filterJSON,
             view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},

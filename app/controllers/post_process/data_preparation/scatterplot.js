@@ -33,6 +33,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         return;
     }
 
+    var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
+
     if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != null && dataSourceDescription.fe_views.chart === false) {
         callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
         return;
@@ -163,6 +165,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                     metaData: dataSourceDescription,
                     renderableFields: numericFields,
                     array_source_key: sourceKey,
+                    team: team,
                     brandColor: dataSourceDescription.brandColor,
                     uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
                     sourceDoc: sourceDoc,

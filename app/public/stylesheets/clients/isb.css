@@ -80,3 +80,17 @@
 }
 
 /* @end Object Show */
+
+/* @group Custom Navbar Color */
+
+.source-isb_library-r1 .navbar-default,
+.source-ISB_keyword_frequency-r1 .navbar-default {
+	background-color: #4a4a4a;
+}
+
+.source-isb_library-r1.array-controls-pinned .navbar-default,
+.source-ISB_keyword_frequency-r1.array-controls-pinned .navbar-default {
+	background-color: white;
+}
+
+/* @end Custom Navbar Color */

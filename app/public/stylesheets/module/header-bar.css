@@ -213,3 +213,17 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 }
 
 /* @end back button */
+
+/* @group Team Logo */
+
+#page .navbar-brand-team-logo {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.navbar-brand-team-logo img {
+	display: inline;
+	max-height: 45px;
+}
+
+/* @end Team Logo */

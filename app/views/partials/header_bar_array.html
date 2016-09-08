@@ -42,7 +42,7 @@
 <nav class="navbar navbar-default navbar-fixed-top background-color-brand">
 	<div class="container-fluid container-full-width">
 		<div class="navbar-brand-container">
-			<a class="navbar-brand navbar-brand-arrays" href="/array">Arrays</a><br />
+			<a class="navbar-brand navbar-brand-arrays {% if team.logo | length %}navbar-brand-team-logo{% endif %}" href="{% if team.id | length %}/team/{{ team.id }}{% else %}/array{% endif %}">{% if team.logo | length %}<img src="{{ team.logo }}" />{% elif team.title | length %}{{ team.title }}{% else %}Arrays{% endif %}</a><br />
 			<a class="navbar-brand navbar-brand-array-title" href="/array/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath({
 				searchQ: searchQ,
 				searchCol: searchCol,
