@@ -119,7 +119,6 @@ exports.Descriptions =
             fe_displayTitleOverrides:
             { // these are to be tuples - the values must be unique as well
                 // "Author": "Author",
-                "Journal Abbreviation": "Journal",
             },
             fe_filters_fabricatedFilters:
             [
