@@ -2,6 +2,7 @@ var winston = require('winston');
 var Batch = require('batch');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
+var import_datatypes = require('../../../datasources/utils/import_datatypes');
 var config = new require('../config')();
 var functions = new require('../functions')();
 
@@ -110,7 +111,22 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         functions._topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
             if (err) return done(err);
 
-            uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
+            uniqueFieldValuesByFieldName = {};
+            for (var columnName in _uniqueFieldValuesByFieldName) {
+                if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
+                    var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+                    if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
+                        var row = [];
+                        _uniqueFieldValuesByFieldName[columnName].forEach(function(rowValue) {
+                            row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
+                        });
+                        row.sort();
+                        uniqueFieldValuesByFieldName[columnName] = row;
+                    } else {
+                        uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
+                    }
+                }
+            }
             done();
         });
     });

@@ -6253,6 +6253,9 @@ linechart svg .axis line, .linechart svg .axis path {
 .linechart svg.viewport circle.data-point {
     fill: transparent;
 }
+.linechart .x-axis text {
+    cursor: pointer;
+}
 /* @override 
 	http://localhost:9080/stylesheets/module/word-cloud.css */
 .word-cloud-list {

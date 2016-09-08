@@ -2,6 +2,7 @@ var winston = require('winston');
 var Batch = require('batch');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
+var import_datatypes = require('../../../datasources/utils/import_datatypes');
 var config = new require('../config')();
 var functions = new require('../functions')();
 
@@ -115,7 +116,24 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             /*
              * Go deeper - collect data for filter's sidebar.
              */
-            functions._topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, function(err, uniqueFieldValuesByFieldName) {
+            functions._topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
+
+                var uniqueFieldValuesByFieldName = {}
+                for (var columnName in _uniqueFieldValuesByFieldName) {
+                    if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
+                        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+                        if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
+                            var row = [];
+                            _uniqueFieldValuesByFieldName[columnName].forEach(function(rowValue) {
+                                row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
+                            });
+                            row.sort();
+                            uniqueFieldValuesByFieldName[columnName] = row;
+                        } else {
+                            uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
+                        }
+                    }
+                }
                 /*
                  * Define numeric fields list which may be used as scatterplot axes.
                  * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.

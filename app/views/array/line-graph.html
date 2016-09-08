@@ -43,15 +43,6 @@
                                                         groupBy: ''})
                                                 )
                                                 }}
-
-                                                {{
-                                                dropdown.axis(
-                                                    y,
-                                                    '',
-                                                    'Category',
-                                                    renderableFields
-                                                )
-                                                }}
                                             </nav>
 
                                             <div class="sort-bar-right pull-right">
@@ -116,6 +107,16 @@
                                 }) }}';
                                 var routePath_base = '{{ routePath_base }}';
                                 var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
+
+                                var redirectData = undefined;
+                                {% if matched_source_pKey %}
+                                redirectData = {
+                                    matched_source_pKey: '{{ matched_source_pKey }}',
+                                    matched_default_view: '{{ matched_default_view }}',
+                                    matched_default_filterObj: {{ matched_default_filterObj | dump | safe }},
+                                    matched_groupBy: '{{ matched_groupBy }}'
+                                };
+                                {% endif %}
                             </script>
 
                             <div class="container-fluid">
@@ -162,7 +163,7 @@
     <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
     <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
     <script>
-        var lineChart = new linechart.chart(graphData)
+        var lineChart = new linechart.chart(graphData, redirectData)
             .render("#linechart");
     </script>
 {% endblock %}

@@ -149,7 +149,7 @@ exports.Descriptions =
                     // "Decade",
                     // "Year"
                 ],
-            fe_timeline_defaultSortByColumnName_humanReadable: "Publication Year",
+            fe_timeline_defaultSortByColumnName_humanReadable: "Year",
             fe_timeline_fieldsNotAvailableAsSortByColumns:
                 [
                     // "Item Type"
@@ -173,6 +173,11 @@ exports.Descriptions =
                 'Single Nucleotide Protein': '#4D8DFF',
                 'Personalized Medicine ': '#CA99FB',
                 'Genome Wide Association Study': '#99BEFF'
+            },
+
+            fe_lineGraph_matched_dataSource_pKey: 'isb_library-r1',
+            fe_lineGraph_matched_dataSource_fields_relationships: {
+                Year: 'Publication Year'
             }
         }
     ];
