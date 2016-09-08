@@ -15,9 +15,6 @@ Proteomics,2003,1666
 Proteomics,2002,1040
 Proteomics,2001,519
 Proteomics,2000,219
-Proteomics,1999,59
-Proteomics,1998,22
-Proteomics,1997,1
 Bioinformatics,2015,24064
 Bioinformatics,2014,22322
 Bioinformatics,2013,17717
@@ -34,11 +31,6 @@ Bioinformatics,2003,4689
 Bioinformatics,2002,3284
 Bioinformatics,2001,2231
 Bioinformatics,2000,1505
-Bioinformatics,1999,834
-Bioinformatics,1998,679
-Bioinformatics,1997,344
-Bioinformatics,1996,301
-Bioinformatics,1995,196
 Computational Biology,2015,16359
 Computational Biology,2014,16380
 Computational Biology,2013,14222
@@ -55,11 +47,6 @@ Computational Biology,2003,3560
 Computational Biology,2002,2635
 Computational Biology,2001,1897
 Computational Biology,2000,1245
-Computational Biology,1999,626
-Computational Biology,1998,546
-Computational Biology,1997,297
-Computational Biology,1996,273
-Computational Biology,1995,184
 Genome Wide Association Study,2015,3420
 Genome Wide Association Study,2014,3318
 Genome Wide Association Study,2013,3341
@@ -76,11 +63,6 @@ Genome Wide Association Study,2003,52
 Genome Wide Association Study,2002,38
 Genome Wide Association Study,2001,25
 Genome Wide Association Study,2000,18
-Genome Wide Association Study,1999,11
-Genome Wide Association Study,1998,8
-Genome Wide Association Study,1997,2
-Genome Wide Association Study,1996,4
-Genome Wide Association Study,1995,4
 Personalized Medicine ,2015,5332
 Personalized Medicine ,2014,4281
 Personalized Medicine ,2013,3119
@@ -97,11 +79,6 @@ Personalized Medicine ,2003,324
 Personalized Medicine ,2002,288
 Personalized Medicine ,2001,234
 Personalized Medicine ,2000,200
-Personalized Medicine ,1999,222
-Personalized Medicine ,1998,241
-Personalized Medicine ,1997,196
-Personalized Medicine ,1996,189
-Personalized Medicine ,1995,173
 Systems Biology,2015,11955
 Systems Biology,2014,10153
 Systems Biology,2013,6879
@@ -118,12 +95,6 @@ Systems Biology,2003,1859
 Systems Biology,2002,1688
 Systems Biology,2001,1373
 Systems Biology,2000,1246
-Systems Biology,1999,1095
-Systems Biology,1998,1062
-Systems Biology,1997,839
-Systems Biology,1996,769
-Systems Biology,1995,720
-Single Nucleotide Protein,2016,1343
 Single Nucleotide Protein,2015,5628
 Single Nucleotide Protein,2014,6105
 Single Nucleotide Protein,2013,5892
@@ -140,37 +111,3 @@ Single Nucleotide Protein,2003,1120
 Single Nucleotide Protein,2002,979
 Single Nucleotide Protein,2001,855
 Single Nucleotide Protein,2000,696
-Single Nucleotide Protein,1999,535
-Single Nucleotide Protein,1998,547
-Single Nucleotide Protein,1997,515
-Single Nucleotide Protein,1996,472
-Single Nucleotide Protein,1995,476
-Single Nucleotide Protein,1994,497
-Single Nucleotide Protein,1993,486
-Single Nucleotide Protein,1992,442
-Single Nucleotide Protein,1991,444
-Single Nucleotide Protein,1990,395
-Single Nucleotide Protein,1989,347
-Single Nucleotide Protein,1988,375
-Single Nucleotide Protein,1987,253
-Single Nucleotide Protein,1986,220
-Single Nucleotide Protein,1985,186
-Single Nucleotide Protein,1984,153
-Single Nucleotide Protein,1983,128
-Single Nucleotide Protein,1982,67
-Single Nucleotide Protein,1981,79
-Single Nucleotide Protein,1980,53
-Single Nucleotide Protein,1979,33
-Single Nucleotide Protein,1978,35
-Single Nucleotide Protein,1977,23
-Single Nucleotide Protein,1976,32
-Single Nucleotide Protein,1975,27
-Single Nucleotide Protein,1974,3
-Single Nucleotide Protein,1973,4
-Single Nucleotide Protein,1972,2
-Single Nucleotide Protein,1971,1
-Single Nucleotide Protein,1970,1
-Single Nucleotide Protein,1969,1
-Single Nucleotide Protein,1967,2
-Single Nucleotide Protein,1966,1
-Single Nucleotide Protein,1959,1

@@ -7,7 +7,7 @@ var import_datatypes = require('../utils/import_datatypes');
 exports.Descriptions =
     [
         {
-            filename: "ISB_Keyword_Frequency_Data.csv",
+            filename: "Keyword_Frequency_Data_20160907_v2_rm - Sheet1.csv",
             fileEncoding: "utf8", // default
             uid: "ISB_keyword_frequency",
             team_id: "isb",

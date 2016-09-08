@@ -7,7 +7,7 @@ var import_datatypes = require('../utils/import_datatypes');
 exports.Descriptions =
     [
         {
-            filename: "ISB-Library-Pubs-With-Categories.csv",
+            filename: "ISB-Library-Pubs-With-Categories-20160907-v3-rm - Sheet1.csv",
             fileEncoding: "utf8", // default
             uid: "isb_library",
             team_id: "isb",
