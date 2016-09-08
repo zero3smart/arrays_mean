@@ -94,3 +94,21 @@
 }
 
 /* @end Custom Navbar Color */
+
+/* @group Timeline Icons */
+
+.timeline-link span {
+	display: none;
+	margin-top: 10px;
+	margin-left: 10px;
+	min-width: 60px;
+	min-height: 60px;
+	width: 60px;
+	height: 60px;
+}
+
+.timeline-link span:first-child {
+	display: block;
+}
+
+/* @end Timeline Icons */
