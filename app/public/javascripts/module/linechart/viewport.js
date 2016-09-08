@@ -112,6 +112,11 @@ linechart.viewport = function(data) {
      * @member {String[]}
      */
     this._colors = d3.scale.category20().range();
+    var self = this;
+    data.forEach(function(el, i) {
+        if (el && el.length > 0 && el[0].color)
+            self._colors[i] = el[0].color;
+    });
     /*
      * Stash reference to this object.
      */
@@ -386,7 +391,7 @@ linechart.viewport.prototype._mouseMoveEventHandler = function() {
         '<div class="default-tooltip-content">' +
             '<ul class="line-graph-list">' +
             tooltipData.reduce(function(html, d, i) {
-                return html += 
+                return html +=
                 '<li class="legend-list-item">' +
                     '<div class="line-graph-item-container">' +
                         '<span style="background-color: ' + self._colors[i] + ';" class="item-marker"></span>' +

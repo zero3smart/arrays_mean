@@ -164,6 +164,15 @@ exports.Descriptions =
                 ],
             fe_lineGraph_defaultKeywordsColumnName_humanReadable: "Word",
             fe_lineGraph_keywordGroupBy: "Word",
-            fe_lineGraph_keywordCountBy: "Count"
+            fe_lineGraph_keywordCountBy: "Count",
+            fe_lineGraph_keywordLineColors: {
+                Bioinformatics: '#33B1B1',
+                'Computational Biology': '#9533F8',
+                'Systems Biology': '#FEB600',
+                Proteomics: '#99D8D8',
+                'Single Nucleotide Protein': '#4D8DFF',
+                'Personalized Medicine ': '#CA99FB',
+                'Genome Wide Association Study': '#99BEFF'
+            }
         }
     ];

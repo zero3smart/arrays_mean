@@ -96,6 +96,11 @@ linechart.navigation = function(data, viewport) {
      * @member {String[]}
      */
     this._colors = d3.scale.category10().range();
+    var self = this;
+    data.forEach(function(el, i) {
+        if (el && el.length > 0 && el[0].color)
+            self._colors[i] = el[0].color;
+    });
     /*
      * Stash reference to this object.
      */

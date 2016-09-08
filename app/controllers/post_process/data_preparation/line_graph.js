@@ -349,6 +349,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             //
             groupedResultsByKeyword: groupedResultsByKeyword,
             groupBy: groupBy,
+            lineColors: dataSourceDescription.fe_lineGraph_keywordLineColors ? dataSourceDescription.fe_lineGraph_keywordLineColors : {},
             //
             filterObj: filterObj,
             filterJSON_nonURIEncodedVals: filterJSON,
