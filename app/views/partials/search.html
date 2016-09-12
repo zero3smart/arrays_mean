@@ -1,4 +1,4 @@
-{% macro default(basePath, searchColToOutput, columnNames, searchQ, sortBy, sortDir, filterJSON_nonURIEncodedVals) %}
+{% macro default(basePath, searchColToOutput, columnNames, searchQ, sortBy, sortDir, filterObj) %}
 <form action="{{ basePath }}" method="get" class="form-search">
     <div class="sort-control visible-xs">
         <div class="dropdown-toggle search-toggle">
@@ -35,13 +35,21 @@
     {% if sortDir %}
     <input type="hidden" name="sortDir" value="{{ sortDir }}">
     {% endif %}
-    {% if filterJSON_nonURIEncodedVals %}
-    <input type="hidden" name="filterJSON" value="{{ filterJSON_nonURIEncodedVals }}"> {# it will get re-encoded #}
+    {% if filterObj %}
+        {% for filterCol, filterVals in filterObj %}
+            {% if filterVals | isArray %}
+                {% for filterVal in filterVals %}
+                    <input type="hidden" name="{{ filterCol }}" value="{{ filterVal }}">
+                {% endfor %}
+            {% else %}
+                <input type="hidden" name="{{ filterCol }}" value="{{ filterVals }}">
+            {% endif %}
+        {% endfor %}
     {% endif %}
 </form>
 {% endmacro %}
 
-{% macro panel(basePath, searchColToOutput, columnNames, searchQ, sortBy, sortDir, filterJSON_nonURIEncodedVals) %}
+{% macro panel(basePath, searchColToOutput, columnNames, searchQ, sortBy, sortDir, filterObj) %}
 <form action="{{ basePath }}" method="get" class="form-search">
     <div class="sort-control visible-xs">
         <div class="btn dropdown-toggle-button search-toggle">
@@ -80,8 +88,16 @@
     {% if sortDir %}
     <input type="hidden" name="sortDir" value="{{ sortDir }}">
     {% endif %}
-    {% if filterJSON_nonURIEncodedVals %}
-    <input type="hidden" name="filterJSON" value="{{ filterJSON_nonURIEncodedVals }}"> {# it will get re-encoded #}
+    {% if filterObj %}
+        {% for filterCol, filterVals in filterObj %}
+            {% if filterVals | isArray %}
+                {% for filterVal in filterVals %}
+                    <input type="hidden" name="{{ filterCol }}" value="{{ filterVal }}">
+                {% endfor %}
+            {% else %}
+                <input type="hidden" name="{{ filterCol }}" value="{{ filterVals }}">
+            {% endif %}
+        {% endfor %}
     {% endif %}
 </form>
 {% endmacro %}

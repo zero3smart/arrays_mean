@@ -22,17 +22,17 @@
                 {% endif %}
                 <li class="sidebar-filter-group-item sidebar-filter-toggle">
                     {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(fieldName, fieldValue, isThisAnActiveFilter) %}
-                    {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                    {% set urlForFilterValue = routePath_base | constructedRoutePath({
+                    {% set urlForFilterValue = routePath_base | constructedRoutePath(filterObjForThisFilterColVal, {
                         searchQ: searchQ,
                         searchCol: searchCol,
                         sortBy: sortBy,
                         sortDir: sortDir,
                         groupBy: groupBy,
-                        mapBy: mayBy,
-                        filterJSON: filterJSONString }) %}
+                        mapBy: mayBy
+                    }) %}
+
                     {% if filterObjForThisFilterColVal | isObjectEmpty %}
-                        {% set urlForFilterValue = routePath_base | constructedRoutePath({
+                        {% set urlForFilterValue = routePath_base | constructedRoutePath(null, {
                             searchQ: searchQ,
                             searchCol: searchCol,
                             sortBy: sortBy,
@@ -57,7 +57,7 @@
                             {% set isThisAnActiveFilterColumn = true %}
                         {% endif %}
                     {% endif %}
-                    
+
                     <a class="collapse-trigger" role="button" href="#column-{{ loop.index }}" aria-expanded="false" aria-controls="column-{{ loop.index }}">
                         <span class="sidebar-filter-fieldname">{{ fieldName }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">1</span>{%endif %}
                     </a>
@@ -71,17 +71,17 @@
                             {% endif %}
                             <li class="sidebar-filter-subgroup-item background-color-brand-hover">
                                 {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(fieldName, fieldValue, isThisAnActiveFilter) %}
-                                {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                                {% set urlForFilterValue = routePath_base | constructedRoutePath({
+                                {% set urlForFilterValue = routePath_base | constructedRoutePath(filterObjForThisFilterColVal, {
                                     searchQ: searchQ,
                                     searchCol: searchCol,
                                     sortBy: sortBy,
                                     sortDir: sortDir,
                                     groupBy: groupBy,
-                                    mapBy: mayBy,
-                                    filterJSON: filterJSONString }) %}
+                                    mapBy: mayBy
+                                }) %}
+
                                 {% if filterObjForThisFilterColVal | isObjectEmpty %}
-                                    {% set urlForFilterValue = routePath_base | constructedRoutePath({
+                                    {% set urlForFilterValue = routePath_base | constructedRoutePath(null, {
                                         searchQ: searchQ,
                                         searchCol: searchCol,
                                         sortBy: sortBy,

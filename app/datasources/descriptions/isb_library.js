@@ -170,6 +170,11 @@ exports.Descriptions =
                     "Publication Title",
                     "Date"
                 ],
+            fe_filters_fieldsAvailableOR:
+                [
+                    "Publication Year",
+                    "Journal"
+                ],
             //
             //
             fe_filters_oneToOneOverrideWithValuesByTitleByFieldName:

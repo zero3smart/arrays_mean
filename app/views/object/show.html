@@ -41,9 +41,8 @@
                                                         {% set sortedArray = columnValue | alphaSortedArray %}
                                                         {% for arrayMember in sortedArray %}
                                                             {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, arrayMember, false) %}
-                                                            {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
                                                             {% if shouldLink %}
-                                                                <li class="object-list-item"><a href="/array/{{ array_source_key }}/gallery?filterJSON={{ filterJSONString }}" class="color-brand">{{ htmlOverrideFn(rowObject, arrayMember) | safe if htmlOverrideFn else arrayMember }}</a></li>
+                                                                <li class="object-list-item"><a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal) }}" class="color-brand">{{ htmlOverrideFn(rowObject, arrayMember) | safe if htmlOverrideFn else arrayMember }}</a></li>
                                                             {% else %}
                                                                 <li class="object-list-item">{{ htmlOverrideFn(rowObject, arrayMember) | safe if htmlOverrideFn else arrayMember }}</li>
                                                             {% endif %}
@@ -58,9 +57,8 @@
                                                 {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
                                                 {% if shouldLink %}
                                                     {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, columnValue, false) %}
-                                                    {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                                                
-                                                    <a href="/array/{{ array_source_key }}/gallery?filterJSON={{ filterJSONString }}" class="color-brand">
+
+                                                    <a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal) }}" class="color-brand">
                                                 {% endif %}
                                                         {{ htmlOverrideFn(rowObject, columnValue) | safe if htmlOverrideFn else columnValue }}
                                                 {% if shouldLink %}

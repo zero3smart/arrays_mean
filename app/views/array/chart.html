@@ -39,11 +39,10 @@
                                             "Chart By",
                                             groupBy if groupBy else defaultGroupByColumnName_humanReadable,
                                             colNames_orderedForGroupByDropdown,
-                                            routePath_base | constructedRoutePath({
+                                            routePath_base | constructedRoutePath(filterObj, {
                                                 searchCol: searchCol,
                                                 searchQ: searchQ,
-                                                filterJSON: filterJSON,
-                                                groupBy: ''
+
                                             })
                                         )
                                     }}
@@ -58,7 +57,7 @@
                                         searchQ if searchQ else "",
                                         null,
                                         null,
-                                        filterJSON_nonURIEncodedVals
+                                        filterObj
                                     )
                                     }}
 
@@ -75,7 +74,7 @@
                 {% if isFilterActive %}
                     {{
                     filter.default(
-                        routePath_base | constructedRoutePath({
+                        routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
                             searchQ: searchQ,
                             groupBy: groupBy
@@ -92,7 +91,7 @@
                     var pieData = {{ groupedResults | dump | safe }};
 
                     var filterObj = {{ filterObj | dump | safe }};
-                    var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath({
+                    var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
                             searchQ: searchQ,
                             groupBy: groupBy

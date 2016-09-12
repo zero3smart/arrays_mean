@@ -111,9 +111,9 @@ scatterplot.view.standard.prototype.render = function(data) {
                     .search('');
             } else {
                 /*
-                 * Prepare filterJSON with search params corresponding to that objects set.
+                 * Prepare filterObj with search params corresponding to that objects set.
                  */
-                var filterJSON;
+                var filterObj;
                 if (uri.search(true).filterJSON) {
                     filterJSON = JSON.parse(uri.search(true).filterJSON);
                 } else {

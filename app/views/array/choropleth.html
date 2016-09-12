@@ -36,11 +36,9 @@
                                 'Map By',
                                 mapBy if mapBy else defaultMapByColumnName_humanReadable,
                                 colNames_orderedForMapByDropdown,
-                                routePath_base | constructedRoutePath({
+                                routePath_base | constructedRoutePath(filterObj, {
                                     searchCol: searchCol,
-                                    searchQ: searchQ,
-                                    filterJSON: filterJSON,
-                                    mapBy: ''
+                                    searchQ: searchQ
                                 })
                             )
                             }}
@@ -55,7 +53,7 @@
                                 searchQ if searchQ else "",
                                 sortBy,
                                 sortDir,
-                                filterJSON_nonURIEncodedVals
+                                filterObj
                             )
                             }}
                         </div>
@@ -69,7 +67,7 @@
         {% if isFilterActive %}
             {{
             filter.default(
-                routePath_base | constructedRoutePath({
+                routePath_base | constructedRoutePath(null, {
                     searchCol: searchCol,
                     searchQ: searchQ,
                     mapBy: mapBy
@@ -87,7 +85,7 @@
             var geoData = {{ featureCollection | dump | safe }};
 
             var filterObj = {{ filterObj | dump | safe }};
-            var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath({
+            var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                     searchCol: searchCol,
                     searchQ: searchQ,
                     mapBy: mapBy

@@ -18,7 +18,12 @@ module.exports = function(nunjucks_env)
     });
     nunjucks_env.addFilter('doesArrayContain', function(array, member)
     {
-        return array.indexOf(member) !== -1;
+        if (Array.isArray(array))
+            return array.indexOf(member) !== -1;
+        else if (typeof array === 'string')
+            return array == member;
+
+        return false;
     });
     nunjucks_env.addFilter('isObjectEmpty', function(obj)
     {
@@ -27,10 +32,6 @@ module.exports = function(nunjucks_env)
     nunjucks_env.addFilter('alphaSortedArray', function(array)
     {
         return array.sort();
-    });
-    nunjucks_env.addFilter('jsonStringify', function(obj)
-    {
-        return JSON.stringify(obj);
     });
     // Array views - Filter obj construction
     nunjucks_env.addFilter('constructedFilterObj', function(existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter)
@@ -45,6 +46,7 @@ module.exports = function(nunjucks_env)
                 // which means we never allow more than one filter on the same column at present
             }
             var existing_filterVals = existing_filterObj[existing_filterCol];
+            if (typeof existing_filterVals === 'string') existing_filterVals = [existing_filterVals];
             //
             var filterVals = [];
             //
@@ -67,7 +69,7 @@ module.exports = function(nunjucks_env)
                 var filterVal = filterIsString ? encodeURIComponent(this_filterVal) : this_filterVal;
                 filterVals.push(filterVal);
             }
-            filterObj[this_filterCol] = filterVals; // in case it's not set yet
+            filterObj[this_filterCol] = filterVals.length > 1 ? filterVals : filterVals[0];
         }
         //
         return filterObj;
@@ -89,12 +91,37 @@ module.exports = function(nunjucks_env)
         return output;
     });
     // Array views - Filter route path
-    nunjucks_env.addFilter('constructedRoutePath', function(routePath_base, queryObj) {
+    nunjucks_env.addFilter('constructedRoutePath', function(routePath_base, filterObj, queryObj) {
+        // Merge filterObj to queryObj
+        var _queryObj = {};
+        if (filterObj)
+            for (var key in filterObj)
+                if (filterObj.hasOwnProperty(key))
+                    _queryObj[key] = filterObj[key];
+
+        if (queryObj)
+            for (var key in queryObj)
+                if (queryObj.hasOwnProperty(key))
+                    _queryObj[key] = queryObj[key];
+
         var routePath = '';
-        for (var key in queryObj)
-            if (queryObj.hasOwnProperty(key) && queryObj[key] !== undefined) {
-                routePath += '&' + key + '=' + queryObj[key];
+        for (key in _queryObj)
+            if (_queryObj.hasOwnProperty(key) && _queryObj[key] !== undefined) {
+                if (typeof _queryObj[key] === 'string')
+                    routePath += '&' + key + '=' + _queryObj[key];
+                else if (Array.isArray(_queryObj[key])) {
+                    var subArray = _queryObj[key];
+                    for (var i = 0; i < subArray.length; i ++)
+                        if (typeof subArray[i] === 'string')
+                            routePath += '&' + key + '=' + subArray[i];
+                        else
+                            routePath += '&' + key + '=';
+                } else {
+                    // Invalid query object
+                }
             }
+
+        if (routePath == '') return routePath_base;
 
         var joinChar = routePath_base.indexOf('?') !== -1 ? '&' : '?';
         return routePath_base + joinChar + routePath.substr(1);

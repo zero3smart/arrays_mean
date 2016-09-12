@@ -36,8 +36,7 @@
     </style>
 {% endif %}
 
-{% set galleryURLQuery = "?filterJSON=" + default_filterJSON if default_filterJSON else "" %}
-{% set galleryURL = "/array/" + array_source_key + "/gallery" + galleryURLQuery %}
+{% set galleryURL = "/array/" + array_source_key + "/gallery?" + default_filterJSON if default_filterJSON else "" %}
 
 <!-- Fixed navbar -->
 <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-bg">

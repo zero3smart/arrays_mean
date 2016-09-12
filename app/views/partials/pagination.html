@@ -10,14 +10,14 @@
     <ul class="pagination">
         {% if currentPage > 1 %}
         <li>
-            <a href="{{ basePath | constructedRoutePath({page: currentPage-1}) }}" aria-label="Previous">
+            <a href="{{ basePath | constructedRoutePath(null, {page: currentPage-1}) }}" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
 
         {% for i in range(1, extremePagesLimit) -%}
         {% if ( i < currentPage - nearbyPagesLimit ) %}
-        <li><a href="{{ basePath | constructedRoutePath({page: i}) }}">{{ i }}</a></li>
+        <li><a href="{{ basePath | constructedRoutePath(null, {page: i}) }}">{{ i }}</a></li>
         {% endif %}
         {%- endfor %}
 
@@ -27,7 +27,7 @@
 
         {% for i in range(currentPage-nearbyPagesLimit, currentPage) -%}
         {% if ( i > 0 ) %}
-        <li><a href="{{ basePath | constructedRoutePath({page: i}) }}">{{ i }}</a></li>
+        <li><a href="{{ basePath | constructedRoutePath(null, {page: i}) }}">{{ i }}</a></li>
         {% endif %}
         {%- endfor %}
         {% elif showAlwaysFirstAndLast %}
@@ -38,12 +38,12 @@
         </li>
         {% endif %}
 
-        <li><a onclick="return false;" href="{{ basePath | constructedRoutePath({page: currentPage}) }}" class="active">{{ currentPage }}</a></li>
+        <li><a onclick="return false;" href="{{ basePath | constructedRoutePath(null, {page: currentPage}) }}" class="active">{{ currentPage }}</a></li>
 
         {% if currentPage < lastPage %}
         {% for i in range(currentPage+1, currentPage + 1 + nearbyPagesLimit) -%}
         {% if ( i <= lastPage ) %}
-        <li><a href="{{ basePath | constructedRoutePath({page: i}) }}">{{ i }}</a></li>
+        <li><a href="{{ basePath | constructedRoutePath(null, {page: i}) }}">{{ i }}</a></li>
         {% endif %}
         {%- endfor %}
 
@@ -53,12 +53,12 @@
 
         {% for i in range(lastPage - extremePagesLimit+1, lastPage+1) -%}
         {% if ( i > currentPage + nearbyPagesLimit ) %}
-        <li><a href="{{ basePath | constructedRoutePath({page: i}) }}">{{ i }}</a></li>
+        <li><a href="{{ basePath | constructedRoutePath(null, {page: i}) }}">{{ i }}</a></li>
         {% endif %}
         {%- endfor %}
 
         <li>
-            <a href="{{ basePath | constructedRoutePath({page: currentPage+1}) }}" aria-label="Next">
+            <a href="{{ basePath | constructedRoutePath(null, {page: currentPage+1}) }}" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>
         </li>

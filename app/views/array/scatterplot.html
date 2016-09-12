@@ -59,7 +59,7 @@
                                     searchQ if searchQ else "",
                                     sortBy,
                                     sortDir,
-                                    filterJSON_nonURIEncodedVals
+                                    filterObj
                                 )
                                 }}
 
@@ -86,7 +86,7 @@
             {% if isFilterActive %}
                 {{
                 filter.default(
-                    routePath_base | constructedRoutePath({
+                    routePath_base | constructedRoutePath(null, {
                         searchCol: searchCol,
                         searchQ: searchQ
                     }),

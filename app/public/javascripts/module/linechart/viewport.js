@@ -1,8 +1,8 @@
 /**
  * @constructor
- * @param {Object[]} data, {Object{}} redirectData
+ * @param {Object[]} data, {Object{}} redirectBaseUrl
  */
-linechart.viewport = function(data, redirectData) {
+linechart.viewport = function(data, _redirectBaseUrl) {
     /**
      * Chart data.
      * @private
@@ -12,7 +12,7 @@ linechart.viewport = function(data, redirectData) {
     /*
      * Url information to redirect when clicking tick on the x-axis
      */
-    this._redirectData = redirectData;
+    this._redirectBaseUrl = redirectBaseUrl;
     /**
      * Data set dates domain.
      * @private
@@ -529,23 +529,11 @@ linechart.viewport.prototype.update = function(data) {
     this._lines.data(data)
         .attr("d", this._lineGenerator);
 
-    if (this._redirectData) {
-        var redirectData = this._redirectData;
+    if (this._redirectBaseUrl) {
+        var redirectBase = this._redirectBaseUrl;
         this._xAxisContainer.selectAll('.x-axis .tick')
             .on('click', function(d) {
-                var default_view = redirectData.matched_default_view;
-                if (default_view === undefined || default_view == 'undefined' || default_view == '') {
-                    default_view = 'gallery';
-                }
-                var words = default_view.split(/(?=[A-Z])/);
-                var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
-                var href = '/array/' + redirectData.matched_source_pKey + '/' + default_view_url;
-
-                var filterObj = redirectData.matched_default_filterObj;
-                filterObj[redirectData.matched_groupBy] = [""+d.getFullYear()];
-                var filterJSON = JSON.stringify(filterObj);
-                href += "?filterJSON=" + filterJSON;
-                window.location.href = href;
+                window.location.href = redirectBaseUrl + d.getFullYear();
             });
     }
 

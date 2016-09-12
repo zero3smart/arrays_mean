@@ -1,6 +1,7 @@
 var url = require('url');
 var winston = require('winston');
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
+var queryString = require('querystring');
 
 module.exports = function(context) {
     var app = context.app;
@@ -37,10 +38,9 @@ module.exports = function(context) {
                 return;
             }
 
-            var url_parts = url.parse(req.url, true);
-            var query = url_parts.query;
-
+            var query = queryString.parse(req.url.replace(/^.*\?/, ''));
             query.source_key = source_key;
+            console.log('-------- %j', query);
             var camelCaseViewType = viewType.replace( /-([a-z])/ig, function( all, letter ) {
                 return letter.toUpperCase();
             });

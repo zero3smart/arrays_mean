@@ -28,7 +28,7 @@ $(document).ready(function() {
         var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
         var href = '/array/' + sourceKey + '/' + default_view_url;
         if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
-            href += "?filterJSON=" + default_filterJSON;
+            href += "?" + default_filterJSON;
         }
         window.location.href = href;
     });
@@ -238,6 +238,28 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
     }
     //
     return filterObj;
+}
+
+function convertQueryStringToObject(inputString) {
+    var obj = {};
+    var arr = decodeURIComponent(inputString).split('&');
+
+    for (var i = 0; i < arr.length; i ++) {
+        var bits = arr[i].split('=');
+        var key = bits[0];
+        var value = bits[1];
+
+        if (!obj.hasOwnProperty(key)) {
+            obj[key] = value;
+        } else if (typeof obj[key] === 'string') {
+            obj[key] = [obj[key]];
+            obj[key].push(value);
+        } else if (Array.isArray(obj[key])) {
+            obj[key].push(value);
+        }
+    }
+
+    return obj;
 }
 
 function _POST_toGetURLForSharingCurrentPage(callback)

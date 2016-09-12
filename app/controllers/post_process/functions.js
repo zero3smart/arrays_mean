@@ -40,17 +40,20 @@ var constructor = function() {
         var filterCols_length = filterCols.length;
         if (filterCols_length == 0) {
             winston.error("❌  Programmer runtime check error. Filter obj had no keys.");
-
             return { err: new Error("No active filter despite filterObj") };
         }
         var conditions = [];
         for (var i = 0 ; i < filterCols_length ; i++) {
             var filterCol = filterCols[i];
             var filterVals = filterObj[filterCol];
+            if (!Array.isArray(filterVals)) {
+                filterVals = [filterVals];
+            }
             var filterVals_length = filterVals.length;
-            for (var j = 0 ; j < filterVals_length ; j++) {
+            for (var j = 0; j < filterVals_length; j++) {
                 var filterVal = filterVals[j];
                 var matchConditions = {};
+                console.log('---------- filter', filterCol, filterVal);
                 if (typeof filterVal === 'string') {
                     matchConditions = self._activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
                 } else if (filterVal.min !== null || filterVal.max !== null) {
@@ -59,14 +62,13 @@ var constructor = function() {
                     // TODO - ERROR - Unexpected format
                 }
                 if (typeof matchConditions.err !== 'undefined') {
-                    return { err: matchConditions.err };
+                    return {err: matchConditions.err};
                 }
                 conditions = conditions.concat(matchConditions.matchConditions);
             }
         }
         if (conditions.length == 0) {
             winston.error("❌  Programmer runtime check error. No match conditions in multifilter for filter obj: ", filterObj);
-
             return { err: new Error("No match conditions in multifilter despite filterObj") };
         }
 
@@ -104,6 +106,7 @@ var constructor = function() {
                 }
             }
         }
+
         if (isAFabricatedFilter == true) { // already obtained matchConditions just above
             if (typeof matchConditions === 'undefined') {
                 return { err: new Error("Unexpectedly missing matchConditions given fabricated filter…" + JSON.stringify(urlQuery)) };
@@ -116,6 +119,7 @@ var constructor = function() {
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
                 && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+
             if (!isDate) {
                 var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
                 var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
@@ -139,6 +143,7 @@ var constructor = function() {
                 matchConditions = self._activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, realFilterValue).matchOps;
 
             } else {
+                //console.log(filterVal);
                 matchConditions = self._activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, filterVal).matchOps;
             }
         }
@@ -399,124 +404,17 @@ var constructor = function() {
         return truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill;
     };
     //
-    self._new_reconstructedURLEncodedFilterObjAsFilterJSONString = function(filterObj)
-    {
-        var reconstructedURLEncodedFilterObjForFilterJSONString = {}; // to construct
-        var filterObj_keys = Object.keys(filterObj);
-        var filterObj_keys_length = filterObj_keys.length;
-        for (var i = 0 ; i < filterObj_keys_length ; i++) {
-            var filterObj_key = filterObj_keys[i];
-            var filterObj_key_vals = filterObj[filterObj_key];
-            // we need to re-URI-encode filterObj_key_vals elements and then stringify
-            var filterObj_key_vals_length = filterObj_key_vals.length;
-            var encodedVals = [];
-            for (var j = 0 ; j < filterObj_key_vals_length ; j++) {
-                var filterObj_key_val = filterObj_key_vals[j];
-                var filterIsString = typeof filterObj_key_val === 'string';
-                var filterVal = filterIsString ? encodeURIComponent(filterObj_key_val) : filterObj_key_val;
-                encodedVals.push(filterVal);
-            }
-            reconstructedURLEncodedFilterObjForFilterJSONString[filterObj_key] = encodedVals;
-        }
-        var filterJSON_uriEncodedVals = JSON.stringify(reconstructedURLEncodedFilterObjForFilterJSONString);
-
-        return filterJSON_uriEncodedVals;
-    }
-
-    //
-    self.buildFilterAggregation = function(urlQuery, dataSourceDescription, data)
-    {
-        var filterJSON = urlQuery.filterJSON;
+    self.filterObjFromQueryParams = function(queryParams) {
         var filterObj = {};
-        var isFilterActive = false;
-        if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
-            try {
-                filterObj = JSON.parse(filterJSON);
-                if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
-                    isFilterActive = true;
-                } else {
-                    filterObj = {}; // must replace it to prevent errors below
-                }
-            } catch (e) {
-                winston.error("❌  Error parsing filterJSON: ", filterJSON);
-                return e;
+        var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'mapBy', 'searchQ', 'searchCol'];
+        for (var key in queryParams) {
+            if (reservedKeys.indexOf(key) !== -1) continue;
+
+            if (queryParams.hasOwnProperty(key) && queryParams[key] != '') {
+                filterObj[key] = queryParams[key];
             }
         }
-
-        var aggregationOperators = [];
-        // We must re-URI-encode the filter vals since they get decoded
-        var filterJSON_uriEncodedVals = self._new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
-
-        if (isFilterActive) { // rules out undefined filterJSON
-            var _orErrDesc = self._activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
-            if (typeof _orErrDesc.err !== 'undefined') {
-                return _orErrDesc.err;
-            }
-            aggregationOperators = _orErrDesc.matchOps;
-        }
-
-        var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
-
-        if (data === undefined) data = {};
-        data.filterObj = filterObj;
-        data.filterJSON_nonURIEncodedVals = filterJSON;
-        data.filterJSON = filterJSON_uriEncodedVals;
-        data.isFilterActive = isFilterActive;
-        data.uniqueFieldValuesByFieldName = uniqueFieldValuesByFieldName;
-        data.truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill;
-
-        return aggregationOperators;
-    }
-    //
-    self.buildSearchAggregation = function(urlQuery, dataSourceDescription, data)
-    {
-        var aggregationOperators = [];
-
-        //
-        var searchCol = urlQuery.searchCol;
-        var searchQ = urlQuery.searchQ;
-        var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
-            && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
-
-        //
-        var aggregationOperators = [];
-        if (isSearchActive) {
-            var _orErrDesc = self._activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
-            if (typeof _orErrDesc.err !== 'undefined') {
-                return _orErrDesc.err;
-            }
-            aggregationOperators = _orErrDesc.matchOps;
-        }
-
-        if (data === undefined) {
-            data = {};
-        }
-        //
-        data.searchQ = searchQ;
-        data.searchCol = searchCol;
-        data.isSearchActive = isSearchActive;
-
-        return aggregationOperators;
-    }
-    //
-    self.buildSourceDocument = function()
-    {
-
-    }
-    //
-    self.buildSampleDocument = function()
-    {
-
-    }
-    //
-    self.buildTopUniqueFieldValuesForFiltering = function()
-    {
-
-    }
-    //
-    self.countWholeSet = function()
-    {
-
+        return filterObj;
     }
 
     return self;
