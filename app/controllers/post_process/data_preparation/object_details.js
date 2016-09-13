@@ -187,7 +187,7 @@ constructor.prototype.BindDataFor_array = function(source_pKey, rowObject_id, ca
             //
             fe_objectShow_customHTMLOverrideFnsByColumnName: dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName || {},
 
-            fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: dataSourceDescription.fe_galleryItem_htmlForIconFromRowObjWhenMissingImage,
+            fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: dataSourceDescription.fe_galleryItem_htmlForIconFromRowObjWhenMissingImage
         };
         callback(null, data);
     });

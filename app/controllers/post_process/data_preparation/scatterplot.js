@@ -162,7 +162,9 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                     urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
                     searchCol: searchCol || '',
                     searchQ: searchQ || '',
-                    colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription)
+                    colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                    // multiselectable filter fields
+                    multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
                 });
             });
         });

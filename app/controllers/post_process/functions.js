@@ -53,7 +53,6 @@ var constructor = function() {
             for (var j = 0; j < filterVals_length; j++) {
                 var filterVal = filterVals[j];
                 var matchConditions = {};
-                var filterValJsonObj;
                 try {
                     filterVal = JSON.parse(filterVal);
                 } catch (e) {
@@ -63,8 +62,10 @@ var constructor = function() {
                 console.log('---------- filter', filterCol, filterVal);
                 if (typeof filterVal === 'string' || typeof filterVal === 'number') {
                     matchConditions = self._activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
-                } else if (filterVal.min !== null || filterVal.max !== null) {
+                } else if (filterVal.min != undefined || filterVal.max != undefined) {
                     matchConditions = self._activeFilterRange_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal.min, filterVal.max);
+                } else if (Array.isArray(filterVal)) {
+                    matchConditions = self._activeFilterOR_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
                 } else {
                     // TODO - ERROR - Unexpected format
                 }
@@ -232,6 +233,94 @@ var constructor = function() {
         return { matchConditions: [projectOp, matchOp] };
     };
     //
+    self._activeFilterOR_matchCondition_orErrDescription = function(dataSourceDescription, filterCol, filterVal)
+    {
+        var matchConditions = undefined;
+        var isAFabricatedFilter = false; // finalize
+        if (dataSourceDescription.fe_filters_fabricatedFilters) {
+            var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
+            for (var i = 0 ; i < fabricatedFilters_length ; i++) {
+                var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
+                if (fabricatedFilter.title === filterCol) {
+                    isAFabricatedFilter = true;
+                    // Now find the applicable filter choice
+                    var choices = fabricatedFilter.choices;
+                    var choices_length = choices.length;
+
+                    for (var k = 0; k < filterVal.length; k ++) {
+
+                        var foundChoice = false;
+                        for (var j = 0; j < choices_length; j++) {
+                            var choice = choices[j];
+                            if (choice.title === filterVal[k]) {
+                                foundChoice = true;
+                                matchConditions = [{$match: choice["$match"]}];
+
+                                break; // found the applicable filter choice
+                            }
+                        }
+                        if (foundChoice == false) { // still not found despite the filter col being recognized as fabricated
+                            return {err: new Error("No such choice \"" + filterVal + "\" for filter " + filterCol)};
+                        }
+
+                    }
+
+                    break; // found the applicable fabricated filter
+                }
+            }
+        }
+
+        if (isAFabricatedFilter == true) { // already obtained matchConditions just above
+            if (typeof matchConditions === 'undefined') {
+                return { err: new Error("Unexpectedly missing matchConditions given fabricated filter…" + JSON.stringify(urlQuery)) };
+            }
+        } else {
+            var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
+            var realColumnName_path = "rowParams." + realColumnName;
+
+            // To coercion the date field into the valid date
+            var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+            var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
+                && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+
+            if (!isDate) {
+                for (var i = 0; i < filterVal.length; i ++) {
+                    var realFilterValue = filterVal[i]; // To finalize in case of override…
+                    var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+                    var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
+                    if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
+                        var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[realFilterValue];
+                        if (typeof overrideValue === 'undefined') {
+                            var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
+                            winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
+                        } else {
+                            realFilterValue = overrideValue;
+                        }
+                    }
+                    if (typeof realFilterValue === 'string') {
+                        // We need to consider that the search column might be array
+                        // escape Mongo reserved characters in Mongo
+                        realFilterValue = realFilterValue.split("(").join("\\(")
+                            .split(")").join("\\)")
+                            .split("+").join("\\+")
+                            .split("$").join("\\$");
+                    } else {
+                        realFilterValue = '' + realFilterValue;
+                    }
+                    filterVal[i] = realFilterValue;
+                }
+            }
+
+            matchConditions = self._activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, filterVal).matchOps;
+        }
+
+        if (typeof matchConditions === 'undefined') {
+            throw new Error("Undefined match condition");
+        }
+
+        return { matchConditions: matchConditions };
+    };
+    //
     self._activeSearch_matchOp_orErrDescription = function(dataSourceDescription, searchCol, searchQ)
     { // returns dictionary with err or matchOp
         var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
@@ -244,16 +333,42 @@ var constructor = function() {
         var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
             && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
         if (!isDate) {
-            matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: "i" };
-        } else {
-            var searchDate = moment.utc('' + searchQ);
-            var realSearchValue;
-            if (searchDate.isValid()) {
-                realSearchValue = searchDate.utc().startOf('day').toDate();
-            } else { // Invalid Date
-                return { err: 'Invalid Date' };
+            if (Array.isArray(searchQ)) {
+                var match = [];
+                for (var i = 0; i < searchQ.length; i ++) {
+                    var obj = {};
+                    obj[realColumnName_path] = {$regex: searchQ[i], $options: "i"};
+                    match.push(obj);
+                }
+                matchOp["$match"]["$or"] = match;
+            } else {
+                matchOp["$match"][realColumnName_path] = {$regex: searchQ, $options: "i"};
             }
-            matchOp["$match"][realColumnName_path] = { $eq: realSearchValue };
+        } else {
+            if (Array.isArray(searchQ)) {
+                match = [];
+                for (var i = 0; i < searchQ.length; i ++) {
+                    var searchDate = moment.utc('' + searchQ[i]);
+                    if (searchDate.isValid()) {
+                        var realSearchValue = searchDate.utc().startOf('day').toDate();
+                    } else { // Invalid Date
+                        return {err: 'Invalid Date'};
+                    }
+                    obj = {};
+                    obj[realColumnName_path] = {$eq: realSearchValue};
+                    match.push(obj);
+                }
+                matchOp["$match"]["$or"] = match;
+            } else {
+                var searchDate = moment.utc('' + searchQ);
+                var realSearchValue;
+                if (searchDate.isValid()) {
+                    realSearchValue = searchDate.utc().startOf('day').toDate();
+                } else { // Invalid Date
+                    return {err: 'Invalid Date'};
+                }
+                matchOp["$match"][realColumnName_path] = {$eq: realSearchValue};
+            }
         }
 
         var groupOp = {

@@ -271,6 +271,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             isSearchActive: isSearchActive,
             //
             routePath_base: routePath_base,
+            // multiselectable filter fields
+            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
         };
         callback(null, data);
     });

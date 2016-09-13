@@ -241,7 +241,9 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChoroplethMapByDropdown(sampleDoc, dataSourceDescription),
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
-            routePath_base: routePath_base
+            routePath_base: routePath_base,
+            // multiselectable filter fields
+            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
         };
         callback(err, data);
     });

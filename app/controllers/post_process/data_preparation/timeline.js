@@ -200,7 +200,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                 }
             }
         ]);
-        console.log(' ========== %j', countWholeFilteredSet_aggregationOperators);
 
         var doneFn = function(err, results)
         {
@@ -285,8 +284,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                 { $skip: skipNResults },
                 { $limit: groupsLimit }
             ]);
-        console.log('======= %j', aggregationOperators);
-
         //
         var doneFn = function(err, _groupedResults)
         {
@@ -354,7 +351,9 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
             colNames_orderedForGroupByDropdown: dataSourceDescription.fe_timeline_durationsAvailableForGroupBy ? dataSourceDescription.fe_timeline_durationsAvailableForGroupBy : {},
             //
-            routePath_base: routePath_base
+            routePath_base: routePath_base,
+            // multiselectable filter fields
+            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
         };
         callback(err, data);
     });

@@ -396,7 +396,9 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             mapping_source_pKey: mapping_source_pKey,
             mapping_default_filterObj: mapping_default_filterObj,
             mapping_default_view: mapping_default_view,
-            mapping_groupByObj: mapping_groupByObj
+            mapping_groupByObj: mapping_groupByObj,
+            // multiselectable filter fields
+            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
         };
         callback(err, data);
     });

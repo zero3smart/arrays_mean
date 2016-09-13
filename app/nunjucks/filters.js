@@ -23,10 +23,17 @@ module.exports = function(nunjucks_env)
     nunjucks_env.addFilter('doesArrayContain', function(array, member)
     {
         if (Array.isArray(array))
-            return array.indexOf(member) !== -1;
-        else if (typeof array === 'string')
-            return array == member;
+            return array.indexOf(member) !== -1 || array.indexOf(parseInt(member)) !== -1;
+        else if (typeof array === 'string') {
+            if (array == '' + member) return true;
 
+            try {
+                var obj = JSON.parse(array);
+                if (Array.isArray(obj))
+                    return obj.indexOf(member) !== -1 || obj.indexOf(parseInt(member)) !== -1;
+            } catch (e) {
+            }
+        }
         return false;
     });
     nunjucks_env.addFilter('isObjectEmpty', function(obj)
@@ -37,15 +44,27 @@ module.exports = function(nunjucks_env)
     {
         return array.sort();
     });
+    nunjucks_env.addFilter('filterCount', function(array) {
+        if (Array.isArray(array)) {
+            return array.length;
+        } else if (typeof array === 'string') {
+            try {
+                var obj = JSON.parse(array);
+                if (Array.isArray(obj)) return obj.length;
+            } catch(e) {
+            }
+        }
+        return 1;
+    });
     // Array views - Filter obj construction
-    nunjucks_env.addFilter('constructedFilterObj', function(existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter)
+    nunjucks_env.addFilter('constructedFilterObj', function(existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter, isMultiselectable)
     {
         var filterObj = {};
         var existing_filterCols = Object.keys(existing_filterObj);
         var existing_filterCols_length = existing_filterCols.length;
         for (var i = 0 ; i < existing_filterCols_length ; i++) {
             var existing_filterCol = existing_filterCols[i];
-            if (existing_filterCol == this_filterCol) {
+            if (existing_filterCol == this_filterCol && !isMultiselectable) {
                 continue; // never push other active values of this is filter col is already active
                 // which means we never allow more than one filter on the same column at present
             }
@@ -55,18 +74,57 @@ module.exports = function(nunjucks_env)
         //
         if (isThisAnActiveFilter === false) { // do not push if active, since we'd want the effect of unsetting it
             var filterVals = filterObj[this_filterCol] || [];
-            if (Array.isArray(this_filterVal) && filterVals.indexOf(this_filterVal) == -1) {
-                filterVals.push(filterVal);
+            if (Array.isArray(filterVals) && (filterVals.indexOf(this_filterVal) == -1 || filterVals.indexOf(parseInt(this_filterVal)) == -1)) {
+                filterVals.push(this_filterVal);
                 filterObj[this_filterCol] = filterVals.length == 1 ? filterVals[0] : filterVals;
+            } else if (typeof filterObj[this_filterCol] === 'string' && filterObj[this_filterCol] != this_filterVal) {
+                var originalVal = filterObj[this_filterCol];
+                filterObj[this_filterCol] = this_filterVal;
+                if (isMultiselectable ) {
+                    try {
+                        var obj = JSON.parse(originalVal);
+                    } catch (e) {}
+                    if (Array.isArray(obj)) {
+                        obj.push(this_filterVal);
+                        filterObj[this_filterCol] = JSON.stringify(obj);
+                    } else {
+                        filterObj[this_filterCol] = JSON.stringify([''+originalVal, ''+this_filterVal]);
+                    }
+                }
             } else {
                 filterObj[this_filterCol] = this_filterVal;
+            }
+        } else if (isMultiselectable) {
+            try {
+                filterVals = JSON.parse(filterObj[this_filterCol]);
+            } catch (e) {}
+            if (Array.isArray(filterVals)) {
+                if (filterVals.indexOf(this_filterVal) != -1) {
+                    var index = filterVals.indexOf(this_filterVal);
+                    filterVals.splice(index, 1);
+
+                    if (filterVals.length > 1)
+                        filterObj[this_filterCol] = JSON.stringify(filterVals);
+                    else if (filterVals.length == 1)
+                        filterObj[this_filterCol] = this_filterVal;
+                } else  if (filterVals.indexOf(parseInt(this_filterVal)) != -1) {
+                    var index = filterVals.indexOf(parseInt(this_filterVal));
+                    filterVals.splice(index, 1);
+
+                    if (filterVals.length > 1)
+                        filterObj[this_filterCol] = JSON.stringify(filterVals);
+                    else if (filterVals.length == 1)
+                        filterObj[this_filterCol] = this_filterVal;
+                }
+            } else if (this_filterVal == '' + filterObj[this_filterCol]) {
+                delete filterObj[this_filterCol];
             }
         }
         //
         return filterObj;
     });
     // Array views - Filter value to display
-        nunjucks_env.addFilter('filterValToDisplay', function(filterVal){
+    nunjucks_env.addFilter('filterValToDisplay', function(filterVal){
         if (typeof filterVal === 'string') {
             var _filterVal = decodeURIComponent(filterVal);
             try {
@@ -79,13 +137,20 @@ module.exports = function(nunjucks_env)
         var output = '';
         if (!isNaN(filterVal.min))
             output = filterVal.min;
-        else if (filterVal.min !== null)
-            output = output + moment(filterVal.min).format("MMMM Do, YYYY");
-        output = output + ' – ';
+        else if (filterVal.min)
+            output = output + moment(filterVal.min).format("MMMM Do, YYYY") + ' – ';
+
         if (!isNaN(filterVal.max))
             output = output + filterVal.max;
-        else if (filterVal.max !== null)
+        else if (filterVal.max)
             output = output + moment(filterVal.max).format("MMMM Do, YYYY");
+
+        if (Array.isArray(filterVal)) {
+            for (var i = 0; i < filterVal.length; i ++) {
+                if (i != 0) output += ', ';
+                output += filterVal[i];
+            }
+        }
         return output;
     });
     // Array views - Filter route path
