@@ -30,7 +30,6 @@
                         groupBy: groupBy,
                         mapBy: mayBy
                     }) %}
-
                     {% if filterObjForThisFilterColVal | isObjectEmpty %}
                         {% set urlForFilterValue = routePath_base | constructedRoutePath(null, {
                             searchQ: searchQ,

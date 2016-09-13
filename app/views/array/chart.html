@@ -42,7 +42,7 @@
                                             routePath_base | constructedRoutePath(filterObj, {
                                                 searchCol: searchCol,
                                                 searchQ: searchQ,
-
+                                                groupBy: ''
                                             })
                                         )
                                     }}
@@ -95,7 +95,7 @@
                             searchCol: searchCol,
                             searchQ: searchQ,
                             groupBy: groupBy
-                    }) }}";
+                    }) | safe }}";
                     var routePath_base = '{{ routePath_base }}';
                     var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
                 </script>

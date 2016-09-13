@@ -39,7 +39,7 @@
                                                     routePath_base | constructedRoutePath(filterObj, {
                                                         searchCol: searchCol,
                                                         searchQ: searchQ,
-                                                        groupBy: {}
+                                                        groupBy: ''
                                                     })
                                                 )
                                                 }}
@@ -113,21 +113,19 @@
                                         searchCol: searchCol,
                                         searchQ: searchQ,
                                         groupBy: groupBy
-                                }) }}';
+                                }) | safe }}';
                                 var routePath_base = '{{ routePath_base }}';
                                 var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
 
                                 var redirectBaseUrl = undefined;
-                                {% if matched_source_pKey %}
-                                    {% if matched_default_view %}
-                                        var default_view = '{{ matched_default_view if matched_default_view else "gallery"}}';
+                                {% if mapping_source_pKey %}
+                                    {% if mapping_default_view %}
+                                        var default_view = '{{ mapping_default_view if mapping_default_view else "gallery"}}';
                                     {% endif %}
                                     var words = default_view.split(/(?=[A-Z])/);
                                     var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
-                                    {% set queryObj = {} %}
-                                    {% set queryObj[matched_default_filterObj] = ''; %}
-                                    redirectBaseUrl = '/array/{{ matched_source_pKey }}/' + default_view_url
-                                            + '?{{ "" | constructedRoutePath(matched_default_filterObj, queryObj) }}';
+                                    redirectBaseUrl = '/array/{{ mapping_source_pKey }}/' + default_view_url
+                                            + '{{ "" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
                                 {% endif %}
                             </script>
 

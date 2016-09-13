@@ -53,8 +53,15 @@ var constructor = function() {
             for (var j = 0; j < filterVals_length; j++) {
                 var filterVal = filterVals[j];
                 var matchConditions = {};
+                var filterValJsonObj;
+                try {
+                    filterVal = JSON.parse(filterVal);
+                } catch (e) {
+                    // Restore
+                    filterVal = filterVals[j];
+                }
                 console.log('---------- filter', filterCol, filterVal);
-                if (typeof filterVal === 'string') {
+                if (typeof filterVal === 'string' || typeof filterVal === 'number') {
                     matchConditions = self._activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
                 } else if (filterVal.min !== null || filterVal.max !== null) {
                     matchConditions = self._activeFilterRange_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal.min, filterVal.max);
@@ -132,13 +139,16 @@ var constructor = function() {
                         realFilterValue = overrideValue;
                     }
                 }
-
-                // We need to consider that the search column might be array
-                // escape Mongo reserved characters in Mongo
-                realFilterValue = realFilterValue.split("(").join("\\(")
-                    .split(")").join("\\)")
-                    .split("+").join("\\+")
-                    .split("$").join("\\$");
+                if (typeof realFilterValue === 'string') {
+                    // We need to consider that the search column might be array
+                    // escape Mongo reserved characters in Mongo
+                    realFilterValue = realFilterValue.split("(").join("\\(")
+                        .split(")").join("\\)")
+                        .split("+").join("\\+")
+                        .split("$").join("\\$");
+                } else {
+                    realFilterValue = '' + realFilterValue;
+                }
 
                 matchConditions = self._activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, realFilterValue).matchOps;
 
@@ -236,7 +246,7 @@ var constructor = function() {
         if (!isDate) {
             matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: "i" };
         } else {
-            var searchDate = moment.utc(searchQ);
+            var searchDate = moment.utc('' + searchQ);
             var realSearchValue;
             if (searchDate.isValid()) {
                 realSearchValue = searchDate.utc().startOf('day').toDate();
@@ -368,7 +378,7 @@ var constructor = function() {
                     if (dateFormat == null) { // still null? use default
                         dateFormat = config.defaultFormat;
                     }
-                    displayableVal = moment.utc(originalVal).format(dateFormat);
+                    displayableVal = moment.utc('' + originalVal).format(dateFormat);
                 } else { // nothing to do? (no other types yet)
                 }
             } else { // nothing to do?

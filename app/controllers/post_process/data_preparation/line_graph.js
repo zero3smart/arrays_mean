@@ -25,9 +25,9 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     // urlQuery keys:
     // source_key
     // groupBy
+    // filterJSON
     // searchQ
     // searchCol
-    // Other filters
     var source_pKey = urlQuery.source_key;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
     if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -77,22 +77,24 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 
     //
     // DataSource Relationship
-    var matched_source_pKey = dataSourceDescription.fe_lineGraph_matched_dataSource_pKey;
-    //var dataSourceRevision_pKey = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(matched_dataSource_uid, matched_dataSource_importRevision);
-    if (matched_source_pKey) {
-        var matchedDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(matched_source_pKey, self.context.raw_source_documents_controller);
+    var mapping_source_pKey = dataSourceDescription.fe_lineGraph_mapping_dataSource_pKey;
+    //var dataSourceRevision_pKey = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
+    if (mapping_source_pKey) {
+        var mappingDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(mapping_source_pKey, self.context.raw_source_documents_controller);
 
-        var matched_default_filterObj = {};
-        if (typeof matchedDataSourceDescription.fe_filters_default !== 'undefined') {
-            matched_default_filterObj = matchedDataSourceDescription.fe_filters_default;
+        var mapping_default_filterObj = {};
+        if (typeof mappingDataSourceDescription.fe_filters_default !== 'undefined') {
+            mapping_default_filterObj = mappingDataSourceDescription.fe_filters_default;
         }
-        var matched_default_view = 'gallery';
-        if (typeof matchedDataSourceDescription.fe_default_view !== 'undefined') {
-            matched_default_view = matchedDataSourceDescription.fe_default_view;
+        var mapping_default_view = 'gallery';
+        if (typeof mappingDataSourceDescription.fe_default_view !== 'undefined') {
+            mapping_default_view = mappingDataSourceDescription.fe_default_view;
         }
-        var matched_groupBy = groupBy_realColumnName;
-        if (dataSourceDescription.fe_lineGraph_matched_dataSource_fields_relationships)
-            matched_groupBy = dataSourceDescription.fe_lineGraph_matched_dataSource_fields_relationships[groupBy_realColumnName];
+        var mapping_groupBy = groupBy_realColumnName;
+        if (dataSourceDescription.fe_lineGraph_mapping_dataSource_fields_relationships)
+            mapping_groupBy = dataSourceDescription.fe_lineGraph_mapping_dataSource_fields_relationships[groupBy_realColumnName];
+        var mapping_groupByObj = {};
+        mapping_groupByObj[mapping_groupBy] = '';
     }
 
     //
@@ -391,10 +393,10 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             //
             routePath_base: routePath_base,
             // datasource relationship
-            matched_source_pKey: matched_source_pKey,
-            matched_default_filterObj: matched_default_filterObj,
-            matched_default_view: matched_default_view,
-            matched_groupBy: matched_groupBy
+            mapping_source_pKey: mapping_source_pKey,
+            mapping_default_filterObj: mapping_default_filterObj,
+            mapping_default_view: mapping_default_view,
+            mapping_groupByObj: mapping_groupByObj
         };
         callback(err, data);
     });

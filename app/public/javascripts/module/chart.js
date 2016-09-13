@@ -166,7 +166,7 @@ g.on('click', function(d) {
 
 	window.location = urlForFilterValue;
 });
-
+6
 /**
  * Sidebar legend
  */

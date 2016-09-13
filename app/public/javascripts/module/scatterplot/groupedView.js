@@ -182,21 +182,21 @@ scatterplot.view.grouped.prototype.render = function(data) {
             /*
              * Add x axis filed params.
              */
-            params[chart._xLabel] = {
+            params[chart._xLabel] = JSON.stringify({
                 min : (d.i - 1) in xTicks ? d3.round(xTicks[d.i - 1]) : 0,
                 max : d3.round(xTicks[d.i])
-            };
+            });
             /*
              * Add y axis filed params.
              */
-            params[chart._yLabel] = {
+            params[chart._yLabel] = JSON.stringify({
                 min : (yTicks.length - d.j - 2) in yTicks ? d3.round(yTicks[yTicks.length - d.j - 2]) : 0,
                 max : d3.round(yTicks[yTicks.length - d.j - 1])
-            };
+            });
             /*
              * Complose bubble URL.
              */
-            var urlParams = convertQueryStringToObject(params);
+            var urlParams = decodeURIComponent($.param(params));
             /*
              * Return bubble URL.
              */

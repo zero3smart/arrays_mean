@@ -200,6 +200,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                 }
             }
         ]);
+        console.log(' ========== %j', countWholeFilteredSet_aggregationOperators);
+
         var doneFn = function(err, results)
         {
             if (err) return done(err);
@@ -283,6 +285,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                 { $skip: skipNResults },
                 { $limit: groupsLimit }
             ]);
+        console.log('======= %j', aggregationOperators);
 
         //
         var doneFn = function(err, _groupedResults)

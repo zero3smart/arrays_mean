@@ -170,7 +170,7 @@ exports.Descriptions =
                     "Publication Title",
                     "Date"
                 ],
-            fe_filters_fieldsAvailableOR:
+            fe_filters_fieldsMultiSelectable:
                 [
                     "Publication Year",
                     "Journal"

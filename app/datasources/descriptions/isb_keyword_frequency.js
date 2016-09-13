@@ -175,8 +175,8 @@ exports.Descriptions =
                 'Genome Wide Association Study': '#99BEFF'
             },
 
-            fe_lineGraph_matched_dataSource_pKey: 'isb_library-r1',
-            fe_lineGraph_matched_dataSource_fields_relationships: {
+            fe_lineGraph_mapping_dataSource_pKey: 'isb_library-r1',
+            fe_lineGraph_mapping_dataSource_fields: {
                 Year: 'Publication Year'
             }
         }

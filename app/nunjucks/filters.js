@@ -8,6 +8,10 @@ module.exports = function(nunjucks_env)
     {
         return moment(date).format("MMMM Do, YYYY");
     });
+    nunjucks_env.addFilter('addDate', function(date, amount, format)
+    {
+        return moment(date).add(amount, format).toDate();
+    });
     nunjucks_env.addFilter('dateFormat', function(date, format)
     {
         return format !== null ? moment(date).format(format) : moment(date).format("MMMM Do, YYYY");
@@ -46,38 +50,32 @@ module.exports = function(nunjucks_env)
                 // which means we never allow more than one filter on the same column at present
             }
             var existing_filterVals = existing_filterObj[existing_filterCol];
-            if (typeof existing_filterVals === 'string') existing_filterVals = [existing_filterVals];
-            //
-            var filterVals = [];
-            //
-            var existing_filterVals_length = existing_filterVals.length;
-            for (var j = 0 ; j < existing_filterVals_length ; j++) {
-                var existing_filterVal = existing_filterVals[j];
-                var encoded_existing_filterVal = typeof existing_filterVal === 'string' ? encodeURIComponent(existing_filterVal) : existing_filterVal;
-                filterVals.push(encoded_existing_filterVal);
-            }
-            //
-            if (filterVals.length !== 0) {
-                filterObj[existing_filterCol] = filterVals; // as it's not set yet
-            }
+            filterObj[existing_filterCol] = existing_filterVals; // as it's not set yet
         }
         //
         if (isThisAnActiveFilter === false) { // do not push if active, since we'd want the effect of unsetting it
             var filterVals = filterObj[this_filterCol] || [];
-            if (filterVals.indexOf(filterVal) == -1) {
-                var filterIsString = typeof this_filterVal === 'string';
-                var filterVal = filterIsString ? encodeURIComponent(this_filterVal) : this_filterVal;
+            if (Array.isArray(this_filterVal) && filterVals.indexOf(this_filterVal) == -1) {
                 filterVals.push(filterVal);
+                filterObj[this_filterCol] = filterVals.length == 1 ? filterVals[0] : filterVals;
+            } else {
+                filterObj[this_filterCol] = this_filterVal;
             }
-            filterObj[this_filterCol] = filterVals.length > 1 ? filterVals : filterVals[0];
         }
         //
         return filterObj;
     });
     // Array views - Filter value to display
-    nunjucks_env.addFilter('filterValToDisplay', function(filterVal){
-        if (typeof filterVal === 'string')
-            return decodeURIComponent(filterVal);
+        nunjucks_env.addFilter('filterValToDisplay', function(filterVal){
+        if (typeof filterVal === 'string') {
+            var _filterVal = decodeURIComponent(filterVal);
+            try {
+                filterVal = JSON.parse(_filterVal);
+            } catch (e) {
+                return _filterVal;
+            }
+            if (typeof filterVal === 'number' || typeof filterVal === 'string') return filterVal;
+        }
         var output = '';
         if (!isNaN(filterVal.min))
             output = filterVal.min;
@@ -96,20 +94,20 @@ module.exports = function(nunjucks_env)
         var _queryObj = {};
         if (filterObj)
             for (var key in filterObj)
-                if (filterObj.hasOwnProperty(key))
+                if (filterObj.hasOwnProperty(key) && filterObj[key] !== undefined)
                     _queryObj[key] = filterObj[key];
 
         if (queryObj)
             for (var key in queryObj)
-                if (queryObj.hasOwnProperty(key))
+                if (queryObj.hasOwnProperty(key) && queryObj[key] !== undefined)
                     _queryObj[key] = queryObj[key];
 
         var routePath = '';
         for (key in _queryObj)
             if (_queryObj.hasOwnProperty(key) && _queryObj[key] !== undefined) {
-                if (typeof _queryObj[key] === 'string')
+                if (typeof _queryObj[key] === 'string') {
                     routePath += '&' + key + '=' + _queryObj[key];
-                else if (Array.isArray(_queryObj[key])) {
+                } else if (Array.isArray(_queryObj[key])) {
                     var subArray = _queryObj[key];
                     for (var i = 0; i < subArray.length; i ++)
                         if (typeof subArray[i] === 'string')
@@ -117,7 +115,7 @@ module.exports = function(nunjucks_env)
                         else
                             routePath += '&' + key + '=';
                 } else {
-                    // Invalid query object
+                    // Unexpected format
                 }
             }
 

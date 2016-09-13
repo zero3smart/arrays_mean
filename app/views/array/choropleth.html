@@ -38,7 +38,8 @@
                                 colNames_orderedForMapByDropdown,
                                 routePath_base | constructedRoutePath(filterObj, {
                                     searchCol: searchCol,
-                                    searchQ: searchQ
+                                    searchQ: searchQ,
+                                    mapBy: ''
                                 })
                             )
                             }}
@@ -89,7 +90,7 @@
                     searchCol: searchCol,
                     searchQ: searchQ,
                     mapBy: mapBy
-            }) }}";
+            }) | safe }}";
             var routePath_base = '{{ routePath_base }}';
             var mapBy = '{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}';
         </script>

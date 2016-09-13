@@ -40,7 +40,6 @@ module.exports = function(context) {
 
             var query = queryString.parse(req.url.replace(/^.*\?/, ''));
             query.source_key = source_key;
-            console.log('-------- %j', query);
             var camelCaseViewType = viewType.replace( /-([a-z])/ig, function( all, letter ) {
                 return letter.toUpperCase();
             });
