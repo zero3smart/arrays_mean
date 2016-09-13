@@ -66,7 +66,7 @@
 
 Environment-related secrets such as the production password database are not committed to this repository as a security-related best practice.
 
-In order to add them (and to support both local development and production deployment) you need to create two files named ".env.development" and ".env.production" in 'config/env/' of this repository at `arrays/env/.env*` and then fill them respectively with the content of the following Google Docs:
+In order to add them (and to support both local development and production deployment) you need to create two files named ".env.development" and ".env.production" in 'config/env/' of this repository at `arrays/config/env/.env*` and then fill them respectively with the content of the following Google Docs:
 
 * [Arrays - Server - .env.production](https://docs.google.com/document/d/1d1IoAHgGPB4bwWGaYprtBFSVoLEcoEuw4WdruUt-v9k/)
 * [Arrays - Server - .env.development](https://docs.google.com/document/d/15-SkjQHqznSMOWevEH6yZvshdNqMzN4RErMhOPFz3jc/)
