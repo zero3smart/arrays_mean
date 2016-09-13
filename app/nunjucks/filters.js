@@ -69,7 +69,11 @@ module.exports = function(nunjucks_env)
                 // which means we never allow more than one filter on the same column at present
             }
             var existing_filterVals = existing_filterObj[existing_filterCol];
-            filterObj[existing_filterCol] = existing_filterVals; // as it's not set yet
+            if (typeof existing_filterVals === 'number' || typeof existing_filterVals === 'string') {
+                filterObj[existing_filterCol] = existing_filterVals; // as it's not set yet
+            } else {
+                filterObj[existing_filterCol] = JSON.parse(JSON.stringify(existing_filterVals)); // clone
+            }
         }
         //
         if (isThisAnActiveFilter === false) { // do not push if active, since we'd want the effect of unsetting it
@@ -145,6 +149,7 @@ module.exports = function(nunjucks_env)
         else if (filterVal.max)
             output = output + moment(filterVal.max).format("MMMM Do, YYYY");
 
+        console.log(typeof filterVal);
         if (Array.isArray(filterVal)) {
             for (var i = 0; i < filterVal.length; i ++) {
                 if (i != 0) output += ', ';
