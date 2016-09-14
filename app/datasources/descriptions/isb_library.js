@@ -16,7 +16,7 @@ exports.Descriptions =
             title: "Articles Published by ISB since 2000",
             // brandColor: "#4A4A4A",
             urls: [ "https://www.systemsbiology.org" ],
-            description: "Institute for Systems Biology",
+            description: "Since 2000, when ISB was founded, our researchers have published more than 1300 papers across a range of journals, including more than 300 in Cell and Nature.",
             logo: "/images/teams/isb_library.jpg",
             raw_rowObjects_coercionScheme:
             {
