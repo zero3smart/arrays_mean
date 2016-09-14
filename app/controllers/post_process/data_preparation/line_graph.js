@@ -55,7 +55,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
     var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultGroupByColumnName_humanReadable;
     //
-    var defaultKeywordsColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultKeywordsColumnName_humanReadable;
     var keywordGroupBy = dataSourceDescription.fe_lineGraph_keywordGroupBy;
     var keywordCountBy = dataSourceDescription.fe_lineGraph_keywordCountBy;
     //
@@ -388,8 +387,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
             colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForLineGraphGroupByDropdown(sampleDoc, dataSourceDescription),
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
-            //
-            defaultKeywordsColumnName_humanReadable: defaultKeywordsColumnName_humanReadable,
             //
             routePath_base: routePath_base,
             // datasource relationship

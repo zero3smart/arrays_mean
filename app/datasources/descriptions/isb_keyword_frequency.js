@@ -162,9 +162,8 @@ exports.Descriptions =
                     "Word",
                     "Count"
                 ],
-            fe_lineGraph_defaultKeywordsColumnName_humanReadable: "Word",
             fe_lineGraph_keywordGroupBy: "Word",
-            fe_lineGraph_keywordCountBy: "Count",
+            fe_lineGraph_keywordCountBy: "Count", // TODO: No neeed if we use the fields to be converted to the integer which is listed on the raw_rowObjects_coercionScheme.
             fe_lineGraph_keywordLineColors: {
                 Bioinformatics: '#33B1B1',
                 'Computational Biology': '#9533F8',
