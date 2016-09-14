@@ -168,7 +168,11 @@ exports.Descriptions =
                     "Url",
                     "Language",
                     "Publication Title",
-                    "Date"
+                    "Date",
+                    "Publisher",
+                    "Volume",
+                    "Library Catalog",
+                    "Issue"
                 ],
             //
             //
