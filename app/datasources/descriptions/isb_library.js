@@ -239,7 +239,8 @@ exports.Descriptions =
                     "File Attachments",
                     "Link Attachments",
                     "Manual Tags",
-                    "Automatic Tags"
+                    "Automatic Tags",
+                    "Author"
                 ],
             fe_chart_valuesToExcludeByOriginalKey:
             {
