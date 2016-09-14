@@ -375,8 +375,9 @@ linechart.navigation.prototype.resize = function() {
         var max = extent[1];
         this._leftSide.attr('x', 1)
             .attr('width', this._xScale(min));
-        this._rightSide.attr('x', this._xScale(max))
-            .attr('width', this._xScale.range()[1] - this._xScale(max) - 1);
+        if (this._xScale.range()[1] > this._xScale(max)+1)
+            this._rightSide.attr('x', this._xScale(max))
+                .attr('width', this._xScale.range()[1] - this._xScale(max) - 1);
     }
     /*
      * Change x axis bottom border length.

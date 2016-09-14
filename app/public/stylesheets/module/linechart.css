@@ -56,6 +56,6 @@ linechart svg .axis line, .linechart svg .axis path {
     fill: transparent;
 }
 
-.linechart .x-axis text {
+.linechart .viewport rect, .linechart .viewport .tick text {
     cursor: pointer;
 }

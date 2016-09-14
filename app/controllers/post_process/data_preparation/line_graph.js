@@ -91,8 +91,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             mapping_default_view = mappingDataSourceDescription.fe_default_view;
         }
         var mapping_groupBy = groupBy_realColumnName;
-        if (dataSourceDescription.fe_lineGraph_mapping_dataSource_fields_relationships)
-            mapping_groupBy = dataSourceDescription.fe_lineGraph_mapping_dataSource_fields_relationships[groupBy_realColumnName];
+        if (dataSourceDescription.fe_lineGraph_mapping_dataSource_fields)
+            mapping_groupBy = dataSourceDescription.fe_lineGraph_mapping_dataSource_fields[groupBy_realColumnName];
         var mapping_groupByObj = {};
         mapping_groupByObj[mapping_groupBy] = '';
     }

@@ -5932,6 +5932,14 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 	color: #c9c9c9;
 }
 /* @end Scatterplot Tooltip */
+/* @begin Linegraph Tooltip */
+div.arrays-co-tooltip.xaxis-highlight {
+	border-radius: 0;
+}
+div.arrays-co-tooltip.xaxis-highlight .default-tooltip-content {
+	padding: 0 0.4em;
+}
+/* @end Linegraph Tooltip */
 /* @override 
 	http://localhost:9080/stylesheets/module/splash.css */
 .splash .container-fluid {
@@ -6263,7 +6271,7 @@ linechart svg .axis line, .linechart svg .axis path {
 .linechart svg.viewport circle.data-point {
     fill: transparent;
 }
-.linechart .x-axis text {
+.linechart .viewport rect, .linechart .viewport .tick text {
     cursor: pointer;
 }
 /* @override 

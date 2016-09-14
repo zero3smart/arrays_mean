@@ -99,7 +99,9 @@
                                             graphData.push(groupedResultsByKeyword[keyword].map(function(row) {
                                                 row.label = keyword;
                                                 row.count = Number(row.count);
-                                                row.year = new Date(row.year);
+                                                var offsetTime = new Date(row.year);
+                                                offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                                                row.year = offsetTime;
                                                 if (lineColors && lineColors[keyword]) row.color = lineColors[keyword];
                                                 return row;
                                             }));
