@@ -21,7 +21,16 @@
 }
 
 .team-logo {
+	width: 100%;
+	max-width: 350px;
+}
 
+.team-header-description {
+	font-size: 20px;
+    line-height: 26px;
+    margin: 25px auto 0;
+    width: 100%;
+    max-width: 620px;
 }
 
 .team-array-logo {
