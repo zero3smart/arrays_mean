@@ -535,7 +535,7 @@ var constructor = function() {
         for (var key in queryParams) {
             if (reservedKeys.indexOf(key) !== -1) continue;
 
-            if (Object.prototype.hasOwnProperty(queryParams, key) && queryParams[key] != '') {
+            if (queryParams[key] != '') {
                 filterObj[key] = queryParams[key];
             }
         }
