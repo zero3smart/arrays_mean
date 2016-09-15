@@ -193,9 +193,11 @@ exports.Descriptions =
                 var categoryArray = categories.split(',');
                 var output = "";
                 var iconSpanClass = undefined;
+                var maxNumberOfIcons = 2;
+                var numIconsClass = "category-icon-" + maxNumberOfIcons.toString();
                 if (typeof categories === 'undefined' || categories === null || categories === "") {
                     iconSpanClass = "icon-tile-null";
-                    output = '<span class="' + iconSpanClass + '"></span>';
+                    output = '<span class="' + iconSpanClass + " " + numIconsClass + '"></span>';
                 } else {
                     for (var i = 0; i < categoryArray.length; i++) {
                         var lowerCasedCategory = categoryArray[i].trim().toLowerCase().replace(' ', '-');
@@ -211,7 +213,7 @@ exports.Descriptions =
                             iconSpanClass = "icon-tile-null";
                         }
                         
-                        output += '<span class="' + iconSpanClass + '"></span>';
+                        output += '<span class="' + iconSpanClass + " " + numIconsClass + '"></span>';
                     }
                 }
 
