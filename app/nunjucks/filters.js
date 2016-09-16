@@ -103,22 +103,22 @@ module.exports = function(nunjucks_env)
                 filterVals = JSON.parse(filterObj[this_filterCol]);
             } catch (e) {}
             if (Array.isArray(filterVals)) {
-                if (filterVals.indexOf(this_filterVal) != -1) {
+                if (filterVals.indexOf(this_filterVal) !== -1) {
                     var index = filterVals.indexOf(this_filterVal);
                     filterVals.splice(index, 1);
 
                     if (filterVals.length > 1)
                         filterObj[this_filterCol] = JSON.stringify(filterVals);
                     else if (filterVals.length == 1)
-                        filterObj[this_filterCol] = this_filterVal;
-                } else  if (filterVals.indexOf(parseInt(this_filterVal)) != -1) {
+                        filterObj[this_filterCol] = filterVals[0];
+                } else if (filterVals.indexOf(parseInt(this_filterVal)) !== -1) {
                     var index = filterVals.indexOf(parseInt(this_filterVal));
                     filterVals.splice(index, 1);
 
                     if (filterVals.length > 1)
                         filterObj[this_filterCol] = JSON.stringify(filterVals);
                     else if (filterVals.length == 1)
-                        filterObj[this_filterCol] = this_filterVal;
+                        filterObj[this_filterCol] = filterVals[0];
                 }
             } else if (this_filterVal == '' + filterObj[this_filterCol]) {
                 delete filterObj[this_filterCol];
@@ -149,7 +149,6 @@ module.exports = function(nunjucks_env)
         else if (filterVal.max)
             output = output + moment(filterVal.max).format("MMMM Do, YYYY");
 
-        console.log(typeof filterVal);
         if (Array.isArray(filterVal)) {
             for (var i = 0; i < filterVal.length; i ++) {
                 if (i != 0) output += ', ';
@@ -157,6 +156,21 @@ module.exports = function(nunjucks_env)
             }
         }
         return output;
+    });
+    // Array views - Filters for bubbles
+    nunjucks_env.addFilter('filterValuesForBubble', function(filterVal){
+        if (Array.isArray(filterVal)) {
+            return filterVal;
+        } else if (typeof filterVal === 'string') {
+            try {
+                var vals = JSON.parse(filterVal);
+                if (Array.isArray(vals))
+                    return vals;
+            } catch (e) {}
+            return [filterVal];
+        } else {
+            return [filterVal];
+        }
     });
     // Array views - Filter route path
     nunjucks_env.addFilter('constructedRoutePath', function(routePath_base, filterObj, queryObj) {

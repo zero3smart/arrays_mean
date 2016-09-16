@@ -81,7 +81,7 @@
                                     mapBy: mayBy
                                 }) %}
 
-                                {% if multiselectableFilterFields | doesArrayContain(fieldName) %}
+                                {% if isMultiselectable %}
                                     <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-toggle-active background-color-brand" if isThisAnActiveFilter else "" }}">
                                         <span class="sidebar-filter-toggle-title">{{ fieldValue }}</span> <span class="sidebar-filter-toggle-check {{ "icon-check-on" if isThisAnActiveFilter else "icon-check-off" }}" aria-hidden="true"></span>
                                     </a>

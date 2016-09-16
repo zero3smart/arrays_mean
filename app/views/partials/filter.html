@@ -7,13 +7,15 @@
     {% endif %}
 
     {% for filterCol, filterVals in filterObj %}
-        {% set filterVals = filterVals if filterVals | isArray else [filterVals] %}
+        {% set filterValsForBubbles = filterVals | filterValuesForBubble %}
 
-        {% for filterVal in filterVals %}
-            {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true) %}
+        {% for filterVal in filterValsForBubbles %}
+
+            {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(filterCol, filterVal, true, true) %}
             {% set routePath_withoutThisFilter = routePath_base | constructedRoutePath(filterObjForThisFilterColVal) %}
             {% set shouldDisplayKey = false if truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill[filterCol][filterVal] else true %}
             <span class="filter-tag border-color-brand">{{ filterCol | safe if shouldDisplayKey else "" }}{{ ": " if shouldDisplayKey else ""}}{{ filterVal | filterValToDisplay }} <a href="{{ routePath_withoutThisFilter }}" class="close filter-tag-close"><span class="icon-close-filterpill" aria-hidden="true"></span></a></span>
+
         {% endfor %}
     {% endfor %}
 

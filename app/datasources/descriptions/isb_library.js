@@ -177,7 +177,8 @@ exports.Descriptions =
             fe_filters_fieldsMultiSelectable:
                 [
                     "Publication Year",
-                    "Journal"
+                    "Journal",
+                    "Categories"
                 ],
             fe_filters_fieldsCommaSeparatedAsIndividual:
             [

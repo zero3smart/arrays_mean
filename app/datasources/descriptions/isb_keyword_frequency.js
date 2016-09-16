@@ -103,6 +103,10 @@ exports.Descriptions =
                 //     "Journal Article": "journalArticle",
                 // }
             },
+            fe_filters_fieldsMultiSelectable:
+                [
+                    "Word"
+                ],
             //
             //
             fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function(rowObject)
