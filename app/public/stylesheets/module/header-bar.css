@@ -219,11 +219,12 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 #page .navbar-brand-team-logo {
 	padding-top: 10px;
 	padding-bottom: 10px;
+	height: 100%;
 }
 
 .navbar-brand-team-logo img {
 	display: inline;
-	max-height: 45px;
+	max-height: 100%;
 }
 
 /* @end Team Logo */

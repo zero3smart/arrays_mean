@@ -224,4 +224,57 @@
 	transform: translate(0, 0);
 }
 
+.category-icon-1 {
+	display: inline-block;
+    min-width: 49%;
+    min-height: 49%;
+	background-size: contain;
+}
+
+@media (min-width: 768px) {
+	.category-icon-1 {
+		min-width: 120px;
+		min-height: 120px;
+		width: 120px;
+		height: 120px;
+	}
+}
+
+.category-icon-2 {
+	display: inline-block;
+    margin-right: 2%;
+    min-width: 49%;
+    min-height: 49%;
+
+	background-size: contain;
+}
+
+@media (min-width: 768px) {
+	.category-icon-2 {
+		margin-right: 8px;
+		min-width: 90px;
+		min-height: 90px;
+		width: 90px;
+		height: 90px;
+	}
+}
+
+.category-icon-3 {
+	display: inline-block;
+    margin-right: 2%;
+    min-width: 32%;
+    min-height: 32%;
+	background-size: contain;
+}
+
+@media (min-width: 768px) {
+	.category-icon-3 {
+		margin-right: 4px;
+		min-width: 60px;
+		min-height: 60px;
+		width: 60px;
+		height: 60px;
+	}
+}
+
 /* @end Image Tile */

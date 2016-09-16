@@ -16,7 +16,7 @@ exports.Descriptions =
             title: "Articles Published by ISB since 2000",
             // brandColor: "#4A4A4A",
             urls: [ "https://www.systemsbiology.org" ],
-            description: "Institute for Systems Biology",
+            description: "Since 2000, when ISB was founded, our researchers have published more than 1300 papers across a range of journals, including more than 300 in Cell and Nature.",
             logo: "/images/teams/isb_library.jpg",
             raw_rowObjects_coercionScheme:
             {
@@ -33,7 +33,7 @@ exports.Descriptions =
             {
                 return "" + rowIndex + "-" + rowObject["Key"];
             },
-            fe_designatedFields:
+            fe_designatedFields: 
             {
                 objectTitle: "Title",
                 // originalImageURL: "thumb_large",
@@ -48,7 +48,7 @@ exports.Descriptions =
                 scatterplot: false,
                 lineGraph: false
             },
-            fe_excludeFields:
+            fe_excludeFields: 
                 [
                     "Key",
                     "ISBN",
@@ -168,7 +168,11 @@ exports.Descriptions =
                     "Url",
                     "Language",
                     "Publication Title",
-                    "Date"
+                    "Date",
+                    "Publisher",
+                    "Volume",
+                    "Library Catalog",
+                    "Issue"
                 ],
             fe_filters_fieldsMultiSelectable:
                 [
@@ -198,9 +202,11 @@ exports.Descriptions =
                 var categoryArray = categories.split(',');
                 var output = "";
                 var iconSpanClass = undefined;
+                var maxNumberOfIcons = 2;
+                var numIconsClass = "category-icon-" + maxNumberOfIcons.toString();
                 if (typeof categories === 'undefined' || categories === null || categories === "") {
                     iconSpanClass = "icon-tile-null";
-                    output = '<span class="' + iconSpanClass + '"></span>';
+                    output = '<span class="' + iconSpanClass + " " + numIconsClass + '"></span>';
                 } else {
                     for (var i = 0; i < categoryArray.length; i++) {
                         var lowerCasedCategory = categoryArray[i].trim().toLowerCase().replace(' ', '-');
@@ -215,8 +221,8 @@ exports.Descriptions =
                             winston.warn("⚠️  Unable to derive icon span class for artist with no image in fe_galleryItem_htmlForIconFromRowObjWhenMissingImage. Using default of 'null' icon.");
                             iconSpanClass = "icon-tile-null";
                         }
-
-                        output += '<span class="' + iconSpanClass + '"></span>';
+                        
+                        output += '<span class="' + iconSpanClass + " " + numIconsClass + '"></span>';
                     }
                 }
 
@@ -244,7 +250,8 @@ exports.Descriptions =
                     "File Attachments",
                     "Link Attachments",
                     "Manual Tags",
-                    "Automatic Tags"
+                    "Automatic Tags",
+                    "Author"
                 ],
             fe_chart_valuesToExcludeByOriginalKey:
             {

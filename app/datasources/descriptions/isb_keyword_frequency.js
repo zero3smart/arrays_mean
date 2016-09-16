@@ -16,7 +16,7 @@ exports.Descriptions =
             title: "The Rise of Keywords Related to Systems Biology",
             // brandColor: "#4A4A4A",
             urls: [ "http://www.ncbi.nlm.nih.gov/pubmed" ],
-            description: "Institute for Systems Biology",
+            description: "View the trajectory of key words and the frequency with which they’re used in all papers listed in PubMed from 2000 to the present.",
             logo: "/images/teams/isb_keyword_frequency.jpg",
             raw_rowObjects_coercionScheme:
             {

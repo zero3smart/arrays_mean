@@ -1,16 +1,6 @@
 /* @override 
 	http://localhost:9080/stylesheets/clients/isb.css */
 
-
-[class^="icon-tile-isb-"] {
-	display: inline-block;
-	min-width: 120px;
-	min-height: 120px;
-	width: 120px;
-	height: 120px;
-	background-size: contain;
-}
-
 .icon-tile-isb-brain {
 	background-image: url(/images/clients/isb/brain.svg);
 }
@@ -45,26 +35,9 @@
 
 /* @group Quantity Queries */
 
-.gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+2),
-.gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+2) ~ span {
-	margin-right: 8px;
-	min-width: 90px;
-	min-height: 90px;
-	width: 90px;
-	height: 90px;
-}
 
 .gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+2) ~ span:last-child {
 	margin-right: 0;
-}
-
-.gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+3),
-.gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+3) ~ span {
-	margin-right: 4px;
-	min-width: 60px;
-	min-height: 60px;
-	width: 60px;
-	height: 60px;
 }
 
 .gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+3) ~ span:last-child {
