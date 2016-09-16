@@ -101,16 +101,17 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
         }
 
         async.each(feVisible_filter_keys, function(key, cb) 
-        {            
-            var uniqueStage = { $group : { _id: {}, count: { $sum: 1 } } };
+        {
+            // Commented out the count section for the comma-separated as individual filters.
+            var uniqueStage = { $group : { _id: {}/*, count: { $sum: 1 }*/ } };
             uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;
 
             processedRowObjects_mongooseModel.aggregate([
                 
                 { $unwind: "$" + "rowParams." + key }, // requires MongoDB 3.2, otherwise throws an error if non-array
                 uniqueStage,
-                { $sort : { count : -1 } },
-                { $limit : 50 }                
+                //{ $sort : { count : -1 } },
+                //{ $limit : 50 }
             ]).allowDiskUse(true).exec(function(err, results)
             {
                 if (err) {
@@ -123,10 +124,31 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
 
                     return;
                 }
-                var valuesRaw = results.map(function(el) { return el._id; });
+                var valuesRaw;
+                if (dataSourceDescription.fe_filters_fieldsCommaSeparatedAsIndividual && dataSourceDescription.fe_filters_fieldsCommaSeparatedAsIndividual.indexOf(key) !== -1) {
+                    valuesRaw = results.map(function(el) {
+                        if (Array.isArray(el._id)) {
+                            var _newId = [];
+                            el._id.forEach(function(id) {
+                                if (typeof id === 'string') _newId.concat(_id.split(/[\s]*[,]+[\s]*/));
+                            });
+                            return _newId;
+                        } else if (typeof el._id === 'string') {
+                            return el._id.split(/[\s]*[,]+[\s]*/);
+                        } else {
+                            return el._id;
+                        }
+                    });
+                } else {
+                    valuesRaw = results.map(function(el) {
+                        return el._id;
+                    });
+                }
 
                 // flatten array of arrays (for nested tables)
-                var values = [].concat.apply([], valuesRaw);
+                var values = [].concat.apply([], valuesRaw).filter(function(elem, index, self) {
+                        return index == self.indexOf(elem);
+                    }).splice(0, 50);
                 //
                 // remove illegal values
                 var illegalValues = []; // default val
@@ -138,7 +160,7 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                     if (illegalValuesForThisKey) {
                         illegalValues = illegalValues.concat(illegalValuesForThisKey);
                     }
-                }                
+                }
                 //
                 var illegalValues_length = illegalValues.length;
                 for (var i = 0 ; i < illegalValues_length ; i++) {
@@ -148,9 +170,6 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                         values.splice(idxOfIllegalVal, 1);
                     }
                 }
-                //
-                // sort the array alphabetically
-                values.sort();
                 //
                 // Note here we use the human-readable key. We decode it back to the original key at query-time
                 delete uniqueFieldValuesByFieldName[key]; // so no stale values persist in hash

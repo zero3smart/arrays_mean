@@ -4515,10 +4515,11 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 #page .navbar-brand-team-logo {
 	padding-top: 10px;
 	padding-bottom: 10px;
+	height: 100%;
 }
 .navbar-brand-team-logo img {
 	display: inline;
-	max-height: 45px;
+	max-height: 100%;
 }
 /* @end Team Logo */
 /* @override 
@@ -5136,7 +5137,15 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	padding-top: 30px;
 }
 .team-logo {
-
+	width: 100%;
+	max-width: 350px;
+}
+.team-header-description {
+	font-size: 20px;
+    line-height: 26px;
+    margin: 25px auto 0;
+    width: 100%;
+    max-width: 620px;
 }
 .team-array-logo {
 	margin: auto;
@@ -5345,6 +5354,53 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	-webkit-transform: translate(0, 0);
 	    -ms-transform: translate(0, 0);
 	        transform: translate(0, 0);
+}
+.category-icon-1 {
+	display: inline-block;
+    min-width: 49%;
+    min-height: 49%;
+	background-size: contain;
+}
+@media (min-width: 768px) {
+	.category-icon-1 {
+		min-width: 120px;
+		min-height: 120px;
+		width: 120px;
+		height: 120px;
+	}
+}
+.category-icon-2 {
+	display: inline-block;
+    margin-right: 2%;
+    min-width: 49%;
+    min-height: 49%;
+
+	background-size: contain;
+}
+@media (min-width: 768px) {
+	.category-icon-2 {
+		margin-right: 8px;
+		min-width: 90px;
+		min-height: 90px;
+		width: 90px;
+		height: 90px;
+	}
+}
+.category-icon-3 {
+	display: inline-block;
+    margin-right: 2%;
+    min-width: 32%;
+    min-height: 32%;
+	background-size: contain;
+}
+@media (min-width: 768px) {
+	.category-icon-3 {
+		margin-right: 4px;
+		min-width: 60px;
+		min-height: 60px;
+		width: 60px;
+		height: 60px;
+	}
 }
 /* @end Image Tile */
 /* @override 
@@ -6320,14 +6376,6 @@ linechart svg .axis line, .linechart svg .axis path {
 /* @group Clients */
 /* @override 
 	http://localhost:9080/stylesheets/clients/isb.css */
-[class^="icon-tile-isb-"] {
-	display: inline-block;
-	min-width: 120px;
-	min-height: 120px;
-	width: 120px;
-	height: 120px;
-	background-size: contain;
-}
 .icon-tile-isb-brain {
 	background-image: url(/images/clients/isb/brain.svg);
 }
@@ -6353,24 +6401,8 @@ linechart svg .axis line, .linechart svg .axis path {
 	background-image: url(/images/clients/isb/proteomics.svg);
 }
 /* @group Quantity Queries */
-.gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+2),
-.gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+2) ~ span {
-	margin-right: 8px;
-	min-width: 90px;
-	min-height: 90px;
-	width: 90px;
-	height: 90px;
-}
 .gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+2) ~ span:last-child {
 	margin-right: 0;
-}
-.gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+3),
-.gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+3) ~ span {
-	margin-right: 4px;
-	min-width: 60px;
-	min-height: 60px;
-	width: 60px;
-	height: 60px;
 }
 .gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+3) ~ span:last-child {
 	margin-right: 0;
