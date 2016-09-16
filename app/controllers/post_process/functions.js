@@ -59,7 +59,7 @@ var constructor = function() {
                     // Restore
                     filterVal = filterVals[j];
                 }
-                console.log('---------- filter', filterCol, filterVal);
+                //console.log('---------- filter', filterCol, filterVal);
                 if (typeof filterVal === 'string' || typeof filterVal === 'number') {
                     matchConditions = self._activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
                 } else if (filterVal.min != undefined || filterVal.max != undefined) {
