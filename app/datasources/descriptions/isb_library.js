@@ -49,7 +49,7 @@ exports.Descriptions =
                 lineGraph: false
             },
             fe_view_descriptions: {
-                gallery: "Gallery description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt, massa nec accumsan vulputate, ex erat venenatis enim, non ornare quam felis eget est. Duis commodo est in mollis facilisis. Nulla ut commodo nulla, id aliquet sapien. Praesent nibh arcu, consequat id ante ac, convallis feugiat tortor. Nunc nec molestie ipsum. Nunc consectetur semper nulla sit amet pretium. Sed nisl massa, ornare a mi eget, condimentum bibendum nisl. Pellentesque et magna lectus. Vivamus porttitor eros at consectetur viverra."
+                gallery: "The links below represent work published by ISB researchers from the year 2000 to the present. The publications fall under the following categories: brain, cancers, cell dynamics, P4 medicine, proteomics, computational biology, environment, infectious disease. Click on the funnel icon in the gray bar above to access the search filters. Switch to the chart or timeline view by clicking on the square icon."
             },
             fe_excludeFields: 
                 [
