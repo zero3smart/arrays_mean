@@ -495,7 +495,7 @@ linechart.viewport.prototype.resize = function() {
      */
     if (this._innerWidth > 0 && this._innerHeight > 0) {
         this._receiver.attr('width', this._innerWidth)
-            .attr('height', this._innerHeight);
+            .attr('height', this._innerHeight + 25);
     }
     /*
      * Configure scale functions.
