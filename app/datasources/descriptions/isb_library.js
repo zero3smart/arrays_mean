@@ -7,7 +7,7 @@ var import_datatypes = require('../utils/import_datatypes');
 exports.Descriptions =
     [
         {
-            filename: "ISB-Library-Pubs-With-Categories-20160907-v3-rm - Sheet1.csv",
+            filename: "ISB_PublicationsData_MASTER_20160908_v0_jy.csv",
             fileEncoding: "utf8", // default
             uid: "isb_library",
             team_id: "isb",
@@ -33,7 +33,7 @@ exports.Descriptions =
             {
                 return "" + rowIndex + "-" + rowObject["Key"];
             },
-            fe_designatedFields: 
+            fe_designatedFields:
             {
                 objectTitle: "Title",
                 // originalImageURL: "thumb_large",
@@ -48,7 +48,7 @@ exports.Descriptions =
                 scatterplot: false,
                 lineGraph: false
             },
-            fe_excludeFields: 
+            fe_excludeFields:
                 [
                     "Key",
                     "ISBN",
@@ -175,6 +175,10 @@ exports.Descriptions =
                     "Publication Year",
                     "Journal"
                 ],
+            fe_filters_fieldsCommaSeparatedAsIndividual:
+            [
+                "Categories"
+            ],
             //
             //
             fe_filters_oneToOneOverrideWithValuesByTitleByFieldName:
@@ -211,7 +215,7 @@ exports.Descriptions =
                             winston.warn("⚠️  Unable to derive icon span class for artist with no image in fe_galleryItem_htmlForIconFromRowObjWhenMissingImage. Using default of 'null' icon.");
                             iconSpanClass = "icon-tile-null";
                         }
-                        
+
                         output += '<span class="' + iconSpanClass + '"></span>';
                     }
                 }

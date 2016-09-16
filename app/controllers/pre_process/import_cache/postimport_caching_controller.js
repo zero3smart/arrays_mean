@@ -88,9 +88,9 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
     {
         if (err) {
             callback(err, null);
-        
+
             return;
-        }        
+        }
         var limitToNTopValues = 50;
         var feVisible_filter_keys = imported_data_preparation.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
         var feVisible_filter_keys_length = feVisible_filter_keys.length;
