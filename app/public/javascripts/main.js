@@ -194,6 +194,23 @@ $(document).ready(function() {
         $(this).attr('src', '/images/image-not-found-lg.png');
     });
 
+    /**
+    * Array description expand/collapse text
+    */
+    $('.array-description-expand').on('click', function(e){
+        $('.array-description').css("display", "none");
+        $('.array-description-full').css("display", "inline");
+        $('.array-description-expand').css("display", "none");
+        $('.array-description-collapse').css("display", "inline");
+    });
+
+    $('.array-description-collapse').on('click', function(e){
+        $('.array-description').css("display", "inline");
+        $('.array-description-full').css("display", "none");
+        $('.array-description-collapse').css("display", "none");
+        $('.array-description-expand').css("display", "inline-block");
+    });
+
 });
 
 /**

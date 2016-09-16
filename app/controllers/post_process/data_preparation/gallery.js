@@ -257,6 +257,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             sourceDoc: sourceDoc,
             sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,
             view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+            view_descriptions: dataSourceDescription.fe_view_descriptions ? dataSourceDescription.fe_view_descriptions : {},
             //
             pageSize: config.pageSize < nonpagedCount ? config.pageSize : nonpagedCount,
             onPageNum: pageNumber,

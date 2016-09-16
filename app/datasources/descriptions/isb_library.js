@@ -48,6 +48,9 @@ exports.Descriptions =
                 scatterplot: false,
                 lineGraph: false
             },
+            fe_view_descriptions: {
+                gallery: "Gallery description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam tincidunt, massa nec accumsan vulputate, ex erat venenatis enim, non ornare quam felis eget est. Duis commodo est in mollis facilisis. Nulla ut commodo nulla, id aliquet sapien. Praesent nibh arcu, consequat id ante ac, convallis feugiat tortor. Nunc nec molestie ipsum. Nunc consectetur semper nulla sit amet pretium. Sed nisl massa, ornare a mi eget, condimentum bibendum nisl. Pellentesque et magna lectus. Vivamus porttitor eros at consectetur viverra."
+            },
             fe_excludeFields: 
                 [
                     "Key",
