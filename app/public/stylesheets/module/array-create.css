@@ -160,16 +160,30 @@
 
 .array-description-wrapper {
     width: 90%;
-    margin: 15px auto 0;
+    margin: 25px auto 15px;
 }
 
 @media (min-width: 768px) {
     .array-description-wrapper {
+    	margin: 35px auto 25px;
         width: 60%;
     }
 }
 
+.array-description-hr {
+	width: 95%;
+	border-bottom: 1px solid var(--color-divider);
+}
+
+@media (min-width: 768px) {
+	.array-description-hr {
+		width: 90%;
+		max-width: 1160px;
+	}
+}
+
 .array-description, .array-description-full {
+
     text-align: center;
     margin-right: 10px;
     font-size: 20px;
