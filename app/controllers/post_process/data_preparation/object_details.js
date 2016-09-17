@@ -119,6 +119,8 @@ constructor.prototype.BindDataFor_array = function(source_pKey, rowObject_id, ca
             var key = rowParams_keys[i];
             var originalVal = rowParams[key];
             var displayableVal = functions._reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, key, dataSourceDescription);
+            if (key === 'Publication Year')
+                console.log('****************** ', rowParams[key], displayableVal);
             rowParams[key] = displayableVal;
         }
         //
