@@ -48,6 +48,9 @@ exports.Descriptions =
                 scatterplot: false,
                 lineGraph: false
             },
+            fe_view_descriptions: {
+                gallery: "The links below represent work published by ISB researchers from the year 2000 to the present. The publications fall under the following categories: brain, cancers, cell dynamics, P4 medicine, proteomics, computational biology, environment, infectious disease. Click on the funnel icon in the gray bar above to access the search filters. Switch to the chart or timeline view by clicking on the square icon."
+            },
             fe_excludeFields: 
                 [
                     "Key",

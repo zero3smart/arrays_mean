@@ -153,3 +153,50 @@
 	font-size: 16px;
 	font-family: "Glyphicons Halflings";
 }*/
+
+/**
+* Collapsible array-description
+*/
+
+.array-description-wrapper {
+    width: 90%;
+    margin: 15px auto 0;
+}
+
+@media (min-width: 768px) {
+    .array-description-wrapper {
+        width: 60%;
+    }
+}
+
+.array-description, .array-description-full {
+    text-align: center;
+    margin-right: 10px;
+    font-size: 20px;
+    font-family: georgia;
+    line-height: 30px;
+}
+
+.array-description {
+    display: inline;
+}
+
+.array-description-full {
+    display: none;
+}
+
+.array-description-expand, .array-description-collapse {
+    font-size: 18px;
+    display: inline;
+    color: #feb600;
+    cursor: pointer;
+}
+
+.array-description-expand:hover, .array-description-collapse:focus {
+    color: #b27f00;
+    text-decoration: underline;
+}
+
+.array-description-collapse { 
+    display: none;
+}

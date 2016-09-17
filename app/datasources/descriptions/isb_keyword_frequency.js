@@ -51,6 +51,9 @@ exports.Descriptions =
                 scatterplot: false,
                 lineGraph: true
             },
+            fe_view_descriptions: {
+                lineGraph: "We selected some keywords that are likely to be associated to systems biology and performed a search in PubMed to reveal the frequency each term appears in all publications listed in the database. Hover your cursor over the graph to view the keyword rankings."
+            },
             fe_default_view: 'lineGraph',
             fe_excludeFields: 
                 [
