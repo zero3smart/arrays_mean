@@ -6,8 +6,8 @@ module.exports = function(nunjucks_env)
     // General/shared
     nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function(date)
     {
-        console.log(date, moment(date).format("MMMM Do, YYYY"));
-        return moment(date).format("MMMM Do, YYYY");
+        console.log(date, moment(date).utc().format("MMMM Do, YYYY"));
+        return moment(date).utc().format("MMMM Do, YYYY");
     });
     nunjucks_env.addFilter('addDate', function(date, amount, format)
     {
@@ -15,7 +15,7 @@ module.exports = function(nunjucks_env)
     });
     nunjucks_env.addFilter('dateFormat', function(date, format)
     {
-        return format !== null ? moment(date).format(format) : moment(date).format("MMMM Do, YYYY");
+        return format !== null ? moment(date).utc().format(format) : moment(date).utc().format("MMMM Do, YYYY");
     });
     nunjucks_env.addFilter('isArray', function(val)
     {
@@ -143,12 +143,12 @@ module.exports = function(nunjucks_env)
         if (!isNaN(filterVal.min))
             output = filterVal.min + ' – ';
         else if (filterVal.min)
-            output = output + moment(filterVal.min).format("MMMM Do, YYYY") + ' – ';
+            output = output + moment(filterVal.min).utc().format("MMMM Do, YYYY") + ' – ';
 
         if (!isNaN(filterVal.max))
             output = output + filterVal.max;
         else if (filterVal.max)
-            output = output + moment(filterVal.max).format("MMMM Do, YYYY");
+            output = output + moment(filterVal.max).utc().format("MMMM Do, YYYY");
 
         if (Array.isArray(filterVal)) {
             for (var i = 0; i < filterVal.length; i ++) {
