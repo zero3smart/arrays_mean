@@ -130,7 +130,6 @@ module.exports = function(nunjucks_env)
     });
     // Array views - Filter value to display
     nunjucks_env.addFilter('filterValToDisplay', function(filterVal){
-        console.log(filterVal);
         if (typeof filterVal === 'string') {
             var _filterVal = decodeURIComponent(filterVal);
             try {
