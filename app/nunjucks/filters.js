@@ -129,6 +129,7 @@ module.exports = function(nunjucks_env)
     });
     // Array views - Filter value to display
     nunjucks_env.addFilter('filterValToDisplay', function(filterVal){
+        console.log(filterVal);
         if (typeof filterVal === 'string') {
             var _filterVal = decodeURIComponent(filterVal);
             try {
@@ -138,9 +139,9 @@ module.exports = function(nunjucks_env)
             }
             if (typeof filterVal === 'number' || typeof filterVal === 'string') return filterVal;
         }
-        var output = '';
+        var output = output + '';
         if (!isNaN(filterVal.min))
-            output = filterVal.min;
+            output = filterVal.min + ' – ';
         else if (filterVal.min)
             output = output + moment(filterVal.min).format("MMMM Do, YYYY") + ' – ';
 
