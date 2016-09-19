@@ -103,15 +103,15 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
         async.each(feVisible_filter_keys, function(key, cb) 
         {
             // Commented out the count section for the comma-separated as individual filters.
-            var uniqueStage = { $group : { _id: {}/*, count: { $sum: 1 }*/ } };
+            var uniqueStage = { $group : { _id: {}, count: { $sum: 1 } } };
             uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;
 
             processedRowObjects_mongooseModel.aggregate([
                 
                 { $unwind: "$" + "rowParams." + key }, // requires MongoDB 3.2, otherwise throws an error if non-array
                 uniqueStage,
-                //{ $sort : { count : -1 } },
-                //{ $limit : 50 }
+                { $sort : { count : -1 } },
+                //{ $limit : limitToNTopValues }
             ]).allowDiskUse(true).exec(function(err, results)
             {
                 if (err) {
@@ -126,19 +126,38 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                 }
                 var valuesRaw;
                 if (dataSourceDescription.fe_filters_fieldsCommaSeparatedAsIndividual && dataSourceDescription.fe_filters_fieldsCommaSeparatedAsIndividual.indexOf(key) !== -1) {
-                    valuesRaw = results.map(function(el) {
-                        if (Array.isArray(el._id)) {
-                            var _newId = [];
-                            el._id.forEach(function(id) {
-                                if (typeof id === 'string') _newId.concat(_id.split(/[\s]*[,]+[\s]*/));
+                    var raw = {}
+                    results.forEach(function(el) {
+                        if (Array.isArray(el._id) || typeof el._id === 'string') {
+                            var _newId;
+                            if (Array.isArray(el._id)) {
+                                _newId = []
+                                el._id.forEach(function(_id) {
+                                    if (typeof _id === 'string') _newId.concat(_id.split(/[\s]*[,]+[\s]*/));
+                                });
+                            } else {
+                                _newId = el._id.split(/[\s]*[,]+[\s]*/);
+                            }
+
+                            _newId.filter(function(elem, index, self) {
+                                return elem != '' && index === _newId.indexOf(elem);
+                            }).forEach(function(_newIdEl) {
+                                raw[_newIdEl] = raw[_newIdEl] !== undefined ? raw[_newIdEl] + el.count : el.count;
                             });
-                            return _newId;
-                        } else if (typeof el._id === 'string') {
-                            return el._id.split(/[\s]*[,]+[\s]*/);
                         } else {
-                            return el._id;
+                            raw[el._id] = el.count;
                         }
                     });
+
+                    // Sort raw by values
+                    valuesRaw = [];
+                    for (var id in raw) {
+                        valuesRaw.push({id: id, count: raw[id]});
+                    }
+                    valuesRaw.sort(function(a, b) {
+                        return a.count < b.count;
+                    });
+                    valuesRaw = valuesRaw.map(function(el) { return el.id; });
                 } else {
                     valuesRaw = results.map(function(el) {
                         return el._id;
@@ -147,8 +166,8 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
 
                 // flatten array of arrays (for nested tables)
                 var values = [].concat.apply([], valuesRaw).filter(function(elem, index, self) {
-                        return index == self.indexOf(elem);
-                    }).splice(0, 50);
+                        return elem != '';
+                    }).splice(0, limitToNTopValues);
                 //
                 // remove illegal values
                 var illegalValues = []; // default val
