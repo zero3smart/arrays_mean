@@ -41,10 +41,11 @@
                                                         {% set sortedArray = columnValue | alphaSortedArray %}
                                                         {% for arrayMember in sortedArray %}
                                                             {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, arrayMember, false) %}
+                                                            {% set arrayMemberText = htmlOverrideFn(rowObject, arrayMember) | safe if htmlOverrideFn else arrayMember %}
                                                             {% if shouldLink %}
-                                                                <li class="object-list-item"><a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal) }}" class="color-brand">{{ htmlOverrideFn(rowObject, arrayMember) | safe if htmlOverrideFn else arrayMember }}</a></li>
+                                                                <li class="object-list-item"><a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal) }}" class="color-brand">{{ arrayMemberText }}</a></li>
                                                             {% else %}
-                                                                <li class="object-list-item">{{ htmlOverrideFn(rowObject, arrayMember) | safe if htmlOverrideFn else arrayMember }}</li>
+                                                                <li class="object-list-item">{{ arrayMemberText | substitutePlainURLs | safe }}</li>
                                                             {% endif %}
                                                         {% endfor %}
                                                         </ul>
@@ -60,7 +61,7 @@
 
                                                     <a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal) }}" class="color-brand">
                                                 {% endif %}
-                                                        {{ htmlOverrideFn(rowObject, columnValue) | safe if htmlOverrideFn else columnValue }}
+                                                        {{ (htmlOverrideFn(rowObject, columnValue) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe }}
                                                 {% if shouldLink %}
                                                     </a>
                                                 {% endif %}

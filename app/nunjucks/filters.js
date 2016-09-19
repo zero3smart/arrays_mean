@@ -1,4 +1,5 @@
 var moment = require('moment');
+var url = require('url');
 
 module.exports = function(nunjucks_env)
 {
@@ -207,5 +208,18 @@ module.exports = function(nunjucks_env)
 
         var joinChar = routePath_base.indexOf('?') !== -1 ? '&' : '?';
         return routePath_base + joinChar + routePath.substr(1);
+    });
+    // Object detail view - Detect/substitute the url string in the parameter with the wrapped a tag
+    nunjucks_env.addFilter('substitutePlainURLs', function(str) {
+        return str.split(/[\s]+/).map(function(el) {
+            var result = url.parse(el);
+            if ((result.protocol == 'http:' || result.protocol == 'https:')
+                && result.hostname != null && result.hostname != '') {
+                //console.log(result);
+                return "<a href='" + el + "' target='blank'>" + el + "</a>";
+            } else {
+                return el;
+            }
+        }).join(' ');
     });
 };
