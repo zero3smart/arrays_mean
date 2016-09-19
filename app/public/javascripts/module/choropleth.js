@@ -132,7 +132,7 @@ map.on('load', function () {
 
 		var filterObjForThisFilterColVal = constructedFilterObj(filterObj, mapBy, feature.properties.name, false);
 		var filterJSONString = $.param(filterObjForThisFilterColVal);
-		var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterJSONString;
+		var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString;
 
 		window.location = urlForFilterValue;
 	});

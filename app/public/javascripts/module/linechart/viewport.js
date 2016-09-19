@@ -572,8 +572,8 @@ linechart.viewport.prototype.update = function(data) {
      * Evaluate amount of required ticks to display only years.
      */
     var datesDomainLength = this._datesDomain.length;
-    var xScaleTicksAmount = this._xScale.ticks().length;
-    var ticksAmount = Math.max(datesDomainLength, xScaleTicksAmount);
+    var xScaleTicksAmount = Math.max(this._innerWidth/50, 2); // this._xScale.ticks().length;
+    var ticksAmount = Math.min(datesDomainLength, xScaleTicksAmount);
     /*
      * Update chart axes.
      */

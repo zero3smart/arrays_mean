@@ -137,7 +137,11 @@
                                                     {% if groupedResultsLimit < group.total %}
                                                         <li class="timeline-group-item">
                                                             <div class="timeline-item timeline-view-all">
-                                                                {% set filterDateRange = {"min": group.startDate | dateFormat('YYYY'), "max": group.endDate | addDate(1, 'y') | dateFormat('YYYY') } %}
+                                                                {% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}
+                                                                    {% set filterDateRange = {"min": group.startDate | dateFormat('YYYY'), "max": group.endDate | addDate(1, 'y') | dateFormat('YYYY') } %}
+                                                                {% else %}
+                                                                    {% set filterDateRange = group.startDate | dateFormat('YYYY') | int %}
+                                                                {% endif %}
                                                                 {% set sortByDateRange = sortBy if sortBy else defaultSortByColumnName_humanReadable %}
                                                                 {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(sortByDateRange, filterDateRange | dump, false) %}
                                                                 <a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal) }}" class="timeline-view-all-link color-brand-hover">

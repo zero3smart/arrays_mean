@@ -493,7 +493,7 @@ var constructor = function() {
                     if (dateFormat == null) { // still null? use default
                         dateFormat = config.defaultFormat;
                     }
-                    displayableVal = moment.utc('' + originalVal).format(dateFormat);
+                    displayableVal = moment('' + originalVal).utc().format(dateFormat);
                 } else { // nothing to do? (no other types yet)
                 }
             } else { // nothing to do?
