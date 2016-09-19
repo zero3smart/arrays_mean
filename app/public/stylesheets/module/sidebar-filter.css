@@ -171,6 +171,10 @@
 .sidebar-filter-toggle-title {
 	display: inline-block;
 	margin-top: 4px;
+	width: 210px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .sidebar-filter-toggle-check {
