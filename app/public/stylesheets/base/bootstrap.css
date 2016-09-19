@@ -2916,29 +2916,15 @@ tbody.collapse.in {
   float: left;
   padding: 22px 15px;
   font-size: 18px;
-  line-height: 24px;
-  height: 100%;
-}
-.navbar-brand .truncate {
-  display: inherit;
-  width: 200px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-@media (min-width: 768px) {
-  .navbar-brand .truncate {
-    width: 500px;
-  }
-}
-.navbar-brand:hover, .navbar-brand:focus {
-  text-decoration: none; }
-.navbar-brand > img {
-  display: block; }
-@media (min-width: 0) {
-  .navbar > .container .navbar-brand, .navbar > .container-fluid .navbar-brand {
-    margin-left: -15px; } 
-}
+  line-height: 20px;
+  height: 64px; }
+  .navbar-brand:hover, .navbar-brand:focus {
+    text-decoration: none; }
+  .navbar-brand > img {
+    display: block; }
+  @media (min-width: 0) {
+    .navbar > .container .navbar-brand, .navbar > .container-fluid .navbar-brand {
+      margin-left: -15px; } }
 
 .navbar-toggle {
   position: relative;
