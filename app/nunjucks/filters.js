@@ -190,9 +190,7 @@ module.exports = function(nunjucks_env)
         var routePath = '';
         for (key in _queryObj)
             if (_queryObj.hasOwnProperty(key) && _queryObj[key] !== undefined) {
-                if (typeof _queryObj[key] === 'string') {
-                    routePath += '&' + key + '=' + _queryObj[key];
-                } else if (Array.isArray(_queryObj[key])) {
+                if (Array.isArray(_queryObj[key])) {
                     var subArray = _queryObj[key];
                     for (var i = 0; i < subArray.length; i ++)
                         if (typeof subArray[i] === 'string')
@@ -200,7 +198,7 @@ module.exports = function(nunjucks_env)
                         else
                             routePath += '&' + key + '=';
                 } else {
-                    // Unexpected format
+                    routePath += '&' + key + '=' + _queryObj[key];
                 }
             }
 
@@ -215,7 +213,6 @@ module.exports = function(nunjucks_env)
             var result = url.parse(el);
             if ((result.protocol == 'http:' || result.protocol == 'https:')
                 && result.hostname != null && result.hostname != '') {
-                //console.log(result);
                 return "<a href='" + el + "' target='blank'>" + el + "</a>";
             } else {
                 return el;
