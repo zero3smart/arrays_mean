@@ -510,7 +510,7 @@ var constructor = function() {
                     if (dateFormat == null || dateFormat == import_datatypes.Coercion_optionsPacks.ToDate.ISO_8601.format) { // still null? use default
                         dateFormat = config.defaultDateFormat;
                     }
-                    displayableVal = moment('' + originalVal).utc().format(dateFormat);
+                    displayableVal = moment(originalVal, moment.ISO_8601).utc().format(dateFormat);
                 } else { // nothing to do? (no other types yet)
                 }
             } else { // nothing to do?
