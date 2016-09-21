@@ -168,7 +168,7 @@ Tooltip.prototype.show = function(element) {
     /*
      * Get element position.
      */
-    var position = jQuery(element).position();
+    var position = jQuery(element).offset();
     /*
      * Append hidden content to the container.
      */

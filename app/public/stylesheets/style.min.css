@@ -4666,7 +4666,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 .sidebar-filter-toggle-title {
 	display: inline-block;
 	margin-top: 4px;
-	width: 210px;
+	width: 209px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
