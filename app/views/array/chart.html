@@ -32,9 +32,9 @@
 
                             <div class="sort-bar clearfix">
 
-                                <nav class="pull-left" role="navigation">
+                                <nav class="sort-bar-left pull-left" role="navigation">
                                     {{
-                                    dropdown.default
+                                    dropdown.sortbar
                                         (
                                             "Chart By",
                                             groupBy if groupBy else defaultGroupByColumnName_humanReadable,
@@ -49,7 +49,7 @@
 
                                     {% if aggregateBy_humanReadable_available %}
                                         {{
-                                        dropdown.default(
+                                        dropdown.sortbar(
                                             'Aggregate By',
                                             aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
                                             aggregateBy_humanReadable_available,
@@ -63,7 +63,7 @@
                                     {% endif %}
                                 </nav>
 
-                                <div class="pull-right">
+                                <div class="sort-bar-right pull-right">
                                     {{
                                     search.panel(
                                         routePath_base,
