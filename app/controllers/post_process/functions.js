@@ -548,7 +548,7 @@ var constructor = function() {
     //
     self.filterObjFromQueryParams = function(queryParams) {
         var filterObj = {};
-        var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'mapBy', 'searchQ', 'searchCol'];
+        var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'mapBy', 'aggregateBy', 'searchQ', 'searchCol'];
         for (var key in queryParams) {
             if (reservedKeys.indexOf(key) !== -1) continue;
 

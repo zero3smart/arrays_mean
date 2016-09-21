@@ -56,7 +56,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultGroupByColumnName_humanReadable;
     //
     var keywordGroupBy = dataSourceDescription.fe_lineGraph_keywordGroupBy;
-    var keywordCountBy = dataSourceDescription.fe_lineGraph_keywordCountBy;
     //
     var routePath_base              = "/array/" + source_pKey + "/line-graph";
     var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
@@ -96,6 +95,32 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         mapping_groupByObj[mapping_groupBy] = '';
     }
 
+    // Aggregate By
+    var aggregateBy = urlQuery.aggregateBy;
+    var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultAggregateByColumnName_humanReadable;
+    if (!defaultAggregateByColumnName_humanReadable)
+        defaultAggregateByColumnName_humanReadable = config.AggregateByDefaultColumnName;
+
+    // Aggregate By Available
+    var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+    var aggregateBy_humanReadable_available = undefined;
+    for (var colName in raw_rowObjects_coercionSchema) {
+        var colValue = raw_rowObjects_coercionSchema[colName];
+        if (colValue.do == import_datatypes.Coercion_ops.ToInteger) {
+            var humanReadableColumnName = colName;
+            if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
+                humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
+
+            if (!aggregateBy_humanReadable_available) {
+                aggregateBy_humanReadable_available = [];
+                aggregateBy_humanReadable_available.push(config.AggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+            }
+
+            aggregateBy_humanReadable_available.push(humanReadableColumnName);
+        }
+    }
+    var aggregateBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy ? aggregateBy : defaultAggregateByColumnName_humanReadable, dataSourceDescription);
+
     //
     var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResultsByKeyword = {};
 
@@ -130,7 +155,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             uniqueFieldValuesByFieldName = {};
             for (var columnName in _uniqueFieldValuesByFieldName) {
                 if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
-                    var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
                     if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                         var row = [];
                         _uniqueFieldValuesByFieldName[columnName].forEach(function(rowValue) {
@@ -164,7 +188,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
 
-        if (typeof keywordCountBy !== 'undefined' && keywordCountBy !== null && keywordCountBy !== "") {
+        if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.AggregateByDefaultColumnName) {
 
             if (typeof keywordGroupBy !== 'undefined' && keywordGroupBy !== null && keywordGroupBy !== "") {
                 var keywordGroupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(keywordGroupBy, dataSourceDescription);
@@ -176,7 +200,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                         {
                             $group: {
                                 _id: {groupBy: "$" + "rowParams." + groupBy_realColumnName, keywordBy: "$" + "rowParams." + keywordGroupBy_realColumnName},
-                                value: { $sum: "$" + "rowParams." + keywordCountBy }
+                                value: { $sum: "$" + "rowParams." + aggregateBy_realColumnName }
                             }
                         },
                         {
@@ -204,7 +228,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                         {
                             $group: {
                                 _id: "$" + "rowParams." + groupBy_realColumnName,
-                                value: { $sum: "$" + "rowParams." + keywordCountBy }
+                                value: { $sum: "$" + "rowParams." + aggregateBy_realColumnName }
                             }
                         },
                         {
@@ -224,33 +248,65 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 
             }
         } else {
+            // Count by number of records
 
-            // Count by number of records in filter group by default
-            aggregationOperators = aggregationOperators.concat(
-                [
-                    { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
-                    { // unique/grouping and summing stage
-                        $group: {
-                            _id: "$" + "rowParams." + groupBy_realColumnName,
-                            value: { $sum: 1 }
+            if (typeof keywordGroupBy !== 'undefined' && keywordGroupBy !== null && keywordGroupBy !== "") {
+                var keywordGroupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(keywordGroupBy, dataSourceDescription);
+
+                aggregationOperators = aggregationOperators.concat(
+                    [
+                        { $unwind: "$" + "rowParams." + groupBy_realColumnName },
+                        { $unwind: "$" + "rowParams." + keywordGroupBy_realColumnName },
+                        {
+                            $group: {
+                                _id: {groupBy: "$" + "rowParams." + groupBy_realColumnName, keywordBy: "$" + "rowParams." + keywordGroupBy_realColumnName},
+                                value: { $sum: 1 }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                label: "$_id.groupBy",
+                                keyword: "$_id.keywordBy",
+                                value: 1
+                            }
+                        },
+                        {
+                            $sort: { value: -1 } // priotize by incidence, since we're $limit-ing below
+                        },
+                        {
+                            $limit: 100 // so the chart can actually handle the number
                         }
-                    },
-                    { // reformat
-                        $project: {
-                            _id: 0,
-                            label: "$_id",
-                            value: 1
+                    ]);
+
+            } else {
+
+                aggregationOperators = aggregationOperators.concat(
+                    [
+                        {$unwind: "$" + "rowParams." + groupBy_realColumnName}, // requires MongoDB 3.2, otherwise throws an error if non-array
+                        { // unique/grouping and summing stage
+                            $group: {
+                                _id: "$" + "rowParams." + groupBy_realColumnName,
+                                value: {$sum: 1}
+                            }
+                        },
+                        { // reformat
+                            $project: {
+                                _id: 0,
+                                label: "$_id",
+                                value: 1
+                            }
+                        },
+                        { // priotize by incidence, since we're $limit-ing below
+                            $sort: {value: -1}
+                        },
+                        {
+                            $limit: 100 // so the chart can actually handle the number
                         }
-                    },
-                    { // priotize by incidence, since we're $limit-ing below
-                        $sort: { value: -1 }
-                    },
-                    {
-                        $limit: 100 // so the chart can actually handle the number
-                    }
-                ]);
+                    ]);
+            }
         }
-        
+
         var doneFn = function(err, _multigroupedResults)
         {
             if (err) return done(err);
@@ -304,7 +360,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                         });
                     });
                     var summedValuesByLowercasedLabels = {};
-                    var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
+                    var titleWithMostMatchesAndMatchAggregateByLowercasedTitle = {};
                     finalizedButNotCoalesced_groupedResults.forEach(function(el, i, arr)
                     {
                         var label = el.label;
@@ -315,10 +371,10 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                         var new_valueSum = existing_valueSum + value;
                         summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
                         //
-                        var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] || { label: '', value: -1 };
+                        var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] || { label: '', value: -1 };
                         if (existing_titleWithMostMatchesAndMatchCount.value < value) {
                             var new_titleWithMostMatchesAndMatchCount = { label: label, value: value };
-                            titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
+                            titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
                         }
                     });
                     var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
@@ -327,7 +383,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                     {
                         var summedValue = summedValuesByLowercasedLabels[key];
                         var reconstitutedDisplayableTitle = key;
-                        var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[key];
+                        var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[key];
                         if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
                             winston.error("❌  This should never be undefined.");
                             callback(new Error('Unexpectedly undefined title with most matches'), null);
@@ -396,7 +452,11 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             mapping_default_view: mapping_default_view,
             mapping_groupByObj: mapping_groupByObj,
             // multiselectable filter fields
-            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
+            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable,
+            // Aggregate By
+            aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
+            defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
+            aggregateBy: aggregateBy
         };
         callback(err, data);
     });

@@ -5,6 +5,8 @@ var constructor = function() {
     self.timelineGroups = this.pageSize / this.timelineGroupSize * 2;
     self.defaultDateFormat = "MMMM Do, YYYY";
 
+    self.AggregateByDefaultColumnName = "NUMBER OF RECORDS";
+
     return self;
 };
 

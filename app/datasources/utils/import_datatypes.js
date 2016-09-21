@@ -138,13 +138,13 @@ var fieldValueDataTypeCoercion_revertFunctionsByOperationName =  // Private for 
 
             return undefined;
         }
+        if (dateFormatString == moment.ISO_8601)
+            dateFormatString = "MMMM Do, YYYY";
 
         if ( isNaN( date.getTime() ) ) {
             // Invalid
             return null;
         } else {
-            var moment = require("moment"); // note, var not var as we're potentially replacing the parse two digit year method here every time
-
             return moment.utc(date).format(dateFormatString);
         }
     }

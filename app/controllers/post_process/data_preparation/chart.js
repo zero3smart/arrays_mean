@@ -64,6 +64,32 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
         && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
 
+    // Aggregate By
+    var aggregateBy = urlQuery.aggregateBy;
+    var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultAggregateByColumnName_humanReadable;
+    if (!defaultAggregateByColumnName_humanReadable)
+        defaultAggregateByColumnName_humanReadable = config.AggregateByDefaultColumnName;
+
+    // Aggregate By Available
+    var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+    var aggregateBy_humanReadable_available = undefined;
+    for (var colName in raw_rowObjects_coercionSchema) {
+        var colValue = raw_rowObjects_coercionSchema[colName];
+        if (colValue.do == import_datatypes.Coercion_ops.ToInteger) {
+            var humanReadableColumnName = colName;
+            if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
+                humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
+
+            if (!aggregateBy_humanReadable_available) {
+                aggregateBy_humanReadable_available = [];
+                aggregateBy_humanReadable_available.push(config.AggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+            }
+
+            aggregateBy_humanReadable_available.push(humanReadableColumnName);
+        }
+    }
+    var aggregateBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy ? aggregateBy : defaultAggregateByColumnName_humanReadable, dataSourceDescription);
+
     //
     var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults = [];
 
@@ -133,29 +159,57 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
-        aggregationOperators = aggregationOperators.concat(
-            [
-                { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
-                { // unique/grouping and summing stage
-                    $group: {
-                        _id: "$" + "rowParams." + groupBy_realColumnName,
-                        value: { $sum: 1 } // the count
+
+        if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.AggregateByDefaultColumnName) {
+            aggregationOperators = aggregationOperators.concat(
+                [
+                    { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                    { // unique/grouping and summing stage
+                        $group: {
+                            _id: "$" + "rowParams." + groupBy_realColumnName,
+                            value: { $sum: "$" + "rowParams." + aggregateBy_realColumnName } // the count
+                        }
+                    },
+                    { // reformat
+                        $project: {
+                            _id: 0,
+                            label: "$_id",
+                            value: 1
+                        }
+                    },
+                    { // priotize by incidence, since we're $limit-ing below
+                        $sort : { value : -1 }
+                    },
+                    {
+                        $limit : 100 // so the chart can actually handle the number
                     }
-                },
-                { // reformat
-                    $project: {
-                        _id: 0,
-                        label: "$_id",
-                        value: 1
+                ]);
+        } else {
+            aggregationOperators = aggregationOperators.concat(
+                [
+                    { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                    { // unique/grouping and summing stage
+                        $group: {
+                            _id: "$" + "rowParams." + groupBy_realColumnName,
+                            value: { $sum: 1 } // the count
+                        }
+                    },
+                    { // reformat
+                        $project: {
+                            _id: 0,
+                            label: "$_id",
+                            value: 1
+                        }
+                    },
+                    { // priotize by incidence, since we're $limit-ing below
+                        $sort : { value : -1 }
+                    },
+                    {
+                        $limit : 100 // so the chart can actually handle the number
                     }
-                },
-                { // priotize by incidence, since we're $limit-ing below
-                    $sort : { value : -1 }
-                },
-                {
-                    $limit : 100 // so the chart can actually handle the number
-                }
-            ]);
+                ]);
+        }
+
         //
         var doneFn = function(err, _groupedResults)
         {
@@ -272,7 +326,11 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             //
             routePath_base: routePath_base,
             // multiselectable filter fields
-            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
+            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable,
+            // Aggregate By
+            aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
+            defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
+            aggregateBy: aggregateBy
         };
         callback(err, data);
     });
