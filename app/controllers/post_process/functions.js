@@ -154,7 +154,6 @@ var constructor = function() {
                 matchConditions = self._activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, realFilterValue).matchOps;
 
             } else {
-                //console.log(filterVal);
                 matchConditions = self._activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, filterVal).matchOps;
             }
         }
@@ -197,15 +196,15 @@ var constructor = function() {
                 }
             }
         } else {
-            var filterDateMin = moment(filterValMin);
+            var filterDateMin = moment.utc(filterValMin);
             if (filterDateMin.isValid()) {
-                realFilterValueMin = filterDateMin.utc().startOf('day').toDate();
+                realFilterValueMin = filterDateMin.startOf('day').toDate();
             } else {
                 throw new Error('Invalid date');
             }
-            var filterDateMax = moment(filterValMax);
+            var filterDateMax = moment.utc(filterValMax);
             if (filterDateMax.isValid()) {
-                realFilterValueMax = filterDateMax.utc().startOf('day').toDate();
+                realFilterValueMax = filterDateMax.startOf('day').toDate();
             } else {
                 throw new Error('Invalid date');
             }
@@ -320,15 +319,16 @@ var constructor = function() {
 
         return { matchConditions: matchConditions };
     };
-    //
+    // returns dictionary with err or matchOp
     self._activeSearch_matchOp_orErrDescription = function(dataSourceDescription, searchCol, searchQ)
-    { // returns dictionary with err or matchOp
+    {
         var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
         var realColumnName_path = "rowParams." + realColumnName;
 
         // We need to consider that the search column is array
         var unwindOp = { $unwind: '$' + realColumnName_path };
         var matchOp = { $match: {} };
+
         var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
         var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
             && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
@@ -345,29 +345,46 @@ var constructor = function() {
                 matchOp["$match"][realColumnName_path] = {$regex: searchQ, $options: "i"};
             }
         } else {
+            var realSearchValueMin, realSearchValueMax, searchDate;
             if (Array.isArray(searchQ)) {
                 match = [];
                 for (var i = 0; i < searchQ.length; i ++) {
-                    var searchDate = moment.utc('' + searchQ[i]);
+                    searchDate = moment.utc('' + searchQ[i]);
                     if (searchDate.isValid()) {
-                        var realSearchValue = searchDate.utc().startOf('day').toDate();
+                        realSearchValueMin = searchDate.startOf('day').toDate();
+
+                        if (searchQ[i].length == 4) { // Year
+                            realSearchValueMax = searchDate.startOf('year').add(1, 'years').toDate();
+                        } else if (searchQ[i].length < 8) { // Month
+                            realSearchValueMax = searchDate.startOf('month').add(1, 'months').toDate();
+                        } else { // Day
+                            realSearchValueMax = searchDate.startOf('day').add(1, 'days').toDate();
+                        }
                     } else { // Invalid Date
                         return {err: 'Invalid Date'};
                     }
                     obj = {};
-                    obj[realColumnName_path] = {$eq: realSearchValue};
+                    obj[realColumnName_path] = {$gte: realSearchValueMin, $lt: realSearchValueMax};
                     match.push(obj);
                 }
                 matchOp["$match"]["$or"] = match;
             } else {
-                var searchDate = moment.utc('' + searchQ);
-                var realSearchValue;
+                searchQ = '' + searchQ;
+                searchDate = moment.utc(searchQ);
                 if (searchDate.isValid()) {
-                    realSearchValue = searchDate.utc().startOf('day').toDate();
+                    realSearchValueMin = searchDate.startOf('day').toDate();
+
+                    if (searchQ.length == 4) { // Year
+                        realSearchValueMax = searchDate.startOf('year').add(1, 'years').toDate();
+                    } else if (searchQ.length < 8) { // Month
+                        realSearchValueMax = searchDate.startOf('month').add(1, 'months').toDate();
+                    } else { // Day
+                        realSearchValueMax = searchDate.startOf('day').add(1, 'days').toDate();
+                    }
                 } else { // Invalid Date
                     return {err: 'Invalid Date'};
                 }
-                matchOp["$match"][realColumnName_path] = {$eq: realSearchValue};
+                matchOp["$match"][realColumnName_path] = {$gte: realSearchValueMin, $lt: realSearchValueMax};
             }
         }
 

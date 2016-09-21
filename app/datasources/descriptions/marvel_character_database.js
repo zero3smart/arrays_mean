@@ -20,9 +20,7 @@ exports.Descriptions =
             {
                 modified: {
                     do: import_datatypes.Coercion_ops.ToDate,
-                    opts: {
-                        format: "YYYY-MM-DD" // e.g. "2009-03-21"
-                    }
+                    opts: import_datatypes.Coercion_optionsPacks.ToDate.ISO_8601
                 },
                 comics_available: {
                     do: import_datatypes.Coercion_ops.ToInteger
