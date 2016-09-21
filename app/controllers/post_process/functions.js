@@ -507,8 +507,8 @@ var constructor = function() {
                             dateFormat = opts.format;
                         }
                     }
-                    if (dateFormat == null) { // still null? use default
-                        dateFormat = config.defaultFormat;
+                    if (dateFormat == null || dateFormat == import_datatypes.Coercion_optionsPacks.ToDate.ISO_8601.format) { // still null? use default
+                        dateFormat = config.defaultDateFormat;
                     }
                     displayableVal = moment('' + originalVal).utc().format(dateFormat);
                 } else { // nothing to do? (no other types yet)

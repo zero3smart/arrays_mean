@@ -3,7 +3,7 @@ var constructor = function() {
     self.pageSize = 200;
     self.timelineGroupSize = 20;
     self.timelineGroups = this.pageSize / this.timelineGroupSize * 2;
-    self.defaultFormat = "MMMM Do, YYYY";
+    self.defaultDateFormat = "MMMM Do, YYYY";
 
     return self;
 };
