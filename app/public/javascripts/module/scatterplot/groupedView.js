@@ -184,14 +184,14 @@ scatterplot.view.grouped.prototype.render = function(data) {
              */
             params[chart._xLabel] = JSON.stringify({
                 min : (d.i - 1) in xTicks ? d3.round(xTicks[d.i - 1]) : 0,
-                max : d3.round(xTicks[d.i])
+                max : d.i == xTicks.length-1 ? d3.round(xTicks[d.i])+1 : d3.round(xTicks[d.i])
             });
             /*
              * Add y axis filed params.
              */
             params[chart._yLabel] = JSON.stringify({
                 min : (yTicks.length - d.j - 2) in yTicks ? d3.round(yTicks[yTicks.length - d.j - 2]) : 0,
-                max : d3.round(yTicks[yTicks.length - d.j - 1])
+                max : d.j == 0 ? d3.round(yTicks[yTicks.length - d.j - 1])+1 : d3.round(yTicks[yTicks.length - d.j - 1])
             });
             /*
              * Complose bubble URL.

@@ -119,11 +119,11 @@ scatterplot.view.standard.prototype.render = function(data) {
                  */
                 filterObj[chart._xLabel] = JSON.stringify({
                     min: chart._xAccessor(d),
-                    max: chart._xAccessor(d)
+                    max: chart._xAccessor(d)+1
                 });
                 filterObj[chart._yLabel] = JSON.stringify({
                     min: chart._yAccessor(d),
-                    max: chart._yAccessor(d)
+                    max: chart._yAccessor(d)+1
                 });
                 /*
                  * Generate URL to gallery with prepared filterJSON.
