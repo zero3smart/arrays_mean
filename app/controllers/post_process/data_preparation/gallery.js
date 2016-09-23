@@ -126,6 +126,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             if (err) return done(err);
 
             uniqueFieldValuesByFieldName = {};
+            console.log(dataSourceDescription.fe_filters_fieldsSortableByInteger);
             for (var columnName in _uniqueFieldValuesByFieldName) {
                 if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
                     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
@@ -138,11 +139,13 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                     } else {
                         uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
                     }
-                    if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) // Sort by integer
-                        uniqueFieldValuesByFieldName[columnName].sort(function(a, b) {
-                            return parseInt(a.replace(/\D/g,'')) - parseInt(b.replace(/\D/g,''));
+                    console.log(columnName);
+                    if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                            return parseInt(a.replace(/\D/g, '')) - parseInt(b.replace(/\D/g, ''));
                         });
-                    else // Sort alphabetically by default
+                        console.log(uniqueFieldValuesByFieldName[columnName]);
+                    } else // Sort alphabetically by default
                         uniqueFieldValuesByFieldName[columnName].sort(function(a, b) {
                             return a - b;
                         });
