@@ -171,6 +171,7 @@ exports.Descriptions =
                 ],
             fe_lineGraph_keywordGroupBy: "Word",
             fe_lineGraph_defaultAggregateByColumnName_humanReadable: "Count",
+            fe_lineGraph_aggregateByColumnName_numberOfRecords_notAvailable: true,
             fe_lineGraph_keywordLineColors: {
                 Bioinformatics: '#33B1B1',
                 'Computational Biology': '#9533F8',

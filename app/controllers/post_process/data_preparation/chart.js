@@ -66,8 +66,9 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 
     // Aggregate By
     var aggregateBy = urlQuery.aggregateBy;
-    var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultAggregateByColumnName_humanReadable;
-    if (!defaultAggregateByColumnName_humanReadable)
+    var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_chart_defaultAggregateByColumnName_humanReadable;
+    var numberOfRecords_notAvailable = dataSourceDescription.fe_chart_aggregateByColumnName_numberOfRecords_notAvailable;
+    if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
         defaultAggregateByColumnName_humanReadable = config.AggregateByDefaultColumnName;
 
     // Aggregate By Available
@@ -82,12 +83,20 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 
             if (!aggregateBy_humanReadable_available) {
                 aggregateBy_humanReadable_available = [];
-                aggregateBy_humanReadable_available.push(config.AggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                if (!numberOfRecords_notAvailable)
+                    aggregateBy_humanReadable_available.push(config.AggregateByDefaultColumnName); // Add the default - aggregate by number of records.
             }
 
             aggregateBy_humanReadable_available.push(humanReadableColumnName);
         }
     }
+    if (aggregateBy_humanReadable_available) {
+        if (aggregateBy_humanReadable_available.length > 0)
+            defaultAggregateByColumnName_humanReadable = aggregateBy_humanReadable_available[0];
+        if (aggregateBy_humanReadable_available.length == 1)
+            aggregateBy_humanReadable_available = undefined;
+    }
+
     var aggregateBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy ? aggregateBy : defaultAggregateByColumnName_humanReadable, dataSourceDescription);
 
     //
