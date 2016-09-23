@@ -140,10 +140,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                     }
                     if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
                         uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                            console.log(a.replace(/\D/g, ''), b.replace(/\D/g, ''));
                             return parseInt(a.replace(/\D/g, '')) - parseInt(b.replace(/\D/g, ''));
                         });
-                        console.log(uniqueFieldValuesByFieldName[columnName]);
                     } else // Sort alphabetically by default
                         uniqueFieldValuesByFieldName[columnName].sort(function(a, b) {
                             return a - b;
