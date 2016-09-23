@@ -134,11 +134,18 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                         _uniqueFieldValuesByFieldName[columnName].forEach(function(rowValue) {
                             row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
                         });
-                        row.sort();
                         uniqueFieldValuesByFieldName[columnName] = row;
                     } else {
                         uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
                     }
+                    if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) // Sort by integer
+                        uniqueFieldValuesByFieldName[columnName].sort(function(a, b) {
+                            return parseInt(a.replace(/\D/g,'')) - parseInt(b.replace(/\D/g,''));
+                        });
+                    else // Sort alphabetically by default
+                        uniqueFieldValuesByFieldName[columnName].sort(function(a, b) {
+                            return a - b;
+                        });
                 }
             }
             done();

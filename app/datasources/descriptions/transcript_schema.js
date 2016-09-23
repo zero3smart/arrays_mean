@@ -270,6 +270,11 @@ exports.Descriptions =
                     "Pages_Thumbnail",
                     "Pages_FullSize"
                 ],
+            fe_filters_fieldsSortableByInteger:
+                [
+                    "Volume",
+                    "Issue"
+                ],
             //
             //
             fe_gallery_defaultSortByColumnName_humanReadable: "Date",
