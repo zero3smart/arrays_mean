@@ -134,8 +134,15 @@ $(document).ready(function() {
                         $modalBody.html('<h3>Share on Social Media</h3>');
                         $modalBody.append('<div id="facebook" data-url="' + share_url + '" data-text="Arrays"></div>');
                         $modalBody.append('<a href="#" id="twitter" class="btn btn-social background-color-brand" data-url="' + share_url + '" data-text="Arrays"><span class="icon-twitter" aria-hidden="true"></span>Twitter</a>');
+
                         $modalBody.append('<h3>Share URL</h3>');
                         $modalBody.append('<pre class="border-color-brand">' + share_url + '</pre>');
+
+                        var embedUrl = '<iframe src="' + share_url + '" width="640" height="480" frameborder="0"></iframe>';
+
+                        $modalBody.append('<h3>Embed URL</h3>');
+                        $modalBody.append('<pre id="embed-url" class="border-color-brand"></pre>');
+                        $('#embed-url').text(embedUrl);
 
                         /**
                          * Initialize Sharrre buttons

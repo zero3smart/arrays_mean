@@ -1,8 +1,12 @@
 var url = require('url');
 var winston = require('winston');
+var helmet = require('helmet');
 
 module.exports = function(context) {
     var app = context.app;
+
+    app.use(helmet.xframe('allow-from', '*'));
+
     app.get('/s/:shared_page_id', function(req, res)
     {
         var shared_page_id = req.params.shared_page_id;
