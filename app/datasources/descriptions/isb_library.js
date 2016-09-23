@@ -305,8 +305,11 @@ exports.Descriptions =
                     "Meeting Name",
                     "Conference Name",
                     "Court",
-                    "Category"
+                    "Category",
+                    "Categories",
+                    "Journal"
                 ],
+            fe_timeline_tooltipDateFormat: "YYYY",
             //
             //
             fe_lineGraph_defaultGroupByColumnName_humanReadable: "Publication Year",

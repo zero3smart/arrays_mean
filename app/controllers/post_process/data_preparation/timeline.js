@@ -353,7 +353,9 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             //
             routePath_base: routePath_base,
             // multiselectable filter fields
-            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
+            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable,
+
+            tooltipDateFormat: dataSourceDescription.fe_timeline_tooltipDateFormat || null
         };
         callback(err, data);
     });
