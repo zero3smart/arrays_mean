@@ -218,6 +218,10 @@ $(document).ready(function() {
         $('.array-description-expand').css("display", "inline-block");
     });
 
+    $('#signup').on('click', function(e) {
+        if (lock) lock.show();
+    });
+
 });
 
 /**
