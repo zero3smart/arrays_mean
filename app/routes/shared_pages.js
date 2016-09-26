@@ -10,29 +10,32 @@ module.exports = function(context) {
     app.get('/s/:shared_page_id', function(req, res)
     {
         var shared_page_id = req.params.shared_page_id;
-        if (shared_page_id == null || typeof shared_page_id === 'undefined' || shared_page_id == "") {
-            res.status(403).send("Bad Request - shared_page_id missing")
+        if (!shared_page_id) {
+            res.status(403).send("Bad Request - shared_page_id missing");
 
             return;
         }
-        context.shared_pages_controller.FindOneWithId(shared_page_id, function(err, doc)
-        {
+
+        context.shared_pages_controller.FindOneWithId(shared_page_id, function(err, doc) {
             if (err) {
-                res.status(500).send("Internal Server Error");
+                res.status(500).send(err.response);
 
                 return;
             }
-            if (doc == null) {
-                res.status(404).send(err.response || 'Not Found');
+
+            if (!doc) {
+                res.status(404).send('Not Found');
 
                 return;
             }
+
             var source_key = doc.sourceKey;
-            if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
+            if (!source_key) {
                 res.status(500).send("Internal Server Error");
 
                 return;
             }
+
             var pageType = doc.pageType;
             if (pageType == "array_view") {
                 var viewType = doc.viewType;
@@ -69,7 +72,7 @@ module.exports = function(context) {
                 context.object_details_controller.BindDataFor_array(source_key, rowObjectId, function(err, bindData)
                 {
                     if (err) {
-                        winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err);
+                        winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + rowObjectId + " details: ", err);
                         res.status(500).send(err.response || 'Internal Server Error');
 
                         return;

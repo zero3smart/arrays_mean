@@ -8,25 +8,25 @@ module.exports = function(context) {
     var apiVersion = 'v1';
     var apiURLPrefix = '/' + apiVersion + '/';
 
-    //
     app.post(apiURLPrefix + 'share', function(req, res)
     {
         var urlContainingShareParams = req.body.url;
-        if (typeof urlContainingShareParams === 'undefined' || urlContainingShareParams == null || urlContainingShareParams == "") {
+        if (!urlContainingShareParams) {
             res.status(400).send("url parameter required");
 
             return;
         }
+
         var url_parts = url.parse(urlContainingShareParams, true);
         var pathname = url_parts.pathname;
         var query = url_parts.query;
-        //
+
         var pageType;
         var viewType_orNull = null;
         var source_key; // the array's pKey
         var rowObjectId_orNull = null;
-        function _stringFromPathNameWithRegEx(matcherRegEx)
-        {
+
+        function _stringFromPathNameWithRegEx(matcherRegEx) {
             var matches = matcherRegEx.exec(pathname);
             if (matches.length <= 1) {
                 return null;
@@ -34,7 +34,8 @@ module.exports = function(context) {
 
             return matches[1];
         }
-        if (/^\/array\/.*\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|choropleth)/g.test(pathname) == true) {
+
+        if (/^\/array\/.*\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|line-graph)/g.test(pathname) == true) {
             pageType = "array_view";
             //
             if (/^\/array\/.*\/gallery/g.test(pathname) == true) {
