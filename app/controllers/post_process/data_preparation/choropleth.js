@@ -4,9 +4,9 @@ var Batch = require('batch');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
+var raw_source_documents = require('../../../models/raw_source_documents');
 var config = new require('../config')();
 var functions = new require('../functions')();
-var raw_source_documents = require('../../../model/raw_source_documents');
 //
 // Prepare country geo data cache
 var __countries_geo_json_str = fs.readFileSync(__dirname + '/../../../public/data/world.geo.json/countries.geo.json', 'utf8');

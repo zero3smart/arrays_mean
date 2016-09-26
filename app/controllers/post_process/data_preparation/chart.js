@@ -3,6 +3,7 @@ var Batch = require('batch');
 
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
+var raw_source_documents = require('../../../models/raw_source_documents');
 var config = new require('../config')();
 var functions = new require('../functions')();
 //
@@ -15,7 +16,7 @@ module.exports.BindData = function (urlQuery, callback) {
     // searchCol
     // Other filters
     var source_pKey = urlQuery.source_key;
-    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, raw_source_documents);
+    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
     if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
         callback(new Error("No data source with that source pkey " + source_pKey), null);
 

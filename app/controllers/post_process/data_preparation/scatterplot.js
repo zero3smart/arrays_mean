@@ -4,6 +4,7 @@ var queryString = require('querystring');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
+var raw_source_documents = require('../../../models/raw_source_documents');
 var config = new require('../config')();
 var functions = new require('../functions')();
 
@@ -25,9 +26,7 @@ constructor.prototype.BindData = function(urlQuery, callback)
     var self = this;
 
     var sourceKey = urlQuery.source_key;
-    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(
-        sourceKey, self.context.raw_source_documents_controller
-    );
+    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(sourceKey);
 
     if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
         callback(new Error("No data source with that source pkey " + sourceKey), null);
@@ -92,7 +91,7 @@ constructor.prototype.BindData = function(urlQuery, callback)
     /*
      * Run chain of functions to collect necessary data.
      */
-    self.context.raw_source_documents_controller.Model.findOne({ primaryKey: sourceKey }, function(err, sourceDoc) {
+    raw_source_documents.Model.findOne({ primaryKey: sourceKey }, function(err, sourceDoc) {
         /*
          * Run query to mongo to obtain all rows which satisfy to specified filters set.
          */

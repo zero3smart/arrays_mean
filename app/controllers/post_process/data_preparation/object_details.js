@@ -3,6 +3,7 @@ var Batch = require('batch');
 var queryString = require('querystring');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
+var raw_source_documents = require('../../../models/raw_source_documents');
 var config = new require('../config')();
 var functions = new require('../functions')();
 
@@ -18,7 +19,7 @@ var constructor = function(options, context) {
 constructor.prototype.BindData = function(source_pKey, rowObject_id, callback)
 {
     var self = this;
-    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
+    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
 
     var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
 
@@ -63,7 +64,7 @@ constructor.prototype.BindData = function(source_pKey, rowObject_id, callback)
                         var by = afterImportingAllSources_generate_description.by;
                         var relationshipSource_uid = by.ofOtherRawSrcUID;
                         var relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
-                        var relationshipSource_pKey = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(relationshipSource_uid, relationshipSource_importRevision);
+                        var relationshipSource_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(relationshipSource_uid, relationshipSource_importRevision);
                         var rowObjectsOfRelationship_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(relationshipSource_pKey);
                         var rowObjectsOfRelationship_mongooseModel = rowObjectsOfRelationship_mongooseContext.Model;
                         //

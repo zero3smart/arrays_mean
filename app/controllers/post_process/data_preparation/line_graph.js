@@ -5,6 +5,7 @@ var importedDataPreparation = require('../../../datasources/utils/imported_data_
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
 var config = new require('../config')();
 var functions = new require('../functions')();
+var raw_source_documents = require('../../../models/raw_source_documents');
 
 var constructor = function(options, context) {
     var self = this;
@@ -76,7 +77,7 @@ constructor.prototype.BindData = function(urlQuery, callback)
     //
     // DataSource Relationship
     var mapping_source_pKey = dataSourceDescription.fe_lineGraph_mapping_dataSource_pKey;
-    //var dataSourceRevision_pKey = self.context.raw_source_documents.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
+    //var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
     if (mapping_source_pKey) {
         var mappingDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(mapping_source_pKey, self.context.raw_source_documents_controller);
 

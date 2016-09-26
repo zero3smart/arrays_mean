@@ -3,6 +3,7 @@ var Batch = require('batch');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
+var raw_source_documents = require('../../../models/raw_source_documents');
 var config = new require('../config')();
 var functions = new require('../functions')();
 
@@ -25,7 +26,7 @@ constructor.prototype.BindData = function(urlQuery, callback)
     // searchCol
     // Other filters
     var source_pKey = urlQuery.source_key;
-    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
+    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
     if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
         callback(new Error("No data source with that source pkey " + source_pKey), null);
 
@@ -73,7 +74,7 @@ constructor.prototype.BindData = function(urlQuery, callback)
 
     // Obtain source document
     batch.push(function(done) {
-        self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
+        raw_source_documents.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
             if (err) return done(err);
 
             sourceDoc = _sourceDoc;
