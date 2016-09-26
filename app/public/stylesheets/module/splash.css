@@ -80,6 +80,7 @@
 	text-transform: uppercase;
 	letter-spacing: 2px;
 	font-size: 14px;
+	background-color: white;
 }
 
 .splash-devices {
@@ -90,7 +91,7 @@
 @media (min-width: 768px) {
 	.splash-devices {
 		margin-top: 130px;
-		margin-bottom: 185px;
+		margin-bottom: 100px;
 	}
 }
 
@@ -170,7 +171,7 @@
 
 .splash-scenarios-list {
 	margin-right: -15px;
-	margin-bottom: 80px;
+	margin-bottom: 60px;
 	margin-left: -15px;
 	padding-left: 0;
 	list-style-type: none;
@@ -179,7 +180,7 @@
 
 @media (min-width: 768px) {
 	.splash-scenarios-list {
-		margin-bottom: 215px;
+		margin-bottom: 130px;
 	}
 }
 
@@ -308,4 +309,25 @@
 	}
 }
 
+.splash-video {
+	background: #FE00FF;
+    max-width: auto;
+}
+
+.embed-container { 
+	position: relative; 
+	margin-bottom: 80px; 
+	padding-bottom: 56.25%; 
+	height: 0; 
+	overflow: hidden; 
+	max-width: 100%; } 
+.embed-container iframe, 
+.embed-container object, 
+.embed-container embed { 
+	position: absolute; 
+	top: 0; 
+	left: 0; 
+	width: 100%; 
+	height: 100%; 
+}
 /* @end Footer */

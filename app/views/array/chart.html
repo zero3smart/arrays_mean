@@ -32,24 +32,40 @@
 
                             <div class="sort-bar clearfix">
 
-                                <nav class="pull-left" role="navigation">
+                                <nav class="sort-bar-left pull-left" role="navigation">
                                     {{
-                                    dropdown.default
+                                    dropdown.sortbar
                                         (
                                             "Chart By",
                                             groupBy if groupBy else defaultGroupByColumnName_humanReadable,
                                             colNames_orderedForGroupByDropdown,
-                                            routePath_base | constructedRoutePath({
+                                            routePath_base | constructedRoutePath(filterObj, {
                                                 searchCol: searchCol,
                                                 searchQ: searchQ,
-                                                filterJSON: filterJSON,
+                                                aggregateBy: aggregateBy,
                                                 groupBy: ''
                                             })
                                         )
                                     }}
+
+                                    {% if aggregateBy_humanReadable_available %}
+                                        {{
+                                        dropdown.sortbar(
+                                            'Aggregate By',
+                                            aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
+                                            aggregateBy_humanReadable_available,
+                                            routePath_base | constructedRoutePath(filterObj, {
+                                                searchCol: searchCol,
+                                                searchQ: searchQ,
+                                                groupBy: groupBy,
+                                                aggregateBy: ''
+                                            })
+                                        )
+                                        }}
+                                    {% endif %}
                                 </nav>
 
-                                <div class="pull-right">
+                                <div class="sort-bar-right pull-right">
                                     {{
                                     search.panel(
                                         routePath_base,
@@ -58,7 +74,7 @@
                                         searchQ if searchQ else "",
                                         null,
                                         null,
-                                        filterJSON_nonURIEncodedVals
+                                        filterObj
                                     )
                                     }}
 
@@ -75,10 +91,11 @@
                 {% if isFilterActive %}
                     {{
                     filter.default(
-                        routePath_base | constructedRoutePath({
+                        routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
                             searchQ: searchQ,
-                            groupBy: groupBy
+                            groupBy: groupBy,
+                            aggregateBy: aggregateBy
                         }),
                         filterObj,
                         truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
@@ -92,11 +109,12 @@
                     var pieData = {{ groupedResults | dump | safe }};
 
                     var filterObj = {{ filterObj | dump | safe }};
-                    var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath({
+                    var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
                             searchQ: searchQ,
-                            groupBy: groupBy
-                    }) }}";
+                            groupBy: groupBy,
+                            aggregateBy: aggregateBy
+                    }) | safe }}";
                     var routePath_base = '{{ routePath_base }}';
                     var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
                 </script>

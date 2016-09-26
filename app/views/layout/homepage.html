@@ -18,7 +18,9 @@
             </footer><!-- #colophon -->
         </div><!-- #page -->
 
-        {% include "../partials/auth.html" %}
+        {% block auth %}
+            {% include "../partials/auth.html" %}
+        {% endblock %}
 
         <script type="text/javascript" src="/javascripts/main.js"></script>
         <script type="text/javascript" src="/javascripts/module/splash.js"></script>

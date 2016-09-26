@@ -37,10 +37,9 @@
                                     'Group By',
                                     groupBy if groupBy else defaultGroupByColumnName_humanReadable,
                                     colNames_orderedForGroupByDropdown,
-                                    routePath_base | constructedRoutePath({
+                                    routePath_base | constructedRoutePath(filterObj, {
                                         searchCol: searchCol,
                                         searchQ: searchQ,
-                                        filterJSON: filterJSON,
                                         sortBy: sortBy,
                                         sortDir: sortDir,
                                         page: onPageNum if onPageNum != 1 else null,
@@ -54,10 +53,9 @@
                                     'Sort By',
                                     sortBy if sortBy else defaultSortByColumnName_humanReadable,
                                     colNames_orderedForTimelineSortByDropdown,
-                                    routePath_base | constructedRoutePath({
+                                    routePath_base | constructedRoutePath(filterObj, {
                                         searchCol: searchCol,
                                         searchQ: searchQ,
-                                        filterJSON: filterJSON,
                                         groupBy: groupBy,
                                         sortDir: sortDir,
                                         page: onPageNum if onPageNum != 1 else null,
@@ -76,7 +74,7 @@
                                     searchQ if searchQ else "",
                                     sortBy,
                                     sortDir,
-                                    filterJSON_nonURIEncodedVals
+                                    filterObj
                                 )
                                 }}
                             </div>
@@ -95,7 +93,7 @@
                 {% if isFilterActive %}
                     {{
                     filter.default(
-                        routePath_base | constructedRoutePath({
+                        routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
                             searchQ: searchQ,
                             sortBy: sortBy,
@@ -139,13 +137,14 @@
                                                     {% if groupedResultsLimit < group.total %}
                                                         <li class="timeline-group-item">
                                                             <div class="timeline-item timeline-view-all">
-                                                                {% set queryParamJoinChar = "?" %}
-                                                                {% set filterDateRange = {'min': group.startDate | dateFormat(''), 'max': group.endDate | dateFormat('') } %}
+                                                                {% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}
+                                                                    {% set filterDateRange = {"min": group.startDate | dateFormat('YYYY'), "max": group.endDate | addDate(1, 'y') | dateFormat('YYYY') } %}
+                                                                {% else %}
+                                                                    {% set filterDateRange = group.startDate | dateFormat('YYYY') | int %}
+                                                                {% endif %}
                                                                 {% set sortByDateRange = sortBy if sortBy else defaultSortByColumnName_humanReadable %}
-                                                                {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(sortByDateRange, filterDateRange, false) %}
-                                                                {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                                                                {% set urlForFilterValue = "/array/" + array_source_key +  "/gallery" + queryParamJoinChar + "filterJSON=" + filterJSONString %}
-                                                                <a href="{{ urlForFilterValue }}" class="timeline-view-all-link color-brand-hover">
+                                                                {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(sortByDateRange, filterDateRange | dump, false) %}
+                                                                <a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal) }}" class="timeline-view-all-link color-brand-hover">
                                                                     <span class="timeline-view-all-label">View all</span>
                                                                     <span class="timeline-view-all-count">{{ group.total }}</span>
                                                                 </a>
@@ -168,10 +167,9 @@
                             <nav class="gallery-pagination">
                                 {{
                                 pagination.default(
-                                    routePath_base | constructedRoutePath({
+                                    routePath_base | constructedRoutePath(filterObj, {
                                         searchCol: searchCol,
                                         searchQ: searchQ,
-                                        filterJSON: filterJSON,
                                         sortBy: sortBy,
                                         sortDir: sortDir,
                                         groupBy: groupBy

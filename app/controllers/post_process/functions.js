@@ -40,33 +40,43 @@ var constructor = function() {
         var filterCols_length = filterCols.length;
         if (filterCols_length == 0) {
             winston.error("❌  Programmer runtime check error. Filter obj had no keys.");
-
             return { err: new Error("No active filter despite filterObj") };
         }
         var conditions = [];
         for (var i = 0 ; i < filterCols_length ; i++) {
             var filterCol = filterCols[i];
             var filterVals = filterObj[filterCol];
+            if (!Array.isArray(filterVals)) {
+                filterVals = [filterVals];
+            }
             var filterVals_length = filterVals.length;
-            for (var j = 0 ; j < filterVals_length ; j++) {
+            for (var j = 0; j < filterVals_length; j++) {
                 var filterVal = filterVals[j];
                 var matchConditions = {};
-                if (typeof filterVal === 'string') {
+                try {
+                    filterVal = JSON.parse(filterVal);
+                } catch (e) {
+                    // Restore
+                    filterVal = filterVals[j];
+                }
+                //console.log('---------- filter', filterCol, filterVal);
+                if (typeof filterVal === 'string' || typeof filterVal === 'number') {
                     matchConditions = self._activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
-                } else if (filterVal.min !== null || filterVal.max !== null) {
+                } else if (filterVal.min != undefined || filterVal.max != undefined) {
                     matchConditions = self._activeFilterRange_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal.min, filterVal.max);
+                } else if (Array.isArray(filterVal)) {
+                    matchConditions = self._activeFilterOR_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
                 } else {
                     // TODO - ERROR - Unexpected format
                 }
                 if (typeof matchConditions.err !== 'undefined') {
-                    return { err: matchConditions.err };
+                    return {err: matchConditions.err};
                 }
                 conditions = conditions.concat(matchConditions.matchConditions);
             }
         }
         if (conditions.length == 0) {
             winston.error("❌  Programmer runtime check error. No match conditions in multifilter for filter obj: ", filterObj);
-
             return { err: new Error("No match conditions in multifilter despite filterObj") };
         }
 
@@ -104,6 +114,7 @@ var constructor = function() {
                 }
             }
         }
+
         if (isAFabricatedFilter == true) { // already obtained matchConditions just above
             if (typeof matchConditions === 'undefined') {
                 return { err: new Error("Unexpectedly missing matchConditions given fabricated filter…" + JSON.stringify(urlQuery)) };
@@ -116,6 +127,7 @@ var constructor = function() {
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
                 && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+
             if (!isDate) {
                 var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
                 var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
@@ -128,13 +140,16 @@ var constructor = function() {
                         realFilterValue = overrideValue;
                     }
                 }
-
-                // We need to consider that the search column might be array
-                // escape Mongo reserved characters in Mongo
-                realFilterValue = realFilterValue.split("(").join("\\(")
-                    .split(")").join("\\)")
-                    .split("+").join("\\+")
-                    .split("$").join("\\$");
+                if (typeof realFilterValue === 'string') {
+                    // We need to consider that the search column might be array
+                    // escape Mongo reserved characters in Mongo
+                    realFilterValue = realFilterValue.split("(").join("\\(")
+                        .split(")").join("\\)")
+                        .split("+").join("\\+")
+                        .split("$").join("\\$");
+                } else {
+                    realFilterValue = '' + realFilterValue;
+                }
 
                 matchConditions = self._activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, realFilterValue).matchOps;
 
@@ -181,15 +196,15 @@ var constructor = function() {
                 }
             }
         } else {
-            var filterDateMin = moment(filterValMin);
+            var filterDateMin = moment.utc(filterValMin);
             if (filterDateMin.isValid()) {
-                realFilterValueMin = filterDateMin.utc().startOf('day').toDate();
+                realFilterValueMin = filterDateMin.startOf('day').toDate();
             } else {
                 throw new Error('Invalid date');
             }
-            var filterDateMax = moment(filterValMax);
+            var filterDateMax = moment.utc(filterValMax);
             if (filterDateMax.isValid()) {
-                realFilterValueMax = filterDateMax.utc().startOf('day').toDate();
+                realFilterValueMax = filterDateMax.startOf('day').toDate();
             } else {
                 throw new Error('Invalid date');
             }
@@ -217,28 +232,160 @@ var constructor = function() {
         return { matchConditions: [projectOp, matchOp] };
     };
     //
+    self._activeFilterOR_matchCondition_orErrDescription = function(dataSourceDescription, filterCol, filterVal)
+    {
+        var matchConditions = undefined;
+        var isAFabricatedFilter = false; // finalize
+        if (dataSourceDescription.fe_filters_fabricatedFilters) {
+            var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
+            for (var i = 0 ; i < fabricatedFilters_length ; i++) {
+                var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
+                if (fabricatedFilter.title === filterCol) {
+                    isAFabricatedFilter = true;
+                    // Now find the applicable filter choice
+                    var choices = fabricatedFilter.choices;
+                    var choices_length = choices.length;
+
+                    for (var k = 0; k < filterVal.length; k ++) {
+
+                        var foundChoice = false;
+                        for (var j = 0; j < choices_length; j++) {
+                            var choice = choices[j];
+                            if (choice.title === filterVal[k]) {
+                                foundChoice = true;
+                                matchConditions = [{$match: choice["$match"]}];
+
+                                break; // found the applicable filter choice
+                            }
+                        }
+                        if (foundChoice == false) { // still not found despite the filter col being recognized as fabricated
+                            return {err: new Error("No such choice \"" + filterVal + "\" for filter " + filterCol)};
+                        }
+
+                    }
+
+                    break; // found the applicable fabricated filter
+                }
+            }
+        }
+
+        if (isAFabricatedFilter == true) { // already obtained matchConditions just above
+            if (typeof matchConditions === 'undefined') {
+                return { err: new Error("Unexpectedly missing matchConditions given fabricated filter…" + JSON.stringify(urlQuery)) };
+            }
+        } else {
+            var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(filterCol, dataSourceDescription);
+            var realColumnName_path = "rowParams." + realColumnName;
+
+            // To coercion the date field into the valid date
+            var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+            var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
+                && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+
+            if (!isDate) {
+                for (var i = 0; i < filterVal.length; i ++) {
+                    var realFilterValue = filterVal[i]; // To finalize in case of override…
+                    var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+                    var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
+                    if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
+                        var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[realFilterValue];
+                        if (typeof overrideValue === 'undefined') {
+                            var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
+                            winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
+                        } else {
+                            realFilterValue = overrideValue;
+                        }
+                    }
+                    if (typeof realFilterValue === 'string') {
+                        // We need to consider that the search column might be array
+                        // escape Mongo reserved characters in Mongo
+                        realFilterValue = realFilterValue.split("(").join("\\(")
+                            .split(")").join("\\)")
+                            .split("+").join("\\+")
+                            .split("$").join("\\$");
+                    } else {
+                        realFilterValue = '' + realFilterValue;
+                    }
+                    filterVal[i] = realFilterValue;
+                }
+            }
+
+            matchConditions = self._activeSearch_matchOp_orErrDescription(dataSourceDescription, realColumnName, filterVal).matchOps;
+        }
+
+        if (typeof matchConditions === 'undefined') {
+            throw new Error("Undefined match condition");
+        }
+
+        return { matchConditions: matchConditions };
+    };
+    // returns dictionary with err or matchOp
     self._activeSearch_matchOp_orErrDescription = function(dataSourceDescription, searchCol, searchQ)
-    { // returns dictionary with err or matchOp
+    {
         var realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(searchCol, dataSourceDescription);
         var realColumnName_path = "rowParams." + realColumnName;
 
         // We need to consider that the search column is array
         var unwindOp = { $unwind: '$' + realColumnName_path };
         var matchOp = { $match: {} };
+
         var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
         var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
             && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
         if (!isDate) {
-            matchOp["$match"][realColumnName_path] = { $regex: searchQ, $options: "i" };
-        } else {
-            var searchDate = moment.utc(searchQ);
-            var realSearchValue;
-            if (searchDate.isValid()) {
-                realSearchValue = searchDate.utc().startOf('day').toDate();
-            } else { // Invalid Date
-                return { err: 'Invalid Date' };
+            if (Array.isArray(searchQ)) {
+                var match = [];
+                for (var i = 0; i < searchQ.length; i ++) {
+                    var obj = {};
+                    obj[realColumnName_path] = {$regex: searchQ[i], $options: "i"};
+                    match.push(obj);
+                }
+                matchOp["$match"]["$or"] = match;
+            } else {
+                matchOp["$match"][realColumnName_path] = {$regex: searchQ, $options: "i"};
             }
-            matchOp["$match"][realColumnName_path] = { $eq: realSearchValue };
+        } else {
+            var realSearchValueMin, realSearchValueMax, searchDate;
+            if (Array.isArray(searchQ)) {
+                match = [];
+                for (var i = 0; i < searchQ.length; i ++) {
+                    searchDate = moment.utc('' + searchQ[i]);
+                    if (searchDate.isValid()) {
+                        realSearchValueMin = searchDate.startOf('day').toDate();
+
+                        if (searchQ[i].length == 4) { // Year
+                            realSearchValueMax = searchDate.startOf('year').add(1, 'years').toDate();
+                        } else if (searchQ[i].length < 8) { // Month
+                            realSearchValueMax = searchDate.startOf('month').add(1, 'months').toDate();
+                        } else { // Day
+                            realSearchValueMax = searchDate.startOf('day').add(1, 'days').toDate();
+                        }
+                    } else { // Invalid Date
+                        return {err: 'Invalid Date'};
+                    }
+                    obj = {};
+                    obj[realColumnName_path] = {$gte: realSearchValueMin, $lt: realSearchValueMax};
+                    match.push(obj);
+                }
+                matchOp["$match"]["$or"] = match;
+            } else {
+                searchQ = '' + searchQ;
+                searchDate = moment.utc(searchQ);
+                if (searchDate.isValid()) {
+                    realSearchValueMin = searchDate.startOf('day').toDate();
+
+                    if (searchQ.length == 4) { // Year
+                        realSearchValueMax = searchDate.startOf('year').add(1, 'years').toDate();
+                    } else if (searchQ.length < 8) { // Month
+                        realSearchValueMax = searchDate.startOf('month').add(1, 'months').toDate();
+                    } else { // Day
+                        realSearchValueMax = searchDate.startOf('day').add(1, 'days').toDate();
+                    }
+                } else { // Invalid Date
+                    return {err: 'Invalid Date'};
+                }
+                matchOp["$match"][realColumnName_path] = {$gte: realSearchValueMin, $lt: realSearchValueMax};
+            }
         }
 
         var groupOp = {
@@ -360,10 +507,10 @@ var constructor = function() {
                             dateFormat = opts.format;
                         }
                     }
-                    if (dateFormat == null) { // still null? use default
-                        dateFormat = config.defaultFormat;
+                    if (dateFormat == null || dateFormat == import_datatypes.Coercion_optionsPacks.ToDate.ISO_8601.format) { // still null? use default
+                        dateFormat = config.defaultDateFormat;
                     }
-                    displayableVal = moment.utc(originalVal).format(dateFormat);
+                    displayableVal = moment(originalVal, moment.ISO_8601).utc().format(dateFormat);
                 } else { // nothing to do? (no other types yet)
                 }
             } else { // nothing to do?
@@ -399,124 +546,17 @@ var constructor = function() {
         return truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill;
     };
     //
-    self._new_reconstructedURLEncodedFilterObjAsFilterJSONString = function(filterObj)
-    {
-        var reconstructedURLEncodedFilterObjForFilterJSONString = {}; // to construct
-        var filterObj_keys = Object.keys(filterObj);
-        var filterObj_keys_length = filterObj_keys.length;
-        for (var i = 0 ; i < filterObj_keys_length ; i++) {
-            var filterObj_key = filterObj_keys[i];
-            var filterObj_key_vals = filterObj[filterObj_key];
-            // we need to re-URI-encode filterObj_key_vals elements and then stringify
-            var filterObj_key_vals_length = filterObj_key_vals.length;
-            var encodedVals = [];
-            for (var j = 0 ; j < filterObj_key_vals_length ; j++) {
-                var filterObj_key_val = filterObj_key_vals[j];
-                var filterIsString = typeof filterObj_key_val === 'string';
-                var filterVal = filterIsString ? encodeURIComponent(filterObj_key_val) : filterObj_key_val;
-                encodedVals.push(filterVal);
-            }
-            reconstructedURLEncodedFilterObjForFilterJSONString[filterObj_key] = encodedVals;
-        }
-        var filterJSON_uriEncodedVals = JSON.stringify(reconstructedURLEncodedFilterObjForFilterJSONString);
-
-        return filterJSON_uriEncodedVals;
-    }
-
-    //
-    self.buildFilterAggregation = function(urlQuery, dataSourceDescription, data)
-    {
-        var filterJSON = urlQuery.filterJSON;
+    self.filterObjFromQueryParams = function(queryParams) {
         var filterObj = {};
-        var isFilterActive = false;
-        if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
-            try {
-                filterObj = JSON.parse(filterJSON);
-                if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
-                    isFilterActive = true;
-                } else {
-                    filterObj = {}; // must replace it to prevent errors below
-                }
-            } catch (e) {
-                winston.error("❌  Error parsing filterJSON: ", filterJSON);
-                return e;
+        var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'mapBy', 'aggregateBy', 'searchQ', 'searchCol'];
+        for (var key in queryParams) {
+            if (reservedKeys.indexOf(key) !== -1) continue;
+
+            if (queryParams[key] != '') {
+                filterObj[key] = queryParams[key];
             }
         }
-
-        var aggregationOperators = [];
-        // We must re-URI-encode the filter vals since they get decoded
-        var filterJSON_uriEncodedVals = self._new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
-
-        if (isFilterActive) { // rules out undefined filterJSON
-            var _orErrDesc = self._activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
-            if (typeof _orErrDesc.err !== 'undefined') {
-                return _orErrDesc.err;
-            }
-            aggregationOperators = _orErrDesc.matchOps;
-        }
-
-        var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
-
-        if (data === undefined) data = {};
-        data.filterObj = filterObj;
-        data.filterJSON_nonURIEncodedVals = filterJSON;
-        data.filterJSON = filterJSON_uriEncodedVals;
-        data.isFilterActive = isFilterActive;
-        data.uniqueFieldValuesByFieldName = uniqueFieldValuesByFieldName;
-        data.truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill;
-
-        return aggregationOperators;
-    }
-    //
-    self.buildSearchAggregation = function(urlQuery, dataSourceDescription, data)
-    {
-        var aggregationOperators = [];
-
-        //
-        var searchCol = urlQuery.searchCol;
-        var searchQ = urlQuery.searchQ;
-        var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
-            && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
-
-        //
-        var aggregationOperators = [];
-        if (isSearchActive) {
-            var _orErrDesc = self._activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
-            if (typeof _orErrDesc.err !== 'undefined') {
-                return _orErrDesc.err;
-            }
-            aggregationOperators = _orErrDesc.matchOps;
-        }
-
-        if (data === undefined) {
-            data = {};
-        }
-        //
-        data.searchQ = searchQ;
-        data.searchCol = searchCol;
-        data.isSearchActive = isSearchActive;
-
-        return aggregationOperators;
-    }
-    //
-    self.buildSourceDocument = function()
-    {
-
-    }
-    //
-    self.buildSampleDocument = function()
-    {
-
-    }
-    //
-    self.buildTopUniqueFieldValuesForFiltering = function()
-    {
-
-    }
-    //
-    self.countWholeSet = function()
-    {
-
+        return filterObj;
     }
 
     return self;

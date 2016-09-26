@@ -41,11 +41,11 @@
                                                         {% set sortedArray = columnValue | alphaSortedArray %}
                                                         {% for arrayMember in sortedArray %}
                                                             {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, arrayMember, false) %}
-                                                            {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
+                                                            {% set arrayMemberText = htmlOverrideFn(rowObject, arrayMember) | safe if htmlOverrideFn else arrayMember %}
                                                             {% if shouldLink %}
-                                                                <li class="object-list-item"><a href="/array/{{ array_source_key }}/gallery?filterJSON={{ filterJSONString }}" class="color-brand">{{ htmlOverrideFn(rowObject, arrayMember) | safe if htmlOverrideFn else arrayMember }}</a></li>
+                                                                <li class="object-list-item"><a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal) }}" class="color-brand">{{ arrayMemberText }}</a></li>
                                                             {% else %}
-                                                                <li class="object-list-item">{{ htmlOverrideFn(rowObject, arrayMember) | safe if htmlOverrideFn else arrayMember }}</li>
+                                                                <li class="object-list-item">{{ arrayMemberText | substitutePlainURLs | safe }}</li>
                                                             {% endif %}
                                                         {% endfor %}
                                                         </ul>
@@ -58,11 +58,10 @@
                                                 {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
                                                 {% if shouldLink %}
                                                     {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, columnValue, false) %}
-                                                    {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                                                
-                                                    <a href="/array/{{ array_source_key }}/gallery?filterJSON={{ filterJSONString }}" class="color-brand">
+
+                                                    <a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal) }}" class="color-brand">
                                                 {% endif %}
-                                                        {{ htmlOverrideFn(rowObject, columnValue) | safe if htmlOverrideFn else columnValue }}
+                                                        {{ (htmlOverrideFn(rowObject, columnValue) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe }}
                                                 {% if shouldLink %}
                                                     </a>
                                                 {% endif %}

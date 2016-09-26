@@ -128,17 +128,18 @@ Tooltip.prototype.setContent = function(content) {
  * @param element
  * @returns {Tooltip}
  */
-Tooltip.prototype.setOn = function(element) {
+Tooltip.prototype.setOn = function(element, cls) {
     /*
      * Stash current element.
      */
     this._element = element;
+    if (!cls) cls = '';
     /*
      * Append tooltip container to the document body.
      */
     if (! this._container) {
         this._container = d3.select(document.body).append('div')
-            .attr('class', 'arrays-co-tooltip')
+            .attr('class', 'arrays-co-tooltip ' + cls)
             .style('background-color', '#fff');
     }
 
@@ -167,7 +168,7 @@ Tooltip.prototype.show = function(element) {
     /*
      * Get element position.
      */
-    var position = jQuery(element).position();
+    var position = jQuery(element).offset();
     /*
      * Append hidden content to the container.
      */

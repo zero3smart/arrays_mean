@@ -39,16 +39,14 @@
 
                                 <div class="sort-control sort-direction">
                                     {% if sortDir == "Descending" %}
-                                        <a href="{{ routePath_base | constructedRoutePath({
-                                            filterJSON: filterJSON,
+                                        <a href="{{ routePath_base | constructedRoutePath(filterObj, {
                                             searchCol: searchCol,
                                             searchQ: searchQ,
                                             sortBy: sortBy,
                                             sortDir: 'Ascending',
                                             page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span></a>
                                     {% else %}
-                                        <a href="{{ routePath_base | constructedRoutePath({
-                                            filterJSON: filterJSON,
+                                        <a href="{{ routePath_base | constructedRoutePath(filterObj, {
                                             searchCol: searchCol,
                                             searchQ: searchQ,
                                             sortBy: sortBy,
@@ -62,13 +60,13 @@
                                     'Sort By',
                                     sortBy if sortBy else defaultSortByColumnName_humanReadable,
                                     colNames_orderedForSortByDropdown,
-                                    routePath_base | constructedRoutePath({
-                                        filterJSON: filterJSON,
+                                    routePath_base | constructedRoutePath(filterObj, {
                                         searchCol: searchCol,
                                         searchQ: searchQ,
                                         page: onPageNum if onPageNum != 1 else null,
                                         sortDir: sortDir,
-                                        sortBy: ''}),
+                                        sortBy: ''
+                                    }),
                                     false,
                                     false
                                 )
@@ -79,13 +77,13 @@
                             <div class="pull-right">
                                 {{
                                     search.default(
-                                    routePath_base,
+                                    routePath_base | constructedRoutePath(filterObj),
                                     searchCol if searchCol else "Object Title",
                                     colNames_orderedForSortByDropdown,
                                     searchQ if searchQ else "",
                                     sortBy,
                                     sortDir,
-                                    filterJSON_nonURIEncodedVals
+                                    filterObj
                                 )
                                 }}
                             </div>
@@ -95,7 +93,7 @@
                         {% if isFilterActive %}
                             {{
                             filter.default(
-                                routePath_base | constructedRoutePath({
+                                routePath_base | constructedRoutePath(null, {
                                     searchQ: searchQ,
                                     searchCol: searchCol,
                                     sortDir: sortDir,
@@ -141,8 +139,7 @@
                         <nav class="gallery-pagination">
                             {{
                             pagination.default(
-                                routePath_base | constructedRoutePath({
-                                    filterJSON: filterJSON,
+                                routePath_base | constructedRoutePath(filterObj, {
                                     searchQ: searchQ,
                                     searchCol: searchCol,
                                     sortDir: sortDir,

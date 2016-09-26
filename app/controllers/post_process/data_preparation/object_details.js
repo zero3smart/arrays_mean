@@ -1,5 +1,6 @@
 var winston = require('winston');
 var Batch = require('batch');
+var queryString = require('querystring');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var config = new require('../config')();
@@ -159,7 +160,7 @@ constructor.prototype.BindDataFor_array = function(source_pKey, rowObject_id, ca
         //
         var default_filterJSON = undefined;
         if (typeof dataSourceDescription.fe_filters_default !== 'undefined') {
-            default_filterJSON = JSON.stringify(dataSourceDescription.fe_filters_default || {}); // "|| {}" for safety
+            default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters_default || {}); // "|| {}" for safety
         }
         //
         var data =
@@ -186,7 +187,7 @@ constructor.prototype.BindDataFor_array = function(source_pKey, rowObject_id, ca
             //
             fe_objectShow_customHTMLOverrideFnsByColumnName: dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName || {},
 
-            fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: dataSourceDescription.fe_galleryItem_htmlForIconFromRowObjWhenMissingImage,
+            fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: dataSourceDescription.fe_galleryItem_htmlForIconFromRowObjWhenMissingImage
         };
         callback(null, data);
     });

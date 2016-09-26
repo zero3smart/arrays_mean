@@ -26,21 +26,34 @@ constructor.prototype._init = function()
 constructor.prototype.MountRoutes = function()
 {
     var self = this;
+
+    self._mountRoutes_monitoring();
     self._mountRoutes_ensureWWW();
 
     // View endpoints
-    require('./test')(self.context);
-    require('./auth')(self.context);
     require('./homepage')(self.context);
+    require('./auth')(self.context);
     require('./array')(self.context);
     require('./team')(self.context);
-    require('./monitoring')(self.context);
     require('./object')(self.context);
     require('./shared_pages')(self.context);
     require('./jsonAPI_share')(self.context);
 
     self._mountRoutes_errorHandling();
 };
+//
+constructor.prototype._mountRoutes_monitoring = function()
+{
+    var self = this;
+    var context = self.context;
+    var app = context.app;
+    app.get('/_ah/health', function(req, res)
+    {
+        res.set('Content-Type', 'text/plain');
+        res.status(200).send('ok');
+    });
+};
+//
 constructor.prototype._mountRoutes_ensureWWW = function()
 {
     var isDev = process.env.NODE_ENV == 'development';
@@ -65,7 +78,6 @@ constructor.prototype._mountRoutes_ensureWWW = function()
         }
     });
 };
-//
 //
 constructor.prototype._mountRoutes_errorHandling = function()
 {

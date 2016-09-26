@@ -150,3 +150,16 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 }
 
 /* @end Scatterplot Tooltip */
+
+/* @begin Linegraph Tooltip */
+
+div.arrays-co-tooltip.xaxis-highlight {
+	cursor: pointer;
+	border-radius: 0;
+}
+
+div.arrays-co-tooltip.xaxis-highlight .default-tooltip-content {
+	padding: 0 0.4em;
+}
+
+/* @end Linegraph Tooltip */

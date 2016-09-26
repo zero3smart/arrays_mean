@@ -1,5 +1,6 @@
 var winston = require('winston');
 var Batch = require('batch');
+var queryString = require('querystring');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
@@ -54,32 +55,17 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
      * Stash somewhat model reference.
      */
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
-    /*
-     * Process URL filterJSON param.
-     */
-    var filterJSON = urlQuery.filterJSON;
-    var filterObj = {};
-    var isFilterActive = false;
-    if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
-        try {
-            filterObj = JSON.parse(filterJSON);
-            if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
-                isFilterActive = true;
-            }
-        } catch (e) {
-            winston.error("❌  Error parsing filterJSON: ", filterJSON);
-            return callback(e, null);
-        }
-    }
 
-    var filterJSON_uriEncodedVals = functions._new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
+    var filterObj = functions.filterObjFromQueryParams(urlQuery);
+    var isFilterActive = Object.keys(filterObj).length != 0;
+
     var urlQuery_forSwitchingViews  = "";
     var appendQuery = "";
     /*
      * Check filter active and update composed URL params.
      */
     if (isFilterActive) {
-        appendQuery = "filterJSON=" + filterJSON_uriEncodedVals;
+        appendQuery = queryString.stringify(filterObj);
         urlQuery_forSwitchingViews = functions._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
     }
 
@@ -95,7 +81,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         urlQuery_forSwitchingViews = functions._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
     }
     /*
-     * Process parsed filterJSON param and prepare $match - https://docs.mongodb.com/manual/reference/operator/aggregation/match/ -
+     * Process filterObj and prepare $match - https://docs.mongodb.com/manual/reference/operator/aggregation/match/ -
      * statement. May return error instead required statement... and i can't say that understand that logic full. But in that case
      * we just will create empty $match statement which acceptable for all documents from data source.
      */
@@ -177,8 +163,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                     searchCol: searchCol || '',
                     searchQ: searchQ || '',
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
-                    filterJSON_nonURIEncodedVals: filterJSON,
-                    filterJSON: filterJSON_uriEncodedVals
+                    // multiselectable filter fields
+                    multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
                 });
             });
         });

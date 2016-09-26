@@ -89,8 +89,7 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     if (persistableObjectTemplate.title) updatedDocument['title'] = persistableObjectTemplate.title;
     if (persistableObjectTemplate.revisionNumber) updatedDocument['revisionNumber'] = persistableObjectTemplate.revisionNumber;
     if (persistableObjectTemplate.importUID) updatedDocument['importUID'] = persistableObjectTemplate.importUID;
-    var numberOfRows = 0;
-    if (persistableObjectTemplate.numberOfRows) numberOfRows = persistableObjectTemplate.numberOfRows;
+    if (persistableObjectTemplate.numberOfRows) updatedDocument['numberOfRows'] = persistableObjectTemplate.numberOfRows;
     updatedDocument['dateOfLastImport'] = new Date();
 
     var findOneAndUpdate_queryParameters =
@@ -98,8 +97,7 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
         primaryKey: persistableObjectTemplate.primaryKey
     };
     RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {
-        $set: updatedDocument,
-        $inc: {numberOfRows: persistableObjectTemplate.numberOfRows}
+        $set: updatedDocument
     }, {
         upsert: true
     }, function(err, doc)

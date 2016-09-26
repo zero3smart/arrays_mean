@@ -172,27 +172,7 @@ scatterplot.view.grouped.prototype.render = function(data) {
     /*
      * Get URL params as object.
      */
-    var params = {};
-    try {
-        params = JSON.parse('{"' + decodeURI(location.search.substring(1))
-            .replace(/"/g, '\\"')
-            .replace(/&/g, '","')
-            .replace(/=/g,'":"') + '"}');
-    } catch (e) {
-        /*
-         * Do nothing here just print warning message.
-         * We can't parse URL so treat that as no filterJSON provided.
-         */
-        console.warn('Can\'t parse URL params');
-    }
-    /*
-     * Parse filterJSON string to object or add empty if not provided.
-     */
-    if (params.filterJSON) {
-        params.filterJSON = JSON.parse(params.filterJSON);
-    } else {
-        params.filterJSON = {};
-    }
+    var params = convertQueryStringToObject(location.search.substring(1));
     /*
      * Render new bubbles.
      */
@@ -202,32 +182,21 @@ scatterplot.view.grouped.prototype.render = function(data) {
             /*
              * Add x axis filed params.
              */
-            params.filterJSON[chart._xLabel] = [{
+            params[chart._xLabel] = JSON.stringify({
                 min : (d.i - 1) in xTicks ? d3.round(xTicks[d.i - 1]) : 0,
-                max : d3.round(xTicks[d.i])
-            }];
+                max : d.i == xTicks.length-1 ? d3.round(xTicks[d.i]+0.5) : d3.round(xTicks[d.i])
+            });
             /*
              * Add y axis filed params.
              */
-            params.filterJSON[chart._yLabel] = [{
+            params[chart._yLabel] = JSON.stringify({
                 min : (yTicks.length - d.j - 2) in yTicks ? d3.round(yTicks[yTicks.length - d.j - 2]) : 0,
-                max : d3.round(yTicks[yTicks.length - d.j - 1])
-            }];
+                max : d.j == 0 ? d3.round(yTicks[yTicks.length - d.j - 1]+0.5) : d3.round(yTicks[yTicks.length - d.j - 1])
+            });
             /*
              * Complose bubble URL.
              */
-            var urlParams = '';
-            for (var key in params) {
-                if (urlParams !== '') {
-                    urlParams += '&';
-                }
-
-                if (typeof params[key] === 'object') {
-                    urlParams += key + '=' + JSON.stringify(params[key]);
-                } else {
-                    urlParams += key + '=' + params[key];
-                }
-            }
+            var urlParams = decodeURIComponent($.param(params));
             /*
              * Return bubble URL.
              */

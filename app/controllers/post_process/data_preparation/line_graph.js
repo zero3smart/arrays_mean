@@ -55,35 +55,15 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
     var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultGroupByColumnName_humanReadable;
     //
-    var defaultKeywordsColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultKeywordsColumnName_humanReadable;
     var keywordGroupBy = dataSourceDescription.fe_lineGraph_keywordGroupBy;
-    var keywordCountBy = dataSourceDescription.fe_lineGraph_keywordCountBy;
     //
     var routePath_base              = "/array/" + source_pKey + "/line-graph";
     var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //
-    var filterJSON = urlQuery.filterJSON;
-    var filterObj = {};
-    var isFilterActive = false;
-    if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
-        try {
-            filterObj = JSON.parse(filterJSON);
-            if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
-                isFilterActive = true;
-            } else {
-                filterObj = {}; // must replace it to prevent errors below
-            }
-        } catch (e) {
-            winston.error("❌  Error parsing filterJSON: ", filterJSON);
-            callback(e, null);
-
-            return;
-        }
-    }
-    // We must re-URI-encode the filter vals since they get decoded
-    var filterJSON_uriEncodedVals = functions._new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
+    var filterObj = functions.filterObjFromQueryParams(urlQuery);
+    var isFilterActive = Object.keys(filterObj).length != 0;
     //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
@@ -95,23 +75,60 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 
     //
     // DataSource Relationship
-    var matched_source_pKey = dataSourceDescription.fe_lineGraph_matched_dataSource_pKey;
-    //var dataSourceRevision_pKey = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(matched_dataSource_uid, matched_dataSource_importRevision);
-    if (matched_source_pKey) {
-        var matchedDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(matched_source_pKey, self.context.raw_source_documents_controller);
+    var mapping_source_pKey = dataSourceDescription.fe_lineGraph_mapping_dataSource_pKey;
+    //var dataSourceRevision_pKey = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
+    if (mapping_source_pKey) {
+        var mappingDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(mapping_source_pKey, self.context.raw_source_documents_controller);
 
-        var matched_default_filterObj = {};
-        if (typeof matchedDataSourceDescription.fe_filters_default !== 'undefined') {
-            matched_default_filterObj = matchedDataSourceDescription.fe_filters_default;
+        var mapping_default_filterObj = {};
+        if (typeof mappingDataSourceDescription.fe_filters_default !== 'undefined') {
+            mapping_default_filterObj = mappingDataSourceDescription.fe_filters_default;
         }
-        var matched_default_view = 'gallery';
-        if (typeof matchedDataSourceDescription.fe_default_view !== 'undefined') {
-            matched_default_view = matchedDataSourceDescription.fe_default_view;
+        var mapping_default_view = 'gallery';
+        if (typeof mappingDataSourceDescription.fe_default_view !== 'undefined') {
+            mapping_default_view = mappingDataSourceDescription.fe_default_view;
         }
-        var matched_groupBy = groupBy_realColumnName;
-        if (dataSourceDescription.fe_lineGraph_matched_dataSource_fields_relationships)
-            matched_groupBy = dataSourceDescription.fe_lineGraph_matched_dataSource_fields_relationships[groupBy_realColumnName];
+        var mapping_groupBy = groupBy_realColumnName;
+        if (dataSourceDescription.fe_lineGraph_mapping_dataSource_fields)
+            mapping_groupBy = dataSourceDescription.fe_lineGraph_mapping_dataSource_fields[groupBy_realColumnName];
+        var mapping_groupByObj = {};
+        mapping_groupByObj[mapping_groupBy] = '';
     }
+
+    // Aggregate By
+    var aggregateBy = urlQuery.aggregateBy;
+    var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultAggregateByColumnName_humanReadable;
+    var numberOfRecords_notAvailable = dataSourceDescription.fe_lineGraph_aggregateByColumnName_numberOfRecords_notAvailable;
+    if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
+        defaultAggregateByColumnName_humanReadable = config.AggregateByDefaultColumnName;
+
+    // Aggregate By Available
+    var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+    var aggregateBy_humanReadable_available = undefined;
+    for (var colName in raw_rowObjects_coercionSchema) {
+        var colValue = raw_rowObjects_coercionSchema[colName];
+        if (colValue.do == import_datatypes.Coercion_ops.ToInteger) {
+            var humanReadableColumnName = colName;
+            if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
+                humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
+
+            if (!aggregateBy_humanReadable_available) {
+                aggregateBy_humanReadable_available = [];
+                if (!numberOfRecords_notAvailable)
+                    aggregateBy_humanReadable_available.push(config.AggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+            }
+
+            aggregateBy_humanReadable_available.push(humanReadableColumnName);
+        }
+    }
+    if (aggregateBy_humanReadable_available) {
+        if (aggregateBy_humanReadable_available.length > 0)
+            defaultAggregateByColumnName_humanReadable = aggregateBy_humanReadable_available[0];
+        if (aggregateBy_humanReadable_available.length == 1)
+            aggregateBy_humanReadable_available = undefined;
+    }
+
+    var aggregateBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy ? aggregateBy : defaultAggregateByColumnName_humanReadable, dataSourceDescription);
 
     //
     var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResultsByKeyword = {};
@@ -147,7 +164,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             uniqueFieldValuesByFieldName = {};
             for (var columnName in _uniqueFieldValuesByFieldName) {
                 if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
-                    var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
                     if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                         var row = [];
                         _uniqueFieldValuesByFieldName[columnName].forEach(function(rowValue) {
@@ -181,7 +197,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
 
-        if (typeof keywordCountBy !== 'undefined' && keywordCountBy !== null && keywordCountBy !== "") {
+        if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.AggregateByDefaultColumnName) {
 
             if (typeof keywordGroupBy !== 'undefined' && keywordGroupBy !== null && keywordGroupBy !== "") {
                 var keywordGroupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(keywordGroupBy, dataSourceDescription);
@@ -193,7 +209,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                         {
                             $group: {
                                 _id: {groupBy: "$" + "rowParams." + groupBy_realColumnName, keywordBy: "$" + "rowParams." + keywordGroupBy_realColumnName},
-                                value: { $sum: "$" + "rowParams." + keywordCountBy }
+                                value: { $sum: "$" + "rowParams." + aggregateBy_realColumnName }
                             }
                         },
                         {
@@ -221,7 +237,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                         {
                             $group: {
                                 _id: "$" + "rowParams." + groupBy_realColumnName,
-                                value: { $sum: "$" + "rowParams." + keywordCountBy }
+                                value: { $sum: "$" + "rowParams." + aggregateBy_realColumnName }
                             }
                         },
                         {
@@ -241,33 +257,65 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 
             }
         } else {
+            // Count by number of records
 
-            // Count by number of records in filter group by default
-            aggregationOperators = aggregationOperators.concat(
-                [
-                    { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
-                    { // unique/grouping and summing stage
-                        $group: {
-                            _id: "$" + "rowParams." + groupBy_realColumnName,
-                            value: { $sum: 1 }
+            if (typeof keywordGroupBy !== 'undefined' && keywordGroupBy !== null && keywordGroupBy !== "") {
+                var keywordGroupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(keywordGroupBy, dataSourceDescription);
+
+                aggregationOperators = aggregationOperators.concat(
+                    [
+                        { $unwind: "$" + "rowParams." + groupBy_realColumnName },
+                        { $unwind: "$" + "rowParams." + keywordGroupBy_realColumnName },
+                        {
+                            $group: {
+                                _id: {groupBy: "$" + "rowParams." + groupBy_realColumnName, keywordBy: "$" + "rowParams." + keywordGroupBy_realColumnName},
+                                value: { $sum: 1 }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                label: "$_id.groupBy",
+                                keyword: "$_id.keywordBy",
+                                value: 1
+                            }
+                        },
+                        {
+                            $sort: { value: -1 } // priotize by incidence, since we're $limit-ing below
+                        },
+                        {
+                            $limit: 100 // so the chart can actually handle the number
                         }
-                    },
-                    { // reformat
-                        $project: {
-                            _id: 0,
-                            label: "$_id",
-                            value: 1
+                    ]);
+
+            } else {
+
+                aggregationOperators = aggregationOperators.concat(
+                    [
+                        {$unwind: "$" + "rowParams." + groupBy_realColumnName}, // requires MongoDB 3.2, otherwise throws an error if non-array
+                        { // unique/grouping and summing stage
+                            $group: {
+                                _id: "$" + "rowParams." + groupBy_realColumnName,
+                                value: {$sum: 1}
+                            }
+                        },
+                        { // reformat
+                            $project: {
+                                _id: 0,
+                                label: "$_id",
+                                value: 1
+                            }
+                        },
+                        { // priotize by incidence, since we're $limit-ing below
+                            $sort: {value: -1}
+                        },
+                        {
+                            $limit: 100 // so the chart can actually handle the number
                         }
-                    },
-                    { // priotize by incidence, since we're $limit-ing below
-                        $sort: { value: -1 }
-                    },
-                    {
-                        $limit: 100 // so the chart can actually handle the number
-                    }
-                ]);
+                    ]);
+            }
         }
-        
+
         var doneFn = function(err, _multigroupedResults)
         {
             if (err) return done(err);
@@ -321,7 +369,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                         });
                     });
                     var summedValuesByLowercasedLabels = {};
-                    var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
+                    var titleWithMostMatchesAndMatchAggregateByLowercasedTitle = {};
                     finalizedButNotCoalesced_groupedResults.forEach(function(el, i, arr)
                     {
                         var label = el.label;
@@ -332,10 +380,10 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                         var new_valueSum = existing_valueSum + value;
                         summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
                         //
-                        var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] || { label: '', value: -1 };
+                        var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] || { label: '', value: -1 };
                         if (existing_titleWithMostMatchesAndMatchCount.value < value) {
                             var new_titleWithMostMatchesAndMatchCount = { label: label, value: value };
-                            titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
+                            titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
                         }
                     });
                     var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
@@ -344,7 +392,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                     {
                         var summedValue = summedValuesByLowercasedLabels[key];
                         var reconstitutedDisplayableTitle = key;
-                        var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[key];
+                        var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[key];
                         if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
                             winston.error("❌  This should never be undefined.");
                             callback(new Error('Unexpectedly undefined title with most matches'), null);
@@ -394,8 +442,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             lineColors: dataSourceDescription.fe_lineGraph_keywordLineColors ? dataSourceDescription.fe_lineGraph_keywordLineColors : {},
             //
             filterObj: filterObj,
-            filterJSON_nonURIEncodedVals: filterJSON,
-            filterJSON: filterJSON_uriEncodedVals,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
@@ -408,14 +454,18 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForLineGraphGroupByDropdown(sampleDoc, dataSourceDescription),
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
-            defaultKeywordsColumnName_humanReadable: defaultKeywordsColumnName_humanReadable,
-            //
             routePath_base: routePath_base,
             // datasource relationship
-            matched_source_pKey: matched_source_pKey,
-            matched_default_filterObj: matched_default_filterObj,
-            matched_default_view: matched_default_view,
-            matched_groupBy: matched_groupBy
+            mapping_source_pKey: mapping_source_pKey,
+            mapping_default_filterObj: mapping_default_filterObj,
+            mapping_default_view: mapping_default_view,
+            mapping_groupByObj: mapping_groupByObj,
+            // multiselectable filter fields
+            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable,
+            // Aggregate By
+            aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
+            defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
+            aggregateBy: aggregateBy
         };
         callback(err, data);
     });

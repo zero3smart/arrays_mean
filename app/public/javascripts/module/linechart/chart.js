@@ -3,7 +3,7 @@
  * @constructor
  * @param {Object[]} data
  */
-linechart.chart = function(data, redirectData) {
+linechart.chart = function(data, redirectBaseUrl) {
     /**
      * Chart data.
      * @private
@@ -17,14 +17,14 @@ linechart.chart = function(data, redirectData) {
     /**
      * Url information to redirect when clicking tick on the x-axis
      */
-    this._redirectData = redirectData;
+    this._redirectBaseUrl = redirectBaseUrl;
 
     /**
      * Chart main part.
      * @private
      * @member {linechart.viewport}
      */
-    this._viewport = new linechart.viewport(this._data, this._redirectData);
+    this._viewport = new linechart.viewport(this._data, this._redirectBaseUrl);
     /**
      * Chart navigation part.
      * @private

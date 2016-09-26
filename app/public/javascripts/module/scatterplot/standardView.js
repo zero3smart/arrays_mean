@@ -111,30 +111,25 @@ scatterplot.view.standard.prototype.render = function(data) {
                     .search('');
             } else {
                 /*
-                 * Prepare filterJSON with search params corresponding to that objects set.
+                 * Prepare filterObj with search params corresponding to that objects set.
                  */
-                var filterJSON;
-                if (uri.search(true).filterJSON) {
-                    filterJSON = JSON.parse(uri.search(true).filterJSON);
-                } else {
-                    filterJSON = {};
-                }
+                var filterObj = convertQueryStringToObject(location.search.substring(1));
                 /*
                  * Prepare filterJSON with search params corresponding to that objects set.
                  */
-                filterJSON[chart._xLabel] = [{
+                filterObj[chart._xLabel] = JSON.stringify({
                     min: chart._xAccessor(d),
-                    max: chart._xAccessor(d)
-                }];
-                filterJSON[chart._yLabel] = [{
+                    max: chart._xAccessor(d)+1
+                });
+                filterObj[chart._yLabel] = JSON.stringify({
                     min: chart._yAccessor(d),
-                    max: chart._yAccessor(d)
-                }];
+                    max: chart._yAccessor(d)+1
+                });
                 /*
                  * Generate URL to gallery with prepared filterJSON.
                  */
                 uri = uri.segment(2, 'gallery')
-                    .search('?filterJSON=' + JSON.stringify(filterJSON));
+                    .search('?' + decodeURIComponent($.param(filterObj)));
             }
             /*
              * Return URL string.

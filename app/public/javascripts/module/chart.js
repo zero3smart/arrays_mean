@@ -161,12 +161,12 @@ g.on('click', function(d) {
 	var queryParamJoinChar = routePath_withoutFilter == routePath_base ? "?" : "&";
 
 	var filterObjForThisFilterColVal = constructedFilterObj(filterObj, groupBy, d.data.label, false);
-	var filterJSONString = JSON.stringify(filterObjForThisFilterColVal);
-	var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString;
+	var filterJSONString = $.param(filterObjForThisFilterColVal);
+	var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterJSONString;
 
 	window.location = urlForFilterValue;
 });
-
+6
 /**
  * Sidebar legend
  */

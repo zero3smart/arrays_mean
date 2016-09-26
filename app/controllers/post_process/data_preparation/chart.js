@@ -21,9 +21,9 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     // urlQuery keys:
     // source_key
     // groupBy
-    // filterJSON
     // searchQ
     // searchCol
+    // Other filters
     var source_pKey = urlQuery.source_key;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
     if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -56,31 +56,48 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //
-    var filterJSON = urlQuery.filterJSON;
-    var filterObj = {};
-    var isFilterActive = false;
-    if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
-        try {
-            filterObj = JSON.parse(filterJSON);
-            if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
-                isFilterActive = true;
-            } else {
-                filterObj = {}; // must replace it to prevent errors below
-            }
-        } catch (e) {
-            winston.error("❌  Error parsing filterJSON: ", filterJSON);
-            callback(e, null);
-
-            return;
-        }
-    }
-    // We must re-URI-encode the filter vals since they get decoded
-    var filterJSON_uriEncodedVals = functions._new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
+    var filterObj = functions.filterObjFromQueryParams(urlQuery);
+    var isFilterActive = Object.keys(filterObj).length != 0;
     //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
     var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
         && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
+
+    // Aggregate By
+    var aggregateBy = urlQuery.aggregateBy;
+    var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_chart_defaultAggregateByColumnName_humanReadable;
+    var numberOfRecords_notAvailable = dataSourceDescription.fe_chart_aggregateByColumnName_numberOfRecords_notAvailable;
+    if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
+        defaultAggregateByColumnName_humanReadable = config.AggregateByDefaultColumnName;
+
+    // Aggregate By Available
+    var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+    var aggregateBy_humanReadable_available = undefined;
+    for (var colName in raw_rowObjects_coercionSchema) {
+        var colValue = raw_rowObjects_coercionSchema[colName];
+        if (colValue.do == import_datatypes.Coercion_ops.ToInteger) {
+            var humanReadableColumnName = colName;
+            if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
+                humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
+
+            if (!aggregateBy_humanReadable_available) {
+                aggregateBy_humanReadable_available = [];
+                if (!numberOfRecords_notAvailable)
+                    aggregateBy_humanReadable_available.push(config.AggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+            }
+
+            aggregateBy_humanReadable_available.push(humanReadableColumnName);
+        }
+    }
+    if (aggregateBy_humanReadable_available) {
+        if (aggregateBy_humanReadable_available.length > 0)
+            defaultAggregateByColumnName_humanReadable = aggregateBy_humanReadable_available[0];
+        if (aggregateBy_humanReadable_available.length == 1)
+            aggregateBy_humanReadable_available = undefined;
+    }
+
+    var aggregateBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy ? aggregateBy : defaultAggregateByColumnName_humanReadable, dataSourceDescription);
 
     //
     var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults = [];
@@ -151,29 +168,57 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
-        aggregationOperators = aggregationOperators.concat(
-            [
-                { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
-                { // unique/grouping and summing stage
-                    $group: {
-                        _id: "$" + "rowParams." + groupBy_realColumnName,
-                        value: { $sum: 1 } // the count
+
+        if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.AggregateByDefaultColumnName) {
+            aggregationOperators = aggregationOperators.concat(
+                [
+                    { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                    { // unique/grouping and summing stage
+                        $group: {
+                            _id: "$" + "rowParams." + groupBy_realColumnName,
+                            value: { $sum: "$" + "rowParams." + aggregateBy_realColumnName } // the count
+                        }
+                    },
+                    { // reformat
+                        $project: {
+                            _id: 0,
+                            label: "$_id",
+                            value: 1
+                        }
+                    },
+                    { // priotize by incidence, since we're $limit-ing below
+                        $sort : { value : -1 }
+                    },
+                    {
+                        $limit : 100 // so the chart can actually handle the number
                     }
-                },
-                { // reformat
-                    $project: {
-                        _id: 0,
-                        label: "$_id",
-                        value: 1
+                ]);
+        } else {
+            aggregationOperators = aggregationOperators.concat(
+                [
+                    { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                    { // unique/grouping and summing stage
+                        $group: {
+                            _id: "$" + "rowParams." + groupBy_realColumnName,
+                            value: { $sum: 1 } // the count
+                        }
+                    },
+                    { // reformat
+                        $project: {
+                            _id: 0,
+                            label: "$_id",
+                            value: 1
+                        }
+                    },
+                    { // priotize by incidence, since we're $limit-ing below
+                        $sort : { value : -1 }
+                    },
+                    {
+                        $limit : 100 // so the chart can actually handle the number
                     }
-                },
-                { // priotize by incidence, since we're $limit-ing below
-                    $sort : { value : -1 }
-                },
-                {
-                    $limit : 100 // so the chart can actually handle the number
-                }
-            ]);
+                ]);
+        }
+
         //
         var doneFn = function(err, _groupedResults)
         {
@@ -276,8 +321,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             groupBy: groupBy,
             //
             filterObj: filterObj,
-            filterJSON_nonURIEncodedVals: filterJSON,
-            filterJSON: filterJSON_uriEncodedVals,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
@@ -290,7 +333,13 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription),
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
-            routePath_base: routePath_base
+            routePath_base: routePath_base,
+            // multiselectable filter fields
+            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable,
+            // Aggregate By
+            aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
+            defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
+            aggregateBy: aggregateBy
         };
         callback(err, data);
     });

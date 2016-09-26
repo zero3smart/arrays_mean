@@ -1,4 +1,5 @@
 var async = require('async');
+var queryString = require('querystring');
 
 var dataSourceDescriptions = require('../../../../datasources/descriptions').GetDescriptions();
 var teamDescriptions = require('../../../../datasources/teams').GetTeams();
@@ -31,7 +32,7 @@ constructor.prototype.BindDataFor_team_show = function(urlQuery, callback) {
 
                 var default_filterJSON = undefined;
                 if (typeof dataSourceDescription.fe_filters_default !== 'undefined') {
-                    default_filterJSON = JSON.stringify(dataSourceDescription.fe_filters_default || {}); // "|| {}" for safety
+                    default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters_default || {}); // "|| {}" for safety
                 }
                 var default_listed = true; // list Arrays by default
                 if (dataSourceDescription.fe_listed === false) {

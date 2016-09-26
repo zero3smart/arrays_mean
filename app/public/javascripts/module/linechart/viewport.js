@@ -1,8 +1,8 @@
 /**
  * @constructor
- * @param {Object[]} data, {Object{}} redirectData
+ * @param {Object[]} data, {Object{}} redirectBaseUrl
  */
-linechart.viewport = function(data, redirectData) {
+linechart.viewport = function(data, _redirectBaseUrl) {
     /**
      * Chart data.
      * @private
@@ -12,7 +12,7 @@ linechart.viewport = function(data, redirectData) {
     /*
      * Url information to redirect when clicking tick on the x-axis
      */
-    this._redirectData = redirectData;
+    this._redirectBaseUrl = redirectBaseUrl;
     /**
      * Data set dates domain.
      * @private
@@ -107,9 +107,16 @@ linechart.viewport = function(data, redirectData) {
      * @private
      * @member {Function}
      */
-    this._bisectDate = d3.bisector(function(d) {
-        return d;
-    }).left;
+    this._bisectDate = function(a, x) {
+        lo = 0;
+        hi = a.length;
+        while (lo < hi) {
+            var mid = lo + hi >>> 1;
+            if (a[mid] < x) lo = mid + 1; else hi = mid;
+        }
+        if (lo > 0 && (x - a[lo-1]) < (a[lo] - x)) lo -= 1;
+        return lo;
+    };
     /**
      * Lines color set.
      * @private
@@ -153,6 +160,12 @@ linechart.viewport = function(data, redirectData) {
      * @member {Tooltip}
      */
     this._tooltip = new Tooltip();
+    /**
+     * X-Axis highlight tooltip.
+     * @private
+     * @member {Tooltip}
+     */
+    this._xAxisHighlight = new Tooltip();
 };
 
 
@@ -236,6 +249,24 @@ linechart.viewport.prototype.render = function(container) {
             self._mouseOutEventHandler();
         }).on('mousemove', function() {
             self._mouseMoveEventHandler();
+        }).on('click', function() {
+            if (self._redirectBaseUrl) {
+                /*
+                 * Get mouse coordinate relative to parent element.
+                 */
+                var x = d3.mouse(self._receiver.node())[0];
+                /*
+                 * Get date value under mouse pointer.
+                 */
+                var date = self._xScale.invert(x);
+                /*
+                 * Get nearest to x date's index.
+                 */
+                var index = self._bisectDate(self._datesDomain, date.getTime());
+                date = new Date(self._datesDomain[index]);
+
+                window.location.href = self._redirectBaseUrl + date.getFullYear();
+            }
         });
     /*
      * Set up chart dimension.
@@ -275,6 +306,12 @@ linechart.viewport.prototype._mouseEnterEventHandler = function() {
         .setWidth(335)
         .setOffset('top', - 10);
     /*
+     * Append x-axis highlight to the document body.
+     */
+    this._xAxisHighlight.setOn(this._svg.node(), 'xaxis-highlight')
+        .setWidth(40)
+        .setOffset('top', - this._innerHeight - 30);
+    /*
      * Show line pointer.
      */
     this._linePointer.style('display', null);
@@ -290,6 +327,10 @@ linechart.viewport.prototype._mouseOutEventHandler = function() {
      * Hide tooltip.
      */
     this._tooltip.hide();
+    /*
+     * Hide x-axis highlight.
+     */
+    this._xAxisHighlight.hide();
     /*
      * Remove all circles from the series lines.
      */
@@ -363,6 +404,14 @@ linechart.viewport.prototype._mouseMoveEventHandler = function() {
         .attr('x1', this._xScale(date))
         .attr('x2', this._xScale(date));
     /*
+     * Move x-axis highlight
+     */
+    this._xAxisHighlight.setPosition('left')
+        .setOffset({
+            right: this._xScale(date) + this._margin.left + 20,
+            left: 0
+        });
+    /*
      * Update circles.
      */
     var circles = this._canvas.selectAll('circle.data-point')
@@ -406,6 +455,15 @@ linechart.viewport.prototype._mouseMoveEventHandler = function() {
             '</ul>' +
         '</div>')
         .show();
+
+    /*
+     * Update tooltip content.
+     */
+    this._xAxisHighlight.setContent(
+            '<div class="default-tooltip-content">' +
+            date.getFullYear() +
+            '</div>')
+        .show();
 };
 
 
@@ -435,8 +493,10 @@ linechart.viewport.prototype.resize = function() {
     /*
      * Resize mouse events catcher.
      */
-    this._receiver.attr('width', this._innerWidth)
-        .attr('height', this._innerHeight);
+    if (this._innerWidth > 0 && this._innerHeight > 0) {
+        this._receiver.attr('width', this._innerWidth)
+            .attr('height', this._innerHeight + 25);
+    }
     /*
      * Configure scale functions.
      */
@@ -512,8 +572,8 @@ linechart.viewport.prototype.update = function(data) {
      * Evaluate amount of required ticks to display only years.
      */
     var datesDomainLength = this._datesDomain.length;
-    var xScaleTicksAmount = this._xScale.ticks().length;
-    var ticksAmount = datesDomainLength > xScaleTicksAmount ? xScaleTicksAmount : datesDomainLength;
+    var xScaleTicksAmount = Math.max(this._innerWidth/50, 2); // this._xScale.ticks().length;
+    var ticksAmount = Math.min(datesDomainLength, xScaleTicksAmount);
     /*
      * Update chart axes.
      */
@@ -528,27 +588,6 @@ linechart.viewport.prototype.update = function(data) {
      */
     this._lines.data(data)
         .attr("d", this._lineGenerator);
-
-    if (this._redirectData) {
-        var redirectData = this._redirectData;
-        this._xAxisContainer.selectAll('.x-axis .tick')
-            .on('click', function(d) {
-                var default_view = redirectData.matched_default_view;
-                if (default_view === undefined || default_view == 'undefined' || default_view == '') {
-                    default_view = 'gallery';
-                }
-                var words = default_view.split(/(?=[A-Z])/);
-                var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
-                var href = '/array/' + redirectData.matched_source_pKey + '/' + default_view_url;
-
-                var filterObj = redirectData.matched_default_filterObj;
-                filterObj[redirectData.matched_groupBy] = [""+d.getFullYear()];
-                var filterJSON = JSON.stringify(filterObj);
-                href += "?filterJSON=" + filterJSON;
-                window.location.href = href;
-            });
-    }
-
 
     return this;
 };

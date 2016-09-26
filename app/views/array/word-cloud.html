@@ -36,8 +36,7 @@
                                     'Chart By',
                                     groupBy if groupBy else defaultGroupByColumnName_humanReadable,
                                     colNames_orderedForGroupByDropdown,
-                                    routePath_base | constructedRoutePath({
-                                        filterJSON: filterJSON,
+                                    routePath_base | constructedRoutePath(filterObj, {
                                         searchCol: searchCol,
                                         searchQ: searchQ,
                                         groupBy: ''}),
@@ -56,7 +55,7 @@
                                     searchQ if searchQ else "",
                                     null,
                                     null,
-                                    filterJSON_nonURIEncodedVals
+                                    filterObj
                                 )
                                 }}
 
@@ -73,7 +72,7 @@
             {% if isFilterActive %}
                 {{
                 filter.default(
-                    routePath_base | constructedRoutePath({
+                    routePath_base | constructedRoutePath(null, {
                         searchQ: searchQ,
                         searchCol: searchCol,
                         sortDir: sortDir,
@@ -98,19 +97,19 @@
                             <ul class="word-cloud-list">
                             {% for result in groupedResults %}
                                 {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(defaultGroupByColumnName_humanReadable, result._id, false) %}
-                                {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                                {% set urlForFilterValue = routePath_base | constructedRoutePath({
+                                {% set urlForFilterValue = routePath_base | constructedRoutePath(filterObjForThisFilterColVal, {
                                     searchQ: searchQ,
                                     searchCol: searchCol,
                                     sortBy: sortBy,
-                                    sortCol: sortCol,
-                                    filterJSON: filterJSONString
+                                    sortCol: sortCol
                                 }) %}
+                                {% if result.value > 0 %}
                                 <li class="word-cloud-item">
                                     <a href="{{ urlForFilterValue }}" class="word-cloud-link border-color-brand-hover has-tooltip" data-tooltip-key="{{ result._id }}" data-tooltip-value="{{ result.value }}">
                                         <span class="word-cloud-label color-brand" style="font-size: {{ (result.value - minGroupedResultsValue) / (maxGroupedResultsValue - minGroupedResultsValue) * 350 + 100 | round() }}%">{{ result._id }}</span>
                                     </a>
                                 </li>
+                                {% endif %}
                             {% endfor %}
                             </ul>
                         {% endif %}

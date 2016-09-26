@@ -57,7 +57,7 @@ var helmet = require('helmet');
 app.use(helmet.xframe());
 app.use(cookieParser());
 app.use(session({
-    secret: 'djU18Hkl3V7Jb7p96l3v7MA31PZX7dwS4_y6J_uURxf03Ed-32g6YvHrf-sHw2d5P',
+    secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true
 }));

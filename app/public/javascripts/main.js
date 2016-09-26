@@ -28,7 +28,7 @@ $(document).ready(function() {
         var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
         var href = '/array/' + sourceKey + '/' + default_view_url;
         if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
-            href += "?filterJSON=" + default_filterJSON;
+            href += "?" + default_filterJSON;
         }
         window.location.href = href;
     });
@@ -134,8 +134,15 @@ $(document).ready(function() {
                         $modalBody.html('<h3>Share on Social Media</h3>');
                         $modalBody.append('<div id="facebook" data-url="' + share_url + '" data-text="Arrays"></div>');
                         $modalBody.append('<a href="#" id="twitter" class="btn btn-social background-color-brand" data-url="' + share_url + '" data-text="Arrays"><span class="icon-twitter" aria-hidden="true"></span>Twitter</a>');
+
                         $modalBody.append('<h3>Share URL</h3>');
                         $modalBody.append('<pre class="border-color-brand">' + share_url + '</pre>');
+
+                        var embedUrl = '<iframe src="' + share_url + '" width="640" height="480" frameborder="0"></iframe>';
+
+                        $modalBody.append('<h3>Embed URL</h3>');
+                        $modalBody.append('<pre id="embed-url" class="border-color-brand"></pre>');
+                        $('#embed-url').text(embedUrl);
 
                         /**
                          * Initialize Sharrre buttons
@@ -211,6 +218,10 @@ $(document).ready(function() {
         $('.array-description-expand').css("display", "inline-block");
     });
 
+    $('#signup').on('click', function(e) {
+        if (lock) lock.show();
+    });
+
 });
 
 /**
@@ -229,32 +240,46 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
             // which means we never allow more than one filter on the same column at present
         }
         var existing_filterVals = existing_filterObj[existing_filterCol];
-        //
-        filterVals = [];
-        //
-        var existing_filterVals_length = existing_filterVals.length;
-        for (var j = 0 ; j < existing_filterVals_length ; j++) {
-            var existing_filterVal = existing_filterVals[j];
-            var encoded_existing_filterVal = typeof existing_filterVal === 'string' ? encodeURIComponent(existing_filterVal) : existing_filterVal;
-            filterVals.push(encoded_existing_filterVal); 
-        }
-        //
-        if (filterVals.length !== 0) {
-            filterObj[existing_filterCol] = filterVals; // as it's not set yet
-        }
+        filterObj[existing_filterCol] = existing_filterVals; // as it's not set yet
     }
     //
     if (isThisAnActiveFilter === false) { // do not push if active, since we'd want the effect of unsetting it
         filterVals = filterObj[this_filterCol] || [];
-        if (filterVals.indexOf(filterVal) == -1) {
-            var filterIsString = typeof this_filterVal === 'string';
-            var filterVal = filterIsString ? encodeURIComponent(this_filterVal) : this_filterVal;
+        if (Array.isArray(this_filterVal) && filterVals.indexOf(this_filterVal) == -1) {
             filterVals.push(filterVal);
+            filterObj[this_filterCol] = filterVals.length == 1 ? filterVals[0] : filterVals;
+        } else {
+            filterObj[this_filterCol] = this_filterVal;
         }
-        filterObj[this_filterCol] = filterVals; // in case it's not set yet
     }
     //
     return filterObj;
+}
+
+function convertQueryStringToObject(inputString) {
+    var obj = {};
+    var arr = decodeURIComponent(inputString).split('&');
+
+    for (var i = 0; i < arr.length; i ++) {
+        var bits = arr[i].split('=');
+        var key = bits[0];
+        var value = bits[1];
+        try {
+            value = JSON.parse(value);
+        } catch (e) {
+            value = bits[1];
+        }
+        if (!obj.hasOwnProperty(key)) {
+            obj[key] = value;
+        } else if (typeof obj[key] === 'string') {
+            obj[key] = [obj[key]];
+            obj[key].push(value);
+        } else if (Array.isArray(obj[key])) {
+            obj[key].push(value);
+        }
+    }
+
+    return obj;
 }
 
 function _POST_toGetURLForSharingCurrentPage(callback)

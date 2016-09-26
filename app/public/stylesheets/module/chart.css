@@ -18,13 +18,19 @@
 }
 
 #chart {
-	overflow: hidden;
-	margin-right: auto;
-	margin-left: auto;
-	padding: 10px;
-	max-width: 100%;
-	width: calc(100vh - 260px);
-	height: calc(100vh - 260px);
+	padding-bottom: 40px;
+}
+
+@media (min-width: 768px) {
+	#chart {
+		overflow: hidden;
+		margin-right: auto;
+		margin-left: auto;
+		padding: 10px;
+		max-width: 100%;
+		width: calc(100vh - 260px);
+		height: calc(100vh - 260px);
+	}
 }
 
 .chart-container,
@@ -71,24 +77,36 @@
 }
 
 .legend {
-	position: absolute;
-	top: 0;
-	right: calc(0px - var(--legend-width));
-	bottom: 0;
-	z-index: 1;
-	overflow-y: auto;
 	padding-top: 50px;
-	width: var(--legend-width);
-	background-color: var(--color-background);
 	padding-bottom: 50px;
-}
-
-.legend-open .legend {
-	transform: translate(calc(0px - var(--legend-width)));
+	width: 100%;
+	background-color: var(--color-background);
 }
 
 .legend-close {
-	margin-right: 40px;
+	display: none;
+}
+
+@media (min-width: 768px) {
+	.legend {
+		position: absolute;
+		top: 0;
+		right: calc(0px - var(--legend-width));
+		bottom: 0;
+		z-index: 1;
+		overflow-y: auto;
+		width: var(--legend-width);
+		background-color: var(--color-background);
+	}
+
+	.legend-open .legend {
+		transform: translate(calc(0px - var(--legend-width)));
+	}
+
+	.legend-close {
+		display: block;
+		margin-right: 40px;
+	}
 }
 
 .legend-title {

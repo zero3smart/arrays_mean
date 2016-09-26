@@ -39,9 +39,9 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     // urlQuery keys:
     // source_key
     // mapBy
-    // filterJSON
     // searchQ
     // searchCol
+    // Other filters
     var source_pKey = urlQuery.source_key;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
     if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -74,26 +74,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //
-    var filterJSON = urlQuery.filterJSON;
-    var filterObj = {};
-    var isFilterActive = false;
-    if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
-        try {
-            filterObj = JSON.parse(filterJSON);
-            if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
-                isFilterActive = true;
-            } else {
-                filterObj = {}; // must replace it to prevent errors below
-            }
-        } catch (e) {
-            winston.error("❌  Error parsing filterJSON: ", filterJSON);
-            callback(e, null);
-
-            return;
-        }
-    }
-    // We must re-URI-encode the filter vals since they get decoded
-    var filterJSON_uriEncodedVals = functions._new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
+    var filterObj = functions.filterObjFromQueryParams(urlQuery);
+    var isFilterActive = Object.keys(filterObj).length != 0;
     //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
@@ -247,8 +229,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             mapBy: mapBy,
             //
             filterObj: filterObj,
-            filterJSON_nonURIEncodedVals: filterJSON,
-            filterJSON: filterJSON_uriEncodedVals,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
@@ -261,7 +241,9 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChoroplethMapByDropdown(sampleDoc, dataSourceDescription),
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
-            routePath_base: routePath_base
+            routePath_base: routePath_base,
+            // multiselectable filter fields
+            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
         };
         callback(err, data);
     });

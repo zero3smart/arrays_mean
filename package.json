@@ -13,7 +13,7 @@
   "scripts": {
     "start": "node app/app.js",
     "monitor": "nodemon app/app.js",
-    "deploy": "gcloud preview app deploy config/app.yaml"
+    "deploy": "gcloud preview app deploy app.yaml"
   },
   "dependencies": {
     "async": "^1.5.2",
@@ -63,6 +63,6 @@
   "homepage": "https://github.com/schemadesign/arrays#readme",
   "main": "Gruntfile.js",
   "keywords": [],
-  "author": "",
+  "author": "christian@schemadesign.com",
   "license": "ISC"
 }

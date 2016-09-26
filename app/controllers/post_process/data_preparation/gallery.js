@@ -23,9 +23,9 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     // page
     // sortBy
     // sortDir
-    // filterJSON
     // searchQ
     // searchCol
+    // Other filters
     var source_pKey = urlQuery.source_key;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
     if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -67,26 +67,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //
-    var filterJSON = urlQuery.filterJSON;
-    var filterObj = {};
-    var isFilterActive = false;
-    if (typeof filterJSON !== 'undefined' && filterJSON != null && filterJSON.length != 0) {
-        try {
-            filterObj = JSON.parse(filterJSON);
-            if (typeof filterObj !== 'undefined' && filterObj != null && Object.keys(filterObj) != 0) {
-                isFilterActive = true;
-            } else {
-                filterObj = {}; // must replace it to prevent errors below
-            }
-        } catch (e) {
-            winston.error("❌  Error parsing filterJSON: ", filterJSON);
-            callback(e, null);
-
-            return;
-        }
-    }
-    // We must re-URI-encode the filter vals since they get decoded
-    var filterJSON_uriEncodedVals = functions._new_reconstructedURLEncodedFilterObjAsFilterJSONString(filterObj);
+    var filterObj = functions.filterObjFromQueryParams(urlQuery);
+    var isFilterActive = Object.keys(filterObj).length != 0;
     //
     var searchCol = urlQuery.searchCol;
     var searchQ = urlQuery.searchQ;
@@ -103,7 +85,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         }
         wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
     }
-    if (isFilterActive) { // rules out undefined filterJSON
+    if (isFilterActive) {
         var _orErrDesc = functions._activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
         if (typeof _orErrDesc.err !== 'undefined') {
             callback(_orErrDesc.err, null);
@@ -152,11 +134,22 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                         _uniqueFieldValuesByFieldName[columnName].forEach(function(rowValue) {
                             row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
                         });
-                        row.sort();
                         uniqueFieldValuesByFieldName[columnName] = row;
                     } else {
                         uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
                     }
+                    if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                            a = a.replace(/\D/g, '');
+                            a = a == '' ? 0 : parseInt(a);
+                            b = b.replace(/\D/g, '');
+                            b = b == '' ? 0 : parseInt(b);
+                            return a - b;
+                        });
+                    } else // Sort alphabetically by default
+                        uniqueFieldValuesByFieldName[columnName].sort(function(a, b) {
+                            return a - b;
+                        });
                 }
             }
             done();
@@ -279,8 +272,6 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
             filterObj: filterObj,
-            filterJSON_nonURIEncodedVals: filterJSON,
-            filterJSON: filterJSON_uriEncodedVals,
             isFilterActive: isFilterActive,
             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
             truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
@@ -292,6 +283,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
             isSearchActive: isSearchActive,
             //
             routePath_base: routePath_base,
+            // multiselectable filter fields
+            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
         };
         callback(null, data);
     });

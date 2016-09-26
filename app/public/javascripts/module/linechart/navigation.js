@@ -193,8 +193,9 @@ linechart.navigation.prototype._brushEventHandler = function() {
      */
     this._leftSide.attr('x', 1)
         .attr('width', this._xScale(min));
-    this._rightSide.attr('x', this._xScale(max))
-        .attr('width', this._xScale.range()[1] - this._xScale(max) - 1);
+    if (this._xScale.range()[1] > this._xScale(max) + 1)
+        this._rightSide.attr('x', this._xScale(max))
+            .attr('width', this._xScale.range()[1] - this._xScale(max) - 1);
     /*
      * Update viewport.
      */
@@ -375,8 +376,9 @@ linechart.navigation.prototype.resize = function() {
         var max = extent[1];
         this._leftSide.attr('x', 1)
             .attr('width', this._xScale(min));
-        this._rightSide.attr('x', this._xScale(max))
-            .attr('width', this._xScale.range()[1] - this._xScale(max) - 1);
+        if (this._xScale.range()[1] > this._xScale(max)+1)
+            this._rightSide.attr('x', this._xScale(max))
+                .attr('width', this._xScale.range()[1] - this._xScale(max) - 1);
     }
     /*
      * Change x axis bottom border length.
@@ -433,6 +435,7 @@ linechart.navigation.prototype.update = function(data) {
     /*
      * Update x axis labels.
      */
+
     var xTicks = this._xScale.ticks(this._xAxis.ticks()[0]);
     var xStep = this._xScale(xTicks[1]) - this._xScale(xTicks[0]);
     this._xAxisContainer.selectAll('text')

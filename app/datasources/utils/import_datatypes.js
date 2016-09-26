@@ -1,6 +1,7 @@
-// Data source format definition
+var moment = require("moment");
 
-module.exports.DataSource_formats = 
+// Data source format definition
+module.exports.DataSource_formats =
 {
     CSV: "csv",
     TSV: "tsv"
@@ -27,6 +28,9 @@ module.exports.Coercion_optionsPacks = // For convenience
     ToDate: {
         FourDigitYearOnly: {
             format: "YYYY"
+        },
+        ISO_8601: {
+            format: moment.ISO_8601
         }
     }
 };
@@ -89,8 +93,6 @@ var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private fo
             
             return undefined;
         }
-        // Instantiate and configure fresh moment module
-        var moment = require("moment"); // note, var not var as we're potentially replacing the parse two digit year method here every time
         var replacement_parseTwoDigitYear_fn = options.replacement_parseTwoDigitYear_fn;
         if (replacement_parseTwoDigitYear_fn != null && typeof replacement_parseTwoDigitYear_fn !== 'undefined') {
             moment.parseTwoDigitYear = replacement_parseTwoDigitYear_fn;
@@ -103,8 +105,7 @@ var fieldValueDataTypeCoercion_coercionFunctionsByOperationName =  // Private fo
             return null;
         }
         var parsedValue = aMoment.toDate();
-        // console.log("The date is", parsedValue)
-        
+
         return parsedValue;
     }
 };
@@ -137,13 +138,13 @@ var fieldValueDataTypeCoercion_revertFunctionsByOperationName =  // Private for 
 
             return undefined;
         }
+        if (dateFormatString == moment.ISO_8601)
+            dateFormatString = "MMMM Do, YYYY";
 
         if ( isNaN( date.getTime() ) ) {
             // Invalid
             return null;
         } else {
-            var moment = require("moment"); // note, var not var as we're potentially replacing the parse two digit year method here every time
-
             return moment.utc(date).format(dateFormatString);
         }
     }

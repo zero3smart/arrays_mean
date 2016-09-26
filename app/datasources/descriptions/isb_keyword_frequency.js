@@ -106,6 +106,10 @@ exports.Descriptions =
                 //     "Journal Article": "journalArticle",
                 // }
             },
+            fe_filters_fieldsMultiSelectable:
+                [
+                    "Word"
+                ],
             //
             //
             fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function(rowObject)
@@ -165,9 +169,9 @@ exports.Descriptions =
                     "Word",
                     "Count"
                 ],
-            fe_lineGraph_defaultKeywordsColumnName_humanReadable: "Word",
             fe_lineGraph_keywordGroupBy: "Word",
-            fe_lineGraph_keywordCountBy: "Count",
+            fe_lineGraph_defaultAggregateByColumnName_humanReadable: "Count",
+            fe_lineGraph_aggregateByColumnName_numberOfRecords_notAvailable: true,
             fe_lineGraph_keywordLineColors: {
                 Bioinformatics: '#33B1B1',
                 'Computational Biology': '#9533F8',
@@ -178,8 +182,8 @@ exports.Descriptions =
                 'Genome Wide Association Study': '#99BEFF'
             },
 
-            fe_lineGraph_matched_dataSource_pKey: 'isb_library-r1',
-            fe_lineGraph_matched_dataSource_fields_relationships: {
+            fe_lineGraph_mapping_dataSource_pKey: 'isb_library-r1',
+            fe_lineGraph_mapping_dataSource_fields: {
                 Year: 'Publication Year'
             }
         }

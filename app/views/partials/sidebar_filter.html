@@ -22,23 +22,24 @@
                 {% endif %}
                 <li class="sidebar-filter-group-item sidebar-filter-toggle">
                     {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(fieldName, fieldValue, isThisAnActiveFilter) %}
-                    {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                    {% set urlForFilterValue = routePath_base | constructedRoutePath({
+                    {% set urlForFilterValue = routePath_base | constructedRoutePath(filterObjForThisFilterColVal, {
                         searchQ: searchQ,
                         searchCol: searchCol,
                         sortBy: sortBy,
                         sortDir: sortDir,
                         groupBy: groupBy,
                         mapBy: mayBy,
-                        filterJSON: filterJSONString }) %}
+                        aggregateBy: aggregateBy
+                    }) %}
                     {% if filterObjForThisFilterColVal | isObjectEmpty %}
-                        {% set urlForFilterValue = routePath_base | constructedRoutePath({
+                        {% set urlForFilterValue = routePath_base | constructedRoutePath(null, {
                             searchQ: searchQ,
                             searchCol: searchCol,
                             sortBy: sortBy,
                             sortDir: sortDir,
                             groupBy: groupBy,
-                            mapBy: mayBy }) %}
+                            mapBy: mayBy,
+                            aggregateBy: aggregateBy }) %}
                     {% endif %}
                     <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-toggle-active color-brand" if isThisAnActiveFilter else "" }}">
                          <span class="sidebar-filter-toggle-title">{{ fieldValue }}</span> <span class="sidebar-filter-toggle-check {{ "icon-check-on" if isThisAnActiveFilter else "icon-check-off" }}" aria-hidden="true"></span>
@@ -57,9 +58,10 @@
                             {% set isThisAnActiveFilterColumn = true %}
                         {% endif %}
                     {% endif %}
-                    
+                    {% set isMultiselectable = multiselectableFilterFields | doesArrayContain(fieldName) %}
+
                     <a class="collapse-trigger" role="button" href="#column-{{ loop.index }}" aria-expanded="false" aria-controls="column-{{ loop.index }}">
-                        <span class="sidebar-filter-fieldname">{{ fieldName }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">1</span>{%endif %}
+                        <span class="sidebar-filter-fieldname">{{ fieldName }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">{{ filterObj[fieldName] | filterCount }}</span>{%endif %}
                     </a>
                     <ul id="column-{{ loop.index }}" class="sidebar-filter-subgroup collapse" aria-expanded="false">
                         {% for fieldValue in fieldValues %}
@@ -69,29 +71,28 @@
                                     {% set isThisAnActiveFilter = true %}
                                 {% endif %}
                             {% endif %}
+
                             <li class="sidebar-filter-subgroup-item background-color-brand-hover">
-                                {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(fieldName, fieldValue, isThisAnActiveFilter) %}
-                                {% set filterJSONString = filterObjForThisFilterColVal | jsonStringify %}
-                                {% set urlForFilterValue = routePath_base | constructedRoutePath({
+                                {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(fieldName, fieldValue, isThisAnActiveFilter, isMultiselectable) %}
+                                {% set urlForFilterValue = routePath_base | constructedRoutePath(filterObjForThisFilterColVal, {
                                     searchQ: searchQ,
                                     searchCol: searchCol,
                                     sortBy: sortBy,
                                     sortDir: sortDir,
                                     groupBy: groupBy,
                                     mapBy: mayBy,
-                                    filterJSON: filterJSONString }) %}
-                                {% if filterObjForThisFilterColVal | isObjectEmpty %}
-                                    {% set urlForFilterValue = routePath_base | constructedRoutePath({
-                                        searchQ: searchQ,
-                                        searchCol: searchCol,
-                                        sortBy: sortBy,
-                                        sortDir: sortDir,
-                                        groupBy: groupBy,
-                                        mapBy: mayBy }) %}
+                                    aggregateBy: aggregateBy
+                                }) %}
+
+                                {% if isMultiselectable %}
+                                    <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-toggle-active background-color-brand" if isThisAnActiveFilter else "" }}">
+                                        <span class="sidebar-filter-toggle-title">{{ fieldValue }}</span> <span class="sidebar-filter-toggle-check {{ "icon-check-on" if isThisAnActiveFilter else "icon-check-off" }}" aria-hidden="true"></span>
+                                    </a>
+                                {% else %}
+                                    <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-active background-color-brand" if isThisAnActiveFilter else "" }}">
+                                        {{ fieldValue }}
+                                    </a>
                                 {% endif %}
-                                <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-active background-color-brand" if isThisAnActiveFilter else "" }}">
-                                    {{ fieldValue }}
-                                </a>
                             </li>
                         {% endfor %}
                     </ul>
