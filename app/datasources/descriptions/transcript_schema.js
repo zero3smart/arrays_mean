@@ -448,7 +448,7 @@ exports.Descriptions =
                 // Setup each ctx, such as the batch operation
                 var srcDoc_pKey = appCtx.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(this.uid, this.importRevision);
                 var forThisDataSource_mongooseContext = appCtx.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(srcDoc_pKey);
-                // ^ there is only one mongooseContext in raw_source_documents_controller because there is only one src docs collection,
+                // ^ there is only one mongooseContext in raw_source_documents because there is only one src docs collection,
                 // but there are many mongooseContexts derivable/in raw_row_objects_controller because there is one collection of processed row objects per src doc
                 var forThisDataSource_nativeCollection = forThisDataSource_mongooseContext.Model.collection;
 

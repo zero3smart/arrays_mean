@@ -44,7 +44,7 @@ module.exports = function(context) {
                     var camelCaseViewType = viewType.replace( /-([a-z])/ig, function( all, letter ) {
                         return letter.toUpperCase();
                     });
-                    context['array_' + camelCaseViewType + '_controller'].BindDataFor_array(query, function(err, bindData)
+                    context['array_' + camelCaseViewType + '_controller'].BindData(query, function(err, bindData)
                     {
                         if (err) {
                             winston.error("❌  Error getting bind data for Array gallery: ", err);
@@ -66,7 +66,7 @@ module.exports = function(context) {
                     return;
                 }
 
-                context.object_details_controller.BindDataFor_array(source_key, rowObjectId, function(err, bindData)
+                context.object_details_controller.BindData(source_key, rowObjectId, function(err, bindData)
                 {
                     if (err) {
                         winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err);

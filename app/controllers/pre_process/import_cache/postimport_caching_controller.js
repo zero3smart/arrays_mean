@@ -226,7 +226,7 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                     srcDocPKey: dataSourceRevision_pKey,
                     limitedUniqValsByHumanReadableColName: uniqueFieldValuesByFieldName
                 };
-                var cached_values_model = require('../../../models/cached_values_model');
+                var cached_values_model = require('../../../models/cached_values');
                 cached_values_model.MongooseModel.findOneAndUpdate({ srcDocPKey: dataSourceRevision_pKey }, persistableDoc, {
                     upsert: true,
                     new: true

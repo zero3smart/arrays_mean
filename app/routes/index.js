@@ -1,27 +1,5 @@
 var winston = require('winston');
 var url = require('url');
-//
-//
-////////////////////////////////////////////////////////////////////////////////
-// Routes controller
-//
-var constructor = function(options, context)
-{
-    var self = this;
-    self.options = options;
-    self.context = context;
-    
-    self._init();
-    
-    return self;
-};
-
-module.exports = constructor;
-constructor.prototype._init = function()
-{
-    var self = this;
-    // console.log('routes controller is up');
-};
 
 constructor.prototype.MountRoutes = function()
 {
@@ -29,16 +7,7 @@ constructor.prototype.MountRoutes = function()
 
     self._mountRoutes_monitoring();
     self._mountRoutes_ensureWWW();
-
-    // View endpoints
-    require('./homepage')(self.context);
-    require('./auth')(self.context);
-    require('./array')(self.context);
-    require('./team')(self.context);
-    require('./object')(self.context);
-    require('./shared_pages')(self.context);
-    require('./jsonAPI_share')(self.context);
-
+    self._mountRoutes_endPoints();
     self._mountRoutes_errorHandling();
 };
 //
@@ -101,4 +70,19 @@ constructor.prototype._mountRoutes_errorHandling = function()
         // TODO: render a view template?
         res.status(500).send(err.response || 'Internal Server Error');
     });
+};
+//
+constructor.prototype._mountRoutes_endPoints = function()
+{
+    var self = this;
+    var app = self.context.app;
+
+    // View endpoints
+    app.use('/', require('./homepage'));
+    app.use('/auth', require('./auth'));
+    app.use('/array', require('./array'));
+    app.use('/team', require('./team'));
+    app.use('/object', require('./object'));
+    app.use('/shared_pages', require('./shared_pages'));
+    app.use('/jsonAPI_share', require('./jsonAPI_share'));
 };

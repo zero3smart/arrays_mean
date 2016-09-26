@@ -15,7 +15,7 @@ var constructor = function(options, context) {
 };
 
 //
-constructor.prototype.BindDataFor_array = function(source_pKey, rowObject_id, callback)
+constructor.prototype.BindData = function(source_pKey, rowObject_id, callback)
 {
     var self = this;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);

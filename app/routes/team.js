@@ -6,7 +6,7 @@ module.exports = function(context) {
     var app = context.app;
 
     // app.get('/team', function(req, res) {
-    //     context.data_preparation_index_controller.BindDataFor_array_index(function(err, bindData) {
+    //     context.data_preparation_index_controller.BindData_index(function(err, bindData) {
     //         if (err) {
     //             winston.error("❌  Error getting bind data for Array index: ", err);
     //             res.status(500).send(err.response || 'Internal Server Error');

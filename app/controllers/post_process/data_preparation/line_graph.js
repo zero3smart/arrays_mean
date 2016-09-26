@@ -19,7 +19,7 @@ var constructor = function(options, context) {
  * @param {Object} urlQuery - URL params
  * @param {Function} callback
  */
-constructor.prototype.BindDataFor_array = function(urlQuery, callback)
+constructor.prototype.BindData = function(urlQuery, callback)
 {
     var self = this;
     // urlQuery keys:
@@ -76,7 +76,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     //
     // DataSource Relationship
     var mapping_source_pKey = dataSourceDescription.fe_lineGraph_mapping_dataSource_pKey;
-    //var dataSourceRevision_pKey = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
+    //var dataSourceRevision_pKey = self.context.raw_source_documents.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
     if (mapping_source_pKey) {
         var mappingDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(mapping_source_pKey, self.context.raw_source_documents_controller);
 

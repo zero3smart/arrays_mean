@@ -1,11 +1,13 @@
-module.exports = function(context) {
-    var app = context.app;
-    app.get('/', function(req, res)
+var express = require('express');
+var router = express.Router();
+
+router.get('/', function(req, res)
+{
+    var bindData =
     {
-        var bindData =
-        {
-            env: process.env
-        };
-        res.render('homepage/homepage', bindData);
-    });
-}
+        env: process.env
+    };
+    res.render('homepage/homepage', bindData);
+});
+
+module.exports = router;

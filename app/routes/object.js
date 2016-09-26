@@ -19,7 +19,7 @@ module.exports = function(context) {
             return;
         }
 
-        context.object_details_controller.BindDataFor_array(source_key, object_id, function(err, bindData)
+        context.object_details_controller.BindData(source_key, object_id, function(err, bindData)
         {
             if (err) {
                 winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err);

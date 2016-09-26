@@ -16,7 +16,7 @@ var constructor = function(options, context) {
 };
 
 //
-constructor.prototype.BindDataFor_array = function(urlQuery, callback)
+constructor.prototype.BindData = function(urlQuery, callback)
 {
     var self = this;
     // urlQuery keys:

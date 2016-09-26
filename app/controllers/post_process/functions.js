@@ -2,7 +2,7 @@ var winston = require('winston');
 var moment = require('moment');
 
 var importedDataPreparation = require('../../datasources/utils/imported_data_preparation');
-var cached_values_model = require('../../models/cached_values_model');
+var cached_values_model = require('../../models/cached_values');
 var import_datatypes = require('../../datasources/utils/import_datatypes');
 var config = new require('./config.js')();
 

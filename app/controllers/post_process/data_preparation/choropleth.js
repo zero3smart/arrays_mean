@@ -6,6 +6,7 @@ var importedDataPreparation = require('../../../datasources/utils/imported_data_
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
 var config = new require('../config')();
 var functions = new require('../functions')();
+var raw_source_documents = require('../../../model/raw_source_documents');
 //
 // Prepare country geo data cache
 var __countries_geo_json_str = fs.readFileSync(__dirname + '/../../../public/data/world.geo.json/countries.geo.json', 'utf8');
@@ -33,7 +34,7 @@ var constructor = function(options, context) {
 };
 
 //
-constructor.prototype.BindDataFor_array = function(urlQuery, callback)
+constructor.prototype.BindData = function(urlQuery, callback)
 {
     var self = this;
     // urlQuery keys:
@@ -43,7 +44,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     // searchCol
     // Other filters
     var source_pKey = urlQuery.source_key;
-    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
+    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
     if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
         callback(new Error("No data source with that source pkey " + source_pKey), null);
 
@@ -90,7 +91,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 
     // Obtain source document
     batch.push(function(done) {
-        self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
+        raw_source_documents.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
             if (err) return done(err);
 
             sourceDoc = _sourceDoc;

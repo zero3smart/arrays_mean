@@ -6,7 +6,7 @@ var CachedUniqValsByKey_scheme = Schema({
     limitedUniqValsByHumanReadableColName: Schema.Types.Mixed
 });
 var modelName = 'CachedUniqValsByKey';
-exports.ModelName = modelName;
+module.exports.ModelName = modelName;
 var mongooseModel = mongoose.model(modelName, CachedUniqValsByKey_scheme);
 //
-exports.MongooseModel = mongooseModel;
+module.exports.MongooseModel = mongooseModel;

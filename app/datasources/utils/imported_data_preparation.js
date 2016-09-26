@@ -1,38 +1,28 @@
-//
-//
-////////////////////////////////////////////////////////////////////////////////
-// Imports
-//
+var raw_source_documents = require('../../../models/raw_source_documents');
 var dataSourceDescriptions = require('../descriptions').GetDescriptions();
 var teamDescriptions = require('../teams').GetTeams();
-//
-//
-////////////////////////////////////////////////////////////////////////////////
-// Constants
-//
+
 var humanReadableColumnName_objectTitle = "Object Title";
+
 module.exports.HumanReadableColumnName_objectTitle = humanReadableColumnName_objectTitle;
-//
-//
-////////////////////////////////////////////////////////////////////////////////
-// Accessors
-//
-function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription, raw_source_documents_controller)
+
+function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription)
 {
     var uid = dataSourceDescription.uid;
     var importRevision = dataSourceDescription.importRevision;
-    var pKey = raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(uid, importRevision);
+    var pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(uid, importRevision);
 
     return pKey;
 };
+
 module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromDataSourceDescription;
 //
-function _dataSourceDescriptionWithPKey(source_pKey, raw_source_documents_controller)
+function _dataSourceDescriptionWithPKey(source_pKey)
 {
     var dataSourceDescriptions_length = dataSourceDescriptions.length;
     for (var i = 0 ; i < dataSourceDescriptions_length ; i++) {
         var dataSourceDescription = dataSourceDescriptions[i];
-        var dataSourceDescription_pKey = _dataSourcePKeyFromDataSourceDescription(dataSourceDescription, raw_source_documents_controller);
+        var dataSourceDescription_pKey = _dataSourcePKeyFromDataSourceDescription(dataSourceDescription);
         if (dataSourceDescription_pKey === source_pKey) {
             return dataSourceDescription;
         }

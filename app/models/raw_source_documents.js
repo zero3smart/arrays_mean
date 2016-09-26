@@ -1,30 +1,40 @@
 var async = require('async');
 var winston = require('winston');
-//
-//
-////////////////////////////////////////////////////////////////////////////////
-// Controller definition
-//
-var constructor = function(options, context)
-{
-    var self = this;
-    self.options = options
-    self.context = context
-    
-    self._init()
-    
-    return self
-};
-module.exports = constructor;
-constructor.prototype._init = function()
-{
-    var self = this;
-    // console.log("raw string documents controller is up")
-};
+var mongoose_client = require('../../../lib/mongoose_client/mongoose_client');
 
+var mongoose = mongoose_client.mongoose;
+var Schema = mongoose.Schema;
 //
-constructor.prototype.New_templateForPersistableObject = function(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows)
-{
+var RawSourceDocument_scheme = Schema({
+    primaryKey: {type: String, index: true}, // NOTE: This primaryKey is made by NewCustomPrimaryKeyStringWithComponents
+    revisionNumber: Number,
+    importUID: String,
+    title: String,
+    numberOfRows: Number,
+    dateOfLastImport: Date
+});
+RawSourceDocument_scheme.index({importUID: 1, revisionNumber: 1}, {unique: true});
+RawSourceDocument_scheme.index({importUID: 1}, {unique: false});
+RawSourceDocument_scheme.index({revisionNumber: 1}, {unique: false});
+//
+var modelName = 'RawSourceDocument';
+var RawSourceDocument_model = mongoose.model(modelName, RawSourceDocument_scheme);
+RawSourceDocument_model.on('index', function (error) {
+    if (error != null) {
+        winston.error("❌  MongoDB index build error for '" + modelName + "':", error);
+    } else {
+        winston.info("✅  Built indices for '" + modelName + "'");
+        // Don't let app start listening until indices built; Coordinate via 
+        // mongoose client
+        mongoose_client.FromModel_IndexHasBeenBuiltForSchemeWithModelNamed(modelName);
+    }
+});
+
+module.exports.ModelName = modelName;
+
+module.exports.Model = RawSourceDocument_model;
+
+module.exports.New_templateForPersistableObject = function (sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows) {
     return {
         primaryKey: sourceDocumentRevisionKey,
         title: sourceDocumentTitle,
@@ -35,53 +45,12 @@ constructor.prototype.New_templateForPersistableObject = function(sourceDocument
         numberOfRows: numberOfRows
     }
 };
-//
-var mongoose_client = require('../../../lib/mongoose_client/mongoose_client');
-var mongoose = mongoose_client.mongoose;
-var Schema = mongoose.Schema;
-//
-var RawSourceDocument_scheme = Schema({
-    primaryKey: { type: String, index: true }, // NOTE: This primaryKey is made by NewCustomPrimaryKeyStringWithComponents
-    revisionNumber: Number,
-    importUID: String,
-    title: String,
-    numberOfRows: Number,
-    dateOfLastImport: Date
-});
-RawSourceDocument_scheme.index({ importUID: 1, revisionNumber: 1 }, { unique: true });
-RawSourceDocument_scheme.index({ importUID: 1 }, { unique: false });
-RawSourceDocument_scheme.index({ revisionNumber: 1 }, { unique: false });
-constructor.prototype.Scheme = RawSourceDocument_scheme;
-//
-var modelName = 'RawSourceDocument';
-exports.ModelName = modelName;
-var RawSourceDocument_model = mongoose.model(modelName, RawSourceDocument_scheme);
-RawSourceDocument_model.on('index', function(error) 
-{
-    if (error != null) {
-        winston.error("❌  MongoDB index build error for '" + modelName + "':", error);
-    } else {
-        winston.info("✅  Built indices for '" + modelName + "'");
-        // Don't let app start listening until indices built; Coordinate via 
-        // mongoose client
-        mongoose_client.FromModel_IndexHasBeenBuiltForSchemeWithModelNamed(modelName);
-    }
-});
-constructor.prototype.Model = RawSourceDocument_model;
-//
-//
-// Public - Accessors - Factories - UIDs
-//
-constructor.prototype.NewCustomPrimaryKeyStringWithComponents = function(dataSource_uid, dataSource_importRevisionNumber)
-{
+
+module.exports.NewCustomPrimaryKeyStringWithComponents = function (dataSource_uid, dataSource_importRevisionNumber) {
     return dataSource_uid + "-r" + dataSource_importRevisionNumber;
 };
-//
-//
-// Public - Imperatives - Upserts
-//
-constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persistableObjectTemplate, fn)
-{
+
+module.exports.UpsertWithOnePersistableObjectTemplate = function (persistableObjectTemplate, fn) {
     winston.log("📡  [" + (new Date()).toString() + "] Going to save source document.");
 
     var updatedDocument = {};
@@ -100,8 +69,7 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
         $set: updatedDocument
     }, {
         upsert: true
-    }, function(err, doc)
-    {
+    }, function (err, doc) {
         if (err) {
             winston.error("❌ [" + (new Date()).toString() + "] Error while updating a raw source document: ", err);
         } else {
@@ -111,9 +79,7 @@ constructor.prototype.UpsertWithOnePersistableObjectTemplate = function(persista
     });
 };
 
-//
-constructor.prototype.IncreaseNumberOfRawRows = function(pKey, numberOfRows, fn)
-{
+module.exports.IncreaseNumberOfRawRows = function (pKey, numberOfRows, fn) {
     winston.log("📡  [" + (new Date()).toString() + "] Going to increase the number of raw rows in the source document.");
 
     var findOneAndUpdate_queryParameters =
@@ -125,8 +91,7 @@ constructor.prototype.IncreaseNumberOfRawRows = function(pKey, numberOfRows, fn)
         $inc: {numberOfRows: numberOfRows},
     }, {
         upsert: true
-    }, function(err, doc)
-    {
+    }, function (err, doc) {
         if (err) {
             winston.error("❌ [" + (new Date()).toString() + "] Error while increasing the number of raw rows in a raw source document: ", err);
         } else {

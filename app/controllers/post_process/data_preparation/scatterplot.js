@@ -20,7 +20,7 @@ var constructor = function(options, context) {
  * @param {Object} urlQuery - URL params
  * @param {Function} callback
  */
-constructor.prototype.BindDataFor_array = function(urlQuery, callback)
+constructor.prototype.BindData = function(urlQuery, callback)
 {
     var self = this;
 

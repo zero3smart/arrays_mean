@@ -1,60 +1,37 @@
-//
-//
-// Constants
-var isDev = process.env.NODE_ENV == 'development' ? true : false;
-//
-//
-//
-// Initialize application object for context
-//
-var dotenv_path = __dirname + "/../config/env/.env." + process.env.NODE_ENV;
-var dotenv_config =
-{
-    path: dotenv_path
-};
-require('dotenv').config(dotenv_config);
 var path = require('path');
 var express = require('express');
 var winston = require('winston');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var passport = require('passport');
 var session = require('express-session');
-
-// This will configure Passport to use Auth0
+var passport = require('passport');
 var strategy = require('./setup-passport');
+var raw_source_documents = require('./models/raw_source_documents');
+
+var isDev = process.env.NODE_ENV == 'production' ? false : true;
+var dotenv_path = __dirname + "/../config/env/.env." + process.env.NODE_ENV;
+require('dotenv').config({
+    path: dotenv_path
+});
 
 var app = express();
-//
-//
-// Set up application runtime object graph
-//
-var context = require('./app_context').NewHydratedContext(app);
-// module.exports = context; // access app at context.app
-//
-//
+
 // Configure app
-//
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
 var nunjucks = require('express-nunjucks');
-var nunjucks_config = 
-{
+nunjucks.setup({
     watch: isDev,
     noCache: isDev,
-};
-nunjucks.setup(nunjucks_config, app).then(require('./nunjucks/filters'));
+}, app).then(require('./nunjucks/filters'));
 //
-//
-app.use(context.logging.requestLogger);
 app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(bodyParser.urlencoded({ extended: false })); // application/x-www-form-urlencoded
 app.use(bodyParser.json()); // application/JSON
 app.use(require('compression')());
 app.set('trust proxy', true);
-var helmet = require('helmet');
-app.use(helmet.xframe());
+app.use(require('helmet').xframe());
 app.use(cookieParser());
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -63,11 +40,22 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Logger
+app.use(expressWinston.logger({
+    transports: [
+        new winston.transports.Console({
+            json: fales,
+            colorize: isDev
+        })
+    ],
+    expressFormat: true,
+    meta: false
+}));
 //
 //
 var mongoose_client = require('../lib/mongoose_client/mongoose_client');
-var modelNames = [];
-modelNames.push(context.raw_source_documents_controller.ModelName);
+var modelNames = [raw_source_documents.ModelName];
 mongoose_client.FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed(modelNames)
 //
 mongoose_client.WhenMongoDBConnected(function() 
@@ -84,6 +72,16 @@ function _mountRoutesAndStartListening()
     //
     context.routes_controller.MountRoutes();
     //
+    // express-winston errorLogger makes sense AFTER the router.
+    app.use(expressWinston.errorLogger({
+        transports: [
+            new winston.transports.Console({
+                json: true,
+                colorize: isDev
+            })
+        ]
+    }));
+    //
     // Run actual server
     if (module === require.main) {
         var server = app.listen(process.env.PORT || 9080, function () {
@@ -93,4 +91,5 @@ function _mountRoutesAndStartListening()
         });
     }
 }
-//
+
+module.exports = app;

@@ -153,6 +153,11 @@
 	font-size: 18px;
 }
 
+.navbar-nav > li > a .user {
+	padding-right: 10px;
+	font-size: 18px;
+}
+
 @media (min-width: 768px) {
 	.navbar-nav > li > a {
 		padding: 20px;

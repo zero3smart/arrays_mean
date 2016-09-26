@@ -1,22 +1,12 @@
 var winston = require('winston');
 var Batch = require('batch');
-//
+
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
 var config = new require('../config')();
 var functions = new require('../functions')();
-
-var constructor = function(options, context) {
-    var self = this;
-    self.options = options;
-    self.context = context;
-
-    return self;
-};
-
 //
-constructor.prototype.BindDataFor_array = function(urlQuery, callback)
-{
+module.exports.BindData = function (urlQuery, callback) {
     var self = this;
     // urlQuery keys:
     // source_key
@@ -25,7 +15,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     // searchCol
     // Other filters
     var source_pKey = urlQuery.source_key;
-    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
+    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, raw_source_documents);
     if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
         callback(new Error("No data source with that source pkey " + source_pKey), null);
 
@@ -51,7 +41,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
     var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_chart_defaultGroupByColumnName_humanReadable;
     //
-    var routePath_base              = "/array/" + source_pKey + "/chart";
+    var routePath_base = "/array/" + source_pKey + "/chart";
     var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
@@ -106,8 +96,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     batch.concurrency(1);
 
     // Obtain source document
-    batch.push(function(done) {
-        self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
+    batch.push(function (done) {
+        raw_source_documents.Model.findOne({primaryKey: source_pKey}, function (err, _sourceDoc) {
             if (err) return done(err);
 
             sourceDoc = _sourceDoc;
@@ -116,8 +106,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     });
 
     // Obtain sample document
-    batch.push(function(done) {
-        processedRowObjects_mongooseModel.findOne({}, function(err, _sampleDoc) {
+    batch.push(function (done) {
+        processedRowObjects_mongooseModel.findOne({}, function (err, _sampleDoc) {
             if (err) return done(err);
 
             sampleDoc = _sampleDoc;
@@ -126,8 +116,8 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     });
 
     // Obtain Top Unique Field Values For Filtering
-    batch.push(function(done) {
-        functions._topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
+    batch.push(function (done) {
+        functions._topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
             if (err) return done(err);
 
             uniqueFieldValuesByFieldName = {};
@@ -136,7 +126,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
                     if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                         var row = [];
-                        _uniqueFieldValuesByFieldName[columnName].forEach(function(rowValue) {
+                        _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
                             row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
                         });
                         row.sort();
@@ -151,7 +141,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
     });
 
     // Obtain Grouped ResultSet
-    batch.push(function(done) {
+    batch.push(function (done) {
         var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
             dataSourceDescription);
         //
@@ -172,11 +162,11 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.AggregateByDefaultColumnName) {
             aggregationOperators = aggregationOperators.concat(
                 [
-                    { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                    {$unwind: "$" + "rowParams." + groupBy_realColumnName}, // requires MongoDB 3.2, otherwise throws an error if non-array
                     { // unique/grouping and summing stage
                         $group: {
                             _id: "$" + "rowParams." + groupBy_realColumnName,
-                            value: { $sum: "$" + "rowParams." + aggregateBy_realColumnName } // the count
+                            value: {$sum: "$" + "rowParams." + aggregateBy_realColumnName} // the count
                         }
                     },
                     { // reformat
@@ -187,20 +177,20 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                         }
                     },
                     { // priotize by incidence, since we're $limit-ing below
-                        $sort : { value : -1 }
+                        $sort: {value: -1}
                     },
                     {
-                        $limit : 100 // so the chart can actually handle the number
+                        $limit: 100 // so the chart can actually handle the number
                     }
                 ]);
         } else {
             aggregationOperators = aggregationOperators.concat(
                 [
-                    { $unwind: "$" + "rowParams." + groupBy_realColumnName }, // requires MongoDB 3.2, otherwise throws an error if non-array
+                    {$unwind: "$" + "rowParams." + groupBy_realColumnName}, // requires MongoDB 3.2, otherwise throws an error if non-array
                     { // unique/grouping and summing stage
                         $group: {
                             _id: "$" + "rowParams." + groupBy_realColumnName,
-                            value: { $sum: 1 } // the count
+                            value: {$sum: 1} // the count
                         }
                     },
                     { // reformat
@@ -211,23 +201,21 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                         }
                     },
                     { // priotize by incidence, since we're $limit-ing below
-                        $sort : { value : -1 }
+                        $sort: {value: -1}
                     },
                     {
-                        $limit : 100 // so the chart can actually handle the number
+                        $limit: 100 // so the chart can actually handle the number
                     }
                 ]);
         }
 
         //
-        var doneFn = function(err, _groupedResults)
-        {
+        var doneFn = function (err, _groupedResults) {
             if (err) return done(err);
 
             if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
             var finalizedButNotCoalesced_groupedResults = [];
-            _groupedResults.forEach(function(el, i, arr)
-            {
+            _groupedResults.forEach(function (el, i, arr) {
                 var originalVal = el.label;
                 //
                 var fe_chart_valuesToExcludeByOriginalKey = dataSourceDescription.fe_chart_valuesToExcludeByOriginalKey;
@@ -261,8 +249,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
 
             var summedValuesByLowercasedLabels = {};
             var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
-            finalizedButNotCoalesced_groupedResults.forEach(function(el, i, arr)
-            {
+            finalizedButNotCoalesced_groupedResults.forEach(function (el, i, arr) {
                 var label = el.label;
                 var value = el.value;
                 var label_toLowerCased = label.toLowerCase();
@@ -271,15 +258,17 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
                 var new_valueSum = existing_valueSum + value;
                 summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
                 //
-                var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] || { label: '', value: -1 };
+                var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] || {
+                        label: '',
+                        value: -1
+                    };
                 if (existing_titleWithMostMatchesAndMatchCount.value < value) {
-                    var new_titleWithMostMatchesAndMatchCount = { label: label, value: value };
+                    var new_titleWithMostMatchesAndMatchCount = {label: label, value: value};
                     titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
                 }
             });
             var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
-            lowercasedLabels.forEach(function(key, i, arr)
-            {
+            lowercasedLabels.forEach(function (key, i, arr) {
                 var summedValue = summedValuesByLowercasedLabels[key];
                 var reconstitutedDisplayableTitle = key;
                 var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchCountByLowercasedTitle[key];
@@ -301,7 +290,7 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
     });
 
-    batch.end(function(err) {
+    batch.end(function (err) {
         if (err) return callback(err);
 
         //
@@ -344,5 +333,3 @@ constructor.prototype.BindDataFor_array = function(urlQuery, callback)
         callback(err, data);
     });
 };
-
-module.exports = constructor;
