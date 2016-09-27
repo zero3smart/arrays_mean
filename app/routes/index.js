@@ -1,5 +1,10 @@
 var winston = require('winston');
+var expressWinston = require('express-winston');
 var url = require('url');
+
+var isDev = process.env.NODE_ENV == 'development';
+var __DEBUG_enableEnsureWWWForDev = false; // for debug
+var shouldEnsureWWW = isDev == false || __DEBUG_enableEnsureWWWForDev;
 
 //
 var _mountRoutes_monitoring = function(app)
@@ -13,10 +18,6 @@ var _mountRoutes_monitoring = function(app)
 //
 var _mountRoutes_ensureWWW = function(app)
 {
-    var isDev = process.env.NODE_ENV == 'development';
-    var __DEBUG_enableEnsureWWWForDev = false; // for debug
-    var shouldEnsureWWW = isDev == false || __DEBUG_enableEnsureWWWForDev;
-
     app.use(function(req, res, next) {
         if (shouldEnsureWWW == false) {
             next();
@@ -69,9 +70,9 @@ var _mountRoutes_endPoints = function(app)
     app.use('/auth', require('./auth'));
     app.use('/array', require('./array'));
     app.use('/team', require('./team'));
-    app.use('/object', require('./object'));
-    app.use('/shared_pages', require('./shared_pages'));
-    app.use('/jsonAPI_share', require('./jsonAPI_share'));
+    app.use('/s', require('./shared_pages'));
+    var apiVersion = 'v1';
+    app.use('/'+apiVersion, require('./jsonAPI_share'));
 };
 
 module.exports.MountRoutes = function(app)

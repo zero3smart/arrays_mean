@@ -5,6 +5,8 @@ var async = require('async');
 var winston = require('winston');
 
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
+var raw_row_objects = require('../../../models/raw_row_objects');
+var raw_source_documents = require('../../../models/raw_source_documents');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -33,7 +35,7 @@ constructor.prototype._parseAndImportRaw = function(indexInList, dataSourceDescr
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.title;
-    var dataSourceRevision_pKey = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+    var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
 
     var format = dataSourceDescription.format;
     switch (format) {
@@ -150,7 +152,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
 
                 return;
             }
-            var parsedObject = self.context.raw_row_objects_controller.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, lineNr-2, rowObject);
+            var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, lineNr-2, rowObject);
             // winston.info("parsedObject " , parsedObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
                 winston.info("⚠️  Warning: An object with the same primary key, \""
@@ -189,7 +191,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
                         winston.info("🔁  Parsing " + lineNr + " rows in \"" + filename + "\"");
 
                         // Bulk for performance at volume
-                        self.context.raw_row_objects_controller.InsertManyPersistableObjectTemplates
+                        raw_row_objects.InsertManyPersistableObjectTemplates
                         (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function(err, record)
                         {
                             if (err) {
@@ -220,14 +222,14 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
                 if (lineNr % 1000 == 0) {
 
                     winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
-                    var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
+                    var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
                     stringDocumentObject.filename = filename;
 
-                    self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
+                    raw_source_documents.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
 
                 } else {
 
-                    self.context.raw_row_objects_controller.InsertManyPersistableObjectTemplates
+                    raw_row_objects.InsertManyPersistableObjectTemplates
                     (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function(err)
                     {
                         if (err) {
@@ -238,10 +240,10 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
 
                         numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
 
-                        var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
+                        var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
                         stringDocumentObject.filename = filename;
 
-                        self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
+                        raw_source_documents.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
                     });
                 }
             })
@@ -310,7 +312,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
 
                 return;
             }
-            var parsedObject = self.context.raw_row_objects_controller.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, lineNr-2, rowObject);
+            var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, lineNr-2, rowObject);
             // winston.info("parsedObject " , parsedObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
                 winston.info("⚠️  Warning: An object with the same primary key, \""
@@ -349,7 +351,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
                         winston.info("🔁  Parsing " + lineNr + " rows in \"" + filename + "\"");
 
                         // Bulk for performance at volume
-                        self.context.raw_row_objects_controller.InsertManyPersistableObjectTemplates
+                        raw_row_objects.InsertManyPersistableObjectTemplates
                         (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function(err, record)
                         {
                             if (err) {
@@ -380,14 +382,14 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
                 if (lineNr % 1000 == 0) {
 
                     winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
-                    var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
+                    var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
                     stringDocumentObject.filename = filename;
 
-                    self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
+                    raw_source_documents.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
 
                 } else {
 
-                    self.context.raw_row_objects_controller.InsertManyPersistableObjectTemplates
+                    raw_row_objects.InsertManyPersistableObjectTemplates
                     (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function(err, record)
                     {
                         if (err) {
@@ -398,10 +400,10 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
 
                         numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
 
-                        var stringDocumentObject = self.context.raw_source_documents_controller.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
+                        var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
                         stringDocumentObject.filename = filename;
 
-                        self.context.raw_source_documents_controller.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
+                        raw_source_documents.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
                     });
                 }
             })

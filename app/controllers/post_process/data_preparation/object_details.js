@@ -4,6 +4,7 @@ var queryString = require('querystring');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var raw_source_documents = require('../../../models/raw_source_documents');
+var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
 
@@ -20,7 +21,7 @@ module.exports.BindData = function(source_pKey, rowObject_id, callback)
 
         return;
     }
-    var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+    var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
 
     var rowObject;
@@ -56,7 +57,7 @@ module.exports.BindData = function(source_pKey, rowObject_id, callback)
                         var relationshipSource_uid = by.ofOtherRawSrcUID;
                         var relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
                         var relationshipSource_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(relationshipSource_uid, relationshipSource_importRevision);
-                        var rowObjectsOfRelationship_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(relationshipSource_pKey);
+                        var rowObjectsOfRelationship_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(relationshipSource_pKey);
                         var rowObjectsOfRelationship_mongooseModel = rowObjectsOfRelationship_mongooseContext.Model;
                         //
                         var field = afterImportingAllSources_generate_description.field;

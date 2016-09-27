@@ -2,7 +2,7 @@ var winston = require('winston');
 var moment = require('moment');
 
 var importedDataPreparation = require('../../datasources/utils/imported_data_preparation');
-var cached_values_model = require('../../models/cached_values');
+var cached_values = require('../../models/cached_values');
 var import_datatypes = require('../../datasources/utils/import_datatypes');
 var config = require('./config.js');
 //
@@ -407,7 +407,7 @@ module.exports.activeSearch_matchOp_orErrDescription = _activeSearch_matchOp_orE
 
 //
 var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescription, callback) {
-    cached_values_model.MongooseModel.findOne({srcDocPKey: source_pKey}, function (err, doc) {
+    cached_values.MongooseModel.findOne({srcDocPKey: source_pKey}, function (err, doc) {
         if (err) {
             callback(err, null);
 

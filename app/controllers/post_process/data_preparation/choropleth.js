@@ -5,8 +5,10 @@ var Batch = require('batch');
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
+var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+
 // Prepare country geo data cache
 var __countries_geo_json_str = fs.readFileSync(__dirname + '/../../../public/data/world.geo.json/countries.geo.json', 'utf8');
 var __countries_geo_json = JSON.parse(__countries_geo_json_str);
@@ -54,7 +56,7 @@ module.exports.BindData = function(urlQuery, callback)
 
         return;
     }
-    var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+    var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
     var mapBy = urlQuery.mapBy; // the human readable col name - real col name derived below

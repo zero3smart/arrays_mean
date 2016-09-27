@@ -131,8 +131,8 @@ map.on('load', function () {
 		var queryParamJoinChar = routePath_withoutFilter == routePath_base ? "?" : "&";
 
 		var filterObjForThisFilterColVal = constructedFilterObj(filterObj, mapBy, feature.properties.name, false);
-		var filterJSONString = $.param(filterObjForThisFilterColVal);
-		var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + "filterJSON=" + filterJSONString;
+		var filterObjString = $.param(filterObjForThisFilterColVal);
+		var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterObjString;
 
 		window.location = urlForFilterValue;
 	});

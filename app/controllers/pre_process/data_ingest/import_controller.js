@@ -3,7 +3,8 @@
 // 
 var async = require("async");
 var winston = require('winston');
-
+var raw_source_documents = require('../../../models/raw_source_documents');
+var processed_row_objects = require('../../../models/processed_row_objects');
 var import_processing = require('../../../datasources/utils/import_processing');
 //
 //
@@ -181,8 +182,8 @@ constructor.prototype._postProcess = function(indexInList, dataSourceDescription
     //
     // Firstly, generate the whole processed objects dataset
     //
-    //self.context.processed_row_objects_controller.GenerateProcessedDatasetFromRawRowObjects
-    self.context.processed_row_objects_controller.InsertProcessedDatasetFromRawRowObjects(
+    //processed_row_objects_controller.GenerateProcessedDatasetFromRawRowObjects
+    processed_row_objects_controller.InsertProcessedDatasetFromRawRowObjects(
         dataSource_uid,
         dataSource_importRevision,
         dataSource_title,
@@ -210,7 +211,7 @@ constructor.prototype._postProcess = function(indexInList, dataSourceDescription
                             if (typeof matchFn === 'undefined' || matchFn == null) {
                                 matchFn = import_processing.MatchFns.LocalEqualsForeignString;
                             }
-                            self.context.processed_row_objects_controller.GenerateFieldsByJoining_comparingWithMatchFn(
+                            processed_row_objects_controller.GenerateFieldsByJoining_comparingWithMatchFn(
                                 dataSource_uid,
                                 dataSource_importRevision,
                                 dataSource_title,
@@ -251,7 +252,7 @@ constructor.prototype._proceedToScrapeImagesAndRemainderOfPostProcessing = funct
         dataSourceDescription.afterImportingAllSources_generateByScraping,
         function(description, cb)
         {
-            self.context.processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSourceDescription.uid,
+            processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSourceDescription.uid,
                 dataSourceDescription.importRevision,
                 dataSourceDescription.title,
                 dataSourceDescription.dataset_uid,
@@ -309,7 +310,7 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
         if (!dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFn) {
             continueToAfterIterating();
         } else {
-            self.context.processed_row_objects_controller.EnumerateProcessedDataset(
+            processed_row_objects_controller.EnumerateProcessedDataset(
                 dataSource_uid,
                 dataSource_importRevision,
                 dataset_uid,

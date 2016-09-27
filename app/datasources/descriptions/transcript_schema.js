@@ -1,7 +1,7 @@
-//
 var winston = require('winston');
-//
 var import_datatypes = require('../utils/import_datatypes');
+var raw_source_documents = require('../../models/raw_source_documents');
+var processed_row_objects = require('../../models/processed_row_objects');
 //
 //
 exports.Descriptions =
@@ -446,10 +446,10 @@ exports.Descriptions =
             afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
             {
                 // Setup each ctx, such as the batch operation
-                var srcDoc_pKey = appCtx.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(this.uid, this.importRevision);
-                var forThisDataSource_mongooseContext = appCtx.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(srcDoc_pKey);
+                var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(this.uid, this.importRevision);
+                var forThisDataSource_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(srcDoc_pKey);
                 // ^ there is only one mongooseContext in raw_source_documents because there is only one src docs collection,
-                // but there are many mongooseContexts derivable/in raw_row_objects_controller because there is one collection of processed row objects per src doc
+                // but there are many mongooseContexts derivable/in raw_row_objects because there is one collection of processed row objects per src doc
                 var forThisDataSource_nativeCollection = forThisDataSource_mongooseContext.Model.collection;
 
                 //
@@ -561,8 +561,8 @@ exports.Descriptions =
                     }
 
                     // Update numberOfRows on the row source documents
-                    var srcDoc_pKey = appCtx.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(self.uid, self.importRevision);
-                    appCtx.raw_source_documents_controller.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows, cb);
+                    var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(self.uid, self.importRevision);
+                    raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows, cb);
                 });
             }
         }

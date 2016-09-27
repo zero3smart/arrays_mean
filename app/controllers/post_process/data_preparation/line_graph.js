@@ -1,28 +1,30 @@
 var winston = require('winston');
 var Batch = require('batch');
+var express = require('express');
+var router = express.Router();
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
+var raw_source_documents = require('../../../models/raw_source_documents');
+var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
-var raw_source_documents = require('../../../models/raw_source_documents');
 
 /**
- * Line Graph view action controller.
- * @param {Object} urlQuery - URL params
+  * @param {Object} urlQuery - URL params
  * @param {Function} callback
  */
-module.exports.BindData = function(urlQuery, callback)
+router.BindData = function(urlQuery, callback)
 {
     var self = this;
     // urlQuery keys:
     // source_key
     // groupBy
-    // filterJSON
     // searchQ
     // searchCol
+    // filters
     var source_pKey = urlQuery.source_key;
-    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey, self.context.raw_source_documents_controller);
+    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
     if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
         callback(new Error("No data source with that source pkey " + source_pKey), null);
 
@@ -42,7 +44,7 @@ module.exports.BindData = function(urlQuery, callback)
 
         return;
     }
-    var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+    var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
     var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
@@ -71,7 +73,7 @@ module.exports.BindData = function(urlQuery, callback)
     var mapping_source_pKey = dataSourceDescription.fe_lineGraph_mapping_dataSource_pKey;
     //var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
     if (mapping_source_pKey) {
-        var mappingDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(mapping_source_pKey, self.context.raw_source_documents_controller);
+        var mappingDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(mapping_source_pKey);
 
         var mapping_default_filterObj = {};
         if (typeof mappingDataSourceDescription.fe_filters_default !== 'undefined') {
@@ -131,7 +133,7 @@ module.exports.BindData = function(urlQuery, callback)
 
     // Obtain source document
     batch.push(function(done) {
-        self.context.raw_source_documents_controller.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
+        raw_source_documents.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
             if (err) return done(err);
 
             sourceDoc = _sourceDoc;
@@ -464,4 +466,4 @@ module.exports.BindData = function(urlQuery, callback)
     });
 };
 
-module.exports = constructor;
+module.exports = router;

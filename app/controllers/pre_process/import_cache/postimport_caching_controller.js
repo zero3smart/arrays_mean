@@ -7,6 +7,8 @@ var parse = require('csv-parse');
 var winston = require('winston');
 
 var imported_data_preparation = require('../../../datasources/utils/imported_data_preparation')
+var processed_row_objects = require('../../../models/processed_row_objects');
+var raw_source_documents = require('../../../models/raw_source_documents');
 //
 //
 //
@@ -79,9 +81,9 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_title = dataSourceDescription.title;
     var dataSource_importRevision = dataSourceDescription.importRevision;    
-    var dataSourceRevision_pKey = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+    var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
     //
-    var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceRevision_pKey);
+    var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceRevision_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
     processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
@@ -226,8 +228,8 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                     srcDocPKey: dataSourceRevision_pKey,
                     limitedUniqValsByHumanReadableColName: uniqueFieldValuesByFieldName
                 };
-                var cached_values_model = require('../../../models/cached_values');
-                cached_values_model.MongooseModel.findOneAndUpdate({ srcDocPKey: dataSourceRevision_pKey }, persistableDoc, {
+                var cached_values = require('../../../models/cached_values');
+                cached_values.MongooseModel.findOneAndUpdate({ srcDocPKey: dataSourceRevision_pKey }, persistableDoc, {
                     upsert: true,
                     new: true
                 }, function (err, doc) 

@@ -1,7 +1,7 @@
 var async = require('async');
 var winston = require('winston');
 var raw_source_documents = require('./raw_source_documents');
-var raw_row_objects_controller = require('./raw_row_objects');
+var raw_row_objects = require('./raw_row_objects');
 var mongoose_client = require('../../lib/mongoose_client/mongoose_client');
 
 var mongoose = mongoose_client.mongoose;
@@ -88,7 +88,7 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (dataSource_ui
 
         var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
         //
-        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
         //
         var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
@@ -129,7 +129,7 @@ module.exports.GenerateProcessedDatasetFromRawRowObjects = function (dataSource_
 
         var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
         //
-        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
         var nativeCollection_ofRawRowObjectsBeingProcessed = mongooseModel_ofRawRowObjectsBeingProcessed.collection;
         //
@@ -254,10 +254,10 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSour
         var pKey_ofFromDataSourceDoc = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(ofOtherRawSrcUID, andOtherRawSrcImportRevision);
         var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
         //
-        var mongooseContext_ofFromRawRowObjects = raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofFromDataSourceDoc);
+        var mongooseContext_ofFromRawRowObjects = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofFromDataSourceDoc);
         var mongooseModel_ofFromRawRowObjects = mongooseContext_ofFromRawRowObjects.forThisDataSource_RawRowObject_model;
         //
-        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
         //
         var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
@@ -443,10 +443,10 @@ module.exports.GenerateFieldsByJoining = function (dataSource_uid,
         var pKey_ofFromDataSourceDoc = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(ofOtherRawSrcUID, andOtherRawSrcImportRevision);
         var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
         //
-        var mongooseContext_ofFromRawRowObjects = raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofFromDataSourceDoc);
+        var mongooseContext_ofFromRawRowObjects = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofFromDataSourceDoc);
         var mongooseModel_ofFromRawRowObjects = mongooseContext_ofFromRawRowObjects.forThisDataSource_RawRowObject_model;
         //
-        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
         //
         var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
@@ -586,10 +586,10 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchRegex = function (dataS
         var pKey_ofFromDataSourceDoc = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(ofOtherRawSrcUID, andOtherRawSrcImportRevision);
         var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
         //
-        var mongooseContext_ofFromRawRowObjects = raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofFromDataSourceDoc);
+        var mongooseContext_ofFromRawRowObjects = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofFromDataSourceDoc);
         var mongooseModel_ofFromRawRowObjects = mongooseContext_ofFromRawRowObjects.forThisDataSource_RawRowObject_model;
         //
-        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects_controller.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
         //
         var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
@@ -803,7 +803,7 @@ module.exports.EnumerateProcessedDataset = function (dataSource_uid,
 //
 var xray = require('x-ray');
 var xray_instance = xray();
-var image_hosting = require('../../../lib/image_process/googlecloudstorage-image_hosting');
+var image_hosting = require('../../lib/image_process/googlecloudstorage-image_hosting');
 
 function _nextLargestImageSrcSetSizeAvailableInParsedRawURLsBySize(rawURLsBySize, afterSize) // -> (String?)
 {

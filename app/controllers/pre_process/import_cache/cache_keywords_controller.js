@@ -1,5 +1,7 @@
 var winston = require('winston');
 var mongoose_client = require('../../../../lib/mongoose_client/mongoose_client');
+var processed_row_objects = require('../../../models/processed_row_objects');
+var raw_source_documents = require('../../../models/raw_source_documents');
 //
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,17 +48,17 @@ constructor.prototype.cacheKeywords_fromDataSourceDescription = function(dataSou
             }
         }
 
-        var pKey_ofDataSrcDocBeingProcessed = self.context.raw_source_documents_controller.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
 
         //
-        var mongooseContext_ofTheseProcessedRowObjects = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseContext_ofTheseProcessedRowObjects = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
         //
         var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();
         var needToUpdate = false;
 
-        self.context.processed_row_objects_controller.EnumerateProcessedDataset(
+        processed_row_objects.EnumerateProcessedDataset(
             dataSource_uid,
             dataSource_importRevision,
             dataset_uid,

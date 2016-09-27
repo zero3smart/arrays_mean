@@ -3,7 +3,7 @@ var router = express.Router();
 var url = require('url');
 var winston = require('winston');
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
-var team_show_controller = require('../controllers/post_process/data_preparation/team/show_controller');
+var team_show_controller = require('../controllers/post_process/data_preparation/team/show');
 
 // router.get('/team', function(req, res) {
 //     context.data_preparation_index_controller.BindData_index(function(err, bindData) {
@@ -17,7 +17,7 @@ var team_show_controller = require('../controllers/post_process/data_preparation
 //     });
 // });
 
-router.get('/team/:team_key', function(req, res) {
+router.get('/:team_key', function(req, res) {
     var team_key = req.params.team_key;
     if (team_key === null || typeof team_key === 'undefined' || team_key === "") {
         res.status(403).send("Bad Request - team_key missing");

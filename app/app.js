@@ -1,12 +1,12 @@
 var path = require('path');
 var express = require('express');
 var winston = require('winston');
+var expressWinston = require('express-winston');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var passport = require('passport');
 var dotenv = require('dotenv');
-var raw_source_documents = require('./models/raw_source_documents');
 var routes = require('./routes');
 
 var isDev = process.env.NODE_ENV == 'production' ? false : true;
@@ -48,7 +48,7 @@ app.use(passport.session());
 app.use(expressWinston.logger({
     transports: [
         new winston.transports.Console({
-            json: fales,
+            json: false,
             colorize: isDev
         })
     ],
@@ -58,6 +58,7 @@ app.use(expressWinston.logger({
 //
 //
 var mongoose_client = require('../lib/mongoose_client/mongoose_client');
+var raw_source_documents = require('./models/raw_source_documents');
 var modelNames = [raw_source_documents.ModelName];
 mongoose_client.FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed(modelNames)
 //

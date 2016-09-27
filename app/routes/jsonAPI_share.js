@@ -5,11 +5,8 @@ var winston = require('winston');
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 var shared_pages_model = require('../models/shared_pages');
 
-var apiVersion = 'v1';
-var apiURLPrefix = '/' + apiVersion + '/';
-
 //
-router.post(apiURLPrefix + 'share', function (req, res) {
+router.post('/share', function (req, res) {
     var urlContainingShareParams = req.body.url;
     if (typeof urlContainingShareParams === 'undefined' || urlContainingShareParams == null || urlContainingShareParams == "") {
         res.status(400).send("url parameter required");

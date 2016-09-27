@@ -28,7 +28,7 @@ var controllers = {
 
 router.use(helmet.xframe('allow-from', '*'));
 
-router.get('/s/:shared_page_id', function(req, res)
+router.get('/:shared_page_id', function(req, res)
 {
     var shared_page_id = req.params.shared_page_id;
     if (shared_page_id == null || typeof shared_page_id === 'undefined' || shared_page_id == "") {

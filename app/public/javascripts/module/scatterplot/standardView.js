@@ -115,7 +115,7 @@ scatterplot.view.standard.prototype.render = function(data) {
                  */
                 var filterObj = convertQueryStringToObject(location.search.substring(1));
                 /*
-                 * Prepare filterJSON with search params corresponding to that objects set.
+                 * Prepare filters with search params corresponding to that objects set.
                  */
                 filterObj[chart._xLabel] = JSON.stringify({
                     min: chart._xAccessor(d),
@@ -126,7 +126,7 @@ scatterplot.view.standard.prototype.render = function(data) {
                     max: chart._yAccessor(d)+1
                 });
                 /*
-                 * Generate URL to gallery with prepared filterJSON.
+                 * Generate URL to gallery with prepared filters.
                  */
                 uri = uri.segment(2, 'gallery')
                     .search('?' + decodeURIComponent($.param(filterObj)));
