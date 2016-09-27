@@ -31,7 +31,7 @@ router.use(helmet.xframe('allow-from', '*'));
 router.get('/:shared_page_id', function(req, res)
 {
     var shared_page_id = req.params.shared_page_id;
-    if (shared_page_id == null || typeof shared_page_id === 'undefined' || shared_page_id == "") {
+    if (!shared_page_id || shared_page_id == "") {
         res.status(403).send("Bad Request - shared_page_id missing")
 
         return;
@@ -39,17 +39,19 @@ router.get('/:shared_page_id', function(req, res)
     shared_pages_controller.FindOneWithId(shared_page_id, function(err, doc)
     {
         if (err) {
-            res.status(500).send("Internal Server Error");
+            res.status(500).send(err.response);
 
             return;
         }
-        if (doc == null) {
-            res.status(404).send(err.response || 'Not Found');
+
+        if (!doc) {
+            res.status(404).send('Not Found');
 
             return;
         }
+
         var source_key = doc.sourceKey;
-        if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
+        if (!source_key == null || source_key == "") {
             res.status(500).send("Internal Server Error");
 
             return;
@@ -65,6 +67,7 @@ router.get('/:shared_page_id', function(req, res)
                 var camelCaseViewType = viewType.replace( /-([a-z])/ig, function( all, letter ) {
                     return letter.toUpperCase();
                 });
+
                 controllers[camelCaseViewType].BindData(query, function(err, bindData)
                 {
                     if (err) {
@@ -73,6 +76,7 @@ router.get('/:shared_page_id', function(req, res)
 
                         return;
                     }
+                    bindData.embedded = req.query.embed;
                     res.render('array/' + viewType, bindData);
                 });
 
@@ -90,16 +94,19 @@ router.get('/:shared_page_id', function(req, res)
             object_details_controller.BindData(source_key, rowObjectId, function(err, bindData)
             {
                 if (err) {
-                    winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err);
+                    winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + rowObjectId + " details: ", err);
                     res.status(500).send(err.response || 'Internal Server Error');
 
                     return;
                 }
+
                 if (bindData == null) { // 404
                     res.status(404).send(err.response || 'Not Found');
 
                     return;
                 }
+
+                bindData.embedded = req.query.embed;
                 bindData.referer = req.headers.referer;
                 res.render('object/show', bindData);
             });

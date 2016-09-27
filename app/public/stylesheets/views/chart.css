@@ -1,5 +1,5 @@
 /* @override 
-	http://localhost:9080/stylesheets/module/chart.css */
+	http://localhost:9080/stylesheets/views/chart.css */
 
 .array-chart .site-content .container-fluid {
 	transition: padding 400ms ease-in-out;

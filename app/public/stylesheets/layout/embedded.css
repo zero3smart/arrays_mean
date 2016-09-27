@@ -1,0 +1,21 @@
+/* @override 
+	http://localhost:9080/stylesheets/layout/embedded.css */
+	
+.view-embedded .navbar,
+.view-embedded .array-header,
+.view-embedded .array-controls,
+.view-embedded .site-footer,
+.view-embedded .filter-bar,
+.view-embedded .sort-bar {
+	display: none;
+}
+
+.view-embedded .site-content {
+	padding-top: 0;
+}
+
+.view-embedded #chart {
+	max-width: calc(100vw - 40px);
+	width: 100vh;
+	height: 100vh;
+}

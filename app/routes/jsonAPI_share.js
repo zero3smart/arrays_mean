@@ -5,10 +5,9 @@ var winston = require('winston');
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 var shared_pages_model = require('../models/shared_pages');
 
-//
 router.post('/share', function (req, res) {
     var urlContainingShareParams = req.body.url;
-    if (typeof urlContainingShareParams === 'undefined' || urlContainingShareParams == null || urlContainingShareParams == "") {
+    if (!urlContainingShareParams) {
         res.status(400).send("url parameter required");
 
         return;
@@ -31,7 +30,7 @@ router.post('/share', function (req, res) {
         return matches[1];
     }
 
-    if (/^\/array\/.*\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|choropleth)/g.test(pathname) == true) {
+    if (/^\/array\/.*\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|line-graph)/g.test(pathname) == true) {
         pageType = "array_view";
         //
         if (/^\/array\/.*\/gallery/g.test(pathname) == true) {
