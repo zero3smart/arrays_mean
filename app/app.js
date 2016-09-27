@@ -5,15 +5,17 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var passport = require('passport');
-var strategy = require('./setup-passport');
+var dotenv = require('dotenv');
 var raw_source_documents = require('./models/raw_source_documents');
 var routes = require('./routes');
 
 var isDev = process.env.NODE_ENV == 'production' ? false : true;
 var dotenv_path = __dirname + "/../config/env/.env." + process.env.NODE_ENV;
-require('dotenv').config({
+dotenv.config({
     path: dotenv_path
 });
+
+var strategy = require('./setup-passport');
 
 var app = express();
 

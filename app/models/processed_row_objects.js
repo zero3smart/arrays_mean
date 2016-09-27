@@ -1,8 +1,8 @@
 var async = require('async');
 var winston = require('winston');
-var raw_source_documents = require('../raw_objects/raw_source_documents');
-var raw_row_objects_controller = require('../raw_objects/raw_row_objects_controller');
-var mongoose_client = require('../../../lib/mongoose_client/mongoose_client');
+var raw_source_documents = require('./raw_source_documents');
+var raw_row_objects_controller = require('./raw_row_objects');
+var mongoose_client = require('../../lib/mongoose_client/mongoose_client');
 
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
