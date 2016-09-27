@@ -41,6 +41,11 @@ constructor.prototype.BindDataFor_array_index = function(callback) {
                 if (dataSourceDescription.fe_listed === false) {
                     default_listed = false;
                 }
+                var default_view = 'gallery';
+                if (typeof dataSourceDescription.fe_default_view !== 'undefined') {
+                    default_view = dataSourceDescription.fe_default_view;
+                }
+                console.log(default_view);
                 var sourceDescription = {
                     key: source_pKey,
                     type: dataSourceDescription.type,
@@ -52,6 +57,7 @@ constructor.prototype.BindDataFor_array_index = function(callback) {
                     urls: dataSourceDescription.urls,
                     arrayListed: default_listed,
                     
+                    default_view: default_view,
                     default_filterJSON: default_filterJSON
                 };
                 cb(err, sourceDescription);
