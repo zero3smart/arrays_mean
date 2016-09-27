@@ -30,6 +30,7 @@
                                     <label>
                                         <input type="radio" name="source_key" value="{{ source.key }}" class="hidden">
                                         <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
+                                        <input type="hidden" name="default_view" value="{{ source.default_view }}" class="hidden">
                                         <div class="panel panel-default panel-source source-{{ source.key }} js-panel-array">
                                             {% if source.brandColor %}
                                                 <style scoped>
