@@ -11,6 +11,7 @@
 
 /* @group Layout */
 @import url('layout/body.css');
+@import url('layout/embedded.css');
 /* @end Layout */
 
 /* @group Module */
@@ -18,21 +19,23 @@
 @import url('module/sidebar-filter.css');
 @import url('module/sort-bar.css');
 @import url('module/modal.css');
-@import url('module/array-create.css');
-@import url('module/team-show.css');
-@import url('module/gallery-grid.css');
 @import url('module/pagination.css');
-@import url('module/object-show.css');
-@import url('module/chart.css');
-@import url('module/choropleth.css');
-@import url('module/timeline.css');
 @import url('module/tooltip.css');
 @import url('module/splash.css');
-@import url('module/scatterplot.css');
-@import url('module/linechart.css');
-@import url('module/word-cloud.css');
-@import url('module/tooltip.css');
 /* @end Module */
+
+/* @group Views */
+@import url('views/array-create.css');
+@import url('views/team-show.css');
+@import url('views/object-show.css');
+@import url('views/gallery-grid.css');
+@import url('views/chart.css');
+@import url('views/choropleth.css');
+@import url('views/timeline.css');
+@import url('views/scatterplot.css');
+@import url('views/linechart.css');
+@import url('views/word-cloud.css');
+/* @end Views */
 
 /* @group Clients */
 @import url('clients/isb.css');

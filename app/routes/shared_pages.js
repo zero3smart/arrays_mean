@@ -47,14 +47,16 @@ module.exports = function(context) {
                     var camelCaseViewType = viewType.replace( /-([a-z])/ig, function( all, letter ) {
                         return letter.toUpperCase();
                     });
-                    context['array_' + camelCaseViewType + '_controller'].BindDataFor_array(query, function(err, bindData)
-                    {
+
+                    context['array_' + camelCaseViewType + '_controller'].BindDataFor_array(query, function(err, bindData) {
                         if (err) {
                             winston.error("❌  Error getting bind data for Array gallery: ", err);
                             res.status(500).send(err.response || 'Internal Server Error');
 
                             return;
                         }
+
+                        bindData.embedded = req.query.embed;
                         res.render('array/' + viewType, bindData);
                     });
 
@@ -77,11 +79,14 @@ module.exports = function(context) {
 
                         return;
                     }
+                    
                     if (bindData == null) { // 404
                         res.status(404).send(err.response || 'Not Found');
 
                         return;
                     }
+
+                    bindData.embedded = req.query.embed;
                     bindData.referer = req.headers.referer;
                     res.render('object/show', bindData);
                 });
