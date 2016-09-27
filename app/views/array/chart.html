@@ -42,6 +42,7 @@
                                             routePath_base | constructedRoutePath(filterObj, {
                                                 searchCol: searchCol,
                                                 searchQ: searchQ,
+                                                aggregateBy: aggregateBy,
                                                 groupBy: ''
                                             })
                                         )
@@ -56,6 +57,7 @@
                                             routePath_base | constructedRoutePath(filterObj, {
                                                 searchCol: searchCol,
                                                 searchQ: searchQ,
+                                                groupBy: groupBy,
                                                 aggregateBy: ''
                                             })
                                         )
@@ -92,7 +94,8 @@
                         routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
                             searchQ: searchQ,
-                            groupBy: groupBy
+                            groupBy: groupBy,
+                            aggregateBy: aggregateBy
                         }),
                         filterObj,
                         truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
@@ -109,7 +112,8 @@
                     var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
                             searchQ: searchQ,
-                            groupBy: groupBy
+                            groupBy: groupBy,
+                            aggregateBy: aggregateBy
                     }) | safe }}";
                     var routePath_base = '{{ routePath_base }}';
                     var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';

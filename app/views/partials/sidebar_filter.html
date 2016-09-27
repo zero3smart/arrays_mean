@@ -28,7 +28,8 @@
                         sortBy: sortBy,
                         sortDir: sortDir,
                         groupBy: groupBy,
-                        mapBy: mayBy
+                        mapBy: mayBy,
+                        aggregateBy: aggregateBy
                     }) %}
                     {% if filterObjForThisFilterColVal | isObjectEmpty %}
                         {% set urlForFilterValue = routePath_base | constructedRoutePath(null, {
@@ -37,7 +38,8 @@
                             sortBy: sortBy,
                             sortDir: sortDir,
                             groupBy: groupBy,
-                            mapBy: mayBy }) %}
+                            mapBy: mayBy,
+                            aggregateBy: aggregateBy }) %}
                     {% endif %}
                     <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-toggle-active color-brand" if isThisAnActiveFilter else "" }}">
                          <span class="sidebar-filter-toggle-title">{{ fieldValue }}</span> <span class="sidebar-filter-toggle-check {{ "icon-check-on" if isThisAnActiveFilter else "icon-check-off" }}" aria-hidden="true"></span>
@@ -78,7 +80,8 @@
                                     sortBy: sortBy,
                                     sortDir: sortDir,
                                     groupBy: groupBy,
-                                    mapBy: mayBy
+                                    mapBy: mayBy,
+                                    aggregateBy: aggregateBy
                                 }) %}
 
                                 {% if isMultiselectable %}
