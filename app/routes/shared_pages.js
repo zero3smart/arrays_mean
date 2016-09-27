@@ -19,12 +19,12 @@ var controllers = {
     object_details: object_details_controller,
     gallery: gallery_controller,
     chart: chart_controller,
-    line_graph: line_graph_controller,
+    lineGraph: line_graph_controller,
     timeline: timeline_controller,
-    word_cloud: word_cloud_controller,
+    wordCloud: word_cloud_controller,
     choropleth: choropleth_controller,
     scatterplot: scatterplot_controller
-}
+};
 
 router.use(helmet.xframe('allow-from', '*'));
 
