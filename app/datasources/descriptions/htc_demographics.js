@@ -14,26 +14,19 @@ exports.Descriptions =
             format: import_datatypes.DataSource_formats.CSV,
             title: "HTC Demographics",
             brandColor: "#03A678",
-            urls: [ "--" ],
+            urls: ["--"],
             description: "--",
             fe_listed: false,
-            fe_displayTitleOverrides: {
-
-            }, // this is needed to not through an error
+            fe_displayTitleOverrides: {}, // this is needed to not through an error
             //
             //
-            fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
-            {
+            fn_new_rowPrimaryKeyFromRowObject: function (rowObject, rowIndex) {
                 return "" + rowIndex + "-" + rowObject["ID"]
             },
-            raw_rowObjects_coercionScheme:
-            {
-
-            },
+            raw_rowObjects_coercionScheme: {},
             //
             //
-            fe_designatedFields:
-            {
+            fe_designatedFields: {
                 objectTitle: "ID",
             },
             fe_views: {
@@ -45,38 +38,27 @@ exports.Descriptions =
                 wordCloud: false,
                 lineGraph: false
             },
-            fe_excludeFields:
-                [
-                 "ID"   
-                ],
-            fe_outputInFormat:
-            {
-
-            },
-            fe_filters_fieldsNotAvailable:
-                [
-
-                ],
-            fe_filters_valuesToExcludeByOriginalKey:
-            {
-                _all: [ "", null ]
+            fe_excludeFields: [
+                "ID"
+            ],
+            fe_outputInFormat: {},
+            fe_filters_fieldsNotAvailable: [],
+            fe_filters_valuesToExcludeByOriginalKey: {
+                _all: ["", null]
             },
             //
             fe_chart_defaultGroupByColumnName_humanReadable: "Rebuild Services",
-            fe_chart_fieldsNotAvailableAsGroupByColumns:
-                [
+            fe_chart_fieldsNotAvailableAsGroupByColumns: [
                 "ID"
 
-                ],
-            fe_chart_valuesToExcludeByOriginalKey:
-            {
-                _all: [ "", null, "NULL", "(not specified)" ],
-                Classification: [ "(not assigned)" ]
-                
+            ],
+            fe_chart_valuesToExcludeByOriginalKey: {
+                _all: ["", null, "NULL", "(not specified)"],
+                Classification: ["(not assigned)"]
+
             },
 
-            fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function(rowObject)
-            {
+            fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function (rowObject) {
                 var gender = rowObject.rowParams["Gender"];
                 var iconSpanClass = undefined;
                 if (typeof gender === 'undefined' || gender == null || gender == "") {

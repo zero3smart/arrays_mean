@@ -6,71 +6,49 @@ var winston = require('winston');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var import_processing = require('../../../datasources/utils/import_processing');
-//
-//
-//
-////////////////////////////////////////////////////////////////////////////////
+var import_raw_objects_controller = require('./import_raw_objects_controller');
 
-var constructor = function(options, context)
-{
-    var self = this;
-    self.options = options;
-    self.context = context;
-    
-    self._init();
-    
-    return self;
-}
 //
-constructor.prototype._init = function()
-{
-    // var self = this;
-    // winston.info("raw source documents controller is up")
-};
-
 // ---------- Multiple DataSource Operation ----------
 //
-constructor.prototype.Import_dataSourceDescriptions = function(dataSourceDescriptions)
-{
-    var self = this;
+module.exports.Import_dataSourceDescriptions = function (dataSourceDescriptions) {
     var i = 1;
     async.eachSeries(
         dataSourceDescriptions,
-        function(dataSourceDescription, eachCb) {
-            self.context.import_raw_objects_controller._parseAndImportRaw(i, dataSourceDescription, eachCb);
+        function (dataSourceDescription, eachCb) {
+            import_raw_objects_controller.ParseAndImportRaw(i, dataSourceDescription, eachCb);
             i++;
         },
-        function(err) {
+        function (err) {
             if (err) {
                 winston.info("❌  Error encountered during raw objects import:", err);
                 process.exit(1); // error code
             } else {
                 winston.info("✅  Raw objects import done. Proceeding to post-processing.");
-                self._PostProcessRawObjects(dataSourceDescriptions);
+                _PostProcessRawObjects(dataSourceDescriptions);
             }
         }
     );
 };
-//
-constructor.prototype.Import_dataSourceDescriptions__enteringImageScrapingDirectly = function(dataSourceDescriptions)
-{
+
+var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (dataSourceDescriptions) {
     var self = this;
     var i = 1;
     async.eachSeries(
         dataSourceDescriptions,
-        function(dataSourceDescription, eachCb) {
+        function (dataSourceDescription, eachCb) {
             winston.info("💬  " + i + ": Proceeding directly to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
-            self._proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, eachCb);
+            _proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, eachCb);
             i++;
         },
-        function(err) {
+        function (err) {
             if (err) {
                 winston.info("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
 
                 if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
                     winston.info("💬  Waiting 3 seconds to restart...");
                     setTimeout(function () {
-                        self.Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
+                        _Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
                     }, 3000);
                 } else {
                     process.exit(1); // error code
@@ -82,18 +60,17 @@ constructor.prototype.Import_dataSourceDescriptions__enteringImageScrapingDirect
         }
     );
 };
-//
-constructor.prototype._PostProcessRawObjects = function(dataSourceDescriptions)
-{
-    var self = this;
+module.exports.Import_dataSourceDescriptions__enteringImageScrapingDirectly = _Import_dataSourceDescriptions__enteringImageScrapingDirectly;
+
+var _PostProcessRawObjects = function (dataSourceDescriptions) {
     var i = 1;
     async.eachSeries(
         dataSourceDescriptions,
-        function(dataSourceDescription, eachCb) {
-            self._postProcess(i, dataSourceDescription, eachCb);
+        function (dataSourceDescription, eachCb) {
+            _postProcess(i, dataSourceDescription, eachCb);
             i++;
         },
-        function(err) {
+        function (err) {
             if (err) {
                 winston.info("❌  Error encountered during import post-processing:", err);
                 process.exit(1); // error code
@@ -102,23 +79,21 @@ constructor.prototype._PostProcessRawObjects = function(dataSourceDescriptions)
                 var omitImageScrapping = true; // set true to omit image scraping,
 
                 if (!omitImageScrapping) {
-                    self._ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions);
+                    _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions);
                 } else {
-                    self._AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions);
+                    _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions);
                 }
             }
         }
     );
 };
-//
-constructor.prototype._ScrapImagesOfPostProcessing_dataSourceDescriptions = function(dataSourceDescriptions)
-{
-    var self = this;
+
+var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDescriptions) {
     var i = 1;
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
-            self._proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, eachCb);
+            _proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, eachCb);
             i++;
         },
         function (err) {
@@ -129,7 +104,7 @@ constructor.prototype._ScrapImagesOfPostProcessing_dataSourceDescriptions = func
                     winston.info("💬  Waiting 3 seconds to restart...");
 
                     setTimeout(function () {
-                        self.Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
+                        _Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
                     }, 3000);
                 } else {
                     process.exit(1); // error code
@@ -142,20 +117,18 @@ constructor.prototype._ScrapImagesOfPostProcessing_dataSourceDescriptions = func
     );
 }
 //
-constructor.prototype._AfterGeneratingProcessing_dataSourceDescriptions = function(dataSourceDescriptions)
-{
+var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDescriptions) {
     //
     // Execute user-defined generalized post-processing pipeline since the image scrapping is omitted
     //
-    var self = this;
     var i = 1;
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
-            self._afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription, eachCb);
-            i ++;
+            _afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription, eachCb);
+            i++;
         },
-        function(err) {
+        function (err) {
             if (err) {
                 winston.info("❌  Error encountered during performming each-row operations:(" + err.code + ')', err);
                 process.exit(1); // error code
@@ -169,9 +142,7 @@ constructor.prototype._AfterGeneratingProcessing_dataSourceDescriptions = functi
 
 // ---------- Single DataSource Operation ----------
 //
-constructor.prototype._postProcess = function(indexInList, dataSourceDescription, callback)
-{
-    var self = this;
+var _postProcess = function (indexInList, dataSourceDescription, callback) {
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.title;
@@ -182,14 +153,13 @@ constructor.prototype._postProcess = function(indexInList, dataSourceDescription
     //
     // Firstly, generate the whole processed objects dataset
     //
-    //processed_row_objects_controller.GenerateProcessedDatasetFromRawRowObjects
-    processed_row_objects_controller.InsertProcessedDatasetFromRawRowObjects(
+    //processed_row_objects.GenerateProcessedDatasetFromRawRowObjects
+    processed_row_objects.InsertProcessedDatasetFromRawRowObjects(
         dataSource_uid,
         dataSource_importRevision,
         dataSource_title,
         dataset_uid,
-        function(err)
-        {
+        function (err) {
             if (err) {
                 winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
                 return callback(err);
@@ -200,8 +170,7 @@ constructor.prototype._postProcess = function(indexInList, dataSourceDescription
             //
             async.eachSeries(
                 dataSourceDescription.afterImportingAllSources_generate,
-                function(description, cb)
-                {
+                function (description, cb) {
                     var by = description.by;
                     var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
                     switch (by.doing) {
@@ -211,7 +180,7 @@ constructor.prototype._postProcess = function(indexInList, dataSourceDescription
                             if (typeof matchFn === 'undefined' || matchFn == null) {
                                 matchFn = import_processing.MatchFns.LocalEqualsForeignString;
                             }
-                            processed_row_objects_controller.GenerateFieldsByJoining_comparingWithMatchFn(
+                            processed_row_objects.GenerateFieldsByJoining_comparingWithMatchFn(
                                 dataSource_uid,
                                 dataSource_importRevision,
                                 dataSource_title,
@@ -225,7 +194,7 @@ constructor.prototype._postProcess = function(indexInList, dataSourceDescription
                                 formingRelationship,
                                 matchFn,
                                 cb
-                             );
+                            );
                             break;
                         }
 
@@ -236,23 +205,19 @@ constructor.prototype._postProcess = function(indexInList, dataSourceDescription
                         }
                     }
                 },
-                function(err)
-                {
+                function (err) {
                     if (err) winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
                     callback(err);
                 }
             );
         });
 };
-//
-constructor.prototype._proceedToScrapeImagesAndRemainderOfPostProcessing = function(indexInList, dataSourceDescription, callback)
-{
-    var self = this;
+
+var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, dataSourceDescription, callback) {
     async.eachSeries(
         dataSourceDescription.afterImportingAllSources_generateByScraping,
-        function(description, cb)
-        {
-            processed_row_objects_controller.GenerateImageURLFieldsByScraping(dataSourceDescription.uid,
+        function (description, cb) {
+            processed_row_objects.GenerateImageURLFieldsByScraping(dataSourceDescription.uid,
                 dataSourceDescription.importRevision,
                 dataSourceDescription.title,
                 dataSourceDescription.dataset_uid,
@@ -262,8 +227,7 @@ constructor.prototype._proceedToScrapeImagesAndRemainderOfPostProcessing = funct
                 description.useAndHostSrcSetSizeByField,
                 cb);
         },
-        function(err)
-        {
+        function (err) {
             if (err) {
                 winston.error("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
                 callback(err);
@@ -272,17 +236,14 @@ constructor.prototype._proceedToScrapeImagesAndRemainderOfPostProcessing = funct
             //
             // Now execute user-defined generalized post-processing pipeline
             //
-            self._afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription, callback);
+            _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription, callback);
         }
     );
 }
 //
-constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations = function(indexInList, dataSourceDescription, callback)
-{
-    var self = this;
-    //
+var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexInList, dataSourceDescription, callback) {
     var dataSource_uid = dataSourceDescription.uid;
-    var dataSource_importRevision = dataSourceDescription.importRevision;    
+    var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.title;
     var dataset_uid = dataSourceDescription.dataset_uid;
     //
@@ -291,10 +252,8 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
     var eachCtx = {};
     if (dataSourceDescription.afterGeneratingProcessedRowObjects_setupBefore_eachRowFn) {
         dataSourceDescription.afterGeneratingProcessedRowObjects_setupBefore_eachRowFn(
-            self.context,
             eachCtx,
-            function(err)
-            {
+            function (err) {
                 if (err) {
                     winston.error("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");
                     return callback(err);
@@ -305,37 +264,34 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
     } else {
         continueToIterations();
     }
-    function continueToIterations() 
-    {
+    function continueToIterations() {
         if (!dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFn) {
             continueToAfterIterating();
         } else {
-            processed_row_objects_controller.EnumerateProcessedDataset(
+            processed_row_objects.EnumerateProcessedDataset(
                 dataSource_uid,
                 dataSource_importRevision,
                 dataset_uid,
-                function(doc, eachCb) {
-                    dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFn(self.context, eachCtx, doc, eachCb);
+                function (doc, eachCb) {
+                    dataSourceDescription.afterGeneratingProcessedRowObjects_eachRowFn(eachCtx, doc, eachCb);
                 },
-                function(err) {
+                function (err) {
                     winston.error("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");
                     callback(err); // bail early
                 },
-                function() {
+                function () {
                     continueToAfterIterating(); // done iterating each row
                 },
                 {}
             );
         }
     }
-    function continueToAfterIterating()
-    {
+
+    function continueToAfterIterating() {
         if (dataSourceDescription.afterGeneratingProcessedRowObjects_afterIterating_eachRowFn) {
             dataSourceDescription.afterGeneratingProcessedRowObjects_afterIterating_eachRowFn(
-                self.context,
                 eachCtx,
-                function(err)
-                {
+                function (err) {
                     if (err) {
                         winston.error("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");
                     } else {
@@ -350,25 +306,4 @@ constructor.prototype._afterGeneratingProcessedDataSet_performEachRowOperations 
             callback(); // all done
         }
     }
-}
-//
-constructor.prototype.CacheKeywords_dataSourceDescriptions = function(dataSourceDescriptions)
-{
-    var self = this;
-    async.eachSeries(
-        dataSourceDescriptions,
-        function(dataSourceDescription, eachCb) {
-            self.context.cache_keywords_controller.cacheKeywords_fromDataSourceDescription(dataSourceDescription, eachCb);
-        },
-        function(err) {
-            if (err) {
-                winston.info("❌  Error encountered during cache keywords:", err);
-                process.exit(1); // error code
-            } else {
-                winston.info("✅  Caching keywords done.");
-                process.exit(0); // all good
-            }
-        }
-    );
 };
-module.exports = constructor;

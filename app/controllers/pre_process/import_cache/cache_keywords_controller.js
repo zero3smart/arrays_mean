@@ -4,32 +4,10 @@ var processed_row_objects = require('../../../models/processed_row_objects');
 var raw_source_documents = require('../../../models/raw_source_documents');
 //
 //
-////////////////////////////////////////////////////////////////////////////////
-// Controller definition
-//
-var constructor = function(options, context)
-{
-    var self = this;
-    self.options = options
-    self.context = context
-
-    self._init()
-
-    return self
-};
-//
-constructor.prototype._init = function()
-{
-    var self = this;
-    // console.log("cache keywords controller is up")
-};
-//
-constructor.prototype.cacheKeywords_fromDataSourceDescription = function(dataSourceDescription, callback)
-{
-    var self = this;
+var _cacheKeywords_fromDataSourceDescription = function (dataSourceDescription, callback) {
     if (!dataSourceDescription.fe_wordCloud_defaultGroupByColumnName_humanReadable) return callback();
 
-    mongoose_client.WhenMongoDBConnected(function() {
+    mongoose_client.WhenMongoDBConnected(function () {
         var dataSource_uid = dataSourceDescription.uid;
         var dataSource_importRevision = dataSourceDescription.importRevision;
         var dataSource_title = dataSourceDescription.title;
@@ -125,5 +103,23 @@ constructor.prototype.cacheKeywords_fromDataSourceDescription = function(dataSou
         );
     });
 };
+module.exports.cacheKeywords_fromDataSourceDescription = _cacheKeywords_fromDataSourceDescription;
 
-module.exports = constructor;
+module.exports.CacheKeywords_dataSourceDescriptions = function (dataSourceDescriptions) {
+    var self = this;
+    async.eachSeries(
+        dataSourceDescriptions,
+        function (dataSourceDescription, eachCb) {
+            _cacheKeywords_fromDataSourceDescription(dataSourceDescription, eachCb);
+        },
+        function (err) {
+            if (err) {
+                winston.info("❌  Error encountered during cache keywords:", err);
+                process.exit(1); // error code
+            } else {
+                winston.info("✅  Caching keywords done.");
+                process.exit(0); // all good
+            }
+        }
+    );
+};

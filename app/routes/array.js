@@ -70,8 +70,7 @@ viewTypes.forEach(function (viewType) {
 
 var object_details_controller = require('../controllers/post_process/data_preparation/object_details');
 
-router.get('/:source_key/:object_id', function(req, res)
-{
+router.get('/:source_key/:object_id', function (req, res) {
     var source_key = req.params.source_key;
     if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
         res.status(403).send("Bad Request - source_key missing")
@@ -85,8 +84,7 @@ router.get('/:source_key/:object_id', function(req, res)
         return;
     }
 
-    object_details_controller.BindData(source_key, object_id, function(err, bindData)
-    {
+    object_details_controller.BindData(source_key, object_id, function (err, bindData) {
         if (err) {
             winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err);
             res.status(500).send(err.response || 'Internal Server Error');

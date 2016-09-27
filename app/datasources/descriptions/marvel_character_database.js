@@ -14,10 +14,9 @@ exports.Descriptions =
             format: import_datatypes.DataSource_formats.CSV,
             title: "Marvel Character Database",
             brandColor: "#F0141E",
-            urls: [ "http://developer.marvel.com/docs" ],
+            urls: ["http://developer.marvel.com/docs"],
             description: "Find profiles for your favorite Marvel characters in Marvel.com's character database, including info on first appearances, key issues, and basic statistics.",
-            raw_rowObjects_coercionScheme:
-            {
+            raw_rowObjects_coercionScheme: {
                 modified: {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: import_datatypes.Coercion_optionsPacks.ToDate.ISO_8601
@@ -37,12 +36,10 @@ exports.Descriptions =
             },
             fe_listed: true,
             //
-            fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
-            {
+            fn_new_rowPrimaryKeyFromRowObject: function (rowObject, rowIndex) {
                 return "" + rowIndex + "-" + rowObject["id"]
             },
-            fe_designatedFields: 
-            {
+            fe_designatedFields: {
                 objectTitle: "name",
                 originalImageURL: "thumb_large",
                 medThumbImageURL: "thumb_small"
@@ -56,8 +53,7 @@ exports.Descriptions =
                 scatterplot: true,
                 lineGraph: false
             },
-            fe_excludeFields: 
-            [
+            fe_excludeFields: [
                 "id",
                 // "name",
                 // "description",
@@ -266,8 +262,7 @@ exports.Descriptions =
                 "thumb_small",
                 "thumb_large",
             ],
-            fe_displayTitleOverrides:
-            { // these are to be tuples - the values must be unique as well
+            fe_displayTitleOverrides: { // these are to be tuples - the values must be unique as well
                 "name": "Name",
                 "description": "Description",
                 "modified": "Last Modified",
@@ -276,8 +271,7 @@ exports.Descriptions =
                 "stories_available": "Stories Available",
                 "events_available": "Events Available"
             },
-            fe_filters_fabricatedFilters:
-            [
+            fe_filters_fabricatedFilters: [
                 {
                     title: "Image",
                     choices: [
@@ -286,7 +280,7 @@ exports.Descriptions =
                             $match: {
                                 "rowParams.thumb_large": {
                                     $exists: true,
-                                    $nin: [ "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg", null ]
+                                    $nin: ["http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg", null]
                                 }
                             }
                         }
@@ -300,25 +294,22 @@ exports.Descriptions =
                             $match: {
                                 "rowParams.description": {
                                     $exists: true,
-                                    $nin: [ "", null ]
+                                    $nin: ["", null]
                                 }
                             }
                         }
                     ]
                 }
             ],
-            fe_filters_valuesToExcludeByOriginalKey:
-            {
-                _all: [ "", null ]
+            fe_filters_valuesToExcludeByOriginalKey: {
+                _all: ["", null]
             },
             //
             //
-            fe_filters_default:
-            {
-                "Image": [ "Has image" ]
+            fe_filters_default: {
+                "Image": ["Has image"]
             },
-            fe_filters_fieldsNotAvailable:
-            [
+            fe_filters_fieldsNotAvailable: [
                 "description",
                 "name",
                 "modified"
@@ -329,36 +320,32 @@ exports.Descriptions =
             //
             //
             fe_chart_defaultGroupByColumnName_humanReadable: "Comics",
-            fe_chart_fieldsNotAvailableAsGroupByColumns:
-            [
+            fe_chart_fieldsNotAvailableAsGroupByColumns: [
                 "name",
                 "description",
             ],
-            fe_chart_valuesToExcludeByOriginalKey:
-            {
-                _all: [ "", null, "NULL", "(not specified)", "NA" ],
+            fe_chart_valuesToExcludeByOriginalKey: {
+                _all: ["", null, "NULL", "(not specified)", "NA"],
             },
             //
             //
             fe_timeline_defaultGroupByColumnName_humanReadable: "Decade",
-            fe_timeline_durationsAvailableForGroupBy:
-            [
+            fe_timeline_durationsAvailableForGroupBy: [
                 "Decade",
                 "Year",
                 "Month",
                 "Day"
             ],
             fe_timeline_defaultSortByColumnName_humanReadable: "Last Modified",
-            fe_timeline_fieldsNotAvailableAsSortByColumns:
-            [
+            fe_timeline_fieldsNotAvailableAsSortByColumns: [
                 "name",
                 "description",
                 "Comics",
                 "Series",
                 "Events"
             ],
-            fe_scatterplot_fieldsMap : {
-                'Object Title' : 'name'
+            fe_scatterplot_fieldsMap: {
+                'Object Title': 'name'
             },
             fe_scatterplot_fieldsNotAvailable: [
                 "description",
@@ -372,8 +359,7 @@ exports.Descriptions =
             //
             //
             // This is implemented but currently not used (it was built for scraping)
-            afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
-            {
+            afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function (eachCtx, cb) {
                 // Setup each ctx, such as the batch operation
                 var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(this.uid, this.importRevision);
                 var forThisDataSource_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(srcDoc_pKey);
@@ -382,101 +368,100 @@ exports.Descriptions =
                 var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.Model.modelName;
                 var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.Model.model;
                 var forThisDataSource_nativeCollection = forThisDataSource_mongooseContext.Model.collection;
-            
-                
+
+
                 // specify (and cache/store) an operating spec for the field merge operation
                 eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Comics = "Comics";
-                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics = 
-                [
-                    "comics_items_0_name",
-                    "comics_items_1_name",
-                    "comics_items_2_name",
-                    "comics_items_3_name",
-                    "comics_items_4_name",
-                    "comics_items_5_name",
-                    "comics_items_6_name",
-                    "comics_items_7_name",
-                    "comics_items_8_name",
-                    "comics_items_9_name",
-                    "comics_items_10_name",
-                    "comics_items_11_name",
-                    "comics_items_12_name",
-                    "comics_items_13_name",
-                    "comics_items_14_name",
-                    "comics_items_15_name",
-                    "comics_items_16_name",
-                    "comics_items_17_name",
-                    "comics_items_18_name",
-                    "comics_items_19_name",
-                    "comics_items_20_name",
-                ];
+                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics =
+                    [
+                        "comics_items_0_name",
+                        "comics_items_1_name",
+                        "comics_items_2_name",
+                        "comics_items_3_name",
+                        "comics_items_4_name",
+                        "comics_items_5_name",
+                        "comics_items_6_name",
+                        "comics_items_7_name",
+                        "comics_items_8_name",
+                        "comics_items_9_name",
+                        "comics_items_10_name",
+                        "comics_items_11_name",
+                        "comics_items_12_name",
+                        "comics_items_13_name",
+                        "comics_items_14_name",
+                        "comics_items_15_name",
+                        "comics_items_16_name",
+                        "comics_items_17_name",
+                        "comics_items_18_name",
+                        "comics_items_19_name",
+                        "comics_items_20_name",
+                    ];
                 //
                 //
                 eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Series = "Series";
-                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series = 
-                [
-                    "series_items_0_name",
-                    "series_items_1_name",
-                    "series_items_2_name",
-                    "series_items_3_name",
-                    "series_items_4_name",
-                    "series_items_5_name",
-                    "series_items_6_name",
-                    "series_items_7_name",
-                    "series_items_8_name",
-                    "series_items_9_name",
-                    "series_items_10_name",
-                    "series_items_11_name",
-                    "series_items_12_name",
-                    "series_items_13_name",
-                    "series_items_14_name",
-                    "series_items_15_name",
-                    "series_items_16_name",
-                    "series_items_17_name",
-                    "series_items_18_name",
-                    "series_items_19_name",
-                    "series_items_20_name",
-                ];
+                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Series =
+                    [
+                        "series_items_0_name",
+                        "series_items_1_name",
+                        "series_items_2_name",
+                        "series_items_3_name",
+                        "series_items_4_name",
+                        "series_items_5_name",
+                        "series_items_6_name",
+                        "series_items_7_name",
+                        "series_items_8_name",
+                        "series_items_9_name",
+                        "series_items_10_name",
+                        "series_items_11_name",
+                        "series_items_12_name",
+                        "series_items_13_name",
+                        "series_items_14_name",
+                        "series_items_15_name",
+                        "series_items_16_name",
+                        "series_items_17_name",
+                        "series_items_18_name",
+                        "series_items_19_name",
+                        "series_items_20_name",
+                    ];
                 //
                 //
                 eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Events = "Events";
-                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events = 
-                [
-                    "events_items_0_name",
-                    "events_items_1_name",
-                    "events_items_2_name",
-                    "events_items_3_name",
-                    "events_items_4_name",
-                    "events_items_5_name",
-                    "events_items_6_name",
-                    "events_items_7_name",
-                    "events_items_8_name",
-                    "events_items_9_name",
-                    "events_items_10_name",
-                    "events_items_11_name",
-                    "events_items_12_name",
-                    "events_items_13_name",
-                    "events_items_14_name",
-                    "events_items_15_name",
-                    "events_items_16_name",
-                    "events_items_17_name",
-                    "events_items_18_name",
-                    "events_items_19_name",
-                    "events_items_20_name",
-                ];
+                eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Events =
+                    [
+                        "events_items_0_name",
+                        "events_items_1_name",
+                        "events_items_2_name",
+                        "events_items_3_name",
+                        "events_items_4_name",
+                        "events_items_5_name",
+                        "events_items_6_name",
+                        "events_items_7_name",
+                        "events_items_8_name",
+                        "events_items_9_name",
+                        "events_items_10_name",
+                        "events_items_11_name",
+                        "events_items_12_name",
+                        "events_items_13_name",
+                        "events_items_14_name",
+                        "events_items_15_name",
+                        "events_items_16_name",
+                        "events_items_17_name",
+                        "events_items_18_name",
+                        "events_items_19_name",
+                        "events_items_20_name",
+                    ];
                 //
                 //
                 // generate a bulk operation for our merge field values operations that we're going to do
                 var mergeFieldsValuesIntoFieldArray_bulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
                 // store it into the "each-row" context for access during the each row operations
-                eachCtx.mergeFieldsValuesIntoFieldArray_bulkOperation = mergeFieldsValuesIntoFieldArray_bulkOperation; 
+                eachCtx.mergeFieldsValuesIntoFieldArray_bulkOperation = mergeFieldsValuesIntoFieldArray_bulkOperation;
                 //
                 //
                 cb(null);
             },
             //
-            afterGeneratingProcessedRowObjects_eachRowFn: function(appCtx, eachCtx, rowDoc, cb)
-            {
+            afterGeneratingProcessedRowObjects_eachRowFn: function (eachCtx, rowDoc, cb) {
                 // Use this space to perform derivations and add update operations to batch operation in eachCtx
                 //
                 mergeManyFieldsIntoOne(eachCtx.mergeFieldsValuesIntoFieldArray_generateFieldNamed__Comics, eachCtx.mergeFieldsValuesIntoFieldArray_withValuesInFieldsNamed__Comics);
@@ -486,7 +471,7 @@ exports.Descriptions =
                 function mergeManyFieldsIntoOne(generateFieldNamed, withValuesInFieldsNamed) {
                     var generatedArray = [];
                     //
-                    for (var i = 0 ; i < withValuesInFieldsNamed.length; i++) {
+                    for (var i = 0; i < withValuesInFieldsNamed.length; i++) {
                         var fieldName = withValuesInFieldsNamed[i];
                         var fieldValue = rowDoc["rowParams"][fieldName];
                         if (typeof fieldValue !== 'undefined' && fieldValue !== null && fieldValue !== "") {
@@ -497,8 +482,8 @@ exports.Descriptions =
                     //
                     var persistableValue = generatedArray;
 
-                    var updateFragment = { $addToSet: {} };
-                    updateFragment["$addToSet"]["rowParams." + generateFieldNamed] = { "$each": persistableValue };
+                    var updateFragment = {$addToSet: {}};
+                    updateFragment["$addToSet"]["rowParams." + generateFieldNamed] = {"$each": persistableValue};
 
                     var bulkOperationQueryFragment =
                     {
@@ -507,14 +492,14 @@ exports.Descriptions =
                     };
                     eachCtx.mergeFieldsValuesIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
                 }
+
                 //
                 // finally, must call cb to advance
                 //
                 cb(null);
             },
             //
-            afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function(appCtx, eachCtx, cb)
-            {
+            afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function (eachCtx, cb) {
                 // Finished iterating … execute the batch operation
                 // cb(null);
 
@@ -523,8 +508,8 @@ exports.Descriptions =
                 {
                     upsert: true // might as well - but this is not necessary
                 };
-                eachCtx.mergeFieldsValuesIntoFieldArray_bulkOperation.execute(writeConcern, function(err, result)
-                // changed from: bulkOperation.execute(writeConcern, function(err, result)
+                eachCtx.mergeFieldsValuesIntoFieldArray_bulkOperation.execute(writeConcern, function (err, result)
+                    // changed from: bulkOperation.execute(writeConcern, function(err, result)
                 {
                     if (err) {
                         winston.error("❌ [" + (new Date()).toString() + "] Error while saving raw row objects: ", err);

@@ -11,19 +11,18 @@ exports.Descriptions =
             dataset_uid: "municipal",
             format: import_datatypes.DataSource_formats.CSV,
             // Special coercion scheme
-            raw_rowObjects_mismatchScheme:
-            {
+            raw_rowObjects_mismatchScheme: {
                 // Substitute
                 /* 'Id': {
-                    do: import_datatypes.Mismatich_ops.ToField,
-                    opts: {
-                        field: "Identifier"
-                    }
-                },
-                // Drop
-                'No': {
-                    do: import_datatypes.Mismatich_ops.ToDrop
-                } */
+                 do: import_datatypes.Mismatich_ops.ToField,
+                 opts: {
+                 field: "Identifier"
+                 }
+                 },
+                 // Drop
+                 'No': {
+                 do: import_datatypes.Mismatich_ops.ToDrop
+                 } */
             },
             fe_nestedObjectFields: [
                 'Catalog Title',
@@ -47,7 +46,7 @@ exports.Descriptions =
             fe_nestedObjectFieldOverrides: {
                 'Catalog Title': 'Title'
             },
-            fe_criteria_nestedObject: function(rowDoc) {
+            fe_criteria_nestedObject: function (rowDoc) {
                 return !rowDoc.rowParams.Title || rowDoc.rowParams.Title == '';
             },
         }

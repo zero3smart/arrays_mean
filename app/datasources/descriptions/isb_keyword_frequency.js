@@ -15,11 +15,10 @@ exports.Descriptions =
             format: import_datatypes.DataSource_formats.CSV,
             title: "The Rise of Keywords Related to Systems Biology",
             // brandColor: "#4A4A4A",
-            urls: [ "http://www.ncbi.nlm.nih.gov/pubmed" ],
+            urls: ["http://www.ncbi.nlm.nih.gov/pubmed"],
             description: "View the trajectory of key words and the frequency with which they’re used in all papers listed in PubMed from 2000 to the present.",
             logo: "/images/teams/isb_keyword_frequency.jpg",
-            raw_rowObjects_coercionScheme:
-            {
+            raw_rowObjects_coercionScheme: {
                 'Year': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
@@ -32,12 +31,10 @@ exports.Descriptions =
             },
             fe_listed: true,
             //
-            fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
-            {
+            fn_new_rowPrimaryKeyFromRowObject: function (rowObject, rowIndex) {
                 return "" + rowIndex + "-" + rowObject["Word"];
             },
-            fe_designatedFields: 
-            {
+            fe_designatedFields: {
                 objectTitle: "Word",
                 // originalImageURL: "thumb_large",
                 // medThumbImageURL: "thumb_small"
@@ -55,16 +52,11 @@ exports.Descriptions =
                 lineGraph: "We selected some keywords that are likely to be associated to systems biology and performed a search in PubMed to reveal the frequency each term appears in all publications listed in the database. Hover your cursor over the graph to view the keyword rankings."
             },
             fe_default_view: 'lineGraph',
-            fe_excludeFields: 
-                [
-                    
-                ],
-            fe_displayTitleOverrides:
-            { // these are to be tuples - the values must be unique as well
+            fe_excludeFields: [],
+            fe_displayTitleOverrides: { // these are to be tuples - the values must be unique as well
                 // "Author": "Author",
             },
-            fe_filters_fabricatedFilters:
-            [
+            fe_filters_fabricatedFilters: [
                 // {
                 //     title: "Abstract Note",
                 //     choices: [
@@ -80,25 +72,21 @@ exports.Descriptions =
                 //     ]
                 // }
             ],
-            fe_filters_valuesToExcludeByOriginalKey:
-            {
-                _all: [ "", null ]
+            fe_filters_valuesToExcludeByOriginalKey: {
+                _all: ["", null]
             },
             //
             //
-            fe_filters_default:
-            {
+            fe_filters_default: {
                 // "Abstract Note": [ "Has Abstract Note" ]
             },
-            fe_filters_fieldsNotAvailable:
-                [
-                    "Year",
-                    "Count"
-                ],
+            fe_filters_fieldsNotAvailable: [
+                "Year",
+                "Count"
+            ],
             //
             //
-            fe_filters_oneToOneOverrideWithValuesByTitleByFieldName:
-            {
+            fe_filters_oneToOneOverrideWithValuesByTitleByFieldName: {
                 // "Item Type": {
                 //     "Book": "book",
                 //     "Book Section": "bookSection",
@@ -106,14 +94,12 @@ exports.Descriptions =
                 //     "Journal Article": "journalArticle",
                 // }
             },
-            fe_filters_fieldsMultiSelectable:
-                [
-                    "Word"
-                ],
+            fe_filters_fieldsMultiSelectable: [
+                "Word"
+            ],
             //
             //
-            fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function(rowObject)
-            {
+            fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function (rowObject) {
                 // var category = rowObject.rowParams["Category"];
                 // var iconSpanClass = undefined;
                 // if (typeof category === 'undefined' || category === null || category === "") {
@@ -140,35 +126,30 @@ exports.Descriptions =
             //
             //
             fe_chart_defaultGroupByColumnName_humanReadable: "Categories",
-            fe_chart_fieldsNotAvailableAsGroupByColumns:
-                [
-                    // "Title"
-                ],
-            fe_chart_valuesToExcludeByOriginalKey:
-            {
-                _all: [ "", null, "NULL", "(not specified)", "NA" ],
+            fe_chart_fieldsNotAvailableAsGroupByColumns: [
+                // "Title"
+            ],
+            fe_chart_valuesToExcludeByOriginalKey: {
+                _all: ["", null, "NULL", "(not specified)", "NA"],
             },
             //
             //
             fe_timeline_defaultGroupByColumnName_humanReadable: "Year",
-            fe_timeline_durationsAvailableForGroupBy:
-                [
-                    // "Decade",
-                    // "Year"
-                ],
+            fe_timeline_durationsAvailableForGroupBy: [
+                // "Decade",
+                // "Year"
+            ],
             fe_timeline_defaultSortByColumnName_humanReadable: "Year",
-            fe_timeline_fieldsNotAvailableAsSortByColumns:
-                [
-                    // "Item Type"
-                ],
+            fe_timeline_fieldsNotAvailableAsSortByColumns: [
+                // "Item Type"
+            ],
             //
             //
             fe_lineGraph_defaultGroupByColumnName_humanReadable: "Year",
-            fe_lineGraph_fieldsNotAvailableAsGroupByColumns:
-                [
-                    "Word",
-                    "Count"
-                ],
+            fe_lineGraph_fieldsNotAvailableAsGroupByColumns: [
+                "Word",
+                "Count"
+            ],
             fe_lineGraph_keywordGroupBy: "Word",
             fe_lineGraph_defaultAggregateByColumnName_humanReadable: "Count",
             fe_lineGraph_aggregateByColumnName_numberOfRecords_notAvailable: true,

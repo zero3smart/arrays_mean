@@ -8,8 +8,7 @@ var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
 
-module.exports.BindData = function(urlQuery, callback)
-{
+module.exports.BindData = function (urlQuery, callback) {
     var self = this;
     // urlQuery keys:
     // source_key
@@ -45,7 +44,7 @@ module.exports.BindData = function(urlQuery, callback)
     var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_wordCloud_defaultGroupByColumnName_humanReadable;
     var keywords = dataSourceDescription.fe_wordCloud_keywords;
     //
-    var routePath_base              = "/array/" + source_pKey + "/word-cloud";
+    var routePath_base = "/array/" + source_pKey + "/word-cloud";
     var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
@@ -65,8 +64,8 @@ module.exports.BindData = function(urlQuery, callback)
     batch.concurrency(1);
 
     // Obtain source document
-    batch.push(function(done) {
-        raw_source_documents.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
+    batch.push(function (done) {
+        raw_source_documents.Model.findOne({primaryKey: source_pKey}, function (err, _sourceDoc) {
             if (err) return done(err);
 
             sourceDoc = _sourceDoc;
@@ -75,8 +74,8 @@ module.exports.BindData = function(urlQuery, callback)
     });
 
     // Obtain sample document
-    batch.push(function(done) {
-        processedRowObjects_mongooseModel.findOne({}, function(err, _sampleDoc) {
+    batch.push(function (done) {
+        processedRowObjects_mongooseModel.findOne({}, function (err, _sampleDoc) {
             if (err) return done(err);
 
             sampleDoc = _sampleDoc;
@@ -85,8 +84,8 @@ module.exports.BindData = function(urlQuery, callback)
     });
 
     // Obtain Top Unique Field Values For Filtering
-    batch.push(function(done) {
-        func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
+    batch.push(function (done) {
+        func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
             if (err) return done(err);
 
             uniqueFieldValuesByFieldName = {};
@@ -95,7 +94,7 @@ module.exports.BindData = function(urlQuery, callback)
                     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
                     if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                         var row = [];
-                        _uniqueFieldValuesByFieldName[columnName].forEach(function(rowValue) {
+                        _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
                             row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
                         });
                         row.sort();
@@ -110,7 +109,7 @@ module.exports.BindData = function(urlQuery, callback)
     });
 
     // Obtain grouped results
-    batch.push(function(done) {
+    batch.push(function (done) {
         var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
             dataSourceDescription);
         //
@@ -129,18 +128,17 @@ module.exports.BindData = function(urlQuery, callback)
         }
 
         //
-        var doneFn = function(err, _groupedResults)
-        {
+        var doneFn = function (err, _groupedResults) {
             if (err) return done(err);
 
             var result = _groupedResults[0];
-            groupedResults = keywords.map(function(keyword) {
+            groupedResults = keywords.map(function (keyword) {
                 var obj = {_id: keyword, value: 0};
                 if (result && result[keyword]) obj.value = result[keyword];
                 return obj;
             });
 
-            groupedResults.sort(function(a, b){
+            groupedResults.sort(function (a, b) {
                 return b.value - a.value;
             });
 
@@ -148,8 +146,8 @@ module.exports.BindData = function(urlQuery, callback)
         };
 
         var groupBy_realColumnName_path = "rowParams." + groupBy_realColumnName;
-        var groupOps_keywords = { _id: null };
-        keywords.forEach(function(keyword) {
+        var groupOps_keywords = {_id: null};
+        keywords.forEach(function (keyword) {
             groupOps_keywords[keyword] = {
                 $sum: {
                     $cond: [
@@ -159,7 +157,7 @@ module.exports.BindData = function(urlQuery, callback)
             }
         });
         aggregationOperators = aggregationOperators.concat([
-            { $group: groupOps_keywords }
+            {$group: groupOps_keywords}
         ]);
 
         processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
@@ -169,8 +167,12 @@ module.exports.BindData = function(urlQuery, callback)
         if (err) return callback(err);
 
         //
-        var minGroupedResultsValue = Math.min.apply(Math, groupedResults.map(function(o){ return o.value; }));
-        var maxGroupedResultsValue = Math.max.apply(Math, groupedResults.map(function(o){ return o.value; }));
+        var minGroupedResultsValue = Math.min.apply(Math, groupedResults.map(function (o) {
+            return o.value;
+        }));
+        var maxGroupedResultsValue = Math.max.apply(Math, groupedResults.map(function (o) {
+            return o.value;
+        }));
         //
         var data =
         {

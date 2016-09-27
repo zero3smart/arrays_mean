@@ -28,16 +28,14 @@ var controllers = {
 
 router.use(helmet.xframe('allow-from', '*'));
 
-router.get('/:shared_page_id', function(req, res)
-{
+router.get('/:shared_page_id', function (req, res) {
     var shared_page_id = req.params.shared_page_id;
     if (!shared_page_id || shared_page_id == "") {
         res.status(403).send("Bad Request - shared_page_id missing")
 
         return;
     }
-    shared_pages_controller.FindOneWithId(shared_page_id, function(err, doc)
-    {
+    shared_pages_controller.FindOneWithId(shared_page_id, function (err, doc) {
         if (err) {
             res.status(500).send(err.response);
 
@@ -64,12 +62,11 @@ router.get('/:shared_page_id', function(req, res)
             var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud'];
             if (viewTypes.indexOf(viewType) !== -1) {
                 query.source_key = source_key;
-                var camelCaseViewType = viewType.replace( /-([a-z])/ig, function( all, letter ) {
+                var camelCaseViewType = viewType.replace(/-([a-z])/ig, function (all, letter) {
                     return letter.toUpperCase();
                 });
 
-                controllers[camelCaseViewType].BindData(query, function(err, bindData)
-                {
+                controllers[camelCaseViewType].BindData(query, function (err, bindData) {
                     if (err) {
                         winston.error("❌  Error getting bind data for Array gallery: ", err);
                         res.status(500).send(err.response || 'Internal Server Error');
@@ -91,8 +88,7 @@ router.get('/:shared_page_id', function(req, res)
                 return;
             }
 
-            object_details_controller.BindData(source_key, rowObjectId, function(err, bindData)
-            {
+            object_details_controller.BindData(source_key, rowObjectId, function (err, bindData) {
                 if (err) {
                     winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + rowObjectId + " details: ", err);
                     res.status(500).send(err.response || 'Internal Server Error');

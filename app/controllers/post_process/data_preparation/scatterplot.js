@@ -5,7 +5,7 @@ var queryString = require('querystring');
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
-var processed_row_objects = require('../../../models/processed_row_objects'); 
+var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
 
@@ -14,8 +14,7 @@ var func = require('../func');
  * @param {Object} urlQuery - URL params
  * @param {Function} callback
  */
-module.exports.BindData = function(urlQuery, callback)
-{
+module.exports.BindData = function (urlQuery, callback) {
     var self = this;
 
     var sourceKey = urlQuery.source_key;
@@ -51,7 +50,7 @@ module.exports.BindData = function(urlQuery, callback)
     var filterObj = func.filterObjFromQueryParams(urlQuery);
     var isFilterActive = Object.keys(filterObj).length != 0;
 
-    var urlQuery_forSwitchingViews  = "";
+    var urlQuery_forSwitchingViews = "";
     var appendQuery = "";
     /*
      * Check filter active and update composed URL params.
@@ -79,16 +78,16 @@ module.exports.BindData = function(urlQuery, callback)
      */
     var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
     if (_orErrDesc.err) {
-        _orErrDesc.matchOps = [{ $match : {} }];
+        _orErrDesc.matchOps = [{$match: {}}];
     }
     /*
      * Run chain of function to collect necessary data.
      */
-    raw_source_documents.Model.findOne({ primaryKey: sourceKey }, function(err, sourceDoc) {
+    raw_source_documents.Model.findOne({primaryKey: sourceKey}, function (err, sourceDoc) {
         /*
          * Run query to mongo to obtain all rows which satisfy to specified filters set.
          */
-        processedRowObjects_mongooseModel.aggregate(_orErrDesc.matchOps).allowDiskUse(true).exec(function(err, documents) {
+        processedRowObjects_mongooseModel.aggregate(_orErrDesc.matchOps).allowDiskUse(true).exec(function (err, documents) {
             /*
              * Get single/sample document.
              */
@@ -96,7 +95,7 @@ module.exports.BindData = function(urlQuery, callback)
             /*
              * Go deeper - collect data for filter's sidebar.
              */
-            func.topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
+            func.topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
 
                 var uniqueFieldValuesByFieldName = {}
                 for (var columnName in _uniqueFieldValuesByFieldName) {
@@ -104,7 +103,7 @@ module.exports.BindData = function(urlQuery, callback)
                         var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
                         if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                             var row = [];
-                            _uniqueFieldValuesByFieldName[columnName].forEach(function(rowValue) {
+                            _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
                                 row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
                             });
                             row.sort();
@@ -118,7 +117,7 @@ module.exports.BindData = function(urlQuery, callback)
                  * Define numeric fields list which may be used as scatterplot axes.
                  * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.
                  */
-                var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown(sampleDoc, dataSourceDescription).filter(function(i) {
+                var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown(sampleDoc, dataSourceDescription).filter(function (i) {
                     return dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) == -1;
                 });
                 /*

@@ -9,29 +9,7 @@ var raw_row_objects = require('../../../models/raw_row_objects');
 var raw_source_documents = require('../../../models/raw_source_documents');
 //
 //
-////////////////////////////////////////////////////////////////////////////////
-// Controller definition
-//
-var constructor = function(options, context)
-{
-    var self = this;
-    self.options = options
-    self.context = context
-
-    self._init()
-
-    return self
-};
-//
-constructor.prototype._init = function()
-{
-    var self = this;
-    // console.log("raw row objects documents controller is up")
-};
-//
-constructor.prototype._parseAndImportRaw = function(indexInList, dataSourceDescription, callback)
-{
-    var self = this;
+module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription, callback) {
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.title;
@@ -41,8 +19,7 @@ constructor.prototype._parseAndImportRaw = function(indexInList, dataSourceDescr
     switch (format) {
         case import_datatypes.DataSource_formats.CSV:
         {
-            self._new_parsed_StringDocumentObject_fromCSVDataSourceDescription(indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function(err)
-            {
+            _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function (err) {
                 if (err) return callback(err);
                 winston.info("✅  Saved document: ", dataSource_title);
                 return callback(null);
@@ -51,8 +28,7 @@ constructor.prototype._parseAndImportRaw = function(indexInList, dataSourceDescr
         }
         case import_datatypes.DataSource_formats.TSV:
         {
-            self._new_parsed_StringDocumentObject_fromTSVDataSourceDescription(indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function(err)
-            {
+            _new_parsed_StringDocumentObject_fromTSVDataSourceDescription(indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function (err) {
                 if (err) return callback(err);
                 winston.info("✅  Saved document: ", dataSource_title);
                 return callback(null);
@@ -65,12 +41,11 @@ constructor.prototype._parseAndImportRaw = function(indexInList, dataSourceDescr
             winston.error(errDescStr);
             callback(new Error(errDescStr)); // skip this one
         }
-    };
+    }
+    ;
 };
-//
-constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function(dataSourceIsIndexInList, csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn)
-{
-    var self = this;
+
+var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (dataSourceIsIndexInList, csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) {
     //
     var CSV_resources_path_prefix = __dirname + "/../../../datasources/resources";
     var filename = csvDescription.filename;
@@ -94,13 +69,12 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
     var cachedLines = '';
     var numberOfRows_inserted = 0;
 
-    var parser = function(columnNamesAndThenRowObject)
-    {
+    var parser = function (columnNamesAndThenRowObject) {
         // replace any dotted fields with underscores, e.g. comics.items to comics_items
         // column names
         if (lineNr == 1) {
             for (var i = 0; i < columnNamesAndThenRowObject.length; i++) {
-                columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g,"_");
+                columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g, "_");
             }
             columnNames = columnNamesAndThenRowObject;
         } else {
@@ -112,7 +86,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
                 return;
             }
             var rowObject = {};
-            for (var columnIndex = 0 ; columnIndex < columnNames.length ; columnIndex++) {
+            for (var columnIndex = 0; columnIndex < columnNames.length; columnIndex++) {
                 var columnName = "" + columnNames[columnIndex];
                 var rowValue = columnNamesAndThenRowObject[columnIndex];
                 //
@@ -146,13 +120,13 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
                 }
                 rowObject[columnName] = typeFinalized_rowValue; // Now store the finalized value
             }
-            var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, (lineNr-1));
+            var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, (lineNr - 1));
             if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
                 winston.error("❌  Error: missing pkey on row", rowObject, "with factory accessor", csvDescription.fn_new_rowPrimaryKeyFromRowObject);
 
                 return;
             }
-            var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, lineNr-2, rowObject);
+            var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, lineNr - 2, rowObject);
             // winston.info("parsedObject " , parsedObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
                 winston.info("⚠️  Warning: An object with the same primary key, \""
@@ -167,15 +141,15 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
         }
     };
     // Now read
-    var readStream = fs.createReadStream(filepath, { encoding: fileEncoding })
+    var readStream = fs.createReadStream(filepath, {encoding: fileEncoding})
         .pipe(es.split())
-        .pipe(es.mapSync(function(line) {
+        .pipe(es.mapSync(function (line) {
                 // pause the readstream
                 readStream.pause();
 
                 lineNr += 1;
 
-                parse(cachedLines + line, {delimiter: ',', relax: true, skip_empty_lines: true}, function(err, output) {
+                parse(cachedLines + line, {delimiter: ',', relax: true, skip_empty_lines: true}, function (err, output) {
                     if (err || !output || output.length == 0) {
                         //winston.info("❌  Error encountered during saving the line " + lineNr + " of document: ", sourceDocumentTitle);
                         cachedLines = cachedLines + line;
@@ -192,8 +166,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
 
                         // Bulk for performance at volume
                         raw_row_objects.InsertManyPersistableObjectTemplates
-                        (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function(err, record)
-                        {
+                        (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function (err, record) {
                             if (err) {
                                 winston.error("❌  Error: An error while saving raw row objects: ", err);
                                 return fn(err);
@@ -212,12 +185,11 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
                     }
                 });
             })
-            .on('error', function(err)
-            {
+            .on('error', function (err) {
                 winston.error("❌  Error encountered while trying to open CSV file. The file might not yet exist or the specified filename might contain a typo.");
                 return fn(err);
             })
-            .on('end', function(){
+            .on('end', function () {
                 // If we have any lines remaining, need to store document to the db.
                 if (lineNr % 1000 == 0) {
 
@@ -230,12 +202,12 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
                 } else {
 
                     raw_row_objects.InsertManyPersistableObjectTemplates
-                    (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function(err)
-                    {
+                    (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function (err) {
                         if (err) {
                             winston.error("❌  Error: An error while saving raw row objects: ", err);
                             return fn(err);
-                        };
+                        }
+                        ;
                         winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
 
                         numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
@@ -250,9 +222,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromCSVDataSourceDescript
         );
 };
 //
-constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescription = function(dataSourceIsIndexInList, tsvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn)
-{
-    var self = this;
+var _new_parsed_StringDocumentObject_fromTSVDataSourceDescription = function (dataSourceIsIndexInList, tsvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) {
     //
     var TSV_resources_path_prefix = __dirname + "/resources";
     var filename = tsvDescription.filename;
@@ -274,13 +244,12 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
     var cachedLines = '';
     var numberOfRows_inserted = 0;
 
-    var parser = function(columnNamesAndThenRowObject)
-    {
+    var parser = function (columnNamesAndThenRowObject) {
         // replace any dotted fields with underscores, e.g. comics.items to comics_items
         // column names
         if (lineNr == 1) {
             for (var i = 0; i < columnNamesAndThenRowObject.length; i++) {
-                columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g,"_");
+                columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g, "_");
             }
             columnNames = columnNamesAndThenRowObject;
         } else {
@@ -292,7 +261,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
                 return;
             }
             var rowObject = {};
-            for (var columnIndex = 0 ; columnIndex < columnNames.length ; columnIndex++) {
+            for (var columnIndex = 0; columnIndex < columnNames.length; columnIndex++) {
                 var columnName = "" + columnNames[columnIndex];
                 var rowValue = columnNamesAndThenRowObject[columnIndex];
                 //
@@ -306,13 +275,13 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
                 }
                 rowObject[columnName] = typeFinalized_rowValue; // Now store the finalized value
             }
-            var rowObject_primaryKey = tsvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, (lineNr-1));
+            var rowObject_primaryKey = tsvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, (lineNr - 1));
             if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
                 winston.error("❌  Error: missing pkey on row", rowObject, "with factory accessor", tsvDescription.fn_new_rowPrimaryKeyFromRowObject);
 
                 return;
             }
-            var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, lineNr-2, rowObject);
+            var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, lineNr - 2, rowObject);
             // winston.info("parsedObject " , parsedObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
                 winston.info("⚠️  Warning: An object with the same primary key, \""
@@ -327,15 +296,15 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
         }
     };
     // Now read
-    var readStream = fs.createReadStream(filepath, { encoding: fileEncoding })
+    var readStream = fs.createReadStream(filepath, {encoding: fileEncoding})
         .pipe(es.split())
-        .pipe(es.mapSync(function(line) {
+        .pipe(es.mapSync(function (line) {
                 // pause the readstream
                 readStream.pause();
 
                 lineNr += 1;
 
-                parse(cachedLines + line, {delimiter: '\t', relax: true, skip_empty_lines: true}, function(err, output) {
+                parse(cachedLines + line, {delimiter: '\t', relax: true, skip_empty_lines: true}, function (err, output) {
                     if (err || !output || output.length == 0) {
                         //winston.info("❌  Error encountered during saving the line " + lineNr + " of document: ", sourceDocumentTitle);
                         cachedLines = cachedLines + line;
@@ -352,8 +321,7 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
 
                         // Bulk for performance at volume
                         raw_row_objects.InsertManyPersistableObjectTemplates
-                        (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function(err, record)
-                        {
+                        (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function (err, record) {
                             if (err) {
                                 winston.error("❌  Error: An error while saving raw row objects: ", err);
                                 return fn(err);
@@ -372,12 +340,11 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
                     }
                 });
             })
-            .on('error', function(err)
-            {
+            .on('error', function (err) {
                 winston.error("❌  Error encountered while trying to open TSV file. The file might not yet exist or the specified filename might contain a typo.");
                 return fn(err);
             })
-            .on('end', function(){
+            .on('end', function () {
                 // If we have any lines remaining, need to store document to the db.
                 if (lineNr % 1000 == 0) {
 
@@ -390,12 +357,12 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
                 } else {
 
                     raw_row_objects.InsertManyPersistableObjectTemplates
-                    (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function(err, record)
-                    {
+                    (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function (err, record) {
                         if (err) {
                             winston.error("❌  Error: An error while saving raw row objects: ", err);
                             return fn(err);
-                        };
+                        }
+                        ;
                         winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
 
                         numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
@@ -409,5 +376,3 @@ constructor.prototype._new_parsed_StringDocumentObject_fromTSVDataSourceDescript
             })
         );
 };
-
-module.exports = constructor;

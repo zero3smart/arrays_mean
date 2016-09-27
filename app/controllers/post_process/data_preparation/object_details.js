@@ -8,8 +8,7 @@ var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
 
-module.exports.BindData = function(source_pKey, rowObject_id, callback)
-{
+module.exports.BindData = function (source_pKey, rowObject_id, callback) {
     var self = this;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
 
@@ -29,14 +28,13 @@ module.exports.BindData = function(source_pKey, rowObject_id, callback)
     var batch = new Batch()
     batch.concurrency(1);
 
-    batch.push(function(done) {
+    batch.push(function (done) {
         var query =
         {
             _id: rowObject_id,
             srcDocPKey: source_pKey
         };
-        processedRowObjects_mongooseModel.findOne(query, function(err, _rowObject)
-        {
+        processedRowObjects_mongooseModel.findOne(query, function (err, _rowObject) {
             if (err) return done(err);
 
             rowObject = _rowObject;
@@ -44,14 +42,14 @@ module.exports.BindData = function(source_pKey, rowObject_id, callback)
         });
     });
 
-    batch.push(function(done) {
+    batch.push(function (done) {
         var afterImportingAllSources_generate = dataSourceDescription.afterImportingAllSources_generate;
         if (typeof afterImportingAllSources_generate !== 'undefined') {
             var batch = new Batch();
             batch.concurrency(1);
 
-            afterImportingAllSources_generate.forEach(function(afterImportingAllSources_generate_description){
-                batch.push(function(done) {
+            afterImportingAllSources_generate.forEach(function (afterImportingAllSources_generate_description) {
+                batch.push(function (done) {
                     if (afterImportingAllSources_generate_description.relationship == true) {
                         var by = afterImportingAllSources_generate_description.by;
                         var relationshipSource_uid = by.ofOtherRawSrcUID;
@@ -67,10 +65,9 @@ module.exports.BindData = function(source_pKey, rowObject_id, callback)
                         if (isSingular == true) {
                             findQuery._id = valueInDocAtField;
                         } else {
-                            findQuery._id = { $in: valueInDocAtField };
+                            findQuery._id = {$in: valueInDocAtField};
                         }
-                        rowObjectsOfRelationship_mongooseModel.find(findQuery, function(err, hydrationFetchResults)
-                        {
+                        rowObjectsOfRelationship_mongooseModel.find(findQuery, function (err, hydrationFetchResults) {
                             if (err) return done(err);
 
                             var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
@@ -90,7 +87,7 @@ module.exports.BindData = function(source_pKey, rowObject_id, callback)
         }
     });
 
-    batch.end(function(err) {
+    batch.end(function (err) {
         if (err) return callback(err);
 
         //
@@ -98,7 +95,7 @@ module.exports.BindData = function(source_pKey, rowObject_id, callback)
         var fe_filters_fieldsNotAvailable = dataSourceDescription.fe_filters_fieldsNotAvailable;
         if (typeof fe_filters_fieldsNotAvailable !== 'undefined') {
             var fe_filters_fieldsNotAvailable_length = fe_filters_fieldsNotAvailable.length;
-            for (var i = 0 ; i < fe_filters_fieldsNotAvailable_length ; i++) {
+            for (var i = 0; i < fe_filters_fieldsNotAvailable_length; i++) {
                 var key = fe_filters_fieldsNotAvailable[i];
                 fieldsNotToLinkAsGalleryFilter_byColName[key] = true;
             }
@@ -108,7 +105,7 @@ module.exports.BindData = function(source_pKey, rowObject_id, callback)
         var rowParams = rowObject.rowParams;
         var rowParams_keys = Object.keys(rowParams);
         var rowParams_keys_length = rowParams_keys.length;
-        for (var i = 0 ; i < rowParams_keys_length ; i++) {
+        for (var i = 0; i < rowParams_keys_length; i++) {
             var key = rowParams_keys[i];
             var originalVal = rowParams[key];
             var displayableVal = func.reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, key, dataSourceDescription);
@@ -138,7 +135,7 @@ module.exports.BindData = function(source_pKey, rowObject_id, callback)
         var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
         var originalKeys = Object.keys(fe_displayTitleOverrides);
         var originalKeys_length = originalKeys.length;
-        for (var i = 0 ; i < originalKeys_length ; i++) {
+        for (var i = 0; i < originalKeys_length; i++) {
             var originalKey = originalKeys[i];
             var overrideTitle = fe_displayTitleOverrides[originalKey];
             //

@@ -1,6 +1,6 @@
 var fs = require('fs');
 
-exports.GetTeams = function() {
+exports.GetTeams = function () {
     var teams = [];
     fs
         .readdirSync(__dirname)
@@ -8,7 +8,7 @@ exports.GetTeams = function() {
             if (/^\./.test(file)) return;
             if (file == 'index.js') return;
 
-            require('./' + file).Teams.forEach(function(desc) {
+            require('./' + file).Teams.forEach(function (desc) {
                 teams.push(desc);
             });
         });

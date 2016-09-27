@@ -14,7 +14,7 @@ var __countries_geo_json_str = fs.readFileSync(__dirname + '/../../../public/dat
 var __countries_geo_json = JSON.parse(__countries_geo_json_str);
 var cache_countryGeometryByLowerCasedCountryName = {};
 var numCountries = __countries_geo_json.features.length;
-for (var i = 0 ; i < numCountries ; i++) {
+for (var i = 0; i < numCountries; i++) {
     var countryFeature = __countries_geo_json.features[i];
     var countryName = countryFeature.properties.name;
     var geometry = countryFeature.geometry;
@@ -26,8 +26,7 @@ winston.info("💬  Cached " + Object.keys(cache_countryGeometryByLowerCasedCoun
 __countries_geo_json_str = undefined; // free
 __countries_geo_json = undefined; // free
 
-module.exports.BindData = function(urlQuery, callback)
-{
+module.exports.BindData = function (urlQuery, callback) {
     var self = this;
     // urlQuery keys:
     // source_key
@@ -62,7 +61,7 @@ module.exports.BindData = function(urlQuery, callback)
     var mapBy = urlQuery.mapBy; // the human readable col name - real col name derived below
     var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_choropleth_defaultMapByColumnName_humanReadable;
     //
-    var routePath_base              = "/array/" + source_pKey + "/choropleth";
+    var routePath_base = "/array/" + source_pKey + "/choropleth";
     var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
@@ -82,8 +81,8 @@ module.exports.BindData = function(urlQuery, callback)
     batch.concurrency(1);
 
     // Obtain source document
-    batch.push(function(done) {
-        raw_source_documents.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
+    batch.push(function (done) {
+        raw_source_documents.Model.findOne({primaryKey: source_pKey}, function (err, _sourceDoc) {
             if (err) return done(err);
 
             sourceDoc = _sourceDoc;
@@ -92,8 +91,8 @@ module.exports.BindData = function(urlQuery, callback)
     });
 
     // Obtain sample document
-    batch.push(function(done) {
-        processedRowObjects_mongooseModel.findOne({}, function(err, _sampleDoc) {
+    batch.push(function (done) {
+        processedRowObjects_mongooseModel.findOne({}, function (err, _sampleDoc) {
             if (err) return done(err);
 
             sampleDoc = _sampleDoc;
@@ -102,8 +101,8 @@ module.exports.BindData = function(urlQuery, callback)
     });
 
     // Obtain Top Unique Field Values For Filtering
-    batch.push(function(done) {
-        func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
+    batch.push(function (done) {
+        func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
             if (err) return done(err);
 
             uniqueFieldValuesByFieldName = {};
@@ -112,7 +111,7 @@ module.exports.BindData = function(urlQuery, callback)
                     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
                     if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                         var row = [];
-                        _uniqueFieldValuesByFieldName[columnName].forEach(function(rowValue) {
+                        _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
                             row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
                         });
                         row.sort();
@@ -127,7 +126,7 @@ module.exports.BindData = function(urlQuery, callback)
     });
 
     // Obtain grouped results
-    batch.push(function(done) {
+    batch.push(function (done) {
         var mapBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(mapBy ? mapBy : defaultMapByColumnName_humanReadable,
             dataSourceDescription);
         //
@@ -149,7 +148,7 @@ module.exports.BindData = function(urlQuery, callback)
                 { // unique/grouping and summing stage
                     $group: {
                         _id: "$" + "rowParams." + mapBy_realColumnName,
-                        total: { $sum: 1 } // the count
+                        total: {$sum: 1} // the count
                     }
                 },
                 { // reformat
@@ -161,13 +160,11 @@ module.exports.BindData = function(urlQuery, callback)
                 }
             ]);
         //
-        var doneFn = function(err, _groupedResults)
-        {
+        var doneFn = function (err, _groupedResults) {
             if (err) return done(err);
 
             if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
-            _groupedResults.forEach(function(el, i, arr)
-            {
+            _groupedResults.forEach(function (el, i, arr) {
                 var countryName = el.name;
                 if (countryName == null) {
                     return; // skip

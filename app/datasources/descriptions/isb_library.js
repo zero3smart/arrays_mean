@@ -15,11 +15,10 @@ exports.Descriptions =
             format: import_datatypes.DataSource_formats.CSV,
             title: "Articles Published by ISB since 2000",
             // brandColor: "#4A4A4A",
-            urls: [ "https://www.systemsbiology.org" ],
+            urls: ["https://www.systemsbiology.org"],
             description: "Since 2000, when ISB was founded, our researchers have published more than 1300 papers across a range of journals, including more than 300 in Cell and Nature.",
             logo: "/images/teams/isb_library.jpg",
-            raw_rowObjects_coercionScheme:
-            {
+            raw_rowObjects_coercionScheme: {
                 'Publication Year': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
@@ -29,12 +28,10 @@ exports.Descriptions =
             },
             fe_listed: true,
             //
-            fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
-            {
+            fn_new_rowPrimaryKeyFromRowObject: function (rowObject, rowIndex) {
                 return "" + rowIndex + "-" + rowObject["Key"];
             },
-            fe_designatedFields: 
-            {
+            fe_designatedFields: {
                 objectTitle: "Title",
                 // originalImageURL: "thumb_large",
                 // medThumbImageURL: "thumb_small"
@@ -51,81 +48,78 @@ exports.Descriptions =
             fe_view_descriptions: {
                 gallery: "The links below represent work published by ISB researchers from the year 2000 to the present. The publications fall under the following categories: brain, cancers, cell dynamics, P4 medicine, proteomics, computational biology, environment, infectious disease. Click on the funnel icon in the gray bar above to access the search filters. Switch to the chart or timeline view by clicking on the square icon."
             },
-            fe_excludeFields: 
-                [
-                    "Key",
-                    "ISBN",
-                    "Date Added",
-                    "Date Modified",
-                    "Access Date",
-                    "Num Pages",
-                    "Number Of Volumes",
-                    "Series Number",
-                    "Series Text",
-                    "Series Title",
-                    "Place",
-                    "Type",
-                    "Archive",
-                    "Archive Location",
-                    "Call Number",
-                    "File Attachment",
-                    "Editor",
-                    "Series Editor",
-                    "Translator",
-                    "Contributor",
-                    "Attorney Agent",
-                    "Book Author",
-                    "Cast Member",
-                    "Commenter",
-                    "Composer",
-                    "Cosponsor",
-                    "Counsel",
-                    "Interviewer",
-                    "Producer",
-                    "Recipient",
-                    "Reviewed Author",
-                    "Scriptwriter",
-                    "Words By",
-                    "Guest",
-                    "Number",
-                    "Edition",
-                    "Running Time",
-                    "Scale",
-                    "Medium",
-                    "Artwork Size",
-                    "Filing Date",
-                    "Application Number",
-                    "Assignee",
-                    "Issuing Authority",
-                    "Country",
-                    "Meeting Name",
-                    "Conference Name",
-                    "Court",
-                    "References",
-                    "Reporter",
-                    "Legal Status",
-                    "Priority Numbers",
-                    "Programming Language",
-                    "Version",
-                    "System",
-                    "Code",
-                    "Code Number",
-                    "Section",
-                    "Session",
-                    "Committee",
-                    "History",
-                    "Legislative Body",
-                    "Series",
-                    "Date",
-                    "Publication Title",
-                    "Journal Abbreviation"
-                ],
-            fe_displayTitleOverrides:
-            { // these are to be tuples - the values must be unique as well
+            fe_excludeFields: [
+                "Key",
+                "ISBN",
+                "Date Added",
+                "Date Modified",
+                "Access Date",
+                "Num Pages",
+                "Number Of Volumes",
+                "Series Number",
+                "Series Text",
+                "Series Title",
+                "Place",
+                "Type",
+                "Archive",
+                "Archive Location",
+                "Call Number",
+                "File Attachment",
+                "Editor",
+                "Series Editor",
+                "Translator",
+                "Contributor",
+                "Attorney Agent",
+                "Book Author",
+                "Cast Member",
+                "Commenter",
+                "Composer",
+                "Cosponsor",
+                "Counsel",
+                "Interviewer",
+                "Producer",
+                "Recipient",
+                "Reviewed Author",
+                "Scriptwriter",
+                "Words By",
+                "Guest",
+                "Number",
+                "Edition",
+                "Running Time",
+                "Scale",
+                "Medium",
+                "Artwork Size",
+                "Filing Date",
+                "Application Number",
+                "Assignee",
+                "Issuing Authority",
+                "Country",
+                "Meeting Name",
+                "Conference Name",
+                "Court",
+                "References",
+                "Reporter",
+                "Legal Status",
+                "Priority Numbers",
+                "Programming Language",
+                "Version",
+                "System",
+                "Code",
+                "Code Number",
+                "Section",
+                "Session",
+                "Committee",
+                "History",
+                "Legislative Body",
+                "Series",
+                "Date",
+                "Publication Title",
+                "Journal Abbreviation"
+            ],
+            fe_displayTitleOverrides: { // these are to be tuples - the values must be unique as well
                 // "Author": "Author",
             },
-            fe_filters_fabricatedFilters:
-            [
+            fe_filters_fabricatedFilters: [
                 {
                     title: "Abstract Note",
                     choices: [
@@ -134,63 +128,57 @@ exports.Descriptions =
                             $match: {
                                 "rowParams.Abstract Note": {
                                     $exists: true,
-                                    $nin: [ "", null ]
+                                    $nin: ["", null]
                                 }
                             }
                         }
                     ]
                 }
             ],
-            fe_filters_valuesToExcludeByOriginalKey:
-            {
-                _all: [ "", null ]
+            fe_filters_valuesToExcludeByOriginalKey: {
+                _all: ["", null]
             },
             //
             //
-            fe_filters_default:
-            {
-                "Abstract Note": [ "Has Abstract Note" ]
+            fe_filters_default: {
+                "Abstract Note": ["Has Abstract Note"]
             },
-            fe_filters_fieldsNotAvailable:
-                [
-                    "Author",
-                    "Title",
-                    "modified",
-                    "ISSN",
-                    "DOI",
-                    "Abstract Note",
-                    "Pages",
-                    "Notes",
-                    "Manual Tags",
-                    "Automatic Tags",
-                    "Extra",
-                    "File Attachments",
-                    "Link Attachments",
-                    "Rights",
-                    "Short Title",
-                    "Url",
-                    "Language",
-                    "Publication Title",
-                    "Date",
-                    "Publisher",
-                    "Volume",
-                    "Library Catalog",
-                    "Issue"
-                ],
-            fe_filters_fieldsMultiSelectable:
-                [
-                    "Publication Year",
-                    "Journal",
-                    "Categories"
-                ],
-            fe_filters_fieldsCommaSeparatedAsIndividual:
-            [
+            fe_filters_fieldsNotAvailable: [
+                "Author",
+                "Title",
+                "modified",
+                "ISSN",
+                "DOI",
+                "Abstract Note",
+                "Pages",
+                "Notes",
+                "Manual Tags",
+                "Automatic Tags",
+                "Extra",
+                "File Attachments",
+                "Link Attachments",
+                "Rights",
+                "Short Title",
+                "Url",
+                "Language",
+                "Publication Title",
+                "Date",
+                "Publisher",
+                "Volume",
+                "Library Catalog",
+                "Issue"
+            ],
+            fe_filters_fieldsMultiSelectable: [
+                "Publication Year",
+                "Journal",
+                "Categories"
+            ],
+            fe_filters_fieldsCommaSeparatedAsIndividual: [
                 "Categories"
             ],
             //
             //
-            fe_filters_oneToOneOverrideWithValuesByTitleByFieldName:
-            {
+            fe_filters_oneToOneOverrideWithValuesByTitleByFieldName: {
                 "Item Type": {
                     "Book": "book",
                     "Book Section": "bookSection",
@@ -200,8 +188,7 @@ exports.Descriptions =
             },
             //
             //
-            fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function(rowObject)
-            {
+            fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: function (rowObject) {
                 var categories = rowObject.rowParams["Categories"];
                 var categoryArray = categories.split(',');
                 var output = "";
@@ -225,7 +212,7 @@ exports.Descriptions =
                             winston.warn("⚠️  Unable to derive icon span class for artist with no image in fe_galleryItem_htmlForIconFromRowObjWhenMissingImage. Using default of 'null' icon.");
                             iconSpanClass = "icon-tile-null";
                         }
-                        
+
                         output += '<span class="' + iconSpanClass + " " + numIconsClass + '"></span>';
                     }
                 }
@@ -238,108 +225,103 @@ exports.Descriptions =
             //
             //
             fe_chart_defaultGroupByColumnName_humanReadable: "Categories",
-            fe_chart_fieldsNotAvailableAsGroupByColumns:
-                [
-                    "Title",
-                    "DOI",
-                    "Url",
-                    "Abstract Note",
-                    "Date",
-                    "Pages",
-                    "Short Title",
-                    "Language",
-                    "Rights",
-                    "Extra",
-                    "Notes",
-                    "File Attachments",
-                    "Link Attachments",
-                    "Manual Tags",
-                    "Automatic Tags",
-                    "Author",
-                    "ISSN",
-                    "Volume",
-                    "Issue",
-                    "Publisher",
-                    "Library Catalog"
-                ],
-            fe_chart_valuesToExcludeByOriginalKey:
-            {
-                _all: [ "", null, "NULL", "(not specified)", "NA" ],
+            fe_chart_fieldsNotAvailableAsGroupByColumns: [
+                "Title",
+                "DOI",
+                "Url",
+                "Abstract Note",
+                "Date",
+                "Pages",
+                "Short Title",
+                "Language",
+                "Rights",
+                "Extra",
+                "Notes",
+                "File Attachments",
+                "Link Attachments",
+                "Manual Tags",
+                "Automatic Tags",
+                "Author",
+                "ISSN",
+                "Volume",
+                "Issue",
+                "Publisher",
+                "Library Catalog"
+            ],
+            fe_chart_valuesToExcludeByOriginalKey: {
+                _all: ["", null, "NULL", "(not specified)", "NA"],
             },
             //
             //
             fe_timeline_defaultGroupByColumnName_humanReadable: "Year",
-            fe_timeline_durationsAvailableForGroupBy:
-                [
-                    "Decade",
-                    "Year"
-                ],
+            fe_timeline_durationsAvailableForGroupBy: [
+                "Decade",
+                "Year"
+            ],
             fe_timeline_defaultSortByColumnName_humanReadable: "Publication Year",
-            fe_timeline_fieldsNotAvailableAsSortByColumns:
-                [
-                    "Item Type",
-                    "Author",
-                    "Title",
-                    "Publication Title",
-                    "ISSN",
-                    "DOI",
-                    "Url",
-                    "Abstract Note",
-                    "Date",
-                    "Pages",
-                    "Issue",
-                    "Volume",
-                    "Journal Abbreviation",
-                    "Short Title",
-                    "Publisher",
-                    "Language",
-                    "Rights",
-                    "Library Catalog",
-                    "Extra",
-                    "Notes",
-                    "File Attachments",
-                    "Link Attachments",
-                    "Manual Tags",
-                    "Automatic Tags",
-                    "Country",
-                    "Meeting Name",
-                    "Conference Name",
-                    "Court",
-                    "Category",
-                    "Categories",
-                    "Journal"
-                ],
+            fe_timeline_fieldsNotAvailableAsSortByColumns: [
+                "Item Type",
+                "Author",
+                "Title",
+                "Publication Title",
+                "ISSN",
+                "DOI",
+                "Url",
+                "Abstract Note",
+                "Date",
+                "Pages",
+                "Issue",
+                "Volume",
+                "Journal Abbreviation",
+                "Short Title",
+                "Publisher",
+                "Language",
+                "Rights",
+                "Library Catalog",
+                "Extra",
+                "Notes",
+                "File Attachments",
+                "Link Attachments",
+                "Manual Tags",
+                "Automatic Tags",
+                "Country",
+                "Meeting Name",
+                "Conference Name",
+                "Court",
+                "Category",
+                "Categories",
+                "Journal"
+            ],
             fe_timeline_tooltipDateFormat: "YYYY",
             //
             //
             fe_lineGraph_defaultGroupByColumnName_humanReadable: "Publication Year",
-            fe_lineGraph_fieldsNotAvailableAsGroupByColumns:
-                [
-                    "Title",
-                    "DOI",
-                    "Url",
-                    "Abstract Note",
-                    "Date",
-                    "Pages",
-                    "Short Title",
-                    "Language",
-                    "Rights",
-                    "Extra",
-                    "Notes",
-                    "File Attachments",
-                    "Link Attachments",
-                    "Manual Tags",
-                    "Automatic Tags",
-                    "Item Type",
-                    "Author",
-                    "Publication Title",
-                    "ISSN",
-                    "Issue",
-                    "Volume",
-                    "Publisher",
-                    "Library Catalog",
-                    "Category"
-                ],
+            fe_lineGraph_fieldsNotAvailableAsGroupByColumns: [
+                "Title",
+                "DOI",
+                "Url",
+                "Abstract Note",
+                "Date",
+                "Pages",
+                "Short Title",
+                "Language",
+                "Rights",
+                "Extra",
+                "Notes",
+                "File Attachments",
+                "Link Attachments",
+                "Manual Tags",
+                "Automatic Tags",
+                "Item Type",
+                "Author",
+                "Publication Title",
+                "ISSN",
+                "Issue",
+                "Volume",
+                "Publisher",
+                "Library Catalog",
+                "Category"
+            ],
             fe_lineGraph_defaultKeywordsColumnName_humanReadable: "Category"
         }
     ];

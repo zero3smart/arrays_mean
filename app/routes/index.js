@@ -7,18 +7,15 @@ var __DEBUG_enableEnsureWWWForDev = false; // for debug
 var shouldEnsureWWW = isDev == false || __DEBUG_enableEnsureWWWForDev;
 
 //
-var _mountRoutes_monitoring = function(app)
-{
-    app.get('/_ah/health', function(req, res)
-    {
+var _mountRoutes_monitoring = function (app) {
+    app.get('/_ah/health', function (req, res) {
         res.set('Content-Type', 'text/plain');
         res.status(200).send('ok');
     });
 };
 //
-var _mountRoutes_ensureWWW = function(app)
-{
-    app.use(function(req, res, next) {
+var _mountRoutes_ensureWWW = function (app) {
+    app.use(function (req, res, next) {
         if (shouldEnsureWWW == false) {
             next();
 
@@ -34,8 +31,7 @@ var _mountRoutes_ensureWWW = function(app)
     });
 };
 //
-var _mountRoutes_errorHandling = function(app)
-{
+var _mountRoutes_errorHandling = function (app) {
     //
     // Add the error logger after all middleware and routes so that
     // it can log errors from the whole application. Any custom error
@@ -50,21 +46,18 @@ var _mountRoutes_errorHandling = function(app)
     }));
 
     //
-    app.use(function(req, res)
-    { // 404 handler
+    app.use(function (req, res) { // 404 handler
         // TODO: render a view template?
         res.status(404).send('Not Found');
     });
     //
-    app.use(function(err, req, res, next) 
-    { // Basic error handler
+    app.use(function (err, req, res, next) { // Basic error handler
         // TODO: render a view template?
         res.status(500).send(err.response || 'Internal Server Error');
     });
 };
 //
-var _mountRoutes_endPoints = function(app)
-{
+var _mountRoutes_endPoints = function (app) {
     // View endpoints
     app.use('/', require('./homepage'));
     app.use('/auth', require('./auth'));
@@ -72,11 +65,10 @@ var _mountRoutes_endPoints = function(app)
     app.use('/team', require('./team'));
     app.use('/s', require('./shared_pages'));
     var apiVersion = 'v1';
-    app.use('/'+apiVersion, require('./jsonAPI_share'));
+    app.use('/' + apiVersion, require('./jsonAPI_share'));
 };
 
-module.exports.MountRoutes = function(app)
-{
+module.exports.MountRoutes = function (app) {
     _mountRoutes_monitoring(app);
     _mountRoutes_ensureWWW(app);
     _mountRoutes_endPoints(app);

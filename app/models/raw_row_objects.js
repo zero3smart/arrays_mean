@@ -9,7 +9,8 @@ var mongooseContextsBySrcDocPKey = {};
 var New_RowObjectsModelName = function (srcDocPKey) {
     return 'RawRowObjects-' + srcDocPKey;
 };
-var Lazy_Shared_RawRowObject_MongooseContext = function (srcDocPKey) {
+
+var _Lazy_Shared_RawRowObject_MongooseContext = function (srcDocPKey) {
     var mongooseContext = mongooseContextsBySrcDocPKey[srcDocPKey];
     if (mongooseContext && typeof mongooseContext !== 'undefined') { // lazy cache, to avoid mongoose model re-definition error
         return mongooseContext;
@@ -37,6 +38,7 @@ var Lazy_Shared_RawRowObject_MongooseContext = function (srcDocPKey) {
 
     return mongooseContext;
 };
+module.exports.Lazy_Shared_RawRowObject_MongooseContext = _Lazy_Shared_RawRowObject_MongooseContext;
 
 module.exports.New_templateForPersistableObject = function (rowObject_primaryKey, sourceDocumentRevisionKey, rowIndex, rowParams) {
     return {
@@ -52,7 +54,7 @@ module.exports.UpsertWithManyPersistableObjectTemplates = function (ordered_pers
     var num_parsed_orderedRowObjectPrimaryKeys = ordered_persistableObjectTemplateUIDs.length;
     winston.info("📡  [" + (new Date()).toString() + "] Upserting " + num_parsed_orderedRowObjectPrimaryKeys + " parsed rows for \"" + srcDocTitle + "\".");
 
-    var forThisDataSource_mongooseContext = Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey);
+    var forThisDataSource_mongooseContext = _Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey);
     var forThisDataSource_RawRowObject_scheme = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_scheme;
     var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.forThisDataSource_rowObjects_modelName;
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model;
@@ -96,7 +98,7 @@ module.exports.InsertManyPersistableObjectTemplates = function (ordered_persista
     var num_parsed_orderedRowObjectPrimaryKeys = ordered_persistableObjectTemplateUIDs.length;
     winston.info("📡  [" + (new Date()).toString() + "] Inserting " + num_parsed_orderedRowObjectPrimaryKeys + " parsed rows for \"" + srcDocTitle + "\".");
 
-    var forThisDataSource_mongooseContext = Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey);
+    var forThisDataSource_mongooseContext = _Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey);
     var forThisDataSource_RawRowObject_scheme = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_scheme;
     var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.forThisDataSource_rowObjects_modelName;
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model;

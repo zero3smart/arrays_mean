@@ -8,8 +8,7 @@ var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
 
-module.exports.BindData = function(urlQuery, callback)
-{
+module.exports.BindData = function (urlQuery, callback) {
     var self = this;
     // urlQuery keys:
     // source_key
@@ -56,7 +55,7 @@ module.exports.BindData = function(urlQuery, callback)
     var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
     //
     var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
-    var routePath_base              = "/array/" + source_pKey + "/gallery";
+    var routePath_base = "/array/" + source_pKey + "/gallery";
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //
@@ -94,8 +93,8 @@ module.exports.BindData = function(urlQuery, callback)
     batch.concurrency(1);
 
     // Obtain source document
-    batch.push(function(done) {
-        raw_source_documents.Model.findOne({ primaryKey: source_pKey }, function(err, _sourceDoc) {
+    batch.push(function (done) {
+        raw_source_documents.Model.findOne({primaryKey: source_pKey}, function (err, _sourceDoc) {
             if (err) return done(err);
 
             sourceDoc = _sourceDoc;
@@ -104,8 +103,8 @@ module.exports.BindData = function(urlQuery, callback)
     });
 
     // Obtain sample document
-    batch.push(function(done) {
-        processedRowObjects_mongooseModel.findOne({}, function(err, _sampleDoc) {
+    batch.push(function (done) {
+        processedRowObjects_mongooseModel.findOne({}, function (err, _sampleDoc) {
             if (err) return done(err);
 
             sampleDoc = _sampleDoc;
@@ -114,8 +113,8 @@ module.exports.BindData = function(urlQuery, callback)
     });
 
     // Obtain Top Unique Field Values For Filtering
-    batch.push(function(done) {
-        func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
+    batch.push(function (done) {
+        func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
             if (err) return done(err);
 
             uniqueFieldValuesByFieldName = {};
@@ -124,7 +123,7 @@ module.exports.BindData = function(urlQuery, callback)
                     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
                     if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                         var row = [];
-                        _uniqueFieldValuesByFieldName[columnName].forEach(function(rowValue) {
+                        _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
                             row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
                         });
                         uniqueFieldValuesByFieldName[columnName] = row;
@@ -140,7 +139,7 @@ module.exports.BindData = function(urlQuery, callback)
                             return a - b;
                         });
                     } else // Sort alphabetically by default
-                        uniqueFieldValuesByFieldName[columnName].sort(function(a, b) {
+                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
                             return a - b;
                         });
                 }
@@ -150,17 +149,16 @@ module.exports.BindData = function(urlQuery, callback)
     });
 
     // Count whole set
-    batch.push(function(done) {
+    batch.push(function (done) {
         var countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
             { // Count
                 $group: {
                     _id: 1,
-                    count: { $sum: 1 }
+                    count: {$sum: 1}
                 }
             }
         ]);
-        var doneFn = function(err, results)
-        {
+        var doneFn = function (err, results) {
             if (err) return done(err);
 
             if (results == undefined || results == null || results.length == 0) { // 0
@@ -173,29 +171,31 @@ module.exports.BindData = function(urlQuery, callback)
     });
 
     // Obtain Paged Docs
-    batch.push(function(done) {
+    batch.push(function (done) {
         var sortBy_realColumnName_path = "rowParams." + sortBy_realColumnName;
         var sortOpParams = {};
         sortOpParams.size = -sortDirection;
         sortOpParams[sortBy_realColumnName_path] = sortDirection;
 
-        var projects = { $project: {
-            _id: 1,
-            pKey: 1,
-            srcDocPKey: 1,
-            rowIdxInDoc: 1,
-            size: {
-                $cond: {
-                    if: { $isArray: "$" + sortBy_realColumnName_path },
-                    then: { $size: "$" + sortBy_realColumnName_path }, // gets the number of items in the array
-                    else: 0
+        var projects = {
+            $project: {
+                _id: 1,
+                pKey: 1,
+                srcDocPKey: 1,
+                rowIdxInDoc: 1,
+                size: {
+                    $cond: {
+                        if: {$isArray: "$" + sortBy_realColumnName_path},
+                        then: {$size: "$" + sortBy_realColumnName_path}, // gets the number of items in the array
+                        else: 0
+                    }
                 }
             }
-        }};
+        };
 
         // Exclude the nested pages fields to reduce the amount of data returned
         var rowParamsfields = Object.keys(sampleDoc.rowParams);
-        rowParamsfields.forEach(function(rowParamsField) {
+        rowParamsfields.forEach(function (rowParamsField) {
             if (rowParamsField.indexOf(dataSourceDescription.fe_nestedObject_prefix) === -1) {
                 projects['$project']['rowParams.' + rowParamsField] = 1;
             }
@@ -204,14 +204,13 @@ module.exports.BindData = function(urlQuery, callback)
         var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
             projects,
             // Sort (before pagination):
-            { $sort: sortOpParams },
+            {$sort: sortOpParams},
             // Pagination
-            { $skip: skipNResults },
-            { $limit: limitToNResults }
+            {$skip: skipNResults},
+            {$limit: limitToNResults}
         ]);
 
-        var doneFn = function(err, _docs)
-        {
+        var doneFn = function (err, _docs) {
             if (err) return done(err);
 
             docs = _docs;
@@ -228,7 +227,7 @@ module.exports.BindData = function(urlQuery, callback)
             .exec(doneFn);
     });
 
-    batch.end(function(err) {
+    batch.end(function (err) {
         if (err) return callback(err);
 
         //

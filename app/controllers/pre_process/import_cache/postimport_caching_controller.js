@@ -9,39 +9,16 @@ var winston = require('winston');
 var imported_data_preparation = require('../../../datasources/utils/imported_data_preparation')
 var processed_row_objects = require('../../../models/processed_row_objects');
 var raw_source_documents = require('../../../models/raw_source_documents');
-//
-//
-//
-////////////////////////////////////////////////////////////////////////////////
+var cache_keywords_controller = require('./cache_keywords_controller');
 
-var constructor = function(options, context)
-{
-    var self = this;
-    self.options = options;
-    self.context = context;
-    
-    self._init();
-    
-    return self;
-}
-module.exports = constructor;
-constructor.prototype._init = function()
-{
-    var self = this;
-    // winston.info("post import caching controller is up")
-};
 //
 //
-constructor.prototype.GeneratePostImportCaches = function(dataSourceDescriptions)
-{
-    var self = this;
+module.exports.GeneratePostImportCaches = function (dataSourceDescriptions) {
     var i = 1;
-    async.eachSeries(dataSourceDescriptions, function(dataSourceDescription, callback)
-    { 
-        self._dataSourcePostImportCachingFunction(i, dataSourceDescription, callback);
+    async.eachSeries(dataSourceDescriptions, function (dataSourceDescription, callback) {
+        _dataSourcePostImportCachingFunction(i, dataSourceDescription, callback);
         i++;
-    }, function(err) 
-    {
+    }, function (err) {
         if (err) {
             winston.info("❌  Error encountered during post-import caching:", err);
             process.exit(1); // error code
@@ -52,9 +29,7 @@ constructor.prototype.GeneratePostImportCaches = function(dataSourceDescriptions
     });
 };
 //
-constructor.prototype._dataSourcePostImportCachingFunction = function(indexInList, dataSourceDescription, callback)
-{
-    var self = this;
+var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDescription, callback) {
     var dataSource_title = dataSourceDescription.title;
     var fe_visible = dataSourceDescription.fe_visible;
     if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
@@ -62,32 +37,27 @@ constructor.prototype._dataSourcePostImportCachingFunction = function(indexInLis
         return callback(null);
     }
     winston.info("🔁  " + indexInList + ": Generated post-import caches for \"" + dataSource_title + "\"");
-    self.generateUniqueFilterValueCacheCollection(dataSourceDescription, function(err) 
-    {
+    _generateUniqueFilterValueCacheCollection(dataSourceDescription, function (err) {
         if (err) {
             winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
             return callback(err);
         }
 
         // Cachcing Keyword for the word cloud
-        self.context.cache_keywords_controller.cacheKeywords_fromDataSourceDescription(dataSourceDescription, callback);
+        cache_keywords_controller.cacheKeywords_fromDataSourceDescription(dataSourceDescription, callback);
     });
-}
-//
-constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSourceDescription, callback)
-{
-    var self = this;
-    //
+};
+
+var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription, callback) {
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_title = dataSourceDescription.title;
-    var dataSource_importRevision = dataSourceDescription.importRevision;    
+    var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
     //
     var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceRevision_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
-    processedRowObjects_mongooseModel.findOne({}, function(err, sampleDoc)
-    {
+    processedRowObjects_mongooseModel.findOne({}, function (err, sampleDoc) {
         if (err) {
             callback(err, null);
 
@@ -97,25 +67,23 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
         var feVisible_filter_keys = imported_data_preparation.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
         var feVisible_filter_keys_length = feVisible_filter_keys.length;
         var uniqueFieldValuesByFieldName = {};
-        for (var i = 0 ; i < feVisible_filter_keys_length; i++) {
+        for (var i = 0; i < feVisible_filter_keys_length; i++) {
             var key = feVisible_filter_keys[i];
             uniqueFieldValuesByFieldName[key] = [];
         }
 
-        async.each(feVisible_filter_keys, function(key, cb) 
-        {
+        async.each(feVisible_filter_keys, function (key, cb) {
             // Commented out the count section for the comma-separated as individual filters.
-            var uniqueStage = { $group : { _id: {}, count: { $sum: 1 } } };
+            var uniqueStage = {$group: {_id: {}, count: {$sum: 1}}};
             uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;
 
             processedRowObjects_mongooseModel.aggregate([
-                
-                { $unwind: "$" + "rowParams." + key }, // requires MongoDB 3.2, otherwise throws an error if non-array
+
+                {$unwind: "$" + "rowParams." + key}, // requires MongoDB 3.2, otherwise throws an error if non-array
                 uniqueStage,
-                { $sort : { count : -1 } },
+                {$sort: {count: -1}},
                 //{ $limit : limitToNTopValues }
-            ]).allowDiskUse(true).exec(function(err, results)
-            {
+            ]).allowDiskUse(true).exec(function (err, results) {
                 if (err) {
                     cb(err);
 
@@ -129,21 +97,21 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                 var valuesRaw;
                 if (dataSourceDescription.fe_filters_fieldsCommaSeparatedAsIndividual && dataSourceDescription.fe_filters_fieldsCommaSeparatedAsIndividual.indexOf(key) !== -1) {
                     var raw = {}
-                    results.forEach(function(el) {
+                    results.forEach(function (el) {
                         if (Array.isArray(el._id) || typeof el._id === 'string') {
                             var _newId;
                             if (Array.isArray(el._id)) {
                                 _newId = []
-                                el._id.forEach(function(_id) {
+                                el._id.forEach(function (_id) {
                                     if (typeof _id === 'string') _newId.concat(_id.split(/[\s]*[,]+[\s]*/));
                                 });
                             } else {
                                 _newId = el._id.split(/[\s]*[,]+[\s]*/);
                             }
 
-                            _newId.filter(function(elem, index, self) {
+                            _newId.filter(function (elem, index, self) {
                                 return elem != '' && index === _newId.indexOf(elem);
-                            }).forEach(function(_newIdEl) {
+                            }).forEach(function (_newIdEl) {
                                 raw[_newIdEl] = raw[_newIdEl] !== undefined ? raw[_newIdEl] + el.count : el.count;
                             });
                         } else {
@@ -156,20 +124,22 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                     for (var id in raw) {
                         valuesRaw.push({id: id, count: raw[id]});
                     }
-                    valuesRaw.sort(function(a, b) {
+                    valuesRaw.sort(function (a, b) {
                         return a.count < b.count;
                     });
-                    valuesRaw = valuesRaw.map(function(el) { return el.id; });
+                    valuesRaw = valuesRaw.map(function (el) {
+                        return el.id;
+                    });
                 } else {
-                    valuesRaw = results.map(function(el) {
+                    valuesRaw = results.map(function (el) {
                         return el._id;
                     });
                 }
 
                 // flatten array of arrays (for nested tables)
-                var values = [].concat.apply([], valuesRaw).filter(function(elem, index, self) {
-                        return elem != '';
-                    }).splice(0, limitToNTopValues);
+                var values = [].concat.apply([], valuesRaw).filter(function (elem, index, self) {
+                    return elem != '';
+                }).splice(0, limitToNTopValues);
                 //
                 // remove illegal values
                 var illegalValues = []; // default val
@@ -184,7 +154,7 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                 }
                 //
                 var illegalValues_length = illegalValues.length;
-                for (var i = 0 ; i < illegalValues_length ; i++) {
+                for (var i = 0; i < illegalValues_length; i++) {
                     var illegalVal = illegalValues[i];
                     var idxOfIllegalVal = values.indexOf(illegalVal);
                     if (idxOfIllegalVal !== -1) {
@@ -200,27 +170,24 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                 uniqueFieldValuesByFieldName[finalizedStorageKey] = values;
                 cb();
             });
-        }, function(err) 
-        {
+        }, function (err) {
             if (err) {
                 callback(err, null);
-            
+
                 return;
             }
             // Override values
             var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
             var fieldNamesToOverride = Object.keys(oneToOneOverrideWithValuesByTitleByFieldName);
-            async.each(fieldNamesToOverride, function(fieldName, cb) 
-            {
+            async.each(fieldNamesToOverride, function (fieldName, cb) {
                 var oneToOneOverrideWithValuesByTitle = oneToOneOverrideWithValuesByTitleByFieldName[fieldName];
                 var titles = Object.keys(oneToOneOverrideWithValuesByTitle);
                 uniqueFieldValuesByFieldName[fieldName] = titles;
                 cb();
-            }, function(err) 
-            {
+            }, function (err) {
                 if (err) {
                     callback(err, null);
-            
+
                     return;
                 }
                 var persistableDoc =
@@ -229,16 +196,15 @@ constructor.prototype.generateUniqueFilterValueCacheCollection = function(dataSo
                     limitedUniqValsByHumanReadableColName: uniqueFieldValuesByFieldName
                 };
                 var cached_values = require('../../../models/cached_values');
-                cached_values.MongooseModel.findOneAndUpdate({ srcDocPKey: dataSourceRevision_pKey }, persistableDoc, {
+                cached_values.MongooseModel.findOneAndUpdate({srcDocPKey: dataSourceRevision_pKey}, persistableDoc, {
                     upsert: true,
                     new: true
-                }, function (err, doc) 
-                {
-                  if (err) {
-                      return callback(err, null);
-                  }
-                  winston.info("✅  Inserted cachedUniqValsByKey for \"" + dataSource_title + "\".");
-                  callback(null, null);
+                }, function (err, doc) {
+                    if (err) {
+                        return callback(err, null);
+                    }
+                    winston.info("✅  Inserted cachedUniqValsByKey for \"" + dataSource_title + "\".");
+                    callback(null, null);
                 });
             });
         });

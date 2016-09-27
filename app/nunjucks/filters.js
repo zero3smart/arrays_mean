@@ -1,28 +1,22 @@
 var moment = require('moment');
 var url = require('url');
 
-module.exports = function(nunjucks_env)
-{
+module.exports = function (nunjucks_env) {
     nunjucks_env.addFilter('comma', require('nunjucks-comma-filter'));
     // General/shared
-    nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function(date)
-    {
+    nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function (date) {
         return moment(date).utc().format("MMMM Do, YYYY");
     });
-    nunjucks_env.addFilter('addDate', function(date, amount, format)
-    {
+    nunjucks_env.addFilter('addDate', function (date, amount, format) {
         return moment(date).add(amount, format).toDate();
     });
-    nunjucks_env.addFilter('dateFormat', function(date, format)
-    {
+    nunjucks_env.addFilter('dateFormat', function (date, format) {
         return format ? moment(date).utc().format(format) : moment(date).utc().format("MMMM Do, YYYY");
     });
-    nunjucks_env.addFilter('isArray', function(val)
-    {
+    nunjucks_env.addFilter('isArray', function (val) {
         return Array.isArray(val);
     });
-    nunjucks_env.addFilter('doesArrayContain', function(array, member)
-    {
+    nunjucks_env.addFilter('doesArrayContain', function (array, member) {
         if (Array.isArray(array))
             return array.indexOf(member) !== -1 || array.indexOf(parseInt(member)) !== -1;
         else if (typeof array === 'string') {
@@ -37,33 +31,30 @@ module.exports = function(nunjucks_env)
         }
         return false;
     });
-    nunjucks_env.addFilter('isObjectEmpty', function(obj)
-    {
+    nunjucks_env.addFilter('isObjectEmpty', function (obj) {
         return Object.keys(obj).length === 0;
     });
-    nunjucks_env.addFilter('alphaSortedArray', function(array)
-    {
+    nunjucks_env.addFilter('alphaSortedArray', function (array) {
         return array.sort();
     });
-    nunjucks_env.addFilter('filterCount', function(array) {
+    nunjucks_env.addFilter('filterCount', function (array) {
         if (Array.isArray(array)) {
             return array.length;
         } else if (typeof array === 'string') {
             try {
                 var obj = JSON.parse(array);
                 if (Array.isArray(obj)) return obj.length;
-            } catch(e) {
+            } catch (e) {
             }
         }
         return 1;
     });
     // Array views - Filter obj construction
-    nunjucks_env.addFilter('constructedFilterObj', function(existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter, isMultiselectable)
-    {
+    nunjucks_env.addFilter('constructedFilterObj', function (existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter, isMultiselectable) {
         var filterObj = {};
         var existing_filterCols = Object.keys(existing_filterObj);
         var existing_filterCols_length = existing_filterCols.length;
-        for (var i = 0 ; i < existing_filterCols_length ; i++) {
+        for (var i = 0; i < existing_filterCols_length; i++) {
             var existing_filterCol = existing_filterCols[i];
             if (existing_filterCol == this_filterCol && !isMultiselectable) {
                 continue; // never push other active values of this is filter col is already active
@@ -85,15 +76,16 @@ module.exports = function(nunjucks_env)
             } else if (typeof filterObj[this_filterCol] === 'string' && filterObj[this_filterCol] != this_filterVal) {
                 var originalVal = filterObj[this_filterCol];
                 filterObj[this_filterCol] = this_filterVal;
-                if (isMultiselectable ) {
+                if (isMultiselectable) {
                     try {
                         var obj = JSON.parse(originalVal);
-                    } catch (e) {}
+                    } catch (e) {
+                    }
                     if (Array.isArray(obj)) {
                         obj.push(this_filterVal);
                         filterObj[this_filterCol] = JSON.stringify(obj);
                     } else {
-                        filterObj[this_filterCol] = JSON.stringify([''+originalVal, ''+this_filterVal]);
+                        filterObj[this_filterCol] = JSON.stringify(['' + originalVal, '' + this_filterVal]);
                     }
                 }
             } else {
@@ -102,7 +94,8 @@ module.exports = function(nunjucks_env)
         } else if (isMultiselectable) {
             try {
                 filterVals = JSON.parse(filterObj[this_filterCol]);
-            } catch (e) {}
+            } catch (e) {
+            }
             if (Array.isArray(filterVals)) {
                 if (filterVals.indexOf(this_filterVal) !== -1) {
                     var index = filterVals.indexOf(this_filterVal);
@@ -129,7 +122,7 @@ module.exports = function(nunjucks_env)
         return filterObj;
     });
     // Array views - Filter value to display
-    nunjucks_env.addFilter('filterValToDisplay', function(filterVal){
+    nunjucks_env.addFilter('filterValToDisplay', function (filterVal) {
         if (typeof filterVal === 'string') {
             var _filterVal = decodeURIComponent(filterVal);
             try {
@@ -151,7 +144,7 @@ module.exports = function(nunjucks_env)
             output = output + moment(filterVal.max).utc().format("MMMM Do, YYYY");
 
         if (Array.isArray(filterVal)) {
-            for (var i = 0; i < filterVal.length; i ++) {
+            for (var i = 0; i < filterVal.length; i++) {
                 if (i != 0) output += ', ';
                 output += filterVal[i];
             }
@@ -159,7 +152,7 @@ module.exports = function(nunjucks_env)
         return output;
     });
     // Array views - Filters for bubbles
-    nunjucks_env.addFilter('filterValuesForBubble', function(filterVal){
+    nunjucks_env.addFilter('filterValuesForBubble', function (filterVal) {
         if (Array.isArray(filterVal)) {
             return filterVal;
         } else if (typeof filterVal === 'string') {
@@ -167,14 +160,15 @@ module.exports = function(nunjucks_env)
                 var vals = JSON.parse(filterVal);
                 if (Array.isArray(vals))
                     return vals;
-            } catch (e) {}
+            } catch (e) {
+            }
             return [filterVal];
         } else {
             return [filterVal];
         }
     });
     // Array views - Filter route path
-    nunjucks_env.addFilter('constructedRoutePath', function(routePath_base, filterObj, queryObj) {
+    nunjucks_env.addFilter('constructedRoutePath', function (routePath_base, filterObj, queryObj) {
         // Merge filterObj to queryObj
         var _queryObj = {};
         if (filterObj)
@@ -192,7 +186,7 @@ module.exports = function(nunjucks_env)
             if (_queryObj.hasOwnProperty(key) && _queryObj[key] !== undefined) {
                 if (Array.isArray(_queryObj[key])) {
                     var subArray = _queryObj[key];
-                    for (var i = 0; i < subArray.length; i ++)
+                    for (var i = 0; i < subArray.length; i++)
                         if (typeof subArray[i] === 'string')
                             routePath += '&' + key + '=' + subArray[i];
                         else
@@ -208,8 +202,8 @@ module.exports = function(nunjucks_env)
         return routePath_base + joinChar + routePath.substr(1);
     });
     // Object detail view - Detect/substitute the url string in the parameter with the wrapped a tag
-    nunjucks_env.addFilter('substitutePlainURLs', function(str) {
-        return str.split(/[\s]+/).map(function(el) {
+    nunjucks_env.addFilter('substitutePlainURLs', function (str) {
+        return str.split(/[\s]+/).map(function (el) {
             var result = url.parse(el);
             if ((result.protocol == 'http:' || result.protocol == 'https:')
                 && result.hostname != null && result.hostname != '') {

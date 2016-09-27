@@ -11,10 +11,9 @@ exports.Descriptions =
             importRevision: 1,
             title: "Seattle Public Library Special Collections",
             brandColor: "#6699CC",
-            urls: [ "http://cdm16118.contentdm.oclc.org/cdm/" ],
+            urls: ["http://cdm16118.contentdm.oclc.org/cdm/"],
             description: "This collection features issues of two local Seattle publications: the Municipal News, started in 1911, and The Jewish Transcript, started in 1924. The Municipal News documents the social, political, economic, and cultural history of Seattle and King County over the past century while The Jewish Transcript documents the daily life of the Jewish community in Seattle as well as local and international events from the 1920’s to present day.",
-            raw_rowObjects_coercionScheme:
-            {
+            raw_rowObjects_coercionScheme: {
                 'Date': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
@@ -75,15 +74,13 @@ exports.Descriptions =
             },
             fe_listed: true,
             //
-            fn_new_rowPrimaryKeyFromRowObject: function(rowObject, rowIndex)
-            {
+            fn_new_rowPrimaryKeyFromRowObject: function (rowObject, rowIndex) {
                 if (this.dataset_uid && typeof this.dataset_uid === 'string')
                     return this.dataset_uid + "-" + rowIndex + "-" + rowObject["Identifier"];
 
                 return "" + rowIndex + "-" + rowObject["Identifier"];
             },
-            fe_designatedFields:
-            {
+            fe_designatedFields: {
                 objectTitle: "Title",
                 originalImageURL: "FullSize",
                 medThumbImageURL: "Thumbnail"
@@ -96,322 +93,307 @@ exports.Descriptions =
                 timeline: true,
                 lineGraph: false
             },
-            fe_excludeFields:
-                [
-                    "Identifier",
-                    "Neighborhood",
-                    "Volume/Issue",
-                    "Edition Label",
-                    "Notes",
-                    "Digitization Specifications",
-                    "File Format",
-                    "Type",
-                    "Local Type",
-                    "Copyright Status",
-                    "Reference URL",
-                    "CONTENTdm number",
-                    "CONTENTdm file name",
-                    "CONTENTdm file path",
-                    "Pages_Title",
-                    "Pages_Date",
-                    "Pages_Decade",
-                    "Pages_Volume",
-                    "Pages_Issue",
-                    "Pages_Volume/Issue",
-                    "Pages_Type",
-                    "Pages_Local Type",
-                    "Pages_Date created",
-                    "Pages_Date modified",
-                    "Pages_Reference URL",
-                    "Pages_CONTENTdm number",
-                    "Pages_CONTENTdm file name",
-                    "Pages_CONTENTdm file path",
-                    "Pages_FullSize",
-                    "Pages_Thumbnail",
-                    "Image",
-                    "Transcript",
-                    "Directory Name",
-                    "Digital Tech",
-                    "Language",
-                    "Date Modified",
-                    "Date Created",
-                    "Pages",
-                    "Pages_Image",
-                    "FullSize",
-                    "Thumbnail",
-                    "LCCN"
-                ],
-            fe_displayTitleOverrides:
-            {
+            fe_excludeFields: [
+                "Identifier",
+                "Neighborhood",
+                "Volume/Issue",
+                "Edition Label",
+                "Notes",
+                "Digitization Specifications",
+                "File Format",
+                "Type",
+                "Local Type",
+                "Copyright Status",
+                "Reference URL",
+                "CONTENTdm number",
+                "CONTENTdm file name",
+                "CONTENTdm file path",
+                "Pages_Title",
+                "Pages_Date",
+                "Pages_Decade",
+                "Pages_Volume",
+                "Pages_Issue",
+                "Pages_Volume/Issue",
+                "Pages_Type",
+                "Pages_Local Type",
+                "Pages_Date created",
+                "Pages_Date modified",
+                "Pages_Reference URL",
+                "Pages_CONTENTdm number",
+                "Pages_CONTENTdm file name",
+                "Pages_CONTENTdm file path",
+                "Pages_FullSize",
+                "Pages_Thumbnail",
+                "Image",
+                "Transcript",
+                "Directory Name",
+                "Digital Tech",
+                "Language",
+                "Date Modified",
+                "Date Created",
+                "Pages",
+                "Pages_Image",
+                "FullSize",
+                "Thumbnail",
+                "LCCN"
+            ],
+            fe_displayTitleOverrides: {
                 // these are to be tuples - the values must be unique as well
-                "Pages_Transcript" : "Transcript",
+                "Pages_Transcript": "Transcript",
                 //"Pages_Date created": "Date created",
                 //"Pages_Date modified": "Date modified"
             },
-            fe_fieldDisplayOrder:
-                [
-                    'Catalog Title',
-                    'Volume',
-                    'Issue',
-                    'Date',
-                    'Year',
-                    'Decade',
-                    'Creator',
-                    'Publisher',
-                    'Subjects',
-                    'Physical Measurements',
-                    'Source',
-                    'Transcript',
-                    'Rights and Reproduction',
-                    'Title [NDNP]',
-                    'Publisher Location (NDNP)',
-                    'Contributing Institution',
-                    'Collection',
-                    'Date created',
-                    'Date modified'
-                ],
-            fe_filters_fabricatedFilters:
-                [
-                    {
-                        title: "Image",
-                        choices: [
-                            {
-                                title: "Has image",
-                                $match: {
-                                    "rowParams.CONTENTdm file path": {
-                                        $exists: true,
-                                        $nin: [ "", null ]
-                                    }
+            fe_fieldDisplayOrder: [
+                'Catalog Title',
+                'Volume',
+                'Issue',
+                'Date',
+                'Year',
+                'Decade',
+                'Creator',
+                'Publisher',
+                'Subjects',
+                'Physical Measurements',
+                'Source',
+                'Transcript',
+                'Rights and Reproduction',
+                'Title [NDNP]',
+                'Publisher Location (NDNP)',
+                'Contributing Institution',
+                'Collection',
+                'Date created',
+                'Date modified'
+            ],
+            fe_filters_fabricatedFilters: [
+                {
+                    title: "Image",
+                    choices: [
+                        {
+                            title: "Has image",
+                            $match: {
+                                "rowParams.CONTENTdm file path": {
+                                    $exists: true,
+                                    $nin: ["", null]
                                 }
                             }
-                        ]
-                    },
-                    {
-                        title: "Description",
-                        choices: [
-                            {
-                                title: "Has description",
-                                $match: {
-                                    "rowParams.Description": {
-                                        $exists: true,
-                                        $nin: [ "", null ]
-                                    }
+                        }
+                    ]
+                },
+                {
+                    title: "Description",
+                    choices: [
+                        {
+                            title: "Has description",
+                            $match: {
+                                "rowParams.Description": {
+                                    $exists: true,
+                                    $nin: ["", null]
                                 }
                             }
-                        ]
-                    }
-                ],
-            fe_filters_valuesToExcludeByOriginalKey:
-            {
-                _all: [ "", null ]
+                        }
+                    ]
+                }
+            ],
+            fe_filters_valuesToExcludeByOriginalKey: {
+                _all: ["", null]
             },
             //
-            fe_filters_keywordFilters:
-                [
-                    {
-                        title: "Transcript",
-                        choices: [
-                            'community',
-                            'petition',
-                            'president',
-                            'immigration',
-                            'development',
-                            'judgement',
-                            'university',
-                            'committee',
-                            'complaint',
-                            'power',
-                            'national',
-                            'proposed',
-                            'against',
-                            'amendment',
-                            'resolution',
-                            'protest',
-                            'war',
-                            'olympic',
-                            'conference',
-                            'world'
-                        ]
-                    }
-                ],
+            fe_filters_keywordFilters: [
+                {
+                    title: "Transcript",
+                    choices: [
+                        'community',
+                        'petition',
+                        'president',
+                        'immigration',
+                        'development',
+                        'judgement',
+                        'university',
+                        'committee',
+                        'complaint',
+                        'power',
+                        'national',
+                        'proposed',
+                        'against',
+                        'amendment',
+                        'resolution',
+                        'protest',
+                        'war',
+                        'olympic',
+                        'conference',
+                        'world'
+                    ]
+                }
+            ],
             //
             //
-            fe_filters_default:
-            {
+            fe_filters_default: {
                 //all have images
             },
-            fe_filters_fieldsNotAvailable:
-                [
-                    "Title",
-                    "Identifier",
-                    "Description",
-                    "Subjects",
-                    "Creator",
-                    "Neighborhood",
-                    "Date Labeled",
-                    "Publisher",
-                    "Publisher Location (NDNP)",
-                    "Edition Label",
-                    "Notes",
-                    "Directory Name",
-                    "Title [NDNP]",
-                    "Language",
-                    "Source",
-                    "Digital Tech",
-                    "Rights and Reproduction",
-                    "Collection",
-                    "Contributing Institution",
-                    "Pages_Transcript",
-                    "File Name",
-                    "Transcript",
-                    "Date modified",
-                    "Date created",
-                    "Date",
-                    "Pages_Thumbnail",
-                    "Pages_FullSize"
-                ],
-            fe_filters_fieldsSortableByInteger:
-                [
-                    "Volume",
-                    "Issue"
-                ],
+            fe_filters_fieldsNotAvailable: [
+                "Title",
+                "Identifier",
+                "Description",
+                "Subjects",
+                "Creator",
+                "Neighborhood",
+                "Date Labeled",
+                "Publisher",
+                "Publisher Location (NDNP)",
+                "Edition Label",
+                "Notes",
+                "Directory Name",
+                "Title [NDNP]",
+                "Language",
+                "Source",
+                "Digital Tech",
+                "Rights and Reproduction",
+                "Collection",
+                "Contributing Institution",
+                "Pages_Transcript",
+                "File Name",
+                "Transcript",
+                "Date modified",
+                "Date created",
+                "Date",
+                "Pages_Thumbnail",
+                "Pages_FullSize"
+            ],
+            fe_filters_fieldsSortableByInteger: [
+                "Volume",
+                "Issue"
+            ],
             //
             //
             fe_gallery_defaultSortByColumnName_humanReadable: "Date",
             //
             //
             fe_chart_defaultGroupByColumnName_humanReadable: "Decade",
-            fe_chart_fieldsNotAvailableAsGroupByColumns:
-                [
-                    "Title",
-                    "Identifier",
-                    "Description",
-                    "Subjects",
-                    "Creator",
-                    "Date Labeled",
-                    "Publisher",
-                    "Publisher Location (NDNP)",
-                    "Collection",
-                    "Contributing Institution",
-                    "Rights and Reproduction",
-                    "Source",
-                    "Digital Tech",
-                    "Language",
-                    "Transcript",
-                    "Title [NDNP]",
-                    "OCLC number",
-                    "Pages_Transcript",
-                    "Directory Name",
-                    "File Name",
-                    "Transcript",
-                    "Date modified",
-                    "Date created",
-                    "Date",
-                    "Pages_Thumbnail",
-                    "Pages_FullSize"
-                ],
-            fe_chart_valuesToExcludeByOriginalKey:
-            {
-                _all: [ "", null, "NULL", "(not specified)", "NA" ],
+            fe_chart_fieldsNotAvailableAsGroupByColumns: [
+                "Title",
+                "Identifier",
+                "Description",
+                "Subjects",
+                "Creator",
+                "Date Labeled",
+                "Publisher",
+                "Publisher Location (NDNP)",
+                "Collection",
+                "Contributing Institution",
+                "Rights and Reproduction",
+                "Source",
+                "Digital Tech",
+                "Language",
+                "Transcript",
+                "Title [NDNP]",
+                "OCLC number",
+                "Pages_Transcript",
+                "Directory Name",
+                "File Name",
+                "Transcript",
+                "Date modified",
+                "Date created",
+                "Date",
+                "Pages_Thumbnail",
+                "Pages_FullSize"
+            ],
+            fe_chart_valuesToExcludeByOriginalKey: {
+                _all: ["", null, "NULL", "(not specified)", "NA"],
             },
             //
             //
             fe_timeline_defaultGroupByColumnName_humanReadable: "Year",
-            fe_timeline_durationsAvailableForGroupBy:
-                [
-                    "Decade",
-                    "Year",
-                    "Month",
-                    "Day"
-                ],
+            fe_timeline_durationsAvailableForGroupBy: [
+                "Decade",
+                "Year",
+                "Month",
+                "Day"
+            ],
             fe_timeline_defaultSortByColumnName_humanReadable: "Date",
-            fe_timeline_fieldsNotAvailableAsSortByColumns:
-                [
-                    "Title",
-                    "Catalog Title",
-                    "Description",
-                    "Subjects",
-                    "Creator",
-                    "Date Labeled",
-                    "Decade",
-                    "Publisher",
-                    "Publisher Location (NDNP)",
-                    "Volume",
-                    "Issue",
-                    "Physical Measurements",
-                    "Collection",
-                    "Contributing Institution",
-                    "Rights and Reproduction",
-                    "Source",
-                    "Digital Tech",
-                    "Language",
-                    "Transcript",
-                    "Title [NDNP]",
-                    "LCCN",
-                    "Pages",
-                    "OCLC number",
-                    "Directory Name",
-                    "File Name",
-                    "Pages_Transcript"
-                ],
+            fe_timeline_fieldsNotAvailableAsSortByColumns: [
+                "Title",
+                "Catalog Title",
+                "Description",
+                "Subjects",
+                "Creator",
+                "Date Labeled",
+                "Decade",
+                "Publisher",
+                "Publisher Location (NDNP)",
+                "Volume",
+                "Issue",
+                "Physical Measurements",
+                "Collection",
+                "Contributing Institution",
+                "Rights and Reproduction",
+                "Source",
+                "Digital Tech",
+                "Language",
+                "Transcript",
+                "Title [NDNP]",
+                "LCCN",
+                "Pages",
+                "OCLC number",
+                "Directory Name",
+                "File Name",
+                "Pages_Transcript"
+            ],
             //
             //
             fe_wordCloud_defaultGroupByColumnName_humanReadable: "Transcript",
-            fe_wordCloud_fieldsNotAvailableAsGroupByColumns:
-                [
-                    "Title",
-                    "Identifier",
-                    "Subjects",
-                    "Creator",
-                    "Date Labeled",
-                    "Publisher",
-                    "Publisher Location (NDNP)",
-                    "Collection",
-                    "Contributing Institution",
-                    "Rights and Reproduction",
-                    "Source",
-                    "Digital Tech",
-                    "Language",
-                    "Title [NDNP]",
-                    "OCLC number",
-                    "Directory Name",
-                    "File Name",
-                    "Transcript",
-                    "Date modified",
-                    "Date created",
-                    "Date",
-                    "Pages_Thumbnail",
-                    "Pages_FullSize",
-                    "Catalog Title",
-                    "Description",
-                    "Decade",
-                    "Volume",
-                    "Issue",
-                    "Physical Measurements"
-                ],
-            fe_wordCloud_keywords:
-                [
-                    'community',
-                    'petition',
-                    'president',
-                    'immigration',
-                    'development',
-                    'judgement',
-                    'university',
-                    'committee',
-                    'complaint',
-                    'power',
-                    'national',
-                    'proposed',
-                    'against',
-                    'amendment',
-                    'resolution',
-                    'protest',
-                    'war',
-                    'olympic',
-                    'conference',
-                    'world'
-                ],
+            fe_wordCloud_fieldsNotAvailableAsGroupByColumns: [
+                "Title",
+                "Identifier",
+                "Subjects",
+                "Creator",
+                "Date Labeled",
+                "Publisher",
+                "Publisher Location (NDNP)",
+                "Collection",
+                "Contributing Institution",
+                "Rights and Reproduction",
+                "Source",
+                "Digital Tech",
+                "Language",
+                "Title [NDNP]",
+                "OCLC number",
+                "Directory Name",
+                "File Name",
+                "Transcript",
+                "Date modified",
+                "Date created",
+                "Date",
+                "Pages_Thumbnail",
+                "Pages_FullSize",
+                "Catalog Title",
+                "Description",
+                "Decade",
+                "Volume",
+                "Issue",
+                "Physical Measurements"
+            ],
+            fe_wordCloud_keywords: [
+                'community',
+                'petition',
+                'president',
+                'immigration',
+                'development',
+                'judgement',
+                'university',
+                'committee',
+                'complaint',
+                'power',
+                'national',
+                'proposed',
+                'against',
+                'amendment',
+                'resolution',
+                'protest',
+                'war',
+                'olympic',
+                'conference',
+                'world'
+            ],
 
             fe_nestedObject_prefix: 'Pages_',
             // specify (and cache/store) an operating spec for the row merge operation
@@ -434,17 +416,14 @@ exports.Descriptions =
                 'FullSize',
                 'Thumbnail'
             ],
-            fe_nestedObjectFieldOverrides: {
-            },
-            fe_criteria_nestedObject: function(rowDoc) {
+            fe_nestedObjectFieldOverrides: {},
+            fe_criteria_nestedObject: function (rowDoc) {
                 return !rowDoc.rowParams.Identifier || rowDoc.rowParams.Identifier == '';
             },
-            fe_nestedObjectValueOverrides: {
-            },
+            fe_nestedObjectValueOverrides: {},
             //
             //
-            afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function(appCtx, eachCtx, cb)
-            {
+            afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function (eachCtx, cb) {
                 // Setup each ctx, such as the batch operation
                 var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(this.uid, this.importRevision);
                 var forThisDataSource_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(srcDoc_pKey);
@@ -466,8 +445,7 @@ exports.Descriptions =
                 cb(null);
             },
             //
-            afterGeneratingProcessedRowObjects_eachRowFn: function(appCtx, eachCtx, rowDoc, cb)
-            {
+            afterGeneratingProcessedRowObjects_eachRowFn: function (eachCtx, rowDoc, cb) {
                 // Use this space to perform derivations and add update operations to batch operation in eachCtx
                 //
                 var self = this;
@@ -490,7 +468,7 @@ exports.Descriptions =
                             // Replace with the pattern listed on the overrides if needed
                             if (self.fe_nestedObjectValueOverrides[fieldName]) {
                                 var keys = Object.keys(self.fe_nestedObjectValueOverrides[fieldName]);
-                                keys.forEach(function(key) {
+                                keys.forEach(function (key) {
                                     var re = new RegExp(key, 'i');
                                     fieldValue = fieldValue.replace(re, self.fe_nestedObjectValueOverrides[fieldName][key])
                                 });
@@ -525,21 +503,20 @@ exports.Descriptions =
                         eachCtx.cachedPages = [];
                     }
 
-                    eachCtx.numberOfInsertedRows ++;
+                    eachCtx.numberOfInsertedRows++;
 
                 } else {
                     // Cache pages if it's a page
                     eachCtx.cachedPages.push(rowDoc);
                 }
-                eachCtx.numberOfRows ++;
+                eachCtx.numberOfRows++;
                 //
                 // finally, must call cb to advance
                 //
                 cb(null);
             },
             //
-            afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function(appCtx, eachCtx, cb)
-            {
+            afterGeneratingProcessedRowObjects_afterIterating_eachRowFn: function (eachCtx, cb) {
                 // Finished iterating … execute the batch operation
                 // cb(null);
 
@@ -552,8 +529,7 @@ exports.Descriptions =
                 {
                     upsert: true // might as well - but this is not necessary
                 };
-                eachCtx.mergeRowsIntoFieldArray_bulkOperation.execute(writeConcern, function(err, result)
-                {
+                eachCtx.mergeRowsIntoFieldArray_bulkOperation.execute(writeConcern, function (err, result) {
                     if (err) {
                         winston.error("❌ [" + (new Date()).toString() + "] Error while saving raw row objects: ", err);
                     } else {
