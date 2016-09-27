@@ -4,19 +4,11 @@ var Batch = require('batch');
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
-var config = new require('../config')();
-var functions = new require('../functions')();
+var processed_row_objects = require('../../../models/processed_row_objects');
+var config = require('../config');
+var func = require('../func');
 
-var constructor = function(options, context) {
-    var self = this;
-    self.options = options;
-    self.context = context;
-
-    return self;
-};
-
-//
-constructor.prototype.BindData = function(urlQuery, callback)
+module.exports.BindData = function(urlQuery, callback)
 {
     var self = this;
     // urlQuery keys:
@@ -46,7 +38,7 @@ constructor.prototype.BindData = function(urlQuery, callback)
 
         return;
     }
-    var processedRowObjects_mongooseContext = self.context.processed_row_objects_controller.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+    var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
     var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
@@ -56,9 +48,9 @@ constructor.prototype.BindData = function(urlQuery, callback)
     var routePath_base              = "/array/" + source_pKey + "/word-cloud";
     var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
     //
-    var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+    var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //
-    var filterObj = functions.filterObjFromQueryParams(urlQuery);
+    var filterObj = func.filterObjFromQueryParams(urlQuery);
     var isFilterActive = Object.keys(filterObj).length != 0;
     //
     var searchCol = urlQuery.searchCol;
@@ -94,7 +86,7 @@ constructor.prototype.BindData = function(urlQuery, callback)
 
     // Obtain Top Unique Field Values For Filtering
     batch.push(function(done) {
-        functions._topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
+        func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
             if (err) return done(err);
 
             uniqueFieldValuesByFieldName = {};
@@ -124,13 +116,13 @@ constructor.prototype.BindData = function(urlQuery, callback)
         //
         var aggregationOperators = [];
         if (isSearchActive) {
-            var _orErrDesc = functions._activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+            var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
             if (_orErrDesc.err) return done(_orErrDesc.err);
 
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
         if (isFilterActive) { // rules out undefined filterCol
-            var _orErrDesc = functions._activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+            var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
             if (_orErrDesc.err) return done(_orErrDesc.err);
 
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
@@ -217,5 +209,3 @@ constructor.prototype.BindData = function(urlQuery, callback)
         callback(err, data);
     });
 };
-
-module.exports = constructor;

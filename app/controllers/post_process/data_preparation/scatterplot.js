@@ -5,23 +5,15 @@ var queryString = require('querystring');
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
-var config = new require('../config')();
-var functions = new require('../functions')();
-
-var constructor = function(options, context) {
-    var self = this;
-    self.options = options;
-    self.context = context;
-
-    return self;
-};
+var config = require('../config');
+var func = require('../func');
 
 /**
  * Scatterplot view action controller.
  * @param {Object} urlQuery - URL params
  * @param {Function} callback
  */
-constructor.prototype.BindData = function(urlQuery, callback)
+module.exports.BindData = function(urlQuery, callback)
 {
     var self = this;
 
@@ -55,7 +47,7 @@ constructor.prototype.BindData = function(urlQuery, callback)
      */
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
 
-    var filterObj = functions.filterObjFromQueryParams(urlQuery);
+    var filterObj = func.filterObjFromQueryParams(urlQuery);
     var isFilterActive = Object.keys(filterObj).length != 0;
 
     var urlQuery_forSwitchingViews  = "";
@@ -65,7 +57,7 @@ constructor.prototype.BindData = function(urlQuery, callback)
      */
     if (isFilterActive) {
         appendQuery = queryString.stringify(filterObj);
-        urlQuery_forSwitchingViews = functions._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        urlQuery_forSwitchingViews = func.urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
     }
 
     var searchCol = urlQuery.searchCol;
@@ -77,19 +69,19 @@ constructor.prototype.BindData = function(urlQuery, callback)
      */
     if (isSearchActive) {
         appendQuery = "searchCol=" + urlQuery.searchCol + "&" + "searchQ=" + urlQuery.searchQ;
-        urlQuery_forSwitchingViews = functions._urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        urlQuery_forSwitchingViews = func.urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
     }
     /*
      * Process filterObj and prepare $match - https://docs.mongodb.com/manual/reference/operator/aggregation/match/ -
      * statement. May return error instead required statement... and i can't say that understand that logic full. But in that case
      * we just will create empty $match statement which acceptable for all documents from data source.
      */
-    var _orErrDesc = functions._activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+    var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
     if (_orErrDesc.err) {
         _orErrDesc.matchOps = [{ $match : {} }];
     }
     /*
-     * Run chain of functions to collect necessary data.
+     * Run chain of function to collect necessary data.
      */
     raw_source_documents.Model.findOne({ primaryKey: sourceKey }, function(err, sourceDoc) {
         /*
@@ -103,7 +95,7 @@ constructor.prototype.BindData = function(urlQuery, callback)
             /*
              * Go deeper - collect data for filter's sidebar.
              */
-            functions._topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
+            func.topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, function(err, _uniqueFieldValuesByFieldName) {
 
                 var uniqueFieldValuesByFieldName = {}
                 for (var columnName in _uniqueFieldValuesByFieldName) {
@@ -168,6 +160,4 @@ constructor.prototype.BindData = function(urlQuery, callback)
             });
         });
     });
-}
-
-module.exports = constructor;
+};

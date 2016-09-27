@@ -1,13 +1,8 @@
-var constructor = function() {
-    var self = this;
-    self.pageSize = 200;
-    self.timelineGroupSize = 20;
-    self.timelineGroups = this.pageSize / this.timelineGroupSize * 2;
-    self.defaultDateFormat = "MMMM Do, YYYY";
+global.config = {};
 
-    self.AggregateByDefaultColumnName = "NUMBER OF RECORDS";
+config.pageSize = 200;
+config.timelineGroupSize = 20;
+config.timelineGroups = config.pageSize / config.timelineGroupSize * 2;
+config.defaultDateFormat = "MMMM Do, YYYY";
 
-    return self;
-};
-
-module.exports = constructor;
+config.aggregateByDefaultColumnName = "NUMBER OF RECORDS";

@@ -7,6 +7,7 @@ var session = require('express-session');
 var passport = require('passport');
 var strategy = require('./setup-passport');
 var raw_source_documents = require('./models/raw_source_documents');
+var routes = require('./routes');
 
 var isDev = process.env.NODE_ENV == 'production' ? false : true;
 var dotenv_path = __dirname + "/../config/env/.env." + process.env.NODE_ENV;
@@ -62,34 +63,19 @@ mongoose_client.WhenMongoDBConnected(function()
 {
     mongoose_client.WhenIndexesHaveBeenBuilt(function() 
     {
-        _mountRoutesAndStartListening();
+        winston.info("💬  Proceeding to boot app.");
+        //
+        routes.MountRoutes(app);
+        //
+        // Run actual server
+        if (module === require.main) {
+            var server = app.listen(process.env.PORT || 9080, function () {
+                var host = isDev ? 'localhost' : server.address().address;
+                var port = server.address().port;
+                winston.info('📡  App listening at %s:%s', host, port);
+            });
+        }
     });
 });
-//
-function _mountRoutesAndStartListening()
-{
-    winston.info("💬  Proceeding to boot app.");
-    //
-    context.routes_controller.MountRoutes();
-    //
-    // express-winston errorLogger makes sense AFTER the router.
-    app.use(expressWinston.errorLogger({
-        transports: [
-            new winston.transports.Console({
-                json: true,
-                colorize: isDev
-            })
-        ]
-    }));
-    //
-    // Run actual server
-    if (module === require.main) {
-        var server = app.listen(process.env.PORT || 9080, function () {
-            var host = isDev ? 'localhost' : server.address().address;
-            var port = server.address().port;
-            winston.info('📡  App listening at %s:%s', host, port);
-        });
-    }
-}
 
 module.exports = app;

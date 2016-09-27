@@ -4,23 +4,16 @@ var queryString = require('querystring');
 var dataSourceDescriptions = require('../../../../datasources/descriptions').GetDescriptions();
 var teamDescriptions = require('../../../../datasources/teams').GetTeams();
 var importedDataPreparation = require('../../../../datasources/utils/imported_data_preparation');
+var raw_source_documents = require('../../../../models/raw_source_documents');
 
-var constructor = function(options, context) {
-    var self = this;
-    self.options = options;
-    self.context = context;
-
-    return self;
-};
-
-constructor.prototype.BindDataFor_team_show = function(urlQuery, callback) {
+module.exports.BindData = function(urlQuery, callback) {
     var self = this;
 
     var iterateeFn = async.ensureAsync(function(dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
     {
         var err = null;
-        var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription, self.context.raw_source_documents_controller);
-        self.context.raw_source_documents_controller.Model.findOne({
+        var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription);
+        raw_source_documents.Model.findOne({
             primaryKey: source_pKey
         }, function(err, doc) {
             if (err)
@@ -115,5 +108,3 @@ constructor.prototype.BindDataFor_team_show = function(urlQuery, callback) {
     async.map(feVisible_dataSourceDescriptions, iterateeFn, completionFn);
     //    ^ parallel execution, but ordered results
 };
-
-module.exports = constructor;

@@ -14,3 +14,5 @@ router.get('/auth/logout', function (req, res) {
 router.get('/auth/callback', passport.authenticate('auth0', {failureRedirect: '/'}), function (req, res) {
     res.redirect(req.session.returnTo || '/array');
 });
+
+module.exports = router;

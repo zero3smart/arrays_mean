@@ -69,3 +69,5 @@ viewTypes.forEach(function (viewType) {
         });
     });
 });
+
+module.exports = router;

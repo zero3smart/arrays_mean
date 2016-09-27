@@ -4,19 +4,10 @@ var queryString = require('querystring');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var raw_source_documents = require('../../../models/raw_source_documents');
-var config = new require('../config')();
-var functions = new require('../functions')();
+var config = require('../config');
+var func = require('../func');
 
-var constructor = function(options, context) {
-    var self = this;
-    self.options = options;
-    self.context = context;
-
-    return self;
-};
-
-//
-constructor.prototype.BindData = function(source_pKey, rowObject_id, callback)
+module.exports.BindData = function(source_pKey, rowObject_id, callback)
 {
     var self = this;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
@@ -119,7 +110,7 @@ constructor.prototype.BindData = function(source_pKey, rowObject_id, callback)
         for (var i = 0 ; i < rowParams_keys_length ; i++) {
             var key = rowParams_keys[i];
             var originalVal = rowParams[key];
-            var displayableVal = functions._reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, key, dataSourceDescription);
+            var displayableVal = func.reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, key, dataSourceDescription);
             rowParams[key] = displayableVal;
         }
         //
@@ -192,6 +183,4 @@ constructor.prototype.BindData = function(source_pKey, rowObject_id, callback)
         };
         callback(null, data);
     });
-}
-
-module.exports = constructor;
+};

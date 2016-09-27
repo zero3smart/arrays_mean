@@ -4,9 +4,9 @@ var Batch = require('batch');
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
-var config = new require('../config')();
-var functions = new require('../functions')();
-//
+var config = require('../config');
+var func = require('../func');
+
 module.exports.BindData = function (urlQuery, callback) {
     var self = this;
     // urlQuery keys:
@@ -45,9 +45,9 @@ module.exports.BindData = function (urlQuery, callback) {
     var routePath_base = "/array/" + source_pKey + "/chart";
     var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
     //
-    var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = functions._new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+    var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //
-    var filterObj = functions.filterObjFromQueryParams(urlQuery);
+    var filterObj = func.filterObjFromQueryParams(urlQuery);
     var isFilterActive = Object.keys(filterObj).length != 0;
     //
     var searchCol = urlQuery.searchCol;
@@ -60,7 +60,7 @@ module.exports.BindData = function (urlQuery, callback) {
     var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_chart_defaultAggregateByColumnName_humanReadable;
     var numberOfRecords_notAvailable = dataSourceDescription.fe_chart_aggregateByColumnName_numberOfRecords_notAvailable;
     if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
-        defaultAggregateByColumnName_humanReadable = config.AggregateByDefaultColumnName;
+        defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
 
     // Aggregate By Available
     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
@@ -75,7 +75,7 @@ module.exports.BindData = function (urlQuery, callback) {
             if (!aggregateBy_humanReadable_available) {
                 aggregateBy_humanReadable_available = [];
                 if (!numberOfRecords_notAvailable)
-                    aggregateBy_humanReadable_available.push(config.AggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                    aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
             }
 
             aggregateBy_humanReadable_available.push(humanReadableColumnName);
@@ -118,7 +118,7 @@ module.exports.BindData = function (urlQuery, callback) {
 
     // Obtain Top Unique Field Values For Filtering
     batch.push(function (done) {
-        functions._topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+        func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
             if (err) return done(err);
 
             uniqueFieldValuesByFieldName = {};
@@ -148,19 +148,19 @@ module.exports.BindData = function (urlQuery, callback) {
         //
         var aggregationOperators = [];
         if (isSearchActive) {
-            var _orErrDesc = functions._activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+            var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
             if (_orErrDesc.err) return done(_orErrDesc.err);
 
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
         if (isFilterActive) { // rules out undefined filterCol
-            var _orErrDesc = functions._activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+            var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
             if (_orErrDesc.err)  return done(_orErrDesc.err);
 
             aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
         }
 
-        if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.AggregateByDefaultColumnName) {
+        if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
             aggregationOperators = aggregationOperators.concat(
                 [
                     {$unwind: "$" + "rowParams." + groupBy_realColumnName}, // requires MongoDB 3.2, otherwise throws an error if non-array
@@ -240,7 +240,7 @@ module.exports.BindData = function (urlQuery, callback) {
                 } else if (originalVal === "") {
                     displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
                 } else {
-                    displayableVal = functions._reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, groupBy_realColumnName, dataSourceDescription);
+                    displayableVal = func.reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, groupBy_realColumnName, dataSourceDescription);
                 }
                 finalizedButNotCoalesced_groupedResults.push({
                     value: el.value,
