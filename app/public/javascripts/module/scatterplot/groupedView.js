@@ -262,7 +262,7 @@ scatterplot.view.grouped.prototype.showTooltip = function(bubble, data) {
                 '<div>X: ' + xInterval + ' ' + chart._xLabel.replace(new RegExp('_', 'g'), ' ') + '</div>' +
                 '<div>Y: ' + yInterval + ' ' + chart._yLabel.replace(new RegExp('_', 'g'), ' ') + '</div>' +
             '</div>' +
-            '<div class="scatterplot-tooltip-content">' + data.density + ' Characters</div>' +
+            '<div class="scatterplot-tooltip-content">' + data.density + ' Records</div>' +
         '</div>')
         .setPosition('top')
         .setOffset(chart._radius / 2)
