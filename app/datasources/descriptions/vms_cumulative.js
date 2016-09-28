@@ -9,7 +9,7 @@ exports.Descriptions =
         {
             filename: "VMS_Cumulative_v2.csv",
             fileEncoding: "utf8", // the default
-            uid: "vms_survey",
+            uid: "vms_survey", 
             importRevision: 2,
             format: import_datatypes.DataSource_formats.CSV,
             title: "Visitor Motivation Survey",
@@ -122,7 +122,9 @@ exports.Descriptions =
                 xAxisField: 'Pageviews',
                 yAxisField: 'Sessions'
             },
-            ///////////
+
+            fe_scatterplot_tooltip_term: "Visitor Records",
+            ////////////
 
             fe_timeline_defaultSortByColumnName_humanReadable: "Date",
             fe_lineGraph_defaultGroupByColumnName_humanReadable: "Date",
@@ -151,6 +153,5 @@ exports.Descriptions =
             fe_lineGraph_mapping_dataSource_fields: {
                 Year: "Date"
             }
-
         }
     ];

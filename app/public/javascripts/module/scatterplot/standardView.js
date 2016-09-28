@@ -189,7 +189,8 @@ scatterplot.view.standard.prototype.showTooltip = function(bubble, data) {
      * If there is more than one character include density information.
      */
     if (data.density > 1) {
-        content += '<div>' + data.density + ' Records</div>';
+        // If data description specifies tooltip terminology it will be displayed, otherwise it will default to  'Records'
+        content += '<div>' + data.density + ' ' + (chart._metaData.fe_scatterplot_tooltip_term ? chart._metaData.fe_scatterplot_tooltip_term : 'Records') + ' </div>';  
     }
     /*
      * Append common information.
