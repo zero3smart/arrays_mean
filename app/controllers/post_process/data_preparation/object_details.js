@@ -108,7 +108,7 @@ module.exports.BindData = function (source_pKey, rowObject_id, callback) {
         for (var i = 0; i < rowParams_keys_length; i++) {
             var key = rowParams_keys[i];
             var originalVal = rowParams[key];
-            var displayableVal = func.reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, key, dataSourceDescription);
+            var displayableVal = func.reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
             rowParams[key] = displayableVal;
         }
         //

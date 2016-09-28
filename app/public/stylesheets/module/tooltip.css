@@ -156,6 +156,7 @@ div.arrays-co-tooltip .scatterplot-tooltip-content {
 div.arrays-co-tooltip.xaxis-highlight {
 	cursor: pointer;
 	border-radius: 0;
+	text-align: center;
 }
 
 div.arrays-co-tooltip.xaxis-highlight .default-tooltip-content {

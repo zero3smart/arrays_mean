@@ -1,8 +1,8 @@
 /**
  * @constructor
- * @param {Object[]} data, {Object{}} redirectBaseUrl
+ * @param {Object[]} data, {Object{}} options
  */
-linechart.viewport = function(data, _redirectBaseUrl) {
+linechart.viewport = function (data, options) {
     /**
      * Chart data.
      * @private
@@ -12,7 +12,14 @@ linechart.viewport = function(data, _redirectBaseUrl) {
     /*
      * Url information to redirect when clicking tick on the x-axis
      */
-    this._redirectBaseUrl = redirectBaseUrl;
+    this._options = {};
+    if (options) {
+        if (options.redirectBaseUrl)
+            this._options.redirectBaseUrl = options.redirectBaseUrl;
+        if (options.outputInFormat)
+            this._options.outputInFormat = options.outputInFormat;
+    }
+
     /**
      * Data set dates domain.
      * @private
@@ -107,14 +114,14 @@ linechart.viewport = function(data, _redirectBaseUrl) {
      * @private
      * @member {Function}
      */
-    this._bisectDate = function(a, x) {
+    this._bisectDate = function (a, x) {
         lo = 0;
         hi = a.length;
         while (lo < hi) {
             var mid = lo + hi >>> 1;
             if (a[mid] < x) lo = mid + 1; else hi = mid;
         }
-        if (lo > 0 && (x - a[lo-1]) < (a[lo] - x)) lo -= 1;
+        if (lo > 0 && (x - a[lo - 1]) < (a[lo] - x)) lo -= 1;
         return lo;
     };
     /**
@@ -124,7 +131,7 @@ linechart.viewport = function(data, _redirectBaseUrl) {
      */
     this._colors = d3.scale.category20().range();
     var self = this;
-    data.forEach(function(el, i) {
+    data.forEach(function (el, i) {
         if (el && el.length > 0 && el[0].color)
             self._colors[i] = el[0].color;
     });
@@ -138,10 +145,10 @@ linechart.viewport = function(data, _redirectBaseUrl) {
      * @member {Function}
      */
     this._lineGenerator = d3.svg.line()
-        .x(function(d) {
-            return self._xScale(d.year);
-        }).y(function(d) {
-            return self._yScale(d.count);
+        .x(function (d) {
+            return self._xScale(d.date);
+        }).y(function (d) {
+            return self._yScale(d.value);
         });
     /**
      * Chart margins.
@@ -149,10 +156,10 @@ linechart.viewport = function(data, _redirectBaseUrl) {
      * @member {Object}
      */
     this._margin = {
-        top : 25,
-        right : 15,
-        bottom : 20,
-        left : 70
+        top: 25,
+        right: 15,
+        bottom: 20,
+        left: 70
     };
     /**
      * Chart tooltip.
@@ -160,12 +167,13 @@ linechart.viewport = function(data, _redirectBaseUrl) {
      * @member {Tooltip}
      */
     this._tooltip = new Tooltip();
+
     /**
      * X-Axis highlight tooltip.
      * @private
      * @member {Tooltip}
      */
-    this._xAxisHighlight = new Tooltip();
+    if (this._options.redirectBaseUrl) this._xAxisHighlight = new Tooltip();
 };
 
 
@@ -178,7 +186,7 @@ linechart.viewport.prototype = Object.create(linechart.base.prototype);
  * @param {String} selector
  * @returns {linechart.viewport}
  */
-linechart.viewport.prototype.render = function(container) {
+linechart.viewport.prototype.render = function (container) {
     /*
      * Stash reference to this object.
      */
@@ -226,7 +234,7 @@ linechart.viewport.prototype.render = function(container) {
      */
     this._lines = this._series.append('path')
         .attr('class', 'line')
-        .style('stroke', function(d, i) {
+        .style('stroke', function (d, i) {
             return self._colors[i];
         });
     /*
@@ -243,14 +251,14 @@ linechart.viewport.prototype.render = function(container) {
         .attr('x', 0)
         .attr('y', 0)
         .style('fill', 'transparent')
-        .on('mouseover', function() {
+        .on('mouseover', function () {
             self._mouseEnterEventHandler();
-        }).on('mouseout', function() {
+        }).on('mouseout', function () {
             self._mouseOutEventHandler();
-        }).on('mousemove', function() {
+        }).on('mousemove', function () {
             self._mouseMoveEventHandler();
-        }).on('click', function() {
-            if (self._redirectBaseUrl) {
+        }).on('click', function () {
+            if (self._options.redirectBaseUrl) {
                 /*
                  * Get mouse coordinate relative to parent element.
                  */
@@ -265,7 +273,8 @@ linechart.viewport.prototype.render = function(container) {
                 var index = self._bisectDate(self._datesDomain, date.getTime());
                 date = new Date(self._datesDomain[index]);
 
-                window.location.href = self._redirectBaseUrl + date.getFullYear();
+                window.location.href = self._options.redirectBaseUrl +
+                    moment(date, moment.ISO_8601).format(this._options.outputInFormat);
             }
         });
     /*
@@ -287,7 +296,7 @@ linechart.viewport.prototype.render = function(container) {
  * @param {String[} labels
  * @returns {linechart.viewport}
  */
-linechart.viewport.prototype.setLabels = function(labels) {
+linechart.viewport.prototype.setLabels = function (labels) {
 
     this._labels = labels;
     return this;
@@ -298,19 +307,22 @@ linechart.viewport.prototype.setLabels = function(labels) {
  * Viewport mouse enter event handler.
  * @private
  */
-linechart.viewport.prototype._mouseEnterEventHandler = function() {
+linechart.viewport.prototype._mouseEnterEventHandler = function () {
     /*
      * Append tooltip to the document body.
      */
     this._tooltip.setOn(this._svg.node())
         .setWidth(335)
-        .setOffset('top', - 10);
+        .setOffset('top', -10);
+
     /*
      * Append x-axis highlight to the document body.
      */
-    this._xAxisHighlight.setOn(this._svg.node(), 'xaxis-highlight')
-        .setWidth(40)
-        .setOffset('top', - this._innerHeight - 30);
+    if (this._options.redirectBaseUrl)
+        this._xAxisHighlight.setOn(this._svg.node(), 'xaxis-highlight')
+            .setWidth(60)
+            .setOffset('top', -this._innerHeight - 30);
+
     /*
      * Show line pointer.
      */
@@ -322,7 +334,7 @@ linechart.viewport.prototype._mouseEnterEventHandler = function() {
  * Viewport mouse out event handler.
  * @private
  */
-linechart.viewport.prototype._mouseOutEventHandler = function() {
+linechart.viewport.prototype._mouseOutEventHandler = function () {
     /*
      * Hide tooltip.
      */
@@ -330,7 +342,7 @@ linechart.viewport.prototype._mouseOutEventHandler = function() {
     /*
      * Hide x-axis highlight.
      */
-    this._xAxisHighlight.hide();
+    if (this._options.redirectBaseUrl) this._xAxisHighlight.hide();
     /*
      * Remove all circles from the series lines.
      */
@@ -347,7 +359,7 @@ linechart.viewport.prototype._mouseOutEventHandler = function() {
  * Viewport mouse move event handler.
  * @private
  */
-linechart.viewport.prototype._mouseMoveEventHandler = function() {
+linechart.viewport.prototype._mouseMoveEventHandler = function () {
     /*
      * Stash reference to this object.
      */
@@ -368,15 +380,15 @@ linechart.viewport.prototype._mouseMoveEventHandler = function() {
     /*
      * Create series current values list.
      */
-    var tooltipData = this._data.reduce(function(values, dataSet) {
+    var tooltipData = this._data.reduce(function (values, dataSet) {
         /*
-         * Push count into summary array, if any or zero otherwise.
+         * Push value into summary array, if any or zero otherwise.
          */
-        var dataPoint = _.find(dataSet, ['year', date]);
+        var dataPoint = _.find(dataSet, ['date', date]);
         if (dataPoint) {
             values.push(dataPoint);
         } else {
-            values.push({ count : 0 });
+            values.push({value: 0});
         }
 
         return values;
@@ -385,16 +397,16 @@ linechart.viewport.prototype._mouseMoveEventHandler = function() {
      * Change tooltip position.
      */
     if (x < this._innerWidth / 2) {
-      this._tooltip.setPosition('right')
-          .setOffset({
-              left : 335 + this._margin.right + 10,
-              right : 0
-          });
+        this._tooltip.setPosition('right')
+            .setOffset({
+                left: 335 + this._margin.right + 10,
+                right: 0
+            });
     } else {
         this._tooltip.setPosition('left')
             .setOffset({
-                right : 335 + this._margin.left + 10,
-                left : 0
+                right: 335 + this._margin.left + 10,
+                left: 0
             });
     }
     /*
@@ -406,17 +418,18 @@ linechart.viewport.prototype._mouseMoveEventHandler = function() {
     /*
      * Move x-axis highlight
      */
-    this._xAxisHighlight.setPosition('left')
-        .setOffset({
-            right: this._xScale(date) + this._margin.left + 20,
-            left: 0
-        });
+    if (this._options.redirectBaseUrl)
+        this._xAxisHighlight.setPosition('left')
+            .setOffset({
+                right: this._xScale(date) + this._margin.left + 30,
+                left: 0
+            });
     /*
      * Update circles.
      */
     var circles = this._canvas.selectAll('circle.data-point')
-        .data(tooltipData, function(d) {
-            return d.label + d.year;
+        .data(tooltipData, function (d) {
+            return d.category + d.date;
         });
     /*
      * Remove old circles.
@@ -428,42 +441,43 @@ linechart.viewport.prototype._mouseMoveEventHandler = function() {
     circles.enter()
         .append('circle')
         .attr('class', 'data-point')
-        .attr('r', function(d) {
-            return d.count ? 5 : 0;
+        .attr('r', function (d) {
+            return d.value ? 5 : 0;
         }).attr('cx', function (d) {
-            return d.year ? self._xScale(d.year) : 0;
-        }).attr('cy', function (d) {
-            return d.count ? self._yScale(d.count) : 0;
-        }).style('fill', function(d, i) {
-            return self._colors[i];
-        });
+        return d.date ? self._xScale(d.date) : 0;
+    }).attr('cy', function (d) {
+        return d.value ? self._yScale(d.value) : 0;
+    }).style('fill', function (d, i) {
+        return self._colors[i];
+    });
     /*
      * Update tooltip content.
      */
     this._tooltip.setContent(
-        '<div class="default-tooltip-content">' +
+            '<div class="default-tooltip-content">' +
             '<ul class="line-graph-list">' +
-            tooltipData.reduce(function(html, d, i) {
+            tooltipData.reduce(function (html, d, i) {
                 return html +=
-                '<li class="legend-list-item">' +
+                    '<li class="legend-list-item">' +
                     '<div class="line-graph-item-container">' +
-                        '<span style="background-color: ' + self._colors[i] + ';" class="item-marker"></span>' +
-                        '<span>' + self._labels[i] + '</span><span style="float:right">' + d.count + '</span>' +
+                    '<span style="background-color: ' + self._colors[i] + ';" class="item-marker"></span>' +
+                    '<span>' + self._labels[i] + '</span><span style="float:right">' + d.value + '</span>' +
                     '</div>' +
-                '</li>';
+                    '</li>';
             }, '') +
             '</ul>' +
-        '</div>')
+            '</div>')
         .show();
 
     /*
      * Update tooltip content.
      */
-    this._xAxisHighlight.setContent(
-            '<div class="default-tooltip-content">' +
-            date.getFullYear() +
-            '</div>')
-        .show();
+    if (this._options.redirectBaseUrl)
+        this._xAxisHighlight.setContent(
+                '<div class="default-tooltip-content">' +
+                moment(date, moment.ISO_8601).format(this._options.outputInFormat) +
+                '</div>')
+            .show();
 };
 
 
@@ -472,7 +486,7 @@ linechart.viewport.prototype._mouseMoveEventHandler = function() {
  * @public
  * @returns {linechart.viewport}
  */
-linechart.viewport.prototype.resize = function() {
+linechart.viewport.prototype.resize = function () {
     /*
      * Get container dimensions.
      */
@@ -510,7 +524,7 @@ linechart.viewport.prototype.resize = function() {
     /*
      * Update grid.
      */
-    this._yAxis.tickSize(- this._innerWidth, 0);
+    this._yAxis.tickSize(-this._innerWidth, 0);
     /*
      * Move x axis corresponding with chart height.
      */
@@ -520,13 +534,13 @@ linechart.viewport.prototype.resize = function() {
 };
 
 
-linechart.viewport.prototype._getDatesDomain = function(data) {
+linechart.viewport.prototype._getDatesDomain = function (data) {
 
-    return _.uniq(data.reduce(function(dates, dataSet) {
-        return dates.concat(dataSet.map(function(d) {
-            return d.year.getTime();
+    return _.uniq(data.reduce(function (dates, dataSet) {
+        return dates.concat(dataSet.map(function (d) {
+            return d.date.getTime();
         }));
-    }, [])).sort(function(a, b) {
+    }, [])).sort(function (a, b) {
         return a - b;
     });
 };
@@ -538,7 +552,7 @@ linechart.viewport.prototype._getDatesDomain = function(data) {
  * @param {Object[]} [data]
  * @returns {linechart.chart}
  */
-linechart.viewport.prototype.update = function(data) {
+linechart.viewport.prototype.update = function (data) {
     /*
      * Use current data if not provided.
      */
@@ -572,7 +586,7 @@ linechart.viewport.prototype.update = function(data) {
      * Evaluate amount of required ticks to display only years.
      */
     var datesDomainLength = this._datesDomain.length;
-    var xScaleTicksAmount = Math.max(this._innerWidth/50, 2); // this._xScale.ticks().length;
+    var xScaleTicksAmount = Math.max(this._innerWidth / 80, 2); // this._xScale.ticks().length;
     var ticksAmount = Math.min(datesDomainLength, xScaleTicksAmount);
     /*
      * Update chart axes.

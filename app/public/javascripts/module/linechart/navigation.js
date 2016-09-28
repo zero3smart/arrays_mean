@@ -112,9 +112,9 @@ linechart.navigation = function(data, viewport) {
      */
     this._lineGenerator = d3.svg.line()
         .x(function(d) {
-            return self._xScale(d.year);
+            return self._xScale(d.date);
         }).y(function(d) {
-            return self._yScale(d.count);
+            return self._yScale(d.value);
         });
     /**
      * X axis height.
@@ -179,7 +179,7 @@ linechart.navigation.prototype._brushEventHandler = function() {
      */
     var data = this._data.map(function(series) {
         return series.filter(function(d) {
-            if (d.year >= min && d.year <= max) {
+            if (d.date >= min && d.date <= max) {
                 return true;
             }
         });
@@ -461,7 +461,7 @@ linechart.navigation.prototype.update = function(data) {
 linechart.navigation.prototype._getLablesList = function(data) {
 
     return data.reduce(function(list, dataSet) {
-        list.push(dataSet[0].label);
+        list.push(dataSet[0].category);
         return list;
     }, []);
 };

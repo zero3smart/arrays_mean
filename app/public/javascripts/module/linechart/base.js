@@ -19,7 +19,7 @@ linechart.base.prototype._getXDomain = function(data) {
 
     return d3.extent(data.reduce(function(extent, dataSet) {
         return extent.concat(dataSet.map(function(d) {
-            return d.year;
+            return d.date;
         }));
     }, []));
 };
@@ -36,7 +36,7 @@ linechart.base.prototype._getYDomain = function(data) {
 
     return [0, data.reduce(function(maxValue, dataSet) {
         return Math.max(maxValue, dataSet.length ? d3.max(dataSet.map(function(d) {
-            return d.count;
+            return d.value;
         })) : 0);
     }, 0)];
 };

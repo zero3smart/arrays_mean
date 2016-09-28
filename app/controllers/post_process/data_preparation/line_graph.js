@@ -48,8 +48,20 @@ router.BindData = function (urlQuery, callback) {
     //
     var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
     var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultGroupByColumnName_humanReadable;
+    var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
+        dataSourceDescription);
+    var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+    var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
+    raw_rowObjects_coercionSchema[groupBy_realColumnName].do == import_datatypes.Coercion_ops.ToDate);
+    var groupBy_outputInFormat = '';
+    if (dataSourceDescription.fe_lineGraph_outputInFormat && dataSourceDescription.fe_lineGraph_outputInFormat[groupBy_realColumnName] && dataSourceDescription.fe_lineGraph_outputInFormat[groupBy_realColumnName].format) {
+        groupBy_outputInFormat = dataSourceDescription.fe_lineGraph_outputInFormat[groupBy_realColumnName].format;
+    } else if (dataSourceDescription.fe_outputInFormat && dataSourceDescription.fe_outputInFormat[groupBy_realColumnName] &&
+        dataSourceDescription.fe_outputInFormat[groupBy_realColumnName].format) {
+        groupBy_outputInFormat = dataSourceDescription.fe_outputInFormat[groupBy_realColumnName].format;
+    }
     //
-    var keywordGroupBy = dataSourceDescription.fe_lineGraph_keywordGroupBy;
+    var stackBy = dataSourceDescription.fe_lineGraph_stackByColumnName_humanReadable;
     //
     var routePath_base = "/array/" + source_pKey + "/line-graph";
     var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
@@ -63,9 +75,6 @@ router.BindData = function (urlQuery, callback) {
     var searchQ = urlQuery.searchQ;
     var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
         && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
-
-    var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
-        dataSourceDescription);
 
     //
     // DataSource Relationship
@@ -97,7 +106,6 @@ router.BindData = function (urlQuery, callback) {
         defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
 
     // Aggregate By Available
-    var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     var aggregateBy_humanReadable_available = undefined;
     for (var colName in raw_rowObjects_coercionSchema) {
         var colValue = raw_rowObjects_coercionSchema[colName];
@@ -125,7 +133,7 @@ router.BindData = function (urlQuery, callback) {
     var aggregateBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy ? aggregateBy : defaultAggregateByColumnName_humanReadable, dataSourceDescription);
 
     //
-    var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResultsByKeyword = {};
+    var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, stackedResultsByGroup = {};
 
     var batch = new Batch();
     batch.concurrency(1);
@@ -193,18 +201,18 @@ router.BindData = function (urlQuery, callback) {
 
         if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
 
-            if (typeof keywordGroupBy !== 'undefined' && keywordGroupBy !== null && keywordGroupBy !== "") {
-                var keywordGroupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(keywordGroupBy, dataSourceDescription);
+            if (typeof stackBy !== 'undefined' && stackBy !== null && stackBy !== "") {
+                var stackBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(stackBy, dataSourceDescription);
 
                 aggregationOperators = aggregationOperators.concat(
                     [
                         {$unwind: "$" + "rowParams." + groupBy_realColumnName},
-                        {$unwind: "$" + "rowParams." + keywordGroupBy_realColumnName},
+                        {$unwind: "$" + "rowParams." + stackBy_realColumnName},
                         {
                             $group: {
                                 _id: {
                                     groupBy: "$" + "rowParams." + groupBy_realColumnName,
-                                    keywordBy: "$" + "rowParams." + keywordGroupBy_realColumnName
+                                    stackBy: "$" + "rowParams." + stackBy_realColumnName
                                 },
                                 value: {$sum: "$" + "rowParams." + aggregateBy_realColumnName}
                             }
@@ -213,7 +221,7 @@ router.BindData = function (urlQuery, callback) {
                             $project: {
                                 _id: 0,
                                 label: "$_id.groupBy",
-                                keyword: "$_id.keywordBy",
+                                stack: "$_id.stackBy",
                                 value: 1
                             }
                         },
@@ -256,18 +264,18 @@ router.BindData = function (urlQuery, callback) {
         } else {
             // Count by number of records
 
-            if (typeof keywordGroupBy !== 'undefined' && keywordGroupBy !== null && keywordGroupBy !== "") {
-                var keywordGroupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(keywordGroupBy, dataSourceDescription);
+            if (typeof stackBy !== 'undefined' && stackBy !== null && stackBy !== "") {
+                var stackBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(stackBy, dataSourceDescription);
 
                 aggregationOperators = aggregationOperators.concat(
                     [
                         {$unwind: "$" + "rowParams." + groupBy_realColumnName},
-                        {$unwind: "$" + "rowParams." + keywordGroupBy_realColumnName},
+                        {$unwind: "$" + "rowParams." + stackBy_realColumnName},
                         {
                             $group: {
                                 _id: {
                                     groupBy: "$" + "rowParams." + groupBy_realColumnName,
-                                    keywordBy: "$" + "rowParams." + keywordGroupBy_realColumnName
+                                    stackBy: "$" + "rowParams." + stackBy_realColumnName
                                 },
                                 value: {$sum: 1}
                             }
@@ -276,7 +284,7 @@ router.BindData = function (urlQuery, callback) {
                             $project: {
                                 _id: 0,
                                 label: "$_id.groupBy",
-                                keyword: "$_id.keywordBy",
+                                stack: "$_id.stackBy",
                                 value: 1
                             }
                         },
@@ -323,16 +331,16 @@ router.BindData = function (urlQuery, callback) {
 
             var _multigroupedResults_object = {};
             _multigroupedResults.forEach(function (el) {
-                var keyword = el.keyword && el.keyword != '' ? el.keyword : 'default';
-                if (_multigroupedResults_object[keyword] === undefined) {
-                    _multigroupedResults_object[keyword] = [];
+                var stack = el.stack && el.stack != '' ? el.stack : 'default';
+                if (_multigroupedResults_object[stack] === undefined) {
+                    _multigroupedResults_object[stack] = [];
                 }
-                _multigroupedResults_object[keyword].push(el);
+                _multigroupedResults_object[stack].push(el);
             });
 
-            for (var keyword in _multigroupedResults_object) {
-                if (_multigroupedResults_object.hasOwnProperty(keyword)) {
-                    var _groupedResults = _multigroupedResults_object[keyword];
+            for (var stack in _multigroupedResults_object) {
+                if (_multigroupedResults_object.hasOwnProperty(stack)) {
+                    var _groupedResults = _multigroupedResults_object[stack];
 
                     var finalizedButNotCoalesced_groupedResults = [];
                     _groupedResults.forEach(function (el, i, arr) {
@@ -359,7 +367,7 @@ router.BindData = function (urlQuery, callback) {
                         } else if (originalVal === "") {
                             displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
                         } else {
-                            displayableVal = func.reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, groupBy_realColumnName, dataSourceDescription);
+                            displayableVal = groupBy_isDate ? func.convertDateToBeRecognizable(originalVal, groupBy_realColumnName, dataSourceDescription) : originalVal;
                         }
                         finalizedButNotCoalesced_groupedResults.push({
                             value: el.value,
@@ -401,15 +409,15 @@ router.BindData = function (urlQuery, callback) {
                             reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
                         }
                         groupedResults.push({
-                            count: summedValue,
-                            year: reconstitutedDisplayableTitle
+                            value: summedValue,
+                            date: reconstitutedDisplayableTitle
                         });
                     });
 
-                    if (keywordGroupBy)
-                        groupedResultsByKeyword[keyword] = groupedResults;
+                    if (stackBy)
+                        stackedResultsByGroup[stack] = groupedResults;
                     else
-                        groupedResultsByKeyword = groupedResults;
+                        stackedResultsByGroup = groupedResults;
                 }
             }
 
@@ -436,9 +444,11 @@ router.BindData = function (urlQuery, callback) {
             view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
             view_descriptions: dataSourceDescription.fe_view_descriptions ? dataSourceDescription.fe_view_descriptions : {},
             //
-            groupedResultsByKeyword: groupedResultsByKeyword,
             groupBy: groupBy,
-            lineColors: dataSourceDescription.fe_lineGraph_keywordLineColors ? dataSourceDescription.fe_lineGraph_keywordLineColors : {},
+            groupBy_isDate: groupBy_isDate,
+            stackedResultsByGroup: stackedResultsByGroup,
+            lineColors: dataSourceDescription.fe_lineGraph_stackedLineColors ? dataSourceDescription.fe_lineGraph_stackedLineColors : {},
+            groupBy_outputInFormat: groupBy_outputInFormat,
             //
             filterObj: filterObj,
             isFilterActive: isFilterActive,

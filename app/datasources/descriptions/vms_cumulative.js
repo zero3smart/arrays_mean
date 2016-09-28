@@ -9,12 +9,13 @@ exports.Descriptions =
         {
             filename: "VMS_Cumulative.csv",
             fileEncoding: "utf8", // the default
+            uid: "vms survey",
             importRevision: 2,
             format: import_datatypes.DataSource_formats.CSV,
             title: "Visitor Motivation Survey",
             brandColor: "#03A678",
-            urls: [ "--" ],
-            description: "This data describes the motivations behind five different categories of users who have visisted museum websites.  Currently, five different museums are represented in this data.",
+            urls: ["--"],
+            description: "This data describes the motivations behind five different categories of users who have visisted museum websites.  Currently, this five different museums are represented in this data.",
             fe_listed: true,
             fe_displayTitleOverrides: {}, // this is needed to not through an error
             //
@@ -22,19 +23,17 @@ exports.Descriptions =
             fn_new_rowPrimaryKeyFromRowObject: function (rowObject, rowIndex) {
                 return "" + rowIndex + "-" + rowObject["id"]
             },
-            raw_rowObjects_coercionScheme:
-            {
-                'Date': {  //Use with format: "MM/DD/YYYY"
-                // 'Date': {
+            raw_rowObjects_coercionScheme: {
+                'Date': {
                     do: import_datatypes.Coercion_ops.ToDate,
                     opts: {
-                        // format: "MM/DD/YY" //LineGraph: results in a tick for every single day on x-axis
-                        // format: 'YYYY'  //LineGraph: results in only 2 ticks on x-axis
-                        format: 'YYYYMMDD'  //LineGraph: results in blank x-axis
+                        format: "YYYYMMDD" // e.g. "2009-03-21"
                     }
+                },
+                'Pageviews': {
+                    do: import_datatypes.Coercion_ops.ToInteger
                 }
             },
-
             //
             //
             fe_designatedFields: {
@@ -47,7 +46,7 @@ exports.Descriptions =
                 scatterplot: true,
                 timeline: false,
                 wordCloud: false,
-                lineGraph: false
+                lineGraph: true
             },
             fe_default_view: 'chart',
             fe_excludeFields: [
@@ -70,18 +69,16 @@ exports.Descriptions =
                 _all: ["", null]
             },
             fe_chart_defaultGroupByColumnName_humanReadable: "Motivation",
-            fe_chart_fieldsNotAvailableAsGroupByColumns:
-            [
-                    "Minute Index",
-                    "Date",
-                    "Date2",  //Remove later after finding solution to the date format issue
-                    "Hour",
-                    "Minute",
-                    "Sessions",
-                    "Session Duration",
-                    "Pageviews",
-                    "Pages Session",
-                    "Landing Page",
+            fe_chart_fieldsNotAvailableAsGroupByColumns: [
+                "Minute_Index",
+                "Date",
+                "Hour",
+                "Minute",
+                "Sessions",
+                "Session Duration",
+                "Pageviews",
+                "Pages Session",
+                "Landing Page",
             ],
             fe_chart_valuesToExcludeByOriginalKey: {
                 _all: ["", null, "NULL", "(not specified)", "NA"],
@@ -90,56 +87,36 @@ exports.Descriptions =
                 'Object Title': 'Motivation'
             },
             fe_scatterplot_fieldsNotAvailable: [
-                "Institution",
-                "Date",
-                "Date2",  //delete after reworking CSV
-                "Hour",
-                "Minute",
-                "Motivation",
-                "Session Duration",
-                "Pages Per Session",
-                "Landing Page",
-                "User Type", 
-                "Traffic Type",
-                "Operating System",
+                "Pageviews",
                 "Minute Index",
-                "City",
-                "Region",
-                "Country"
             ],
             fe_scatterplot_defaults: {
-                xAxisField: 'Pageviews',
-                yAxisField: 'Sessions'
+                xAxisField: 'Motivation',
+                yAxisField: 'Pageviews'
             },
-            ///////////
-
-            fe_timeline_defaultSortByColumnName_humanReadable: "Date",
             fe_lineGraph_defaultGroupByColumnName_humanReadable: "Date",
-            fe_lineGraph_keywordGroupBy: "Motivation",
-            fe_lineGraph_fieldsNotAvailableAsGroupByColumns:
-                [
-                    "Institution",
-                    "Motivation",
-                    "Sessions",
-                    "Traffic Type",
-                    "Minute Index",
-                    "Hour",
-                    "Minute",
-                    "Landing Page",
-                ],
+            fe_lineGraph_fieldsNotAvailableAsGroupByColumns: [
+                "Minute Index",
+                "Motivation",
+                "Hour",
+                "Minute",
+                "Sessions",
+                "Session Duration",
+                "Pageviews",
+                "Pages Session",
+                "Landing Page",
+            ],
+            fe_lineGraph_stackByColumnName_humanReadable: "Motivation",
             fe_lineGraph_defaultAggregateByColumnName_humanReadable: "Pageviews",
             fe_lineGraph_aggregateByColumnName_numberOfRecords_notAvailable: true,
-            fe_lineGraph_keywordLineColors: {
-                'Explorer': '#33B1B1',
-                'Facilitator': '#9533F8',
-                'Professional': '#FEB600',
-                'Recharger': '#99D8D8',
-                'Seeker': '#4D8DFF',
-            },
-            // fe_lineGraph_mapping_dataSource_pKey: "vms_survey-r2",
+            fe_lineGraph_mapping_dataSource_pKey: 'isb_library-r1',
             fe_lineGraph_mapping_dataSource_fields: {
-                Year: "Date"
+                Date: 'Date'
+            },
+            fe_lineGraph_outputInFormat: {
+                Date: {
+                    format: "MMM DD"
+                }
             }
-
         }
     ];

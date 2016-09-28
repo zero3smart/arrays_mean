@@ -116,6 +116,11 @@ exports.Descriptions =
                 "Publication Title",
                 "Journal Abbreviation"
             ],
+            fe_outputInFormat: {
+                "Publication Year": {
+                    format: "YYYY"
+                }
+            },
             fe_displayTitleOverrides: { // these are to be tuples - the values must be unique as well
                 // "Author": "Author",
             },
