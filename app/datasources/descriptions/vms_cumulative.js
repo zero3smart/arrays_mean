@@ -9,13 +9,13 @@ exports.Descriptions =
         {
             filename: "VMS_Cumulative.csv",
             fileEncoding: "utf8", // the default
-            uid: "vms survey",
+            uid: "vms_survey",
             importRevision: 2,
             format: import_datatypes.DataSource_formats.CSV,
             title: "Visitor Motivation Survey",
             brandColor: "#03A678",
-            urls: ["--"],
-            description: "This data describes the motivations behind five different categories of users who have visisted museum websites.  Currently, this five different museums are represented in this data.",
+            urls: [ "--" ],
+            description: "This data describes the motivations behind five different categories of users who have visisted museum websites.  Currently, five different museums are represented in this data.",
             fe_listed: true,
             fe_displayTitleOverrides: {}, // this is needed to not through an error
             //
@@ -34,6 +34,7 @@ exports.Descriptions =
                     do: import_datatypes.Coercion_ops.ToInteger
                 }
             },
+
             //
             //
             fe_designatedFields: {
@@ -87,13 +88,32 @@ exports.Descriptions =
                 'Object Title': 'Motivation'
             },
             fe_scatterplot_fieldsNotAvailable: [
-                "Pageviews",
+                "Institution",
+                "Date",
+                "Date2",  //delete after reworking CSV
+                "Hour",
+                "Minute",
+                "Motivation",
+                "Session Duration",
+                "Pages Per Session",
+                "Landing Page",
+                "User Type", 
+                "Traffic Type",
+                "Operating System",
                 "Minute Index",
+                "City",
+                "Region",
+                "Country"
             ],
             fe_scatterplot_defaults: {
-                xAxisField: 'Motivation',
-                yAxisField: 'Pageviews'
+                xAxisField: 'Pageviews',
+                yAxisField: 'Sessions'
             },
+
+            fe_scatterplot_tooltip_term: "Visitor Records",
+            ////////////
+
+            fe_timeline_defaultSortByColumnName_humanReadable: "Date",
             fe_lineGraph_defaultGroupByColumnName_humanReadable: "Date",
             fe_lineGraph_fieldsNotAvailableAsGroupByColumns: [
                 "Minute Index",
@@ -109,14 +129,18 @@ exports.Descriptions =
             fe_lineGraph_stackByColumnName_humanReadable: "Motivation",
             fe_lineGraph_defaultAggregateByColumnName_humanReadable: "Pageviews",
             fe_lineGraph_aggregateByColumnName_numberOfRecords_notAvailable: true,
-            fe_lineGraph_mapping_dataSource_pKey: 'isb_library-r1',
-            fe_lineGraph_mapping_dataSource_fields: {
-                Date: 'Date'
+            fe_lineGraph_keywordLineColors: {
+                'Explorer': '#33B1B1',
+                'Facilitator': '#9533F8',
+                'Professional': '#FEB600',
+                'Recharger': '#99D8D8',
+                'Seeker': '#4D8DFF',
             },
             fe_lineGraph_outputInFormat: {
                 Date: {
                     format: "MMM DD"
                 }
             }
+
         }
     ];

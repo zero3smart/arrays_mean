@@ -173,7 +173,7 @@ linechart.viewport = function (data, options) {
      * @private
      * @member {Tooltip}
      */
-    if (this._options.redirectBaseUrl) this._xAxisHighlight = new Tooltip();
+    this._xAxisHighlight = new Tooltip();
 };
 
 
@@ -318,10 +318,9 @@ linechart.viewport.prototype._mouseEnterEventHandler = function () {
     /*
      * Append x-axis highlight to the document body.
      */
-    if (this._options.redirectBaseUrl)
-        this._xAxisHighlight.setOn(this._svg.node(), 'xaxis-highlight')
-            .setWidth(60)
-            .setOffset('top', -this._innerHeight - 30);
+    this._xAxisHighlight.setOn(this._svg.node(), 'xaxis-highlight')
+        .setWidth(60)
+        .setOffset('top', -this._innerHeight - 30);
 
     /*
      * Show line pointer.
@@ -342,7 +341,7 @@ linechart.viewport.prototype._mouseOutEventHandler = function () {
     /*
      * Hide x-axis highlight.
      */
-    if (this._options.redirectBaseUrl) this._xAxisHighlight.hide();
+    this._xAxisHighlight.hide();
     /*
      * Remove all circles from the series lines.
      */
@@ -418,12 +417,11 @@ linechart.viewport.prototype._mouseMoveEventHandler = function () {
     /*
      * Move x-axis highlight
      */
-    if (this._options.redirectBaseUrl)
-        this._xAxisHighlight.setPosition('left')
-            .setOffset({
-                right: this._xScale(date) + this._margin.left + 30,
-                left: 0
-            });
+    this._xAxisHighlight.setPosition('left')
+        .setOffset({
+            right: this._xScale(date) + this._margin.left + 30,
+            left: 0
+        });
     /*
      * Update circles.
      */
@@ -472,12 +470,11 @@ linechart.viewport.prototype._mouseMoveEventHandler = function () {
     /*
      * Update tooltip content.
      */
-    if (this._options.redirectBaseUrl)
-        this._xAxisHighlight.setContent(
-                '<div class="default-tooltip-content">' +
-                moment(date, moment.ISO_8601).format(this._options.outputInFormat) +
-                '</div>')
-            .show();
+    this._xAxisHighlight.setContent(
+            '<div class="default-tooltip-content">' +
+            moment(date, moment.ISO_8601).format(this._options.outputInFormat) +
+            '</div>')
+        .show();
 };
 
 
