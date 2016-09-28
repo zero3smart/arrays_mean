@@ -7,7 +7,7 @@ var import_datatypes = require('../utils/import_datatypes');
 exports.Descriptions =
     [
         {
-            filename: "VMS_Cumulative_v2.csv",
+            filename: "VMS_Cumulative.csv",
             fileEncoding: "utf8", // the default
             importRevision: 2,
             format: import_datatypes.DataSource_formats.CSV,
@@ -136,7 +136,7 @@ exports.Descriptions =
                 'Recharger': '#99D8D8',
                 'Seeker': '#4D8DFF',
             },
-            fe_lineGraph_mapping_dataSource_pKey: "vms_survey-r2",
+            // fe_lineGraph_mapping_dataSource_pKey: "vms_survey-r2",
             fe_lineGraph_mapping_dataSource_fields: {
                 Year: "Date"
             }
