@@ -70,7 +70,7 @@ var _mountRoutes_endPoints = function (app) {
 
 module.exports.MountRoutes = function (app) {
     _mountRoutes_monitoring(app);
-    _mountRoutes_ensureWWW(app);
+    //_mountRoutes_ensureWWW(app);
     _mountRoutes_endPoints(app);
     _mountRoutes_errorHandling(app);
 };
