@@ -2,7 +2,7 @@
 //
 // NOTE: Run this from arrays-server-js via bin/_*_MVP_DB_seed
 //
-var dotenv_path = __dirname + "/../../../../config/env/.env." + process.env.NODE_ENV;
+var dotenv_path = __dirname + "/../../../../config/env/.env." + (process.env.NODE_ENV ? process.env.NODE_ENV : "development");
 require('dotenv').config({
     path: dotenv_path
 });

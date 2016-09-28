@@ -6,18 +6,15 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var passport = require('passport');
+var dotenv = require('dotenv');
 var fs = require('fs');
 var routes = require('./routes');
 
 var isDev = process.env.NODE_ENV == 'production' ? false : true;
-var dotenv_path = __dirname + "/../config/env/.env." + process.env.NODE_ENV;
-fs.access(dotenv_path, fs.F_OK, function(err) {
-    if (!err) {
-        var dotenv = require('dotenv');
-        dotenv.config({
-            path: dotenv_path
-        });
-    }
+var dotenv_path = __dirname + "/../config/env/.env." + (process.env.NODE_ENV ? process.env.NODE_ENV : "development");
+dotenv.config({
+    path: dotenv_path,
+    silent: true
 });
 
 var strategy = require('./setup-passport');

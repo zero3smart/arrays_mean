@@ -2,7 +2,7 @@ var winston = require('winston');
 var expressWinston = require('express-winston');
 var url = require('url');
 
-var isDev = process.env.NODE_ENV == 'development';
+var isDev = !process.env.NODE_ENV || process.env.NODE_ENV == 'development';
 var __DEBUG_enableEnsureWWWForDev = false; // for debug
 var shouldEnsureWWW = isDev == false || __DEBUG_enableEnsureWWWForDev;
 
