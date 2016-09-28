@@ -803,7 +803,7 @@ module.exports.EnumerateProcessedDataset = function (dataSource_uid,
 //
 var xray = require('x-ray');
 var xray_instance = xray();
-var image_hosting = require('../../lib/image_process/googlecloudstorage-image_hosting');
+//var image_hosting = require('../../lib/image_process/googlecloudstorage-image_hosting');
 
 function _nextLargestImageSrcSetSizeAvailableInParsedRawURLsBySize(rawURLsBySize, afterSize) // -> (String?)
 {
@@ -992,16 +992,9 @@ module.exports.GenerateImageURLFieldsByScraping
                         var destinationFilenameSansExt = doc.srcDocPKey + "__" + doc.pKey + "__" + key;
                         var hostImageCb = function (err, hostedURL) {
                             if (err) {
-                                /* if (err.code == 'ECONNRESET') {
-                                 winston.info("💬  Waiting 3 seconds to restart...");
-                                 setTimeout(function () {
-                                 image_hosting.hostImageLocatedAtRemoteURL(finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, hostImageCb);
-                                 }, 3000);
-                                 } else { */
                                 cb(err);
 
                                 return;
-                                /* } */
                             } else {
                                 proceedToPersistHostedImageURLOrNull_forKey(err, hostedURL, key, function (err) {
                                     cb(err);
