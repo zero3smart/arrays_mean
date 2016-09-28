@@ -189,7 +189,7 @@ scatterplot.view.standard.prototype.showTooltip = function(bubble, data) {
      * If there is more than one character include density information.
      */
     if (data.density > 1) {
-        content += '<div>' + data.density + ' Characters</div>';
+        content += '<div>' + data.density + ' Records</div>';
     }
     /*
      * Append common information.
