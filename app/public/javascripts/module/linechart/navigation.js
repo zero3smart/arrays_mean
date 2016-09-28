@@ -77,13 +77,27 @@ linechart.navigation = function(data, viewport) {
      */
     this._yScale = d3.scale.linear();
     /**
+     * Custom date format in X axis
+     */
+    this._customTimeFormat = d3.time.format.multi([
+        [".%L", function(d) { return d.getMilliseconds(); }],
+        [":%S", function(d) { return d.getSeconds(); }],
+        ["%I:%M", function(d) { return d.getMinutes(); }],
+        ["%I %p", function(d) { return d.getHours(); }],
+        ["%a %d", function(d) { return d.getDay() && d.getDate() != 1; }],
+        ["%b %d", function(d) { return d.getDate() != 1; }],
+        ["%B", function(d) { return d.getMonth(); }],
+        ["'%y", function() { return true; }]
+    ]);
+    /**
      * Chart x axis.
      * @private
      * @member {Function}
      */
     this._xAxis = d3.svg.axis()
         .scale(this._xScale)
-        .orient('bottom');
+        .orient('bottom')
+        .tickFormat(this._customTimeFormat);
     /**
      * Chart x axis container.
      * @private
@@ -439,10 +453,7 @@ linechart.navigation.prototype.update = function(data) {
     var xTicks = this._xScale.ticks(this._xAxis.ticks()[0]);
     var xStep = this._xScale(xTicks[1]) - this._xScale(xTicks[0]);
     this._xAxisContainer.selectAll('text')
-        .attr('x', - xStep / 2)
-        .text(function() {
-            return '\'' + d3.select(this).text().slice(2);
-        });
+        .attr('x', xStep / 2);
 
     if (this._brush.empty()) {
         this._resetBrush();
