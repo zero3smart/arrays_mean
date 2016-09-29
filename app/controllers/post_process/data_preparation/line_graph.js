@@ -418,7 +418,17 @@ router.BindData = function (urlQuery, callback) {
                         stackedResultsByGroup[stack] = groupedResults;
                     else
                         stackedResultsByGroup = groupedResults;
+
+                    /* Make linegraph category colors consistent for different "Aggregate By" settings
+                      The following code alphabetizes the categories which are properties of stackedResultsByGroup */
+                    var alphabetizedStackedResultsByGroup = {};
+                    Object.keys(stackedResultsByGroup).sort().forEach(function(key) {
+                      alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
+                    });
+                    stackedResultsByGroup = alphabetizedStackedResultsByGroup;
+                    /////
                 }
+
             }
 
             done();
