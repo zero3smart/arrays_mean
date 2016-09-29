@@ -116,19 +116,28 @@ exports.Descriptions =
             fe_timeline_defaultSortByColumnName_humanReadable: "Date",
             fe_lineGraph_defaultGroupByColumnName_humanReadable: "Date",
             fe_lineGraph_fieldsNotAvailableAsGroupByColumns: [
-                "Minute Index",
-                "Motivation",
+                "Institution",
+                "Date2",  //delete after reworking CSV
                 "Hour",
                 "Minute",
-                "Sessions",
+                "Motivation",
                 "Session Duration",
-                "Pageviews",
-                "Pages Session",
+                "Pages Per Session",
                 "Landing Page",
+                "User Type", 
+                "Traffic Type",
+                "Operating System",
+                "Minute Index",
+                "City",
+                "Region",
+                "Country",
+                "Sessions", 
+                "Pageviews",
+                "Pages Session"
             ],
             fe_lineGraph_stackByColumnName_humanReadable: "Motivation",
-            fe_lineGraph_defaultAggregateByColumnName_humanReadable: "Pageviews",
-            fe_lineGraph_aggregateByColumnName_numberOfRecords_notAvailable: true,
+            fe_lineGraph_defaultAggregateByColumnName_humanReadable: "Sessions",
+            fe_lineGraph_aggregateByColumnName_numberOfRecords_notAvailable: false,
             fe_lineGraph_keywordLineColors: {
                 'Explorer': '#33B1B1',
                 'Facilitator': '#9533F8',
@@ -140,7 +149,8 @@ exports.Descriptions =
                 Date: {
                     format: "MMM DD"
                 }
-            }
+            },
+            fe_lineGraph_defaultKeywordsColumnName_humanReadable: "Motivation"
 
         }
     ];
