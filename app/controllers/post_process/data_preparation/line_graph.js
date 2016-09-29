@@ -229,7 +229,7 @@ router.BindData = function (urlQuery, callback) {
                             $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
                         },
                         {
-                            $limit: 100 // so the chart can actually handle the number
+                            $limit: 100000 // so the chart can actually handle the number
                         }
                     ]);
 
@@ -256,7 +256,7 @@ router.BindData = function (urlQuery, callback) {
                             $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
                         },
                         {
-                            $limit: 100 // so the chart can actually handle the number
+                            $limit: 100000 // so the chart can actually handle the number
                         }
                     ]);
 
@@ -292,7 +292,7 @@ router.BindData = function (urlQuery, callback) {
                             $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
                         },
                         {
-                            $limit: 100 // so the chart can actually handle the number
+                            $limit: 100000 // so the chart can actually handle the number
                         }
                     ]);
 
@@ -318,7 +318,7 @@ router.BindData = function (urlQuery, callback) {
                             $sort: {value: -1}
                         },
                         {
-                            $limit: 100 // so the chart can actually handle the number
+                            $limit: 100000 // so the chart can actually handle the number
                         }
                     ]);
             }
