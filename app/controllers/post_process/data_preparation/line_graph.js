@@ -227,10 +227,10 @@ router.BindData = function (urlQuery, callback) {
                         },
                         {
                             $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                        },
+                        }/* ,
                         {
                             $limit: 100000 // so the chart can actually handle the number
-                        }
+                        } */
                     ]);
 
             } else {
@@ -254,10 +254,10 @@ router.BindData = function (urlQuery, callback) {
                         },
                         {
                             $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                        },
+                        }/* ,
                         {
                             $limit: 100000 // so the chart can actually handle the number
-                        }
+                        } */
                     ]);
 
             }
