@@ -12,7 +12,6 @@ linechart.chart = function(data, options) {
 
      //for loop added to change all row.date properties to date objects, necessary to show the lines in D3
      for (var i = 0; i < data.length; i += 1) {
-        console.log(data[i].length);
         for (var k = 0; k < data[i].length; k += 1) {
             data[i][k].date = new Date(data[i][k].date);
         }
