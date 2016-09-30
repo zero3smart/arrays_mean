@@ -437,20 +437,14 @@ router.BindData = function (urlQuery, callback) {
             }
 
             graphData = [];
-            <!--  -->
-            // var stackedResultsByGroup = {{ stackedResultsByGroup | dump | safe }};
-            // stackedResultsByGroup = JSON.stringify(stackedResultsByGroup);
-            //JSON.stringify ^^^^
-            // var lineColors = {{ lineColors | dump | safe }};
+
             var lineColors = dataSourceDescription.fe_lineGraph_stackedLineColors ? dataSourceDescription.fe_lineGraph_stackedLineColors : {};
-            // lineColors = JSON.stringify(lineColors);
 
             if (Array.isArray(stackedResultsByGroup)) {
 
                 graphData[0] = stackedResultsByGroup.map(function(row) {
-                    row.category = dataSourceDescription.title // row.category = "{{ arrayTitle }}";
+                    row.category = dataSourceDescription.title
                     row.value = Number(row.value);
-                    // {% if groupBy_isDate %}
                     if (groupBy_isDate) {
                         var offsetTime = new Date(row.date);
                         offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
@@ -505,8 +499,9 @@ router.BindData = function (urlQuery, callback) {
             //
             groupBy: groupBy,
             groupBy_isDate: groupBy_isDate,
-            stackedResultsByGroup: stackedResultsByGroup,
-            lineColors: dataSourceDescription.fe_lineGraph_stackedLineColors ? dataSourceDescription.fe_lineGraph_stackedLineColors : {},
+            // Logic has been moved from template to controller, doesn't need to be exported
+            //stackedResultsByGroup: stackedResultsByGroup,
+            // lineColors: dataSourceDescription.fe_lineGraph_stackedLineColors ? dataSourceDescription.fe_lineGraph_stackedLineColors : {},
             groupBy_outputInFormat: groupBy_outputInFormat,
             //
             filterObj: filterObj,
@@ -534,7 +529,7 @@ router.BindData = function (urlQuery, callback) {
             aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
             defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
             aggregateBy: aggregateBy,
-            // graphData is used by the template's inline script to generate the D3 linechart
+            // graphData contains all the data rows; used by the template to create the linechart
             graphData: graphData 
         };
         callback(err, data);
