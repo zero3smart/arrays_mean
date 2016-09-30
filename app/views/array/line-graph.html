@@ -95,50 +95,8 @@
                             </div><!-- .container-fluid -->
 
                             <script type="text/javascript">
-                                var graphData = [];
-                                <!--  -->
-                                var stackedResultsByGroup = {{ stackedResultsByGroup | dump | safe }};
-                                var lineColors = {{ lineColors | dump | safe }};
-
-                                if (Array.isArray(stackedResultsByGroup)) {
-
-                                    graphData[0] = stackedResultsByGroup.map(function(row) {
-                                        row.category = "{{ arrayTitle }}";
-                                        row.value = Number(row.value);
-                                        {% if groupBy_isDate %}
-                                        var offsetTime = new Date(row.date);
-                                        offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                                        row.date = offsetTime;
-                                        {% else %}
-
-                                        {% endif %}
-
-                                        return row;
-                                    });
-
-                                } else {
-
-                                    for (var category in stackedResultsByGroup) {
-                                        if (stackedResultsByGroup.hasOwnProperty(category)) {
-                                            graphData.push(stackedResultsByGroup[category].map(function(row) {
-                                                row.category = category;
-                                                row.value = Number(row.value);
-                                                {% if groupBy_isDate %}
-                                                var offsetTime = new Date(row.date);
-                                                offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                                                row.date = offsetTime;
-                                                {% else %}
-
-                                                {% endif %}
-                                                if (lineColors && lineColors[category]) row.color = lineColors[category];
-
-                                                return row;
-                                            }));
-                                        }
-                                    }
-
-                                }
-
+                                // var lineColors = {{ lineColors | dump | safe }};
+                                var line;
                                 var filterObj = {{ filterObj | dump | safe }};
                                 var routePath_withoutFilter = '{{ routePath_base | constructedRoutePath(null, {
                                         searchCol: searchCol,
@@ -148,7 +106,7 @@
                                 }) | safe }}';
                                 var routePath_base = '{{ routePath_base }}';
                                 var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
-                                var groupBy_outputInFormat = '{{ groupBy_outputInFormat }}'
+                                var groupBy_outputInFormat = '{{ groupBy_outputInFormat }}';
 
                                 var redirectBaseUrl = undefined;
                                 {% if mapping_source_pKey %}
@@ -209,7 +167,10 @@
     <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
     <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
     <script>
-        var lineChart = new linechart.chart(graphData, options)
-            .render("#linechart");
+        
+        // var options = {{options | dump | safe}};
+        var graphData = {{graphData | dump | safe}};       
+        // var lineChart = new linechart.chart({{graphData | dump | safe}} , options).render("#linechart");
+        var lineChart = new linechart.chart(graphData , options).render("#linechart");
     </script>
 {% endblock %}
