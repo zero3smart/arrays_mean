@@ -1,14 +1,13 @@
-var url = require('url');
 var winston = require('winston');
-var queryString = require('querystring');
-var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 var express = require('express');
+var passport = require('passport');
+var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn('/auth/login');
 var router = express.Router();
 
 var admin_index_controller = require('../controllers/admin/');
 
-router.get('/', function (req, res) {
-    admin_index_controller.BindData(function (err, bindData) {
+router.get('/', ensureLoggedIn, function (req, res) {
+    admin_index_controller.BindData(req, function (err, bindData) {
         if (err) {
             winston.error("❌  Error getting bind data for Admin index: ", err);
             res.status(500).send(err.response || 'Internal Server Error');
