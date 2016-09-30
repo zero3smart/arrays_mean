@@ -12,7 +12,7 @@ router.get('/logout', function (req, res) {
 });
 
 router.get('/callback', passport.authenticate('auth0', {failureRedirect: '/'}), function (req, res) {
-    res.redirect(req.session.returnTo || '/array');
+    res.redirect(req.session.returnTo || '/admin');
 });
 
 module.exports = router;

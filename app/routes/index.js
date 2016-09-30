@@ -61,6 +61,7 @@ var _mountRoutes_endPoints = function (app) {
     // View endpoints
     app.use('/', require('./homepage'));
     app.use('/auth', require('./auth'));
+    app.use('/admin', require('./admin'));
     app.use('/array', require('./array'));
     app.use('/team', require('./team'));
     app.use('/s', require('./shared_pages'));
