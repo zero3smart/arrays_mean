@@ -135,6 +135,11 @@ router.BindData = function (urlQuery, callback) {
     //
     var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, stackedResultsByGroup = {};
 
+    ///
+    // graphData is exported and used by template for lineChart generation
+    var graphData;
+
+
     var batch = new Batch();
     batch.concurrency(1);
 
@@ -431,6 +436,50 @@ router.BindData = function (urlQuery, callback) {
 
             }
 
+            graphData = [];
+            <!--  -->
+            // var stackedResultsByGroup = {{ stackedResultsByGroup | dump | safe }};
+            // stackedResultsByGroup = JSON.stringify(stackedResultsByGroup);
+            //JSON.stringify ^^^^
+            // var lineColors = {{ lineColors | dump | safe }};
+            var lineColors = dataSourceDescription.fe_lineGraph_stackedLineColors ? dataSourceDescription.fe_lineGraph_stackedLineColors : {};
+            // lineColors = JSON.stringify(lineColors);
+
+            if (Array.isArray(stackedResultsByGroup)) {
+
+                graphData[0] = stackedResultsByGroup.map(function(row) {
+                    row.category = dataSourceDescription.title // row.category = "{{ arrayTitle }}";
+                    row.value = Number(row.value);
+                    // {% if groupBy_isDate %}
+                    if (groupBy_isDate) {
+                        var offsetTime = new Date(row.date);
+                        offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                        row.date = offsetTime;
+                    }
+                    return row;
+                });
+
+            } else {
+
+                for (var category in stackedResultsByGroup) {
+                    if (stackedResultsByGroup.hasOwnProperty(category)) {
+                        graphData.push(stackedResultsByGroup[category].map(function(row) {
+                            row.category = category;
+                            row.value = Number(row.value);
+                            // {% if groupBy_isDate %}
+                            if (groupBy_isDate) {
+                                var offsetTime = new Date(row.date);
+                                offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                                row.date = offsetTime;
+                            }
+                            if (lineColors && lineColors[category]) row.color = lineColors[category];
+
+                            return row;
+                        }));
+                    }
+                }
+
+            }
             done();
         };
 
@@ -484,7 +533,9 @@ router.BindData = function (urlQuery, callback) {
             // Aggregate By
             aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
             defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
-            aggregateBy: aggregateBy
+            aggregateBy: aggregateBy,
+            // graphData is used by the template's inline script to generate the D3 linechart
+            graphData: graphData 
         };
         callback(err, data);
     });

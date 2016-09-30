@@ -145,6 +145,13 @@ exports.Descriptions =
                 'Recharger': '#99D8D8',
                 'Seeker': '#4D8DFF',
             },
+            fe_lineGraph_stackedLineColors: {
+                'Explorer': '#33B1B1',
+                'Facilitator': '#9533F8',
+                'Professional': '#FEB600',
+                'Recharger': '#99D8D8',
+                'Seeker': '#4D8DFF',
+            },
             fe_lineGraph_outputInFormat: {
                 Date: {
                     format: "MMM DD"

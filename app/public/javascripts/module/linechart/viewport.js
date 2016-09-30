@@ -532,10 +532,12 @@ linechart.viewport.prototype.resize = function () {
 
 
 linechart.viewport.prototype._getDatesDomain = function (data) {
-
     return _.uniq(data.reduce(function (dates, dataSet) {
         return dates.concat(dataSet.map(function (d) {
-            return d.date.getTime();
+            //because d.date is a string, it needs to be converted into a new date object
+            var newDate = new Date(d.date);
+            // return d.date.getTime();
+            return newDate.getTime();
         }));
     }, [])).sort(function (a, b) {
         return a - b;
