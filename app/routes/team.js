@@ -30,7 +30,7 @@ router.get('/:team_key', function (req, res) {
 
     query.team_key = team_key;
 
-    team_show_controller.BindData(query, function (err, bindData) {
+    team_show_controller.BindData(req, query, function (err, bindData) {
         if (err) {
             winston.error("❌  Error getting bind data for Team show: ", err);
             res.status(500).send(err.response || 'Internal Server Error');

@@ -9,7 +9,7 @@ var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
 //
-module.exports.BindData = function (urlQuery, callback) {
+module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
     // urlQuery keys:
     // source_key
@@ -300,7 +300,9 @@ module.exports.BindData = function (urlQuery, callback) {
         var data =
         {
             env: process.env,
-            //
+            
+            user: req.user,
+
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
             team: team,

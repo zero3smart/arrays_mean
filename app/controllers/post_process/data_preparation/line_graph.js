@@ -14,7 +14,7 @@ var func = require('../func');
  * @param {Object} urlQuery - URL params
  * @param {Function} callback
  */
-router.BindData = function (urlQuery, callback) {
+router.BindData = function (req, urlQuery, callback) {
     var self = this;
     // urlQuery keys:
     // source_key
@@ -487,7 +487,9 @@ router.BindData = function (urlQuery, callback) {
         var data =
         {
             env: process.env,
-            //
+            
+            user: req.user,
+
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
             team: team,

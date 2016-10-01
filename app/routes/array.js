@@ -1,8 +1,9 @@
 var url = require('url');
 var winston = require('winston');
 var queryString = require('querystring');
-var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 var express = require('express');
+var passport = require('passport');
+var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 var router = express.Router();
 
 router.get('/create', function (req, res) {
@@ -13,7 +14,7 @@ router.get('/create', function (req, res) {
 var index_controller = require('../controllers/post_process/data_preparation');
 
 router.get('/', function (req, res) {
-    index_controller.BindData(function (err, bindData) {
+    index_controller.BindData(req, function (err, bindData) {
         if (err) {
             winston.error("❌  Error getting bind data for Array index: ", err);
             res.status(500).send(err.response || 'Internal Server Error');
@@ -56,7 +57,7 @@ viewTypes.forEach(function (viewType) {
         var query = queryString.parse(req.url.replace(/^.*\?/, ''));
         query.source_key = source_key;
         var camelCaseViewType = viewType.replace('-', '_');
-        controllers[camelCaseViewType].BindData(query, function (err, bindData) {
+        controllers[camelCaseViewType].BindData(req, query, function (err, bindData) {
             if (err) {
                 winston.error("❌  Error getting bind data for Array gallery: ", err);
                 res.status(500).send(err.response || 'Internal Server Error');
@@ -84,7 +85,7 @@ router.get('/:source_key/:object_id', function (req, res) {
         return;
     }
 
-    object_details_controller.BindData(source_key, object_id, function (err, bindData) {
+    object_details_controller.BindData(req, source_key, object_id, function (err, bindData) {
         if (err) {
             winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err);
             res.status(500).send(err.response || 'Internal Server Error');
