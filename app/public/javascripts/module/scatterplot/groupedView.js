@@ -256,13 +256,15 @@ scatterplot.view.grouped.prototype.showTooltip = function(bubble, data) {
     /*
      * Show tooltip.
      */
+
     this._tooltip.setContent(
+        // If data description specifies tooltip terminology it will be displayed, otherwise it will default to  'Records'
         '<div class="scatterplot-tooltip-container">' +
             '<div class="scatterplot-tooltip-title">' +
                 '<div>X: ' + xInterval + ' ' + chart._xLabel.replace(new RegExp('_', 'g'), ' ') + '</div>' +
                 '<div>Y: ' + yInterval + ' ' + chart._yLabel.replace(new RegExp('_', 'g'), ' ') + '</div>' +
             '</div>' +
-            '<div class="scatterplot-tooltip-content">' + data.density + ' Characters</div>' +
+            '<div class="scatterplot-tooltip-content">' + data.density + ' ' + (chart._metaData.fe_scatterplot_tooltip_term ? chart._metaData.fe_scatterplot_tooltip_term : 'Records') + ' </div>' +
         '</div>')
         .setPosition('top')
         .setOffset(chart._radius / 2)

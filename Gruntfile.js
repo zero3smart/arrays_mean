@@ -131,6 +131,12 @@ module.exports = function(grunt) {
         cwd: 'bower_components/lodash/dist/',
         src: '*',
         dest: 'app/public/javascripts/lib/lodash'
+      },
+      moment: {
+        expand: true,
+        cwd: 'bower_components/moment',
+        src: 'moment.js',
+        dest: 'app/public/javascripts/lib/moment'
       }
     },
 

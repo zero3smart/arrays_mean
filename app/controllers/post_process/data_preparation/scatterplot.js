@@ -14,7 +14,7 @@ var func = require('../func');
  * @param {Object} urlQuery - URL params
  * @param {Function} callback
  */
-module.exports.BindData = function (urlQuery, callback) {
+module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
 
     var sourceKey = urlQuery.source_key;
@@ -138,6 +138,9 @@ module.exports.BindData = function (urlQuery, callback) {
                  */
                 callback(err, {
                     env: process.env,
+
+                    user: req.user,
+
                     documents: documents,
                     metaData: dataSourceDescription,
                     renderableFields: numericFields,

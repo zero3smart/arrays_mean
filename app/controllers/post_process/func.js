@@ -477,7 +477,7 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
 module.exports.topUniqueFieldValuesForFiltering = _topUniqueFieldValuesForFiltering;
 
 //
-var _reverseDataTypeCoersionToMakeFEDisplayableValFrom = function (originalVal, key, dataSourceDescription) {
+var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescription) {
     var displayableVal = originalVal;
     // var prototypeName = Object.prototype.toString.call(originalVal);
     // if (prototypeName === '[object Date]') {
@@ -504,12 +504,6 @@ var _reverseDataTypeCoersionToMakeFEDisplayableValFrom = function (originalVal, 
                         dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
                     }
                 }
-                if (dateFormat == null) { // still null - no specific ovrride, so check initial coersion
-                    var opts = coersionSchemeOfKey.opts;
-                    if (opts && typeof opts !== 'undefined') {
-                        dateFormat = opts.format;
-                    }
-                }
                 if (dateFormat == null || dateFormat == import_datatypes.Coercion_optionsPacks.ToDate.ISO_8601.format) { // still null? use default
                     dateFormat = config.defaultDateFormat;
                 }
@@ -523,7 +517,36 @@ var _reverseDataTypeCoersionToMakeFEDisplayableValFrom = function (originalVal, 
     //
     return displayableVal;
 };
-module.exports.reverseDataTypeCoersionToMakeFEDisplayableValFrom = _reverseDataTypeCoersionToMakeFEDisplayableValFrom;
+module.exports.reverseDataToBeDisplayableVal = _reverseDataToBeDisplayableVal;
+
+//
+var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescription) {
+    var displayableVal = originalVal;
+    // var prototypeName = Object.prototype.toString.call(originalVal);
+    // if (prototypeName === '[object Date]') {
+    // }
+    // ^ We could check this but we ought to have the info, and checking the
+    // coersion scheme will make this function slightly more rigorous.
+    // Perhaps we could do some type-introspection automated formatting later
+    // here if needed, but I think generally that kind of thing would be done case-by-case
+    // in the template, such as comma-formatting numbers.
+    var raw_rowObjects_coercionScheme = dataSourceDescription.raw_rowObjects_coercionScheme;
+    if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
+        var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
+        if (coersionSchemeOfKey && typeof coersionSchemeOfKey !== 'undefined') {
+            var _do = coersionSchemeOfKey.do;
+            if (_do === import_datatypes.Coercion_ops.ToDate) {
+                if (originalVal == null || originalVal == "") {
+                    return originalVal; // do not attempt to format
+                }
+                displayableVal = moment(originalVal, moment.ISO_8601).utc().format("MMM DD, YYYY HH:mm:ss");
+            }
+        }
+    }
+    //
+    return displayableVal;
+};
+module.exports.convertDateToBeRecognizable = _convertDateToBeRecognizable;
 
 //
 var _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = function (dataSourceDescription) {

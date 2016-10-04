@@ -1,0 +1,23 @@
+<header id="masthead" class="site-header hidden-print" role="banner">
+	<nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand">
+		<div class="container-fluid container-full-width">
+			<div class="navbar-brand-container">
+				<a class="navbar-brand navbar-brand-arrays" href="/array/create">Arrays</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+							{{ user.displayName }}
+						</a>
+						<ul class="dropdown-menu">
+							<li class="background-color-brand-hover"><a href="/auth/logout">Log Out</a></li>
+							<li role="separator" class="divider"></li>
+							<li class="background-color-brand-hover"><a href="mailto:{{ 'Arrays Support<info@arrays.co>' | urlencode}}">Contact Support</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div><!--/.nav-collapse -->
+		</div>
+	</nav>
+</header>

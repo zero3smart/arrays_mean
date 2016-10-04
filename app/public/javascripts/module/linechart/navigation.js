@@ -77,13 +77,27 @@ linechart.navigation = function(data, viewport) {
      */
     this._yScale = d3.scale.linear();
     /**
+     * Custom date format in X axis
+     */
+    this._customTimeFormat = d3.time.format.multi([
+        [".%L", function(d) { return d.getMilliseconds(); }],
+        [":%S", function(d) { return d.getSeconds(); }],
+        ["%I:%M", function(d) { return d.getMinutes(); }],
+        ["%I %p", function(d) { return d.getHours(); }],
+        ["%a %d", function(d) { return d.getDay() && d.getDate() != 1; }],
+        ["%b %d", function(d) { return d.getDate() != 1; }],
+        ["%B", function(d) { return d.getMonth(); }],
+        ["'%y", function() { return true; }]
+    ]);
+    /**
      * Chart x axis.
      * @private
      * @member {Function}
      */
     this._xAxis = d3.svg.axis()
         .scale(this._xScale)
-        .orient('bottom');
+        .orient('bottom')
+        .tickFormat(this._customTimeFormat);
     /**
      * Chart x axis container.
      * @private
@@ -112,9 +126,9 @@ linechart.navigation = function(data, viewport) {
      */
     this._lineGenerator = d3.svg.line()
         .x(function(d) {
-            return self._xScale(d.year);
+            return self._xScale(d.date);
         }).y(function(d) {
-            return self._yScale(d.count);
+            return self._yScale(d.value);
         });
     /**
      * X axis height.
@@ -179,7 +193,7 @@ linechart.navigation.prototype._brushEventHandler = function() {
      */
     var data = this._data.map(function(series) {
         return series.filter(function(d) {
-            if (d.year >= min && d.year <= max) {
+            if (d.date >= min && d.date <= max) {
                 return true;
             }
         });
@@ -439,10 +453,7 @@ linechart.navigation.prototype.update = function(data) {
     var xTicks = this._xScale.ticks(this._xAxis.ticks()[0]);
     var xStep = this._xScale(xTicks[1]) - this._xScale(xTicks[0]);
     this._xAxisContainer.selectAll('text')
-        .attr('x', - xStep / 2)
-        .text(function() {
-            return '\'' + d3.select(this).text().slice(2);
-        });
+        .attr('x', xStep / 2);
 
     if (this._brush.empty()) {
         this._resetBrush();
@@ -461,7 +472,7 @@ linechart.navigation.prototype.update = function(data) {
 linechart.navigation.prototype._getLablesList = function(data) {
 
     return data.reduce(function(list, dataSet) {
-        list.push(dataSet[0].label);
+        list.push(dataSet[0].category);
         return list;
     }, []);
 };

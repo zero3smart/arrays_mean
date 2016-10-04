@@ -47,21 +47,21 @@ router.BindData = function (req, urlQuery, callback) {
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
     var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
-    var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultGroupByColumnName_humanReadable;
+    var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_barChart_defaultGroupByColumnName_humanReadable;
     var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
         dataSourceDescription);
     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
     raw_rowObjects_coercionSchema[groupBy_realColumnName].do == import_datatypes.Coercion_ops.ToDate);
     var groupBy_outputInFormat = '';
-    if (dataSourceDescription.fe_lineGraph_outputInFormat && dataSourceDescription.fe_lineGraph_outputInFormat[groupBy_realColumnName] && dataSourceDescription.fe_lineGraph_outputInFormat[groupBy_realColumnName].format) {
-        groupBy_outputInFormat = dataSourceDescription.fe_lineGraph_outputInFormat[groupBy_realColumnName].format;
+    if (dataSourceDescription.fe_barChart_outputInFormat && dataSourceDescription.fe_barChart_outputInFormat[groupBy_realColumnName] && dataSourceDescription.fe_barChart_outputInFormat[groupBy_realColumnName].format) {
+        groupBy_outputInFormat = dataSourceDescription.fe_barChart_outputInFormat[groupBy_realColumnName].format;
     } else if (dataSourceDescription.fe_outputInFormat && dataSourceDescription.fe_outputInFormat[groupBy_realColumnName] &&
         dataSourceDescription.fe_outputInFormat[groupBy_realColumnName].format) {
         groupBy_outputInFormat = dataSourceDescription.fe_outputInFormat[groupBy_realColumnName].format;
     }
     //
-    var stackBy = dataSourceDescription.fe_lineGraph_stackByColumnName_humanReadable;
+    var stackBy = dataSourceDescription.fe_barChart_stackByColumnName_humanReadable;
     //
     var routePath_base = "/array/" + source_pKey + "/line-graph";
     var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
@@ -78,7 +78,7 @@ router.BindData = function (req, urlQuery, callback) {
 
     //
     // DataSource Relationship
-    var mapping_source_pKey = dataSourceDescription.fe_lineGraph_mapping_dataSource_pKey;
+    var mapping_source_pKey = dataSourceDescription.fe_barChart_mapping_dataSource_pKey;
     //var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
     if (mapping_source_pKey) {
         var mappingDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(mapping_source_pKey);
@@ -92,16 +92,16 @@ router.BindData = function (req, urlQuery, callback) {
             mapping_default_view = mappingDataSourceDescription.fe_default_view;
         }
         var mapping_groupBy = groupBy_realColumnName;
-        if (dataSourceDescription.fe_lineGraph_mapping_dataSource_fields)
-            mapping_groupBy = dataSourceDescription.fe_lineGraph_mapping_dataSource_fields[groupBy_realColumnName];
+        if (dataSourceDescription.fe_barChart_mapping_dataSource_fields)
+            mapping_groupBy = dataSourceDescription.fe_barChart_mapping_dataSource_fields[groupBy_realColumnName];
         var mapping_groupByObj = {};
         mapping_groupByObj[mapping_groupBy] = '';
     }
 
     // Aggregate By
     var aggregateBy = urlQuery.aggregateBy;
-    var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_lineGraph_defaultAggregateByColumnName_humanReadable;
-    var numberOfRecords_notAvailable = dataSourceDescription.fe_lineGraph_aggregateByColumnName_numberOfRecords_notAvailable;
+    var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_barChart_defaultAggregateByColumnName_humanReadable;
+    var numberOfRecords_notAvailable = dataSourceDescription.fe_barChart_aggregateByColumnName_numberOfRecords_notAvailable;
     if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
         defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
 
@@ -438,7 +438,7 @@ router.BindData = function (req, urlQuery, callback) {
 
             graphData = [];
 
-            var lineColors = dataSourceDescription.fe_lineGraph_stackedLineColors ? dataSourceDescription.fe_lineGraph_stackedLineColors : {};
+            var lineColors = dataSourceDescription.fe_barChart_stackedLineColors ? dataSourceDescription.fe_barChart_stackedLineColors : {};
 
             if (Array.isArray(stackedResultsByGroup)) {
 
@@ -503,7 +503,7 @@ router.BindData = function (req, urlQuery, callback) {
             groupBy_isDate: groupBy_isDate,
             // Logic has been moved from template to controller, doesn't need to be exported
             //stackedResultsByGroup: stackedResultsByGroup,
-            // lineColors: dataSourceDescription.fe_lineGraph_stackedLineColors ? dataSourceDescription.fe_lineGraph_stackedLineColors : {},
+            // lineColors: dataSourceDescription.fe_barChart_stackedLineColors ? dataSourceDescription.fe_barChart_stackedLineColors : {},
             groupBy_outputInFormat: groupBy_outputInFormat,
             //
             filterObj: filterObj,

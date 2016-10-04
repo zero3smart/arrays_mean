@@ -3,28 +3,40 @@
  * @constructor
  * @param {Object[]} data
  */
-linechart.chart = function(data, redirectBaseUrl) {
+linechart.chart = function(data, options) {
     /**
      * Chart data.
      * @private
      * @member {Object[]}
      */
+
+     //for loop added to change all row.date properties to date objects, necessary to show the lines in D3
+     for (var i = 0; i < data.length; i += 1) {
+        for (var k = 0; k < data[i].length; k += 1) {
+            data[i][k].date = new Date(data[i][k].date);
+        }
+    }
+
     this._data = data.map(function(series) {
         return series.sort(function(a, b) {
-            return a.year - b.year;
+            return a.date - b.date;
         });
     });
     /**
-     * Url information to redirect when clicking tick on the x-axis
+     * {redirectBaseUrl: redirectBaseUrl, outputInFormat: outputInFormat}
+     *
+     * redirectBaseUrl: Url information to redirect when clicking tick on the x-axis
+     * outputInFormat: Date format in tooltip
      */
-    this._redirectBaseUrl = redirectBaseUrl;
+    this._options = options;
+
 
     /**
      * Chart main part.
      * @private
      * @member {linechart.viewport}
      */
-    this._viewport = new linechart.viewport(this._data, this._redirectBaseUrl);
+    this._viewport = new linechart.viewport(this._data, this._options);
     /**
      * Chart navigation part.
      * @private

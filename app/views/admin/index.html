@@ -1,0 +1,76 @@
+{% extends "../layout/admin.html" %}
+
+{% block headSuffix %}
+	<title>Admin - Arrays</title>
+{% endblock %}
+
+{% block content %}
+
+	<div id="primary" class="content-area">
+		<main id="main" class="site-main" role="main">
+
+			<div class="container">
+				<div class="col-sm-3">
+
+					<nav class="admin-sidebar">
+						<ul class="nav nav-pills nav-stacked">
+							<li role="presentation"><a href="/array">Public Website</a></li>
+							<li role="presentation" class="active"><a href="#">Account Settings</a></li>
+							<li role="presentation"><a href="#">Website Settings</a></li>
+							<li role="presentation"><a href="#">Manage Users</a></li>
+						</ul>
+					</nav>
+
+				</div>
+				<div class="col-sm-9">
+
+					<header class="admin-header">
+						<h1 class="admin-title">{{ pageTitle }}</h1>
+					</header>
+
+					<nav class="admin-tabs">
+						<ul class="nav nav-tabs">
+							<li role="presentation" class="active"><a href="#">Profile</a></li>
+							<li role="presentation"><a href="#">Billing</a></li>
+						</ul>
+					</nav>
+
+					<br />
+
+					<form>
+						<div class="form-group">
+							<label for="provider">Authentication Provider</label>
+							<input type="text" class="form-control" id="provider" value="{{ user.provider }}" disabled>
+						</div>
+						<div class="form-group">
+							<label for="displayName">Display Name</label>
+							<input type="text" class="form-control" id="displayName" value="{{ user.displayName }}" disabled>
+						</div>
+						<div class="form-group">
+							<label for="givenName">First Name</label>
+							<input type="text" class="form-control" id="givenName" value="{{ user.name.givenName }}" disabled>
+						</div>
+						<div class="form-group">
+							<label for="familyName">Last Name</label>
+							<input type="text" class="form-control" id="familyName" value="{{ user.name.familyName }}" disabled>
+						</div>
+						<div class="form-group">
+							<label for="email">Email</label>
+							{% for email in user.emails %}
+							<input type="email" class="form-control" id="email" value="{{ email.value }}" disabled>
+							{% endfor %}
+						</div>
+						<div class="form-group">
+							<label for="picture">Picture</label><br />
+							{% if user.picture | length %}
+							<img src="{{ user.picture }}" width="100" height="100">
+							{% endif %}
+						</div>
+					</form>
+
+				</div>
+			</div><!-- .container -->
+
+		</main><!-- #main -->
+	</div><!-- #primary -->
+{% endblock %}

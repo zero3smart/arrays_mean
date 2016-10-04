@@ -72,6 +72,7 @@ router.post('/share', function (req, res) {
 
         return;
     }
+    source_key = decodeURIComponent(source_key);
     //
     var persistableObjectTemplate = shared_pages_model.New_templateForPersistableObject(pageType, viewType_orNull, source_key, rowObjectId_orNull, query);
     shared_pages_model.InsertOneWithPersistableObjectTemplate(persistableObjectTemplate, function (err, sharedPageDoc) {

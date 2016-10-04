@@ -53,6 +53,11 @@ exports.Descriptions =
             },
             fe_default_view: 'lineGraph',
             fe_excludeFields: [],
+            fe_outputInFormat: {
+                "Year": {
+                    format: "YYYY"
+                }
+            },
             fe_displayTitleOverrides: { // these are to be tuples - the values must be unique as well
                 // "Author": "Author",
             },
@@ -150,10 +155,10 @@ exports.Descriptions =
                 "Word",
                 "Count"
             ],
-            fe_lineGraph_keywordGroupBy: "Word",
+            fe_lineGraph_stackByColumnName_humanReadable: "Word",
             fe_lineGraph_defaultAggregateByColumnName_humanReadable: "Count",
             fe_lineGraph_aggregateByColumnName_numberOfRecords_notAvailable: true,
-            fe_lineGraph_keywordLineColors: {
+            fe_lineGraph_stackedLineColors: {
                 Bioinformatics: '#33B1B1',
                 'Computational Biology': '#9533F8',
                 'Systems Biology': '#FEB600',
@@ -166,6 +171,11 @@ exports.Descriptions =
             fe_lineGraph_mapping_dataSource_pKey: 'isb_library-r1',
             fe_lineGraph_mapping_dataSource_fields: {
                 Year: 'Publication Year'
+            },
+            fe_lineGraph_outputInFormat: {
+                Year: {
+                    format: 'YYYY'
+                }
             }
         }
     ];

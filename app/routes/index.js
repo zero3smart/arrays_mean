@@ -2,7 +2,7 @@ var winston = require('winston');
 var expressWinston = require('express-winston');
 var url = require('url');
 
-var isDev = process.env.NODE_ENV == 'development';
+var isDev = !process.env.NODE_ENV || process.env.NODE_ENV == 'development';
 var __DEBUG_enableEnsureWWWForDev = false; // for debug
 var shouldEnsureWWW = isDev == false || __DEBUG_enableEnsureWWWForDev;
 
@@ -60,7 +60,8 @@ var _mountRoutes_errorHandling = function (app) {
 var _mountRoutes_endPoints = function (app) {
     // View endpoints
     app.use('/', require('./homepage'));
-    app.use('/', require('./auth'));
+    app.use('/auth', require('./auth'));
+    app.use('/admin', require('./admin'));
     app.use('/array', require('./array'));
     app.use('/team', require('./team'));
     app.use('/s', require('./shared_pages'));
@@ -70,7 +71,7 @@ var _mountRoutes_endPoints = function (app) {
 
 module.exports.MountRoutes = function (app) {
     _mountRoutes_monitoring(app);
-    _mountRoutes_ensureWWW(app);
+    //_mountRoutes_ensureWWW(app);
     _mountRoutes_endPoints(app);
     _mountRoutes_errorHandling(app);
 };

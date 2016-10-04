@@ -12,13 +12,8 @@ router.get('/logout', function (req, res) {
     res.redirect('/');
 });
 
-router.get('/auth/callback', passport.authenticate('auth0', {failureRedirect: '/auth/failure'}), function (req, res) {
-    console.log(req.user.Profile._json);
-    res.redirect(req.session.returnTo || '/array');
-});
-
-router.get('/admin', requireRole('admin'), function (req, res) {
-    res.render('auth/admin');
+router.get('/callback', passport.authenticate('auth0', {failureRedirect: '/'}), function (req, res) {
+    res.redirect(req.session.returnTo || '/admin');
 });
 
 router.get('/unauthorized', function(req, res) {

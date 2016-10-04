@@ -17,7 +17,7 @@
             <div class="container-fluid">
                 <h1 class="array-title">{{ arrayTitle }}</h1>
                 <div class="array-meta">
-                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-value">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
                 </div>
             </div>
         </header><!-- .array-header -->
@@ -95,38 +95,8 @@
                             </div><!-- .container-fluid -->
 
                             <script type="text/javascript">
-                                var graphData = [];
-                                <!--  -->
-                                var groupedResultsByKeyword = {{ groupedResultsByKeyword | dump | safe }};
-                                var lineColors = {{ lineColors | dump | safe }};
-
-                                if (Array.isArray(groupedResultsByKeyword)) {
-
-                                    graphData[0] = groupedResultsByKeyword.map(function(row) {
-                                        row.label = "{{ arrayTitle }}";
-                                        row.count = Number(row.count);
-                                        row.year = new Date(row.year);
-                                        return row;
-                                    });
-
-                                } else {
-
-                                    for (var keyword in groupedResultsByKeyword) {
-                                        if (groupedResultsByKeyword.hasOwnProperty(keyword)) {
-                                            graphData.push(groupedResultsByKeyword[keyword].map(function(row) {
-                                                row.label = keyword;
-                                                row.count = Number(row.count);
-                                                var offsetTime = new Date(row.year);
-                                                offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                                                row.year = offsetTime;
-                                                if (lineColors && lineColors[keyword]) row.color = lineColors[keyword];
-                                                return row;
-                                            }));
-                                        }
-                                    }
-
-                                }
-
+                                // var lineColors = {{ lineColors | dump | safe }};
+                                var line;
                                 var filterObj = {{ filterObj | dump | safe }};
                                 var routePath_withoutFilter = '{{ routePath_base | constructedRoutePath(null, {
                                         searchCol: searchCol,
@@ -136,6 +106,7 @@
                                 }) | safe }}';
                                 var routePath_base = '{{ routePath_base }}';
                                 var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
+                                var groupBy_outputInFormat = '{{ groupBy_outputInFormat }}';
 
                                 var redirectBaseUrl = undefined;
                                 {% if mapping_source_pKey %}
@@ -147,6 +118,7 @@
                                     redirectBaseUrl = '/array/{{ mapping_source_pKey }}/' + default_view_url
                                             + '{{ "" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
                                 {% endif %}
+                                var options = {redirectBaseUrl: redirectBaseUrl, outputInFormat: groupBy_outputInFormat};
                             </script>
 
                             <div class="container-fluid">
@@ -185,6 +157,7 @@
 
     <script type="text/javascript" src="/javascripts/lib/lodash/lodash.js"></script>
     <script type="text/javascript" src="/javascripts/lib/d3/d3.js"></script>
+    <script type="text/javascript" src="/javascripts/lib/moment/moment.js"></script>
 
     <script type="text/javascript" src="/javascripts/tooltip.js"></script>
     <script type="text/javascript" src="/javascripts/module/scatterplot/main.js"></script>
@@ -194,7 +167,10 @@
     <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
     <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
     <script>
-        var lineChart = new linechart.chart(graphData, redirectBaseUrl)
-            .render("#linechart");
+        
+        // var options = {{options | dump | safe}};
+        var graphData = {{graphData | dump | safe}};       
+        // var lineChart = new linechart.chart({{graphData | dump | safe}} , options).render("#linechart");
+        var lineChart = new linechart.chart(graphData , options).render("#linechart");
     </script>
 {% endblock %}

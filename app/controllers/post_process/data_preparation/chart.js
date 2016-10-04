@@ -8,7 +8,7 @@ var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
 
-module.exports.BindData = function (urlQuery, callback) {
+module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
     // urlQuery keys:
     // source_key
@@ -42,6 +42,9 @@ module.exports.BindData = function (urlQuery, callback) {
     //
     var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
     var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_chart_defaultGroupByColumnName_humanReadable;
+    var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
+        dataSourceDescription);
+    var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     //
     var routePath_base = "/array/" + source_pKey + "/chart";
     var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
@@ -64,7 +67,6 @@ module.exports.BindData = function (urlQuery, callback) {
         defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
 
     // Aggregate By Available
-    var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     var aggregateBy_humanReadable_available = undefined;
     for (var colName in raw_rowObjects_coercionSchema) {
         var colValue = raw_rowObjects_coercionSchema[colName];
@@ -144,9 +146,6 @@ module.exports.BindData = function (urlQuery, callback) {
 
     // Obtain Grouped ResultSet
     batch.push(function (done) {
-        var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
-            dataSourceDescription);
-        //
         var aggregationOperators = [];
         if (isSearchActive) {
             var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
@@ -241,7 +240,7 @@ module.exports.BindData = function (urlQuery, callback) {
                 } else if (originalVal === "") {
                     displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
                 } else {
-                    displayableVal = func.reverseDataTypeCoersionToMakeFEDisplayableValFrom(originalVal, groupBy_realColumnName, dataSourceDescription);
+                    displayableVal = func.reverseDataToBeDisplayableVal(originalVal, groupBy_realColumnName, dataSourceDescription);
                 }
                 finalizedButNotCoalesced_groupedResults.push({
                     value: el.value,
@@ -299,7 +298,9 @@ module.exports.BindData = function (urlQuery, callback) {
         var data =
         {
             env: process.env,
-            //
+            
+            user: req.user,
+
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
             team: team,
