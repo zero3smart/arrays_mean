@@ -327,6 +327,5 @@ exports.Descriptions =
                 "Library Catalog",
                 "Category"
             ],
-            fe_lineGraph_defaultKeywordsColumnName_humanReadable: "Category"
         }
     ];

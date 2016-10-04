@@ -32,6 +32,7 @@ var scatterplot_controller = require('../controllers/post_process/data_preparati
 var choropleth_controller = require('../controllers/post_process/data_preparation/choropleth');
 var timeline_controller = require('../controllers/post_process/data_preparation/timeline');
 var word_cloud_controller = require('../controllers/post_process/data_preparation/word_cloud');
+var bar_chart_controller = require('../controllers/post_process/data_preparation/bar_chart');
 
 var controllers = {
     gallery: gallery_controller,
@@ -40,10 +41,11 @@ var controllers = {
     choropleth: choropleth_controller,
     scatterplot: scatterplot_controller,
     line_graph: line_graph_controller,
-    word_cloud: word_cloud_controller
+    word_cloud: word_cloud_controller,
+    bar_chart: bar_chart_controller
 };
 
-var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud'];
+var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud', 'bar-chart'];
 
 viewTypes.forEach(function (viewType) {
     router.get('/:source_key/' + viewType, function (req, res) {
