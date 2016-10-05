@@ -5,6 +5,7 @@ var expressWinston = require('express-winston');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var flash = require('connect-flash');
 var passport = require('passport');
 var dotenv = require('dotenv');
 var fs = require('fs');
@@ -43,6 +44,7 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
