@@ -90,7 +90,6 @@ exports.Descriptions =
             fe_scatterplot_fieldsNotAvailable: [
                 "Institution",
                 "Date",
-                "Date2",  //delete after reworking CSV
                 "Hour",
                 "Minute",
                 "Motivation",
@@ -117,7 +116,6 @@ exports.Descriptions =
             fe_lineGraph_defaultGroupByColumnName_humanReadable: "Date",
             fe_lineGraph_fieldsNotAvailableAsGroupByColumns: [
                 "Institution",
-                "Date2",  //delete after reworking CSV
                 "Hour",
                 "Minute",
                 "Motivation",
