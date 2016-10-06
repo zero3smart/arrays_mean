@@ -36,8 +36,6 @@ var DatasourceDescription_scheme = Schema({
     raw_rowObjects_coercionScheme: String,
     fn_new_rowPrimaryKeyFromRowObject: String,
     fe_designatedFields: Object,
-    fe_fieldDisplayOrder: Array,
-    fe_objectShow_customHTMLOverrideFnsByColumnName: Object,
 
     fe_nestedObject_prefix: String,
     fe_nestedObject_fields: Array,
@@ -109,6 +107,8 @@ var DatasourceDescription_scheme = Schema({
     // Bar Chart
 
     // Object Details
+    fe_fieldDisplayOrder: Array,
+    fe_objectShow_customHTMLOverrideFnsByColumnName: Object,
 
     user_id: String,
     dateOfLastImport: Date
