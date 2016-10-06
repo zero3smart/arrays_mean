@@ -47,8 +47,7 @@ exports.Descriptions =
                 scatterplot: true,
                 timeline: false,
                 wordCloud: false,
-                lineGraph: true,
-                barChart: true
+                lineGraph: true
             },
             fe_default_view: 'chart',
             fe_excludeFields: [

@@ -91,6 +91,7 @@ exports.Descriptions =
                 chart: true,
                 scatterplot: false,
                 timeline: true,
+                wordCloud: true,
                 lineGraph: false
             },
             fe_excludeFields: [
