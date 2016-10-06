@@ -1,5 +1,3 @@
-var async = require('async');
-var winston = require('winston');
 var mongoose_client = require('../../lib/mongoose_client/mongoose_client');
 
 var mongoose = mongoose_client.mongoose;
@@ -113,9 +111,6 @@ var DatasourceDescription_scheme = Schema({
     user_id: String,
     dateOfLastImport: Date
 });
-DatasourceDescription_scheme.index({uid: 1, importRevision: 1}, {unique: true});
-DatasourceDescription_scheme.index({uid: 1}, {unique: false});
-DatasourceDescription_scheme.index({importRevision: 1}, {unique: false});
 //
 var modelName = 'DatasourceDescription';
-var DatasourceDescription_model = mongoose.model(modelName, DatasourceDescription_scheme);
+module.exports = mongoose.model(modelName, DatasourceDescription_scheme);

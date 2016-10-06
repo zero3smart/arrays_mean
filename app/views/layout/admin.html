@@ -8,10 +8,28 @@
 
     <body class="site-admin">
         <div id="page" class="site">
-            {% include "../partials/header-bar-admin.html" %}
+            {% include "../partials/admin/header-bar.html" %}
 
             <div id="content" class="site-content">
-                {% block content %}{% endblock %}
+                <div id="primary" class="content-area">
+                    <main id="main" class="site-main" role="main">
+
+                        <div class="container">
+                            <div class="col-sm-3">
+
+                                {% include "../partials/admin/nav.html" %}
+
+                            </div>
+
+                            <div class="col-sm-9">
+
+                                {% block content %}{% endblock %}
+
+                            </div>
+                        </div>
+
+                    </main>
+                </div>
             </div><!-- #content -->
 
             {% include "../partials/footer.html" %}

@@ -196,7 +196,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                     limitedUniqValsByHumanReadableColName: uniqueFieldValuesByFieldName
                 };
                 var cached_values = require('../../../models/cached_values');
-                cached_values.MongooseModel.findOneAndUpdate({srcDocPKey: dataSourceRevision_pKey}, persistableDoc, {
+                cached_values.findOneAndUpdate({srcDocPKey: dataSourceRevision_pKey}, persistableDoc, {
                     upsert: true,
                     new: true
                 }, function (err, doc) {

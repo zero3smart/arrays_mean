@@ -5,6 +5,9 @@ var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn('/auth/login
 var router = express.Router();
 
 var account_controller = require('../controllers/admin/account');
+var dataset_controller = require('../controllers/admin/dataset');
+var website_controller = require('../controllers/admin/website');
+var users_controller = require('../controllers/admin/users');
 
 router.get('/', ensureLoggedIn, function(req, res) {
     res.redirect('/admin/account');
@@ -18,7 +21,7 @@ router.get('/account', ensureLoggedIn, function(req, res) {
 
             return;
         }
-        res.render('admin/index', data);
+        res.render('admin/account', data);
     });
 });
 
@@ -38,6 +41,42 @@ router.post('/account/:userId', ensureLoggedIn, function(req, res) {
         }
         req.flash('message', 'Account settings have been updated.');
         res.redirect('/admin/account');
+    });
+});
+
+router.get('/dataset', ensureLoggedIn, function(req, res) {
+    dataset_controller.index(req, function(err, data) {
+        if (err) {
+            winston.error("❌  Error getting bind data for Dataset index: ", err);
+            res.status(500).send(err.response || 'Internal Server Error');
+
+            return;
+        }
+        res.render('admin/dataset', data);
+    });
+});
+
+router.get('/website', ensureLoggedIn, function(req, res) {
+    website_controller.index(req, function(err, data) {
+        if (err) {
+            winston.error("❌  Error getting bind data for Website index: ", err);
+            res.status(500).send(err.response || 'Internal Server Error');
+
+            return;
+        }
+        res.render('admin/website', data);
+    });
+});
+
+router.get('/users', ensureLoggedIn, function(req, res) {
+    users_controller.index(req, function(err, data) {
+        if (err) {
+            winston.error("❌  Error getting bind data for users index: ", err);
+            res.status(500).send(err.response || 'Internal Server Error');
+
+            return;
+        }
+        res.render('admin/users', data);
     });
 });
 
