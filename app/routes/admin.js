@@ -13,6 +13,7 @@ router.get('/', ensureLoggedIn, function(req, res) {
     res.redirect('/admin/account');
 });
 
+/***************  Account ***************/
 router.get('/account', ensureLoggedIn, function(req, res) {
     account_controller.index(req, function(err, data) {
         if (err) {
@@ -44,6 +45,7 @@ router.post('/account/:userId', ensureLoggedIn, function(req, res) {
     });
 });
 
+/***************  Dataset ***************/
 router.get('/dataset', ensureLoggedIn, function(req, res) {
     dataset_controller.index(req, function(err, data) {
         if (err) {
@@ -56,6 +58,20 @@ router.get('/dataset', ensureLoggedIn, function(req, res) {
     });
 });
 
+router.get('/dataset/sign-s3', ensureLoggedIn, function(req, res) {
+    dataset_controller.signS3(req, function(err, data) {
+        if (err) {
+            winston.error("❌  Error getting bind data for Dataset signS3: ", err);
+            res.status(500).send(err.response || 'Internal Server Error');
+
+            return;
+        }
+        res.write(JSON.stringify(data));
+        res.send();
+    });
+});
+
+/***************  Website ***************/
 router.get('/website', ensureLoggedIn, function(req, res) {
     website_controller.index(req, function(err, data) {
         if (err) {
@@ -68,6 +84,7 @@ router.get('/website', ensureLoggedIn, function(req, res) {
     });
 });
 
+/***************  Users ***************/
 router.get('/users', ensureLoggedIn, function(req, res) {
     users_controller.index(req, function(err, data) {
         if (err) {

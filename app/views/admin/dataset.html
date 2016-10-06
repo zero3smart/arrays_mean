@@ -17,77 +17,39 @@
 
 	<nav class="admin-tabs">
 		<ul class="nav nav-tabs">
-			<li role="presentation" class="active"><a href="#">Profile</a></li>
-			<li role="presentation"><a href="#">Billing</a></li>
+			<li role="presentation"><a href="#">Select Dataset</a></li>
+			<li role="presentation" class="active"><a href="#">Upload New</a></li>
+			<li role="presentation"><a href="#">Format Data</a></li>
+			<li role="presentation"><a href="#">General Settings</a></li>
 		</ul>
 	</nav>
 
 	<br />
 
-	{% if user.provider == "auth0" %}
+	<form>
+		<div class="form-group">
+			<label for="file-input">Select a CSV/TSV file To Upload</label>
+			<input type="file" id="file-input" accept=".csv,.tsv|text/csv,text/csv-schema"/>
+		</div>
 
-	<form action="/admin/account/{{ user.id }}" method="post">
-		<div class="form-group">
-			{% if user.picture | length %}
-			<img src="{{ user.picture }}" width="100" height="100">
-			{% endif %}
-		</div>
-		<div class="form-group">
-			<label for="displayName">Display Name</label>
-			<input type="text" class="form-control" id="displayName" name="displayName" value="{{ user.displayName }}" readonly>
-		</div>
-		<div class="form-group">
-			<label for="givenName">First Name</label>
-			<input type="text" class="form-control" id="givenName" name="givenName" value="{{ user._json.user_metadata.name.givenName }}" autocomplete="off">
-		</div>
-		<div class="form-group">
-			<label for="familyName">Last Name</label>
-			<input type="text" class="form-control" id="familyName" name="familyName" value="{{ user._json.user_metadata.name.familyName }}" autocomplete="off">
-		</div>
-		<div class="form-group">
-			<label for="password">Change Password</label>
-			<input type="password" class="form-control" id="password" name="password" value="" placeholder="Type new password" autocomplete="off">
+			<div class="form-group">
+			<label for="url">Public URL: </label>
+			<input type="text" id="url" disabled required/>
 		</div>
 		<div class="panel-footer">
-			<button type="submit" class="btn btn-default pull-right">Save</button>
+			<button type="submit" class="btn btn-default pull-right">Next</button>
 			<div class="clearfix"></div>
 		</div>
 	</form>
 
-	<br />
-
-	{% else %}
-
 	<form>
-		<div class="form-group">
-			<label for="provider">Authentication Provider</label>
-			<p class="form-control-static">{{ user.provider }}</p>
-		</div>
-		<div class="form-group">
-			<label for="displayName">Display Name</label>
-			<p class="form-control-static">{{ user.displayName }}</p>
-		</div>
-		<div class="form-group">
-			<label for="givenName">First Name</label>
-			<p class="form-control-static">{{ user.name.givenName }}</p>
-		</div>
-		<div class="form-group">
-			<label for="familyName">Last Name</label>
-			<p class="form-control-static">{{ user.name.familyName }}</p>
-		</div>
-		<div class="form-group">
-			<label for="email">Email</label>
-			{% for email in user.emails %}
-			<p class="form-control-static">{{ email.value }}</p>
-			{% endfor %}
-		</div>
-		<div class="form-group">
-			<label for="picture">Picture</label><br />
-			{% if user.picture | length %}
-			<img src="{{ user.picture }}" width="100" height="100">
-			{% endif %}
-		</div>
+
 	</form>
 
-	{% endif %}
+{% endblock %}
+
+{% block inlineScript %}
+	{{ super() }}
+
+	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
 {% endblock %}
