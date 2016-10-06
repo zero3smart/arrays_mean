@@ -22,6 +22,7 @@
     "body-parser": "^1.15.0",
     "compression": "^1.6.1",
     "connect-ensure-login": "^0.1.1",
+    "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.3",
     "csv-parse": "^1.0.2",
     "dotenv": "^2.0.0",
@@ -37,6 +38,7 @@
     "nunjucks-comma-filter": "^1.0.0",
     "passport": "^0.3.2",
     "passport-auth0": "^0.5.2",
+    "request": "^2.75.0",
     "serve-favicon": "^2.3.0",
     "winston": "^2.2.0",
     "x-ray": "^2.2.0"
