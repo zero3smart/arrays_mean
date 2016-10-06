@@ -5,7 +5,7 @@ var import_datatypes = require('../utils/import_datatypes');
 exports.Descriptions =
     [
         {
-            schemaname: "transcript_schema.js",
+            schema_id: "transcript_schema.js",
             filename: "Municipal_News_Data_v5.csv",
             fileEncoding: "utf8", // default
             dataset_uid: "municipal",
@@ -24,7 +24,7 @@ exports.Descriptions =
                  do: import_datatypes.Mismatich_ops.ToDrop
                  } */
             },
-            fe_nestedObjectFields: [
+            fe_nestedObject_fields: [
                 'Catalog Title',
                 'Date',
                 'Decade',
@@ -43,10 +43,10 @@ exports.Descriptions =
                 'FullSize',
                 'Thumbnail'
             ],
-            fe_nestedObjectFieldOverrides: {
+            fe_nestedObject_fieldOverrides: {
                 'Catalog Title': 'Title'
             },
-            fe_criteria_nestedObject: function (rowDoc) {
+            fe_nestedObject_criteria: function (rowDoc) {
                 return !rowDoc.rowParams.Title || rowDoc.rowParams.Title == '';
             },
         }
