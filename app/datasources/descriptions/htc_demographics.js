@@ -7,7 +7,7 @@ var import_datatypes = require('../utils/import_datatypes');
 exports.Descriptions =
     [
         {
-            filename: "HTC_Demographics.csv",
+            sourceURL: "HTC_Demographics.csv",
             fileEncoding: "utf8", // the default
             uid: "htc_demographics",
             importRevision: 2,

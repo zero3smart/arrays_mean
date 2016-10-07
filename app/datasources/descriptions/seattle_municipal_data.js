@@ -6,7 +6,7 @@ exports.Descriptions =
     [
         {
             schema_id: "transcript_schema.js",
-            filename: "Municipal_News_Data_v5.csv",
+            sourceURL: "Municipal_News_Data_v5.csv",
             fileEncoding: "utf8", // default
             dataset_uid: "municipal",
             format: import_datatypes.DataSource_formats.CSV,
