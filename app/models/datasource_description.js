@@ -5,7 +5,7 @@ var Schema = mongoose.Schema;
 //
 var DatasourceDescription_scheme = Schema({
     // Unique
-    filename: String,
+    sourceURL: String,
     fileEncoding: String,
     importRevision: Number,
     uid: String,
@@ -31,7 +31,7 @@ var DatasourceDescription_scheme = Schema({
     fe_displayTitleOverrides: Object,
 
     // Fields
-    raw_rowObjects_coercionScheme: String,
+    raw_rowObjects_coercionScheme: Object,
     fn_new_rowPrimaryKeyFromRowObject: String,
     fe_designatedFields: Object,
 

@@ -10,7 +10,7 @@ exports.Descriptions =
         //
         // Production - Invisible - Nationality <-> Country -
         {
-            filename: "Countries-to-Demonyms.csv",
+            sourceURL: "Countries-to-Demonyms.csv",
             fileEncoding: "utf8", // default
             uid: "countries_to_demonyms",
             importRevision: 1,
@@ -25,7 +25,7 @@ exports.Descriptions =
         //
         // Production - Visible - MoMA dataset
         {
-            filename: "MoMA_Artists_v1_jy.csv",
+            sourceURL: "MoMA_Artists_v1_jy.csv",
             fe_views: {
                 gallery: true,
                 chart: true,
@@ -217,7 +217,7 @@ exports.Descriptions =
             }
         },
         {
-            filename: "MoMA_Artworks_v2_jy.csv",
+            sourceURL: "MoMA_Artworks_v2_jy.csv",
             fe_views: {
                 gallery: true,
                 chart: true,

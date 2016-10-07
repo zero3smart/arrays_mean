@@ -4,3 +4,30 @@
 .site-admin .site-main {
 	padding-top: 40px;
 }
+
+.dataset {
+	padding: 15px 0;
+}
+
+.dataset .upload input[type="text"].url {
+	width: 100%;
+}
+
+.dataset ul.steps {
+	list-style: none;
+	padding: 0;
+	margin-top: 25px;
+	text-align: center;
+}
+
+.dataset ul.steps > li {
+	display: inline-block;
+	min-width: 90px;
+	text-align: center;
+}
+
+.dataset ul.steps > li > span.glyphicon {
+	display: block;
+	text-align: center;
+	font-size: 25px;
+}

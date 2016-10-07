@@ -1,8 +1,8 @@
 $(document).ready(function() {
-     /* $('#url').on('change', function() {
+     $('#url').on('change', function() {
         var url = $('#url').val();
         if (url != '') {
-            var xhr = new XMLHttpRequest();
+            /* var xhr = new XMLHttpRequest();
 
             // "withCredentials" only exists on XMLHTMLRequest2 objects
             if ("withCredentials" in xhr) {
@@ -29,9 +29,10 @@ $(document).ready(function() {
                     }
                 }
             }
-            xhr.send();
+            xhr.send(); */
+            $('.upload button').removeAttr('disabled');
         }
-    }); */
+    });
 
     $('#file-input').on('change', function() {
         const files = $('#file-input')[0].files;
@@ -40,7 +41,6 @@ $(document).ready(function() {
             return alert('No file selected');
         }
         getSignedRequest(file);
-        $('input[type="submit"]').attr('disabled', 'disabled');
     });
 
     function getSignedRequest(file) {
@@ -53,6 +53,7 @@ $(document).ready(function() {
                     uploadFile(file, response.signedRequest, response.url);
                 } else {
                     alert('Could not get signed URL.');
+                    $('.upload button').removeAttr('disabled');
                 }
             }
         };
@@ -69,7 +70,7 @@ $(document).ready(function() {
                 } else {
                     alert('Could not upload file.');
                 }
-                $('input[type="submit"]').removeAttr('disabled');
+                $('.upload button').removeAttr('disabled');
             }
         };
         xhr.send(file);

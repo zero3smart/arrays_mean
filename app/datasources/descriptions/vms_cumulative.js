@@ -7,7 +7,7 @@ var import_datatypes = require('../utils/import_datatypes');
 exports.Descriptions =
     [
         {
-            filename: "VMS_Cumulative.csv",
+            sourceURL: "VMS_Cumulative.csv",
             fileEncoding: "utf8", // the default
             uid: "vms_survey",
             importRevision: 2,
