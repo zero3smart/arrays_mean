@@ -54,7 +54,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             searchCol: searchCol || '',
             searchQ: searchQ || '',
             multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable,
-            pieData: [{
+            groupedResults: [{
                     title : 'First one',
                     data : [{"value":397,"label":"NASA 2"},{"value":17,"label":"Intelsat"},{"value":12,"label":"DOE"},{"value":7,"label":"DOD"},{"value":5,"label":"RAYTHEON"},{"value":1,"label":"OSC"}]
                 }, {
