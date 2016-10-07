@@ -1,0 +1,156 @@
+{% extends "../layout/array.html" %}
+
+{% import "../partials/dropdown.html" as dropdown %}
+{% import "../partials/search.html" as search %}
+{% import "../partials/filter.html" as filter %}
+
+{% block headSuffix %}
+    <title>Arrays - {{ arrayTitle }}</title>
+{% endblock %}
+
+{% set currentView = "chart" %}
+
+{% block content %}
+    <section class="array">
+
+        <header class="array-header header-shadow array-header-small clearfix">
+            <div class="container-fluid">
+                <h1 class="array-title">{{ arrayTitle }}</h1>
+                <div class="array-meta">
+                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                </div>
+            </div>
+        </header><!-- .array-header -->
+
+        <div class="array-content">
+
+            <div class="chart-container">
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+
+                            <div class="sort-bar clearfix">
+
+                                <nav class="sort-bar-left pull-left" role="navigation">
+                                    {{
+                                    dropdown.sortbar
+                                        (
+                                            "Chart By",
+                                            groupBy if groupBy else defaultGroupByColumnName_humanReadable,
+                                            colNames_orderedForGroupByDropdown,
+                                            routePath_base | constructedRoutePath(filterObj, {
+                                                searchCol: searchCol,
+                                                searchQ: searchQ,
+                                                aggregateBy: aggregateBy,
+                                                groupBy: ''
+                                            })
+                                        )
+                                    }}
+
+                                    {% if aggregateBy_humanReadable_available %}
+                                        {{
+                                        dropdown.sortbar(
+                                            'Aggregate By',
+                                            aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
+                                            aggregateBy_humanReadable_available,
+                                            routePath_base | constructedRoutePath(filterObj, {
+                                                searchCol: searchCol,
+                                                searchQ: searchQ,
+                                                groupBy: groupBy,
+                                                aggregateBy: ''
+                                            })
+                                        )
+                                        }}
+                                    {% endif %}
+                                </nav>
+
+                                <div class="sort-bar-right pull-right">
+                                    {{
+                                    search.panel(
+                                        routePath_base,
+                                        searchCol if searchCol else "Object Title",
+                                        colNames_orderedForSortByDropdown,
+                                        searchQ if searchQ else "",
+                                        null,
+                                        null,
+                                        filterObj
+                                    )
+                                    }}
+
+                                    <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
+                                        <span class="icon-legend" aria-hidden="true"></span>
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div><!-- .row -->
+                </div><!-- .container-fluid -->
+
+                {% if isFilterActive %}
+                    {{
+                    filter.default(
+                        routePath_base | constructedRoutePath(null, {
+                            searchCol: searchCol,
+                            searchQ: searchQ,
+                            groupBy: groupBy,
+                            aggregateBy: aggregateBy
+                        }),
+                        filterObj,
+                        truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
+                        false,
+                        'filter-bar-fixed-bottom'
+                    )
+                    }}
+                {% endif %}
+
+                <script type="text/javascript">
+                    var pieData = {{ pieData | dump | safe }};
+
+                    var filterObj = {{ filterObj | dump | safe }};
+                    var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
+                            searchCol: searchCol,
+                            searchQ: searchQ,
+                            groupBy: groupBy,
+                            aggregateBy: aggregateBy
+                    }) | safe }}";
+                    var routePath_base = '{{ routePath_base }}';
+                    var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
+                </script>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="gallery">
+                                <ul id="pie-set" class="gallery-grid"></ul>
+                            </div>
+                        </div>
+                    </div><!-- .row -->
+                </div><!-- .container-fluid -->
+
+            </div><!-- .chart-container -->
+
+            <nav class="legend" role="navigation">
+                <button type="button" class="close legend-close" aria-label="Close"><span class="icon-close-big" aria-hidden="true"></span></button>
+                <h3 class="legend-title">Legend</h3>
+                {% if groupedResults | length %}
+                <ul class="legend-list">
+                    {# {% for result in groupedResults %}
+                    <li class="legend-list-item"><span class="legend-dot"></span><a href="#" class="legend-list-link">{{ result.label }}</a></li>
+                    {% endfor %} #}
+                </ul>
+                {% endif %}
+            </nav>
+
+        </div><!-- .array-content -->
+
+    </section>
+{% endblock %}
+
+{% block inlineScript %}
+    {{ super() }}
+
+    <script type="text/javascript" src="/javascripts/lib/d3/d3.js"></script>
+    <script type="text/javascript" src="/javascripts/module/pieChart.js"></script>
+    <script type="text/javascript" src="/javascripts/module/pieset/pieSetController.js"></script>
+{% endblock %}
