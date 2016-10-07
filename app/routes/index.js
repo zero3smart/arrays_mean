@@ -60,12 +60,17 @@ var _mountRoutes_errorHandling = function (app) {
 var _mountRoutes_endPoints = function (app) {
     // View endpoints
     app.use('/', require('./homepage'));
-    app.use('/auth', require('./auth'));
     app.use('/array', require('./array'));
     app.use('/team', require('./team'));
     app.use('/s', require('./shared_pages'));
     var apiVersion = 'v1';
     app.use('/' + apiVersion, require('./jsonAPI_share'));
+
+    app.use('/auth', require('./auth'));
+    app.use('/admin', require('./admin/account'));
+    app.use('/admin/dataset', require('./admin/dataset'));
+    app.use('/admin/users', require('./admin/users'));
+    //app.use('/admin/website', require('./admin/website'));
 };
 
 module.exports.MountRoutes = function (app) {

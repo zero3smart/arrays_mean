@@ -10,7 +10,7 @@ exports.Descriptions =
         //
         // Production - Invisible - Nationality <-> Country -
         {
-            filename: "Countries-to-Demonyms.csv",
+            sourceURL: "Countries-to-Demonyms.csv",
             fileEncoding: "utf8", // default
             uid: "countries_to_demonyms",
             importRevision: 1,
@@ -25,11 +25,12 @@ exports.Descriptions =
         //
         // Production - Visible - MoMA dataset
         {
-            filename: "MoMA_Artists_v1_jy.csv",
+            sourceURL: "MoMA_Artists_v1_jy.csv",
             fe_views: {
-                scatterplot: false,
-                wordCloud: false,
-                lineGraph: false
+                gallery: true,
+                chart: true,
+                timeline: true,
+                choropleth: true
             },
             fileEncoding: "utf8", // the default
             uid: "moma_artists",
@@ -216,11 +217,12 @@ exports.Descriptions =
             }
         },
         {
-            filename: "MoMA_Artworks_v2_jy.csv",
+            sourceURL: "MoMA_Artworks_v2_jy.csv",
             fe_views: {
-                scatterplot: false,
-                wordCloud: false,
-                lineGraph: false
+                gallery: true,
+                chart: true,
+                timeline: true,
+                choropleth: true
             },
             fileEncoding: "utf8", // the default
             uid: "moma_artworks",

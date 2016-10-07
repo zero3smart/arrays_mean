@@ -6,7 +6,7 @@ var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 var mongooseContextsBySrcDocPKey = {};
 
-var New_RowObjectsModelName = function (srcDocPKey) {
+var _New_RowObjectsModelName = function (srcDocPKey) {
     return 'RawRowObjects-' + srcDocPKey;
 };
 
@@ -25,7 +25,7 @@ var _Lazy_Shared_RawRowObject_MongooseContext = function (srcDocPKey) {
     forThisDataSource_RawRowObject_scheme.index({pKey: 1, srcDocPKey: 1}, {unique: true});
     forThisDataSource_RawRowObject_scheme.index({srcDocPKey: 1}, {unique: false});
     //
-    var forThisDataSource_rowObjects_modelName = New_RowObjectsModelName(srcDocPKey);
+    var forThisDataSource_rowObjects_modelName = _New_RowObjectsModelName(srcDocPKey);
     var forThisDataSource_RawRowObject_model = mongoose.model(forThisDataSource_rowObjects_modelName, forThisDataSource_RawRowObject_scheme);
     //
     mongooseContext =

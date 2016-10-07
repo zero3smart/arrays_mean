@@ -1,0 +1,16 @@
+.pie-set-item {
+    height: 300px;
+    border: 1px solid green;
+    position: relative;
+}
+
+.pie-set-item .title {
+    border: 1px solid red;
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    text-align: center;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}

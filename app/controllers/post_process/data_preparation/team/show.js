@@ -6,7 +6,7 @@ var teamDescriptions = require('../../../../datasources/teams').GetTeams();
 var importedDataPreparation = require('../../../../datasources/utils/imported_data_preparation');
 var raw_source_documents = require('../../../../models/raw_source_documents');
 
-module.exports.BindData = function (urlQuery, callback) {
+module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
 
     var iterateeFn = async.ensureAsync(function (dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
@@ -58,6 +58,7 @@ module.exports.BindData = function (urlQuery, callback) {
         var data = {
             env: process.env,
 
+            user: req.user,
             sources: sourceDescriptions,
             team: team
         };

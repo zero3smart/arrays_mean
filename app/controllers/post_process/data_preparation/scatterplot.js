@@ -14,7 +14,7 @@ var func = require('../func');
  * @param {Object} urlQuery - URL params
  * @param {Function} callback
  */
-module.exports.BindData = function (urlQuery, callback) {
+module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
 
     var sourceKey = urlQuery.source_key;
@@ -111,6 +111,21 @@ module.exports.BindData = function (urlQuery, callback) {
                         } else {
                             uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
                         }
+
+                        if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                                a = a.replace(/\D/g, '');
+                                a = a == '' ? 0 : parseInt(a);
+                                b = b.replace(/\D/g, '');
+                                b = b == '' ? 0 : parseInt(b);
+                                return a - b;
+                            });
+
+                        } else // Sort alphabetically by default
+                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                                return a - b;
+                            });
                     }
                 }
                 /*
@@ -138,6 +153,9 @@ module.exports.BindData = function (urlQuery, callback) {
                  */
                 callback(err, {
                     env: process.env,
+
+                    user: req.user,
+
                     documents: documents,
                     metaData: dataSourceDescription,
                     renderableFields: numericFields,

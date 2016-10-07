@@ -7,7 +7,7 @@ var import_datatypes = require('../utils/import_datatypes');
 exports.Descriptions =
     [
         {
-            filename: "NASA_Labs_Facilities.csv",
+            sourceURL: "NASA_Labs_Facilities.csv",
             fileEncoding: "utf8", // the default
             uid: "nasa_labs_facilities",
             importRevision: 2,

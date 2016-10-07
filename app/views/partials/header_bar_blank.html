@@ -1,60 +1,70 @@
-<!-- Fixed navbar -->
 {% if brandColor %}
-<style scoped>
-	.color-brand,
-	a.color-brand:hover,
-	a.color-brand:focus,
-	a.color-brand:active,
-	.sidebar-filter-toggle .color-brand {
-	color: {{ brandColor }};
-	}
+	<style scoped>
+		.color-brand,
+		a.color-brand:hover,
+		a.color-brand:focus,
+		a.color-brand:active,
+		.sidebar-filter-toggle .color-brand {
+			color: {{ brandColor }};
+		}
 
-	.color-brand-hover:hover,
-	.dropdown-toggle:hover .color-brand-hover,
-	.open .color-brand-hover,
-	.search-toggle:hover .color-brand-hover,
-	.search-toggle.search-active .color-brand-hover {
-	color: {{ brandColor }};
-	}
+		.color-brand-hover:hover,
+		.dropdown-toggle:hover .color-brand-hover,
+		.open .color-brand-hover,
+		.search-toggle:hover .color-brand-hover,
+		.search-toggle.search-active .color-brand-hover {
+			color: {{ brandColor }};
+		}
 
-	.background-color-brand,
-	#page .background-color-brand-hover:hover,
-	#page .background-color-brand-hover:focus,
-	#page .background-color-brand-hover:active,
-	#page .background-color-brand-hover > a:hover,
-	#page .background-color-brand-hover > a:focus,
-	#page .background-color-brand-hover > a:active ,
-	#page .background-color-brand-hover.active > a {
-	background-color: {{ brandColor }};
-	}
+		.background-color-brand,
+		#page .background-color-brand-hover:hover,
+		#page .background-color-brand-hover:focus,
+		#page .background-color-brand-hover:active,
+		#page .background-color-brand-hover > a:hover,
+		#page .background-color-brand-hover > a:focus,
+		#page .background-color-brand-hover > a:active ,
+		#page .background-color-brand-hover.active > a {
+			background-color: {{ brandColor }};
+		}
 
-	.border-color-brand,
-	.border-color-brand-hover:hover {
-	border-color: {{ brandColor }};
-	}
+		.border-color-brand,
+		.border-color-brand-hover:hover {
+			border-color: {{ brandColor }};
+		}
 
-	.border-top-color-brand {
-	border-top-color: {{ brandColor }};
-	}
-</style>
+		.border-top-color-brand {
+			border-top-color: {{ brandColor }};
+		}
+	</style>
 {% endif %}
 
-<nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand">
-	<div class="container-fluid container-full-width">
-		<div class="navbar-brand-container">
-			<a class="navbar-brand navbar-brand-arrays" href="/array/create">Arrays</a>
+<header id="masthead" class="site-header hidden-print" role="banner">
+	<nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand">
+		<div class="container-fluid container-full-width">
+			<div class="navbar-brand-container">
+				<a class="navbar-brand navbar-brand-arrays" href="/array/create">Arrays</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+							<span class="icon-menu" aria-hidden="true"></span>
+						</a>
+						<ul class="dropdown-menu">
+							{% if env.NODE_ENV != 'production' %}
+								{% if user %}
+								<li class="background-color-brand-hover"><a href="/admin">Account Settings</a></li>
+								<li class="background-color-brand-hover"><a href="/auth/logout">Log Out</a></li>
+								{% else %}
+								<li class="background-color-brand-hover"><a href="/auth/login">Log In</a></li>
+								{% endif %}
+								<li role="separator" class="divider"></li>
+							{% endif %}
+							<li class="background-color-brand-hover"><a href="mailto:{{ 'Arrays Support<info@arrays.co>' | urlencode}}">Contact Support</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div><!--/.nav-collapse -->
 		</div>
-		<div id="navbar" class="navbar-collapse collapse">
-			<ul class="nav navbar-nav navbar-right">
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-						<span class="icon-menu" aria-hidden="true"></span>
-					</a>
-					<ul class="dropdown-menu">
-						<li class="background-color-brand-hover"><a href="mailto:{{ 'Arrays Support<info@arrays.co>' | urlencode}}">Contact Support</a></li>
-					</ul>
-				</li>
-			</ul>
-		</div><!--/.nav-collapse -->
-	</div>
-</nav>
+	</nav>
+</header>

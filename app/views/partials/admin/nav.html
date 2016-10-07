@@ -1,0 +1,10 @@
+{{view}}
+<nav class="admin-sidebar">
+    <ul class="nav nav-pills nav-stacked">
+        <li role="presentation"><a href="/array">Public Website</a></li>
+        <li role="presentation" class="{{ 'active' if view=='account' }}"><a href="/admin/account">Account Settings</a></li>
+        <li role="presentation" class="{{ 'active' if view=='website' }}"><a href="/admin/website">Website Settings</a></li>
+        <li role="presentation" class="{{ 'active' if view=='dataset' }}"><a href="/admin/dataset">Dataset Settings</a></li>
+        <li role="presentation" class="{{ 'active' if view=='users' }}"><a href="/admin/users">Manage Users</a></li>
+    </ul>
+</nav>

@@ -71,11 +71,13 @@ In order to add them (and to support both local development and production deplo
 * [Arrays - Server - .env.production](https://docs.google.com/document/d/1d1IoAHgGPB4bwWGaYprtBFSVoLEcoEuw4WdruUt-v9k/)
 * [Arrays - Server - .env.development](https://docs.google.com/document/d/15-SkjQHqznSMOWevEH6yZvshdNqMzN4RErMhOPFz3jc/)
 
-#### iii. Signing into Google Cloud Platform
+#### iii. Signing into Heroku
 
-1. Download the archive file and extract: https://cloud.google.com/sdk/docs/quickstart-mac-os-x
-2. Run `./google-cloud-sdk/install.sh` from the containing folder.
-3. Run `gcloud init`
+1. Download/Install the heroku toolbelt: https://devcenter.heroku.com/articles/heroku-command-line
+2. Login to the heroku account.
+$ heroku login
+3. Add a remote using the git URL so that you can deploy the current source to Heroku.
+$ heroku git:remote -a arrays
 
 
 #### iv. Seeding the local database
@@ -152,9 +154,9 @@ See this Doc for information on the data import framework capabilities.
 
 ### Deploying to production 
 
-#### Deploying HEAD to Google Cloud Platform/App Engine
+#### Deploying HEAD to Heroku
 
-1. Execute [`bin/deploy`](bin/deploy)
+1. Execute [git push heroku master](git push heroku develop:master)
 
 #### Seeding the production database
 

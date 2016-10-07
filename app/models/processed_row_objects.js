@@ -279,27 +279,21 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSour
             mongooseModel_ofFromRawRowObjects.find({}, function (err, fromProcessedRowObjectDocs) {
                 if (err) {
                     winston.error("❌  Error while generating field by reverse-join:", err);
-                    callback(err);
-
-                    return;
+                    return callback(err);
                 }
                 var fromProcessedRowObjectDocs_length = fromProcessedRowObjectDocs.length;
                 if (fromProcessedRowObjectDocs_length == 0) {
                     var errorString = "No rows in foreign set " + pKey_ofFromDataSourceDoc + ".";
                     var err = new Error(errorString);
                     winston.error("❌  Error while generating field by reverse-join:", err);
-                    callback(err);
-
-                    return;
+                    return callback(err);
                 }
                 var ofTheseProcessedRowObjectDocs_length = ofTheseProcessedRowObjectDocs.length;
                 if (ofTheseProcessedRowObjectDocs_length == 0) {
                     var errorString = "No rows in " + pKey_ofDataSrcDocBeingProcessed + ".";
                     var err = new Error(errorString);
                     winston.error("❌  Error while generating field by join:", err);
-                    callback(err);
-
-                    return;
+                    return callback(err);
                 }
                 //
                 for (var i = 0; i < ofTheseProcessedRowObjectDocs.length; i++) {
@@ -803,7 +797,7 @@ module.exports.EnumerateProcessedDataset = function (dataSource_uid,
 //
 var xray = require('x-ray');
 var xray_instance = xray();
-//var image_hosting = require('../../lib/image_process/googlecloudstorage-image_hosting');
+var image_hosting = require('../../lib/image_process/aws-image-hosting');
 
 function _nextLargestImageSrcSetSizeAvailableInParsedRawURLsBySize(rawURLsBySize, afterSize) // -> (String?)
 {
@@ -1005,11 +999,8 @@ module.exports.GenerateImageURLFieldsByScraping
                     }, function (err) {
                         if (err) {
                             winston.error("❌  Error while downloading, uploading, or storing URLs for images: ", err);
-                            eachCb(err);
-
-                            return;
                         }
-                        eachCb();
+                        eachCb(err);
                     });
                 });
 

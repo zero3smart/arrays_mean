@@ -14,7 +14,7 @@ var func = require('../func');
  * @param {Object} urlQuery - URL params
  * @param {Function} callback
  */
-router.BindData = function (urlQuery, callback) {
+router.BindData = function (req, urlQuery, callback) {
     var self = this;
     // urlQuery keys:
     // source_key
@@ -135,6 +135,11 @@ router.BindData = function (urlQuery, callback) {
     //
     var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, stackedResultsByGroup = {};
 
+    ///
+    // graphData is exported and used by template for lineChart generation
+    var graphData;
+
+
     var batch = new Batch();
     batch.concurrency(1);
 
@@ -176,6 +181,21 @@ router.BindData = function (urlQuery, callback) {
                     } else {
                         uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
                     }
+
+                    if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                            a = a.replace(/\D/g, '');
+                            a = a == '' ? 0 : parseInt(a);
+                            b = b.replace(/\D/g, '');
+                            b = b == '' ? 0 : parseInt(b);
+                            return a - b;
+                        });
+
+                    } else // Sort alphabetically by default
+                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                            return a - b;
+                        });
                 }
             }
             done();
@@ -431,6 +451,44 @@ router.BindData = function (urlQuery, callback) {
 
             }
 
+            graphData = [];
+
+            var lineColors = dataSourceDescription.fe_lineGraph_stackedLineColors ? dataSourceDescription.fe_lineGraph_stackedLineColors : {};
+
+            if (Array.isArray(stackedResultsByGroup)) {
+
+                graphData[0] = stackedResultsByGroup.map(function(row) {
+                    row.category = dataSourceDescription.title
+                    row.value = Number(row.value);
+                    if (groupBy_isDate) {
+                        var offsetTime = new Date(row.date);
+                        offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                        row.date = offsetTime;
+                    }
+                    return row;
+                });
+
+            } else {
+
+                for (var category in stackedResultsByGroup) {
+                    if (stackedResultsByGroup.hasOwnProperty(category)) {
+                        graphData.push(stackedResultsByGroup[category].map(function(row) {
+                            row.category = category;
+                            row.value = Number(row.value);
+                            // {% if groupBy_isDate %}
+                            if (groupBy_isDate) {
+                                var offsetTime = new Date(row.date);
+                                offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                                row.date = offsetTime;
+                            }
+                            if (lineColors && lineColors[category]) row.color = lineColors[category];
+
+                            return row;
+                        }));
+                    }
+                }
+
+            }
             done();
         };
 
@@ -444,7 +502,9 @@ router.BindData = function (urlQuery, callback) {
         var data =
         {
             env: process.env,
-            //
+            
+            user: req.user,
+
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
             team: team,
@@ -456,8 +516,9 @@ router.BindData = function (urlQuery, callback) {
             //
             groupBy: groupBy,
             groupBy_isDate: groupBy_isDate,
-            stackedResultsByGroup: stackedResultsByGroup,
-            lineColors: dataSourceDescription.fe_lineGraph_stackedLineColors ? dataSourceDescription.fe_lineGraph_stackedLineColors : {},
+            // Logic has been moved from template to controller, doesn't need to be exported
+            //stackedResultsByGroup: stackedResultsByGroup,
+            // lineColors: dataSourceDescription.fe_lineGraph_stackedLineColors ? dataSourceDescription.fe_lineGraph_stackedLineColors : {},
             groupBy_outputInFormat: groupBy_outputInFormat,
             //
             filterObj: filterObj,
@@ -484,7 +545,9 @@ router.BindData = function (urlQuery, callback) {
             // Aggregate By
             aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
             defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
-            aggregateBy: aggregateBy
+            aggregateBy: aggregateBy,
+            // graphData contains all the data rows; used by the template to create the linechart
+            graphData: graphData 
         };
         callback(err, data);
     });

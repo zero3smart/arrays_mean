@@ -407,7 +407,7 @@ module.exports.activeSearch_matchOp_orErrDescription = _activeSearch_matchOp_orE
 
 //
 var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescription, callback) {
-    cached_values.MongooseModel.findOne({srcDocPKey: source_pKey}, function (err, doc) {
+    cached_values.findOne({srcDocPKey: source_pKey}, function (err, doc) {
         if (err) {
             callback(err, null);
 

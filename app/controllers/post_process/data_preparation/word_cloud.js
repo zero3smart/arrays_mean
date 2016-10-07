@@ -8,7 +8,7 @@ var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
 
-module.exports.BindData = function (urlQuery, callback) {
+module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
     // urlQuery keys:
     // source_key
@@ -102,6 +102,21 @@ module.exports.BindData = function (urlQuery, callback) {
                     } else {
                         uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
                     }
+
+                    if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                            a = a.replace(/\D/g, '');
+                            a = a == '' ? 0 : parseInt(a);
+                            b = b.replace(/\D/g, '');
+                            b = b == '' ? 0 : parseInt(b);
+                            return a - b;
+                        });
+
+                    } else // Sort alphabetically by default
+                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                            return a - b;
+                        });
                 }
             }
             done();
@@ -177,7 +192,9 @@ module.exports.BindData = function (urlQuery, callback) {
         var data =
         {
             env: process.env,
-            //
+            
+            user: req.user,
+
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
             team: team,

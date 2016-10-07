@@ -7,7 +7,7 @@ var import_datatypes = require('../utils/import_datatypes');
 exports.Descriptions =
     [
         {
-            filename: "VMS_Cumulative.csv",
+            sourceURL: "VMS_Cumulative.csv",
             fileEncoding: "utf8", // the default
             uid: "vms_survey",
             importRevision: 2,
@@ -90,7 +90,6 @@ exports.Descriptions =
             fe_scatterplot_fieldsNotAvailable: [
                 "Institution",
                 "Date",
-                "Date2",  //delete after reworking CSV
                 "Hour",
                 "Minute",
                 "Motivation",
@@ -117,7 +116,6 @@ exports.Descriptions =
             fe_lineGraph_defaultGroupByColumnName_humanReadable: "Date",
             fe_lineGraph_fieldsNotAvailableAsGroupByColumns: [
                 "Institution",
-                "Date2",  //delete after reworking CSV
                 "Hour",
                 "Minute",
                 "Motivation",
@@ -138,11 +136,11 @@ exports.Descriptions =
             fe_lineGraph_stackByColumnName_humanReadable: "Motivation",
             fe_lineGraph_defaultAggregateByColumnName_humanReadable: "Sessions",
             fe_lineGraph_aggregateByColumnName_numberOfRecords_notAvailable: false,
-            fe_lineGraph_keywordLineColors: {
+            fe_lineGraph_stackedLineColors: {
                 'Explorer': '#33B1B1',
                 'Facilitator': '#9533F8',
                 'Professional': '#FEB600',
-                'Recharger': '#99D8D8',
+                'Recharger': '#F0141E',
                 'Seeker': '#4D8DFF',
             },
             fe_lineGraph_outputInFormat: {
@@ -150,7 +148,6 @@ exports.Descriptions =
                     format: "MMM DD"
                 }
             },
-            fe_lineGraph_defaultKeywordsColumnName_humanReadable: "Motivation"
 
         }
     ];
