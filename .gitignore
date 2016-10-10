@@ -105,6 +105,8 @@ Temporary Items
 
 
 .env
+## csv files ##
+*.csv
 
 ### Webstorm Env ###
 .idea/
