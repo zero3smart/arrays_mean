@@ -7141,11 +7141,7 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 	text-align: center;
 	font-size: 25px;
 }
-@media (min-width: 768px) {
-    .array-bar-chart .sort-direction {
-        margin: 12px 0;
-    }
-}
+
 /* @end Views */
 /* @group Clients */
 /* @override 
