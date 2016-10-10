@@ -57,44 +57,50 @@
 					<li class="dropdown">
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="icon-{{ currentView }}" aria-hidden="true"></span></a>
 						<ul class="dropdown-menu">
-							{% if view_visibility.gallery != false %}
+							{% if view_visibility.gallery == true %}
 							<li class="background-color-brand-hover menu-item-gallery {{ "active" if currentView == "gallery" }}"><a href="/array/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-gallery color-brand" aria-hidden="true"></span> Gallery</a></li>
-							{% endif %}
-							{% if view_visibility.choropleth != false %}
-							<li class="background-color-brand-hover menu-item-choropleth {{ "active" if currentView == "choropleth" }}"><a href="/array/{{ array_source_key }}/{{ 'choropleth' | constructedRoutePath(filterObj, {
+                            {% endif %}
+                            {% if view_visibility.choropleth == true %}
+                            <li class="background-color-brand-hover menu-item-choropleth {{ " active
+                            " if currentView == "choropleth" }}"><a href="/array/{{ array_source_key }}/{{ 'choropleth' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-choropleth color-brand" aria-hidden="true"></span> Choropleth</a></li>
-							{% endif %}
-							{% if view_visibility.chart != false %}
-							<li class="background-color-brand-hover menu-item-chart {{ "active" if currentView == "chart" }}"><a href="/array/{{ array_source_key }}/{{ 'chart' | constructedRoutePath(filterObj, {
+                            {% endif %}
+                            {% if view_visibility.chart == true %}
+                            <li class="background-color-brand-hover menu-item-chart {{ " active
+                            " if currentView == "chart" }}"><a href="/array/{{ array_source_key }}/{{ 'chart' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-chart color-brand" aria-hidden="true"></span> Chart</a></li>
-							{% endif %}
-							{% if view_visibility.timeline != false %}
-							<li class="background-color-brand-hover menu-item-timeline {{ "active" if currentView == "timeline" }}"><a href="/array/{{ array_source_key }}/{{ 'timeline' | constructedRoutePath(filterObj, {
+                            {% endif %}
+                            {% if view_visibility.timeline == true %}
+                            <li class="background-color-brand-hover menu-item-timeline {{ " active
+                            " if currentView == "timeline" }}"><a href="/array/{{ array_source_key }}/{{ 'timeline' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-timeline color-brand" aria-hidden="true"></span> Timeline</a></li>
-							{% endif %}
-									{% if view_visibility.scatterplot != false %}
-									<li class="background-color-brand-hover menu-item-scatterplot {{ "active" if currentView == "scatterplot" }}"><a href="/array/{{ array_source_key }}/{{ 'scatterplot' | constructedRoutePath(filterObj, {
+                            {% endif %}
+                            {% if view_visibility.scatterplot == true %}
+                            <li class="background-color-brand-hover menu-item-scatterplot {{ " active
+                            " if currentView == "scatterplot" }}"><a href="/array/{{ array_source_key }}/{{ 'scatterplot' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-scatterplot color-brand" aria-hidden="true"></span> Scatterplot</a></li>
-									{% endif %}
-									{% if view_visibility.wordCloud != false %}
-									<li class="background-color-brand-hover menu-item-word-cloud {{ "active" if currentView == "word-cloud" }}"><a href="/array/{{ array_source_key }}/{{ 'word-cloud' | constructedRoutePath(filterObj, {
+                            {% endif %}
+                            {% if view_visibility.wordCloud == true %}
+                            <li class="background-color-brand-hover menu-item-word-cloud {{ " active
+                            " if currentView == "word-cloud" }}"><a href="/array/{{ array_source_key }}/{{ 'word-cloud' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-word-cloud color-brand" aria-hidden="true"></span> Word cloud</a></li>
-									{% endif %}
-									{% if view_visibility.lineGraph != false %}
-									<li class="background-color-brand-hover menu-item-line-graph {{ "active" if currentView == "line-graph" }}"><a href="/array/{{ array_source_key }}/{{ 'line-graph' | constructedRoutePath(filterObj, {
+                            {% endif %}
+                            {% if view_visibility.lineGraph == true %}
+                            <li class="background-color-brand-hover menu-item-line-graph {{ " active
+                            " if currentView == "line-graph" }}"><a href="/array/{{ array_source_key }}/{{ 'line-graph' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-linegraph color-brand" aria-hidden="true"></span> Line graph</a></li>

@@ -9,7 +9,7 @@ exports.GetDescriptions = function () {
             if (file == 'index.js' || file == 'default.js') return;
 
             require('./' + file).Descriptions.forEach(function (desc) {
-                if (desc.schemaname == null) {
+                if (desc.schema_id == null) {
                     descriptions.push(desc);
                 }
             });
@@ -28,8 +28,8 @@ exports.GetDescriptionsToSetup = function (files) {
         var newDescs = [];
         descs.forEach(function (desc) {
             // Extract the common fields from the schema if available.
-            if (desc.schemaname) {
-                var schemaDescriptions = require('./' + desc.schemaname).Descriptions;
+            if (desc.schema_id) {
+                var schemaDescriptions = require('./' + desc.schema_id).Descriptions;
                 var schemaDesc = Array.isArray(schemaDescriptions) ? schemaDescriptions[0] : schemaDescriptions;
 
                 for (var attrname in schemaDesc) {

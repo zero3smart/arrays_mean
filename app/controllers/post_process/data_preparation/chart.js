@@ -138,6 +138,21 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     } else {
                         uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
                     }
+
+                    if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                            a = a.replace(/\D/g, '');
+                            a = a == '' ? 0 : parseInt(a);
+                            b = b.replace(/\D/g, '');
+                            b = b == '' ? 0 : parseInt(b);
+                            return a - b;
+                        });
+
+                    } else // Sort alphabetically by default
+                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                            return a - b;
+                        });
                 }
             }
             done();

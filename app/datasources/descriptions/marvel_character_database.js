@@ -7,7 +7,7 @@ var processed_row_objects = require('../../models/processed_row_objects');
 exports.Descriptions =
     [
         {
-            filename: "Marvel_Character_Database.csv",
+            sourceURL: "Marvel_Character_Database.csv",
             fileEncoding: "utf8", // default
             uid: "marvel_character_database",
             importRevision: 1,

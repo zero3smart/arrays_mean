@@ -91,6 +91,7 @@ exports.Descriptions =
                 chart: true,
                 scatterplot: false,
                 timeline: true,
+                wordCloud: true,
                 lineGraph: false
             },
             fe_excludeFields: [
@@ -397,7 +398,7 @@ exports.Descriptions =
 
             fe_nestedObject_prefix: 'Pages_',
             // specify (and cache/store) an operating spec for the row merge operation
-            fe_nestedObjectFields: [
+            fe_nestedObject_fields: [
                 'Title',
                 'Date',
                 'Decade',
@@ -416,11 +417,11 @@ exports.Descriptions =
                 'FullSize',
                 'Thumbnail'
             ],
-            fe_nestedObjectFieldOverrides: {},
-            fe_criteria_nestedObject: function (rowDoc) {
+            fe_nestedObject_fieldOverrides: {},
+            fe_nestedObject_criteria: function (rowDoc) {
                 return !rowDoc.rowParams.Identifier || rowDoc.rowParams.Identifier == '';
             },
-            fe_nestedObjectValueOverrides: {},
+            fe_nestedObject_valueOverrides: {},
             //
             //
             afterGeneratingProcessedRowObjects_setupBefore_eachRowFn: function (eachCtx, cb) {
@@ -450,27 +451,27 @@ exports.Descriptions =
                 //
                 var self = this;
                 // Detect if the row is an issue or page by it's primary key - Identifier
-                if (!this.fe_criteria_nestedObject(rowDoc)) {
+                if (!this.fe_nestedObject_criteria(rowDoc)) {
                     // Issue
                     var bulkOperationQueryFragment;
 
                     // Apply to Merge the cached rows(Page) into one row(Issue)
                     var updateFragment = {$pushAll: {}};
 
-                    for (var i = 0; i < self.fe_nestedObjectFields.length; i++) {
+                    for (var i = 0; i < self.fe_nestedObject_fields.length; i++) {
 
-                        var fieldName = self.fe_nestedObjectFields[i];
+                        var fieldName = self.fe_nestedObject_fields[i];
 
                         var generatedArray = [];
                         //
                         eachCtx.cachedPages.forEach(function (rowDoc) {
                             var fieldValue = rowDoc["rowParams"][fieldName];
                             // Replace with the pattern listed on the overrides if needed
-                            if (self.fe_nestedObjectValueOverrides[fieldName]) {
-                                var keys = Object.keys(self.fe_nestedObjectValueOverrides[fieldName]);
+                            if (self.fe_nestedObject_valueOverrides[fieldName]) {
+                                var keys = Object.keys(self.fe_nestedObject_valueOverrides[fieldName]);
                                 keys.forEach(function (key) {
                                     var re = new RegExp(key, 'i');
-                                    fieldValue = fieldValue.replace(re, self.fe_nestedObjectValueOverrides[fieldName][key])
+                                    fieldValue = fieldValue.replace(re, self.fe_nestedObject_valueOverrides[fieldName][key])
                                 });
                             }
                             generatedArray.push(fieldValue);
@@ -483,8 +484,8 @@ exports.Descriptions =
                             eachCtx.mergeRowsIntoFieldArray_bulkOperation.find(bulkOperationQueryFragment).remove();
                         });
 
-                        if (self.fe_nestedObjectFieldOverrides[fieldName])
-                            fieldName = self.fe_nestedObjectFieldOverrides[fieldName];
+                        if (self.fe_nestedObject_fieldOverrides[fieldName])
+                            fieldName = self.fe_nestedObject_fieldOverrides[fieldName];
 
                         updateFragment["$pushAll"]["rowParams." + self.fe_nestedObject_prefix + fieldName] = generatedArray;
                     }
