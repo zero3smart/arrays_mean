@@ -1,0 +1,48 @@
+{% set view = 'dataset' %}
+
+{% extends "../../layout/admin.html" %}
+
+{% block headSuffix %}
+	<title>Admin - Arrays</title>
+{% endblock %}
+
+{% block content %}
+	<header class="admin-header">
+		<h1 class="admin-title">{{ pageTitle }}</h1>
+	</header>
+
+	{% if flash | length %}
+	<div class="alert alert-success" role="alert">{{ flash }}</div>
+	{% endif %}
+
+	<dive class="dataset">
+		<ul class="steps">
+			<li><span class="glyphicon glyphicon-check"></span>{% if id %}<a href="source">{% endif %}1. Upload Data{% if id %}</a>{% endif %}</li>
+			<li><span class="glyphicon glyphicon-check"></span>{% if id %}<a href="format">{% endif %}2. Format{% if id %}</a>{% endif %}</li>
+			<li><span class="glyphicon glyphicon-unchecked"></span>3. Settings</li>
+			<li><span class="glyphicon glyphicon-unchecked"></span> Done!</li>
+		</ul>
+
+		<br />
+
+		<form class="upload" method="post">
+
+			<div class="panel-footer">
+				<a class="btn btn-default pull-left" href="/admin/dataset/"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
+				<button type="submit" class="btn btn-default pull-right"{% if not id %}disabled="disabled" {% endif %}><span class="glyphicon glyphicon-hand-right"></span> Next</button>
+				<div class="clearfix"></div>
+			</div>
+		</form>
+
+		<form>
+
+		</form>
+	</dive>
+
+{% endblock %}
+
+{% block inlineScript %}
+	{{ super() }}
+
+	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
+{% endblock %}
