@@ -47,7 +47,8 @@ exports.Descriptions =
                 scatterplot: true,
                 timeline: false,
                 wordCloud: false,
-                lineGraph: true
+                lineGraph: true,
+                pieSet: true
             },
             fe_default_view: 'chart',
             fe_excludeFields: [
@@ -82,6 +83,33 @@ exports.Descriptions =
                 "Landing Page",
             ],
             fe_chart_valuesToExcludeByOriginalKey: {
+                _all: ["", null, "NULL", "(not specified)", "NA"],
+            },
+            fe_pieSet_defaultChartByColumnName_humanReadable: "Operating System",
+            fe_pieSet_fieldsNotAvailableAsChartByColumns: [
+                "Minute_Index",
+                "Date",
+                "Hour",
+                "Minute",
+                "Sessions",
+                "Session Duration",
+                "Pageviews",
+                "Pages Session",
+                "Landing Page",
+            ],
+            fe_pieSet_defaultGroupByColumnName_humanReadable: "Motivation",
+            fe_pieSet_fieldsNotAvailableAsGroupByColumns: [
+                "Minute_Index",
+                "Date",
+                "Hour",
+                "Minute",
+                "Sessions",
+                "Session Duration",
+                "Pageviews",
+                "Pages Session",
+                "Landing Page",
+            ],
+            fe_pieSet_valuesToExcludeByOriginalKey: {
                 _all: ["", null, "NULL", "(not specified)", "NA"],
             },
             fe_scatterplot_fieldsMap: {
@@ -148,6 +176,5 @@ exports.Descriptions =
                     format: "MMM DD"
                 }
             },
-
         }
     ];

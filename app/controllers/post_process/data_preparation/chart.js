@@ -26,7 +26,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
     var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
 
-    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != null && dataSourceDescription.fe_views.chart === false) {
+    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != true) {
         callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
 
         return;
@@ -279,8 +279,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         value: -1
                     };
                 if (existing_titleWithMostMatchesAndMatchCount.value < value) {
-                    var new_titleWithMostMatchesAndMatchCount = {label: label, value: value};
-                    titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
+                    titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = {label: label, value: value};
                 }
             });
             var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
