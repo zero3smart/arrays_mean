@@ -228,6 +228,7 @@ router.BindData = function (req, urlQuery, callback) {
                     [
                         {$unwind: "$" + "rowParams." + groupBy_realColumnName},
                         {$unwind: "$" + "rowParams." + stackBy_realColumnName},
+                        {$unwind: "$" + "rowParams." + aggregateBy_realColumnName},
                         {
                             $group: {
                                 _id: {
@@ -246,11 +247,8 @@ router.BindData = function (req, urlQuery, callback) {
                             }
                         },
                         {
-                            $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                        }/* ,
-                        {
-                            $limit: 100000 // so the chart can actually handle the number
-                        } */
+                            $sort: {value: -1} // priotize by incidence
+                        }
                     ]);
 
             } else {
@@ -258,7 +256,8 @@ router.BindData = function (req, urlQuery, callback) {
                 // Count by summing numeric field in group if option in datasource description is set
                 aggregationOperators = aggregationOperators.concat(
                     [
-                        {$unwind: "$" + "rowParams." + groupBy_realColumnName}, // requires MongoDB 3.2, otherwise throws an error if non-array
+                        {$unwind: "$" + "rowParams." + groupBy_realColumnName},
+                        {$unwind: "$" + "rowParams." + aggregateBy_realColumnName},
                         {
                             $group: {
                                 _id: "$" + "rowParams." + groupBy_realColumnName,
@@ -273,11 +272,8 @@ router.BindData = function (req, urlQuery, callback) {
                             }
                         },
                         {
-                            $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                        }/* ,
-                        {
-                            $limit: 100000 // so the chart can actually handle the number
-                        } */
+                            $sort: {value: -1} // priotize by incidence
+                        }
                     ]);
 
             }
@@ -309,10 +305,7 @@ router.BindData = function (req, urlQuery, callback) {
                             }
                         },
                         {
-                            $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                        },
-                        {
-                            $limit: 100000 // so the chart can actually handle the number
+                            $sort: {value: -1} // priotize by incidence
                         }
                     ]);
 
@@ -334,11 +327,8 @@ router.BindData = function (req, urlQuery, callback) {
                                 value: 1
                             }
                         },
-                        { // priotize by incidence, since we're $limit-ing below
+                        { // priotize by incidence
                             $sort: {value: -1}
-                        },
-                        {
-                            $limit: 100000 // so the chart can actually handle the number
                         }
                     ]);
             }
@@ -441,12 +431,13 @@ router.BindData = function (req, urlQuery, callback) {
 
                     /* Make linegraph category colors consistent for different "Aggregate By" settings
                       The following code alphabetizes the categories which are properties of stackedResultsByGroup */
-                    var alphabetizedStackedResultsByGroup = {};
-                    Object.keys(stackedResultsByGroup).sort().forEach(function(key) {
-                      alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
-                    });
-                    stackedResultsByGroup = alphabetizedStackedResultsByGroup;
-                    /////
+                    if (!Array.isArray(stackedResultsByGroup)) {
+                        var alphabetizedStackedResultsByGroup = {};
+                        Object.keys(stackedResultsByGroup).sort().forEach(function (key) {
+                            alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
+                        });
+                        stackedResultsByGroup = alphabetizedStackedResultsByGroup;
+                    }
                 }
 
             }
@@ -475,7 +466,6 @@ router.BindData = function (req, urlQuery, callback) {
                         graphData.push(stackedResultsByGroup[category].map(function(row) {
                             row.category = category;
                             row.value = Number(row.value);
-                            // {% if groupBy_isDate %}
                             if (groupBy_isDate) {
                                 var offsetTime = new Date(row.date);
                                 offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
@@ -489,6 +479,7 @@ router.BindData = function (req, urlQuery, callback) {
                 }
 
             }
+
             done();
         };
 
@@ -516,8 +507,6 @@ router.BindData = function (req, urlQuery, callback) {
             //
             groupBy: groupBy,
             groupBy_isDate: groupBy_isDate,
-            // Logic has been moved from template to controller, doesn't need to be exported
-            //stackedResultsByGroup: stackedResultsByGroup,
             // lineColors: dataSourceDescription.fe_lineGraph_stackedLineColors ? dataSourceDescription.fe_lineGraph_stackedLineColors : {},
             groupBy_outputInFormat: groupBy_outputInFormat,
             //

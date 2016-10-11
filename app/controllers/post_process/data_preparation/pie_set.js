@@ -193,6 +193,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 [
                     {$unwind: "$" + "rowParams." + groupBy_realColumnName},
                     {$unwind: "$" + "rowParams." + chartBy_realColumnName},
+                    {$unwind: "$" + "rowParams." + aggregateBy_realColumnName},
                     { // unique/grouping and summing stage
                         $group: {
                             _id: {

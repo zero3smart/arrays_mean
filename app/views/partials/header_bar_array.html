@@ -146,14 +146,21 @@
                             " if currentView == "line-graph" }}"><a href="/array/{{ array_source_key }}/{{ 'line-graph' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
-				}) }}"><span class="icon-linegraph color-brand" aria-hidden="true"></span> Line graph</a></li>
+				}) }}"><span class="icon-line-graph color-brand" aria-hidden="true"></span> Line graph</a></li>
                             {% endif %}
                             {% if view_visibility.pieSet == true %}
-                            <li class="background-color-brand-hover menu-item-pieSet {{ " active
+                            <li class="background-color-brand-hover menu-item-pie-set {{ " active
                             " if currentView == "pie-set" }}"><a href="/array/{{ array_source_key }}/{{ 'pie-set' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-pie-set color-brand" aria-hidden="true"></span> Pie Set</a></li>
+                            {% endif %}
+                            {% if view_visibility.barChart == true %}
+                            <li class="background-color-brand-hover menu-item-bar-chart {{ " active
+                            " if currentView == "bar-chart" }}"><a href="/array/{{ array_source_key }}/{{ 'bar-chart' | constructedRoutePath(filterObj, {
+					searchQ: searchQ,
+					searchCol: searchCol
+				}) }}"><span class="icon-bar-chart color-brand" aria-hidden="true"></span> Bar Chart</a></li>
                             {% endif %}
                         </ul>
                     </li>

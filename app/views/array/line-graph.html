@@ -96,7 +96,6 @@
 
                             <script type="text/javascript">
                                 // var lineColors = {{ lineColors | dump | safe }};
-                                var line;
                                 var filterObj = {{ filterObj | dump | safe }};
                                 var routePath_withoutFilter = '{{ routePath_base | constructedRoutePath(null, {
                                         searchCol: searchCol,
@@ -167,10 +166,7 @@
     <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
     <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
     <script>
-        
-        // var options = {{options | dump | safe}};
-        var graphData = {{graphData | dump | safe}};       
-        // var lineChart = new linechart.chart({{graphData | dump | safe}} , options).render("#linechart");
+        var graphData = {{graphData | dump | safe}};
         var lineChart = new linechart.chart(graphData , options).render("#linechart");
     </script>
 {% endblock %}

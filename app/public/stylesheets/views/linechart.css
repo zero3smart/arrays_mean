@@ -1,4 +1,4 @@
-linechart svg .axis line, .linechart svg .axis path {
+.linechart svg .axis line, .linechart svg .axis path {
     shape-rendering: crispEdges;
 }
 

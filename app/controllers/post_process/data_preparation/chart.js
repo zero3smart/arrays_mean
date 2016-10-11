@@ -178,7 +178,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
         if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
             aggregationOperators = aggregationOperators.concat(
                 [
-                    {$unwind: "$" + "rowParams." + groupBy_realColumnName}, // requires MongoDB 3.2, otherwise throws an error if non-array
+                    {$unwind: "$" + "rowParams." + groupBy_realColumnName},
+                    {$unwind: "$" + "rowParams." + aggregateBy_realColumnName},
                     { // unique/grouping and summing stage
                         $group: {
                             _id: "$" + "rowParams." + groupBy_realColumnName,
@@ -194,9 +195,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     },
                     { // priotize by incidence, since we're $limit-ing below
                         $sort: {value: -1}
-                    },
-                    {
-                        $limit: 100 // so the chart can actually handle the number
                     }
                 ]);
         } else {
@@ -218,9 +216,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     },
                     { // priotize by incidence, since we're $limit-ing below
                         $sort: {value: -1}
-                    },
-                    {
-                        $limit: 100 // so the chart can actually handle the number
                     }
                 ]);
         }
