@@ -265,6 +265,8 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
 }
 
 function convertQueryStringToObject(inputString) {
+    if (inputString == '') return {};
+
     var obj = {};
     var arr = decodeURIComponent(inputString).split('&');
 

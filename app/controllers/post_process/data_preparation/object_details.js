@@ -165,6 +165,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
             brandColor: dataSourceDescription.brandColor,
             default_filterJSON: default_filterJSON,
             view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+            main_view: dataSourceDescription.fe_default_view ? dataSourceDescription.fe_default_view : 'gallery',
             //
             rowObject: rowObject,
             //

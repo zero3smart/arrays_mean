@@ -35,7 +35,6 @@ var _activeFilter_matchOp_orErrDescription_fromMultiFilter = function (dataSourc
     var filterCols = Object.keys(filterObj);
     var filterCols_length = filterCols.length;
     if (filterCols_length == 0) {
-        winston.error("❌  Programmer runtime check error. Filter obj had no keys.");
         return {err: new Error("No active filter despite filterObj")};
     }
     var conditions = [];
