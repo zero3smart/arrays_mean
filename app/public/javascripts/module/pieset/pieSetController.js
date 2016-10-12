@@ -32,8 +32,6 @@ legendData.forEach(function(d, i) {
     colorMap[d.label] = colors[i];
 });
 
-console.log(colorMap);
-
 d3.select('#pie-set')
     .selectAll('li.gallery-item')
     .data(pieData)

@@ -1,12 +1,11 @@
 .pie-set-item {
     height: 270px;
-    border: 1px solid green;
     position: relative;
     padding: 20px;
 }
 
 .pie-set-item .title {
-    border: 1px solid red;
+    padding-right: 40px;
     height: 30px;
     line-height: 30px;
     vertical-align: middle;
