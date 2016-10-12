@@ -4923,13 +4923,13 @@ body {
 /* @end footer */
 /* @override 
 	http://localhost:9080/stylesheets/layout/embedded.css */
-.view-embedded .navbar,
 .view-embedded .array-header,
-.view-embedded .array-controls,
 .view-embedded .site-footer,
-.view-embedded .filter-bar,
 .view-embedded .sort-bar {
 	display: none;
+}
+.view-embedded .array-controls {
+	top: 0;
 }
 .view-embedded .site-content {
 	padding-top: 0;
@@ -4938,6 +4938,30 @@ body {
 	max-width: calc(100vw - 40px);
 	width: 100vh;
 	height: 100vh;
+}
+.view-embedded #scatterplot {
+	height: calc(100vh - 70px);
+	min-height: calc(100vh - 70px);
+}
+.view-embedded .site-header .navbar-brand-container {
+	display: none;
+}
+.view-embedded .site-header .navbar-default {
+	background: none;
+	display: inline-block;
+}
+.view-embedded .site-header .navbar-collapse.collapse {
+	display: none!important;
+}
+.view-embedded .site-header .navbar-fixed-top, .view-embedded .site-header .navbar-fixed-bottom {
+	right: initial;
+	width: initial;
+}
+.view-embedded .site-header .navbar .container-fluid {
+	padding-left: 0;
+	padding-right: 0;
+	width: initial;
+	display: inline-block;
 }
 /* @end Layout */
 /* @group Module */
@@ -5539,6 +5563,9 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	color: #9b9b9b;
 	text-align: right;
 	font-size: 16px;
+}
+#Aggregate-By .dropdown-toggle-label .sort-criteria {
+	text-transform: none;
 }
 /* @override 
 	http://localhost:9080/stylesheets/module/modal.css */
@@ -6999,6 +7026,10 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 	font-weight: 600;
 	font-size: 16px;
 }
+#scatterplot {
+	height: calc(100vh - 340px);
+	min-height: 300px;
+}
 .linechart svg .axis line, .linechart svg .axis path {
     shape-rendering: crispEdges;
 }
@@ -7091,12 +7122,12 @@ html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
 	text-decoration: none;
 }
 .pie-set-item {
-    height: 300px;
-    border: 1px solid green;
+    height: 270px;
     position: relative;
+    padding: 20px;
 }
 .pie-set-item .title {
-    border: 1px solid red;
+    padding-right: 40px;
     height: 30px;
     line-height: 30px;
     vertical-align: middle;
