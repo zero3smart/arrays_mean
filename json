@@ -93,6 +93,7 @@
             ]
         }
     },
+    "fe_displayTitleOverrides" : [],
     "fe_viewDetails" : {
         "gallery" : {
             "defaultSortByColumnName_humanReadable" : "Object Title"
