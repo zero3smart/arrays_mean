@@ -69,6 +69,8 @@ var DatasourceDescription_scheme = Schema({
     fe_chart_defaultGroupByColumnName_humanReadable: String,
     fe_chart_fieldsNotAvailableAsGroupByColumns: Array,
     fe_chart_valuesToExcludeByOriginalKey: Object,
+    fe_chart_defaultAggregateByColumnName_humanReadable: String,
+    fe_chart_aggregateByColumnName_numberOfRecords_notAvailable: Boolean,
 
     // Choropleth
     fe_choropleth_defaultMapByColumnName_humanReadable: String,
@@ -84,7 +86,6 @@ var DatasourceDescription_scheme = Schema({
     fe_timeline_defaultGroupByColumnName_humanReadable: String,
     fe_timeline_fieldsNotAvailableAsSortByColumns: Array,
     fe_timeline_fieldsNotAvailableAsGroupByColumns: Array,
-    fe_timeline_tooltipDateFormat: String,
 
     // WordCloud
     fe_wordCloud_defaultGroupByColumnName_humanReadable: String,
@@ -103,6 +104,15 @@ var DatasourceDescription_scheme = Schema({
     fe_lineGraph_mapping_dataSource_fields: Object,
 
     // Bar Chart
+
+    // Pie Set
+    fe_pieSet_defaultGroupByColumnName_humanReadable: String,
+    fe_pieSet_fieldsNotAvailableAsGroupByColumns: Array,
+    fe_pieSet_defaultChartByColumnName_humanReadable: String,
+    fe_pieSet_fieldsNotAvailableAsChartByColumns: Array,
+    fe_pieSet_valuesToExcludeByOriginalKey: Array,
+    fe_pieSet_defaultAggregateByColumnName_humanReadable: String,
+    fe_pieSet_aggregateByColumnName_numberOfRecords_notAvailable: Boolean,
 
     // Object Details
     fe_fieldDisplayOrder: Array,

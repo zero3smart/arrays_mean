@@ -274,7 +274,7 @@ linechart.viewport.prototype.render = function (container) {
                 date = new Date(self._datesDomain[index]);
 
                 window.location.href = self._options.redirectBaseUrl +
-                    moment(date, moment.ISO_8601).format(this._options.outputInFormat);
+                    moment(date, moment.ISO_8601).format(self._options.outputInFormat);
             }
         });
     /*

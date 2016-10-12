@@ -206,8 +206,9 @@ exports.Descriptions =
             },
             //
             fe_objectShow_customHTMLOverrideFnsByColumnName: {
-                "Artworks": function (rowObject, eachValue) {
+                "Artworks": function (rowObject, eachValue, strParams) {
                     var relationshipObjectShowLink = "/array/" + eachValue.srcDocPKey + "/" + eachValue._id;
+                    if (strParams && strParams != '') relationshipObjectShowLink += '?' + strParams;
                     var openingTag = '<a href="' + relationshipObjectShowLink + '" class="color-brand">';
                     var tagContent = eachValue.rowParams.Title;
                     var closingTag = '</a>';

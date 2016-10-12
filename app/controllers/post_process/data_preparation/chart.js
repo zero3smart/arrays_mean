@@ -15,6 +15,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // groupBy
     // searchQ
     // searchCol
+    // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
@@ -26,7 +27,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
     var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
 
-    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != null && dataSourceDescription.fe_views.chart === false) {
+    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != true) {
         callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
 
         return;
@@ -47,7 +48,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     //
     var routePath_base = "/array/" + source_pKey + "/chart";
-    var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+    var sourceDocURL = dataSourceDescription.urls && dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null;
+    if (urlQuery.embed == 'true') routePath_base += '?embed=true';
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //
@@ -178,7 +180,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
         if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
             aggregationOperators = aggregationOperators.concat(
                 [
-                    {$unwind: "$" + "rowParams." + groupBy_realColumnName}, // requires MongoDB 3.2, otherwise throws an error if non-array
+                    {$unwind: "$" + "rowParams." + groupBy_realColumnName},
+                    {$unwind: "$" + "rowParams." + aggregateBy_realColumnName},
                     { // unique/grouping and summing stage
                         $group: {
                             _id: "$" + "rowParams." + groupBy_realColumnName,
@@ -194,9 +197,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     },
                     { // priotize by incidence, since we're $limit-ing below
                         $sort: {value: -1}
-                    },
-                    {
-                        $limit: 100 // so the chart can actually handle the number
                     }
                 ]);
         } else {
@@ -218,9 +218,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     },
                     { // priotize by incidence, since we're $limit-ing below
                         $sort: {value: -1}
-                    },
-                    {
-                        $limit: 100 // so the chart can actually handle the number
                     }
                 ]);
         }
@@ -279,8 +276,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         value: -1
                     };
                 if (existing_titleWithMostMatchesAndMatchCount.value < value) {
-                    var new_titleWithMostMatchesAndMatchCount = {label: label, value: value};
-                    titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
+                    titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = {label: label, value: value};
                 }
             });
             var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);

@@ -138,12 +138,20 @@ $(document).ready(function() {
                         $modalBody.append('<h3>Share URL</h3>');
                         $modalBody.append('<pre class="border-color-brand">' + share_url + '</pre>');
 
-                        var embedUrl = '<iframe src="' + share_url + '?embed=true" width="640" height="480" frameborder="0"></iframe>';
+                        var embedUrl = '<iframe id="iEmbed" src="' + share_url + '?embed=true" width="640" height="480" frameborder="0"></iframe>';
 
                         $modalBody.append('<h3>Embed URL</h3>');
                         $modalBody.append('<pre id="embed-url" class="border-color-brand"></pre>');
+
+                        $modalBody.append('<h3><input type="checkbox" id="cbEmbed">  Show header and footer</h3>');
                         $('#embed-url').text(embedUrl);
 
+                        $(this).find('#cbEmbed').change(function() {
+                            embedUrl = '<iframe id="iEmbed" src="' + share_url;
+                            if (!$(this).is(":checked")) embedUrl += '?embed=true';
+                            embedUrl += '" width="640" height="480" frameborder="0"></iframe>';
+                            $('#embed-url').text(embedUrl);
+                        });
                         /**
                          * Initialize Sharrre buttons
                          */

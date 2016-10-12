@@ -15,6 +15,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // groupBy
     // searchQ
     // searchCol
+    // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
@@ -26,7 +27,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
     var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
 
-    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != null && dataSourceDescription.fe_views.chart === false) {
+    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.wordCloud != true) {
         callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
 
         return;
@@ -45,7 +46,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var keywords = dataSourceDescription.fe_wordCloud_keywords;
     //
     var routePath_base = "/array/" + source_pKey + "/word-cloud";
-    var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+    var sourceDocURL = dataSourceDescription.urls && dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null;
+    if (urlQuery.embed == 'true') routePath_base += '?embed=true';
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //

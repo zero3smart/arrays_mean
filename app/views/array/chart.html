@@ -1,3 +1,5 @@
+{% set currentView = "chart" %}
+
 {% extends "../layout/array.html" %}
 
 {% import "../partials/dropdown.html" as dropdown %}
@@ -7,8 +9,6 @@
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
 {% endblock %}
-
-{% set currentView = "chart" %}
 
 {% block content %}
     <section class="array">
@@ -115,7 +115,6 @@
                             groupBy: groupBy,
                             aggregateBy: aggregateBy
                     }) | safe }}";
-                    var routePath_base = '{{ routePath_base }}';
                     var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
                 </script>
 

@@ -297,7 +297,6 @@ exports.Descriptions =
                 "Categories",
                 "Journal"
             ],
-            fe_timeline_tooltipDateFormat: "YYYY",
             //
             //
             fe_lineGraph_defaultGroupByColumnName_humanReadable: "Publication Year",
