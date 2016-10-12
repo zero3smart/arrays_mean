@@ -1,3 +1,5 @@
+{% set currentView = "word-cloud" %}
+
 {% extends "../layout/array.html" %}
 
 {% import "../partials/dropdown.html" as dropdown %}
@@ -7,8 +9,6 @@
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
 {% endblock %}
-
-{% set currentView = "word-cloud" %}
 
 {% block content %}
     <section class="array">

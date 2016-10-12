@@ -28,7 +28,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
     var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
 
-    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.gallery != null && dataSourceDescription.fe_views.gallery === false) {
+    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.gallery != true) {
         callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
 
         return;

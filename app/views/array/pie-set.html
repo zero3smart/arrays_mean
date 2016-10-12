@@ -1,3 +1,5 @@
+{% set currentView = "pie-set" %}
+
 {% extends "../layout/array.html" %}
 
 {% import "../partials/dropdown.html" as dropdown %}
@@ -7,8 +9,6 @@
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
 {% endblock %}
-
-{% set currentView = "chart" %}
 
 {% block content %}
     <section class="array">
@@ -37,15 +37,32 @@
                                     dropdown.sortbar
                                         (
                                             "Chart By",
-                                            groupBy if groupBy else defaultGroupByColumnName_humanReadable,
-                                            colNames_orderedForGroupByDropdown,
+                                            chartBy if chartBy else defaultChartByColumnName_humanReadable,
+                                            colNames_orderedForChartByDropdown,
                                             routePath_base | constructedRoutePath(filterObj, {
                                                 searchCol: searchCol,
                                                 searchQ: searchQ,
                                                 aggregateBy: aggregateBy,
-                                                groupBy: ''
+                                                groupBy: groupBy,
+                                                chartBy: ''
                                             })
                                         )
+                                    }}
+
+                                    {{
+                                    dropdown.sortbar
+                                    (
+                                        "Group By",
+                                        groupBy if groupBy else defaultGroupByColumnName_humanReadable,
+                                        colNames_orderedForGroupByDropdown,
+                                        routePath_base | constructedRoutePath(filterObj, {
+                                            searchCol: searchCol,
+                                            searchQ: searchQ,
+                                            aggregateBy: aggregateBy,
+                                            chartBy: chartBy,
+                                            groupBy: ''
+                                        })
+                                    )
                                     }}
 
                                     {% if aggregateBy_humanReadable_available %}

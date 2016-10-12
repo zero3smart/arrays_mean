@@ -47,7 +47,9 @@ exports.Descriptions =
                 scatterplot: true,
                 timeline: false,
                 wordCloud: false,
-                lineGraph: true
+                lineGraph: true,
+                pieSet: true,
+                barChart: true
             },
             fe_default_view: 'chart',
             fe_excludeFields: [
@@ -84,6 +86,35 @@ exports.Descriptions =
             fe_chart_valuesToExcludeByOriginalKey: {
                 _all: ["", null, "NULL", "(not specified)", "NA"],
             },
+            fe_pieSet_defaultChartByColumnName_humanReadable: "Operating System",
+            fe_pieSet_fieldsNotAvailableAsChartByColumns: [
+                "Minute_Index",
+                "Date",
+                "Hour",
+                "Minute",
+                "Sessions",
+                "Session Duration",
+                "Pageviews",
+                "Pages Session",
+                "Landing Page",
+            ],
+            fe_pieSet_defaultGroupByColumnName_humanReadable: "Motivation",
+            fe_pieSet_fieldsNotAvailableAsGroupByColumns: [
+                "Minute_Index",
+                "Date",
+                "Hour",
+                "Minute",
+                "Sessions",
+                "Session Duration",
+                "Pageviews",
+                "Pages Session",
+                "Landing Page",
+            ],
+            fe_pieSet_valuesToExcludeByOriginalKey: {
+                _all: ["", null, "NULL", "(not specified)", "NA"],
+            },
+            fe_pieSet_defaultAggregateByColumnName_humanReadable: "Sessions",
+            fe_pieSet_aggregateByColumnName_numberOfRecords_notAvailable: false,
             fe_scatterplot_fieldsMap: {
                 'Object Title': 'Motivation'
             },
@@ -113,6 +144,8 @@ exports.Descriptions =
             ////////////
 
             fe_timeline_defaultSortByColumnName_humanReadable: "Date",
+
+            // line graph
             fe_lineGraph_defaultGroupByColumnName_humanReadable: "Date",
             fe_lineGraph_fieldsNotAvailableAsGroupByColumns: [
                 "Institution",
@@ -148,6 +181,41 @@ exports.Descriptions =
                     format: "MMM DD"
                 }
             },
-
+            // bar chart
+            fe_barChart_defaultGroupByColumnName_humanReadable: "Institution",
+            fe_barChart_fieldsNotAvailableAsGroupByColumns: [
+                "Hour",
+                "Minute",
+                "Motivation",
+                "Session Duration",
+                "Pages Per Session",
+                "Landing Page",
+                "User Type",
+                "Traffic Type",
+                "Minute Index",
+                "City",
+                "Region",
+                "Country",
+                "Sessions",
+                "Pageviews",
+                "Pages Session",
+                "Date"
+            ],
+            fe_barChart_stackByColumnName_humanReadable: "Motivation",
+            fe_barChart_defaultAggregateByColumnName_humanReadable: "Sessions",
+            fe_barChart_aggregateByColumnName_numberOfRecords_notAvailable: false,
+            fe_barChart_stackedBarColors: {
+                'Explorer': '#33B1B1',
+                'Facilitator': '#9533F8',
+                'Professional': '#FEB600',
+                'Recharger': '#F0141E',
+                'Seeker': '#4D8DFF',
+            },
+            fe_barChart_outputInFormat: {
+                Date: {
+                    format: "MMM DD"
+                }
+            },
+            //fe_barChart_isHorizontal: true
         }
     ];

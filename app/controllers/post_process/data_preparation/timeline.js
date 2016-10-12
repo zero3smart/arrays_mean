@@ -27,7 +27,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
     var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
 
-    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.timeline != null && dataSourceDescription.fe_views.timeline === false) {
+    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.timeline != true) {
         callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
 
         return;
@@ -300,8 +300,27 @@ module.exports.BindData = function (req, urlQuery, callback) {
         var doneFn = function (err, _groupedResults) {
             if (err) return done(err);
 
-            groupedResults = _groupedResults;
-            if (groupedResults == undefined || groupedResults == null) groupedResults = [];
+            if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
+
+            var finalizedButNotCoalesced_groupedResults = [];
+            _groupedResults.forEach(function (el, i, arr) {
+                var results = [];
+                el.results.forEach(function(el2, i2) {
+                    var originalVal = el2.rowParams[sortBy_realColumnName];
+                    var displayableVal = originalVal;
+                    if (originalVal == null) {
+                        displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
+                    } else if (originalVal === "") {
+                        displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
+                    } else {
+                        displayableVal = func.reverseDataToBeDisplayableVal(originalVal, sortBy_realColumnName, dataSourceDescription);
+                    }
+                    el2.rowParams[sortBy_realColumnName] = displayableVal;
+                    results.push(el2);
+                });
+                el.results = results;
+                groupedResults.push(el);
+            });
 
             done();
         };
@@ -366,9 +385,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             routePath_base: routePath_base,
             // multiselectable filter fields
-            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable,
-
-            tooltipDateFormat: dataSourceDescription.fe_timeline_tooltipDateFormat || null
+            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
         };
         callback(err, data);
     });
