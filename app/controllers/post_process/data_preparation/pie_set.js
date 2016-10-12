@@ -195,7 +195,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 [
                     {$unwind: "$" + "rowParams." + groupBy_realColumnName},
                     {$unwind: "$" + "rowParams." + chartBy_realColumnName},
-                    {$unwind: "$" + "rowParams." + aggregateBy_realColumnName},
                     { // unique/grouping and summing stage
                         $group: {
                             _id: {
@@ -210,7 +209,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     { // reformat
                         $project: {
                             _id: 0,
-                            gropuBy: "$_id.groupBy",
+                            groupBy: "$_id.groupBy",
                             chartBy: "$_id.chartBy",
                             value: 1
                         }
@@ -252,12 +251,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     } */
                 ]);
         }
-
+console.log('---- %j', aggregationOperators);
         //
         var doneFn = function (err, _groupedResults) {
             if (err) return done(err);
 
             if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
+
+            console.log('|||| %j', _groupedResults);
 
             var finalizedButNotCoalesced_groupedResults = {};
             _groupedResults.forEach(function (el, i, arr) {
@@ -320,6 +321,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 });
             });
 
+            console.log('++++ %j', finalizedButNotCoalesced_groupedResults);
+
             for (var chartBy in finalizedButNotCoalesced_groupedResults) {
                 var _groupedResultsByChart = finalizedButNotCoalesced_groupedResults[chartBy];
 
@@ -367,6 +370,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     data: data
                 });
             };
+
+            console.log('**** %j', groupedResults);
 
             done();
         };
