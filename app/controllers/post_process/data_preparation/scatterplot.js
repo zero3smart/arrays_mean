@@ -148,6 +148,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                  numericFields.push(i);
                  }
                  }*/
+                var routePath_base = '/array/' + sourceKey + '/scatterplot';
+                if (urlQuery.embed == 'true') routePath_base += '?embed=true';
                 /*
                  * Run callback function to finish action.
                  */
@@ -165,7 +167,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
                     sourceDoc: sourceDoc,
                     view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
-                    routePath_base: '/array/' + sourceKey + '/scatterplot',
+                    routePath_base: routePath_base,
                     filterObj: filterObj,
                     isFilterActive: isFilterActive,
                     urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,

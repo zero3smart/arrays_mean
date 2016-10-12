@@ -17,6 +17,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // sortDir
     // searchQ
     // searchCol
+    // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
@@ -56,6 +57,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     //
     var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
     var routePath_base = "/array/" + source_pKey + "/gallery";
+    if (urlQuery.embed == 'true') routePath_base += '?embed=true';
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //

@@ -144,7 +144,7 @@
                                                                 {% endif %}
                                                                 {% set sortByDateRange = sortBy if sortBy else defaultSortByColumnName_humanReadable %}
                                                                 {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(sortByDateRange, filterDateRange | dump, false) %}
-                                                                <a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal) }}" class="timeline-view-all-link color-brand-hover">
+                                                                <a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="timeline-view-all-link color-brand-hover">
                                                                     <span class="timeline-view-all-label">View all</span>
                                                                     <span class="timeline-view-all-count">{{ group.total }}</span>
                                                                 </a>

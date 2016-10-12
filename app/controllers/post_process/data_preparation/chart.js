@@ -15,6 +15,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // groupBy
     // searchQ
     // searchCol
+    // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
@@ -47,7 +48,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     //
     var routePath_base = "/array/" + source_pKey + "/chart";
-    var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+    var sourceDocURL = dataSourceDescription.urls && dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null;
+    if (urlQuery.embed == 'true') routePath_base += '?embed=true';
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //

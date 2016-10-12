@@ -22,6 +22,7 @@ router.BindData = function (req, urlQuery, callback) {
     // sortDir
     // searchQ
     // searchCol
+    // embed
     // filters
     var source_pKey = urlQuery.source_key;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
@@ -68,7 +69,8 @@ router.BindData = function (req, urlQuery, callback) {
     var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
     //
     var routePath_base = "/array/" + source_pKey + "/bar-chart";
-    var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+    var sourceDocURL = dataSourceDescription.urls && dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null;
+    if (urlQuery.embed == 'true') routePath_base += '?embed=true';
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //

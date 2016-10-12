@@ -21,6 +21,7 @@ router.BindData = function (req, urlQuery, callback) {
     // groupBy
     // searchQ
     // searchCol
+    // embed
     // filters
     var source_pKey = urlQuery.source_key;
     var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
@@ -64,7 +65,8 @@ router.BindData = function (req, urlQuery, callback) {
     var stackBy = dataSourceDescription.fe_lineGraph_stackByColumnName_humanReadable;
     //
     var routePath_base = "/array/" + source_pKey + "/line-graph";
-    var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+    var sourceDocURL = dataSourceDescription.urls && dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null;
+    if (urlQuery.embed == 'true') routePath_base += '?embed=true';
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
     //
@@ -95,6 +97,7 @@ router.BindData = function (req, urlQuery, callback) {
         if (dataSourceDescription.fe_lineGraph_mapping_dataSource_fields)
             mapping_groupBy = dataSourceDescription.fe_lineGraph_mapping_dataSource_fields[groupBy_realColumnName];
         var mapping_groupByObj = {};
+        if (urlQuery.embed == 'true') mapping_groupByObj.embed = 'true';
         mapping_groupByObj[mapping_groupBy] = '';
     }
 
