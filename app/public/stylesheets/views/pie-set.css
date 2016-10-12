@@ -2,6 +2,9 @@
     height: 270px;
     position: relative;
     padding: 20px;
+    margin: 10px 6px;
+    border-radius: 5px;
+    box-shadow: var(--box-shadow);
 }
 
 .pie-set-item .title {
