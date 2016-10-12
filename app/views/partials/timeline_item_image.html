@@ -1,4 +1,4 @@
-<li class="timeline-group-item has-tooltip" data-tooltip-key="{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}" data-tooltip-value="{{ doc.rowParams[sortBy_realColumnName] | dateFormat(tooltipDateFormat) }}">
+<li class="timeline-group-item has-tooltip" data-tooltip-key="{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}" data-tooltip-value="{{ doc.rowParams[sortBy_realColumnName] if doc.rowParams[sortBy_realColumnName] else "(Date not specified)" }}">
 	<div class="timeline-item timeline-item-image">
 		<a href="/array/{{ doc.srcDocPKey }}/{{ doc._id }}" class="timeline-link">
 			<img src="{{ doc.rowParams[fieldKey_medThumbImageURL] }}" class="timeline-image" />

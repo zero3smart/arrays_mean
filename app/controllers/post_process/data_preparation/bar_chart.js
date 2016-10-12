@@ -19,6 +19,7 @@ router.BindData = function (req, urlQuery, callback) {
     // urlQuery keys:
     // source_key
     // groupBy
+    // sortDir
     // searchQ
     // searchCol
     // filters
@@ -32,7 +33,7 @@ router.BindData = function (req, urlQuery, callback) {
 
     var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
 
-    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.lineGraph != null && dataSourceDescription.fe_views.lineGraph === false) {
+    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.barChart != true) {
         callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
 
         return;
@@ -63,7 +64,10 @@ router.BindData = function (req, urlQuery, callback) {
     //
     var stackBy = dataSourceDescription.fe_barChart_stackByColumnName_humanReadable;
     //
-    var routePath_base = "/array/" + source_pKey + "/line-graph";
+    var sortDir = urlQuery.sortDir;
+    var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
+    //
+    var routePath_base = "/array/" + source_pKey + "/bar-chart";
     var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
     //
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
@@ -136,7 +140,7 @@ router.BindData = function (req, urlQuery, callback) {
     var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, stackedResultsByGroup = {};
 
     ///
-    // graphData is exported and used by template for lineChart generation
+    // graphData is exported and used by template for barChart generation
     var graphData;
 
 
@@ -181,6 +185,21 @@ router.BindData = function (req, urlQuery, callback) {
                     } else {
                         uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
                     }
+
+                    if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                            a = a.replace(/\D/g, '');
+                            a = a == '' ? 0 : parseInt(a);
+                            b = b.replace(/\D/g, '');
+                            b = b == '' ? 0 : parseInt(b);
+                            return a - b;
+                        });
+
+                    } else // Sort alphabetically by default
+                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                            return a - b;
+                        });
                 }
             }
             done();
@@ -213,6 +232,7 @@ router.BindData = function (req, urlQuery, callback) {
                     [
                         {$unwind: "$" + "rowParams." + groupBy_realColumnName},
                         {$unwind: "$" + "rowParams." + stackBy_realColumnName},
+                        {$unwind: "$" + "rowParams." + aggregateBy_realColumnName},
                         {
                             $group: {
                                 _id: {
@@ -231,11 +251,8 @@ router.BindData = function (req, urlQuery, callback) {
                             }
                         },
                         {
-                            $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                        }/* ,
-                        {
-                            $limit: 100000 // so the chart can actually handle the number
-                        } */
+                            $sort: {value: sortDirection} // priotize by incidence
+                        }
                     ]);
 
             } else {
@@ -243,7 +260,8 @@ router.BindData = function (req, urlQuery, callback) {
                 // Count by summing numeric field in group if option in datasource description is set
                 aggregationOperators = aggregationOperators.concat(
                     [
-                        {$unwind: "$" + "rowParams." + groupBy_realColumnName}, // requires MongoDB 3.2, otherwise throws an error if non-array
+                        {$unwind: "$" + "rowParams." + groupBy_realColumnName},
+                        {$unwind: "$" + "rowParams." + aggregateBy_realColumnName},
                         {
                             $group: {
                                 _id: "$" + "rowParams." + groupBy_realColumnName,
@@ -258,11 +276,8 @@ router.BindData = function (req, urlQuery, callback) {
                             }
                         },
                         {
-                            $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                        }/* ,
-                        {
-                            $limit: 100000 // so the chart can actually handle the number
-                        } */
+                            $sort: {value: sortDirection} // priotize by incidence
+                        }
                     ]);
 
             }
@@ -294,10 +309,7 @@ router.BindData = function (req, urlQuery, callback) {
                             }
                         },
                         {
-                            $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                        },
-                        {
-                            $limit: 100000 // so the chart can actually handle the number
+                            $sort: {value: sortDirection} // priotize by incidence
                         }
                     ]);
 
@@ -319,11 +331,8 @@ router.BindData = function (req, urlQuery, callback) {
                                 value: 1
                             }
                         },
-                        { // priotize by incidence, since we're $limit-ing below
-                            $sort: {value: -1}
-                        },
-                        {
-                            $limit: 100000 // so the chart can actually handle the number
+                        { // priotize by incidence
+                            $sort: {value: sortDirection}
                         }
                     ]);
             }
@@ -415,7 +424,7 @@ router.BindData = function (req, urlQuery, callback) {
                         }
                         groupedResults.push({
                             value: summedValue,
-                            date: reconstitutedDisplayableTitle
+                            label: reconstitutedDisplayableTitle
                         });
                     });
 
@@ -424,21 +433,22 @@ router.BindData = function (req, urlQuery, callback) {
                     else
                         stackedResultsByGroup = groupedResults;
 
-                    /* Make linegraph category colors consistent for different "Aggregate By" settings
+                    /* Make barChart category colors consistent for different "Aggregate By" settings
                       The following code alphabetizes the categories which are properties of stackedResultsByGroup */
-                    var alphabetizedStackedResultsByGroup = {};
-                    Object.keys(stackedResultsByGroup).sort().forEach(function(key) {
-                      alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
-                    });
-                    stackedResultsByGroup = alphabetizedStackedResultsByGroup;
-                    /////
+                    if (!Array.isArray(stackedResultsByGroup)) {
+                        var alphabetizedStackedResultsByGroup = {};
+                        Object.keys(stackedResultsByGroup).sort().forEach(function (key) {
+                            alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
+                        });
+                        stackedResultsByGroup = alphabetizedStackedResultsByGroup;
+                    }
                 }
 
             }
 
             graphData = [];
 
-            var lineColors = dataSourceDescription.fe_barChart_stackedLineColors ? dataSourceDescription.fe_barChart_stackedLineColors : {};
+            var barColors = dataSourceDescription.fe_barChart_stackedBarColors ? dataSourceDescription.fe_barChart_stackedBarColors : {};
 
             if (Array.isArray(stackedResultsByGroup)) {
 
@@ -446,9 +456,9 @@ router.BindData = function (req, urlQuery, callback) {
                     row.category = dataSourceDescription.title
                     row.value = Number(row.value);
                     if (groupBy_isDate) {
-                        var offsetTime = new Date(row.date);
+                        var offsetTime = new Date(row.label);
                         offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                        row.date = offsetTime;
+                        row.label = offsetTime;
                     }
                     return row;
                 });
@@ -460,13 +470,12 @@ router.BindData = function (req, urlQuery, callback) {
                         graphData.push(stackedResultsByGroup[category].map(function(row) {
                             row.category = category;
                             row.value = Number(row.value);
-                            // {% if groupBy_isDate %}
                             if (groupBy_isDate) {
-                                var offsetTime = new Date(row.date);
+                                var offsetTime = new Date(row.label);
                                 offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                                row.date = offsetTime;
+                                row.label = offsetTime;
                             }
-                            if (lineColors && lineColors[category]) row.color = lineColors[category];
+                            if (barColors && barColors[category]) row.color = barColors[category];
 
                             return row;
                         }));
@@ -474,6 +483,9 @@ router.BindData = function (req, urlQuery, callback) {
                 }
 
             }
+
+            console.log('---- %j', graphData);
+
             done();
         };
 
@@ -501,9 +513,7 @@ router.BindData = function (req, urlQuery, callback) {
             //
             groupBy: groupBy,
             groupBy_isDate: groupBy_isDate,
-            // Logic has been moved from template to controller, doesn't need to be exported
-            //stackedResultsByGroup: stackedResultsByGroup,
-            // lineColors: dataSourceDescription.fe_barChart_stackedLineColors ? dataSourceDescription.fe_barChart_stackedLineColors : {},
+            // barColors: dataSourceDescription.fe_barChart_stackedBarColors ? dataSourceDescription.fe_barChart_stackedBarColors : {},
             groupBy_outputInFormat: groupBy_outputInFormat,
             //
             filterObj: filterObj,
@@ -515,8 +525,9 @@ router.BindData = function (req, urlQuery, callback) {
             searchCol: searchCol,
             isSearchActive: isSearchActive,
             //
+            sortDir: sortDir,
             defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-            colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForLineGraphGroupByDropdown(sampleDoc, dataSourceDescription),
+            colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForBarChartGroupByDropdown(sampleDoc, dataSourceDescription),
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
             routePath_base: routePath_base,
@@ -531,8 +542,9 @@ router.BindData = function (req, urlQuery, callback) {
             aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
             defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
             aggregateBy: aggregateBy,
-            // graphData contains all the data rows; used by the template to create the linechart
-            graphData: graphData 
+            // graphData contains all the data rows; used by the template to create the barchart
+            graphData: graphData ,
+            isHorizontal: dataSourceDescription.fe_barChart_isHorizontal
         };
         callback(err, data);
     });

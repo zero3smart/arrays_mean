@@ -1,3 +1,5 @@
+{% set currentView = "timeline" %}
+
 {% extends "../layout/array.html" %}
 
 {% import "../partials/dropdown.html" as dropdown %}
@@ -8,8 +10,6 @@
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
 {% endblock %}
-
-{% set currentView = "timeline" %}
 
 {% block content %}
     <section class="array">

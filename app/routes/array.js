@@ -1,10 +1,13 @@
 var url = require('url');
 var winston = require('winston');
+var helmet = require('helmet');
 var queryString = require('querystring');
 var express = require('express');
 var passport = require('passport');
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 var router = express.Router();
+
+router.use(helmet.xframe('allow-from', '*'));
 
 router.get('/create', function (req, res) {
     // Temporarily redirect to array index

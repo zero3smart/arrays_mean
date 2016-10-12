@@ -1,3 +1,5 @@
+{% set currentView = "bar-chart" %}
+
 {% extends "../layout/array.html" %}
 
 {% import "../partials/dropdown.html" as dropdown %}
@@ -7,8 +9,6 @@
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
 {% endblock %}
-
-{% set currentView = "chart" %}
 
 {% block content %}
     <section class="array">
@@ -41,7 +41,7 @@
                                     searchCol: searchCol,
                                     searchQ: searchQ,
                                     groupBy: groupBy,
-                                    sortBy: sortBy,
+                                    sortDir: sortDir,
                                     aggregateBy: ''
                                 })
                                 )
@@ -58,26 +58,31 @@
                                         searchCol: searchCol,
                                         searchQ: searchQ,
                                         aggregateBy: aggregateBy,
-                                        sortBy: sortBy,
+                                        sortDir: sortDir,
                                         groupBy: ''
                                     })
                                 )
                                 }}
 
-                                {{
-                                dropdown.sortbar(
-                                    'Sort',
-                                    sortBy if sortBy else defaultSortByColumnName_humanReadable,
-                                    sortBy_humanReadable_available,
-                                    routePath_base | constructedRoutePath(filterObj, {
-                                        searchCol: searchCol,
-                                        searchQ: searchQ,
-                                        groupBy: groupBy,
-                                        aggregateBy: aggregateBy,
-                                        sortBy: ''
-                                    })
-                                )
-                                }}
+                                <div class="sort-control sort-direction">
+                                    {% if sortDir == "Descending" %}
+                                    <a title="Sort Ascending" href="{{ routePath_base | constructedRoutePath(filterObj, {
+                                            searchCol: searchCol,
+                                            searchQ: searchQ,
+                                            sortDir: 'Ascending',
+                                            aggregateBy: aggregateBy,
+                                            groupBy: groupBy,
+                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span></a>
+                                    {% else %}
+                                    <a title="Sort Descending" href="{{ routePath_base | constructedRoutePath(filterObj, {
+                                            searchCol: searchCol,
+                                            searchQ: searchQ,
+                                            sortDir: 'Descending',
+                                            aggregateBy: aggregateBy,
+                                            groupBy: groupBy,
+                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span></a>
+                                    {% endif %}
+                                </div>
                             </nav>
 
                             <div class="sort-bar-right pull-right">
@@ -122,18 +127,30 @@
             {% endif %}
 
             <script type="text/javascript">
-                var pieData = {{ groupedResults | dump | safe }};
-
+                // var barColors = {{ barColors | dump | safe }};
                 var filterObj = {{ filterObj | dump | safe }};
-                var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
-                        searchCol: searchCol,
+                var routePath_withoutFilter = '{{ routePath_base | constructedRoutePath(null, {
+                searchCol: searchCol,
                         searchQ: searchQ,
                         groupBy: groupBy,
-                        sortBy: sortBy,
                         aggregateBy: aggregateBy
-                }) | safe }}";
+                }) | safe }}';
                 var routePath_base = '{{ routePath_base }}';
                 var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
+                var groupBy_outputInFormat = '{{ groupBy_outputInFormat }}';
+
+                var redirectBaseUrl = undefined;
+                {% if mapping_source_pKey %}
+                {% if mapping_default_view %}
+                var default_view = '{{ mapping_default_view if mapping_default_view else "gallery"}}';
+                {% endif %}
+                var words = default_view.split(/(?=[A-Z])/);
+                var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
+                redirectBaseUrl = '/array/{{ mapping_source_pKey }}/' + default_view_url
+                        + '{{ "" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
+                {% endif %}
+                var isHorizontal = {{ isHorizontal if isHorizontal else false }};
+                var options = {redirectBaseUrl: redirectBaseUrl, outputInFormat: groupBy_outputInFormat, isHorizontal: isHorizontal};
             </script>
 
             <div class="container-fluid">
@@ -156,4 +173,9 @@
 
     <script type="text/javascript" src="/javascripts/lib/d3/d3.js"></script>
     <script type="text/javascript" src="/javascripts/module/bar-chart.js"></script>
+    <script>
+        var graphData = {{graphData | dump | safe}};
+
+        var barChart = new BarChart('#bar-chart', graphData, options);
+    </script>
 {% endblock %}
