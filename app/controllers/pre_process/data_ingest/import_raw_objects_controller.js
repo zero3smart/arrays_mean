@@ -47,16 +47,16 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
 
 var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (dataSourceIsIndexInList, csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) {
     //
-    var CSV_resources_path_prefix = __dirname + "/../../../datasources/resources";
+    // var CSV_resources_path_prefix = __dirname + "/../../../datasources/resources";
     var sourceURL = csvDescription.sourceURL;
     var fileEncoding = csvDescription.fileEncoding || 'utf8';
     var revisionNumber = csvDescription.importRevision;
     var importUID = csvDescription.uid;
     winston.info("🔁  " + dataSourceIsIndexInList + ": Importing CSV \"" + sourceURL + "\"");
-    var filepath = CSV_resources_path_prefix + "/" + sourceURL;
+    // var filepath = CSV_resources_path_prefix + "/" + sourceURL;
     //
-    var raw_rowObjects_coercionScheme = csvDescription.raw_rowObjects_coercionScheme; // look up data type scheme here
-    var raw_rowObjects_mismatchScheme = csvDescription.raw_rowObjects_mismatchScheme;
+    var raw_rowObjects_FieldScheme = csvDescription.raw_rowObjects_FieldScheme; // look up data type scheme here
+    // var raw_rowObjects_mismatchScheme = csvDescription.raw_rowObjects_mismatchScheme;
 
     // so we can do translation/mapping just below
     // winston.info("raw_rowObjects_coercionScheme " , raw_rowObjects_coercionScheme)
@@ -80,7 +80,10 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
         } else {
             // row objects
             //
+
+
             if (columnNamesAndThenRowObject.length != columnNames.length) {
+
                 winston.error("❌  Error: Row has different number of values than number of CSV's number of columns. Skipping: ", rowObjectValues);
 
                 return;
@@ -93,34 +96,36 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
                 var typeFinalized_rowValue = rowValue;
 
                 // substitution / drop for mismatching fields in the common schema
-                if (raw_rowObjects_mismatchScheme != null && typeof raw_rowObjects_mismatchScheme !== 'undefined') {
-                    var mismatchSchemeForKey = raw_rowObjects_mismatchScheme[columnName];
-                    if (mismatchSchemeForKey != null && typeof mismatchSchemeForKey !== 'undefined') {
-                        // substitute
-                        if (mismatchSchemeForKey.do == import_datatypes.Mismatich_ops.ToField) {
-                            if (mismatchSchemeForKey.opts && typeof mismatchSchemeForKey.opts.field === 'string') {
-                                columnName = mismatchSchemeForKey.opts.field;
-                            } else {
-                                continue;
-                            }
-                        } else if (mismatchSchemeForKey.do == import_datatypes.Mismatich_ops.ToDrop) {
-                            continue;
-                        } else {
-                            continue;
-                        }
-                    }
-                }
+                // if (raw_rowObjects_mismatchScheme != null && typeof raw_rowObjects_mismatchScheme !== 'undefined') {
+                //     var mismatchSchemeForKey = raw_rowObjects_mismatchScheme[columnName];
+                //     if (mismatchSchemeForKey != null && typeof mismatchSchemeForKey !== 'undefined') {
+                //         // substitute
+                //         if (mismatchSchemeForKey.do == import_datatypes.Mismatich_ops.ToField) {
+                //             if (mismatchSchemeForKey.opts && typeof mismatchSchemeForKey.opts.field === 'string') {
+                //                 columnName = mismatchSchemeForKey.opts.field;
+                //             } else {
+                //                 continue;
+                //             }
+                //         } else if (mismatchSchemeForKey.do == import_datatypes.Mismatich_ops.ToDrop) {
+                //             continue;
+                //         } else {
+                //             continue;
+                //         }
+                //     }
+                // }
 
                 // now do type coercion/parsing here with functions to finalize
-                if (raw_rowObjects_coercionScheme != null && typeof raw_rowObjects_coercionScheme !== 'undefined') {
-                    var coercionSchemeForKey = raw_rowObjects_coercionScheme[columnName];
-                    if (coercionSchemeForKey != null && typeof coercionSchemeForKey !== 'undefined') {
-                        typeFinalized_rowValue = import_datatypes.NewDataTypeCoercedValue(coercionSchemeForKey, rowValue);
-                    }
+
+                var field = raw_rowObjects_FieldScheme[columnName];
+                if (field != null && typeof field  !== 'undefined') {
+                    var typeFinalized_rowValue = import_datatypes.NewDataTypeCoercedValue(field,rowValue);
+
                 }
                 rowObject[columnName] = typeFinalized_rowValue; // Now store the finalized value
             }
-            var rowObject_primaryKey = csvDescription.fn_new_rowPrimaryKeyFromRowObject(rowObject, (lineNr - 1));
+
+
+            var rowObject_primaryKey = "" + (lineNr-1) + "-" + rowObject[csvDescription.fn_new_rowPrimaryKeyFromRowObject];
             if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
                 winston.error("❌  Error: missing pkey on row", rowObject, "with factory accessor", csvDescription.fn_new_rowPrimaryKeyFromRowObject);
 

@@ -1,0 +1,102 @@
+{
+    "_id" : ObjectId("57fd3b3ac6f9ae279957217e"),
+    "sourceURL" : "NASA_Labs_Facilities.csv",
+    "fileEncoding" : "utf8",
+    "uid" : "nasa_labs_facilities",
+    "importRevision" : 2,
+    "format" : "CSV",
+    "title" : "NASA Agency Data on User Facilities",
+    "brandColor" : "#fe00ff",
+    "urls" : [ 
+        "https://catalog.data.gov/dataset/agency-data-on-user-facilities"
+    ],
+    "description" : "The purpose of the Aerospace Technical Facility Inventory is to facilitate the sharing of specialized capabilities within the aerospace research/engineering community primarily within NASA, but also throughout the nation and the entire world. A second use is to assist in answering questions regarding NASA capabilities for future missions or various alternative scenarios regarding mission support to help the Agency maintain the right set of assets.",
+    "fn_new_rowPrimaryKeyFromRowObject" : "ID",
+    "raw_rowObjects_FieldScheme" : {
+        "ID" : {
+            "type" : "String",
+            "exclude" : true
+        },
+        "Agency" : {
+            "type" : "String"
+        },
+        "Center" : {
+            "type" : "String"
+        },
+        "Center Search Status" : {
+            "type" : "String"
+        },
+        "Facility" : {
+            "type" : "String",
+            "designated" : true
+        },
+        "Occupied" : {
+            "type" : "String"
+        },
+        "Status" : {
+            "type" : "String"
+        },
+        "URL Link" : {
+            "type" : "String"
+        },
+        "Record Date" : {
+            "type" : "Date",
+            "operation" : "ToDate",
+            "format" : "MM/DD/YYYY",
+            "outputFormat" : "MMMM Do, YYYY"
+        },
+        "Last Update" : {
+            "type" : "Date",
+            "operation" : "ToDate",
+            "format" : "MM/DD/YYYY",
+            "outputFormat" : "MMMM Do, YYYY"
+        },
+        "Address" : {
+            "type" : "String"
+        },
+        "City" : {
+            "type" : "String"
+        },
+        "State" : {
+            "type" : "String"
+        },
+        "ZIP" : {
+            "type" : "String"
+        },
+        "Country" : {
+            "type" : "String"
+        },
+        "Contact" : {
+            "type" : "String"
+        },
+        "Mail Stop" : {
+            "type" : "String"
+        },
+        "Phone" : {
+            "type" : "String"
+        }
+    },
+    "fe_views" : [ 
+        "gallery"
+    ],
+    "fe_filters" : {
+        "excludeFields" : [ 
+            "Facility", 
+            "URL Link", 
+            "Record Date", 
+            "Last Update"
+        ],
+        "valuesToExclude" : {
+            "_all" : [ 
+                "", 
+                null
+            ]
+        }
+    },
+    "fe_viewDetails" : {
+        "gallery" : {
+            "defaultSortByColumnName_humanReadable" : "Object Title"
+        },
+        "timeline" : {}
+    }
+}
