@@ -374,6 +374,20 @@ module.exports.BindData = function (req, urlQuery, callback) {
     batch.end(function (err) {
         if (err) return callback(err);
 
+        var flatResults = groupedResults.reduce(function(groups, dataSet) {
+            dataSet.data.forEach(function(dataPoint) {
+                if (! (dataPoint.label in groups)) {
+                    groups[dataPoint.label] = dataPoint;
+                }
+            });
+
+            return groups;
+        }, {});
+
+        flatResults = Object.keys(flatResults).map(function(key) {
+            return flatResults[key];
+        });
+
         //
         var data =
         {
@@ -390,6 +404,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
             //
             groupedResults: groupedResults,
+            flatResults: flatResults,
             groupBy: groupBy,
             chartBy: chartBy,
             //

@@ -1,53 +1,24 @@
 /**
  * 
  */
-function PieChart(selection, pieData) {
-    var colors = [
-        '#FEAA00',
-        '#FEBC12',
-        '#FECC4B',
-        '#FFDE82',
-        '#008E8C',
-        '#26A4A2',
-        '#53BAB8',
-        '#87D0D0',
-        '#0036FF',
-        '#235EFF',
-        '#5284FF',
-        '#86ACFF',
-        '#6500F8',
-        '#8200FB',
-        '#9E3FFD',
-        '#BE7DFD',
-        '#FE00FF',
-        '#FE33FF',
-        '#FE66FF',
-        '#FE99FF',
-        '#FA2A00',
-        '#FB5533'
-    ];
-    
-    
+function PieChart(selection, pieData, colorMap) {
     /**
      * Set up pie chart
      */
     var width = 1000,
         height = 1000,
         radius = Math.min(width, height) / 2;
-    
-    var color = d3.scale.ordinal()
-        .range(colors);
-    
+
     var arc = d3.svg.arc()
         .outerRadius(radius - 10)
         .innerRadius(0);
-    
+
     var pie = d3.layout.pie()
         .sort(null)
         .value(function(d) {
             return d.value;
         });
-    
+
     var svg = d3.select(selection)
         .attr('width', width)
         .attr('height', height)
@@ -59,26 +30,24 @@ function PieChart(selection, pieData) {
                 .classed('svg-content-responsive', true)
                 .append('g')
                     .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
-    
     /**
      * Add blur filter definition for drop shadow
      */
     var defs = svg.append('defs');
-    
+
     var filter = defs.append('filter')
         .attr('id', 'drop-shadow')
         .attr('height', '150%');
-    
+
     filter.append('feGaussianBlur')
         .attr('in', 'SourceAlpha')
         .attr('stdDeviation', 4)
         .attr('result', 'blur');
-    
+
     filter.append('feOffset')
         .attr('in', 'blur')
         .attr('dx', 0)
         .attr('dy', 4);
-    
     /**
      * Blur opacity
      */
@@ -86,7 +55,6 @@ function PieChart(selection, pieData) {
     feComponentTransfer.append('feFuncA')
         .attr('type', 'linear')
         .attr('slope', '0.2');
-    
     /**
      * Merge blurs
      */
@@ -94,7 +62,6 @@ function PieChart(selection, pieData) {
     feMerge.append('feMergeNode');
     feMerge.append('feMergeNode')
         .attr('in', 'SourceGraphic');
-    
     /**
      * Place background circle
      */
@@ -104,7 +71,6 @@ function PieChart(selection, pieData) {
         .attr('r', radius - 10)
         .attr('class', 'pie-background')
         .style('filter', 'url(#drop-shadow)');
-    
     /**
      * Place groups
      */
@@ -113,16 +79,15 @@ function PieChart(selection, pieData) {
         .enter()
         .append('g')
             .attr('class', 'arc');
-    
     /**
      * Place paths
      */
     var slices = g.append('path')
         .attr('d', arc)
         .style('fill', function(d, i) {
-            return color(i);
-        })
-        .attr('id', function(d, i) {
+            console.log(d)
+            return colorMap[d.data.label];
+        }).attr('id', function(d, i) {
             return 'slice-' + i;
         });
 }

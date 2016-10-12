@@ -124,6 +124,7 @@
 
                 <script type="text/javascript">
                     var pieData = {{ groupedResults | dump | safe }};
+                    var legendData = {{ flatResults | dump | safe }};
 
                     var filterObj = {{ filterObj | dump | safe }};
                     var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
@@ -150,12 +151,8 @@
             <nav class="legend" role="navigation">
                 <button type="button" class="close legend-close" aria-label="Close"><span class="icon-close-big" aria-hidden="true"></span></button>
                 <h3 class="legend-title">Legend</h3>
-                {% if groupedResults | length %}
-                <ul class="legend-list">
-                    {# {% for result in groupedResults %}
-                    <li class="legend-list-item"><span class="legend-dot"></span><a href="#" class="legend-list-link">{{ result.label }}</a></li>
-                    {% endfor %} #}
-                </ul>
+                {% if flatResults | length %}
+                <ul class="legend-list"></ul>
                 {% endif %}
             </nav>
 
