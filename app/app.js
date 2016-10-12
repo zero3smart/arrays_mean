@@ -50,16 +50,24 @@ app.use(require('compression')());
 app.set('trust proxy', true);
 app.use(require('helmet').xframe());
 app.use(cookieParser());
+
+// Mongo Store
+var dbName = process.env.MONGODB_DBNAME;
+var dbURI = process.env.MONGODB_URI;
+if (!dbURI) dbURI = 'mongodb://localhost/';
+dbURI = dbURI + dbName;
+
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
     cookie: {maxAge: 100*60*60},
     store: new MongoSessionStore({
-        url: process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/',
+        url: dbURI,
         touchAfter: 24 * 3600 // time period in seconds
     })
 }));
+
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
