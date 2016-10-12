@@ -1,13 +1,14 @@
 /* @override 
 	http://localhost:9080/stylesheets/layout/embedded.css */
 	
-.view-embedded .navbar,
 .view-embedded .array-header,
-.view-embedded .array-controls,
 .view-embedded .site-footer,
-.view-embedded .filter-bar,
 .view-embedded .sort-bar {
 	display: none;
+}
+
+.view-embedded .array-controls {
+	top: 0;
 }
 
 .view-embedded .site-content {
@@ -18,4 +19,30 @@
 	max-width: calc(100vw - 40px);
 	width: 100vh;
 	height: 100vh;
+}
+
+.view-embedded #scatterplot {
+	height: calc(100vh - 70px);
+	min-height: calc(100vh - 70px);
+}
+
+.view-embedded .site-header .navbar-brand-container {
+	display: none;
+}
+.view-embedded .site-header .navbar-default {
+	background: none;
+	display: inline-block;
+}
+.view-embedded .site-header .navbar-collapse.collapse {
+	display: none!important;
+}
+.view-embedded .site-header .navbar-fixed-top, .view-embedded .site-header .navbar-fixed-bottom {
+	right: initial;
+	width: initial;
+}
+.view-embedded .site-header .navbar .container-fluid {
+	padding-left: 0;
+	padding-right: 0;
+	width: initial;
+	display: inline-block;
 }
