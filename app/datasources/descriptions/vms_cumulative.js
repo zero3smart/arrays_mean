@@ -53,7 +53,8 @@ exports.Descriptions =
             },
             fe_default_view: 'chart',
             fe_excludeFields: [
-                "id"
+                "id",
+                "Minute Index"
             ],
             fe_outputInFormat: {},
             fe_filters_fieldsNotAvailable: [
