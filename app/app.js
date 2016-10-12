@@ -5,6 +5,7 @@ var expressWinston = require('express-winston');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var MongoSessionStore = require('connect-mongo')(session);
 var flash = require('connect-flash');
 var passport = require('passport');
 var dotenv = require('dotenv');
@@ -30,6 +31,16 @@ nunjucks.setup({
     watch: isDev,
     noCache: isDev,
 }, app).then(require('./nunjucks/filters'));
+
+// Redirect https
+app.use(function(req, res, next){
+    if (process.env.USE_SSL === 'true' && 'https' !== req.header('x-forwarded-proto')){
+        res.redirect('https://'+req.header('host')+req.url);
+    }
+
+    next();
+});
+
 //
 app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
 app.use(express.static(path.join(__dirname, '/public')));
@@ -39,11 +50,19 @@ app.use(require('compression')());
 app.set('trust proxy', true);
 app.use(require('helmet').xframe());
 app.use(cookieParser());
+
+// Mongo Store to prevent a warnning.
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: {maxAge: 100*60*60},
+    store: new MongoSessionStore({
+        url: process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/arraysdb',
+        touchAfter: 24 * 3600 // time period in seconds
+    })
 }));
+
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());

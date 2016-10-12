@@ -130,12 +130,11 @@
                 // var barColors = {{ barColors | dump | safe }};
                 var filterObj = {{ filterObj | dump | safe }};
                 var routePath_withoutFilter = '{{ routePath_base | constructedRoutePath(null, {
-                searchCol: searchCol,
+                        searchCol: searchCol,
                         searchQ: searchQ,
                         groupBy: groupBy,
                         aggregateBy: aggregateBy
                 }) | safe }}';
-                var routePath_base = '{{ routePath_base }}';
                 var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
                 var groupBy_outputInFormat = '{{ groupBy_outputInFormat }}';
 

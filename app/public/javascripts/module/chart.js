@@ -158,7 +158,7 @@ g.on('mouseout', function() {
  * Filter slice on click
  */
 g.on('click', function(d) {
-	var queryParamJoinChar = routePath_withoutFilter == routePath_base ? "?" : "&";
+	var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1? '&' : '?';
 
 	var filterObjForThisFilterColVal = constructedFilterObj(filterObj, groupBy, d.data.label, false);
 	var filterJSONString = $.param(filterObjForThisFilterColVal);
