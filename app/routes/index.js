@@ -10,7 +10,10 @@ var shouldEnsureWWW = isDev == false || __DEBUG_enableEnsureWWWForDev;
 var _mountRoutes_monitoring = function (app) {
     app.get('/_ah/health', function (req, res) {
         res.set('Content-Type', 'text/plain');
-        res.status(200).send('ok');
+        // TODO: remove after https test
+        var protocol = req.connection && req.connection.encrypted ? "https" : "http";
+        var proto = req.header('x-forwarded-proto');
+        res.status(200).send('ok' + protocol + '&&' + proto);
     });
 };
 //
@@ -22,7 +25,7 @@ var _mountRoutes_ensureWWW = function (app) {
             return;
         }
         var host = req.header("host");
-        var protocol = req.connection.encrypted ? "https" : "http";
+        var protocol = req.connection && req.connection.encrypted ? "https" : "http";
         if (host.match(/^www\..*/i)) {
             next();
         } else {

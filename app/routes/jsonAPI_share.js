@@ -91,7 +91,7 @@ router.post('/share', function (req, res) {
         _fabricateAndReplyWithShareURLWithSharedPageId(id);
     });
     function _fabricateAndReplyWithShareURLWithSharedPageId(id) {
-        var protocol = req.connection.encrypted ? "https" : "http";
+        var protocol = req.connection && req.connection.encrypted ? "https" : "http";
         var fabricatedShareURL = protocol + '://' + req.get('host') + "/s/" + id;
         _replyWithShareURL(fabricatedShareURL);
     }
