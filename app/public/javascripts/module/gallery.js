@@ -1,6 +1,4 @@
 $(function() {
-	console.log('gallery loaded');
-
 	/**
 	 * Initialize controller
 	 */
@@ -10,7 +8,7 @@ $(function() {
 	 * Set array header pin
 	 */
 	var scene = new ScrollMagic.Scene({
-			offset: - $('.navbar-fixed-top').innerHeight(),
+			offset: 0,
 			triggerElement: '#array-controls'
 		})
 		.triggerHook('onLeave')
