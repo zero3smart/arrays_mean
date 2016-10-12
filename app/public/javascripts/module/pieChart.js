@@ -7,7 +7,7 @@ function PieChart(selection, pieData, colorMap) {
      */
     var width = 1000,
         height = 1000,
-        radius = Math.min(width, height) / 2;
+        radius = (Math.min(width, height) / 2) - 10;
 
     var arc = d3.svg.arc()
         .outerRadius(radius - 10)
@@ -68,7 +68,7 @@ function PieChart(selection, pieData, colorMap) {
     svg.append('circle')
         .attr('cx', 0)
         .attr('cy', 0)
-        .attr('r', radius - 10)
+        .attr('r', radius)
         .attr('class', 'pie-background')
         .style('filter', 'url(#drop-shadow)');
     /**
