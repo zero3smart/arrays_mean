@@ -147,7 +147,7 @@ g.on('mouseover', function(d) {
 });
 
 g.on('mousemove', function() {
-	tooltip.style('top', (event.pageY-15)+'px').style('left', (event.pageX)+'px');
+	tooltip.style('top', (d3.event.pageY-15)+'px').style('left', (d3.event.pageX)+'px');
 });
 
 g.on('mouseout', function() {
