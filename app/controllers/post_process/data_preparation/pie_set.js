@@ -251,14 +251,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     } */
                 ]);
         }
-console.log('---- %j', aggregationOperators);
         //
         var doneFn = function (err, _groupedResults) {
             if (err) return done(err);
 
             if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
-
-            console.log('|||| %j', _groupedResults);
 
             var finalizedButNotCoalesced_groupedResults = {};
             _groupedResults.forEach(function (el, i, arr) {
@@ -321,8 +318,6 @@ console.log('---- %j', aggregationOperators);
                 });
             });
 
-            console.log('++++ %j', finalizedButNotCoalesced_groupedResults);
-
             for (var chartBy in finalizedButNotCoalesced_groupedResults) {
                 var _groupedResultsByChart = finalizedButNotCoalesced_groupedResults[chartBy];
 
@@ -370,8 +365,6 @@ console.log('---- %j', aggregationOperators);
                     data: data
                 });
             };
-
-            console.log('**** %j', groupedResults);
 
             done();
         };
