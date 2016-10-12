@@ -30,7 +30,9 @@ router.post('/share', function (req, res) {
         return matches[1];
     }
 
-    if (/^\/array\/.*\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|line-graph)/g.test(pathname) == true) {
+    var urlRegEx = /^\/array\/(.*)\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart)/g;
+
+    if (/^\/array\/(.*)\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart)/g.test(pathname) == true) {
         pageType = "array_view";
         //
         if (/^\/array\/.*\/gallery/g.test(pathname) == true) {
@@ -47,9 +49,13 @@ router.post('/share', function (req, res) {
             viewType_orNull = "scatterplot";
         } else if (/^\/array\/.*\/line-graph/g.test(pathname) == true) {
             viewType_orNull = "line-graph";
+        } else if (/^\/array\/.*\/pie-set/g.test(pathname) == true) {
+            viewType_orNull = "pie-set";
+        } else if (/^\/array\/.*\/bar-chart/g.test(pathname) == true) {
+            viewType_orNull = "bar-chart";
         }
         //
-        source_key = _stringFromPathNameWithRegEx(/^\/array\/(.*)\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|line-graph)/g);
+        source_key = _stringFromPathNameWithRegEx(urlRegEx);
     } else if (/^\/array\/.*\/.*/g.test(pathname) == true) {
         pageType = "object_details";
         //
@@ -85,7 +91,7 @@ router.post('/share', function (req, res) {
         _fabricateAndReplyWithShareURLWithSharedPageId(id);
     });
     function _fabricateAndReplyWithShareURLWithSharedPageId(id) {
-        var protocol = req.protocol; // http in production at the moment since we have a custom domain and no https support yet; when https is in place on prod, use process.env.NODE_ENV == 'production' ? 'https' : 'http'
+        var protocol = req.connection.encrypted ? "https" : "http";
         var fabricatedShareURL = protocol + '://' + req.get('host') + "/s/" + id;
         _replyWithShareURL(fabricatedShareURL);
     }

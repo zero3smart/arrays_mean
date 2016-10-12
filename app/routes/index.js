@@ -22,7 +22,7 @@ var _mountRoutes_ensureWWW = function (app) {
             return;
         }
         var host = req.header("host");
-        var protocol = "http";
+        var protocol = req.connection.encrypted ? "https" : "http";
         if (host.match(/^www\..*/i)) {
             next();
         } else {
