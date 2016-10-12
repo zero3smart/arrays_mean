@@ -17,7 +17,7 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
 
     var format = dataSourceDescription.format;
     switch (format) {
-        case import_datatypes.DataSource_formats.CSV:
+        case "CSV":
         {
             _new_parsed_StringDocumentObject_fromCSVDataSourceDescription(indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function (err) {
                 if (err) return callback(err);
@@ -26,7 +26,7 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
             });
             break;
         }
-        case import_datatypes.DataSource_formats.TSV:
+        case "TSV" :
         {
             _new_parsed_StringDocumentObject_fromTSVDataSourceDescription(indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, function (err) {
                 if (err) return callback(err);
@@ -47,13 +47,13 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
 
 var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (dataSourceIsIndexInList, csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) {
     //
-    // var CSV_resources_path_prefix = __dirname + "/../../../datasources/resources";
+    var CSV_resources_path_prefix = __dirname + "/../../../datasources/resources";
     var sourceURL = csvDescription.sourceURL;
     var fileEncoding = csvDescription.fileEncoding || 'utf8';
     var revisionNumber = csvDescription.importRevision;
     var importUID = csvDescription.uid;
     winston.info("🔁  " + dataSourceIsIndexInList + ": Importing CSV \"" + sourceURL + "\"");
-    // var filepath = CSV_resources_path_prefix + "/" + sourceURL;
+    var filepath = CSV_resources_path_prefix + "/" + sourceURL;
     //
     var raw_rowObjects_FieldScheme = csvDescription.raw_rowObjects_FieldScheme; // look up data type scheme here
     // var raw_rowObjects_mismatchScheme = csvDescription.raw_rowObjects_mismatchScheme;
@@ -80,6 +80,8 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
         } else {
             // row objects
             //
+
+           
 
 
             if (columnNamesAndThenRowObject.length != columnNames.length) {

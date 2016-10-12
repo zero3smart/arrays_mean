@@ -3,10 +3,11 @@ var https = require('https');
 var es = require('event-stream');
 var parse = require('csv-parse');
 
-var datasource_description = require('../../models/datasource_description');
+var datasource_description = require('../../models/datasource_descriptions');
 
 /***************  Index  ***************/
 module.exports.index = function(req, next) {
+
     datasource_description.find({}, {_id: 1, title: 1, importRevision: 1}, function(err, datasets) {
         if (err) {
             return next(err);

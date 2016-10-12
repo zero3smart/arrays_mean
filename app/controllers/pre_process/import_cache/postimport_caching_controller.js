@@ -15,6 +15,8 @@ var cache_keywords_controller = require('./cache_keywords_controller');
 //
 module.exports.GeneratePostImportCaches = function (dataSourceDescriptions) {
     var i = 1;
+
+
     async.eachSeries(dataSourceDescriptions, function (dataSourceDescription, callback) {
         _dataSourcePostImportCachingFunction(i, dataSourceDescription, callback);
         i++;
@@ -32,34 +34,31 @@ module.exports.GeneratePostImportCaches = function (dataSourceDescriptions) {
 var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDescription, callback) {
     var dataSource_title = dataSourceDescription.title;
     var fe_visible = dataSourceDescription.fe_visible;
-    var isCustom = dataSourceDescription.isCustom;
+    // var isCustom = dataSourceDescription.isCustom;
     if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
         winston.warn("⚠️  The data source \"" + dataSource_title + "\" had fe_visible=false, so not going to generate its unique filter value cache.");
         return callback(null);
     }
     winston.info("🔁  " + indexInList + ": Generated post-import caches for \"" + dataSource_title + "\"");
 
-    if (typeof isCustom !== 'undefined' && isCustom != null && isCustom === true) { //custom view, look inside user folder 
-        
 
-
-    } else {
-         _generateUniqueFilterValueCacheCollection(dataSourceDescription, function (err) {
-        if (err) {
-            winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
-            return callback(err);
-        }
-            // Cachcing Keyword for the word cloud
-            cache_keywords_controller.cacheKeywords_fromDataSourceDescription(dataSourceDescription, callback);
-        });
-
+     _generateUniqueFilterValueCacheCollection(dataSourceDescription, function (err) {
+    if (err) {
+        winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
+        return callback(err);
     }
+        // Cachcing Keyword for the word cloud
+        cache_keywords_controller.cacheKeywords_fromDataSourceDescription(dataSourceDescription, callback);
+    });
 
 
-   
 };
 
 var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription, callback) {
+
+
+
+
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_title = dataSourceDescription.title;
     var dataSource_importRevision = dataSourceDescription.importRevision;
@@ -154,11 +153,19 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 //
                 // remove illegal values
                 var illegalValues = []; // default val
-                if (dataSourceDescription.fe_filters_valuesToExcludeByOriginalKey) {
-                    if (dataSourceDescription.fe_filters_valuesToExcludeByOriginalKey._all) {
-                        illegalValues = illegalValues.concat(dataSourceDescription.fe_filters_valuesToExcludeByOriginalKey._all);
+
+
+
+
+                if (dataSourceDescription.fe_filters.valuesToExclude) {
+
+                   
+
+                    if (dataSourceDescription.fe_filters.valuesToExclude._all) {
+
+                        illegalValues = illegalValues.concat(dataSourceDescription.fe_filters.valuesToExclude._all);
                     }
-                    var illegalValuesForThisKey = dataSourceDescription.fe_filters_valuesToExcludeByOriginalKey[key];
+                    var illegalValuesForThisKey = dataSourceDescription.fe_filters.valuesToExclude[key];
                     if (illegalValuesForThisKey) {
                         illegalValues = illegalValues.concat(illegalValuesForThisKey);
                     }
