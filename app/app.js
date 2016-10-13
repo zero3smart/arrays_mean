@@ -49,10 +49,8 @@ app.use(bodyParser.urlencoded({ extended: false })); // application/x-www-form-u
 app.use(bodyParser.json()); // application/JSON
 app.use(require('compression')());
 app.set('trust proxy', true);
-app.use(require('helmet').xframe());
-app.use(cookieParser());
-
 app.use(helmet.xframe('allow-from', '*'));
+app.use(cookieParser());
 
 // Mongo Store to prevent a warnning.
 app.use(session({
