@@ -388,6 +388,7 @@ router.BindData = function (req, urlQuery, callback) {
                             label: displayableVal
                         });
                     });
+
                     var summedValuesByLowercasedLabels = {};
                     var titleWithMostMatchesAndMatchAggregateByLowercasedTitle = {};
                     finalizedButNotCoalesced_groupedResults.forEach(function (el, i, arr) {
@@ -445,6 +446,8 @@ router.BindData = function (req, urlQuery, callback) {
                 }
 
             }
+
+            console.log('++++ %j', stackedResultsByGroup);
 
             graphData = [];
 

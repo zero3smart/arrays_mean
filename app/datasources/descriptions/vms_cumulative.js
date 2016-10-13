@@ -217,6 +217,6 @@ exports.Descriptions =
                     format: "MMM DD"
                 }
             },
-            //fe_barChart_isHorizontal: true
+            fe_barChart_isHorizontal: true
         }
     ];

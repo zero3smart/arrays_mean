@@ -3,3 +3,8 @@
         margin: 12px 0;
     }
 }
+
+#bar-chart {
+    min-height: 300px;
+    height: calc(100vh - 360);
+}

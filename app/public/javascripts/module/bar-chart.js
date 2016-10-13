@@ -1,7 +1,7 @@
 /**
  *
  */
-function BarChart(selection, data, options) {
+function BarChart(selector, data, options) {
 	var colors = [
 		'#FEAA00',
 		'#FEBC12',
@@ -31,21 +31,44 @@ function BarChart(selection, data, options) {
 	/**
 	 * Set up bar chart
 	 */
-	var width = 1000,
-		height = 1000;
+	var container = d3.select(selector);
+
+	var dimension = container.node().getBoundingClientRect();
+
+	var margins = {
+		top: 25,
+		right: 15,
+		bottom: 30,
+		left: 70
+	};
+
+	var outerWidth = dimension.width,
+		outerHeight = dimension.height,
+		innerWidth = outerWidth - margins.left - margins.right,
+		innerHeight = outerHeight - margins.top - margins.bottom;
 
 	var color = d3.scale.ordinal()
 		.range(colors);
 
-	var svg = d3.select('#chart')
-		.attr('width', width)
-		.attr('height', height)
-		.append('div')
-		.classed('svg-container', true) //container class to make it responsive
-		.append('svg')
-		.attr('preserveAspectRatio', 'xMinYMin meet')
-		.attr('viewBox', '0 0 ' + width + ' ' + height)
-		.classed('svg-content-responsive', true)
+	var svg = container.append('svg')
+		.attr('width', outerWidth)
+		.attr('height', outerHeight);
+
+	var canvas = svg.append('g')
+		.attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')');
+
+	var xAxisContainer = canvas.append('g')
+		.attr('class', 'axis x-axis'),
+		yAxisContainer = canvas.append('g')
+		.attr('class', 'axis y-axis');
+
+	var series = canvas.selectAll('g.series')
+		.data(data)
+		.enter()
 		.append('g')
-		.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+		.attr('class', 'series');
+
+	d3.select(window).on('resize.bar-chart', function() {
+
+	});
 }
