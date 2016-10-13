@@ -22,12 +22,16 @@ var DatasourceDescription_scheme = Schema({
     fn_new_rowPrimaryKeyFromRowObject: String,
     raw_rowObjects_FieldScheme: Object,
     fe_displayTitleOverrides: Array,
-    fe_views:Array,
+    fe_views: {
+        default_view : String,
+        views: Object
+    },
     fe_filters: {
         excludeFields: Array,
-        valuesToExclude: Object
+        valuesToExclude: Object,
+        default_filter: Object
     },
-    fe_viewDetails: Object
+    fe_displayTitleOverrides: Object
 });
 //
 

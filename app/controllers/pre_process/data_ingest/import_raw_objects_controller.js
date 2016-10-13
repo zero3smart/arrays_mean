@@ -55,7 +55,7 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
     winston.info("🔁  " + dataSourceIsIndexInList + ": Importing CSV \"" + sourceURL + "\"");
     var filepath = CSV_resources_path_prefix + "/" + sourceURL;
     //
-    var raw_rowObjects_FieldScheme = csvDescription.raw_rowObjects_FieldScheme; // look up data type scheme here
+    var raw_rowObjects_coercionScheme = csvDescription.raw_rowObjects_coercionScheme; // look up data type scheme here
     // var raw_rowObjects_mismatchScheme = csvDescription.raw_rowObjects_mismatchScheme;
 
     // so we can do translation/mapping just below
@@ -118,12 +118,15 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
 
                 // now do type coercion/parsing here with functions to finalize
 
-                var field = raw_rowObjects_FieldScheme[columnName];
-                if (field != null && typeof field  !== 'undefined') {
-                    var typeFinalized_rowValue = import_datatypes.NewDataTypeCoercedValue(field,rowValue);
 
+                if (raw_rowObjects_coercionScheme != null && typeof raw_rowObjects_coercionScheme !== 'undefined') {
+                    var coercionSchemeForKey = raw_rowObjects_coercionScheme[columnName];
+                    if (coercionSchemeForKey != null && typeof coercionSchemeForKey !== 'undefined') {
+                        typeFinalized_rowValue = import_datatypes.NewDataTypeCoercedValue(coercionSchemeForKey, rowValue);
+                    }
                 }
                 rowObject[columnName] = typeFinalized_rowValue; // Now store the finalized value
+
             }
 
 

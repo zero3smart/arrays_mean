@@ -12,33 +12,12 @@
     ],
     "description" : "The purpose of the Aerospace Technical Facility Inventory is to facilitate the sharing of specialized capabilities within the aerospace research/engineering community primarily within NASA, but also throughout the nation and the entire world. A second use is to assist in answering questions regarding NASA capabilities for future missions or various alternative scenarios regarding mission support to help the Agency maintain the right set of assets.",
     "fn_new_rowPrimaryKeyFromRowObject" : "ID",
-    "raw_rowObjects_FieldScheme" : {
-        "ID" : {
-            "type" : "String",
-            "exclude" : true
-        },
-        "Agency" : {
-            "type" : "String"
-        },
-        "Center" : {
-            "type" : "String"
-        },
-        "Center Search Status" : {
-            "type" : "String"
-        },
-        "Facility" : {
-            "type" : "String",
-            "designated" : true
-        },
-        "Occupied" : {
-            "type" : "String"
-        },
-        "Status" : {
-            "type" : "String"
-        },
-        "URL Link" : {
-            "type" : "String"
-        },
+    "fe_visible" : true,
+    "fe_listed" : true,
+    "fe_designatedFields" : {
+        "objectTitle" : "Facility"
+    },
+    "raw_rowObjects_coercionScheme" : {
         "Record Date" : {
             "type" : "Date",
             "operation" : "ToDate",
@@ -50,36 +29,18 @@
             "operation" : "ToDate",
             "format" : "MM/DD/YYYY",
             "outputFormat" : "MMMM Do, YYYY"
-        },
-        "Address" : {
-            "type" : "String"
-        },
-        "City" : {
-            "type" : "String"
-        },
-        "State" : {
-            "type" : "String"
-        },
-        "ZIP" : {
-            "type" : "String"
-        },
-        "Country" : {
-            "type" : "String"
-        },
-        "Contact" : {
-            "type" : "String"
-        },
-        "Mail Stop" : {
-            "type" : "String"
-        },
-        "Phone" : {
-            "type" : "String"
         }
     },
-    "fe_views" : [ 
-        "gallery"
-    ],
+    "fe_views" : {
+        "default_view" : "gallery",
+        "views" : {
+            "gallery" : {
+                "defaultSortByColumnName_humanReadable" : "Object Title"
+            }
+        }
+    },
     "fe_filters" : {
+        "default_filter" : {},
         "excludeFields" : [ 
             "Facility", 
             "URL Link", 
@@ -93,11 +54,5 @@
             ]
         }
     },
-    "fe_displayTitleOverrides" : [],
-    "fe_viewDetails" : {
-        "gallery" : {
-            "defaultSortByColumnName_humanReadable" : "Object Title"
-        },
-        "timeline" : {}
-    }
+    "fe_displayTitleOverrides" : []
 }

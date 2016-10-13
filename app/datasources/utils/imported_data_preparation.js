@@ -1,6 +1,6 @@
 var raw_source_documents = require('../../models/raw_source_documents');
-var dataSourceDescriptions = require('../descriptions').GetDescriptions();
-var teamDescriptions = require('../teams').GetTeams();
+var dataSourceDescriptions = require('../descriptions');
+// var teamDescriptions = require('../teams').GetTeams();
 
 var humanReadableColumnName_objectTitle = "Object Title";
 
@@ -16,18 +16,56 @@ function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription) {
 module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromDataSourceDescription;
 
 //
-function _dataSourceDescriptionWithPKey(source_pKey) {
-    var dataSourceDescriptions_length = dataSourceDescriptions.length;
-    for (var i = 0; i < dataSourceDescriptions_length; i++) {
-        var dataSourceDescription = dataSourceDescriptions[i];
-        var dataSourceDescription_pKey = _dataSourcePKeyFromDataSourceDescription(dataSourceDescription);
-        if (dataSourceDescription_pKey === source_pKey) {
-            return dataSourceDescription;
-        }
-    }
 
-    return null;
-};
+var _dataSourceDescriptionWithPKey = function(source_pKey) {
+
+    var split = source_pKey.split("-");
+    var uid = split[0];
+    var revision = split[1].substring(1);
+
+
+
+
+    return new Promise(function(resolve,reject) {
+
+
+
+
+         dataSourceDescriptions.GetDescriptionsWith_uid_importRevision(uid,revision,function(data) {
+           resolve(data);
+
+        },function(err) {
+            reject(err);
+        })
+
+    })
+}
+
+
+
+
+// function _dataSourceDescriptionWithPKey(source_pKey) {
+
+//     dataSourceDescriptions.GetDescriptionsWithSourceKey(source_pKey,function(data) {
+
+
+//         console.log("get data");
+
+//        var dataSourceDescriptions_length = data.length;
+//         for (var i = 0; i < dataSourceDescriptions_length; i++) {
+//             var dataSourceDescription = data[i];
+//             var dataSourceDescription_pKey = _dataSourcePKeyFromDataSourceDescription(dataSourceDescription);
+//             if (dataSourceDescription_pKey === source_pKey) {
+//                 return dataSourceDescription;
+//             }
+//         }
+
+//         // return null;
+
+//     })
+// };
+
+
 module.exports.DataSourceDescriptionWithPKey = _dataSourceDescriptionWithPKey;
 
 //

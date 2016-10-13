@@ -63,7 +63,11 @@ viewTypes.forEach(function (viewType) {
         var query = queryString.parse(req.url.replace(/^.*\?/, ''));
         query.source_key = source_key;
         var camelCaseViewType = viewType.replace('-', '_');
+
+
+
         controllers[camelCaseViewType].BindData(req, query, function (err, bindData) {
+
             if (err) {
                 winston.error("❌  Error getting bind data for Array gallery: ", err);
                 res.status(500).send(err.response || 'Internal Server Error');
