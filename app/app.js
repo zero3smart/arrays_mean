@@ -10,6 +10,7 @@ var flash = require('connect-flash');
 var passport = require('passport');
 var dotenv = require('dotenv');
 var fs = require('fs');
+var helmet = require('helmet');
 var routes = require('./routes');
 
 var isDev = process.env.NODE_ENV == 'production' ? false : true;
@@ -50,6 +51,8 @@ app.use(require('compression')());
 app.set('trust proxy', true);
 app.use(require('helmet').xframe());
 app.use(cookieParser());
+
+app.use(helmet.xframe('allow-from', '*'));
 
 // Mongo Store to prevent a warnning.
 app.use(session({

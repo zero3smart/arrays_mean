@@ -1,6 +1,6 @@
 var url = require('url');
 var winston = require('winston');
-var helmet = require('helmet');
+//var helmet = require('helmet');
 var express = require('express');
 var router = express.Router();
 
@@ -30,7 +30,7 @@ var controllers = {
     barChart: bar_chart_controller
 };
 
-router.use(helmet.xframe('allow-from', '*'));
+//router.use(helmet.xframe('allow-from', '*'));
 
 router.get('/:shared_page_id', function (req, res) {
     var shared_page_id = req.params.shared_page_id;
