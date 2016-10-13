@@ -1,8 +1,8 @@
 var url = require('url');
 var winston = require('winston');
-var helmet = require('helmet');
 var express = require('express');
 var router = express.Router();
+var cors = require('cors');
 
 var shared_pages_controller = require('../models/shared_pages');
 var object_details_controller = require('../controllers/post_process/data_preparation/object_details');
@@ -30,9 +30,7 @@ var controllers = {
     barChart: bar_chart_controller
 };
 
-router.use(helmet.xframe('allow-from', '*'));
-
-router.get('/:shared_page_id', function (req, res) {
+router.get('/:shared_page_id', cors(), function (req, res) {
     var shared_page_id = req.params.shared_page_id;
     if (!shared_page_id || shared_page_id == "") {
         res.status(403).send("Bad Request - shared_page_id missing")
