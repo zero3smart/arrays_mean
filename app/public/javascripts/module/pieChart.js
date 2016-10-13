@@ -85,7 +85,6 @@ function PieChart(selection, pieData, colorMap) {
     var slices = g.append('path')
         .attr('d', arc)
         .style('fill', function(d, i) {
-            console.log(d)
             return colorMap[d.data.label];
         }).attr('id', function(d, i) {
             return 'slice-' + i;

@@ -29,7 +29,7 @@ var colors = [
 
 var colorMap = {};
 legendData.forEach(function(d, i) {
-    colorMap[d.label] = colors[i];
+    colorMap[d.label] = colors[i % colors.length];
 });
 
 d3.select('#pie-set')
