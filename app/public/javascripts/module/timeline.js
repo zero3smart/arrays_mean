@@ -16,6 +16,9 @@ $timelineGroupItem.each(function(i) {
 	var $this = $(this);
 
 	$this.on('mouseover', function() {
+
+
+
 		console.log($this.data('tooltip-key'));
 		$tooltipKey.html($this.data('tooltip-key'));
 		$tooltipValue.html($this.data('tooltip-value'));

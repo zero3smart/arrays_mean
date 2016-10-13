@@ -46,7 +46,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             team: team,
             brandColor: dataSourceDescription.brandColor,
             sourceDoc: sourceDoc,
-            view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+            view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
             routePath_base: '/array/' + sourceKey + '/scatterplot',
             filterObj: filterObj,
             isFilterActive: isFilterActive,

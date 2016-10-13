@@ -10,7 +10,6 @@ var func = require('../func');
 
 module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
     var self = this;
-    // var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey);
 
     // var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
 
@@ -49,7 +48,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 batch.concurrency(1);
 
                 afterImportingAllSources_generate.forEach(function (afterImportingAllSources_generate_description) {
-                    batch.push(function (done) {
+                    batch.push(function (done) {152
                         if (afterImportingAllSources_generate_description.relationship == true) {
                             var by = afterImportingAllSources_generate_description.by;
                             var relationshipSource_uid = by.ofOtherRawSrcUID;
@@ -92,7 +91,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
             //
             var fieldsNotToLinkAsGalleryFilter_byColName = {}; // we will translate any original keys to human-readable later
-            var fe_filters_fieldsNotAvailable = dataSourceDescription.fe_filters.excludeFields;
+            var fe_filters_fieldsNotAvailable = dataSourceDescription.fe_filters.fieldsNotAvailable;
             if (typeof fe_filters_fieldsNotAvailable !== 'undefined') {
                 var fe_filters_fieldsNotAvailable_length = fe_filters_fieldsNotAvailable.length;
                 for (var i = 0; i < fe_filters_fieldsNotAvailable_length; i++) {
@@ -149,8 +148,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
             }
             //
             var default_filterJSON = undefined;
-            if (typeof dataSourceDescription.fe_filters_default !== 'undefined') {
-                default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters_default || {}); // "|| {}" for safety
+            if (typeof dataSourceDescription.fe_filters.default_filter !== 'undefined') {
+                default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default_filter || {}); // "|| {}" for safety
             }
             //
             var data =
@@ -164,7 +163,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 team: null,
                 brandColor: dataSourceDescription.brandColor,
                 default_filterJSON: default_filterJSON,
-                view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+                view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                 //
                 rowObject: rowObject,
                 //

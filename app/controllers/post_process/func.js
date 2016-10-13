@@ -139,10 +139,10 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
         // To coercion the date field into the valid date
         var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
         var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
-            && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+            && raw_rowObjects_coercionSchema[realColumnName].operation === "ToDate";
 
         if (!isDate) {
-            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
             var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
             if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
                 var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[filterVal];
@@ -186,9 +186,9 @@ var _activeFilterRange_matchCondition_orErrDescription = function (dataSourceDes
     // To coercion the date field into the valid date
     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
-        && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+        && raw_rowObjects_coercionSchema[realColumnName].oepration === "ToDate";
     if (!isDate) {
-        var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+        var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
         var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
         if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
             var overrideValueMin = oneToOneOverrideWithValuesByTitle_forThisColumn[filterValMin];
@@ -253,10 +253,10 @@ module.exports.activeFilterRange_matchCondition_orErrDescription = _activeFilter
 var _activeFilterOR_matchCondition_orErrDescription = function (dataSourceDescription, filterCol, filterVal) {
     var matchConditions = undefined;
     var isAFabricatedFilter = false; // finalize
-    if (dataSourceDescription.fe_filters_fabricatedFilters) {
-        var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
+    if (dataSourceDescription.fe_filters.fabricatedFilters) {
+        var fabricatedFilters_length = dataSourceDescription.fe_filters.fabricatedFilters.length;
         for (var i = 0; i < fabricatedFilters_length; i++) {
-            var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
+            var fabricatedFilter = dataSourceDescription.fe_filters.fabricatedFilters[i];
             if (fabricatedFilter.title === filterCol) {
                 isAFabricatedFilter = true;
                 // Now find the applicable filter choice
@@ -270,8 +270,18 @@ var _activeFilterOR_matchCondition_orErrDescription = function (dataSourceDescri
                         var choice = choices[j];
                         if (choice.title === filterVal[k]) {
                             foundChoice = true;
-                            matchConditions = [{$match: choice["$match"]}];
 
+                            var reformQuery = {};
+
+                             reformQuery[choice["match"].field] =  {
+                               $exists : choice["match"].exist,
+                               $nin : choice["match"].nin
+                            }
+  
+                            matchConditions = [{$match: reformQuery}];
+
+
+                        
                             break; // found the applicable filter choice
                         }
                     }
@@ -297,12 +307,12 @@ var _activeFilterOR_matchCondition_orErrDescription = function (dataSourceDescri
         // To coercion the date field into the valid date
         var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
         var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
-            && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+            && raw_rowObjects_coercionSchema[realColumnName].operation === "ToDate";
 
         if (!isDate) {
             for (var i = 0; i < filterVal.length; i++) {
                 var realFilterValue = filterVal[i]; // To finalize in case of override…
-                var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+                var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
                 var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
                 if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
                     var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[realFilterValue];
@@ -349,7 +359,7 @@ var _activeSearch_matchOp_orErrDescription = function (dataSourceDescription, se
 
     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
-        && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+        && raw_rowObjects_coercionSchema[realColumnName].operation === "ToDate";
     if (!isDate) {
         if (Array.isArray(searchQ)) {
             var match = [];
@@ -466,9 +476,9 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
         //
         // Now insert keyword filters
         if (dataSourceDescription.fe_filters_keywordFilters) {
-            var keywordFilters_length = dataSourceDescription.fe_filters_keywordFilters.length;
+            var keywordFilters_length = dataSourceDescription.fe_filters.keywordFilters.length;
             for (var i = 0; i < keywordFilters_length; i++) {
-                var keywordFilter = dataSourceDescription.fe_filters_keywordFilters[i];
+                var keywordFilter = dataSourceDescription.fe_filters.keywordFilters[i];
                 var choices = keywordFilter.choices;
                 var choices_length = choices.length;
                 var values = [];
@@ -550,8 +560,8 @@ var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescrip
     if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
         var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
         if (coersionSchemeOfKey && typeof coersionSchemeOfKey !== 'undefined') {
-            var _do = coersionSchemeOfKey.do;
-            if (_do === import_datatypes.Coercion_ops.ToDate) {
+            var _do = coersionSchemeOfKey.operation;
+            if (_do === "ToDate") {
                 if (originalVal == null || originalVal == "") {
                     return originalVal; // do not attempt to format
                 }
@@ -567,7 +577,7 @@ module.exports.convertDateToBeRecognizable = _convertDateToBeRecognizable;
 //
 var _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = function (dataSourceDescription) {
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = {};
-    var fe_filters_fabricatedFilters = dataSourceDescription.fe_filters_fabricatedFilters;
+    var fe_filters_fabricatedFilters = dataSourceDescription.fe_filters.fabricatedFilters;
     if (typeof fe_filters_fabricatedFilters !== 'undefined') {
         var fe_filters_fabricatedFilters_length = fe_filters_fabricatedFilters.length;
         for (var i = 0; i < fe_filters_fabricatedFilters_length; i++) {

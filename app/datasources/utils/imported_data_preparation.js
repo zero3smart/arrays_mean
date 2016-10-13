@@ -177,7 +177,7 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelin
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
         if (dataSourceDescription.fe_views.views.timeline.fieldsNotAvailableAsSortByColumns) {
-            if (dataSourceDescription.fe_timeline_fieldsNotAvailableAsSortByColumns.indexOf(key) !== -1) {
+            if (dataSourceDescription.fe_views.views.timeline.fieldsNotAvailableAsSortByColumns.indexOf(key) !== -1) {
                 continue;
             }
         }

@@ -127,6 +127,7 @@
                                             <li class="timeline-group">
                                                 <span class="timeline-group-label">{{ group.startDate | dateFormat(groupByDateFormat) }}{% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}&ndash;{{ group.endDate | dateFormat(groupByDateFormat) }}{% endif %}</span>
                                                 <ul class="timeline-group-list">
+
                                                     {% for doc in group.results %}
                                                         {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}
                                                             {% include "../partials/timeline_item_image.html" %}
@@ -135,6 +136,7 @@
                                                         {% endif %}
                                                     {% endfor %}
                                                     {% if groupedResultsLimit < group.total %}
+                                                    
                                                         <li class="timeline-group-item">
                                                             <div class="timeline-item timeline-view-all">
                                                                 {% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}
@@ -199,4 +201,13 @@
     <script type="text/javascript" src="/javascripts/lib/scrollmagic/ScrollMagic.js"></script>
     <script type="text/javascript" src="/javascripts/module/gallery.js"></script>
     <script type="text/javascript" src="/javascripts/module/timeline.js"></script>
+
+
+    <script>
+        console.log(groupedResults);
+</script>
+
+
+
+
 {% endblock %}

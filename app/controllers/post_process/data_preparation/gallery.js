@@ -24,12 +24,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
     .then(function(dataSourceDescription) {
 
 
-
-
-
-
-    
-
         if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
             callback(new Error("No data source with that source pkey " + source_pKey), null);
             return;
@@ -78,7 +72,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
         //
 
-        console.log("before")
         var wholeFilteredSet_aggregationOperators = [];
         if (isSearchActive) {
             var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
@@ -112,9 +105,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 if (err) return done(err);
 
                 sourceDoc = _sourceDoc;
-
-
-                console.log("obtained source doc");
                 done();
             });
         });
@@ -148,7 +138,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
                         }
 
-                        if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+                        if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
 
                             uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
                                 a = a.replace(/\D/g, '');
@@ -301,7 +291,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 //
                 routePath_base: routePath_base,
                 // multiselectable filter fields
-                multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
+                multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable
             };
             callback(null, data);
         });

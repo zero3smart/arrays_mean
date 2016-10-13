@@ -31,7 +31,7 @@ module.exports.DataSource_formats =
 //
 var fieldValueDataTypeCoercion_coercionFunctions= function(inString,field) {
     var opName = field.operation;
-    if (opName == undefined || opName == 'ProxyExisting' ) {
+    if (opName == 'ProxyExisting' ) {
         return inString;
 
     } else if (opName == 'ToDate') {
@@ -91,31 +91,22 @@ var fieldValueDataTypeCoercion_coercionFunctions= function(inString,field) {
 
 }
 
-
-var fieldValueDataTypeCoercion_revertFunctionsByOperationName =  // Private for now
-{ // Note: We're assuming all in-values will be strings, so these are inStrings rather than inValues
-    ProxyExisting: function (inString, options) {
-        return inString;
-    },
-    ToStringTrim: function (inString, options) {
-        // Trim space characters from either side of string
-        return inString.trim();
-    },
-    ToInteger: function (intValue, options) {
-        return intValue.toString();
-    },
-    ToFloat: function (floatValue, options) {
-        return floatValue.toString();
-    },
-    ToDate: function (date, options) {
-        // Now verify date parsing format string
-        var dateFormatString = options.format;
+var fieldValueDataTypeCoercion_revertFunctions = function(value,field) {
+    var opName = field.operation;
+    if (opName == "ProxyExisting") {
+        return value;
+    } else if (opName == "ToStringTrim") {
+        return value.trim();
+    } else if (opName == "ToInteger" || opName == "ToFloat") {
+        return value.toString();
+    } else if (opName == "ToDate") {
+        var date = value;
+        var dateFormatString = field.format;
         if (dateFormatString == "" || dateFormatString == null || typeof dateFormatString === 'undefined') {
             console.error("❌  No format string with which to derive formatted date \"" + inString + "\". Returning undefined.");
-
             return undefined;
         }
-        if (dateFormatString == moment.ISO_8601)
+        if (dateFormatString == "ISO_8601")
             dateFormatString = "MMMM Do, YYYY";
 
         if (isNaN(date.getTime())) {
@@ -125,25 +116,35 @@ var fieldValueDataTypeCoercion_revertFunctionsByOperationName =  // Private for 
             return moment.utc(date).format(dateFormatString);
         }
     }
-};
+
+
+}
 //
 // Public: 
 module.exports.NewDataTypeCoercedValue = function (coercionSchemeForKey, rowValue) {
-    return fieldValueDataTypeCoercion_coercionFunctions(rowValue,coercionSchemeForKey);
-};
-// Public:
-module.exports.OriginalValue = function (coercionSchemeForKey, rowValue) {
-    var operationName = coercionSchemeForKey.do;
+    var operationName = coercionSchemeForKey.operation;
     if (operationName == null || operationName == "" || typeof operationName === 'undefined') {
-        console.error("❌  Illegal, malformed, or missing operation name at key 'do' in coercion scheme."
+        console.error("❌  Illegal, malformed, or missing operation name at key 'operation' in coercion scheme."
             + " Returning undefined.\ncoercionSchemeForKey:\n"
             , coercionSchemeForKey);
 
         return undefined;
     }
-    var operationOptions = coercionSchemeForKey.opts;
-    var operationFn = fieldValueDataTypeCoercion_revertFunctionsByOperationName[operationName];
-    var coercedValue = operationFn(rowValue, operationOptions);
 
-    return coercedValue;
+
+    return fieldValueDataTypeCoercion_coercionFunctions(rowValue,coercionSchemeForKey);
+};
+// Public:
+module.exports.OriginalValue = function (coercionSchemeForKey, rowValue) {
+    var operationName = coercionSchemeForKey.operation;
+    if (operationName == null || operationName == "" || typeof operationName === 'undefined') {
+        console.error("❌  Illegal, malformed, or missing operation name at key 'operation' in coercion scheme."
+            + " Returning undefined.\ncoercionSchemeForKey:\n"
+            , coercionSchemeForKey);
+
+        return undefined;
+    }
+
+    return fieldValueDataTypeCoercion_revertFunctions(rowValue,coercionSchemeForKey);
+
 };

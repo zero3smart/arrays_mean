@@ -22,7 +22,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
     .then(function(dataSourceDescription) {
         if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
             callback(new Error("No data source with that source pkey " + source_pKey), null);
-
             return;
         }
 
@@ -30,16 +29,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
         if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views.chart != null && typeof dataSourceDescription.fe_views.views.chart === 'undefined') {
             callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
-
             return;
         }
-
-        // var fe_visible = dataSourceDescription.fe_visible;
-        // if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
-        //     callback(new Error("That data source was set to be not visible: " + source_pKey), null);
-
-        //     return;
-        // }
 
         var chartViewSettings = dataSourceDescription.fe_views.views.chart;
         var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
@@ -71,7 +62,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
         // Aggregate By
         var aggregateBy = urlQuery.aggregateBy;
         var defaultAggregateByColumnName_humanReadable = chartViewSettings.defaultAggregateByColumnName_humanReadable;
-        var numberOfRecords_notAvailable = chartViewSettings.fieldsNotAvailableAsGroupByColumns;
+        var numberOfRecords_notAvailable = chartViewSettings.aggregateByColumnName_numberOfRecords_notAvailable
+
         if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
             defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
 
@@ -151,7 +143,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
                         }
 
-                        if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+                        if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
 
                             uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
                                 a = a.replace(/\D/g, '');

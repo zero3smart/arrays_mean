@@ -105,7 +105,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                     return;
                 }
                 var valuesRaw;
-                if (dataSourceDescription.fe_filters_fieldsCommaSeparatedAsIndividual && dataSourceDescription.fe_filters_fieldsCommaSeparatedAsIndividual.indexOf(key) !== -1) {
+                if (dataSourceDescription.fe_filters.fieldsCommaSeparatedAsIndividual && dataSourceDescription.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf(key) !== -1) {
                     var raw = {}
                     results.forEach(function (el) {
                         if (Array.isArray(el._id) || typeof el._id === 'string') {
@@ -157,7 +157,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
 
 
 
-                if (dataSourceDescription.fe_filters.valuesToExclude) {
+                if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey) {
 
                    
 
@@ -195,7 +195,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 return;
             }
             // Override values
-            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
             var fieldNamesToOverride = Object.keys(oneToOneOverrideWithValuesByTitleByFieldName);
             async.each(fieldNamesToOverride, function (fieldName, cb) {
                 var oneToOneOverrideWithValuesByTitle = oneToOneOverrideWithValuesByTitleByFieldName[fieldName];
