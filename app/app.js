@@ -35,7 +35,8 @@ nunjucks.setup({
 // Redirect https
 app.use(function(req, res, next){
     if (process.env.USE_SSL === 'true' && 'https' !== req.header('x-forwarded-proto')){
-        res.redirect('https://'+req.header('host')+req.url);
+        return res.redirect('https://'+req.header('host')+req.url);
+
     }
 
     next();
