@@ -22,15 +22,7 @@ var _dataSourceDescriptionWithPKey = function(source_pKey) {
     var split = source_pKey.split("-");
     var uid = split[0];
     var revision = split[1].substring(1);
-
-
-
-
     return new Promise(function(resolve,reject) {
-
-
-
-
          dataSourceDescriptions.GetDescriptionsWith_uid_importRevision(uid,revision,function(data) {
            resolve(data);
 
@@ -44,43 +36,22 @@ var _dataSourceDescriptionWithPKey = function(source_pKey) {
 
 
 
-// function _dataSourceDescriptionWithPKey(source_pKey) {
-
-//     dataSourceDescriptions.GetDescriptionsWithSourceKey(source_pKey,function(data) {
-
-
-//         console.log("get data");
-
-//        var dataSourceDescriptions_length = data.length;
-//         for (var i = 0; i < dataSourceDescriptions_length; i++) {
-//             var dataSourceDescription = data[i];
-//             var dataSourceDescription_pKey = _dataSourcePKeyFromDataSourceDescription(dataSourceDescription);
-//             if (dataSourceDescription_pKey === source_pKey) {
-//                 return dataSourceDescription;
-//             }
-//         }
-
-//         // return null;
-
-//     })
-// };
-
 
 module.exports.DataSourceDescriptionWithPKey = _dataSourceDescriptionWithPKey;
 
 //
-function _teamDescription(team_key) {
-    var teamDescriptions_length = teamDescriptions.length;
-    for (var i = 0; i < teamDescriptions_length; i++) {
-        var teamDescription = teamDescriptions[i];
-        if (teamDescription.id === team_key) {
-            return teamDescription;
-        }
-    }
+// function _teamDescription(team_key) {
+//     var teamDescriptions_length = teamDescriptions.length;
+//     for (var i = 0; i < teamDescriptions_length; i++) {
+//         var teamDescription = teamDescriptions[i];
+//         if (teamDescription.id === team_key) {
+//             return teamDescription;
+//         }
+//     }
 
-    return null;
-}
-module.exports.TeamDescription = _teamDescription;
+//     return null;
+// }
+// module.exports.TeamDescription = _teamDescription;
 
 //
 function _realColumnNameFromHumanReadableColumnName(humanReadableColumnName, dataSourceDescription) {
@@ -205,7 +176,7 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelin
     var available_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_timeline_fieldsNotAvailableAsSortByColumns) {
+        if (dataSourceDescription.fe_views.views.timeline.fieldsNotAvailableAsSortByColumns) {
             if (dataSourceDescription.fe_timeline_fieldsNotAvailableAsSortByColumns.indexOf(key) !== -1) {
                 continue;
             }
@@ -230,8 +201,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGr
     var available_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_chart_fieldsNotAvailableAsGroupByColumns) {
-            if (dataSourceDescription.fe_chart_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_views.views.chart.fieldsNotAvailableAsGroupByColumns) {
+            if (dataSourceDescription.fe_views.views.chart.fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
                 continue;
             }
         }
@@ -255,8 +226,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChoropl
     var available_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_choropleth_fieldsNotAvailableAsMapByColumns) {
-            if (dataSourceDescription.fe_choropleth_fieldsNotAvailableAsMapByColumns.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_views.views.choropleth.fieldsNotAvailableAsMapByColumns) {
+            if (dataSourceDescription.fe_views.views.choropleth.fieldsNotAvailableAsMapByColumns.indexOf(key) !== -1) {
                 continue;
             }
         }
@@ -280,8 +251,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatter
     var available_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable) {
-            if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable) {
+            if (dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable.indexOf(key) !== -1) {
                 continue;
             }
         }
@@ -305,8 +276,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForwordClo
     var available_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_wordCloud_fieldsNotAvailableAsGroupByColumns) {
-            if (dataSourceDescription.fe_wordCloud_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_views.views.wordCloud.fieldsNotAvailableAsGroupByColumns) {
+            if (dataSourceDescription.fe_views.views.wordCloud.fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
                 continue;
             }
         }
@@ -330,8 +301,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForLineGra
     var available_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_lineGraph_fieldsNotAvailableAsGroupByColumns) {
-            if (dataSourceDescription.fe_lineGraph_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_views.views.lineGraph.fieldsNotAvailableAsGroupByColumns) {
+            if (dataSourceDescription.fe_views.views.lineGraph.fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
                 continue;
             }
         }

@@ -47,6 +47,7 @@ module.exports.New_templateForPersistableObject = function (rowObject_primaryKey
     };
 };
 
+
 var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (srcDocPKey) {
     var mongooseContext = MongooseContextsBySrcDocPKey[srcDocPKey];
     if (mongooseContext && typeof mongooseContext !== 'undefined') { // lazy cache, to avoid mongoose model re-definition error
@@ -770,6 +771,8 @@ module.exports.EnumerateProcessedDataset = function (dataSource_uid,
                 function _finishedWithDoc() {
                     numberOfDocumentsFoundButNotYetProcessed -= 1; // finished with this doc - decrement
                     //
+
+
                     if (hasReachedEndOfCursor == true) {
                         if (numberOfDocumentsFoundButNotYetProcessed == 0) {
                             // console.log("Reached end of cursor and finished processing all")

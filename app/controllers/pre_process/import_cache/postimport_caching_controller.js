@@ -161,11 +161,11 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
 
                    
 
-                    if (dataSourceDescription.fe_filters.valuesToExclude._all) {
+                    if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all) {
 
-                        illegalValues = illegalValues.concat(dataSourceDescription.fe_filters.valuesToExclude._all);
+                        illegalValues = illegalValues.concat(dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all);
                     }
-                    var illegalValuesForThisKey = dataSourceDescription.fe_filters.valuesToExclude[key];
+                    var illegalValuesForThisKey = dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey[key];
                     if (illegalValuesForThisKey) {
                         illegalValues = illegalValues.concat(illegalValuesForThisKey);
                     }

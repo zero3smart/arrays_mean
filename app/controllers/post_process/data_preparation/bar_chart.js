@@ -492,7 +492,7 @@ router.BindData = function (req, urlQuery, callback) {
 
             arrayTitle: dataSourceDescription.title,
             array_source_key: source_pKey,
-            team: team,
+            team: null,
             brandColor: dataSourceDescription.brandColor,
             sourceDoc: sourceDoc,
             sourceDocURL: sourceDocURL,

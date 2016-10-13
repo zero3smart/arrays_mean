@@ -84,10 +84,10 @@ module.exports.activeFilter_matchOp_orErrDescription_fromMultiFilter = _activeFi
 var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescription, filterCol, filterVal) {
     var matchConditions = undefined;
     var isAFabricatedFilter = false; // finalize
-    if (dataSourceDescription.fe_filters_fabricatedFilters) {
-        var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
+    if (dataSourceDescription.fe_filters.fabricatedFilters) {
+        var fabricatedFilters_length = dataSourceDescription.fe_filters.fabricatedFilters.length;
         for (var i = 0; i < fabricatedFilters_length; i++) {
-            var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
+            var fabricatedFilter = dataSourceDescription.fe_filters.fabricatedFilters[i];
             if (fabricatedFilter.title === filterCol) {
                 isAFabricatedFilter = true;
                 // Now find the applicable filter choice
@@ -98,7 +98,23 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
                     var choice = choices[j];
                     if (choice.title === filterVal) {
                         foundChoice = true;
-                        matchConditions = [{$match: choice["$match"]}];
+                        
+                        var reformQuery = {};
+
+                
+                        reformQuery[choice["match"].field] =  {
+                            $exists : choice["match"].exist,
+                            $nin : choice["match"].nin
+
+                        }
+
+                        matchConditions = [{$match: reformQuery}];
+
+
+
+                    
+
+
 
                         break; // found the applicable filter choice
                     }
@@ -491,20 +507,20 @@ var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescr
     if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
         var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
         if (coersionSchemeOfKey && typeof coersionSchemeOfKey !== 'undefined') {
-            var _do = coersionSchemeOfKey.do;
-            if (_do === import_datatypes.Coercion_ops.ToDate) {
+            var _do = coersionSchemeOfKey.operation;
+            if (_do === "ToDate") {
                 if (originalVal == null || originalVal == "") {
                     return originalVal; // do not attempt to format
                 }
                 var dateFormat = null;
-                var fe_outputInFormat = dataSourceDescription.fe_outputInFormat;
+                var fe_outputInFormat = coersionSchemeOfKey.outputFormat;
                 if (fe_outputInFormat && typeof fe_outputInFormat !== 'undefined') {
                     var outputInFormat_ofKey = fe_outputInFormat["" + key];
                     if (outputInFormat_ofKey && typeof outputInFormat_ofKey !== 'undefined') {
                         dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
                     }
                 }
-                if (dateFormat == null || dateFormat == import_datatypes.Coercion_optionsPacks.ToDate.ISO_8601.format) { // still null? use default
+                if (dateFormat == null || dateFormat == "ISO_8601") { // still null? use default
                     dateFormat = config.defaultDateFormat;
                 }
                 displayableVal = moment(originalVal, moment.ISO_8601).utc().format(dateFormat);

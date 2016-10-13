@@ -20,11 +20,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // Other filters
     var source_pKey = urlQuery.source_key;
 
-
-    console.log( importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey))
-
-
-
     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
     .then(function(dataSourceDescription) {
 
@@ -45,12 +40,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
             callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
             return;
         }
-        var fe_visible = dataSourceDescription.fe_visible;
+        // var fe_visible = dataSourceDescription.fe_visible;
 
-        if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
-            callback(new Error("That data source was set to be not visible: " + source_pKey), null);
-            return;
-        }
+        // if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
+        //     callback(new Error("That data source was set to be not visible: " + source_pKey), null);
+        //     return;
+        // }
 
         var galleryViewSettings = dataSourceDescription.fe_views.views.gallery;
 
@@ -271,7 +266,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,
-                view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+                view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                 view_descriptions: dataSourceDescription.fe_view_descriptions ? dataSourceDescription.fe_view_descriptions : {},
                 //
                 pageSize: config.pageSize < nonpagedCount ? config.pageSize : nonpagedCount,

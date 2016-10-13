@@ -64,7 +64,7 @@ module.exports =  {
     GetDescriptionsWith_uid_importRevision : function(uid,revision,fn) {
 
 
-        datasource_description.findOne({uid: uid,importRevision: revision})
+        datasource_description.findOne({uid: uid,importRevision: revision,fe_visible:true})
             .lean()
             .exec(function(err,descriptions) {
                 if (err) {
