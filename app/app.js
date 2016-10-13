@@ -10,7 +10,6 @@ var flash = require('connect-flash');
 var passport = require('passport');
 var dotenv = require('dotenv');
 var fs = require('fs');
-var cors = require('cors');
 var routes = require('./routes');
 
 var isDev = process.env.NODE_ENV == 'production' ? false : true;
@@ -49,7 +48,6 @@ app.use(bodyParser.urlencoded({ extended: false })); // application/x-www-form-u
 app.use(bodyParser.json()); // application/JSON
 app.use(require('compression')());
 app.set('trust proxy', true);
-app.use(cors());
 app.use(cookieParser());
 
 // Mongo Store to prevent a warnning.
