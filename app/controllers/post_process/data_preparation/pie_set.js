@@ -195,7 +195,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 [
                     {$unwind: "$" + "rowParams." + groupBy_realColumnName},
                     {$unwind: "$" + "rowParams." + chartBy_realColumnName},
-                    {$unwind: "$" + "rowParams." + aggregateBy_realColumnName},
                     { // unique/grouping and summing stage
                         $group: {
                             _id: {
@@ -210,7 +209,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     { // reformat
                         $project: {
                             _id: 0,
-                            gropuBy: "$_id.groupBy",
+                            groupBy: "$_id.groupBy",
                             chartBy: "$_id.chartBy",
                             value: 1
                         }

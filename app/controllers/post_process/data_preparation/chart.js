@@ -181,7 +181,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             aggregationOperators = aggregationOperators.concat(
                 [
                     {$unwind: "$" + "rowParams." + groupBy_realColumnName},
-                    {$unwind: "$" + "rowParams." + aggregateBy_realColumnName},
                     { // unique/grouping and summing stage
                         $group: {
                             _id: "$" + "rowParams." + groupBy_realColumnName,

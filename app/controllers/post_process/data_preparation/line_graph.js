@@ -231,7 +231,6 @@ router.BindData = function (req, urlQuery, callback) {
                     [
                         {$unwind: "$" + "rowParams." + groupBy_realColumnName},
                         {$unwind: "$" + "rowParams." + stackBy_realColumnName},
-                        {$unwind: "$" + "rowParams." + aggregateBy_realColumnName},
                         {
                             $group: {
                                 _id: {
@@ -260,7 +259,6 @@ router.BindData = function (req, urlQuery, callback) {
                 aggregationOperators = aggregationOperators.concat(
                     [
                         {$unwind: "$" + "rowParams." + groupBy_realColumnName},
-                        {$unwind: "$" + "rowParams." + aggregateBy_realColumnName},
                         {
                             $group: {
                                 _id: "$" + "rowParams." + groupBy_realColumnName,
