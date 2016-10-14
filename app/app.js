@@ -46,13 +46,12 @@ app.use(function(req, res, next){
 //
 app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
 app.use(express.static(path.join(__dirname, '/public')));
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false })); // application/x-www-form-urlencoded
 app.use(bodyParser.json()); // application/JSON
 app.use(require('compression')());
 app.set('trust proxy', true);
 app.use(cookieParser());
-
-app.use(cors());
 
 // Mongo Store to prevent a warnning.
 app.use(session({
