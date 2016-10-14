@@ -143,6 +143,8 @@ var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDesc
     );
 }
 
+module.exports._AfterGeneratingProcessing_dataSourceDescriptions  = _AfterGeneratingProcessing_dataSourceDescriptions ;
+
 // ---------- Single DataSource Operation ----------
 //
 var _postProcess = function (indexInList, dataSourceDescription, callback) {
@@ -262,21 +264,35 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     //
     winston.info("🔁  Performing each-row operation for \"" + dataSource_title + "\"");
-    //    
+
+    var eachCtx;
     var eachCtx = dataSourceDescription.customFieldsToProcess;
+    if (eachCtx == null  || typeof eachCtx == 'undefined') {
+        eachCtx = dataSourceDescription.fe_nestedObject;
+        eachCtx.nested = true;
+
+        eachCtx.numberOfInsertedRows = 0;
+        eachCtx.numberOfRows = 0;
+        eachCtx.cached = [];
+    }
+
+    eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation
 
     startIterations();
     
     function startIterations() {
+
+
         if (eachCtx == null || typeof eachCtx == 'undefined') {
             continueToAfterIterating();
         } else {
-
             processed_row_objects.EnumerateProcessedDataset(
                 dataSource_uid,
                 dataSource_importRevision,
                 dataset_uid,
                 function (doc, eachCb) {
+
+
                     afterGeneratingProcessedRowObjects_eachRowFn(eachCtx, doc, eachCb);
                 },
                 function (err) {
@@ -294,30 +310,123 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     function afterGeneratingProcessedRowObjects_eachRowFn(eachCtx, rowDoc, cb) {
 
-        for (var i = 0; i < eachCtx.length; i++) {
-            var newFieldName = eachCtx[i].fieldName;
-            var newFieldType = eachCtx[i].fieldType;
-            if (newFieldType == 'array') {
-                var fieldsToMergeIntoArray  = eachCtx[i].fieldsToMergeIntoArray;
-                var new_array = mergeAllFieldsToArray(newFieldName,fieldsToMergeIntoArray,rowDoc);
-                var updateQuery = addToSet(newFieldName,new_array);
+        var bulkOperationQueryFragment;
 
-                var bulkOperationQueryFragment =
-                {
-                    pKey: rowDoc.pKey, 
-                    srcDocPKey: rowDoc.srcDocPKey 
-                };
-                eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation ;
-                eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateQuery);
 
-            } else if (newFieldType == 'object') {
+
+        if (typeof eachCtx.nested !== 'undefined' && eachCtx.nested == true ) {
+
+            if (!ifHasAndMeetCriteria(eachCtx,rowDoc)) { 
+                var updateFragment = {$pushAll: {}};
+                for (var i = 0; i < eachCtx.fields.length; i++) {
+
+                    var fieldName = eachCtx.fields[i];
+                    var generatedArray = [];
+
+               
+                    eachCtx.cached.forEach(function (rowDoc) {
+
+                        var fieldValue = rowDoc["rowParams"][fieldName];
+
+                        if (eachCtx.valueOverrides[fieldName]) {
+                            var keys = Object.keys(eachCtx.valueOverrides[fieldName]);
+                            keys.forEach(function (key) {
+                                var re = new RegExp(key, 'i');
+                                fieldValue = fieldValue.replace(re, eachCtx.valueOverrides[fieldName][key])
+                            });
+                        }
+                        generatedArray.push(fieldValue);
+
+                        bulkOperationQueryFragment =
+                        {
+                            pKey: rowDoc.pKey, // the specific row
+                            srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
+                        };
+                        eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
+                    });
+
                 
+
+                    if (eachCtx.fieldOverrides[fieldName]) {
+                        fieldName = eachCtx.fieldOverrides[fieldName];
+                    }
+                    updateFragment["$pushAll"]["rowParams." + eachCtx.prefix + fieldName] = generatedArray;
+                }
+
+                // console.log(JSON.stringify(updateFragment))
+               
+
+             // Insert the nested object into the main row
+                if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {
+                    bulkOperationQueryFragment =
+                        {
+                            pKey: rowDoc.pKey, // the specific row
+                            srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
+                        };
+
+                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+
+    
+                    eachCtx.cached = [];                
+                }
+                eachCtx.numberOfInsertedRows++;
+
+            } else {
+                eachCtx.cached.push(rowDoc);
+            }
+            eachCtx.numberOfRows++;
+        } else {
+            for (var i = 0; i < eachCtx.length; i++) {
+                var newFieldName = eachCtx[i].fieldName;
+                var newFieldType = eachCtx[i].fieldType;
+                if (newFieldType == 'array') {
+                    var fieldsToMergeIntoArray  = eachCtx[i].fieldsToMergeIntoArray;
+                    var new_array = mergeAllFieldsToArray(fieldsToMergeIntoArray,rowDoc,null);
+                    var updateQuery = addToSet(newFieldName,new_array);
+
+                    bulkOperationQueryFragment =
+                    {
+                        pKey: rowDoc.pKey, 
+                        srcDocPKey: rowDoc.srcDocPKey 
+                    };
+                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateQuery);
+
+                } else if (newFieldType == 'object') {
+
+                  
+                    
+                }
             }
         }
         cb();
     }
 
-    function mergeAllFieldsToArray(generateFieldNamed,withValuesInFieldsNamed,rowDoc) {
+    function ifHasAndMeetCriteria (ctx,rowDoc) {
+
+
+        if (ctx.criteria !== null && typeof ctx.criteria !== 'undefined') {
+            var checkField = ctx.criteria.fieldName;
+            var opr = ctx.criteria.operatorName;
+            var val = ctx.criteria.value;
+
+    
+            if (opr == 'equal') {
+                if (val == "") {
+                    var ret = !rowDoc.rowParams[checkField] || rowDoc.rowParams[checkField] == "";
+                    return ret;
+                }
+
+            } //other conditions to implement
+
+     
+
+        }
+
+        return true;
+
+    }
+
+    function mergeAllFieldsToArray(withValuesInFieldsNamed,rowDoc) {
         var generatedArray = [];
          for (var i = 0; i < withValuesInFieldsNamed.length; i++) {
             var fieldName = withValuesInFieldsNamed[i];
@@ -348,7 +457,17 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             if (err) {
                 winston.error("❌ [" + (new Date()).toString() + "] Error while saving raw row objects: ", err);
             } else {
+
+                console.log(JSON.stringify(result));
                 winston.info("✅  [" + (new Date()).toString() + "] Saved raw row objects.");
+
+            }
+
+            if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
+
+                var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+                raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows, cb)
+
             }
             cb(err); // all done - must call DB
         });

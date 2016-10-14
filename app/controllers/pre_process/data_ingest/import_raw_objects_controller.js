@@ -129,8 +129,13 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
 
             }
 
+           
 
-            var rowObject_primaryKey = "" + (lineNr-1) + "-" + rowObject[csvDescription.fn_new_rowPrimaryKeyFromRowObject];
+
+            var rowObject_primaryKey = csvDescription.dataset_uid ? csvDescription.dataset_uid + "-" + (lineNr-1) + "-" + rowObject[csvDescription.fn_new_rowPrimaryKeyFromRowObject] :  "" + (lineNr-1) + "-" + rowObject[csvDescription.fn_new_rowPrimaryKeyFromRowObject];
+
+
+
             if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
                 winston.error("❌  Error: missing pkey on row", rowObject, "with factory accessor", csvDescription.fn_new_rowPrimaryKeyFromRowObject);
 

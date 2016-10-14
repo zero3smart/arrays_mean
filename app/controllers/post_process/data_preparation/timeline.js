@@ -256,7 +256,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             rowParamsfields.forEach(function (rowParamsField) {
 
 
-                if (rowParamsField == sortBy_realColumnName || dataSourceDescription.fe_nestedObject_prefix == null || dataSourceDescription.fe_nestedObject_prefix.indexOf(rowParamsField) == -1) {
+                if (rowParamsField == sortBy_realColumnName || dataSourceDescription.fe_nestedObject == null || rowParamsField.indexOf(dataSourceDescription.fe_nestedObject.prefix) == -1) {
                     projects['$project']['rowParams.' + rowParamsField] = 1;
                 }
             });

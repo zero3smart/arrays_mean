@@ -46,15 +46,11 @@ module.exports.BindData = function (req, callback) {
             // }
 
             var type;
-            if (typeof dataSourceDescription.sourceURL != 'undefined') {
+            if (typeof dataSourceDescription.uid != 'undefined') {
                 type = "array";
             } else {
                 type = "team";
             }
-
-
-
-
 
 
             var sourceDescription = {

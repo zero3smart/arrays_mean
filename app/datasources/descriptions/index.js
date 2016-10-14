@@ -10,7 +10,7 @@ module.exports =  {
     GetDescriptions : function(fn) {
         if (typeof fn == 'function') {
             mongoose_client.WhenMongoDBConnected(function () {
-                datasource_description.find({fe_visible:true})
+                datasource_description.find({$and:[{fe_visible:true},{schema_id:{$exists:false}}]})
                     .lean()
                     .exec(function(err,descriptions) {
                         if (err) {
@@ -38,13 +38,19 @@ module.exports =  {
         mongoose_client.WhenMongoDBConnected(function () {
             function asyncFunction (file, cb) {
 
-                datasource_description.findOne({uid:file})
+                datasource_description.findOne({$or: [{uid:file},{dataset_uid:file}]})
                     .lean()
                     .exec(function(err,description) {
                         if (err) {
                             winston.error("❌ Error occurred when finding datasource description: ", err);
                         } else {
-                            cb(description);
+                            if (!description.schema_id) {
+                                cb(description);
+                            } else {
+                                var des = getSchemaDescriptionAndCombine(description.schema_id,description);
+                                cb(des);
+
+                            }
                         }
                     })
             }
@@ -54,9 +60,54 @@ module.exports =  {
                 });
             });
             Promise.all(requests).then(function(data) {
+        
                 fn(data);
             });
         })
+
+
+
+
+
+        var getSchemaDescriptionAndCombine = function(schemaId,desc) {
+            return new Promise(function(resolve,reject) {
+                 datasource_description.findOne({uid:schemaId})
+                    .lean()
+                    .exec(function(err,schemaDesc) {
+
+                        for (var attrname in schemaDesc) {
+                            if (desc[attrname]) {
+                                if (Array.isArray(desc[attrname])) {
+                                    desc[attrname] = schemaDesc[attrname].concat(desc[attrname]);
+                                } else if (typeof desc[attrname] === 'string') {
+                                    // Nothing to do
+                                } else if (typeof desc[attrname] === 'object') {
+                                    desc[attrname] = mergeObject(schemaDesc[attrname], desc[attrname]);
+                                }
+                            } else {
+                                desc[attrname] = schemaDesc[attrname];
+                            }
+                        }
+                        resolve(desc);
+
+                    })
+
+
+            }) 
+        }
+
+        var mergeObject = function(obj1,obj2) {
+            var obj3 = {};
+            for (var attrname in obj1) {
+                obj3[attrname] = obj1[attrname]
+            }
+             for (var attrname in obj2) {
+                obj3[attrname] = obj2[attrname];
+            }
+            return obj3;
+        }
+
+
  
 
     }, 

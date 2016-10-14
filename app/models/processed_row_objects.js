@@ -97,12 +97,20 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (dataSource_ui
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
 
         var updateDocs = [];
+
         var datasetQuery = dataset_uid ? {pKey: {$regex: "^" + dataset_uid + "-"}} : {};
+
+
+
+
+
         mongooseModel_ofRawRowObjectsBeingProcessed.find(datasetQuery, function (err, rowObjects) {
             if (err) {
                 winston.error("❌ [" + (new Date()).toString() + "] Error while saving processed row objects: ", err);
                 return callback(err);
             }
+
+    
             rowObjects.forEach(function (doc) {
                 updateDocs.push({insertOne: {document: doc._doc}});
             });
@@ -718,6 +726,7 @@ module.exports.EnumerateProcessedDataset = function (dataSource_uid,
         var query = {};
         if (dataset_uid && typeof dataset_uid === 'string' && dataset_uid != '') {
             query = {pKey: {$regex: "^" + dataset_uid + "-"}};
+            query = {};
         }
         if (query_optl == null || typeof query_optl === 'undefined') {
             query = {};
