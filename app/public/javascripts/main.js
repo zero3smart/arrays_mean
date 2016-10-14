@@ -3,12 +3,11 @@ $(window).load(function() {
     trackEvent("page load");
 
 
-     trackEvent('page viewed', {
+    trackEvent('page viewed', {
        'page name' : document.title,
        'url' : window.location.pathname
-     });
+    });
 
-    
     /**
      * Add class to body to prevent weird page width transitions
      */
