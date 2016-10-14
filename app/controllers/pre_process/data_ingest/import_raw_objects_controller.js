@@ -7,6 +7,8 @@ var winston = require('winston');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
 var raw_row_objects = require('../../../models/raw_row_objects');
 var raw_source_documents = require('../../../models/raw_source_documents');
+
+var s3_service = require('../../../services/s3_service');
 //
 //
 module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription, callback) {
@@ -53,7 +55,13 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
     var revisionNumber = csvDescription.importRevision;
     var importUID = csvDescription.uid;
     winston.info("🔁  " + dataSourceIsIndexInList + ": Importing CSV \"" + sourceURL + "\"");
-    var filepath = CSV_resources_path_prefix + "/" + sourceURL;
+    // var filepath = CSV_resources_path_prefix + "/" + sourceURL;
+
+    var filepath = sourceURL;
+
+    
+
+
     //
     var raw_rowObjects_coercionScheme = csvDescription.raw_rowObjects_coercionScheme; // look up data type scheme here
     // var raw_rowObjects_mismatchScheme = csvDescription.raw_rowObjects_mismatchScheme;
@@ -156,7 +164,11 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
         }
     };
     // Now read
-    var readStream = fs.createReadStream(filepath, {encoding: fileEncoding})
+
+    // var readStream = fs.createReadStream(filepath, {encoding: fileEncoding})
+
+
+    var readStream = s3_service.getDatasource(filepath).createReadStream()
         .pipe(es.split())
         .pipe(es.mapSync(function (line) {
                 // pause the readstream
@@ -311,6 +323,10 @@ var _new_parsed_StringDocumentObject_fromTSVDataSourceDescription = function (da
         }
     };
     // Now read
+
+   
+
+  
     var readStream = fs.createReadStream(filepath, {encoding: fileEncoding})
         .pipe(es.split())
         .pipe(es.mapSync(function (line) {

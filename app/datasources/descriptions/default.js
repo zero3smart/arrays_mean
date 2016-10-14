@@ -1,3 +1,5 @@
 exports.Datasources = [
-    "nasa_labs_facilities"
+    "nasa_labs_facilities",
+    "marvel_character_database",
+    "jewish"
 ];

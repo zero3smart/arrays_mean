@@ -267,7 +267,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     var eachCtx;
     var eachCtx = dataSourceDescription.customFieldsToProcess;
-    if (eachCtx == null  || typeof eachCtx == 'undefined') {
+    if ( typeof dataSourceDescription.fe_nestedObject != 'undefined' ) {
         eachCtx = dataSourceDescription.fe_nestedObject;
         eachCtx.nested = true;
 
@@ -276,7 +276,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         eachCtx.cached = [];
     }
 
-    eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation
+   
 
     startIterations();
     
@@ -286,6 +286,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         if (eachCtx == null || typeof eachCtx == 'undefined') {
             continueToAfterIterating();
         } else {
+             eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation
+
             processed_row_objects.EnumerateProcessedDataset(
                 dataSource_uid,
                 dataSource_importRevision,
@@ -352,10 +354,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     }
                     updateFragment["$pushAll"]["rowParams." + eachCtx.prefix + fieldName] = generatedArray;
                 }
-
-                // console.log(JSON.stringify(updateFragment))
-               
-
              // Insert the nested object into the main row
                 if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {
                     bulkOperationQueryFragment =
@@ -458,7 +456,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                 winston.error("❌ [" + (new Date()).toString() + "] Error while saving raw row objects: ", err);
             } else {
 
-                console.log(JSON.stringify(result));
+        
                 winston.info("✅  [" + (new Date()).toString() + "] Saved raw row objects.");
 
             }
@@ -476,7 +474,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
 
     function continueToAfterIterating(eachCtx) {
-
     
         if (eachCtx != null || typeof eachCtx != 'undefined') {
 

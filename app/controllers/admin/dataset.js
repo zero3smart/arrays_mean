@@ -2,6 +2,7 @@ var aws = require('aws-sdk');
 var https = require('https');
 var es = require('event-stream');
 var parse = require('csv-parse');
+var s3Service = require("../.././services/s3_service")
 
 var datasource_description = require('../../models/datasource_descriptions');
 
@@ -52,6 +53,10 @@ module.exports.getSource = function(req, next) {
 };
 
 module.exports.signS3 = function(req, next) {
+
+    // uploading data to s3? can just use s3Service.uploadDataSource function
+
+
     var bucket = process.env.AWS_S3_BUCKET;
     var accessKey = process.env.AWS_ACCESS_KEY;
     var secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
@@ -69,7 +74,7 @@ module.exports.signS3 = function(req, next) {
         Bucket: bucket,
         Key: key,
         ContentType: fileType,
-        ACL: 'public-read'
+        ACL: 'private'
     };
 
     s3.getSignedUrl('putObject', s3Params, function(err, data) {
@@ -78,11 +83,14 @@ module.exports.signS3 = function(req, next) {
         }
         const returnData = {
             signedRequest: data,
-            url: 'https://' + bucket + '.s3.amazonaws.com/' + key
+            // url: 'https://' + bucket + '.s3.amazonaws.com/' + key
         };
 
         next(null, returnData);
     })
+
+
+
 };
 
 module.exports.saveSource = function(req, next) {
@@ -118,6 +126,7 @@ module.exports.getFormat = function(req, next) {
         pageTitle: "Dataset Settings"
     };
 
+
     if (req.params.id) {
         datasource_description.findById(req.params.id, function(err, doc) {
             if (err || !doc) return next(err);
@@ -126,6 +135,8 @@ module.exports.getFormat = function(req, next) {
             data.doc =doc;
 
             var countOfLines = 0;
+
+
 
             var request = https.get(doc.sourceURL, function(response) {
                 response.pipe(es.split())

@@ -14,6 +14,7 @@ var DatasourceDescription_scheme = Schema({
         type: Number,
         integer: true
     },
+    dataset_uid: String,
     format: String,
     title: String,
     brandColor: String,
