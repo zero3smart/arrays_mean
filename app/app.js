@@ -10,7 +10,6 @@ var flash = require('connect-flash');
 var passport = require('passport');
 var dotenv = require('dotenv');
 var fs = require('fs');
-var cors = require('cors');
 var routes = require('./routes');
 
 var isDev = process.env.NODE_ENV == 'production' ? false : true;
@@ -46,7 +45,6 @@ app.use(function(req, res, next){
 //
 app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
 app.use(express.static(path.join(__dirname, '/public')));
-app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false })); // application/x-www-form-urlencoded
 app.use(bodyParser.json()); // application/JSON
 app.use(require('compression')());

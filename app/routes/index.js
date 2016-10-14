@@ -1,6 +1,7 @@
 var winston = require('winston');
 var expressWinston = require('express-winston');
 var url = require('url');
+var cors = require('cors');
 
 var isDev = !process.env.NODE_ENV || process.env.NODE_ENV == 'development';
 var __DEBUG_enableEnsureWWWForDev = false; // for debug
@@ -59,6 +60,7 @@ var _mountRoutes_errorHandling = function (app) {
 //
 var _mountRoutes_endPoints = function (app) {
     // View endpoints
+    app.use(cors());
     app.use('/', require('./homepage'));
     app.use('/array', require('./array'));
     app.use('/team', require('./team'));
