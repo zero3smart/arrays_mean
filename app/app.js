@@ -35,7 +35,8 @@ nunjucks.setup({
 // Redirect https
 app.use(function(req, res, next){
     if (process.env.USE_SSL === 'true' && 'https' !== req.header('x-forwarded-proto')){
-        res.redirect('https://'+req.header('host')+req.url);
+        return res.redirect('https://'+req.header('host')+req.url);
+
     }
 
     next();
@@ -48,7 +49,6 @@ app.use(bodyParser.urlencoded({ extended: false })); // application/x-www-form-u
 app.use(bodyParser.json()); // application/JSON
 app.use(require('compression')());
 app.set('trust proxy', true);
-app.use(require('helmet').xframe());
 app.use(cookieParser());
 
 // Mongo Store to prevent a warnning.
