@@ -310,6 +310,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                 eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation ;
                 eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateQuery);
 
+            } else if (newFieldType == 'object') {
+                
             }
         }
         cb();
