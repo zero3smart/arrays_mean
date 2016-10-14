@@ -100,8 +100,8 @@ function _rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleRowOb
     var filterAvailable_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_filters.excludeFields) {
-            if (dataSourceDescription.fe_filters.excludeFields.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_filters.fieldsNotAvailable) {
+            if (dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key) !== -1) {
                 continue;
             }
         }

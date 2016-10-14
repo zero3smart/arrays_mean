@@ -18,164 +18,175 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
 
     var sourceKey = urlQuery.source_key;
-    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(sourceKey);
 
-    if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
-        callback(new Error("No data source with that source pkey " + sourceKey), null);
-        return;
-    }
+    importedDataPreparation.DataSourceDescriptionWithPKey(sourceKey)
+    .then(function(dataSourceDescription) {
+        if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
+            callback(new Error("No data source with that source pkey " + sourceKey), null);
+            return;
+        }
 
-    var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
+        // var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
 
-    if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != null && dataSourceDescription.fe_views.chart === false) {
-        callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
-        return;
-    }
+        if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.scatterplot  === 'undefined') {
+            callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
+            return;
+        }
 
-    var fe_visible = dataSourceDescription.fe_visible;
-    if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
-        callback(new Error("That data source was set to be not visible: " + sourceKey), null);
-        return;
-    }
-    /*
-     * Get somewhat mongoose context.
-     */
-    var processedRowObjects_mongooseContext = processed_row_objects
-        .Lazy_Shared_ProcessedRowObject_MongooseContext(sourceKey);
-    /*
-     * Stash somewhat model reference.
-     */
-    var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
-
-    var filterObj = func.filterObjFromQueryParams(urlQuery);
-    var isFilterActive = Object.keys(filterObj).length != 0;
-
-    var urlQuery_forSwitchingViews = "";
-    var appendQuery = "";
-    /*
-     * Check filter active and update composed URL params.
-     */
-    if (isFilterActive) {
-        appendQuery = queryString.stringify(filterObj);
-        urlQuery_forSwitchingViews = func.urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
-    }
-
-    var searchCol = urlQuery.searchCol;
-    var searchQ = urlQuery.searchQ;
-    var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != ""
-        && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";
-    /*
-     * Check search active and update composed URL params.
-     */
-    if (isSearchActive) {
-        appendQuery = "searchCol=" + urlQuery.searchCol + "&" + "searchQ=" + urlQuery.searchQ;
-        urlQuery_forSwitchingViews = func.urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
-    }
-    /*
-     * Process filterObj and prepare $match - https://docs.mongodb.com/manual/reference/operator/aggregation/match/ -
-     * statement. May return error instead required statement... and i can't say that understand that logic full. But in that case
-     * we just will create empty $match statement which acceptable for all documents from data source.
-     */
-    var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
-    if (_orErrDesc.err) {
-        _orErrDesc.matchOps = [{$match: {}}];
-    }
-    /*
-     * Run chain of function to collect necessary data.
-     */
-    raw_source_documents.Model.findOne({primaryKey: sourceKey}, function (err, sourceDoc) {
-        /*
-         * Run query to mongo to obtain all rows which satisfy to specified filters set.
+         /* Get somewhat mongoose context.
          */
-        processedRowObjects_mongooseModel.aggregate(_orErrDesc.matchOps).allowDiskUse(true).exec(function (err, documents) {
-            /*
-             * Get single/sample document.
-             */
-            var sampleDoc = documents[0];
-            /*
-             * Go deeper - collect data for filter's sidebar.
-             */
-            func.topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+        var processedRowObjects_mongooseContext = processed_row_objects
+            .Lazy_Shared_ProcessedRowObject_MongooseContext(sourceKey);
+        /*
+         * Stash somewhat model reference.
+         */
+        var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
 
-                var uniqueFieldValuesByFieldName = {}
-                for (var columnName in _uniqueFieldValuesByFieldName) {
-                    if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
-                        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
-                        if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
-                            var row = [];
-                            _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
-                                row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
-                            });
-                            row.sort();
-                            uniqueFieldValuesByFieldName[columnName] = row;
-                        } else {
-                            uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
+        var filterObj = func.filterObjFromQueryParams(urlQuery);
+        var isFilterActive = Object.keys(filterObj).length != 0;
+
+        var urlQuery_forSwitchingViews = "";
+        var appendQuery = "";
+        /*
+         * Check filter active and update composed URL params.
+         */
+        if (isFilterActive) {
+            appendQuery = queryString.stringify(filterObj);
+            urlQuery_forSwitchingViews = func.urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        }
+
+        var searchCol = urlQuery.searchCol;
+        var searchQ = urlQuery.searchQ;
+        var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != ""
+            && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";
+        /*
+         * Check search active and update composed URL params.
+         */
+        if (isSearchActive) {
+            appendQuery = "searchCol=" + urlQuery.searchCol + "&" + "searchQ=" + urlQuery.searchQ;
+            urlQuery_forSwitchingViews = func.urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
+        }
+        /*
+         * Process filterObj and prepare $match - https://docs.mongodb.com/manual/reference/operator/aggregation/match/ -
+         * statement. May return error instead required statement... and i can't say that understand that logic full. But in that case
+         * we just will create empty $match statement which acceptable for all documents from data source.
+         */
+        var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+        if (_orErrDesc.err) {
+            _orErrDesc.matchOps = [{$match: {}}];
+        }
+        /*
+         * Run chain of function to collect necessary data.
+         */
+        raw_source_documents.Model.findOne({primaryKey: sourceKey}, function (err, sourceDoc) {
+            /*
+             * Run query to mongo to obtain all rows which satisfy to specified filters set.
+             */
+            processedRowObjects_mongooseModel.aggregate(_orErrDesc.matchOps).allowDiskUse(true).exec(function (err, documents) {
+                /*
+                 * Get single/sample document.
+                 */
+                var sampleDoc = documents[0];
+                /*
+                 * Go deeper - collect data for filter's sidebar.
+                 */
+                func.topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+
+                    var uniqueFieldValuesByFieldName = {}
+                    for (var columnName in _uniqueFieldValuesByFieldName) {
+                        if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
+                            var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+                            if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
+                                var row = [];
+                                _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
+                                    row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
+                                });
+                                row.sort();
+                                uniqueFieldValuesByFieldName[columnName] = row;
+                            } else {
+                                uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
+                            }
+
+                            if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                                uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                                    a = a.replace(/\D/g, '');
+                                    a = a == '' ? 0 : parseInt(a);
+                                    b = b.replace(/\D/g, '');
+                                    b = b == '' ? 0 : parseInt(b);
+                                    return a - b;
+                                });
+
+                            } else // Sort alphabetically by default
+                                uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                                    return a - b;
+                                });
                         }
-
-                        if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
-
-                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                a = a.replace(/\D/g, '');
-                                a = a == '' ? 0 : parseInt(a);
-                                b = b.replace(/\D/g, '');
-                                b = b == '' ? 0 : parseInt(b);
-                                return a - b;
-                            });
-
-                        } else // Sort alphabetically by default
-                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                return a - b;
-                            });
                     }
-                }
-                /*
-                 * Define numeric fields list which may be used as scatterplot axes.
-                 * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.
-                 */
-                var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown(sampleDoc, dataSourceDescription).filter(function (i) {
-                    return dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) == -1;
-                });
-                /*
-                 * Then loop through document's fields and get numeric.
-                 * Also checking they are not in fe_scatterplot_fieldsNotAvailable config option.
-                 */
-                /*for (i in sampleDoc.rowParams) {
-                 if (! (! isNaN(parseFloat(sampleDoc.rowParams[i])) && isFinite(sampleDoc.rowParams[i]) && i !== 'id')) {
-                 continue;
-                 } else if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) >= 0) {
-                 continue;
-                 } else {
-                 numericFields.push(i);
-                 }
-                 }*/
-                /*
-                 * Run callback function to finish action.
-                 */
-                callback(err, {
-                    env: process.env,
+                    /*
+                     * Define numeric fields list which may be used as plot axes.
+                     * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.
+                     */
+                    var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown(sampleDoc, dataSourceDescription).filter(function (i) {
+                        return dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable.indexOf(i) == -1;
+                    });
 
-                    user: req.user,
+                    /*
+                     * Then loop through document's fields and get numeric.
+                     * Also checking they are not in fe_scatterplot_fieldsNotAvailable config option.
+                     */
+                    /*for (i in sampleDoc.rowParams) {
+                     if (! (! isNaN(parseFloat(sampleDoc.rowParams[i])) && isFinite(sampleDoc.rowParams[i]) && i !== 'id')) {
+                     continue;
+                     } else if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) >= 0) {
+                     continue;
+                     } else {
+                     numericFields.push(i);
+                     }
+                     }*/
+                    /*
+                     * Run callback function to finish action.
+                     */
+                    callback(err, {
+                        env: process.env,
 
-                    documents: documents,
-                    metaData: dataSourceDescription,
-                    renderableFields: numericFields,
-                    array_source_key: sourceKey,
-                    team: team,
-                    brandColor: dataSourceDescription.brandColor,
-                    uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
-                    sourceDoc: sourceDoc,
-                    view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
-                    routePath_base: '/array/' + sourceKey + '/scatterplot',
-                    filterObj: filterObj,
-                    isFilterActive: isFilterActive,
-                    urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
-                    searchCol: searchCol || '',
-                    searchQ: searchQ || '',
-                    colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
-                    // multiselectable filter fields
-                    multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable
+                        user: req.user,
+
+                        documents: documents,
+                        metaData: dataSourceDescription,
+                        renderableFields: numericFields,
+                        array_source_key: sourceKey,
+                        team: null,
+                        brandColor: dataSourceDescription.brandColor,
+                        uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+                        sourceDoc: sourceDoc,
+                        view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
+                        routePath_base: '/array/' + sourceKey + '/scatterplot',
+                        filterObj: filterObj,
+                        isFilterActive: isFilterActive,
+                        urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
+                        searchCol: searchCol || '',
+                        searchQ: searchQ || '',
+                        colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                        // multiselectable filter fields
+                        multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable
+                    });
+
+
+
+
                 });
             });
         });
-    });
+
+
+
+
+
+    })
+
+
+
+
+
 };

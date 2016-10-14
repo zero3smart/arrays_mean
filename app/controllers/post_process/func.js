@@ -57,10 +57,14 @@ var _activeFilter_matchOp_orErrDescription_fromMultiFilter = function (dataSourc
             }
             //console.log('---------- filter', filterCol, filterVal);
             if (typeof filterVal === 'string' || typeof filterVal === 'number') {
+
+                console.log("first");
+
                 matchConditions = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
             } else if (filterVal.min != undefined || filterVal.max != undefined) {
                 matchConditions = _activeFilterRange_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal.min, filterVal.max);
             } else if (Array.isArray(filterVal)) {
+                console
                 matchConditions = _activeFilterOR_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
             } else {
                 // TODO - ERROR - Unexpected format
@@ -452,10 +456,10 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
         }
         //
         // Now insert fabricated filters
-        if (dataSourceDescription.fe_filters_fabricatedFilters) {
-            var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
+        if (dataSourceDescription.fe_filters.fabricatedFilters) {
+            var fabricatedFilters_length = dataSourceDescription.fe_filters.fabricatedFilters.length;
             for (var i = 0; i < fabricatedFilters_length; i++) {
-                var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
+                var fabricatedFilter = dataSourceDescription.fe_filters.fabricatedFilters[i];
                 var choices = fabricatedFilter.choices;
                 var choices_length = choices.length;
                 var values = [];

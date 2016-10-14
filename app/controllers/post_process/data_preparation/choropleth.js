@@ -56,7 +56,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
         var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
         //
         var mapBy = urlQuery.mapBy; // the human readable col name - real col name derived below
-        var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_views.view.choropleth.defaultMapByColumnName_humanReadable;
+        var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_views.views.choropleth.defaultMapByColumnName_humanReadable;
         //
         var routePath_base = "/array/" + source_pKey + "/choropleth";
         var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;

@@ -65,12 +65,12 @@ var mongoose_client = require('../lib/mongoose_client/mongoose_client');
 var raw_source_documents = require('./models/raw_source_documents');
 
 
-// if (typeof process === 'object') {
-//     process.on('unhandledRejection', (error, promise) => {
-//         console.error("== Node detected an unhandled rejection! ==");
-//         console.error(error.stack);
-//     });
-// }
+if (typeof process === 'object') {
+    process.on('unhandledRejection', (error, promise) => {
+        console.error("== Node detected an unhandled rejection! ==");
+        console.error(error.stack);
+    });
+}
 
 
 
