@@ -40,17 +40,23 @@ module.exports =  {
 
                 datasource_description.findOne({$or: [{uid:file},{dataset_uid:file}]})
                     .lean()
+                    .pppulate('_otherSources')
                     .exec(function(err,description) {
                         if (err) {
                             winston.error("❌ Error occurred when finding datasource description: ", err);
                         } else {
-                            if (!description.schema_id) {
-                                cb(description);
-                            } else {
-                                var des = getSchemaDescriptionAndCombine(description.schema_id,description);
-                                cb(des);
 
-                            }
+                            console.log(description);
+
+                           
+                                // if (!description.schema_id) {
+                                //     cb(description);
+                                // } else {
+                                //     var des = getSchemaDescriptionAndCombine(description.schema_id,description);
+                                //     cb(des);
+
+                            //     // }
+                            // }
                         }
                     })
             }
@@ -106,9 +112,6 @@ module.exports =  {
             }
             return obj3;
         }
-
-
- 
 
     }, 
 

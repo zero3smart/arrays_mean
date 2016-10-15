@@ -14,6 +14,8 @@ var DatasourceDescription_scheme = Schema({
         type: Number,
         integer: true
     },
+    schema_id: String,
+    _otherSources: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
     dataset_uid: String,
     format: String,
     title: String,
@@ -34,6 +36,11 @@ var DatasourceDescription_scheme = Schema({
     },
     fe_displayTitleOverrides: Object
 });
+
+ stories : [{ type: Schema.Types.ObjectId, ref: 'Story' }]
+
+
+
 //
 
 

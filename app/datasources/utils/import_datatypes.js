@@ -14,19 +14,7 @@ module.exports.DataSource_formats =
 //     ToDrop: "ToDrop" // drop if necessory
 // };
 //
-// module.exports.Coercion_optionsPacks = // For convenience
-// {
-//     ToDate: {
-//         FourDigitYearOnly: {
-//             format: "YYYY"
-//         },
-//         ISO_8601: {
-//             format: moment.ISO_8601
-//         }
-//     }
-// };
-//
-//
+
 //
 //
 var fieldValueDataTypeCoercion_coercionFunctions= function(inString,field) {
