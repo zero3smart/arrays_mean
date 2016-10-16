@@ -41,15 +41,57 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
             });
         });
 
+        var galleryItem_htmlWhenMissingImage;
+
+
+        if (dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage) {
+            var cond = dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage;
+            var galleryItem_htmlWhenMissingImage = function(rowObject) {
+                var fieldName = cond.field;
+                var conditions = cond.conditions;
+                for (var i = 0; i < conditions.length; i++) {
+                    if (conditions[i].operator == "in" && Array.isArray(conditions[i].value)) {
+                        
+
+                        if (conditions[i].value.indexOf(rowObject["rowParams"][fieldName]) > 0) {
+                            
+                            var string = conditions[i].applyClasses.toString();
+                            
+                            var classes = string.replace(","," ");
+
+
+                            return '<span class="' + classes + '"</span>'; 
+                        }
+                    } else if (conditions[i].operator == "equal") {
+                        if (conditions[i].value == rowObject["rowParams"][fieldName]) {
+
+                            var string = conditions[i].applyClasses.toString();
+
+
+                            var classes = string.replace(","," ");
+
+                            return '<span class="' + classes + '"</span>'; 
+                        }
+                    } 
+                }
+
+
+            }
+        }
+
+
+
         batch.push(function (done) {
-            var afterImportingAllSources_generate = dataSourceDescription.afterImportingAllSources_generate;
+            var afterImportingAllSources_generate = dataSourceDescription.relationshipFields;
             if (typeof afterImportingAllSources_generate !== 'undefined') {
                 var batch = new Batch();
                 batch.concurrency(1);
 
                 afterImportingAllSources_generate.forEach(function (afterImportingAllSources_generate_description) {
-                    batch.push(function (done) {152
+                    batch.push(function (done) {
                         if (afterImportingAllSources_generate_description.relationship == true) {
+
+                            console.log("here");
                             var by = afterImportingAllSources_generate_description.by;
                             var relationshipSource_uid = by.ofOtherRawSrcUID;
                             var relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
@@ -68,6 +110,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                             }
                             rowObjectsOfRelationship_mongooseModel.find(findQuery, function (err, hydrationFetchResults) {
                                 if (err) return done(err);
+
+                         
 
                                 var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
                                 rowObject.rowParams[field] = hydrationValue; // a doc or list of docs
@@ -146,6 +190,36 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     fieldsNotToLinkAsGalleryFilter_byColName[overrideTitle] = true; // replace with human-readable
                 }
             }
+
+            var fe_objectShow_customHTMLOverrideFnsByColumnName = {};
+
+
+            if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName !== 'undefined') {
+
+                for (var relationshipFieldName in dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName) {
+                    fe_objectShow_customHTMLOverrideFnsByColumnName[relationshipFieldName] = function(rowObject,eachValue,strParams) {
+                        var relationshipObjectShowLink = "/array/" + eachValue.srcDocPKey + "/" + eachValue._id;
+                        if (strParams && strParams != '') relationshipObjectShowLink += '?' + strParams;
+
+                        var classes = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName[relationshipFieldName].classes.toString().replace(",", " ");
+
+                        var openingTag = '<a href="' + relationshipObjectShowLink + '" class=' + classes + '">';
+                        var tagContent = eachValue.rowParams[dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName[relationshipFieldName].showField];
+                        var closingTag = '</a>';
+                        return openingTag + tagContent + closingTag;
+
+                    }
+
+                }
+
+                    
+                
+            }
+
+
+           
+
+
             //
             var default_filterJSON = undefined;
             if (typeof dataSourceDescription.fe_filters.default_filter !== 'undefined') {
@@ -176,7 +250,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 //
                 fieldsNotToLinkAsGalleryFilter_byColName: fieldsNotToLinkAsGalleryFilter_byColName,
                 //
-                fe_objectShow_customHTMLOverrideFnsByColumnName: dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName || {},
+                fe_objectShow_customHTMLOverrideFnsByColumnName: fe_objectShow_customHTMLOverrideFnsByColumnName,
 
                 fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: dataSourceDescription.fe_galleryItem_htmlForIconFromRowObjWhenMissingImage
             };

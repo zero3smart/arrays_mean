@@ -15,6 +15,10 @@ var DatasourceDescription_scheme = Schema({
         integer: true
     },
     schema_id: String,
+    fe_visible: {
+        type: Boolean,
+        default: true
+    },
     _otherSources: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
     dataset_uid: String,
     format: String,
@@ -34,14 +38,11 @@ var DatasourceDescription_scheme = Schema({
         valuesToExclude: Object,
         default_filter: Object
     },
+    customFieldsToProcess: Array,
+    relationshipFields: Object,
     fe_displayTitleOverrides: Object
 });
 
- stories : [{ type: Schema.Types.ObjectId, ref: 'Story' }]
-
-
-
-//
 
 
 DatasourceDescription_scheme.plugin(integerValidator);

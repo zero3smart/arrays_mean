@@ -86,6 +86,7 @@ module.exports.BindData = function (req, callback) {
 
     var getDatasourceDescriptionsFn = new Promise(function(resolve,reject) {
          dataSourceDescriptions.GetDescriptions(function(all_descriptions) {
+            // console.log(all_descriptions);
             resolve(all_descriptions);
         },function(err) {
             reject(err);

@@ -303,8 +303,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     {$limit: groupsLimit}
                 ]);
 
-// console.log(aggregationOperators)
-            //
+
             var doneFn = function (err, _groupedResults) {
                 if (err) return done(err);
 
@@ -317,6 +316,46 @@ module.exports.BindData = function (req, urlQuery, callback) {
             };
             processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         });
+
+        var galleryItem_htmlWhenMissingImage;
+
+
+        if (dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage) {
+            var cond = dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage;
+            var galleryItem_htmlWhenMissingImage = function(rowObject) {
+                var fieldName = cond.field;
+                var conditions = cond.conditions;
+                for (var i = 0; i < conditions.length; i++) {
+                    if (conditions[i].operator == "in" && Array.isArray(conditions[i].value)) {
+                        
+
+                        if (conditions[i].value.indexOf(rowObject["rowParams"][fieldName]) > 0) {
+                            
+                            var string = conditions[i].applyClasses.toString();
+                            
+                            var classes = string.replace(","," ");
+
+
+                            return '<span class="' + classes + '"</span>'; 
+                        }
+                    } else if (conditions[i].operator == "equal") {
+                        if (conditions[i].value == rowObject["rowParams"][fieldName]) {
+
+                            var string = conditions[i].applyClasses.toString();
+
+
+                            var classes = string.replace(","," ");
+
+                            return '<span class="' + classes + '"</span>'; 
+                        }
+                    } 
+                }
+
+
+            }
+        }
+
+
 
         batch.end(function (err) {
             if (err) return callback(err);
@@ -369,7 +408,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
                 truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
                 //
-                fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: dataSourceDescription.fe_galleryItem_htmlForIconFromRowObjWhenMissingImage,
+                fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
                 //
                 searchQ: searchQ,
                 searchCol: searchCol,

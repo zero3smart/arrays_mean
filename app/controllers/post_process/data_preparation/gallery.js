@@ -34,18 +34,49 @@ module.exports.BindData = function (req, urlQuery, callback) {
             callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
             return;
         }
-        // var fe_visible = dataSourceDescription.fe_visible;
-
-        // if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
-        //     callback(new Error("That data source was set to be not visible: " + source_pKey), null);
-        //     return;
-        // }
-
         var galleryViewSettings = dataSourceDescription.fe_views.views.gallery;
 
         var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
         var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
-    
+
+        var galleryItem_htmlWhenMissingImage;
+
+
+        if (galleryViewSettings.galleryItemConditionsForIconWhenMissingImage) {
+            var cond = galleryViewSettings.galleryItemConditionsForIconWhenMissingImage;
+            var galleryItem_htmlWhenMissingImage = function(rowObject) {
+                var fieldName = cond.field;
+                var conditions = cond.conditions;
+                for (var i = 0; i < conditions.length; i++) {
+                    if (conditions[i].operator == "in" && Array.isArray(conditions[i].value)) {
+                        
+
+                        if (conditions[i].value.indexOf(rowObject["rowParams"][fieldName]) > 0) {
+                            
+                            var string = conditions[i].applyClasses.toString();
+                            
+                            var classes = string.replace(","," ");
+
+
+                            return '<span class="' + classes + '"</span>'; 
+                        }
+                    } else if (conditions[i].operator == "equal") {
+                        if (conditions[i].value == rowObject["rowParams"][fieldName]) {
+
+                            var string = conditions[i].applyClasses.toString();
+
+
+                            var classes = string.replace(","," ");
+
+                            return '<span class="' + classes + '"</span>'; 
+                        }
+                    } 
+                }
+
+
+            }
+        }
+
         var page = urlQuery.page;
         var pageNumber = page ? page : 1;
         var skipNResults = config.pageSize * (Math.max(pageNumber, 1) - 1);
@@ -283,7 +314,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
                 truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
                 //
-                fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: dataSourceDescription.fe_galleryItem_htmlForIconFromRowObjWhenMissingImage,
+                fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
                 //
                 searchQ: searchQ,
                 searchCol: searchCol,

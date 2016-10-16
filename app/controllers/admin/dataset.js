@@ -2,8 +2,6 @@ var aws = require('aws-sdk');
 var https = require('https');
 var es = require('event-stream');
 var parse = require('csv-parse');
-var s3Service = require("../.././services/s3_service")
-
 var datasource_description = require('../../models/datasource_descriptions');
 
 /***************  Index  ***************/

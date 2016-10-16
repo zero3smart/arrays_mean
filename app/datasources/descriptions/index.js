@@ -3,6 +3,7 @@ var winston = require('winston');
 var mongoose_client = require('../../../lib/mongoose_client/mongoose_client');
 var datasource_description = require('../../models/datasource_descriptions');
 var Promise = require('q').Promise;
+var _ = require("lodash");
 
 
 
@@ -10,13 +11,18 @@ module.exports =  {
     GetDescriptions : function(fn) {
         if (typeof fn == 'function') {
             mongoose_client.WhenMongoDBConnected(function () {
-                datasource_description.find({$and:[{fe_visible:true},{schema_id:{$exists:false}}]})
+
+                datasource_description.find({fe_visible:true,schema_id:{$exists:false}})
                     .lean()
                     .exec(function(err,descriptions) {
+
+                        
+
                         if (err) {
                             winston.error("❌ Error occurred when finding datasource description: ", err);
                         } else {
                             fn(descriptions);
+
                         }
 
                     })
@@ -34,29 +40,43 @@ module.exports =  {
     GetDescriptionsToSetup : function(files,fn) {
         if (!files || files.length == 0)
             files = require('./default.js').Datasources;
+
+        var descriptions = [];
         
         mongoose_client.WhenMongoDBConnected(function () {
             function asyncFunction (file, cb) {
 
+                
+
                 datasource_description.findOne({$or: [{uid:file},{dataset_uid:file}]})
                     .lean()
-                    .pppulate('_otherSources')
+                    .populate('_otherSources')
                     .exec(function(err,description) {
                         if (err) {
                             winston.error("❌ Error occurred when finding datasource description: ", err);
                         } else {
 
-                            console.log(description);
+                            if (description._otherSources) {
+                                var extractDescriptions = [];
 
-                           
-                                // if (!description.schema_id) {
-                                //     cb(description);
-                                // } else {
-                                //     var des = getSchemaDescriptionAndCombine(description.schema_id,description);
-                                //     cb(des);
+                                var omitted = _.omit(description,["_otherSources"]);
 
-                            //     // }
-                            // }
+                                descriptions.push(omitted);
+                                
+                                _.map(description._otherSources,function(src) {
+                                    var excludeOtherSource = _.omit(src,["_otherSources"])
+                                    descriptions.push(excludeOtherSource);
+                                })
+                                descriptions.concat(extractDescriptions);
+                            } else if (!description.schema_id) {
+                                descriptions.push(description);
+                          
+                            } else {
+                                var des = getSchemaDescriptionAndCombine(description.schema_id,description);
+                                descriptions.push(des);
+                             
+                            }
+                            cb();
                         }
                     })
             }
@@ -65,9 +85,11 @@ module.exports =  {
                   asyncFunction(file, resolve);
                 });
             });
-            Promise.all(requests).then(function(data) {
-        
-                fn(data);
+
+            Promise.all(requests).then(function() {
+
+                // console.log(JSON.stringify(descriptions));
+                fn(descriptions);
             });
         })
 
@@ -80,7 +102,6 @@ module.exports =  {
                  datasource_description.findOne({uid:schemaId})
                     .lean()
                     .exec(function(err,schemaDesc) {
-
                         for (var attrname in schemaDesc) {
                             if (desc[attrname]) {
                                 if (Array.isArray(desc[attrname])) {

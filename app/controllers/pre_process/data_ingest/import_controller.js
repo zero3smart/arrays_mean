@@ -79,7 +79,7 @@ var _PostProcessRawObjects = function (dataSourceDescriptions) {
                 process.exit(1); // error code
             } else {
                 winston.info("✅  Import post-processing done.");
-                var omitImageScrapping = true; // set true to omit image scraping,
+                var omitImageScrapping = false; // set true to omit image scraping,
 
                 if (!omitImageScrapping) {
                     _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions);
@@ -174,16 +174,16 @@ var _postProcess = function (indexInList, dataSourceDescription, callback) {
             // Now generate fields by joins, etc.
             //
             async.eachSeries(
-                dataSourceDescription.afterImportingAllSources_generate,
+                dataSourceDescription.relationshipFields,
                 function (description, cb) {
                     var by = description.by;
                     var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
-                    switch (by.doing) {
-                        case import_processing.Ops.Join:
+                    switch (by.operation) {
+                        case "Join": 
                         {
                             var matchFn = by.matchFn;
                             if (typeof matchFn === 'undefined' || matchFn == null) {
-                                matchFn = import_processing.MatchFns.LocalEqualsForeignString;
+                                matchFn = "LocalEqualsForeignString";
                             }
                             processed_row_objects.GenerateFieldsByJoining_comparingWithMatchFn(
                                 dataSource_uid,
@@ -219,8 +219,9 @@ var _postProcess = function (indexInList, dataSourceDescription, callback) {
 };
 
 var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, dataSourceDescription, callback) {
+
     async.eachSeries(
-        dataSourceDescription.afterImportingAllSources_generateByScraping,
+        dataSourceDescription.imageScraping,
         function (description, cb) {
             processed_row_objects.GenerateImageURLFieldsByScraping(dataSourceDescription.uid,
                 dataSourceDescription.importRevision,
