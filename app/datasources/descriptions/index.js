@@ -16,12 +16,11 @@ module.exports =  {
                     .lean()
                     .exec(function(err,descriptions) {
 
-                        
-
                         if (err) {
                             winston.error("❌ Error occurred when finding datasource description: ", err);
+                            fn(err,null);
                         } else {
-                            fn(descriptions);
+                            fn(null,descriptions);
 
                         }
 
@@ -46,12 +45,16 @@ module.exports =  {
         mongoose_client.WhenMongoDBConnected(function () {
             function asyncFunction (file, cb) {
 
-                
+
+
+
 
                 datasource_description.findOne({$or: [{uid:file},{dataset_uid:file}]})
                     .lean()
                     .populate('_otherSources')
                     .exec(function(err,description) {
+
+                    
                         if (err) {
                             winston.error("❌ Error occurred when finding datasource description: ", err);
                         } else {
@@ -68,15 +71,19 @@ module.exports =  {
                                     descriptions.push(excludeOtherSource);
                                 })
                                 descriptions.concat(extractDescriptions);
+                                cb();
                             } else if (!description.schema_id) {
                                 descriptions.push(description);
+                                cb();
                           
                             } else {
-                                var des = getSchemaDescriptionAndCombine(description.schema_id,description);
-                                descriptions.push(des);
+                                getSchemaDescriptionAndCombine(description.schema_id,description).then(function(des) {
+                                    descriptions.push(des);
+                                    cb();
+                                })
+                                
                              
                             }
-                            cb();
                         }
                     })
             }

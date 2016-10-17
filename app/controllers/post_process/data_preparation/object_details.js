@@ -91,7 +91,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     batch.push(function (done) {
                         if (afterImportingAllSources_generate_description.relationship == true) {
 
-                            console.log("here");
                             var by = afterImportingAllSources_generate_description.by;
                             var relationshipSource_uid = by.ofOtherRawSrcUID;
                             var relationshipSource_importRevision = by.andOtherRawSrcImportRevision;

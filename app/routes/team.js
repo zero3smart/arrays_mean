@@ -18,6 +18,8 @@ var team_show_controller = require('../controllers/post_process/data_preparation
 // });
 
 router.get('/:team_key', function (req, res) {
+
+
     var team_key = req.params.team_key;
     if (team_key === null || typeof team_key === 'undefined' || team_key === "") {
         res.status(403).send("Bad Request - team_key missing");
@@ -31,13 +33,16 @@ router.get('/:team_key', function (req, res) {
     query.team_key = team_key;
 
     team_show_controller.BindData(req, query, function (err, bindData) {
+
+       
+
         if (err) {
             winston.error("❌  Error getting bind data for Team show: ", err);
             res.status(500).send(err.response || 'Internal Server Error');
 
             return;
         }
-        res.render('team/show', bindData);
+        return res.render('team/show', bindData);
     });
 });
 

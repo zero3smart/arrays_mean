@@ -9,12 +9,9 @@ var team_scheme = Schema({
     title: String,
     tid: String,
     description: String,
-    logoURL: String,
+    logo: String,
     logoHeader: String,
-    arrayCount: {
-        type: Number,
-        integer: true
-    }
+    datasourceDescriptions: [{type:Schema.Types.ObjectId, ref: 'DatasourceDescription'}]
     
 });
 

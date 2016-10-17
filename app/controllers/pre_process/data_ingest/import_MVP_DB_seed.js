@@ -14,7 +14,7 @@ var dataSourceDescriptions = require('../../../datasources/descriptions')
 var import_controller = require('./import_controller');
 
 dataSourceDescriptions.GetDescriptionsToSetup(datasources,function(descriptions_array) {
-	// import_controller._AfterGeneratingProcessing_dataSourceDescriptions(descriptions_array)
+	// import_controller._AfterGeneratingProcessing_dataSourceDescriptions(descriptions_array) /*directly enter post process */
 	
 
 	import_controller.Import_dataSourceDescriptions(descriptions_array);

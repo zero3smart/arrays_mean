@@ -872,13 +872,13 @@ module.exports.GenerateImageURLFieldsByScraping
         
                 // The following allows us to skip scraping for this doc if we already have done so
 
-                // if (typeof doc["scrapped"] !== 'undefined' && doc["rowParams"]["scrapped"] == true ) {
-                //     async.setImmediate(function () { // ^ so as not to blow stack
-                //         eachCb(); // already done
-                //     });
+                if (typeof doc["rowParams.imageScraped"] !== 'undefined' && doc["rowParams.imageScraped"] == true ) {
+                    async.setImmediate(function () { // ^ so as not to blow stack
+                        eachCb(); // already done
+                    });
 
-                //     return;
-                // }
+                    return;
+                }
 
          
                 //
@@ -893,13 +893,19 @@ module.exports.GenerateImageURLFieldsByScraping
                 }
                 // winston.info("📡  Scraping image URL from \"" + htmlSourceAtURL + "\"…");
                 xray_instance(htmlSourceAtURL, imageSrcSetInSelector)(function (err, scrapedString) {
-                    if (err) {
-                        winston.error("❌  Error while scraping " + htmlSourceAtURL + ": ", err);
-                        eachCb(err);
+                    if (err ) {
 
-                        return;
+                        if (err.code == "ENOTFOUND" || err.code == 'ETIMEDOUT' ) {
+                            scrapedString = null;
+                        } else {
+                            winston.error("❌  Error while scraping " + htmlSourceAtURL + ": ", err);
+                            eachCb(err);
+                            return;
+
+                        }
+                       
                     }
-                    function proceedToPersistHostedImageURLOrNull_forKey(err, hostedURLOrNull, fieldKey, persistedCb) {
+                    function proceedToPersistHostedImageURLOrNull_forKey(err, hostedURLOrNull, fieldKey, lastFieldKey,persistedCb) {
                         if (err) {
                             persistedCb(err);
                             return;
@@ -911,8 +917,11 @@ module.exports.GenerateImageURLFieldsByScraping
                             srcDocPKey: doc.srcDocPKey 
                         };
                         var docUpdate = {};
-                        docUpdate["rowParams." + fieldKey] = hostedURLOrNull; // note it's a path rather than an object, so we don't overwrite the whole top-level key of 'rowParams'
-                        mongooseModel.update(docQuery, docUpdate, function (err) {
+                        if (lastFieldKey == true) {
+                            docUpdate["rowParams.imageScrapped"] = true
+                        }
+                        docUpdate["rowParams." + fieldKey] = hostedURLOrNull; // note it's a path rather than an object, so we don't overwrite the whole top-level key of 'rowParams'      
+                        mongooseModel.update(docQuery, {$set: docUpdate}, function (err,result) {
                             persistedCb(err);
                         });
                     }
@@ -920,25 +929,21 @@ module.exports.GenerateImageURLFieldsByScraping
                     if (scrapedString == null || typeof scrapedString === 'undefined' || scrapedString == "") {
                         // winston.info("💬  No images available for " + doc.srcDocPKey + " row with pKey " + doc.pKey + ". Saving nulls in image fields.");
                         // persist this as a 'null' in the db for all keys by calling proceedToPersistHostedImageURLOrNull_forKey for each key, as there were no images available on site src
+                        var completed = 0;
+
+
                         async.each(useAndHostSrcSetSizeByField_keys, function (key, cb) {
-                            proceedToPersistHostedImageURLOrNull_forKey(null, null, key, function (err) {
+                            completed += 1;
+                            var lastEntry = false;
+                            if (completed == useAndHostSrcSetSizeByField_keys.length) {
+                                lastEntry = true;
+                            } 
+                            proceedToPersistHostedImageURLOrNull_forKey(null, null, key,lastEntry, function (err) {
                                 cb(err);
                             });
+                           
                         }, function (err) {
-                            if (err) {
-                                eachCb(err);
-                            } else {
-                                var docQuery =
-                                {
-                                    pKey: doc.pKey,
-                                    srcDocPKey: doc.srcDocPKey 
-                                };
-                                var docUpdate = {};
-                                docUpdate["scraped"] = true; 
-                                mongooseModel.update(docQuery, docUpdate, function (err) {
-                                    eachCb(err);
-                                });
-                            }
+                            eachCb(err);
                             
                         });
 
@@ -970,7 +975,11 @@ module.exports.GenerateImageURLFieldsByScraping
                         rawURLsBySize[size] = rawURL;
                     }
                     // console.log("rawURLsBySize " , rawURLsBySize)
+
+                    var counter = 0;
                     async.each(useAndHostSrcSetSizeByField_keys, function (key, cb) {
+                        counter ++;
+
                         var preexisting_hostedURLForKey = doc["rowParams"][key];
                         if (typeof preexisting_hostedURLForKey !== 'undefined') {
                             // winston.warn("⚠️  " + key + " has already been downloaded as " + preexisting_hostedURLForKey);
@@ -1011,29 +1020,20 @@ module.exports.GenerateImageURLFieldsByScraping
 
                                 return;
                             } else {
+                                var last = false;
+                                if (counter == useAndHostSrcSetSizeByField_keys.length) {
+                                    last = true;
 
-                                proceedToPersistHostedImageURLOrNull_forKey(err, hostedURL, key, function (err) {
+                                }
+
+                                proceedToPersistHostedImageURLOrNull_forKey(err, hostedURL, key, last,function (err) {
                                     cb(err);
                                 });
                             }
                         };
                         image_hosting.hostImageLocatedAtRemoteURL(finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, hostImageCb);
                     }, function (err) {
-                        if (err) {
-                            winston.error("❌  Error while downloading, uploading, or storing URLs for images: ", err);
-                            eachCb(err);
-                        } else {
-                            var docQuery =
-                            {
-                                pKey: doc.pKey,
-                                srcDocPKey: doc.srcDocPKey 
-                            };
-                            var docUpdate = {};
-                            docUpdate["scraped"] = true; 
-                            mongooseModel.update(docQuery, docUpdate, function (err) {
-                                eachCb(err);
-                            });
-                        }
+                        eachCb(err);
                        
                     });
                 });

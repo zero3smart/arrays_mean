@@ -26,7 +26,8 @@ var _mountRoutes_ensureWWW = function (app) {
         if (host.match(/^www\..*/i)) {
             next();
         } else {
-            res.redirect(301, protocol + "://www." + host + req.originalUrl);
+            return res.redirect(301, protocol + "://www." + host + req.originalUrl);
+            
         }
     });
 };

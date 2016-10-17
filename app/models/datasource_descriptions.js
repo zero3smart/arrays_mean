@@ -19,6 +19,7 @@ var DatasourceDescription_scheme = Schema({
         type: Boolean,
         default: true
     },
+    logo: String,
     _otherSources: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
     dataset_uid: String,
     format: String,
@@ -33,6 +34,7 @@ var DatasourceDescription_scheme = Schema({
         default_view : String,
         views: Object
     },
+    _team: {type: Schema.types.ObjectId,ref: "Team"},
     fe_filters: {
         excludeFields: Array,
         valuesToExclude: Object,

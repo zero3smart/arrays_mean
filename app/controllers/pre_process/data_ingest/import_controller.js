@@ -79,7 +79,7 @@ var _PostProcessRawObjects = function (dataSourceDescriptions) {
                 process.exit(1); // error code
             } else {
                 winston.info("✅  Import post-processing done.");
-                var omitImageScrapping = false; // set true to omit image scraping,
+                var omitImageScrapping = true; // set true to omit image scraping,
 
                 if (!omitImageScrapping) {
                     _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions);
