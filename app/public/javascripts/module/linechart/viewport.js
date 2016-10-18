@@ -1,6 +1,6 @@
 /**
  * @constructor
- * @param {Object[]} data, {Object{}} options
+ * @param {Object{data, labels, colors}} data, {Object{}} options
  */
 linechart.viewport = function (data, options) {
     /**
@@ -8,24 +8,30 @@ linechart.viewport = function (data, options) {
      * @private
      * @member {Object[][]}
      */
-    this._data = data;
+    this._data = data.data.map(function(lineData) {
+        return lineData.map(function(d) {
+            d.date = new Date(d.date);
+            return d;
+        })
+    });
+
+    /**
+     * Series names.
+     * @private
+     * @member {Object[]}
+     */
+    this._labels = data.labels;
+
     /*
      * Url information to redirect when clicking tick on the x-axis
      */
-    this._options = {};
-    if (options) {
-        if (options.redirectBaseUrl)
-            this._options.redirectBaseUrl = options.redirectBaseUrl;
-        if (options.outputInFormat)
-            this._options.outputInFormat = options.outputInFormat;
-    }
-
+    this._options = options;
     /**
      * Data set dates domain.
      * @private
      * @member {Integer[]}
      */
-    this._datesDomain = this._getDatesDomain(data);
+    this._datesDomain = this._getDatesDomain(this._data);
     /**
      * Chart container.
      * @private
@@ -130,11 +136,13 @@ linechart.viewport = function (data, options) {
      * @member {String[]}
      */
     this._colors = d3.scale.category20().range();
-    var self = this;
-    data.forEach(function (el, i) {
-        if (el && el.length > 0 && el[0].color)
-            self._colors[i] = el[0].color;
-    });
+    if (data.colors) {
+        for(var i = 0; i < data.colors.length; i ++) {
+            this._colors[i] = data.colors[i];
+        }
+    }
+
+
     /*
      * Stash reference to this object.
      */
@@ -286,19 +294,6 @@ linechart.viewport.prototype.render = function (container) {
      */
     this.update();
 
-    return this;
-};
-
-
-/**
- * Set series names.
- * @public
- * @param {String[} labels
- * @returns {linechart.viewport}
- */
-linechart.viewport.prototype.setLabels = function (labels) {
-
-    this._labels = labels;
     return this;
 };
 

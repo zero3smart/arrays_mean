@@ -140,7 +140,7 @@ router.BindData = function (req, urlQuery, callback) {
 
     ///
     // graphData is exported and used by template for lineChart generation
-    var graphData;
+    var graphData = {};
 
 
     var batch = new Batch();
@@ -249,7 +249,7 @@ router.BindData = function (req, urlQuery, callback) {
                             }
                         },
                         {
-                            $sort: {value: -1} // priotize by incidence
+                            $sort: {label: -1} // priotize by group
                         }
                     ]);
 
@@ -273,7 +273,7 @@ router.BindData = function (req, urlQuery, callback) {
                             }
                         },
                         {
-                            $sort: {value: -1} // priotize by incidence
+                            $sort: {label: -1} // priotize by group
                         }
                     ]);
 
@@ -306,7 +306,7 @@ router.BindData = function (req, urlQuery, callback) {
                             }
                         },
                         {
-                            $sort: {value: -1} // priotize by incidence
+                            $sort: {label: -1} // priotize by group
                         }
                     ]);
 
@@ -328,8 +328,8 @@ router.BindData = function (req, urlQuery, callback) {
                                 value: 1
                             }
                         },
-                        { // priotize by incidence
-                            $sort: {value: -1}
+                        {
+                            $sort: {label: -1} // priotize by group
                         }
                     ]);
             }
@@ -443,39 +443,44 @@ router.BindData = function (req, urlQuery, callback) {
 
             }
 
-            graphData = [];
-
             var lineColors = dataSourceDescription.fe_lineGraph_stackedLineColors ? dataSourceDescription.fe_lineGraph_stackedLineColors : {};
 
             if (Array.isArray(stackedResultsByGroup)) {
 
-                graphData[0] = stackedResultsByGroup.map(function(row) {
-                    row.category = dataSourceDescription.title
-                    row.value = Number(row.value);
-                    if (groupBy_isDate) {
-                        var offsetTime = new Date(row.date);
-                        offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                        row.date = offsetTime;
-                    }
-                    return row;
-                });
+                graphData = {
+                    labels: [dataSourceDescription.title],
+                    data: stackedResultsByGroup.map(function (row) {
+                        row.value = Number(row.value);
+                        if (groupBy_isDate) {
+                            var offsetTime = new Date(row.date);
+                            offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                            row.date = offsetTime;
+                        }
+                        return row;
+                    })
+                };
 
             } else {
 
+                graphData = {labels: [], data: []};
                 for (var category in stackedResultsByGroup) {
                     if (stackedResultsByGroup.hasOwnProperty(category)) {
-                        graphData.push(stackedResultsByGroup[category].map(function(row) {
-                            row.category = category;
+                        graphData.labels.push(category);
+
+                        graphData.data.push(stackedResultsByGroup[category].map(function(row) {
                             row.value = Number(row.value);
                             if (groupBy_isDate) {
                                 var offsetTime = new Date(row.date);
                                 offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
                                 row.date = offsetTime;
                             }
-                            if (lineColors && lineColors[category]) row.color = lineColors[category];
-
                             return row;
                         }));
+
+                        if (lineColors && lineColors[category]) {
+                            if (!graphData.colors) graphData.colors = [];
+                            graphData.colors.push(lineColors[category]);
+                        }
                     }
                 }
 
@@ -494,7 +499,7 @@ router.BindData = function (req, urlQuery, callback) {
         var data =
         {
             env: process.env,
-            
+
             user: req.user,
 
             arrayTitle: dataSourceDescription.title,
@@ -537,7 +542,7 @@ router.BindData = function (req, urlQuery, callback) {
             defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
             aggregateBy: aggregateBy,
             // graphData contains all the data rows; used by the template to create the linechart
-            graphData: graphData 
+            graphData: graphData
         };
         callback(err, data);
     });

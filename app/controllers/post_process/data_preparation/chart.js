@@ -278,6 +278,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = {label: label, value: value};
                 }
             });
+
+            // Custom colors
+            var colors = dataSourceDescription.fe_chart_colorsInPercentOrder ? dataSourceDescription.fe_chart_colorsInPercentOrder : {};
+
             var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
             lowercasedLabels.forEach(function (key, i, arr) {
                 var summedValue = summedValuesByLowercasedLabels[key];
@@ -291,10 +295,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 } else {
                     reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
                 }
-                groupedResults.push({
+                var result = {
                     value: summedValue,
                     label: reconstitutedDisplayableTitle
-                });
+                };
+                if (colors && colors[i]) result.color = colors[i];
+
+                groupedResults.push(result);
             });
             done();
         };

@@ -1,29 +1,3 @@
-var colors = [
-	'#FEAA00',
-	'#FEBC12',
-	'#FECC4B',
-	'#FFDE82',
-	'#008E8C',
-	'#26A4A2',
-	'#53BAB8',
-	'#87D0D0',
-	'#0036FF',
-	'#235EFF',
-	'#5284FF',
-	'#86ACFF',
-	'#6500F8',
-	'#8200FB',
-	'#9E3FFD',
-	'#BE7DFD',
-	'#FE00FF',
-	'#FE33FF',
-	'#FE66FF',
-	'#FE99FF',
-	'#FA2A00',
-	'#FB5533'
-];
-
-
 /**
  * Set up pie chart
  */
@@ -31,8 +5,11 @@ var width = 1000,
 	height = 1000,
 	radius = Math.min(width, height) / 2;
 
-var color = d3.scale.ordinal()
-	.range(colors);
+var colors = d3.scale.category20().range();
+for (var i = 0; i < pieData.length; i ++) {
+	var row = pieData[i];
+	if (row.color) colors[i] = row.color;
+}
 
 var arc = d3.svg.arc()
 	.outerRadius(radius - 10)
@@ -116,7 +93,7 @@ var g = svg.selectAll('.arc')
 var slices = g.append('path')
 	.attr('d', arc)
 	.style('fill', function(d, i) {
-		return color(i);
+		return colors[i];
 	})
 	.attr('id', function(d, i) {
 		return 'slice-' + i;

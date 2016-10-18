@@ -1,6 +1,6 @@
 /**
  * @constructor
- * @param {Object[]} data
+ * @param {Object{data, labels, colors}} data
  * @param {linechart.viewport}
  */
 linechart.navigation = function(data, viewport) {
@@ -9,19 +9,26 @@ linechart.navigation = function(data, viewport) {
      * @private
      * @member {Object[]}
      */
-    this._data = data;
+    this._data = data.data.map(function(lineData) {
+        return lineData.map(function(d) {
+            d.date = new Date(d.date);
+            return d;
+        })
+    });
+
     /**
      * Time series names.
      * @private
      * @member {String[]}
      */
-    this._labelsList = this._getLablesList(data);
+    this._labels = data.labels;
+
     /**
      * Chart to upadte.
      * @private
      * @member {linechart.viewport}
      */
-    this._viewport = viewport.setLabels(this._labelsList);
+    this._viewport = viewport;
     /**
      * Chart container.
      * @private
@@ -110,11 +117,11 @@ linechart.navigation = function(data, viewport) {
      * @member {String[]}
      */
     this._colors = d3.scale.category10().range();
-    var self = this;
-    data.forEach(function(el, i) {
-        if (el && el.length > 0 && el[0].color)
-            self._colors[i] = el[0].color;
-    });
+    if (data.colors) {
+        for(var i = 0; i < data.colors.length; i ++) {
+            this._colors[i] = data.colors[i];
+        }
+    }
     /*
      * Stash reference to this object.
      */
@@ -414,10 +421,6 @@ linechart.navigation.prototype.update = function(data) {
      * Use current data if not provided.
      */
     data = data || this._data;
-    /*
-     * Update labels list.
-     */
-    this._viewport.setLabels(this._getLablesList(data));
     /*
      * Stash reference to this object.
      */

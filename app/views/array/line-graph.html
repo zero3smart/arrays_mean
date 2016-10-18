@@ -95,7 +95,6 @@
                             </div><!-- .container-fluid -->
 
                             <script type="text/javascript">
-                                // var lineColors = {{ lineColors | dump | safe }};
                                 var filterObj = {{ filterObj | dump | safe }};
                                 var routePath_withoutFilter = '{{ routePath_base | constructedRoutePath(null, {
                                         searchCol: searchCol,
@@ -120,7 +119,10 @@
                                     redirectBaseUrl += '{{ "" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
                                     {% endif %}
                                 {% endif %}
-                                var options = {redirectBaseUrl: redirectBaseUrl, outputInFormat: groupBy_outputInFormat};
+                                var options = {
+                                    redirectBaseUrl: redirectBaseUrl,
+                                    outputInFormat: groupBy_outputInFormat
+                                };
                             </script>
 
                             <div class="container-fluid">

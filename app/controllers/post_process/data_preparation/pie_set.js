@@ -340,6 +340,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = {label: label, value: value};
                     }
                 });
+                // Custom colors
+                var colors = dataSourceDescription.fe_pieSet_colorsInPercentOrder ? dataSourceDescription.fe_pieSet_colorsInPercentOrder : {};
+
                 var data = [];
                 var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
                 lowercasedLabels.forEach(function (key, i, arr) {
@@ -354,10 +357,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     } else {
                         reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
                     }
-                    data.push({
+                    var row = {
                         value: summedValue,
                         label: reconstitutedDisplayableTitle
-                    });
+                    };
+                    if (colors && colors[i]) row.color = colors[i];
+
+                    data.push(row);
                 });
 
                 groupedResults.push({

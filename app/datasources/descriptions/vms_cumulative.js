@@ -72,6 +72,7 @@ exports.Descriptions =
             fe_filters_valuesToExcludeByOriginalKey: {
                 _all: ["", null]
             },
+            // Chart
             fe_chart_defaultGroupByColumnName_humanReadable: "Motivation",
             fe_chart_fieldsNotAvailableAsGroupByColumns: [
                 "Minute_Index",
@@ -87,6 +88,14 @@ exports.Descriptions =
             fe_chart_valuesToExcludeByOriginalKey: {
                 _all: ["", null, "NULL", "(not specified)", "NA"],
             },
+            fe_chart_colorsInPercentOrder: [
+                '#33B1B1',
+                '#9533F8',
+                '#FEB600',
+                '#F0141E',
+                '#4D8DFF'
+            ],
+            // Pie set
             fe_pieSet_defaultChartByColumnName_humanReadable: "Operating System",
             fe_pieSet_fieldsNotAvailableAsChartByColumns: [
                 "Minute_Index",
@@ -116,6 +125,14 @@ exports.Descriptions =
             },
             fe_pieSet_defaultAggregateByColumnName_humanReadable: "Sessions",
             fe_pieSet_aggregateByColumnName_numberOfRecords_notAvailable: false,
+            fe_pieSet_colorsInPercentOrder: [
+                '#33B1B1',
+                '#9533F8',
+                '#FEB600',
+                '#F0141E',
+                '#4D8DFF'
+            ],
+            // Scatterplot
             fe_scatterplot_fieldsMap: {
                 'Object Title': 'Motivation'
             },
