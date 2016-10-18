@@ -7,31 +7,28 @@ var _ = require("lodash");
 
 
 
-module.exports =  {
-    GetDescriptions : function(fn) {
-        if (typeof fn == 'function') {
-            mongoose_client.WhenMongoDBConnected(function () {
+module.exports =  { 
+    GetDescriptions : function(fn) { 
+       
+        mongoose_client.WhenMongoDBConnected(function () {
 
-                datasource_description.find({fe_visible:true,schema_id:{$exists:false}})
-                    .lean()
-                    .exec(function(err,descriptions) {
+            datasource_description.find({fe_visible:true,schema_id:{$exists:false},_team:{$exists:false}})
+                .lean()
+                .exec(function(err,descriptions) {
 
-                        if (err) {
-                            winston.error("❌ Error occurred when finding datasource description: ", err);
-                            fn(err,null);
-                        } else {
-                            fn(null,descriptions);
+                    if (err) {
+                        winston.error("❌ Error occurred when finding datasource description: ", err);
+                        fn(err,null);
+                    } else {
+                        fn(null,descriptions);
 
-                        }
+                    }
 
-                    })
+                })
 
-            })
+        })
 
-        } else {
-            // winston.error("❌ not passing function to GetDescriptions for callback ");
-
-        }
+       
 
 
     },
@@ -44,10 +41,6 @@ module.exports =  {
         
         mongoose_client.WhenMongoDBConnected(function () {
             function asyncFunction (file, cb) {
-
-
-
-
 
                 datasource_description.findOne({$or: [{uid:file},{dataset_uid:file}]})
                     .lean()
@@ -147,12 +140,14 @@ module.exports =  {
 
 
         datasource_description.findOne({uid: uid,importRevision: revision,fe_visible:true})
+            .populate('_team')
             .lean()
             .exec(function(err,descriptions) {
                 if (err) {
                     winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
+                    fn(err,null);
                 } else {
-                    fn(descriptions);
+                    fn(err,descriptions);
                 }
             })
 

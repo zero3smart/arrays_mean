@@ -4,18 +4,22 @@ var _ = require("lodash")
 
 module.exports = {
     GetTeams : function (fn) {
-        if (typeof fn == 'function') {
-            mongoose_client.WhenMongoDBConnected(function () {
-                teams.find({},function(err,teams) {
-                    if (err) fn(err);
-                    fn(null,teams);
+        mongoose_client.WhenMongoDBConnected(function () {
+            teams.find({},function(err,teams) {
+                if (err) fn(err);
+                fn(null,teams);
 
-                })
             })
-
-
-        }
+        })
     },
+
+    GetTeamByTid : function(team_key,fn) {
+        teams.findOne({tid:team_key})
+        .exec(function(err,teamDesc) {
+            fn(err,teamDesc);
+        })
+    },
+
 
     findOneByTidAndPopulateDatasourceDescription: function(team_key,fn) {
 

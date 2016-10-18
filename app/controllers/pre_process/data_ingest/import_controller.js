@@ -271,7 +271,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     if ( typeof dataSourceDescription.fe_nestedObject != 'undefined' ) {
         eachCtx = dataSourceDescription.fe_nestedObject;
         eachCtx.nested = true;
-
         eachCtx.numberOfInsertedRows = 0;
         eachCtx.numberOfRows = 0;
         eachCtx.cached = [];
@@ -407,7 +406,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             var checkField = ctx.criteria.fieldName;
             var opr = ctx.criteria.operatorName;
             var val = ctx.criteria.value;
-
     
             if (opr == 'equal') {
                 if (val == "") {

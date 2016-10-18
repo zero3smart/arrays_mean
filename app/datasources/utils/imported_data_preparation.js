@@ -1,6 +1,6 @@
 var raw_source_documents = require('../../models/raw_source_documents');
 var dataSourceDescriptions = require('../descriptions');
-// var teamDescriptions = require('../teams').GetTeams();
+var teamDescriptions = require('../teams');
 
 var humanReadableColumnName_objectTitle = "Object Title";
 
@@ -23,11 +23,10 @@ var _dataSourceDescriptionWithPKey = function(source_pKey) {
     var uid = split[0];
     var revision = split[1].substring(1);
     return new Promise(function(resolve,reject) {
-         dataSourceDescriptions.GetDescriptionsWith_uid_importRevision(uid,revision,function(data) {
-           resolve(data);
+         dataSourceDescriptions.GetDescriptionsWith_uid_importRevision(uid,revision,function(err,data) {
+            if (err) reject(err);
+            resolve(data);
 
-        },function(err) {
-            reject(err);
         })
 
     })
@@ -39,21 +38,9 @@ var _dataSourceDescriptionWithPKey = function(source_pKey) {
 
 module.exports.DataSourceDescriptionWithPKey = _dataSourceDescriptionWithPKey;
 
-//
-// function _teamDescription(team_key) {
-//     var teamDescriptions_length = teamDescriptions.length;
-//     for (var i = 0; i < teamDescriptions_length; i++) {
-//         var teamDescription = teamDescriptions[i];
-//         if (teamDescription.id === team_key) {
-//             return teamDescription;
-//         }
-//     }
 
-//     return null;
-// }
-// module.exports.TeamDescription = _teamDescription;
 
-//
+
 function _realColumnNameFromHumanReadableColumnName(humanReadableColumnName, dataSourceDescription) {
     if (humanReadableColumnName === humanReadableColumnName_objectTitle) {
         return dataSourceDescription.fe_designatedFields.objectTitle;

@@ -33,8 +33,6 @@ router.BindData = function (req, urlQuery, callback) {
             return;
         }
 
-        // var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
-
         if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.lineGraph === 'undefined') {
             callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
             return;
@@ -492,12 +490,12 @@ router.BindData = function (req, urlQuery, callback) {
 
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
-                team: null,
+                team: dataSourceDescription._team?  dataSourceDescription._team : null,
                 brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: sourceDocURL,
                 view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                view_descriptions: dataSourceDescription.fe_views.view_descriptions ? dataSourceDescription.fe_views.view_descriptions : {},
+                view_description: dataSourceDescription.fe_views.views.barChart.description ? dataSourceDescription.fe_view.views.barChart.description : "",
                 //
                 groupBy: groupBy,
                 groupBy_isDate: groupBy_isDate,

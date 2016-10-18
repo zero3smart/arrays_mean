@@ -11,11 +11,6 @@ var func = require('../func');
 module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
     var self = this;
 
-    // var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
-
-  
-
-
     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
     .then(function(dataSourceDescription) {
 
@@ -233,7 +228,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
-                team: null,
+                team: dataSourceDescription._team?  dataSourceDescription._team : null,
                 brandColor: dataSourceDescription.brandColor,
                 default_filterJSON: default_filterJSON,
                 view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},

@@ -18,14 +18,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var err = null;
 
     var sourceKey = urlQuery.source_key;
-    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(sourceKey);
 
-    if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
+    importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
+    .then(function(dataSourceDescription) {
+         if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
         callback(new Error("No data source with that source pkey " + sourceKey), null);
         return;
     }
 
-    var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
+
     var urlQuery_forSwitchingViews = '';
     var filterObj = func.filterObjFromQueryParams(urlQuery);
     var isFilterActive = Object.keys(filterObj).length != 0;
@@ -43,7 +44,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             user: req.user,
             metaData: dataSourceDescription,
             array_source_key: sourceKey,
-            team: team,
+            team: dataSourceDescription._team?  dataSourceDescription._team : null,
             brandColor: dataSourceDescription.brandColor,
             sourceDoc: sourceDoc,
             view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
@@ -53,7 +54,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             urlQuery_forSwitchingViews: urlQuery_forSwitchingViews || '',
             searchCol: searchCol || '',
             searchQ: searchQ || '',
-            multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable,
+            multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
             groupedResults: [{
                     title : 'First one',
                     data : [{"value":397,"label":"NASA 2"},{"value":17,"label":"Intelsat"},{"value":12,"label":"DOE"},{"value":7,"label":"DOD"},{"value":5,"label":"RAYTHEON"},{"value":1,"label":"OSC"}]
@@ -64,4 +65,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
             ]
         });
     });
+    })
+
+
+  
+
+   
 };

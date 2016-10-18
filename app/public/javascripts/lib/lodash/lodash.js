@@ -12,11 +12,7 @@
   var undefined;
 
   /** Used as the semantic version number. */
-<<<<<<< HEAD
-  var VERSION = '4.16.3';
-=======
   var VERSION = '4.16.4';
->>>>>>> master
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -2438,11 +2434,7 @@
      * @returns {Array} Returns the random elements.
      */
     function arraySampleSize(array, n) {
-<<<<<<< HEAD
-      return shuffleSelf(copyArray(array), n);
-=======
       return shuffleSelf(copyArray(array), baseClamp(n, 0, array.length));
->>>>>>> master
     }
 
     /**
@@ -3649,31 +3641,21 @@
 
       if (isCommon) {
         var isArr = isArray(srcValue),
-<<<<<<< HEAD
-            isTyped = !isArr && isTypedArray(srcValue);
-
-        newValue = srcValue;
-        if (isArr || isTyped) {
-=======
             isBuff = !isArr && isBuffer(srcValue),
             isTyped = !isArr && !isBuff && isTypedArray(srcValue);
 
         newValue = srcValue;
         if (isArr || isBuff || isTyped) {
->>>>>>> master
           if (isArray(objValue)) {
             newValue = objValue;
           }
           else if (isArrayLikeObject(objValue)) {
             newValue = copyArray(objValue);
           }
-<<<<<<< HEAD
-=======
           else if (isBuff) {
             isCommon = false;
             newValue = cloneBuffer(srcValue, true);
           }
->>>>>>> master
           else if (isTyped) {
             isCommon = false;
             newValue = cloneTypedArray(srcValue, true);
@@ -3970,12 +3952,8 @@
      * @returns {Array} Returns the random elements.
      */
     function baseSampleSize(collection, n) {
-<<<<<<< HEAD
-      return shuffleSelf(values(collection), n);
-=======
       var array = values(collection);
       return shuffleSelf(array, baseClamp(n, 0, array.length));
->>>>>>> master
     }
 
     /**
@@ -6651,11 +6629,7 @@
           length = array.length,
           lastIndex = length - 1;
 
-<<<<<<< HEAD
-      size = size === undefined ? length : baseClamp(size, 0, length);
-=======
       size = size === undefined ? length : size;
->>>>>>> master
       while (++index < size) {
         var rand = baseRandom(index, lastIndex),
             value = array[rand];
@@ -11460,11 +11434,7 @@
         return !value.size;
       }
       if (isPrototype(value)) {
-<<<<<<< HEAD
-        return !nativeKeys(value).length;
-=======
         return !baseKeys(value).length;
->>>>>>> master
       }
       for (var key in value) {
         if (hasOwnProperty.call(value, key)) {

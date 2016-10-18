@@ -27,14 +27,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             return;
         }
-
-        // var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
-
-        if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.chart != null && dataSourceDescription.fe_views.chart === false) {
+        if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.wordCloud === 'undefined') {
             callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
 
             return;
         }
+
+ 
 
         var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
         var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
@@ -196,7 +195,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
-                team: null,
+                team: dataSourceDescription._team?  dataSourceDescription._team : null,
                 brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: sourceDocURL,

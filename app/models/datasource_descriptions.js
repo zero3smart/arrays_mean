@@ -34,7 +34,7 @@ var DatasourceDescription_scheme = Schema({
         default_view : String,
         views: Object
     },
-    _team: {type: Schema.types.ObjectId,ref: "Team"},
+    _team: {type: Schema.Types.ObjectId,ref: "Team"},
     fe_filters: {
         excludeFields: Array,
         valuesToExclude: Object,

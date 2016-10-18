@@ -918,7 +918,7 @@ module.exports.GenerateImageURLFieldsByScraping
                         };
                         var docUpdate = {};
                         if (lastFieldKey == true) {
-                            docUpdate["rowParams.imageScrapped"] = true
+                            docUpdate["rowParams.imageScraped"] = true
                         }
                         docUpdate["rowParams." + fieldKey] = hostedURLOrNull; // note it's a path rather than an object, so we don't overwrite the whole top-level key of 'rowParams'      
                         mongooseModel.update(docQuery, {$set: docUpdate}, function (err,result) {
@@ -1039,7 +1039,19 @@ module.exports.GenerateImageURLFieldsByScraping
                 });
 
             }, function (err) {
-                callback(err);
+                if (err) {
+                    callback(err);
+
+                } else {
+                    mongooseModel.update(datasetQuery,{$unset:{"rowParams.imageScraped":1}},{multi:true},function(err) {
+                        if (err) winston.error("❌ Error while deleting rowParams.imageScraped : ", err);
+                        callback(err);
+
+                    })
+
+                   
+
+                }
             });
         });
     });

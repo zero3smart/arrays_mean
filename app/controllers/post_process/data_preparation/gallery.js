@@ -24,11 +24,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
     .then(function(dataSourceDescription) {
 
 
+
+
         if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
             callback(new Error("No data source with that source pkey " + source_pKey), null);
             return;
         }
-        // var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
 
         if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.gallery === 'undefined') {
             callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
@@ -42,38 +43,81 @@ module.exports.BindData = function (req, urlQuery, callback) {
         var galleryItem_htmlWhenMissingImage;
 
 
+
+
+
         if (galleryViewSettings.galleryItemConditionsForIconWhenMissingImage) {
             var cond = galleryViewSettings.galleryItemConditionsForIconWhenMissingImage;
-            var galleryItem_htmlWhenMissingImage = function(rowObject) {
-                var fieldName = cond.field;
-                var conditions = cond.conditions;
+
+            var checkConditionAndApplyClasses = function(conditions,value,opr) {
+
                 for (var i = 0; i < conditions.length; i++) {
                     if (conditions[i].operator == "in" && Array.isArray(conditions[i].value)) {
                         
-
-                        if (conditions[i].value.indexOf(rowObject["rowParams"][fieldName]) > 0) {
+                        if (conditions[i].value.indexOf(value) > 0) {
                             
                             var string = conditions[i].applyClasses.toString();
                             
                             var classes = string.replace(","," ");
 
 
-                            return '<span class="' + classes + '"</span>'; 
+                            return '<span class="' + classes + '"></span>'; 
                         }
-                    } else if (conditions[i].operator == "equal") {
-                        if (conditions[i].value == rowObject["rowParams"][fieldName]) {
+                    }
+                    if (conditions[i].operator == "equal") {
+
+
+                        if (opr !== null) {
+
+                            if (opr == "trim") {
+                                value = value.trim();
+                            }
+                        }
+                       
+                        if (conditions[i].value == value) {
 
                             var string = conditions[i].applyClasses.toString();
 
 
                             var classes = string.replace(","," ");
 
-                            return '<span class="' + classes + '"</span>'; 
+                            return '<span class="' + classes + '"></span>'; 
                         }
                     } 
                 }
+            }
+
+            var galleryItem_htmlWhenMissingImage = function(rowObject) {
+                var fieldName = cond.field;
+                var conditions = cond.conditions;
+                var htmlElem = "";
 
 
+                var fieldValue = rowObject["rowParams"][fieldName];
+                if (cond.operation != null && typeof cond.operation !== 'undefined') {
+
+                    if (cond.operation == "split") {
+                        var splitOnString = cond.option;
+                        if (splitOnString != null && typeof splitOnString == "string") {
+                            fieldValue = rowObject["rowParams"][fieldName].split(splitOnString)
+                        }
+
+                    }
+                }
+                if (Array.isArray(fieldValue) == true) {
+                    var opr = null
+
+                   if (cond.operationForEachValue) opr = cond.operationForEachValue
+
+                    for (var i = 0 ; i < fieldValue.length ; i++) {
+                        htmlElem += checkConditionAndApplyClasses(conditions,fieldValue[i],opr);
+                    }
+
+                } else if (typeof fieldValue == "string") {
+                    htmlElem = checkConditionAndApplyClasses(conditions,fieldValue)
+
+                } 
+                return htmlElem;
             }
         }
 
@@ -283,12 +327,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
-                team: null,
+                team: dataSourceDescription._team?  dataSourceDescription._team : null,
                 brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,
+        
+
                 view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                view_descriptions: dataSourceDescription.fe_view_descriptions ? dataSourceDescription.fe_view_descriptions : {},
+                view_description: dataSourceDescription.fe_views.views.gallery.description ? dataSourceDescription.fe_view.views.gallery.description : "",
                 //
                 pageSize: config.pageSize < nonpagedCount ? config.pageSize : nonpagedCount,
                 onPageNum: pageNumber,

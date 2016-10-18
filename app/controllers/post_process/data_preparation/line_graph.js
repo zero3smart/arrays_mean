@@ -39,10 +39,6 @@ router.BindData = function (req, urlQuery, callback) {
             return;
         }
 
-
-
-        // var team = importedDataPreparation.TeamDescription(dataSourceDescription.team_id);
-      
         var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
         var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
         //
@@ -80,22 +76,33 @@ router.BindData = function (req, urlQuery, callback) {
         // DataSource Relationship
         var mapping_source_pKey = dataSourceDescription.fe_views.views.lineGraph.mapping_dataSource_pKey;
         //var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
+        var mapping_default_filterObj = {};
+        var mapping_default_view = "gallery";
+        var mapping_groupByObj = {};
+
         if (mapping_source_pKey) {
+
+
             var mappingDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(mapping_source_pKey).then(function(mappingDataSourceDescription) {
+                
+                if (mappingDataSourceDescription !== null) {
 
+             
+                    if (typeof mappingDataSourceDescription.fe_filters.default_filter !== 'undefined') {
+                        mapping_default_filterObj = mappingDataSourceDescription.fe_filters.default_filter ;
+                    } 
 
-                var mapping_default_filterObj = {};
-                if (typeof mappingDataSourceDescription.fe_filters.default_filter !== 'undefined') {
-                    mapping_default_filterObj = mappingDataSourceDescription.fe_filters.default_filter ;
-                } 
+                    mapping_default_view = mappingDataSourceDescription.fe_views.default_view;
 
-                mapping_default_view = mappingDataSourceDescription.fe_views.default_view;
+                    var mapping_groupBy = groupBy_realColumnName;
+                    if (dataSourceDescription.fe_views.views.lineGraph.mapping_dataSource_fields)
+                        mapping_groupBy = dataSourceDescription.fe_views.views.lineGraph.mapping_dataSource_fields[groupBy_realColumnName];
+                    
+                    mapping_groupByObj[mapping_groupBy] = '';
 
-                var mapping_groupBy = groupBy_realColumnName;
-                if (dataSourceDescription.fe_views.views.barChart.mapping_dataSource_fields)
-                    mapping_groupBy = dataSourceDescription.fe_views.views.barChart.mapping_dataSource_fields[groupBy_realColumnName];
-                var mapping_groupByObj = {};
-                mapping_groupByObj[mapping_groupBy] = '';
+                }
+
+                
             })
         }
 
@@ -457,7 +464,7 @@ router.BindData = function (req, urlQuery, callback) {
 
                 graphData = [];
 
-                var lineColors = dataSourceDescription.fe_views.views.lineGraph.stackedLineColors ? dataSourceDescription.ffe_views.views.lineGraph.stackedLineColors : {};
+                var lineColors = dataSourceDescription.fe_views.views.lineGraph.stackedLineColors ? dataSourceDescription.fe_views.views.lineGraph.stackedLineColors : {};
 
                 if (Array.isArray(stackedResultsByGroup)) {
 
@@ -511,12 +518,12 @@ router.BindData = function (req, urlQuery, callback) {
 
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
-                team: null,
+                team: dataSourceDescription._team?  dataSourceDescription._team : null,
                 brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: sourceDocURL,
-                view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                view_descriptions: dataSourceDescription.fe_views.view_descriptions ? dataSourceDescription.fe_views.view_descriptions : {},
+                view_visibility: dataSourceDescription.fe_views.views? dataSourceDescription.fe_views.views: {},
+                view_description: dataSourceDescription.fe_views.views.lineGraph.description ? dataSourceDescription.fe_views.views.lineGraph.description : "",
                 //
                 groupBy: groupBy,
                 groupBy_isDate: groupBy_isDate,
@@ -553,6 +560,7 @@ router.BindData = function (req, urlQuery, callback) {
                 // graphData contains all the data rows; used by the template to create the linechart
                 graphData: graphData 
             };
+            
             callback(err, data);
         });
 
