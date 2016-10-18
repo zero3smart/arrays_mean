@@ -447,41 +447,46 @@ router.BindData = function (req, urlQuery, callback) {
 
             }
 
-            console.log('++++ %j', stackedResultsByGroup);
-
             graphData = [];
 
             var barColors = dataSourceDescription.fe_barChart_stackedBarColors ? dataSourceDescription.fe_barChart_stackedBarColors : {};
 
             if (Array.isArray(stackedResultsByGroup)) {
 
-                graphData[0] = stackedResultsByGroup.map(function(row) {
-                    row.category = dataSourceDescription.title
-                    row.value = Number(row.value);
-                    if (groupBy_isDate) {
-                        var offsetTime = new Date(row.label);
-                        offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                        row.label = offsetTime;
-                    }
-                    return row;
-                });
+                graphData = {
+                    categories: [dataSourceDescription.title],
+                    data: stackedResultsByGroup.map(function(row) {
+                        row.value = Number(row.value);
+                        if (groupBy_isDate) {
+                            var offsetTime = new Date(row.label);
+                            offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                            row.label = offsetTime;
+                        }
+                        return row;
+                    })
+                };
 
             } else {
 
+                graphData = {categories: [], data: []};
                 for (var category in stackedResultsByGroup) {
                     if (stackedResultsByGroup.hasOwnProperty(category)) {
-                        graphData.push(stackedResultsByGroup[category].map(function(row) {
-                            row.category = category;
+                        graphData.categories.push(category);
+
+                        graphData.data.push(stackedResultsByGroup[category].map(function(row) {
                             row.value = Number(row.value);
                             if (groupBy_isDate) {
                                 var offsetTime = new Date(row.label);
                                 offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
                                 row.label = offsetTime;
                             }
-                            if (barColors && barColors[category]) row.color = barColors[category];
-
                             return row;
                         }));
+
+                        if (barColors && barColors[category]) {
+                            if (!graphData.colors) graphData.colors = [];
+                            graphData.colors.push(barColors[category]);
+                        }
                     }
                 }
 
