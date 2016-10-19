@@ -5,14 +5,7 @@
     a.color-brand:focus,
     a.color-brand:active,
     .sidebar-filter-toggle .color-brand {
-
-    color: {
-
-    {
-        brandColor
-    }
-    }
-    ;
+        color: {{ brandColor }};
     }
 
     .color-brand-hover:hover,
@@ -20,14 +13,7 @@
     .open .color-brand-hover,
     .search-toggle:hover .color-brand-hover,
     .search-toggle.search-active .color-brand-hover {
-
-    color: {
-
-    {
-        brandColor
-    }
-    }
-    ;
+        color: {{ brandColor }};
     }
 
     .background-color-brand,
@@ -38,37 +24,16 @@
     #page .background-color-brand-hover > a:focus,
     #page .background-color-brand-hover > a:active,
     #page .background-color-brand-hover.active > a {
-
-    background-color: {
-
-    {
-        brandColor
-    }
-    }
-    ;
+        background-color: {{ brandColor }};
     }
 
     .border-color-brand,
     .border-color-brand-hover:hover {
-
-    border-color: {
-
-    {
-        brandColor
-    }
-    }
-    ;
+        border-color: {{ brandColor }};
     }
 
     .border-top-color-brand {
-
-    border-top-color: {
-
-    {
-        brandColor
-    }
-    }
-    ;
+        border-top-color: {{ brandColor }};
     }
 </style>
 {% endif %}
@@ -85,7 +50,7 @@
                 <a class="navbar-brand navbar-brand-array-title" href="/array/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
-				}) }}"><span class="truncate">{{ arrayTitle }}</span></a>
+				}) }}"><span>{{ arrayTitle }}</span></a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">

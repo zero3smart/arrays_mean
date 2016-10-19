@@ -8,15 +8,15 @@
 }
 
 .navbar-default {
-	min-height: 50px;
-	height: 50px;
+	min-height: var(--navbar-height-mobile);
+	height: var(--navbar-height-mobile);
 	border-bottom-style: none;
 	font-size: 18px;
 }
 
 @media (min-width: 768px) {
 	.navbar-default {
-		height: 64px;
+		height: var(--navbar-height-tablet);
 		font-size: 24px;
 	}
 }
@@ -42,13 +42,13 @@
 	display: block;
 	overflow: hidden;
 	width: 100%;
-	height: 50px;
+	height: var(--navbar-height-mobile);
 	text-align: center;
 }
 
 @media (min-width: 768px) {
 	.navbar-default .navbar-brand-container {
-		height: 64px;
+		height: var(--navbar-height-tablet);
 	}
 }
 
@@ -56,15 +56,15 @@
 	display: inline-block;
 	float: none;
 	margin-right: 0;
-	margin-left: 0;
-	padding-top: 15px;
-	padding-bottom: 15px;
-	padding-left: 15px;
+	margin-left: 15px !important;
+	padding: 15px 0;
+	max-width: calc(100% - (42px * 4)); /* width of 2 icons on each side of header */
 	font-weight: 600;
 	transition: transform 400ms ease-in-out;
 }
 
 .navbar-default .navbar-brand-arrays {
+	height: var(--navbar-height-mobile);
 	text-transform: uppercase;
 	letter-spacing: 10px;
 	font-size: 17px;
@@ -74,11 +74,34 @@
 	.navbar-default .navbar-brand {
 		padding-top: 22px;
 		padding-bottom: 22px;
+		height: var(--navbar-height-tablet);
 		font-size: 20px;
 	}
 }
 
+/* Truncate array title with gradient not working well */
+/*.navbar-default .navbar-brand-array-title::after {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	display: block;
+	width: 25px;
+	background: linear-gradient(to right, rgba(249, 250, 249, 0) 0%, #f9faf9 100%);
+	content: "";
+	opacity: 0;
+	transition: opacity 400ms ease-in-out;
+}
+
+.array-controls-pinned .navbar-default .navbar-brand-array-title::after {
+	opacity: 1;
+}*/
+
 .navbar-default .navbar-brand-array-title {
+	overflow: hidden;
+	height: auto;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 	transform: translate(0, 100%);
 }
 

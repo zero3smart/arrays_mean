@@ -4995,10 +4995,9 @@ body {
 	display: inline-block;
 	float: none;
 	margin-right: 0;
-	margin-left: 0;
-	padding-top: 15px;
-	padding-bottom: 15px;
-	padding-left: 15px;
+	margin-left: 15px !important;
+	padding: 15px 0;
+	max-width: calc(100% - (42px * 4)); /* width of 2 icons on each side of header */
 	font-weight: 600;
 	-webkit-transition: -webkit-transform 400ms ease-in-out;
 	transition: -webkit-transform 400ms ease-in-out;
@@ -5006,6 +5005,7 @@ body {
 	transition: transform 400ms ease-in-out, -webkit-transform 400ms ease-in-out;
 }
 .navbar-default .navbar-brand-arrays {
+	height: 50px;
 	text-transform: uppercase;
 	letter-spacing: 10px;
 	font-size: 17px;
@@ -5014,10 +5014,32 @@ body {
 	.navbar-default .navbar-brand {
 		padding-top: 22px;
 		padding-bottom: 22px;
+		height: 64px;
 		font-size: 20px;
 	}
 }
+/* Truncate array title with gradient not working well */
+/*.navbar-default .navbar-brand-array-title::after {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	display: block;
+	width: 25px;
+	background: linear-gradient(to right, rgba(249, 250, 249, 0) 0%, #f9faf9 100%);
+	content: "";
+	opacity: 0;
+	transition: opacity 400ms ease-in-out;
+}
+
+.array-controls-pinned .navbar-default .navbar-brand-array-title::after {
+	opacity: 1;
+}*/
 .navbar-default .navbar-brand-array-title {
+	overflow: hidden;
+	height: auto;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 	-webkit-transform: translate(0, 100%);
 	    -ms-transform: translate(0, 100%);
 	        transform: translate(0, 100%);
