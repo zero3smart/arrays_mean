@@ -9,19 +9,20 @@ module.exports.HumanReadableColumnName_objectTitle = humanReadableColumnName_obj
 function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription) {
     var uid = dataSourceDescription.uid;
     var importRevision = dataSourceDescription.importRevision;
+    
     var pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(uid, importRevision);
 
     return pKey;
 };
 module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromDataSourceDescription;
 
-//
 
 var _dataSourceDescriptionWithPKey = function(source_pKey) {
 
     var split = source_pKey.split("-");
     var uid = split[0];
     var revision = split[1].substring(1);
+
     return new Promise(function(resolve,reject) {
          dataSourceDescriptions.GetDescriptionsWith_uid_importRevision(uid,revision,function(err,data) {
             if (err) reject(err);
