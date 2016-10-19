@@ -129,8 +129,8 @@ module.exports.GetDescriptions = GetDescriptions
                         }
                     })
             }
-            var requests = files.map((file) => {
-                return new Promise((resolve) => {
+            var requests = files.map(function(file) {
+                return new Promise(function(resolve) {
                   asyncFunction(file, resolve);
                 });
             });
