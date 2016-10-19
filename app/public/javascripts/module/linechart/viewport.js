@@ -27,7 +27,7 @@ linechart.viewport = function (data, options) {
      */
     this._options = options;
     /**
-     * Data set dates domain.
+ * Data set dates domain.
      * @private
      * @member {Integer[]}
      */

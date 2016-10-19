@@ -208,8 +208,8 @@ scatterplot.chart.prototype.setColor = function(color) {
  */
 scatterplot.chart.prototype.searchBy = function(key, value) {
 
-    if (key in this._metaData.fe_scatterplot_fieldsMap) {
-        key = this._metaData.fe_scatterplot_fieldsMap[key];
+    if (key in this._metaData.fe_views.views.scatterplot.fieldsMap) {
+        key = this._metaData.fe_views.views.scatterplot.fieldsMap[key];
     }
 
     this._searchBy = [key, value];

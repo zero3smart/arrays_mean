@@ -1,8 +1,10 @@
 exports.Datasources = [
+    "nasa_labs_facilities",
     "marvel_character_database",
-    //"nasa_labs_facilities",
-    //"moma_artists",
-    "jewish_transcript_data",
-    "seattle_municipal_data",
-    "htc_demographics"
+    "jewish",
+    "moma_artists",
+    "municipal",
+    "vms_survey",
+    "isb_library",
+    "ISB_keyword_frequency"
 ];

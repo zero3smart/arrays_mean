@@ -1,6 +1,6 @@
 var raw_source_documents = require('../../models/raw_source_documents');
-var dataSourceDescriptions = require('../descriptions').GetDescriptions();
-var teamDescriptions = require('../teams').GetTeams();
+var dataSourceDescriptions = require('../descriptions');
+var teamDescriptions = require('../teams');
 
 var humanReadableColumnName_objectTitle = "Object Title";
 
@@ -16,35 +16,31 @@ function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription) {
 module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromDataSourceDescription;
 
 //
-function _dataSourceDescriptionWithPKey(source_pKey) {
-    var dataSourceDescriptions_length = dataSourceDescriptions.length;
-    for (var i = 0; i < dataSourceDescriptions_length; i++) {
-        var dataSourceDescription = dataSourceDescriptions[i];
-        var dataSourceDescription_pKey = _dataSourcePKeyFromDataSourceDescription(dataSourceDescription);
-        if (dataSourceDescription_pKey === source_pKey) {
-            return dataSourceDescription;
-        }
-    }
 
-    return null;
-};
+var _dataSourceDescriptionWithPKey = function(source_pKey) {
+
+    var split = source_pKey.split("-");
+    var uid = split[0];
+    var revision = split[1].substring(1);
+    return new Promise(function(resolve,reject) {
+         dataSourceDescriptions.GetDescriptionsWith_uid_importRevision(uid,revision,function(err,data) {
+            if (err) reject(err);
+            resolve(data);
+
+        })
+
+    })
+}
+
+
+
+
+
 module.exports.DataSourceDescriptionWithPKey = _dataSourceDescriptionWithPKey;
 
-//
-function _teamDescription(team_key) {
-    var teamDescriptions_length = teamDescriptions.length;
-    for (var i = 0; i < teamDescriptions_length; i++) {
-        var teamDescription = teamDescriptions[i];
-        if (teamDescription.id === team_key) {
-            return teamDescription;
-        }
-    }
 
-    return null;
-}
-module.exports.TeamDescription = _teamDescription;
 
-//
+
 function _realColumnNameFromHumanReadableColumnName(humanReadableColumnName, dataSourceDescription) {
     if (humanReadableColumnName === humanReadableColumnName_objectTitle) {
         return dataSourceDescription.fe_designatedFields.objectTitle;
@@ -91,8 +87,8 @@ function _rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleRowOb
     var filterAvailable_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_filters_fieldsNotAvailable) {
-            if (dataSourceDescription.fe_filters_fieldsNotAvailable.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_filters.fieldsNotAvailable) {
+            if (dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key) !== -1) {
                 continue;
             }
         }
@@ -167,8 +163,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelin
     var available_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_timeline_fieldsNotAvailableAsSortByColumns) {
-            if (dataSourceDescription.fe_timeline_fieldsNotAvailableAsSortByColumns.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_views.views.timeline.fieldsNotAvailableAsSortByColumns) {
+            if (dataSourceDescription.fe_views.views.timeline.fieldsNotAvailableAsSortByColumns.indexOf(key) !== -1) {
                 continue;
             }
         }
@@ -192,8 +188,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGr
     var available_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_chart_fieldsNotAvailableAsGroupByColumns) {
-            if (dataSourceDescription.fe_chart_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_views.views.chart.fieldsNotAvailableAsGroupByColumns) {
+            if (dataSourceDescription.fe_views.views.chart.fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
                 continue;
             }
         }
@@ -217,8 +213,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChoropl
     var available_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_choropleth_fieldsNotAvailableAsMapByColumns) {
-            if (dataSourceDescription.fe_choropleth_fieldsNotAvailableAsMapByColumns.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_views.views.choropleth.fieldsNotAvailableAsMapByColumns) {
+            if (dataSourceDescription.fe_views.views.choropleth.fieldsNotAvailableAsMapByColumns.indexOf(key) !== -1) {
                 continue;
             }
         }
@@ -242,8 +238,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatter
     var available_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable) {
-            if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable) {
+            if (dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable.indexOf(key) !== -1) {
                 continue;
             }
         }
@@ -267,8 +263,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForwordClo
     var available_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_wordCloud_fieldsNotAvailableAsGroupByColumns) {
-            if (dataSourceDescription.fe_wordCloud_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_views.views.wordCloud.fieldsNotAvailableAsGroupByColumns) {
+            if (dataSourceDescription.fe_views.views.wordCloud.fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
                 continue;
             }
         }
@@ -292,8 +288,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForLineGra
     var available_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_lineGraph_fieldsNotAvailableAsGroupByColumns) {
-            if (dataSourceDescription.fe_lineGraph_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_views.views.lineGraph.fieldsNotAvailableAsGroupByColumns) {
+            if (dataSourceDescription.fe_views.views.lineGraph.fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
                 continue;
             }
         }

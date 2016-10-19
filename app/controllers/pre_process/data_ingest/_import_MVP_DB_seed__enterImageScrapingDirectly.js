@@ -8,7 +8,17 @@ require('dotenv').config({
 });
 //
 var datasources = require('../cmd_parser').GetDatasources();
-var dataSourceDescriptions = require('../../../datasources/descriptions').GetDescriptionsToSetup(datasources);
+var dataSourceDescriptions = require('../../../datasources/descriptions')
 //
 var import_controller = require('./import_controller');
-import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
+
+
+dataSourceDescriptions.GetDescriptionsToSetup(datasources,function(descriptions_array) {
+	// import_controller._AfterGeneratingProcessing_dataSourceDescriptions(descriptions_array)
+	import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(descriptions_array);
+// 
+});
+
+
+
+

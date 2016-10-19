@@ -37,6 +37,8 @@
                                     {% for columnName in ordered_colNames_sansObjectTitleAndImages %}
                                         {% set htmlOverrideFn = fe_objectShow_customHTMLOverrideFnsByColumnName[columnName] %}
                                         {% set columnValue = rowObject.rowParams[columnName] %}
+
+                                        
                                         {% if columnValue %}
                                             {% if columnValue | isArray %}
                                                 {% if columnValue.length > 0 %}
@@ -75,6 +77,8 @@
                                                 </dd>
                                             {% endif %}
                                         {% endif %}
+
+
                                     {% endfor %}
                                     </dl>
 

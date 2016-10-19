@@ -1,66 +1,164 @@
 var fs = require('fs');
+var winston = require('winston');
+var mongoose_client = require('../../../lib/mongoose_client/mongoose_client');
+var datasource_description = require('../../models/datasource_descriptions');
+var Promise = require('q').Promise;
+var _ = require("lodash");
 
-exports.GetDescriptions = function () {
-    var descriptions = [];
-    fs
-        .readdirSync(__dirname)
-        .forEach(function (file) {
-            if (/^\./.test(file)) return;
-            if (file == 'index.js' || file == 'default.js') return;
 
-            require('./' + file).Descriptions.forEach(function (desc) {
-                if (desc.schema_id == null) {
-                    descriptions.push(desc);
-                }
-            });
-        });
 
-    return descriptions;
-}
+module.exports =  { 
+    GetDescriptions : function(fn) { 
+       
+        mongoose_client.WhenMongoDBConnected(function () {
 
-exports.GetDescriptionsToSetup = function (files) {
-    if (!files || files.length == 0)
-        files = require('./default.js').Datasources;
+            datasource_description.find({fe_visible:true,schema_id:{$exists:false},_team:{$exists:false}})
+                .lean()
+                .exec(function(err,descriptions) {
 
-    var descriptions = [];
-    files.forEach(function (file) {
-        var descs = require('./' + file).Descriptions;
-        var newDescs = [];
-        descs.forEach(function (desc) {
-            // Extract the common fields from the schema if available.
-            if (desc.schema_id) {
-                var schemaDescriptions = require('./' + desc.schema_id).Descriptions;
-                var schemaDesc = Array.isArray(schemaDescriptions) ? schemaDescriptions[0] : schemaDescriptions;
-
-                for (var attrname in schemaDesc) {
-                    if (desc[attrname]) {
-                        if (Array.isArray(desc[attrname])) {
-                            desc[attrname] = schemaDesc[attrname].concat(desc[attrname]);
-                        } else if (typeof desc[attrname] === 'string') {
-                            // Nothing to do
-                        } else if (typeof desc[attrname] === 'object') {
-                            desc[attrname] = mergeObject(schemaDesc[attrname], desc[attrname]);
-                        }
+                    if (err) {
+                        winston.error("❌ Error occurred when finding datasource description: ", err);
+                        fn(err,null);
                     } else {
-                        desc[attrname] = schemaDesc[attrname];
+                        fn(null,descriptions);
+
                     }
-                }
+
+                })
+
+        })
+
+       
+
+
+    },
+
+    GetDescriptionsToSetup : function(files,fn) {
+        if (!files || files.length == 0)
+            files = require('./default.js').Datasources;
+
+        var descriptions = [];
+        
+        mongoose_client.WhenMongoDBConnected(function () {
+            function asyncFunction (file, cb) {
+
+                datasource_description.findOne({$or: [{uid:file},{dataset_uid:file}]})
+                    .lean()
+                    .populate('_otherSources')
+                    .exec(function(err,description) {
+
+                    
+                        if (err) {
+                            winston.error("❌ Error occurred when finding datasource description: ", err);
+                        } else {
+
+                            if (description._otherSources) {
+                                var extractDescriptions = [];
+
+                                var omitted = _.omit(description,["_otherSources"]);
+
+                                descriptions.push(omitted);
+                                
+                                _.map(description._otherSources,function(src) {
+                                    var excludeOtherSource = _.omit(src,["_otherSources"])
+                                    descriptions.push(excludeOtherSource);
+                                })
+                                descriptions.concat(extractDescriptions);
+                                cb();
+                            } else if (!description.schema_id) {
+                                descriptions.push(description);
+                                cb();
+                          
+                            } else {
+                                getSchemaDescriptionAndCombine(description.schema_id,description).then(function(des) {
+                                    descriptions.push(des);
+                                    cb();
+                                })
+                                
+                             
+                            }
+                        }
+                    })
             }
-            newDescs.push(desc);
-        });
-        descriptions = descriptions.concat(newDescs);
-    });
+            var requests = files.map(function(file) {
+                return new Promise(function(resolve) {
+                  asyncFunction(file, resolve);
+                });
+            });
 
-    return descriptions;
+            Promise.all(requests).then(function() {
+
+                // console.log(JSON.stringify(descriptions));
+                fn(descriptions);
+            });
+        })
+
+
+
+
+
+        var getSchemaDescriptionAndCombine = function(schemaId,desc) {
+            return new Promise(function(resolve,reject) {
+                 datasource_description.findOne({uid:schemaId})
+                    .lean()
+                    .exec(function(err,schemaDesc) {
+                        for (var attrname in schemaDesc) {
+                            if (desc[attrname]) {
+                                if (Array.isArray(desc[attrname])) {
+                                    desc[attrname] = schemaDesc[attrname].concat(desc[attrname]);
+                                } else if (typeof desc[attrname] === 'string') {
+                                    // Nothing to do
+                                } else if (typeof desc[attrname] === 'object') {
+                                    desc[attrname] = mergeObject(schemaDesc[attrname], desc[attrname]);
+                                }
+                            } else {
+                                desc[attrname] = schemaDesc[attrname];
+                            }
+                        }
+                        resolve(desc);
+
+                    })
+
+
+            }) 
+        }
+
+        var mergeObject = function(obj1,obj2) {
+            var obj3 = {};
+            for (var attrname in obj1) {
+                obj3[attrname] = obj1[attrname]
+            }
+             for (var attrname in obj2) {
+                obj3[attrname] = obj2[attrname];
+            }
+            return obj3;
+        }
+
+    }, 
+
+    GetDescriptionsWith_uid_importRevision : function(uid,revision,fn) {
+
+
+        datasource_description.findOne({uid: uid,importRevision: revision,fe_visible:true})
+            .populate('_team')
+            .lean()
+            .exec(function(err,descriptions) {
+                if (err) {
+                    winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
+                    fn(err,null);
+                } else {
+                    fn(err,descriptions);
+                }
+            })
+
+    }
+
+
+
+
+
+
 }
 
-function mergeObject(obj1, obj2) {
-    var obj3 = {};
-    for (var attrname in obj1) {
-        obj3[attrname] = obj1[attrname];
-    }
-    for (var attrname in obj2) {
-        obj3[attrname] = obj2[attrname];
-    }
-    return obj3;
-}
+
+

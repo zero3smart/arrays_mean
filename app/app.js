@@ -85,13 +85,28 @@ app.use(expressWinston.logger({
 //
 var mongoose_client = require('../lib/mongoose_client/mongoose_client');
 var raw_source_documents = require('./models/raw_source_documents');
+
+
+
+if (typeof process === 'object') { /* to debug promise */
+    process.on('unhandledRejection', (error, promise) => {
+        console.error("== Node detected an unhandled rejection! ==");
+        console.error(error.stack);
+    });
+}
+
 var modelNames = [raw_source_documents.ModelName];
 mongoose_client.FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed(modelNames)
-//
+
 mongoose_client.WhenMongoDBConnected(function() 
 {
     mongoose_client.WhenIndexesHaveBeenBuilt(function() 
     {
+
+
+  
+
+     
         winston.info("💬  Proceeding to boot app.");
         //
         routes.MountRoutes(app);

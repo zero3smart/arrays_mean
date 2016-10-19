@@ -63,22 +63,22 @@ module.exports.signS3 = function (req, next) {
 
     const s3 = new aws.S3({params: {Bucket: bucket}});
     const fileName = decodeURIComponent(req.query['file-name']);
-    const key = 'dataset/' + fileName;
+    const key = '/dataset/' + fileName;
     const fileType = req.query['file-type'];
     const s3Params = {
         Bucket: bucket,
         Key: key,
         ContentType: fileType,
-        ACL: 'public-read'
+        ACL: 'private'
     };
 
-    s3.getSignedUrl('putObject', s3Params, function (err, data) {
+    s3.getSignedUrl('putObject', s3Params, function(err, data) {
         if (err) {
-            return next(err);
+            return next (err);
         }
         const returnData = {
             signedRequest: data,
-            url: 'https://' + bucket + '.s3.amazonaws.com/' + key
+            // url: 'https://' + bucket + '.s3.amazonaws.com/' + key
         };
 
         next(null, returnData);
@@ -248,7 +248,7 @@ module.exports.getFormat = function (req, next) {
     }
 };
 
-module.exports.saveFormat = function (req, next) {
+module.exports.saveFormat = function(req, next) {
     var data = {
         env: process.env,
         user: req.user,
@@ -258,7 +258,7 @@ module.exports.saveFormat = function (req, next) {
     var sourceURL = req.body.sourceURL;
 
     if (req.params.id) {
-        datasource_description.updateOne({_id: req.params.id}, {$set: {sourceURL: sourceURL}}, function (err) {
+        datasource_description.updateOne({_id: req.params.id}, {$set: {sourceURL: sourceURL}}, function(err) {
             if (err) return next(err);
 
             data.id = req.params.id;
@@ -273,7 +273,7 @@ module.exports.saveFormat = function (req, next) {
 };
 
 /***************  Settings  ***************/
-module.exports.getSettings = function (req, next) {
+module.exports.getSettings = function(req, next) {
     var data = {
         env: process.env,
         user: req.user,
@@ -283,7 +283,7 @@ module.exports.getSettings = function (req, next) {
     next(null, data);
 };
 
-module.exports.saveSettings = function (req, next) {
+module.exports.saveSettings = function(req, next) {
     var data = {
         env: process.env,
         user: req.user,
