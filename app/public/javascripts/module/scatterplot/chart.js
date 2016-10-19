@@ -3,7 +3,7 @@
  * @param {Object[]} data
  * @param {Object} metaData
  */
-scatterplot.chart = function(data, metaData) {
+scatterplot.chart = function (data, metaData) {
     /**
      * Chart data.
      * @private
@@ -127,13 +127,17 @@ scatterplot.chart = function(data, metaData) {
      * @private
      * @member {Function}
      */
-    this._xAccessor = function(d) { return d.x; };
+    this._xAccessor = function (d) {
+        return d.x;
+    };
     /**
      * Data y accessor.
      * @private
      * @member {Function}
      */
-    this._yAccessor = function(d) { return d.y; };
+    this._yAccessor = function (d) {
+        return d.y;
+    };
     /**
      * X axis label.
      * @private
@@ -153,10 +157,10 @@ scatterplot.chart = function(data, metaData) {
      */
     this._marginLeft = this._radius * 3;
     this._margin = {
-        top : this._radius * 3,
-        right : this._radius * 2,
-        bottom : this._radius * 3,
-        left : this._marginLeft
+        top: this._radius * 3,
+        right: this._radius * 2,
+        bottom: this._radius * 3,
+        left: this._marginLeft
     };
     /**
      * View treshold.
@@ -180,7 +184,7 @@ scatterplot.chart = function(data, metaData) {
      * Set up window resize event handler.
      */
     var self = this;
-    window.onresize = function() {
+    window.onresize = function () {
         self.resize();
         self.update();
     };
@@ -192,7 +196,7 @@ scatterplot.chart = function(data, metaData) {
  * @param {String} color
  * @returns {scatterplot.chart}
  */
-scatterplot.chart.prototype.setColor = function(color) {
+scatterplot.chart.prototype.setColor = function (color) {
 
     this._color = color;
 
@@ -206,7 +210,7 @@ scatterplot.chart.prototype.setColor = function(color) {
  * @param {String} value
  * @return {scatterplot.chart}
  */
-scatterplot.chart.prototype.searchBy = function(key, value) {
+scatterplot.chart.prototype.searchBy = function (key, value) {
 
     if (key in this._metaData.fe_views.views.scatterplot.fieldsMap) {
         key = this._metaData.fe_views.views.scatterplot.fieldsMap[key];
@@ -224,7 +228,7 @@ scatterplot.chart.prototype.searchBy = function(key, value) {
  * @param {String} selector
  * @returns {scatterplot.chart}
  */
-scatterplot.chart.prototype.render = function(selector) {
+scatterplot.chart.prototype.render = function (selector) {
     /*
      * Select chart container.
      */
@@ -288,7 +292,7 @@ scatterplot.chart.prototype.render = function(selector) {
  * @public
  * @returns {scatterplot.chart}
  */
-scatterplot.chart.prototype.resize = function() {
+scatterplot.chart.prototype.resize = function () {
     /*
      * Get container dimensions.
      */
@@ -331,8 +335,8 @@ scatterplot.chart.prototype.resize = function() {
     /*
      * Update grid.
      */
-    this._xAxis.tickSize(- this._innerHeight, 0);
-    this._yAxis.tickSize(- this._innerWidth, 0);
+    this._xAxis.tickSize(-this._innerHeight, 0);
+    this._yAxis.tickSize(-this._innerWidth, 0);
     /*
      * Move x axis corresponding with chart height.
      */
@@ -355,7 +359,7 @@ scatterplot.chart.prototype.resize = function() {
  * @param {String} label
  * @return {String}
  */
-scatterplot.chart.prototype._normalizeLabel = function(label) {
+scatterplot.chart.prototype._normalizeLabel = function (label) {
 
     label = label.replace(/_/g, ' ');
     label = 'Number of ' + label;
@@ -371,10 +375,10 @@ scatterplot.chart.prototype._normalizeLabel = function(label) {
  * @param {String} [xLabel]
  * @return {scatterplot.chart}
  */
-scatterplot.chart.prototype.setXAccessor= function(xAccessor, xLabel) {
+scatterplot.chart.prototype.setXAccessor = function (xAccessor, xLabel) {
 
     if (xAccessor) {
-        this._xAccessor = function(d) {
+        this._xAccessor = function (d) {
             var value = xAccessor(d);
             if (Array.isArray(value)) {
                 return value.length;
@@ -401,10 +405,10 @@ scatterplot.chart.prototype.setXAccessor= function(xAccessor, xLabel) {
  * @param {String} [yLabel]
  * @return {scatterplot.chart}
  */
-scatterplot.chart.prototype.setYAccessor = function(yAccessor, yLabel) {
+scatterplot.chart.prototype.setYAccessor = function (yAccessor, yLabel) {
 
     if (yAccessor) {
-        this._yAccessor = function(d) {
+        this._yAccessor = function (d) {
             var value = yAccessor(d);
             if (Array.isArray(value)) {
                 return value.length;
@@ -431,7 +435,7 @@ scatterplot.chart.prototype.setYAccessor = function(yAccessor, yLabel) {
  * @param {Function} accessor
  * @returns [Number]
  */
-scatterplot.chart.prototype._getDomain = function(data, accessor) {
+scatterplot.chart.prototype._getDomain = function (data, accessor) {
     /*
      * Get data extent using accessor.
      */
@@ -455,7 +459,7 @@ scatterplot.chart.prototype._getDomain = function(data, accessor) {
  * @param {Number} size - value to scale
  * @returns {Number}
  */
-scatterplot.chart.prototype._getBinLength = function(value, size) {
+scatterplot.chart.prototype._getBinLength = function (value, size) {
 
     var scale = d3.scale.linear()
         .range([0, 15])
@@ -475,7 +479,7 @@ scatterplot.chart.prototype._getBinLength = function(value, size) {
  * @private
  * @returns {Boolean}
  */
-scatterplot.chart.prototype._isMobileMode = function() {
+scatterplot.chart.prototype._isMobileMode = function () {
 
     return this._innerWidth < 300;
 };
@@ -488,7 +492,7 @@ scatterplot.chart.prototype._isMobileMode = function() {
  * @param {Function} scale
  * @returns {Array}
  */
-scatterplot.chart.prototype._getTicks = function(binLength, scale) {
+scatterplot.chart.prototype._getTicks = function (binLength, scale) {
 
     var ticks = [];
 
@@ -509,7 +513,7 @@ scatterplot.chart.prototype._getTicks = function(binLength, scale) {
  * @param {Object[]} [data]
  * @returns {scatterplot.chart}
  */
-scatterplot.chart.prototype.update = function(data) {
+scatterplot.chart.prototype.update = function (data) {
     /*
      * Use current data if not provided.
      */
@@ -522,9 +526,11 @@ scatterplot.chart.prototype.update = function(data) {
      * Filter data by user search input.
      */
     if (this._searchBy.length && this._searchBy[1] !== '') {
-        data = data.filter(function(d) {
+        data = data.filter(function (d) {
             if (Array.isArray(d[self._searchBy[0]])) {
-                return d[self._searchBy[0]].some(function(d) { return d.toLowerCase().indexOf(self._searchBy[1]) >= 0; });
+                return d[self._searchBy[0]].some(function (d) {
+                    return d.toLowerCase().indexOf(self._searchBy[1]) >= 0;
+                });
             } else {
                 return d[self._searchBy[0]].toLowerCase().indexOf(self._searchBy[1]) >= 0;
             }
@@ -566,7 +572,7 @@ scatterplot.chart.prototype.update = function(data) {
      */
     this._xAxis.ticks(xTicks.length)
         .tickValues(xTicks)
-        .tickFormat(function(d) {
+        .tickFormat(function (d) {
             return d3.round(d, 1);
         });
     /*
@@ -595,7 +601,7 @@ scatterplot.chart.prototype.update = function(data) {
      */
     this._yAxis.ticks(yTicks.length)
         .tickValues(yTicks.reverse())
-        .tickFormat(function(d) {
+        .tickFormat(function (d) {
             return d3.round(d, 1);
         });
     /*
@@ -609,7 +615,7 @@ scatterplot.chart.prototype.update = function(data) {
         .selectAll('text')
         .style('text-anchor', 'middle')
         .attr('transform', 'rotate(-90)')
-        .attr('y', - this._axesHeight / 2)
+        .attr('y', -this._axesHeight / 2)
         .attr('x', 0);
     /*
      * Update axes labels.
@@ -637,10 +643,10 @@ scatterplot.chart.prototype.update = function(data) {
  * @param {String} key
  * @returns {Function}
  */
-scatterplot.chart.prototype._getFilter = function(key) {
+scatterplot.chart.prototype._getFilter = function (key) {
 
-    return function(d, i) {
-        return d[key] && ! /^\s*$/.test(d[key]);
+    return function (d, i) {
+        return d[key] && !/^\s*$/.test(d[key]);
     };
 };
 
@@ -651,14 +657,14 @@ scatterplot.chart.prototype._getFilter = function(key) {
  * @param {SVGElement} bubble
  * @param {Object} data
  */
-scatterplot.chart.prototype._bubbleMouseOverEventHandler = function(bubble, data) {
+scatterplot.chart.prototype._bubbleMouseOverEventHandler = function (bubble, data) {
     /*
      * Highlight bubble.
      */
     d3.select(bubble)
         .transition()
         .duration(500)
-        .attr('r', function(d) {
+        .attr('r', function (d) {
             return d.radius + 10;
         }).style('opacity', 1);
     /*
@@ -673,14 +679,14 @@ scatterplot.chart.prototype._bubbleMouseOverEventHandler = function(bubble, data
  * @private
  * @param {SVGElement} bubble
  */
-scatterplot.chart.prototype._bubbleMouseOutEventHandler = function(bubble) {
+scatterplot.chart.prototype._bubbleMouseOutEventHandler = function (bubble) {
     /*
      * Fade bubble.
      */
     d3.select(bubble)
         .transition()
         .duration(500)
-        .attr('r', function(d) {
+        .attr('r', function (d) {
             return d.radius;
         }).style('opacity', 0.5);
     /*

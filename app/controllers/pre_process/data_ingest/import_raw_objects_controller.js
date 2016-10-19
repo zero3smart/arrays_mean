@@ -18,7 +18,6 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
     var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
 
 
-
     var format = dataSourceDescription.format;
 
     switch (format) {
@@ -62,8 +61,6 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
 
     var filepath = filename;
 
-    
-
 
     //
     var raw_rowObjects_coercionScheme = csvDescription.raw_rowObjects_coercionScheme; // look up data type scheme here
@@ -91,8 +88,6 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
         } else {
             // row objects
             //
-
-           
 
 
             if (columnNamesAndThenRowObject.length != columnNames.length) {
@@ -141,11 +136,8 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
 
             }
 
-           
 
-
-            var rowObject_primaryKey = csvDescription.dataset_uid ? csvDescription.dataset_uid + "-" + (lineNr-1) + "-" + rowObject[csvDescription.fn_new_rowPrimaryKeyFromRowObject] :  "" + (lineNr-1) + "-" + rowObject[csvDescription.fn_new_rowPrimaryKeyFromRowObject];
-
+            var rowObject_primaryKey = csvDescription.dataset_uid ? csvDescription.dataset_uid + "-" + (lineNr - 1) + "-" + rowObject[csvDescription.fn_new_rowPrimaryKeyFromRowObject] : "" + (lineNr - 1) + "-" + rowObject[csvDescription.fn_new_rowPrimaryKeyFromRowObject];
 
 
             if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
@@ -328,9 +320,7 @@ var _new_parsed_StringDocumentObject_fromTSVDataSourceDescription = function (da
     };
     // Now read
 
-   
 
-  
     var readStream = fs.createReadStream(filepath, {encoding: fileEncoding})
         .pipe(es.split())
         .pipe(es.mapSync(function (line) {

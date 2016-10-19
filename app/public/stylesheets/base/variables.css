@@ -2,44 +2,44 @@
 	http://localhost:9080/stylesheets/base/variables.css */
 
 :root {
-	--color-primary: #feb600;
-	
-	--color-background: #fafafa;
-	
-	--color-text-dark: #4a4a4a;
-	--color-text-med: #777777;
-	--color-text-light: #9b9b9b;
-	--color-text-ultralight: #c3c3c3;
-	
-	--color-sidebar-bg: #4a4a4a;
-	--color-sidebar-fg: #272727;
-	--color-sort-bar-border: #d8d8d8;
-	--color-sort-bar-label: #9b9b9b;
-	
-	--color-divider: #d8d8d8;
-	
-	--font-family-calibre: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	--font-family-georgia: Georgia, "Times New Roman", Times, serif;
-	
-	--sidebar-width: 280px;
-	--legend-width: 300px;
-	
-	--box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	--box-shadow-dark: 0 2px 4px rgba(0, 0, 0, 0.5);
+    --color-primary: #feb600;
+
+    --color-background: #fafafa;
+
+    --color-text-dark: #4a4a4a;
+    --color-text-med: #777777;
+    --color-text-light: #9b9b9b;
+    --color-text-ultralight: #c3c3c3;
+
+    --color-sidebar-bg: #4a4a4a;
+    --color-sidebar-fg: #272727;
+    --color-sort-bar-border: #d8d8d8;
+    --color-sort-bar-label: #9b9b9b;
+
+    --color-divider: #d8d8d8;
+
+    --font-family-calibre: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-family-georgia: Georgia, "Times New Roman", Times, serif;
+
+    --sidebar-width: 280px;
+    --legend-width: 300px;
+
+    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    --box-shadow-dark: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* @group Icon colors */
 
 .color-default {
-	color: #000000;
+    color: #000000;
 }
 
 .color-gender {
-	color: #7a00f6;
+    color: #7a00f6;
 }
 
 .color-vital-status {
-	color: #feb600;
+    color: #feb600;
 }
 
 /* @end */
@@ -51,13 +51,13 @@ a.color-brand:hover,
 a.color-brand:focus,
 a.color-brand:active,
 .sidebar-filter-toggle .color-brand {
-	color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .color-brand-hover:hover,
 .dropdown-toggle:hover .color-brand-hover,
 .open .color-brand-hover {
-	color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .background-color-brand,
@@ -67,15 +67,15 @@ a.color-brand:active,
 .background-color-brand-hover > a:hover,
 .background-color-brand-hover > a:focus,
 .background-color-brand-hover > a:active {
-	background-color: var(--color-primary);
+    background-color: var(--color-primary);
 }
 
 .border-color-brand {
-	border-color: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 .border-top-color-brand {
-	border-top-color: var(--color-primary);
+    border-top-color: var(--color-primary);
 }
 
 /* @end Primary Color */

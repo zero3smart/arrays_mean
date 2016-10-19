@@ -435,7 +435,7 @@ router.BindData = function (req, urlQuery, callback) {
                         stackedResultsByGroup = groupedResults;
 
                     /* Make barChart category colors consistent for different "Aggregate By" settings
-                      The following code alphabetizes the categories which are properties of stackedResultsByGroup */
+                     The following code alphabetizes the categories which are properties of stackedResultsByGroup */
                     if (!Array.isArray(stackedResultsByGroup)) {
                         var alphabetizedStackedResultsByGroup = {};
                         Object.keys(stackedResultsByGroup).sort().forEach(function (key) {
@@ -455,7 +455,7 @@ router.BindData = function (req, urlQuery, callback) {
 
                 graphData = {
                     categories: [dataSourceDescription.title],
-                    data: stackedResultsByGroup.map(function(row) {
+                    data: stackedResultsByGroup.map(function (row) {
                         row.value = Number(row.value);
                         if (groupBy_isDate) {
                             var offsetTime = new Date(row.label);
@@ -473,7 +473,7 @@ router.BindData = function (req, urlQuery, callback) {
                     if (stackedResultsByGroup.hasOwnProperty(category)) {
                         graphData.categories.push(category);
 
-                        graphData.data.push(stackedResultsByGroup[category].map(function(row) {
+                        graphData.data.push(stackedResultsByGroup[category].map(function (row) {
                             row.value = Number(row.value);
                             if (groupBy_isDate) {
                                 var offsetTime = new Date(row.label);
@@ -507,7 +507,7 @@ router.BindData = function (req, urlQuery, callback) {
         var data =
         {
             env: process.env,
-            
+
             user: req.user,
 
             arrayTitle: dataSourceDescription.title,
@@ -551,7 +551,7 @@ router.BindData = function (req, urlQuery, callback) {
             defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
             aggregateBy: aggregateBy,
             // graphData contains all the data rows; used by the template to create the barchart
-            graphData: graphData ,
+            graphData: graphData,
             isHorizontal: dataSourceDescription.fe_barChart_isHorizontal
         };
         callback(err, data);

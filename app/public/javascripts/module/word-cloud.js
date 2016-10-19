@@ -12,20 +12,20 @@ var $tooltipValue = $('<span class="tooltip-value"></span>').appendTo($tooltip);
  */
 var $wordCloudLink = $('.word-cloud-link.has-tooltip');
 
-$wordCloudLink.each(function(i) {
-	var $this = $(this);
+$wordCloudLink.each(function (i) {
+    var $this = $(this);
 
-	$this.on('mouseover', function() {
-		$tooltipKey.html($this.data('tooltip-key'));
-		$tooltipValue.html($this.data('tooltip-value'));
-		$tooltip.css('display', 'block');
-	});
+    $this.on('mouseover', function () {
+        $tooltipKey.html($this.data('tooltip-key'));
+        $tooltipValue.html($this.data('tooltip-value'));
+        $tooltip.css('display', 'block');
+    });
 
-	$this.on('mousemove', function() {
-		$tooltip.css('top', (event.pageY - 15)+'px').css('left', (event.pageX)+'px');
-	});
+    $this.on('mousemove', function () {
+        $tooltip.css('top', (event.pageY - 15) + 'px').css('left', (event.pageX) + 'px');
+    });
 
-	$this.on('mouseout', function() {
-		$tooltip.css('display', 'none');
-	});
+    $this.on('mouseout', function () {
+        $tooltip.css('display', 'none');
+    });
 });

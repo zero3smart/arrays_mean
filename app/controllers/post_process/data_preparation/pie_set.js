@@ -218,8 +218,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         $sort: {value: -1}
                     },
                     /* {
-                        $limit: 100 // so the pie-set can actually handle the number
-                    } */
+                     $limit: 100 // so the pie-set can actually handle the number
+                     } */
                 ]);
         } else {
             aggregationOperators = aggregationOperators.concat(
@@ -247,8 +247,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         $sort: {value: -1}
                     },
                     /* {
-                        $limit: 100 // so the pie-set can actually handle the number
-                    } */
+                     $limit: 100 // so the pie-set can actually handle the number
+                     } */
                 ]);
         }
         //
@@ -337,7 +337,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             value: -1
                         };
                     if (existing_titleWithMostMatchesAndMatchCount.value < value) {
-                        titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = {label: label, value: value};
+                        titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = {
+                            label: label,
+                            value: value
+                        };
                     }
                 });
                 // Custom colors
@@ -370,7 +373,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     title: chartBy,
                     data: data
                 });
-            };
+            }
+            ;
 
             done();
         };
@@ -380,9 +384,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
     batch.end(function (err) {
         if (err) return callback(err);
 
-        var flatResults = groupedResults.reduce(function(groups, dataSet) {
-            dataSet.data.forEach(function(dataPoint) {
-                if (! (dataPoint.label in groups)) {
+        var flatResults = groupedResults.reduce(function (groups, dataSet) {
+            dataSet.data.forEach(function (dataPoint) {
+                if (!(dataPoint.label in groups)) {
                     groups[dataPoint.label] = dataPoint;
                 }
             });
@@ -390,7 +394,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             return groups;
         }, {});
 
-        flatResults = Object.keys(flatResults).map(function(key) {
+        flatResults = Object.keys(flatResults).map(function (key) {
             return flatResults[key];
         });
 

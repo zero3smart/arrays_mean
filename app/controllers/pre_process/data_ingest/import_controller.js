@@ -7,7 +7,6 @@ var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 
 
-
 var import_processing = require('../../../datasources/utils/import_processing');
 var import_raw_objects_controller = require('./import_raw_objects_controller');
 
@@ -143,7 +142,7 @@ var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDesc
     );
 }
 
-module.exports._AfterGeneratingProcessing_dataSourceDescriptions  = _AfterGeneratingProcessing_dataSourceDescriptions ;
+module.exports._AfterGeneratingProcessing_dataSourceDescriptions = _AfterGeneratingProcessing_dataSourceDescriptions;
 
 // ---------- Single DataSource Operation ----------
 //
@@ -179,7 +178,7 @@ var _postProcess = function (indexInList, dataSourceDescription, callback) {
                     var by = description.by;
                     var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
                     switch (by.operation) {
-                        case "Join": 
+                        case "Join":
                         {
                             var matchFn = by.matchFn;
                             if (typeof matchFn === 'undefined' || matchFn == null) {
@@ -254,7 +253,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     var dataset_uid = dataSourceDescription.dataset_uid;
 
 
-    var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid,dataSource_importRevision);
+    var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
     var forThisDataSource_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(srcDoc_pKey);
     var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.Model.modelName;
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.Model.model;
@@ -262,13 +261,12 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     var mergeFieldsIntoCustomField_BulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
 
 
-
     //
     winston.info("🔁  Performing each-row operation for \"" + dataSource_title + "\"");
 
     var eachCtx;
     var eachCtx = dataSourceDescription.customFieldsToProcess;
-    if ( typeof dataSourceDescription.fe_nestedObject != 'undefined' ) {
+    if (typeof dataSourceDescription.fe_nestedObject != 'undefined') {
         eachCtx = dataSourceDescription.fe_nestedObject;
         eachCtx.nested = true;
         eachCtx.numberOfInsertedRows = 0;
@@ -276,17 +274,16 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         eachCtx.cached = [];
     }
 
-   
 
     startIterations();
-    
+
     function startIterations() {
 
 
         if (eachCtx == null || typeof eachCtx == 'undefined') {
             continueToAfterIterating();
         } else {
-             eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation
+            eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation
 
             processed_row_objects.EnumerateProcessedDataset(
                 dataSource_uid,
@@ -315,17 +312,16 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         var bulkOperationQueryFragment;
 
 
+        if (typeof eachCtx.nested !== 'undefined' && eachCtx.nested == true) {
 
-        if (typeof eachCtx.nested !== 'undefined' && eachCtx.nested == true ) {
-
-            if (!ifHasAndMeetCriteria(eachCtx,rowDoc)) { 
+            if (!ifHasAndMeetCriteria(eachCtx, rowDoc)) {
                 var updateFragment = {$pushAll: {}};
                 for (var i = 0; i < eachCtx.fields.length; i++) {
 
                     var fieldName = eachCtx.fields[i];
                     var generatedArray = [];
 
-               
+
                     eachCtx.cached.forEach(function (rowDoc) {
 
                         var fieldValue = rowDoc["rowParams"][fieldName];
@@ -347,25 +343,24 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
                     });
 
-                
 
                     if (eachCtx.fieldOverrides[fieldName]) {
                         fieldName = eachCtx.fieldOverrides[fieldName];
                     }
                     updateFragment["$pushAll"]["rowParams." + eachCtx.prefix + fieldName] = generatedArray;
                 }
-             // Insert the nested object into the main row
+                // Insert the nested object into the main row
                 if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {
                     bulkOperationQueryFragment =
-                        {
-                            pKey: rowDoc.pKey, // the specific row
-                            srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
-                        };
+                    {
+                        pKey: rowDoc.pKey, // the specific row
+                        srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
+                    };
 
                     eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
 
-    
-                    eachCtx.cached = [];                
+
+                    eachCtx.cached = [];
                 }
                 eachCtx.numberOfInsertedRows++;
 
@@ -378,35 +373,34 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                 var newFieldName = eachCtx[i].fieldName;
                 var newFieldType = eachCtx[i].fieldType;
                 if (newFieldType == 'array') {
-                    var fieldsToMergeIntoArray  = eachCtx[i].fieldsToMergeIntoArray;
-                    var new_array = mergeAllFieldsToArray(fieldsToMergeIntoArray,rowDoc,null);
-                    var updateQuery = addToSet(newFieldName,new_array);
+                    var fieldsToMergeIntoArray = eachCtx[i].fieldsToMergeIntoArray;
+                    var new_array = mergeAllFieldsToArray(fieldsToMergeIntoArray, rowDoc, null);
+                    var updateQuery = addToSet(newFieldName, new_array);
 
                     bulkOperationQueryFragment =
                     {
-                        pKey: rowDoc.pKey, 
-                        srcDocPKey: rowDoc.srcDocPKey 
+                        pKey: rowDoc.pKey,
+                        srcDocPKey: rowDoc.srcDocPKey
                     };
                     eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateQuery);
 
                 } else if (newFieldType == 'object') {
 
-                  
-                    
+
                 }
             }
         }
         cb();
     }
 
-    function ifHasAndMeetCriteria (ctx,rowDoc) {
+    function ifHasAndMeetCriteria(ctx, rowDoc) {
 
 
         if (ctx.criteria !== null && typeof ctx.criteria !== 'undefined') {
             var checkField = ctx.criteria.fieldName;
             var opr = ctx.criteria.operatorName;
             var val = ctx.criteria.value;
-    
+
             if (opr == 'equal') {
                 if (val == "") {
                     var ret = !rowDoc.rowParams[checkField] || rowDoc.rowParams[checkField] == "";
@@ -415,7 +409,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
             } //other conditions to implement
 
-     
 
         }
 
@@ -423,9 +416,9 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     }
 
-    function mergeAllFieldsToArray(withValuesInFieldsNamed,rowDoc) {
+    function mergeAllFieldsToArray(withValuesInFieldsNamed, rowDoc) {
         var generatedArray = [];
-         for (var i = 0; i < withValuesInFieldsNamed.length; i++) {
+        for (var i = 0; i < withValuesInFieldsNamed.length; i++) {
             var fieldName = withValuesInFieldsNamed[i];
             var fieldValue = rowDoc["rowParams"][fieldName];
             if (typeof fieldValue !== 'undefined' && fieldValue !== null && fieldValue !== "") {
@@ -435,7 +428,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         return generatedArray;
     }
 
-    function addToSet (generateFieldNamed,persistableValue) {
+    function addToSet(generateFieldNamed, persistableValue) {
         var updateFragment = {$addToSet: {}};
         updateFragment["$addToSet"]["rowParams." + generateFieldNamed] = {"$each": persistableValue};
 
@@ -443,19 +436,17 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     }
 
-    function afterGeneratingProcessedRowObjects_afterIterating_eachRowFn (eachCtx, cb) {
+    function afterGeneratingProcessedRowObjects_afterIterating_eachRowFn(eachCtx, cb) {
         var writeConcern =
         {
-            upsert: true 
+            upsert: true
         };
-        eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(writeConcern, function (err, result)
-            
-        {
+        eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(writeConcern, function (err, result) {
             if (err) {
                 winston.error("❌ [" + (new Date()).toString() + "] Error while saving raw row objects: ", err);
             } else {
 
-        
+
                 winston.info("✅  [" + (new Date()).toString() + "] Saved raw row objects.");
 
             }
@@ -471,9 +462,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     }
 
 
-
     function continueToAfterIterating(eachCtx) {
-    
+
         if (eachCtx != null || typeof eachCtx != 'undefined') {
 
             afterGeneratingProcessedRowObjects_afterIterating_eachRowFn(

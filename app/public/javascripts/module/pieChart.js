@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 function PieChart(selection, pieData, colorMap) {
     /**
@@ -15,7 +15,7 @@ function PieChart(selection, pieData, colorMap) {
 
     var pie = d3.layout.pie()
         .sort(null)
-        .value(function(d) {
+        .value(function (d) {
             return d.value;
         });
 
@@ -23,13 +23,13 @@ function PieChart(selection, pieData, colorMap) {
         .attr('width', width)
         .attr('height', height)
         .append('div')
-            .classed('svg-container', true) //container class to make it responsive
-            .append('svg')
-                .attr('preserveAspectRatio', 'xMinYMin meet')
-                .attr('viewBox', '0 0 ' + width + ' ' + height)
-                .classed('svg-content-responsive', true)
-                .append('g')
-                    .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+        .classed('svg-container', true) //container class to make it responsive
+        .append('svg')
+        .attr('preserveAspectRatio', 'xMinYMin meet')
+        .attr('viewBox', '0 0 ' + width + ' ' + height)
+        .classed('svg-content-responsive', true)
+        .append('g')
+        .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
     /**
      * Add blur filter definition for drop shadow
      */
@@ -78,15 +78,15 @@ function PieChart(selection, pieData, colorMap) {
         .data(pie(pieData))
         .enter()
         .append('g')
-            .attr('class', 'arc');
+        .attr('class', 'arc');
     /**
      * Place paths
      */
     var slices = g.append('path')
         .attr('d', arc)
-        .style('fill', function(d, i) {
+        .style('fill', function (d, i) {
             return colorMap[d.data.label];
-        }).attr('id', function(d, i) {
+        }).attr('id', function (d, i) {
             return 'slice-' + i;
         });
 }

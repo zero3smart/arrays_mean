@@ -14,7 +14,7 @@ function GroupingAlgorithm() {
  * @param {Numbers} intervals
  * @returns {Integer}
  */
-GroupingAlgorithm.prototype._getGroupIndex = function(value, intervals) {
+GroupingAlgorithm.prototype._getGroupIndex = function (value, intervals) {
     /*
      * Define group number/counter.
      */
@@ -31,7 +31,7 @@ GroupingAlgorithm.prototype._getGroupIndex = function(value, intervals) {
     /*
      * Loop through interval and find value group number.
      */
-    for (i = 0; i < intervals.length; i ++) {
+    for (i = 0; i < intervals.length; i++) {
         /*
          * Get interval right border.
          */
@@ -63,7 +63,7 @@ GroupingAlgorithm.prototype._getGroupIndex = function(value, intervals) {
  * @param {Number} yTicks
  * @return {GroupingAlgorithm}
  */
-GroupingAlgorithm.prototype.setUp = function(xValues, xTicks, yValues, yTicks) {
+GroupingAlgorithm.prototype.setUp = function (xValues, xTicks, yValues, yTicks) {
 
     this._xValues = xValues;
     this._xTicks = xTicks;
@@ -79,18 +79,18 @@ GroupingAlgorithm.prototype.setUp = function(xValues, xTicks, yValues, yTicks) {
  * @public
  * @return {Integer[][]}
  */
-GroupingAlgorithm.prototype.execute = function() {
+GroupingAlgorithm.prototype.execute = function () {
     /*
      * Generate density matrix filled with values.
      * The matrix rows and columns equals to the chart's rows and columns number.
      */
-    var densityMatrix = this._xTicks.map(function() {
+    var densityMatrix = this._xTicks.map(function () {
         return Array.apply(null, Array(this._yTicks.length)).map(Number.prototype.valueOf, 0);
     }, this);
     /*
      * Populate density matrix.
      */
-    this._xValues.forEach(function(d, i) {
+    this._xValues.forEach(function (d, i) {
         /*
          * Get x and y values of the data point.
          */
@@ -104,7 +104,7 @@ GroupingAlgorithm.prototype.execute = function() {
         /*
          * Increment corresponding element of density matrix.
          */
-        densityMatrix[xIndex][yIndex] ++;
+        densityMatrix[xIndex][yIndex]++;
     }, this);
 
     return densityMatrix;

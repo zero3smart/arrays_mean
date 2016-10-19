@@ -2,90 +2,90 @@
 	http://localhost:9080/stylesheets/module/choropleth.css */
 
 .array-choropleth .site-content {
-	height: 100vh;
+    height: 100vh;
 }
 
 #map {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
 }
 
 .array-choropleth .sort-bar {
-	border-bottom-style: none;
+    border-bottom-style: none;
 }
 
 /* @group Dropdown buttons */
 
 .dropdown-toggle-button-group,
 .dropdown-toggle-button {
-	margin-bottom: 5px;
-	border-radius: 5px;
-	background-color: #ffffff;
-	box-shadow: var(--box-shadow);
+    margin-bottom: 5px;
+    border-radius: 5px;
+    background-color: #ffffff;
+    box-shadow: var(--box-shadow);
 }
 
 .dropdown-toggle-button-group {
-	padding: 0;
+    padding: 0;
 }
 
 .sort-control .dropdown-toggle-button,
 .dropdown-toggle-button-group .dropdown-toggle {
-	padding: 15px 20px;
+    padding: 15px 20px;
 }
 
 .sort-control .dropdown-toggle-button-has-caret {
-	padding-right: 0;
+    padding-right: 0;
 }
 
 .sort-control .dropdown-toggle-button-has-caret:before {
-	position: relative;
-	display: block;
-	float: right;
-	margin-top: -15px;
-	margin-bottom: -15px;
-	padding-top: 16px;
-	padding-right: 23px;
-	padding-left: 23px;
-	width: 52px;
-	height: 52px;
-	border-radius: 0 4px 4px 0;
-	background-color: var(--color-background);
-	content: "▾";
-	font-size: 14px;
+    position: relative;
+    display: block;
+    float: right;
+    margin-top: -15px;
+    margin-bottom: -15px;
+    padding-top: 16px;
+    padding-right: 23px;
+    padding-left: 23px;
+    width: 52px;
+    height: 52px;
+    border-radius: 0 4px 4px 0;
+    background-color: var(--color-background);
+    content: "▾";
+    font-size: 14px;
 }
 
 .sort-control .dropdown-toggle-button-has-caret .dropdown-toggle-label {
-	margin-right: 65px;
+    margin-right: 65px;
 }
 
 .sort-control .dropdown-toggle-button:hover,
 .sort-control .dropdown-toggle-button:focus,
 .sort-control .dropdown-toggle-button:active {
-	box-shadow: var(--box-shadow);
+    box-shadow: var(--box-shadow);
 }
 
 .sort-control-left {
-	margin-right: -3px;
+    margin-right: -3px;
 }
 
 .sort-control-left .dropdown-toggle-button {
-	margin-right: 0;
-	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
+    margin-right: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .sort-control-left .dropdown-toggle {
-	border: 1px solid #ffffff;
-	border-top-right-radius: 0;
-	border-bottom-right-radius: 0;
-	background-color: var(--color-background);
+    border: 1px solid #ffffff;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: var(--color-background);
 }
 
 .sort-control-right .dropdown-toggle-button {
-	border-top-left-radius: 0;
-	border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 /* @end Dropdown buttons */
@@ -93,67 +93,67 @@
 /* @group Map popups */
 
 html .mapboxgl-popup-content {
-	padding: 10px 15px;
-	border: 1px solid #eeeeee;
-	border-radius: 4px;
-	box-shadow: var(--box-shadow);
-	font: 17px/20px var(--font-family-calibre);
+    padding: 10px 15px;
+    border: 1px solid #eeeeee;
+    border-radius: 4px;
+    box-shadow: var(--box-shadow);
+    font: 17px/20px var(--font-family-calibre);
 }
 
 html .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
-	position: relative;
-	border-top-color: #eeeeee;
+    position: relative;
+    border-top-color: #eeeeee;
 }
 
 html .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip::before {
-	position: absolute;
-	top: -11px;
-	left: -10px;
-	border: 10px solid transparent;
-	border-top-color: #ffffff;
-	border-bottom: none;
-	content: "";
+    position: absolute;
+    top: -11px;
+    left: -10px;
+    border: 10px solid transparent;
+    border-top-color: #ffffff;
+    border-bottom: none;
+    content: "";
 }
 
 html .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
-	position: relative;
-	border-right-color: #eeeeee;
+    position: relative;
+    border-right-color: #eeeeee;
 }
 
 html .mapboxgl-popup-anchor-left .mapboxgl-popup-tip::before {
-	position: absolute;
-	top: -10px;
-	left: 1px;
-	border: 10px solid transparent;
-	border-right-color: #ffffff;
-	border-left: none;
-	content: "";
+    position: absolute;
+    top: -10px;
+    left: 1px;
+    border: 10px solid transparent;
+    border-right-color: #ffffff;
+    border-left: none;
+    content: "";
 }
 
 html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
-	position: relative;
-	border-left-color: #eeeeee;
+    position: relative;
+    border-left-color: #eeeeee;
 }
 
 html .mapboxgl-popup-anchor-right .mapboxgl-popup-tip::before {
-	position: absolute;
-	top: -10px;
-	left: -11px;
-	border: 10px solid transparent;
-	border-right: none;
-	border-left-color: #ffffff;
-	content: "";
+    position: absolute;
+    top: -10px;
+    left: -11px;
+    border: 10px solid transparent;
+    border-right: none;
+    border-left-color: #ffffff;
+    content: "";
 }
 
 .popup-key {
-	display: block;
-	color: var(--color-text-med);
-	font-weight: 600;
+    display: block;
+    color: var(--color-text-med);
+    font-weight: 600;
 }
 
 .popup-value {
-	display: block;
-	color: #a8a8a8;
+    display: block;
+    color: #a8a8a8;
 }
 
 /* @end Map popups */

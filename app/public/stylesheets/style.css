@@ -4,16 +4,12 @@
 @import url('base/variables.css');
 @import url('base/typography.css');
 /* @end Base */
-
 /* @group Lib */
-
 /* @end Lib */
-
 /* @group Layout */
 @import url('layout/body.css');
 @import url('layout/embedded.css');
 /* @end Layout */
-
 /* @group Module */
 @import url('module/header-bar.css');
 @import url('module/sidebar-filter.css');
@@ -23,7 +19,6 @@
 @import url('module/tooltip.css');
 @import url('module/splash.css');
 /* @end Module */
-
 /* @group Views */
 @import url('views/array-create.css');
 @import url('views/team-show.css');
@@ -39,7 +34,6 @@
 @import url('views/admin.css');
 @import url('views/bar-chart.css');
 /* @end Views */
-
 /* @group Clients */
 @import url('clients/isb.css');
 /* @end Clients */

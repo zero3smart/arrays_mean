@@ -13,8 +13,8 @@ var dataSourceDescriptions = require('../../../datasources/descriptions')
 //
 var cache_keywords_controller = require('./cache_keywords_controller');
 
-dataSourceDescriptions.GetDescriptionsToSetup(datasources,function(descriptions_array) {
-	cache_keywords_controller.CacheKeywords_dataSourceDescriptions(descriptions_array);
+dataSourceDescriptions.GetDescriptionsToSetup(datasources, function (descriptions_array) {
+    cache_keywords_controller.CacheKeywords_dataSourceDescriptions(descriptions_array);
 
 });
 

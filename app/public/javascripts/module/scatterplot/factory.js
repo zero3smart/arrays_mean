@@ -6,7 +6,7 @@
  * @param {Integer} [threshold=250]
  * @param {Object[]} [data]
  */
-scatterplot.view.factory = function(chart, threshold, data) {
+scatterplot.view.factory = function (chart, threshold, data) {
 
     threshold = threshold || 250;
     data = data || chart._data;

@@ -27,7 +27,7 @@ var _mountRoutes_ensureWWW = function (app) {
             next();
         } else {
             return res.redirect(301, protocol + "://www." + host + req.originalUrl);
-            
+
         }
     });
 };

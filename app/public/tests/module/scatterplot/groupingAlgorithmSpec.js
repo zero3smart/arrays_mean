@@ -1,4 +1,4 @@
-describe('GroupingAlgorithm', function() {
+describe('GroupingAlgorithm', function () {
     /*
      * Define axes ticks (without) zeroes.
      */
@@ -27,16 +27,16 @@ describe('GroupingAlgorithm', function() {
      * Run arrays comparison procedure. If arrays equals to each other
      * it will return total size of answer array - it contains 9 elements.
      */
-    var size = answer.reduce(function(size, answerColumn, i) {
+    var size = answer.reduce(function (size, answerColumn, i) {
         var densityColumn = densityMatrix[i];
-        return size += answerColumn.filter(function(answerValue, i) {
+        return size += answerColumn.filter(function (answerValue, i) {
             return answerValue == densityColumn[i];
         }).length;
     }, 0);
     /*
      * Test values with jasmine.
      */
-    it('Check density matrix', function() {
+    it('Check density matrix', function () {
         expect(size).toEqual(9);
     });
 });

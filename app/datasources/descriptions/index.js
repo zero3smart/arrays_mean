@@ -1,26 +1,24 @@
 var fs = require('fs');
 var winston = require('winston');
 var mongoose_client = require('../../../lib/mongoose_client/mongoose_client');
-var datasource_description = require('../../models/datasource_descriptions');
+var datasource_description = require('../../models/descriptions');
 var Promise = require('q').Promise;
 var _ = require("lodash");
 
+module.exports = {
+    GetDescriptions: function (fn) {
 
-
-module.exports =  { 
-    GetDescriptions : function(fn) { 
-       
         mongoose_client.WhenMongoDBConnected(function () {
 
-            datasource_description.find({fe_visible:true,schema_id:{$exists:false},_team:{$exists:false}})
+            datasource_description.find({fe_visible: true, schema_id: {$exists: false}, _team: {$exists: false}})
                 .lean()
-                .exec(function(err,descriptions) {
+                .exec(function (err, descriptions) {
 
                     if (err) {
                         winston.error("❌ Error occurred when finding datasource description: ", err);
-                        fn(err,null);
+                        fn(err, null);
                     } else {
-                        fn(null,descriptions);
+                        fn(null, descriptions);
 
                     }
 
@@ -28,26 +26,24 @@ module.exports =  {
 
         })
 
-       
-
 
     },
 
-    GetDescriptionsToSetup : function(files,fn) {
+    GetDescriptionsToSetup: function (files, fn) {
         if (!files || files.length == 0)
             files = require('./default.js').Datasources;
 
         var descriptions = [];
-        
-        mongoose_client.WhenMongoDBConnected(function () {
-            function asyncFunction (file, cb) {
 
-                datasource_description.findOne({$or: [{uid:file},{dataset_uid:file}]})
+        mongoose_client.WhenMongoDBConnected(function () {
+            function asyncFunction(file, cb) {
+
+                datasource_description.findOne({$or: [{uid: file}, {dataset_uid: file}]})
                     .lean()
                     .populate('_otherSources')
-                    .exec(function(err,description) {
+                    .exec(function (err, description) {
 
-                    
+
                         if (err) {
                             winston.error("❌ Error occurred when finding datasource description: ", err);
                         } else {
@@ -55,12 +51,12 @@ module.exports =  {
                             if (description._otherSources) {
                                 var extractDescriptions = [];
 
-                                var omitted = _.omit(description,["_otherSources"]);
+                                var omitted = _.omit(description, ["_otherSources"]);
 
                                 descriptions.push(omitted);
-                                
-                                _.map(description._otherSources,function(src) {
-                                    var excludeOtherSource = _.omit(src,["_otherSources"])
+
+                                _.map(description._otherSources, function (src) {
+                                    var excludeOtherSource = _.omit(src, ["_otherSources"])
                                     descriptions.push(excludeOtherSource);
                                 })
                                 descriptions.concat(extractDescriptions);
@@ -68,25 +64,26 @@ module.exports =  {
                             } else if (!description.schema_id) {
                                 descriptions.push(description);
                                 cb();
-                          
+
                             } else {
-                                getSchemaDescriptionAndCombine(description.schema_id,description).then(function(des) {
+                                getSchemaDescriptionAndCombine(description.schema_id, description).then(function (des) {
                                     descriptions.push(des);
                                     cb();
                                 })
-                                
-                             
+
+
                             }
                         }
                     })
             }
-            var requests = files.map(function(file) {
-                return new Promise(function(resolve) {
-                  asyncFunction(file, resolve);
+
+            var requests = files.map(function (file) {
+                return new Promise(function (resolve) {
+                    asyncFunction(file, resolve);
                 });
             });
 
-            Promise.all(requests).then(function() {
+            Promise.all(requests).then(function () {
 
                 // console.log(JSON.stringify(descriptions));
                 fn(descriptions);
@@ -94,14 +91,11 @@ module.exports =  {
         })
 
 
-
-
-
-        var getSchemaDescriptionAndCombine = function(schemaId,desc) {
-            return new Promise(function(resolve,reject) {
-                 datasource_description.findOne({uid:schemaId})
+        var getSchemaDescriptionAndCombine = function (schemaId, desc) {
+            return new Promise(function (resolve, reject) {
+                datasource_description.findOne({uid: schemaId})
                     .lean()
-                    .exec(function(err,schemaDesc) {
+                    .exec(function (err, schemaDesc) {
                         for (var attrname in schemaDesc) {
                             if (desc[attrname]) {
                                 if (Array.isArray(desc[attrname])) {
@@ -120,42 +114,38 @@ module.exports =  {
                     })
 
 
-            }) 
+            })
         }
 
-        var mergeObject = function(obj1,obj2) {
+        var mergeObject = function (obj1, obj2) {
             var obj3 = {};
             for (var attrname in obj1) {
                 obj3[attrname] = obj1[attrname]
             }
-             for (var attrname in obj2) {
+            for (var attrname in obj2) {
                 obj3[attrname] = obj2[attrname];
             }
             return obj3;
         }
 
-    }, 
+    },
 
-    GetDescriptionsWith_uid_importRevision : function(uid,revision,fn) {
+    GetDescriptionsWith_uid_importRevision: function (uid, revision, fn) {
 
 
-        datasource_description.findOne({uid: uid,importRevision: revision,fe_visible:true})
+        datasource_description.findOne({uid: uid, importRevision: revision, fe_visible: true})
             .populate('_team')
             .lean()
-            .exec(function(err,descriptions) {
+            .exec(function (err, descriptions) {
                 if (err) {
                     winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
-                    fn(err,null);
+                    fn(err, null);
                 } else {
-                    fn(err,descriptions);
+                    fn(err, descriptions);
                 }
             })
 
     }
-
-
-
-
 
 
 }

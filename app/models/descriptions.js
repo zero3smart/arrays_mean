@@ -2,7 +2,6 @@ var mongoose_client = require('../../lib/mongoose_client/mongoose_client');
 var integerValidator = require('mongoose-integer');
 
 
-
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 //
@@ -10,7 +9,7 @@ var DatasourceDescription_scheme = Schema({
     sourceURL: String,
     fileEncoding: String,
     uid: String,
-    importRevision: { 
+    importRevision: {
         type: Number,
         integer: true
     },
@@ -31,10 +30,10 @@ var DatasourceDescription_scheme = Schema({
     raw_rowObjects_FieldScheme: Object,
     fe_displayTitleOverrides: Array,
     fe_views: {
-        default_view : String,
+        default_view: String,
         views: Object
     },
-    _team: {type: Schema.Types.ObjectId,ref: "Team"},
+    _team: {type: Schema.Types.ObjectId, ref: "Team"},
     fe_filters: {
         excludeFields: Array,
         valuesToExclude: Object,
@@ -44,7 +43,6 @@ var DatasourceDescription_scheme = Schema({
     relationshipFields: Object,
     fe_displayTitleOverrides: Object
 });
-
 
 
 DatasourceDescription_scheme.plugin(integerValidator);

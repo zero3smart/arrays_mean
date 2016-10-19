@@ -12,20 +12,17 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
     var team;
-    var team_dataSourceDescriptions ;
+    var team_dataSourceDescriptions;
 
 
-    teamDescriptions.findOneByTidAndPopulateDatasourceDescription(urlQuery.team_key,function(err,objReturned) {
+    teamDescriptions.findOneByTidAndPopulateDatasourceDescription(urlQuery.team_key, function (err, objReturned) {
 
-     
+
         team = objReturned.team;
         team_dataSourceDescriptions = objReturned.team_dataSourceDescriptions;
 
         async.map(team_dataSourceDescriptions, iterateeFn, completionFn);
     })
-
-
-
 
 
     var iterateeFn = async.ensureAsync(function (dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
@@ -34,9 +31,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
         console.log(dataSourceDescription["logo"])
         var err = null;
         var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription);
-
-
-
 
 
         raw_source_documents.Model.findOne({
@@ -90,12 +84,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
         };
         callback(err, data);
     };
-
-   
-    
-    
-
-
 
 
 };

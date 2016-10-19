@@ -14,8 +14,8 @@ var datasourceDescriptions = require('../../../datasources/descriptions')
 var postimport_caching_controller = require('./postimport_caching_controller');
 
 
-datasourceDescriptions.GetDescriptionsToSetup(datasources,function(descriptions_array) {
-	
-	postimport_caching_controller.GeneratePostImportCaches(descriptions_array);
+datasourceDescriptions.GetDescriptionsToSetup(datasources, function (descriptions_array) {
+
+    postimport_caching_controller.GeneratePostImportCaches(descriptions_array);
 });
 
