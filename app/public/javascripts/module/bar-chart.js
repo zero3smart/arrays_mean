@@ -32,13 +32,22 @@ function BarChart(selector, dataSet, options) {
 
     this._xDomain = dataSet.categories;
     /*
-     * 
+     * Evaluate y domain max value.
      */
     var max = d3.max(this._data.reduce(function(values, series) {
         return values.concat(d3.sum(series.map(function(d) {
             return d.value;
         })));
     }, []));
+
+    var chartData = this._data;
+    /*
+     * Normalize data if necessary.
+     */
+    if (options.normalize) {
+        chartData = this.normalize();
+        max = 1;
+    }
 
     this._yDomain = [0, max];
 
@@ -72,7 +81,7 @@ function BarChart(selector, dataSet, options) {
     this._canvas.append('g')
         .attr('class', 'bars')
         .selectAll('g.series')
-        .data(this._data)
+        .data(chartData)
         .enter()
         .append('g')
         .attr('class', 'series')
@@ -100,6 +109,30 @@ function BarChart(selector, dataSet, options) {
             return dataSet.colors[i];
         }).style('opacity', 0.8);
 }
+
+
+/**
+ * Normalize input data.
+ * @returns {Object[]}
+ */
+BarChart.prototype.normalize = function() {
+
+    return this._data.map(function(series) {
+        /*
+         * Get column max value.
+         */
+        var columnMax = d3.sum(series.map(function(d) {
+            return d.value;
+        }))
+        /*
+         * Devide every column's value to the max value.
+         */
+        return series.map(function(d) {
+            d.value = d.value / columnMax;
+            return d;
+        });
+    });
+};
 
 
 
