@@ -6,7 +6,7 @@
 .sidebar-filter {
 	position: fixed;
 	top: 0;
-	left: calc(0px - var(--sidebar-width));
+	left: var(--sidebar-width-negative);
 	z-index: 1030;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
@@ -24,7 +24,7 @@
 .navbar-fixed-top,
 .site-content,
 .site-footer {
-	width: calc(100%);
+	width: 100%;
 }
 
 .app-ready .navbar-fixed-top,

@@ -5176,7 +5176,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 .sidebar-filter {
 	position: fixed;
 	top: 0;
-	left: calc(0px - 280px);
+	left: -280px;
 	z-index: 1030;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
@@ -5192,7 +5192,7 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 .navbar-fixed-top,
 .site-content,
 .site-footer {
-	width: calc(100%);
+	width: 100%;
 }
 .app-ready .navbar-fixed-top,
 /*.app-ready .array-controls,*/
