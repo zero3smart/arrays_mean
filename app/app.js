@@ -84,6 +84,8 @@ mongoose_client.WhenMongoDBConnected(function()
     mongoose_client.WhenIndexesHaveBeenBuilt(function() 
     {
 
+        winston.info("💬  ready to find all source descriptions and seed the DB");
+
         datasource_descriptions.findAllDescriptionAndSetup(function(err) {
             if (err) {
                 winston.error("❌ cannot find descriptions in db and set them up");

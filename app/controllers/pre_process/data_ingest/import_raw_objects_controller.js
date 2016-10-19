@@ -52,7 +52,8 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
 
 var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (dataSourceIsIndexInList, csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) {
     //
-    var CSV_resources_path_prefix = __dirname + "/../../../datasources/resources";
+    // var CSV_resources_path_prefix = __dirname + "/../../../datasources/resources";
+
     var filename = csvDescription.filename;
     var fileEncoding = csvDescription.fileEncoding || 'utf8';
     var revisionNumber = csvDescription.importRevision;

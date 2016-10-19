@@ -56,8 +56,6 @@ var getSchemaDescriptionAndCombine = function(schemaId,desc) {
 }
 
 
-
-
 /* -------   end helper function ------------  */
 
 
@@ -148,17 +146,14 @@ module.exports.GetDescriptions = GetDescriptions
 
 
 
-var _findAllDescriptionAndSetup  = function(fn) { /* find all description and check if it is processed, if not -> seed it 
+var _findAllDescriptionAndSetup  = function(fn) {  
 
-    first or finding all datasource that doesnt have schema (single datasets and team datasets), the second or including all datasource has schema
-
-    */
     datasource_description.find({$or:[{fe_visible:true,filename:{$exists:true}},{filename:{$exists:true},fe_visible:false}]}) 
         .lean()
-        .populate('_otherSources')
         .exec(function(err,descriptions) {
-
+            
             async.each(descriptions,function(desc,eachCb) {
+
                 var keyname;
                 if (typeof desc.schema_id !== 'undefined')  { 
                     getSchemaDescriptionAndCombine(desc.schema_id,desc).then(function(descr) {
@@ -194,34 +189,18 @@ var _findAllDescriptionAndSetup  = function(fn) { /* find all description and ch
                                         } 
                                     })
                                 } else {
-                                    winston.info("❗ rawrowobjects collection does not exists for dataset: "+keyname);
+                                    winston.info("❗ rawrowobjects collection does not exists for dataset_uid: ",desc.dataset_uid);
                                     winston.info("💬  will build it right now....");
                                     import_controller.Import_dataSourceDescriptions([desc],function() {
                                         eachCb(null);
                                     });
                                 }
                             }
-
-
-
-
                         })
 
                     })
                 } else {
-                    var description = desc
-                    if (desc._otherSources && desc._otherSources.length > 0) {
-                        var omitted = _.omit(desc,["_otherSources"]);
-                        description = [];
-                        description.push(omitted);
-                        _.map(desc._otherSources,function(src) {
-                            var excludeOtherSource = _.omit(src,["_otherSources"])
-                            descriptions.push(excludeOtherSource);
-                        })
-                        
-                    } 
-
-                    keyname = imported_data_preparation.DataSourcePKeyFromDataSourceDescription(description).toLowerCase();
+                    keyname = imported_data_preparation.DataSourcePKeyFromDataSourceDescription(desc).toLowerCase();
 
                     mongoose_client.checkIfCollectionExists('rawrowobjects-'+ keyname,function(err,exist) {
                         if (err) {
@@ -261,10 +240,8 @@ var _findAllDescriptionAndSetup  = function(fn) { /* find all description and ch
 
                 }
 
-
             },function(err) {
 
-        
                 fn(err);
             })
     })

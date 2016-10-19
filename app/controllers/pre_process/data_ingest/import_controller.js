@@ -92,7 +92,7 @@ var _PostProcessRawObjects = function (dataSourceDescriptions,fn) {
                 process.exit(1); // error code
             } else {
                 winston.info("✅  Import post-processing done.");
-                var omitImageScrapping = false; // set true to omit image scraping,
+                var omitImageScrapping = true; // set true to omit image scraping,
 
                 if (!omitImageScrapping) {
                     if (!fn) {
@@ -514,6 +514,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                 if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
 
                     var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+
                     raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
                         cb(err);
                     })
@@ -522,7 +523,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     cb(err);
                 }
 
-            
+
 
             }
 
