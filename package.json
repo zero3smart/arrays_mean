@@ -34,6 +34,7 @@
     "express-nunjucks": "^1.0.0",
     "express-session": "^1.14.0",
     "express-winston": "^1.3.0",
+    "lodash": "^4.16.4",
     "moment": "^2.12.0",
     "mongoose": "^4.4.9",
     "nunjucks-comma-filter": "^1.0.0",
