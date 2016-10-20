@@ -171,10 +171,12 @@
     {{ super() }}
 
     <script type="text/javascript" src="/javascripts/lib/d3/d3.js"></script>
-    <script type="text/javascript" src="/javascripts/module/bar-chart.js"></script>
+    <script type="text/javascript" src="/javascripts/module/barchart/barChart.js"></script>
+    <script type="text/javascript" src="/javascripts/module/barchart/verticalBarChart.js"></script>
+    <script type="text/javascript" src="/javascripts/module/barchart/horizontalBarChart.js"></script>
     <script>
         var graphData = {{graphData | dump | safe}};
 
-        var barChart = new BarChart('#bar-chart', graphData, options);
+        var barChart = BarChart.getInstance('#bar-chart', graphData, options);
     </script>
 {% endblock %}
