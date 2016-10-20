@@ -4,67 +4,67 @@
 /* @group Sliding Transition */
 
 .sidebar-filter {
-    position: fixed;
-    top: 0;
-    left: calc(0px - var(--sidebar-width));
-    z-index: 1030;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    width: var(--sidebar-width);
-    height: 100vh;
-    background-color: var(--color-sidebar-bg);
+	position: fixed;
+	top: 0;
+	left: var(--sidebar-width-negative);
+	z-index: 1030;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+	width: var(--sidebar-width);
+	height: 100vh;
+	background-color: var(--color-sidebar-bg);
 }
 
 .site-content,
 .site-footer {
-    position: relative;
-    left: 0;
+	position: relative;
+	left: 0;
 }
 
 .navbar-fixed-top,
 .site-content,
 .site-footer {
-    width: calc(100%);
+	width: 100%;
 }
 
 .app-ready .navbar-fixed-top,
-    /*.app-ready .array-controls,*/
+/*.app-ready .array-controls,*/
 .app-ready .site-content,
 .app-ready .site-footer {
-    transition: left 400ms ease-in-out, width 400ms ease-in-out;
+	transition: left 400ms ease-in-out, width 400ms ease-in-out;
 }
 
 .app-ready .sidebar-filter {
-    transition: left 400ms ease-in-out;
+	transition: left 400ms ease-in-out;
 }
 
 .sidebar-filter-in .sidebar-filter {
-    left: 0;
+	left: 0;
 }
 
 .sidebar-filter-in .navbar-fixed-top,
 .sidebar-filter-in .site-content,
 .sidebar-filter-in .site-footer {
-    left: var(--sidebar-width);
+	left: var(--sidebar-width);
 }
 
 @media (min-width: 768px) {
-    .sidebar-filter-in .navbar-fixed-top,
-    .sidebar-filter-in .site-content,
-        /*.sidebar-filter-in.sidebar-filter-complete.array-gallery .site-content,*/
-    .sidebar-filter-in .site-footer {
-        width: calc(100% - var(--sidebar-width));
-    }
+	.sidebar-filter-in .navbar-fixed-top,
+	.sidebar-filter-in .site-content,
+	/*.sidebar-filter-in.sidebar-filter-complete.array-gallery .site-content,*/
+	.sidebar-filter-in .site-footer {
+		width: calc(100% - var(--sidebar-width));
+	}
 }
 
 .array-controls {
-    left: 0 !important;
-    width: calc(100%) !important;
+	left: 0 !important;
+	width: calc(100%) !important;
 }
 
 .sidebar-filter-in.sidebar-filter-complete.array-controls-pinned .array-controls {
-    left: var(--sidebar-width) !important;
-    width: calc(100% - var(--sidebar-width)) !important;
+	left: var(--sidebar-width) !important;
+	width: calc(100% - var(--sidebar-width)) !important;
 }
 
 /* @end Sliding Transition */
@@ -72,24 +72,24 @@
 /* @group Sidebar Heading */
 
 .sidebar-filter-heading {
-    position: relative;
-    z-index: 1;
-    padding: 14px 15px;
-    min-height: 50px;
-    box-shadow: var(--box-shadow-dark);
-    color: #ffffff;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 600;
-    font-size: 16px;
+	position: relative;
+	z-index: 1;
+	padding: 14px 15px;
+	min-height: 50px;
+	box-shadow: var(--box-shadow-dark);
+	color: #ffffff;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	font-weight: 600;
+	font-size: 16px;
 }
 
 @media (min-width: 768px) {
-    .sidebar-filter-heading {
-        padding-top: 21px;
-        padding-bottom: 21px;
-        min-height: 64px;
-    }
+	.sidebar-filter-heading {
+		padding-top: 21px;
+		padding-bottom: 21px;
+		min-height: 64px;
+	}
 }
 
 /* @end Sidebar Heading */
@@ -97,60 +97,60 @@
 /* @group Sidebar Filter Links */
 
 .sidebar-filter a {
-    display: inline-block;
-    padding: 17px 15px;
-    width: 100%;
-    color: #ffffff;
+	display: inline-block;
+	padding: 17px 15px;
+	width: 100%;
+	color: #ffffff;
 }
 
 .sidebar-filter a:hover,
 .sidebar-filter a:focus,
 .sidebar-filter a:active {
-    text-decoration: none;
+	text-decoration: none;
 }
 
 .sidebar-filter-group,
 .sidebar-filter-subgroup {
-    margin-left: 0;
-    padding-left: 0;
-    list-style-type: none;
+	margin-left: 0;
+	padding-left: 0;
+	list-style-type: none;
 }
 
 .sidebar-filter-group-item > a {
-    position: relative;
-    border-top: 1px solid var(--color-sidebar-bg);
-    background-color: var(--color-sidebar-fg);
-    box-shadow: var(--box-shadow);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 16px;
-    line-height: 1em;
+	position: relative;
+	border-top: 1px solid var(--color-sidebar-bg);
+	background-color: var(--color-sidebar-fg);
+	box-shadow: var(--box-shadow);
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	font-size: 16px;
+	line-height: 1em;
 }
 
 .sidebar-filter-group-item:first-child > a {
-    border-top: none;
+	border-top: none;
 }
 
 .sidebar-filter .badge {
-    float: right;
-    width: 1.5em;
-    color: var(--color-text-dark);
-    font-size: 13px;
+	float: right;
+	width: 1.5em;
+	color: var(--color-text-dark);
+	font-size: 13px;
 }
 
 .sidebar-filter-subgroup-item > a {
-    border-top: 1px solid var(--color-sidebar-fg);
-    font-size: 18px;
-    line-height: 1em;
+	border-top: 1px solid var(--color-sidebar-fg);
+	font-size: 18px;
+	line-height: 1em;
 }
 
 .sidebar-filter-subgroup-item:first-child > a {
-    border-top: none;
+	border-top: none;
 }
 
 .sidebar-filter-subgroup-item > a.sidebar-filter-active,
 .sidebar-filter-subgroup-item > a:hover {
-    /*color: var(--color-sidebar-bg);*/
+	/*color: var(--color-sidebar-bg);*/
 }
 
 /* @end Sidebar Filter Links */
@@ -158,33 +158,33 @@
 /* @group Toggle Link */
 
 .sidebar-filter-toggle > a {
-    padding-top: 13px;
-    padding-bottom: 13px;
-    border-top: 1px solid var(--color-sidebar-fg);
-    background-color: var(--color-sidebar-bg);
+	padding-top: 13px;
+	padding-bottom: 13px;
+	border-top: 1px solid var(--color-sidebar-fg);
+	background-color: var(--color-sidebar-bg);
 }
 
 .sidebar-filter-toggle:hover .sidebar-filter-toggle-check:before {
-    content: "\e802";
+	content: "\e802";
 }
 
 .sidebar-filter-toggle-title {
-    display: inline-block;
-    margin-top: 4px;
-    width: 209px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+	display: inline-block;
+	margin-top: 4px;
+	width: 209px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .sidebar-filter-toggle-check {
-    float: right;
-    width: 1em;
-    font-size: 24px;
+	float: right;
+	width: 1em;
+	font-size: 24px;
 }
 
 .sidebar-filter-toggle-check.icon-check-off {
-    color: var(--color-text-light);
+	color: var(--color-text-light);
 }
 
 /* @end Toggle Link */

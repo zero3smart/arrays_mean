@@ -1,5 +1,6 @@
 var winston = require('winston');
 var Batch = require('batch');
+var _ = require('lodash');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
@@ -115,8 +116,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Aggregate By Available
             var aggregateBy_humanReadable_available = undefined;
-            for (var colName in raw_rowObjects_coercionSchema) {
-                var colValue = raw_rowObjects_coercionSchema[colName];
+            _.forOwn(raw_rowObjects_coercionSchema, function(colValue, colName) {
                 if (colValue.operation == "ToInteger") {
                     var humanReadableColumnName = colName;
                     if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
@@ -130,7 +130,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     aggregateBy_humanReadable_available.push(humanReadableColumnName);
                 }
-            }
+            });
+
             if (aggregateBy_humanReadable_available) {
                 if (aggregateBy_humanReadable_available.length > 0)
                     defaultAggregateByColumnName_humanReadable = aggregateBy_humanReadable_available[0];
@@ -177,35 +178,34 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = {};
-                    for (var columnName in _uniqueFieldValuesByFieldName) {
-                        if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
-                            if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
-                                var row = [];
-                                _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
-                                    row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
-                                });
-                                row.sort();
-                                uniqueFieldValuesByFieldName[columnName] = row;
-                            } else {
-                                uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
-                            }
-
-                            if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
-
-                                uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                    a = a.replace(/\D/g, '');
-                                    a = a == '' ? 0 : parseInt(a);
-                                    b = b.replace(/\D/g, '');
-                                    b = b == '' ? 0 : parseInt(b);
-                                    return a - b;
-                                });
-
-                            } else // Sort alphabetically by default
-                                uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                    return a - b;
-                                });
+                    _.forOwn(_uniqueFieldValuesByFieldName, function(columnValue, columnName) {
+                        if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
+                            var row = [];
+                            columnValue.forEach(function (rowValue) {
+                                row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
+                            });
+                            row.sort();
+                            uniqueFieldValuesByFieldName[columnName] = row;
+                        } else {
+                            uniqueFieldValuesByFieldName[columnName] = columnValue;
                         }
-                    }
+
+                        if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                                a = a.replace(/\D/g, '');
+                                a = a == '' ? 0 : parseInt(a);
+                                b = b.replace(/\D/g, '');
+                                b = b == '' ? 0 : parseInt(b);
+                                return a - b;
+                            });
+
+                        } else // Sort alphabetically by default
+                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                                return a - b;
+                            });
+                    });
+
                     done();
                 });
             });
@@ -346,7 +346,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (_multigroupedResults == undefined || _multigroupedResults == null) _multigroupedResults = [];
 
                     var _multigroupedResults_object = {};
-                    _multigroupedResults.forEach(function (el) {
+                    _.forEach(_multigroupedResults, function (el) {
                         var stack = el.stack && el.stack != '' ? el.stack : 'default';
                         if (_multigroupedResults_object[stack] === undefined) {
                             _multigroupedResults_object[stack] = [];
@@ -354,99 +354,85 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         _multigroupedResults_object[stack].push(el);
                     });
 
-                    for (var stack in _multigroupedResults_object) {
-                        if (_multigroupedResults_object.hasOwnProperty(stack)) {
-                            var _groupedResults = _multigroupedResults_object[stack];
+                    _.forOwn(_multigroupedResults_object, function(_groupedResults, stack) {
 
-                            var finalizedButNotCoalesced_groupedResults = [];
-                            _groupedResults.forEach(function (el, i, arr) {
-                                var originalVal = el.label;
-                                //
-                                var fe_chart_valuesToExcludeByOriginalKey = dataSourceDescription.fe_views.views.chart.valuesToExcludeByOriginalKey;
-                                if (fe_chart_valuesToExcludeByOriginalKey != null && typeof fe_chart_valuesToExcludeByOriginalKey !== 'undefined') {
-                                    if (fe_chart_valuesToExcludeByOriginalKey._all) {
-                                        if (fe_chart_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
-                                            return; // do not push to list
-                                        }
-                                    }
-                                    var illegalValuesForThisKey = fe_chart_valuesToExcludeByOriginalKey[groupBy_realColumnName];
-                                    if (illegalValuesForThisKey) {
-                                        if (illegalValuesForThisKey.indexOf(originalVal) !== -1) {
-                                            return; // do not push to list
-                                        }
-                                    }
-                                }
-                                //
-                                var displayableVal = originalVal;
-                                if (originalVal == null) {
-                                    displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
-                                } else if (originalVal === "") {
-                                    displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
-                                } else {
-                                    displayableVal = groupBy_isDate ? func.convertDateToBeRecognizable(originalVal, groupBy_realColumnName, dataSourceDescription) : originalVal;
-                                }
-                                finalizedButNotCoalesced_groupedResults.push({
-                                    value: el.value,
-                                    label: displayableVal
-                                });
-                            });
-                            var summedValuesByLowercasedLabels = {};
-                            var titleWithMostMatchesAndMatchAggregateByLowercasedTitle = {};
-                            finalizedButNotCoalesced_groupedResults.forEach(function (el, i, arr) {
-                                var label = el.label;
-                                var value = el.value;
-                                var label_toLowerCased = label.toLowerCase();
-                                //
-                                var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
-                                var new_valueSum = existing_valueSum + value;
-                                summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
-                                //
-                                var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] || {
-                                        label: '',
-                                        value: -1
-                                    };
-                                if (existing_titleWithMostMatchesAndMatchCount.value < value) {
-                                    var new_titleWithMostMatchesAndMatchCount = {label: label, value: value};
-                                    titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
-                                }
-                            });
-                            var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
-                            var groupedResults = [];
-                            lowercasedLabels.forEach(function (key, i, arr) {
-                                var summedValue = summedValuesByLowercasedLabels[key];
-                                var reconstitutedDisplayableTitle = key;
-                                var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[key];
-                                if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
-                                    winston.error("❌  This should never be undefined.");
-                                    callback(new Error('Unexpectedly undefined title with most matches'), null);
+                        var displayableStack = func.ValueToExcludeByOriginalKey(
+                            stack, dataSourceDescription, stackBy_realColumnName, 'lineGraph');
+                        if (!displayableStack) return;
 
-                                    return;
-                                } else {
-                                    reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
-                                }
-                                groupedResults.push({
-                                    value: summedValue,
-                                    date: reconstitutedDisplayableTitle
-                                });
-                            });
+                        var finalizedButNotCoalesced_groupedResults = [];
+                        _groupedResults.forEach(function (el, i, arr) {
+                            var displayableVal;
 
-                            if (stackBy)
-                                stackedResultsByGroup[stack] = groupedResults;
-                            else
-                                stackedResultsByGroup = groupedResults;
-
-                            /* Make linegraph category colors consistent for different "Aggregate By" settings
-                             The following code alphabetizes the categories which are properties of stackedResultsByGroup */
-                            if (!Array.isArray(stackedResultsByGroup)) {
-                                var alphabetizedStackedResultsByGroup = {};
-                                Object.keys(stackedResultsByGroup).sort().forEach(function (key) {
-                                    alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
-                                });
-                                stackedResultsByGroup = alphabetizedStackedResultsByGroup;
+                            if (groupBy_isDate) {
+                                displayableVal = func.convertDateToBeRecognizable(el.label, groupBy_realColumnName, dataSourceDescription);
+                            } else {
+                                displayableVal = importedDataPreparation.ValueToExcludeByOriginalKey(
+                                    el.label, dataSourceDescription, groupBy_realColumnName, 'lineGraph');
+                                if (!displayableVal) return;
                             }
+
+                            finalizedButNotCoalesced_groupedResults.push({
+                                value: el.value,
+                                label: displayableVal
+                            });
+                        });
+                        var summedValuesByLowercasedLabels = {};
+                        var titleWithMostMatchesAndMatchAggregateByLowercasedTitle = {};
+                        _.each(finalizedButNotCoalesced_groupedResults, function (el, i) {
+                            var label = el.label;
+                            var value = el.value;
+                            var label_toLowerCased = label.toLowerCase();
+                            //
+                            var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
+                            var new_valueSum = existing_valueSum + value;
+                            summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
+                            //
+                            var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] || {
+                                    label: '',
+                                    value: -1
+                                };
+                            if (existing_titleWithMostMatchesAndMatchCount.value < value) {
+                                var new_titleWithMostMatchesAndMatchCount = {label: label, value: value};
+                                titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
+                            }
+                        });
+                        var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
+                        var groupedResults = [];
+                        _.forEach(lowercasedLabels, function (key) {
+                            var summedValue = summedValuesByLowercasedLabels[key];
+                            var reconstitutedDisplayableTitle = key;
+                            var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[key];
+                            if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
+                                winston.error("❌  This should never be undefined.");
+                                callback(new Error('Unexpectedly undefined title with most matches'), null);
+
+                                return;
+                            } else {
+                                reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
+                            }
+                            groupedResults.push({
+                                value: summedValue,
+                                date: reconstitutedDisplayableTitle
+                            });
+                        });
+
+                        if (stackBy)
+                            stackedResultsByGroup[displayableStack] = groupedResults;
+                        else
+                            stackedResultsByGroup = groupedResults;
+
+                        /* Make linegraph category colors consistent for different "Aggregate By" settings
+                         The following code alphabetizes the categories which are properties of stackedResultsByGroup */
+                        if (!Array.isArray(stackedResultsByGroup)) {
+                            var alphabetizedStackedResultsByGroup = {};
+                            Object.keys(stackedResultsByGroup).sort().forEach(function (key) {
+                                alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
+                            });
+                            stackedResultsByGroup = alphabetizedStackedResultsByGroup;
                         }
 
-                    }
+                    });
 
                     var lineColors = dataSourceDescription.fe_views.views.lineGraph.stackedLineColors ? dataSourceDescription.fe_views.views.lineGraph.stackedLineColors : {};
 
@@ -468,26 +454,24 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     } else {
 
                         graphData = {labels: [], data: []};
-                        for (var category in stackedResultsByGroup) {
-                            if (stackedResultsByGroup.hasOwnProperty(category)) {
-                                graphData.labels.push(category);
+                        _.forOwn(stackedResultsByGroup, function(results, category) {
+                            graphData.labels.push(category);
 
-                                graphData.data.push(stackedResultsByGroup[category].map(function (row) {
-                                    row.value = Number(row.value);
-                                    if (groupBy_isDate) {
-                                        var offsetTime = new Date(row.date);
-                                        offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                                        row.date = offsetTime;
-                                    }
-                                    return row;
-                                }));
-
-                                if (lineColors && lineColors[category]) {
-                                    if (!graphData.colors) graphData.colors = [];
-                                    graphData.colors.push(lineColors[category]);
+                            graphData.data.push(results.map(function (row) {
+                                row.value = Number(row.value);
+                                if (groupBy_isDate) {
+                                    var offsetTime = new Date(row.date);
+                                    offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                                    row.date = offsetTime;
                                 }
+                                return row;
+                            }));
+
+                            if (lineColors && lineColors[category]) {
+                                if (!graphData.colors) graphData.colors = [];
+                                graphData.colors.push(lineColors[category]);
                             }
-                        }
+                        });
 
                     }
 
@@ -499,8 +483,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             batch.end(function (err) {
                 if (err) return callback(err);
-
-                console.log(dataSourceDescription._team)
 
                 //
                 var data =

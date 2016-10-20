@@ -569,7 +569,7 @@ var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescrip
 module.exports.convertDateToBeRecognizable = _convertDateToBeRecognizable;
 
 //
-var _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = function (dataSourceDescription) {
+function _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription) {
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = {};
     var fe_filters_fabricatedFilters = dataSourceDescription.fe_filters.fabricatedFilters;
     if (typeof fe_filters_fabricatedFilters !== 'undefined') {
@@ -595,9 +595,9 @@ var _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPil
 module.exports.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill;
 
 //
-var _filterObjFromQueryParams = function (queryParams) {
+function _filterObjFromQueryParams (queryParams) {
     var filterObj = {};
-    var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'chartBy', 'mapBy', 'aggregateBy', 'searchQ', 'searchCol', 'embed'];
+    var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'chartBy', 'stackBy', 'mapBy', 'aggregateBy', 'searchQ', 'searchCol', 'embed'];
     for (var key in queryParams) {
         if (reservedKeys.indexOf(key) !== -1) continue;
 
@@ -608,3 +608,33 @@ var _filterObjFromQueryParams = function (queryParams) {
     return filterObj;
 };
 module.exports.filterObjFromQueryParams = _filterObjFromQueryParams;
+
+function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupBy_realColumnName, viewType) {
+    //
+    var fe_valuesToExcludeByOriginalKey = dataSourceDescription['fe_' + viewType + '_valuesToExcludeByOriginalKey'];
+    if (fe_valuesToExcludeByOriginalKey != null && typeof fe_valuesToExcludeByOriginalKey !== 'undefined') {
+        if (fe_valuesToExcludeByOriginalKey._all) {
+            if (fe_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
+                return null; // do not push to list
+            }
+        }
+        var illegalValuesForThisKey = fe_valuesToExcludeByOriginalKey[groupBy_realColumnName];
+        if (illegalValuesForThisKey) {
+            if (illegalValuesForThisKey.indexOf(originalVal) !== -1) {
+                return null; // do not push to list
+            }
+        }
+    }
+    //
+    var displayableVal = originalVal;
+    if (originalVal == null) {
+        displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
+    } else if (originalVal === "") {
+        displayableVal = "(not specified)"; // we want to show a category for it rather than it appearing broken by lacking a category
+    } else {
+        displayableVal = _reverseDataToBeDisplayableVal(originalVal, groupBy_realColumnName, dataSourceDescription);
+    }
+
+    return displayableVal;
+}
+module.exports.ValueToExcludeByOriginalKey = _valueToExcludeByOriginalKey;

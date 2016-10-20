@@ -1,6 +1,6 @@
 var winston = require('winston');
 var Batch = require('batch');
-var queryString = require('querystring');
+var _ = require('lodash');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
@@ -375,6 +375,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 });
             }
             ;
+            });
 
             done();
         };
