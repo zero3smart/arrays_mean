@@ -34,7 +34,7 @@
                                 {% if colNames_orderedForAggregateByDropdown %}
                                 {{
                                 dropdown.sortbar(
-                                    'Y Axis',
+                                    'Y Axis' if not isHorizontal else 'X Axis',
                                     aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
                                     colNames_orderedForAggregateByDropdown,
                                     routePath_base | constructedRoutePath(filterObj, {
@@ -52,7 +52,7 @@
                                 {% if colNames_orderedForGroupByDropdown %}
                                 {{
                                 dropdown.sortbar(
-                                    'X Axis',
+                                    'X Axis' if not isHorizontal else 'Y Axis',
                                     groupBy if groupBy else defaultGroupByColumnName_humanReadable,
                                     colNames_orderedForGroupByDropdown,
                                     routePath_base | constructedRoutePath(filterObj, {
@@ -203,6 +203,7 @@
     {{ super() }}
 
     <script type="text/javascript" src="/javascripts/lib/d3/d3.js"></script>
+    <script type="text/javascript" src="/javascripts/tooltip.js"></script>
     <script type="text/javascript" src="/javascripts/module/barchart/barChart.js"></script>
     <script type="text/javascript" src="/javascripts/module/barchart/verticalBarChart.js"></script>
     <script type="text/javascript" src="/javascripts/module/barchart/horizontalBarChart.js"></script>
