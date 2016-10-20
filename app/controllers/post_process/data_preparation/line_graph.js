@@ -1,7 +1,5 @@
 var winston = require('winston');
 var Batch = require('batch');
-var express = require('express');
-var router = express.Router();
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
@@ -14,7 +12,7 @@ var func = require('../func');
  * @param {Object} urlQuery - URL params
  * @param {Function} callback
  */
-router.BindData = function (req, urlQuery, callback) {
+module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
     // urlQuery keys:
     // source_key
@@ -502,6 +500,8 @@ router.BindData = function (req, urlQuery, callback) {
             batch.end(function (err) {
                 if (err) return callback(err);
 
+                console.log(dataSourceDescription._team)
+
                 //
                 var data =
                 {
@@ -511,7 +511,7 @@ router.BindData = function (req, urlQuery, callback) {
 
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
-                    team: team,
+                    team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,

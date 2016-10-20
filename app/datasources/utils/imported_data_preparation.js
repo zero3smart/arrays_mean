@@ -15,15 +15,15 @@ function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription) {
 };
 module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromDataSourceDescription;
 
-//
 
 var _dataSourceDescriptionWithPKey = function (source_pKey) {
 
     var split = source_pKey.split("-");
     var uid = split[0];
     var revision = split[1].substring(1);
-    return new Promise(function (resolve, reject) {
-        dataSourceDescriptions.GetDescriptionsWith_uid_importRevision(uid, revision, function (err, data) {
+
+    return new Promise(function(resolve,reject) {
+         dataSourceDescriptions.GetDescriptionsWith_uid_importRevision(uid,revision,function(err,data) {
             if (err) reject(err);
             resolve(data);
 

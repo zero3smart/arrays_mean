@@ -83,6 +83,9 @@ app.use(expressWinston.logger({
 //
 var mongoose_client = require('../lib/mongoose_client/mongoose_client');
 var raw_source_documents = require('./models/raw_source_documents');
+var datasource_descriptions = require('./datasources/descriptions');
+
+
 
 
 if (typeof process === 'object') { /* to debug promise */
@@ -94,22 +97,35 @@ if (typeof process === 'object') { /* to debug promise */
 
 var modelNames = [raw_source_documents.ModelName];
 mongoose_client.FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed(modelNames)
-mongoose_client.WhenMongoDBConnected(function () {
-    mongoose_client.WhenIndexesHaveBeenBuilt(function () {
 
-        winston.info("💬  Proceeding to boot app.");
-        //
-        routes.MountRoutes(app);
-        //
-        // Run actual server
-        if (module === require.main) {
-            var server = app.listen(process.env.PORT || 9080, function () {
-                var host = isDev ? 'localhost' : server.address().address;
-                var port = server.address().port;
-                winston.info('📡  App listening at %s:%s', host, port);
-            });
-        }
+mongoose_client.WhenMongoDBConnected(function() 
+{
+    mongoose_client.WhenIndexesHaveBeenBuilt(function() 
+    {
 
+        winston.info("💬  ready to find all source descriptions and seed the DB");
+
+        datasource_descriptions.findAllDescriptionAndSetup(function(err) {
+            if (err) {
+                winston.error("❌ cannot find descriptions in db and set them up");
+            } else {
+                winston.info("✅ all datasources descriptions in db has been set up");
+
+            }
+
+            winston.info("💬  Proceeding to boot app.");
+            //
+            routes.MountRoutes(app);
+            //
+            // Run actual server
+            if (module === require.main) {
+                var server = app.listen(process.env.PORT || 9080, function () {
+                    var host = isDev ? 'localhost' : server.address().address;
+                    var port = server.address().port;
+                    winston.info('📡  App listening at %s:%s', host, port);
+                });
+            }
+        })
     });
 });
 

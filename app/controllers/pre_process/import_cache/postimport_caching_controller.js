@@ -13,7 +13,7 @@ var cache_keywords_controller = require('./cache_keywords_controller');
 
 //
 //
-module.exports.GeneratePostImportCaches = function (dataSourceDescriptions) {
+module.exports.GeneratePostImportCaches = function (dataSourceDescriptions,fn) {
     var i = 1;
 
 
@@ -26,7 +26,14 @@ module.exports.GeneratePostImportCaches = function (dataSourceDescriptions) {
             process.exit(1); // error code
         } else {
             winston.info("✅  Post-import caching done.");
-            process.exit(0); // all good
+            if (!fn) {
+                process.exit(0); // all good
+            }
+
+            return fn();
+
+
+           
         }
     });
 };

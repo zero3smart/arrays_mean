@@ -6,6 +6,9 @@ var winston = require('winston');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 
+var postimport_caching_controller = require('.././import_cache/postimport_caching_controller');
+
+
 
 var import_processing = require('../../../datasources/utils/import_processing');
 var import_raw_objects_controller = require('./import_raw_objects_controller');
@@ -13,8 +16,10 @@ var import_raw_objects_controller = require('./import_raw_objects_controller');
 //
 // ---------- Multiple DataSource Operation ----------
 //
-module.exports.Import_dataSourceDescriptions = function (dataSourceDescriptions) {
+module.exports.Import_dataSourceDescriptions = function (dataSourceDescriptions,fn) {
     var i = 1;
+
+
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
@@ -27,7 +32,15 @@ module.exports.Import_dataSourceDescriptions = function (dataSourceDescriptions)
                 process.exit(1); // error code
             } else {
                 winston.info("✅  Raw objects import done. Proceeding to post-processing.");
-                _PostProcessRawObjects(dataSourceDescriptions);
+
+                if (!fn) {
+                    _PostProcessRawObjects(dataSourceDescriptions);
+                } else {
+                    _PostProcessRawObjects(dataSourceDescriptions,function() {
+                        return fn();
+                     });
+                }
+                
             }
         }
     );
@@ -64,7 +77,7 @@ var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (da
 };
 module.exports.Import_dataSourceDescriptions__enteringImageScrapingDirectly = _Import_dataSourceDescriptions__enteringImageScrapingDirectly;
 
-var _PostProcessRawObjects = function (dataSourceDescriptions) {
+var _PostProcessRawObjects = function (dataSourceDescriptions,fn) {
     var i = 1;
     async.eachSeries(
         dataSourceDescriptions,
@@ -81,16 +94,32 @@ var _PostProcessRawObjects = function (dataSourceDescriptions) {
                 var omitImageScrapping = true; // set true to omit image scraping,
 
                 if (!omitImageScrapping) {
-                    _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions);
+                    if (!fn) {
+                        _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions)
+                    } else {
+                        _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions,function(){
+                            return fn();
+                        });
+                    }
+                    
                 } else {
-                    _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions);
+
+                    if (!fn) {
+                        _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions)
+                    } else {
+                        _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions,function() {
+                            return fn();
+                        });
+                    }                   
                 }
             }
         }
     );
 };
 
-var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDescriptions) {
+module.exports.PostProcessRawObjects = _PostProcessRawObjects;
+
+var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDescriptions,fn) {
     var i = 1;
     async.eachSeries(
         dataSourceDescriptions,
@@ -113,13 +142,25 @@ var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDe
                 }
             } else {
                 winston.info("✅  Image-scrapping done.");
-                process.exit(0); // all good
+
+                winston.info("✅  All done for importing data");
+
+                if (!fn) {
+                    process.exit(0); // all good
+                }
+
+                winston.info("📡 now ready to do post import caching");
+                postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions,function() {
+                    return fn();
+                });
+            
+                
             }
         }
     );
 }
 //
-var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDescriptions) {
+var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDescriptions,fn) {
     //
     // Execute user-defined generalized post-processing pipeline since the image scrapping is omitted
     //
@@ -135,8 +176,18 @@ var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDesc
                 winston.info("❌  Error encountered during performming each-row operations:(" + err.code + ')', err);
                 process.exit(1); // error code
             } else {
-                winston.info("✅  All done.");
-                process.exit(0); // all good
+                winston.info("✅  All done for importing data");
+
+                if (! fn) {
+                    process.exit(0); // all good
+
+                }
+                winston.info(" 📡 now ready to do post import caching");
+                postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions,function() {
+                    return fn();
+                });
+
+              
             }
         }
     );
@@ -246,6 +297,8 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
     );
 }
 //
+
+
 var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexInList, dataSourceDescription, callback) {
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_importRevision = dataSourceDescription.importRevision;
@@ -449,15 +502,23 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
                 winston.info("✅  [" + (new Date()).toString() + "] Saved raw row objects.");
 
+                if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
+
+                    var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+
+                    raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
+                        cb(err);
+                    })
+
+                } else {
+                    cb(err);
+                }
+
+
+
             }
 
-            if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
 
-                var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
-                raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows, cb)
-
-            }
-            cb(err); // all done - must call DB
         });
     }
 
