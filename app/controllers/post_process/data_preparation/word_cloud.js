@@ -216,7 +216,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     isSearchActive: isSearchActive,
                     //
                     defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-                    colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForwordCloudGroupByDropdown(sampleDoc, dataSourceDescription),
+                    colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'wordCloud', 'GroupBy'),
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     routePath_base: routePath_base,

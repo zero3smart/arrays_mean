@@ -318,8 +318,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 });
             });
 
-            for (var chartBy in finalizedButNotCoalesced_groupedResults) {
-                var _groupedResultsByChart = finalizedButNotCoalesced_groupedResults[chartBy];
+            _.forOwn (finalizedButNotCoalesced_groupedResults, function(_groupedResultsByChart, chartBy) {
 
                 var summedValuesByLowercasedLabels = {};
                 var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
@@ -373,8 +372,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     title: chartBy,
                     data: data
                 });
-            }
-            ;
             });
 
             done();
@@ -412,7 +409,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             brandColor: dataSourceDescription.brandColor,
             sourceDoc: sourceDoc,
             sourceDocURL: sourceDocURL,
-            view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+            view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
             //
             groupedResults: groupedResults,
             flatResults: flatResults,
@@ -429,10 +426,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
             isSearchActive: isSearchActive,
             //
             defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-            colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForPieSetGroupByDropdown(sampleDoc, dataSourceDescription),
+            colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'pieSet', 'GroupBy'),
             //
             defaultChartByColumnName_humanReadable: defaultChartByColumnName_humanReadable,
-            colNames_orderedForChartByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForPieSetChartByDropdown(sampleDoc, dataSourceDescription),
+            colNames_orderedForChartByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'pieSet', 'ChartBy'),
             //
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //

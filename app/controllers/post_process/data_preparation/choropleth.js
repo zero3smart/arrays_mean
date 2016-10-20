@@ -241,7 +241,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     isSearchActive: isSearchActive,
                     //
                     defaultMapByColumnName_humanReadable: defaultMapByColumnName_humanReadable,
-                    colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChoroplethMapByDropdown(sampleDoc, dataSourceDescription),
+                    colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'choropleth', 'SortBy'),
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     routePath_base: routePath_base,

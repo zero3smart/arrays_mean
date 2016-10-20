@@ -497,7 +497,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     brandColor: dataSourceDescription.brandColor,
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
-                    view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+                    view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                     view_descriptions: dataSourceDescription.fe_view_descriptions ? dataSourceDescription.fe_view_descriptions : {},
                     //
                     groupBy: groupBy,
@@ -515,7 +515,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     isSearchActive: isSearchActive,
                     //
                     defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-                    colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForLineGraphGroupByDropdown(sampleDoc, dataSourceDescription),
+                    colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'lineGraph', 'GroupBy'),
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     routePath_base: routePath_base,

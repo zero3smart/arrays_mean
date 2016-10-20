@@ -159,8 +159,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdow
     var field = 'fieldsNotAvailable';
     if (fieldName) field += ('As' + fieldName + 'Columns');
     _.each(keys, function(key) {
-        if (dataSourceDescription.fe_views[viewType][field]) {
-            if (dataSourceDescription.fe_views[viewType][field].indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_views.views[viewType][field]) {
+            if (dataSourceDescription.fe_views.views[viewType][field].indexOf(key) !== -1) {
                 return;
             }
         }

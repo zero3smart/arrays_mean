@@ -453,7 +453,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             brandColor: dataSourceDescription.brandColor,
             sourceDoc: sourceDoc,
             sourceDocURL: sourceDocURL,
-            view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
+            view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
             view_descriptions: dataSourceDescription.fe_view_descriptions ? dataSourceDescription.fe_view_descriptions : {},
             // Group By
             groupBy: groupBy,
