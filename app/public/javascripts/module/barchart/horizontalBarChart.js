@@ -38,7 +38,7 @@ HorizontalBarChart.prototype.getXAxisTransform = function() {
 HorizontalBarChart.prototype.getYScale = function() {
 
     return this._yScale = d3.scale.ordinal()
-        .rangeRoundBands([0, this._innerHeight], 0.05)
+        .rangeRoundBands([0, this._innerHeight], this._padding)
         .domain(this._categories);
 };
 

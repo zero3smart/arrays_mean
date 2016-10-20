@@ -6,6 +6,7 @@ function BarChart(selector, dataSet, options) {
     this._categories = dataSet.categories;
     this._data = dataSet.data;
     this._options = options;
+    this._padding = options.padding || 0.2;
     /**
      * Set up bar chart
      */
@@ -43,6 +44,9 @@ function BarChart(selector, dataSet, options) {
       .call(this.getYAxis());
 
     var self = this;
+    /**
+     * Append bar's series.
+     */
     this._canvas.append('g')
         .attr('class', 'bars')
         .selectAll('g.series')
@@ -66,6 +70,10 @@ function BarChart(selector, dataSet, options) {
             return self.getBarY(d, i, j);
         }).style('fill', function(d, i, j) {
             return dataSet.colors[i];
+        }).on('mouseenter', function(d, i, j) {
+            self._barMouseEnterEventHandler(this, d, i, j);
+        }).on('mouseout', function(d, i, j) {
+            self._barMouseOutEventHandler(this, d, i, j);
         });
 }
 
@@ -111,6 +119,24 @@ BarChart.prototype.getMaxValue = function() {
             return d.value;
         })));
     }, []));
+};
+
+
+BarChart.prototype._barMouseEnterEventHandler = function(bar, d, i, j) {
+
+    this._canvas.selectAll('rect.bar')
+        .filter(function(a, b, c) {
+            return this != bar;
+        }).style('opacity', 0.2)
+};
+
+
+BarChart.prototype._barMouseOutEventHandler = function(bar, d, i, j) {
+
+    this._canvas.selectAll('rect.bar')
+        .filter(function(a, b, c) {
+            return this != bar;
+        }).style('opacity', 1)
 };
 
 

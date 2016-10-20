@@ -16,7 +16,7 @@ VerticalBarChart.prototype = Object.create(BarChart.prototype);
 VerticalBarChart.prototype.getXScale = function() {
 
     return this._xScale = d3.scale.ordinal()
-        .rangeRoundBands([0, this._innerWidth], 0.05)
+        .rangeRoundBands([0, this._innerWidth], this._padding)
         .domain(this._categories);
 };
 
