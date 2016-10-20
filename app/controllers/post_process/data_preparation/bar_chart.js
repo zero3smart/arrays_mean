@@ -1,7 +1,7 @@
 var winston = require('winston');
 var Batch = require('batch');
 var express = require('express');
-var router = express.Router();
+var _ = require('lodash');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
@@ -14,11 +14,13 @@ var func = require('../func');
  * @param {Object} urlQuery - URL params
  * @param {Function} callback
  */
-router.BindData = function (req, urlQuery, callback) {
+module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
     // urlQuery keys:
     // source_key
+    // aggregateBy
     // groupBy
+    // stackBy
     // sortDir
     // searchQ
     // searchCol
@@ -50,8 +52,9 @@ router.BindData = function (req, urlQuery, callback) {
     //
     var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
     var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_barChart_defaultGroupByColumnName_humanReadable;
-    var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
-        dataSourceDescription);
+    var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(
+        groupBy ? groupBy : defaultGroupByColumnName_humanReadable, dataSourceDescription);
+    //
     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
     raw_rowObjects_coercionSchema[groupBy_realColumnName].do == import_datatypes.Coercion_ops.ToDate);
@@ -63,7 +66,10 @@ router.BindData = function (req, urlQuery, callback) {
         groupBy_outputInFormat = dataSourceDescription.fe_outputInFormat[groupBy_realColumnName].format;
     }
     //
-    var stackBy = dataSourceDescription.fe_barChart_stackByColumnName_humanReadable;
+    var stackBy = urlQuery.stackBy; // the human readable col name - real col name derived below
+    var defaultStackByColumnName_humanReadable = dataSourceDescription.fe_barChart_defaultStackByColumnName_humanReadable;
+    var stackBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(
+        stackBy ? stackBy : defaultStackByColumnName_humanReadable, dataSourceDescription);
     //
     var sortDir = urlQuery.sortDir;
     var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
@@ -82,28 +88,6 @@ router.BindData = function (req, urlQuery, callback) {
     var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
         && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
 
-    //
-    // DataSource Relationship
-    var mapping_source_pKey = dataSourceDescription.fe_barChart_mapping_dataSource_pKey;
-    //var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
-    if (mapping_source_pKey) {
-        var mappingDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(mapping_source_pKey);
-
-        var mapping_default_filterObj = {};
-        if (typeof mappingDataSourceDescription.fe_filters_default !== 'undefined') {
-            mapping_default_filterObj = mappingDataSourceDescription.fe_filters_default;
-        }
-        var mapping_default_view = 'gallery';
-        if (typeof mappingDataSourceDescription.fe_default_view !== 'undefined') {
-            mapping_default_view = mappingDataSourceDescription.fe_default_view;
-        }
-        var mapping_groupBy = groupBy_realColumnName;
-        if (dataSourceDescription.fe_barChart_mapping_dataSource_fields)
-            mapping_groupBy = dataSourceDescription.fe_barChart_mapping_dataSource_fields[groupBy_realColumnName];
-        var mapping_groupByObj = {};
-        mapping_groupByObj[mapping_groupBy] = '';
-    }
-
     // Aggregate By
     var aggregateBy = urlQuery.aggregateBy;
     var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_barChart_defaultAggregateByColumnName_humanReadable;
@@ -112,7 +96,7 @@ router.BindData = function (req, urlQuery, callback) {
         defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
 
     // Aggregate By Available
-    var aggregateBy_humanReadable_available = undefined;
+    var colNames_orderedForAggregateByDropdown = undefined;
     for (var colName in raw_rowObjects_coercionSchema) {
         var colValue = raw_rowObjects_coercionSchema[colName];
         if (colValue.do == import_datatypes.Coercion_ops.ToInteger) {
@@ -120,20 +104,20 @@ router.BindData = function (req, urlQuery, callback) {
             if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
                 humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
 
-            if (!aggregateBy_humanReadable_available) {
-                aggregateBy_humanReadable_available = [];
+            if (!colNames_orderedForAggregateByDropdown) {
+                colNames_orderedForAggregateByDropdown = [];
                 if (!numberOfRecords_notAvailable)
-                    aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                    colNames_orderedForAggregateByDropdown.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
             }
 
-            aggregateBy_humanReadable_available.push(humanReadableColumnName);
+            colNames_orderedForAggregateByDropdown.push(humanReadableColumnName);
         }
     }
-    if (aggregateBy_humanReadable_available) {
-        if (aggregateBy_humanReadable_available.length > 0)
-            defaultAggregateByColumnName_humanReadable = aggregateBy_humanReadable_available[0];
-        if (aggregateBy_humanReadable_available.length == 1)
-            aggregateBy_humanReadable_available = undefined;
+    if (colNames_orderedForAggregateByDropdown) {
+        if (colNames_orderedForAggregateByDropdown.length > 0)
+            defaultAggregateByColumnName_humanReadable = colNames_orderedForAggregateByDropdown[0];
+        if (colNames_orderedForAggregateByDropdown.length == 1)
+            colNames_orderedForAggregateByDropdown = undefined;
     }
 
     var aggregateBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy ? aggregateBy : defaultAggregateByColumnName_humanReadable, dataSourceDescription);
@@ -144,7 +128,6 @@ router.BindData = function (req, urlQuery, callback) {
     ///
     // graphData is exported and used by template for barChart generation
     var graphData;
-
 
     var batch = new Batch();
     batch.concurrency(1);
@@ -175,35 +158,35 @@ router.BindData = function (req, urlQuery, callback) {
             if (err) return done(err);
 
             uniqueFieldValuesByFieldName = {};
-            for (var columnName in _uniqueFieldValuesByFieldName) {
-                if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
-                    if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
-                        var row = [];
-                        _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
-                            row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
-                        });
-                        row.sort();
-                        uniqueFieldValuesByFieldName[columnName] = row;
-                    } else {
-                        uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
-                    }
-
-                    if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
-
-                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                            a = a.replace(/\D/g, '');
-                            a = a == '' ? 0 : parseInt(a);
-                            b = b.replace(/\D/g, '');
-                            b = b == '' ? 0 : parseInt(b);
-                            return a - b;
-                        });
-
-                    } else // Sort alphabetically by default
-                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                            return a - b;
-                        });
+            _.forOwn(_uniqueFieldValuesByFieldName, function(columnValue, columnName) {
+                var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+                if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
+                    var row = [];
+                    columnValue.forEach(function (rowValue) {
+                        row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
+                    });
+                    row.sort();
+                    uniqueFieldValuesByFieldName[columnName] = row;
+                } else {
+                    uniqueFieldValuesByFieldName[columnName] = columnValue;
                 }
-            }
+
+                if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                    uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                        a = a.replace(/\D/g, '');
+                        a = a == '' ? 0 : parseInt(a);
+                        b = b.replace(/\D/g, '');
+                        b = b == '' ? 0 : parseInt(b);
+                        return a - b;
+                    });
+
+                } else // Sort alphabetically by default
+                    uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                        return a - b;
+                    });
+            });
+
             done();
         });
     });
@@ -227,8 +210,7 @@ router.BindData = function (req, urlQuery, callback) {
 
         if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
 
-            if (typeof stackBy !== 'undefined' && stackBy !== null && stackBy !== "") {
-                var stackBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(stackBy, dataSourceDescription);
+            if (typeof stackBy_realColumnName !== 'undefined' && stackBy_realColumnName !== null && stackBy_realColumnName !== "") {
 
                 aggregationOperators = aggregationOperators.concat(
                     [
@@ -246,8 +228,8 @@ router.BindData = function (req, urlQuery, callback) {
                         {
                             $project: {
                                 _id: 0,
-                                label: "$_id.groupBy",
-                                stack: "$_id.stackBy",
+                                category: "$_id.groupBy",
+                                label: "$_id.stackBy",
                                 value: 1
                             }
                         },
@@ -271,7 +253,7 @@ router.BindData = function (req, urlQuery, callback) {
                         {
                             $project: {
                                 _id: 0,
-                                label: "$_id",
+                                category: "$_id",
                                 value: 1
                             }
                         },
@@ -284,8 +266,7 @@ router.BindData = function (req, urlQuery, callback) {
         } else {
             // Count by number of records
 
-            if (typeof stackBy !== 'undefined' && stackBy !== null && stackBy !== "") {
-                var stackBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(stackBy, dataSourceDescription);
+            if (typeof stackBy_realColumnName !== 'undefined' && stackBy_realColumnName !== null && stackBy_realColumnName !== "") {
 
                 aggregationOperators = aggregationOperators.concat(
                     [
@@ -303,8 +284,8 @@ router.BindData = function (req, urlQuery, callback) {
                         {
                             $project: {
                                 _id: 0,
-                                label: "$_id.groupBy",
-                                stack: "$_id.stackBy",
+                                category: "$_id.groupBy",
+                                label: "$_id.stackBy",
                                 value: 1
                             }
                         },
@@ -327,7 +308,7 @@ router.BindData = function (req, urlQuery, callback) {
                         { // reformat
                             $project: {
                                 _id: 0,
-                                label: "$_id",
+                                category: "$_id",
                                 value: 1
                             }
                         },
@@ -335,6 +316,7 @@ router.BindData = function (req, urlQuery, callback) {
                             $sort: {value: sortDirection}
                         }
                     ]);
+
             }
         }
 
@@ -344,155 +326,116 @@ router.BindData = function (req, urlQuery, callback) {
             if (_multigroupedResults == undefined || _multigroupedResults == null) _multigroupedResults = [];
 
             var _multigroupedResults_object = {};
-            _multigroupedResults.forEach(function (el) {
-                var stack = el.stack && el.stack != '' ? el.stack : 'default';
-                if (_multigroupedResults_object[stack] === undefined) {
-                    _multigroupedResults_object[stack] = [];
+            _.each(_multigroupedResults, function (el) {
+                var category = el.category;
+                if (_multigroupedResults_object[category] === undefined) {
+                    _multigroupedResults_object[category] = [];
                 }
-                _multigroupedResults_object[stack].push(el);
+                _multigroupedResults_object[category].push(el);
             });
 
-            for (var stack in _multigroupedResults_object) {
-                if (_multigroupedResults_object.hasOwnProperty(stack)) {
-                    var _groupedResults = _multigroupedResults_object[stack];
+            _.forOwn(_multigroupedResults_object, function(_groupedResults, category) {
 
-                    var finalizedButNotCoalesced_groupedResults = [];
-                    _groupedResults.forEach(function (el, i, arr) {
-                        var originalVal = el.label;
-                        //
-                        var fe_chart_valuesToExcludeByOriginalKey = dataSourceDescription.fe_chart_valuesToExcludeByOriginalKey;
-                        if (fe_chart_valuesToExcludeByOriginalKey != null && typeof fe_chart_valuesToExcludeByOriginalKey !== 'undefined') {
-                            if (fe_chart_valuesToExcludeByOriginalKey._all) {
-                                if (fe_chart_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
-                                    return; // do not push to list
-                                }
-                            }
-                            var illegalValuesForThisKey = fe_chart_valuesToExcludeByOriginalKey[groupBy_realColumnName];
-                            if (illegalValuesForThisKey) {
-                                if (illegalValuesForThisKey.indexOf(originalVal) !== -1) {
-                                    return; // do not push to list
-                                }
-                            }
-                        }
-                        //
-                        var displayableVal = originalVal;
-                        if (originalVal == null) {
-                            displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
-                        } else if (originalVal === "") {
-                            displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
-                        } else {
-                            displayableVal = groupBy_isDate ? func.convertDateToBeRecognizable(originalVal, groupBy_realColumnName, dataSourceDescription) : originalVal;
-                        }
-                        finalizedButNotCoalesced_groupedResults.push({
-                            value: el.value,
-                            label: displayableVal
-                        });
-                    });
-
-                    var summedValuesByLowercasedLabels = {};
-                    var titleWithMostMatchesAndMatchAggregateByLowercasedTitle = {};
-                    finalizedButNotCoalesced_groupedResults.forEach(function (el, i, arr) {
-                        var label = el.label;
-                        var value = el.value;
-                        var label_toLowerCased = label.toLowerCase();
-                        //
-                        var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
-                        var new_valueSum = existing_valueSum + value;
-                        summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
-                        //
-                        var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] || {
-                                label: '',
-                                value: -1
-                            };
-                        if (existing_titleWithMostMatchesAndMatchCount.value < value) {
-                            var new_titleWithMostMatchesAndMatchCount = {label: label, value: value};
-                            titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
-                        }
-                    });
-                    var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
-                    var groupedResults = [];
-                    lowercasedLabels.forEach(function (key, i, arr) {
-                        var summedValue = summedValuesByLowercasedLabels[key];
-                        var reconstitutedDisplayableTitle = key;
-                        var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[key];
-                        if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
-                            winston.error("❌  This should never be undefined.");
-                            callback(new Error('Unexpectedly undefined title with most matches'), null);
-
-                            return;
-                        } else {
-                            reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
-                        }
-                        groupedResults.push({
-                            value: summedValue,
-                            label: reconstitutedDisplayableTitle
-                        });
-                    });
-
-                    if (stackBy)
-                        stackedResultsByGroup[stack] = groupedResults;
-                    else
-                        stackedResultsByGroup = groupedResults;
-
-                    /* Make barChart category colors consistent for different "Aggregate By" settings
-                      The following code alphabetizes the categories which are properties of stackedResultsByGroup */
-                    if (!Array.isArray(stackedResultsByGroup)) {
-                        var alphabetizedStackedResultsByGroup = {};
-                        Object.keys(stackedResultsByGroup).sort().forEach(function (key) {
-                            alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
-                        });
-                        stackedResultsByGroup = alphabetizedStackedResultsByGroup;
-                    }
+                var displayableCategory;
+                if (groupBy_isDate) {
+                    displayableCategory = func.convertDateToBeRecognizable(category, groupBy_realColumnName, dataSourceDescription);
+                } else {
+                    displayableCategory = func.ValueToExcludeByOriginalKey(
+                        category, dataSourceDescription, groupBy_realColumnName, 'barChart');
+                    if (!displayableCategory) return;
                 }
 
-            }
+                var finalizedButNotCoalesced_groupedResults = [];
+                _.each(_groupedResults, function (el, i) {
+                    //
+                    if (el.label) {
+                        var displayableLabel;
+
+                        displayableLabel = func.ValueToExcludeByOriginalKey(
+                            el.label, dataSourceDescription, groupBy_realColumnName, 'barChart');
+                        if (!displayableLabel) return;
+
+                        finalizedButNotCoalesced_groupedResults.push({
+                            value: el.value,
+                            label: displayableLabel
+                        });
+                    } else {
+                        finalizedButNotCoalesced_groupedResults.push({
+                            value: el.value,
+                            label: 'default'
+                        });
+                    }
+                });
+
+                var summedValuesByLowercasedLabels = {};
+                var titleWithMostMatchesAndMatchAggregateByLowercasedTitle = {};
+                _.each(finalizedButNotCoalesced_groupedResults, function (el) {
+                    var label = el.label;
+                    var value = el.value;
+                    var label_toLowerCased = label.toLowerCase();
+                    //
+                    var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
+                    var new_valueSum = existing_valueSum + value;
+                    summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
+                    //
+                    var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] || {
+                            label: '',
+                            value: -1
+                        };
+                    if (existing_titleWithMostMatchesAndMatchCount.value < value) {
+                        var new_titleWithMostMatchesAndMatchCount = {label: label, value: value};
+                        titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
+                    }
+                });
+                var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
+                var groupedResults = [];
+                _.each(lowercasedLabels, function (key, i, arr) {
+                    var summedValue = summedValuesByLowercasedLabels[key];
+                    var reconstitutedDisplayableTitle = key;
+                    var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[key];
+                    if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
+                        winston.error("❌  This should never be undefined.");
+                        callback(new Error('Unexpectedly undefined title with most matches'), null);
+
+                        return;
+                    } else {
+                        reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
+                    }
+                    groupedResults.push({
+                        value: summedValue,
+                        label: reconstitutedDisplayableTitle
+                    });
+                });
+
+                stackedResultsByGroup[displayableCategory] = groupedResults;
+
+                var alphabetizedStackedResultsByGroup = {};
+                Object.keys(stackedResultsByGroup).sort().forEach(function (key) {
+                    alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
+                });
+                stackedResultsByGroup = alphabetizedStackedResultsByGroup;
+
+            });
 
             graphData = [];
 
             var barColors = dataSourceDescription.fe_barChart_stackedBarColors ? dataSourceDescription.fe_barChart_stackedBarColors : {};
 
-            if (Array.isArray(stackedResultsByGroup)) {
-
-                graphData = {
-                    categories: [dataSourceDescription.title],
-                    data: stackedResultsByGroup.map(function(row) {
-                        row.value = Number(row.value);
-                        if (groupBy_isDate) {
-                            var offsetTime = new Date(row.label);
-                            offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                            row.label = offsetTime;
-                        }
-                        return row;
-                    })
-                };
-
-            } else {
-
-                graphData = {categories: [], data: []};
-                for (var category in stackedResultsByGroup) {
-                    if (stackedResultsByGroup.hasOwnProperty(category)) {
+            graphData = {categories: [], data: [], colors: barColors};
+            var i = 0;
+            for (var category in stackedResultsByGroup) {
+                if (stackedResultsByGroup.hasOwnProperty(category)) {
+                    if (groupBy_isDate) {
+                        var offsetTime = new Date(category);
+                        offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                        graphData.categories.push(offsetTime);
+                    } else {
                         graphData.categories.push(category);
-
-                        graphData.data.push(stackedResultsByGroup[category].map(function(row) {
-                            row.value = Number(row.value);
-                            if (groupBy_isDate) {
-                                var offsetTime = new Date(row.label);
-                                offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                                row.label = offsetTime;
-                            }
-                            return row;
-                        }));
-
-                        if (barColors && barColors[category]) {
-                            if (!graphData.colors) graphData.colors = [];
-                            graphData.colors.push(barColors[category]);
-                        }
                     }
+
+                    graphData.data.push(stackedResultsByGroup[category]);
                 }
-
             }
-
-            console.log('---- %j', graphData);
 
             done();
         };
@@ -518,11 +461,20 @@ router.BindData = function (req, urlQuery, callback) {
             sourceDocURL: sourceDocURL,
             view_visibility: dataSourceDescription.fe_views ? dataSourceDescription.fe_views : {},
             view_descriptions: dataSourceDescription.fe_view_descriptions ? dataSourceDescription.fe_view_descriptions : {},
-            //
+            // Group By
             groupBy: groupBy,
+            defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
+            colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'barChart', 'GroupBy'),
             groupBy_isDate: groupBy_isDate,
-            // barColors: dataSourceDescription.fe_barChart_stackedBarColors ? dataSourceDescription.fe_barChart_stackedBarColors : {},
             groupBy_outputInFormat: groupBy_outputInFormat,
+            // Aggregate By
+            colNames_orderedForAggregateByDropdown: colNames_orderedForAggregateByDropdown,
+            defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
+            aggregateBy: aggregateBy,
+            // Stack By
+            stackBy: stackBy,
+            defaultStackByColumnName_humanReadable: defaultStackByColumnName_humanReadable,
+            colNames_orderedForStackByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'barChart', 'StackBy'),
             //
             filterObj: filterObj,
             isFilterActive: isFilterActive,
@@ -534,28 +486,17 @@ router.BindData = function (req, urlQuery, callback) {
             isSearchActive: isSearchActive,
             //
             sortDir: sortDir,
-            defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-            colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForBarChartGroupByDropdown(sampleDoc, dataSourceDescription),
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //
             routePath_base: routePath_base,
-            // datasource relationship
-            mapping_source_pKey: mapping_source_pKey,
-            mapping_default_filterObj: mapping_default_filterObj,
-            mapping_default_view: mapping_default_view,
-            mapping_groupByObj: mapping_groupByObj,
             // multiselectable filter fields
             multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable,
-            // Aggregate By
-            aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
-            defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
-            aggregateBy: aggregateBy,
             // graphData contains all the data rows; used by the template to create the barchart
             graphData: graphData ,
-            isHorizontal: dataSourceDescription.fe_barChart_isHorizontal
+            isHorizontal: dataSourceDescription.fe_barChart_isHorizontal,
+            isNormalized: stackBy == groupBy || !stackBy ? false : dataSourceDescription.fe_barChart_isNormalized,
+            padding: dataSourceDescription.fe_barChart_padding
         };
         callback(err, data);
     });
 };
-
-module.exports = router;

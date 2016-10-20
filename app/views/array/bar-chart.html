@@ -31,38 +31,60 @@
                         <div class="sort-bar clearfix">
 
                             <nav class="sort-bar-left pull-left" role="navigation">
-                                {% if aggregateBy_humanReadable_available %}
+                                {% if colNames_orderedForAggregateByDropdown %}
                                 {{
                                 dropdown.sortbar(
                                     'Y Axis',
                                     aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
-                                    aggregateBy_humanReadable_available,
+                                    colNames_orderedForAggregateByDropdown,
                                     routePath_base | constructedRoutePath(filterObj, {
-                                    searchCol: searchCol,
-                                    searchQ: searchQ,
-                                    groupBy: groupBy,
-                                    sortDir: sortDir,
-                                    aggregateBy: ''
-                                })
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        stackBy: stackBy,
+                                        sortDir: sortDir,
+                                        groupBy: groupBy,
+                                        aggregateBy: ''
+                                    })
                                 )
                                 }}
                                 {% endif %}
 
+                                {% if colNames_orderedForGroupByDropdown %}
                                 {{
-                                dropdown.sortbar
-                                (
-                                    "Chart By",
+                                dropdown.sortbar(
+                                    'X Axis',
                                     groupBy if groupBy else defaultGroupByColumnName_humanReadable,
                                     colNames_orderedForGroupByDropdown,
                                     routePath_base | constructedRoutePath(filterObj, {
                                         searchCol: searchCol,
                                         searchQ: searchQ,
-                                        aggregateBy: aggregateBy,
+                                        stackBy: stackBy,
                                         sortDir: sortDir,
+                                        aggregateBy: aggregateBy,
                                         groupBy: ''
                                     })
                                 )
                                 }}
+                                {% endif %}
+
+                                {% if colNames_orderedForStackByDropdown %}
+                                {{
+                                dropdown.sortbar
+                                (
+                                    "Stack By",
+                                    stackBy if stackBy else defaultStackByColumnName_humanReadable,
+                                    colNames_orderedForStackByDropdown,
+                                    routePath_base | constructedRoutePath(filterObj, {
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        aggregateBy: aggregateBy,
+                                        groupBy: groupBy,
+                                        sortDir: sortDir,
+                                        stackBy: ''
+                                    })
+                                )
+                                }}
+                                {% endif %}
 
                                 <div class="sort-control sort-direction">
                                     {% if sortDir == "Descending" %}
@@ -72,6 +94,7 @@
                                             sortDir: 'Ascending',
                                             aggregateBy: aggregateBy,
                                             groupBy: groupBy,
+                                            stackBy: stackBy,
                                             page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span></a>
                                     {% else %}
                                     <a title="Sort Descending" href="{{ routePath_base | constructedRoutePath(filterObj, {
@@ -80,6 +103,7 @@
                                             sortDir: 'Descending',
                                             aggregateBy: aggregateBy,
                                             groupBy: groupBy,
+                                            stackBy: stackBy,
                                             page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span></a>
                                     {% endif %}
                                 </div>
@@ -114,9 +138,10 @@
                     routePath_base | constructedRoutePath(null, {
                         searchCol: searchCol,
                         searchQ: searchQ,
+                        aggregateBy: aggregateBy,
                         groupBy: groupBy,
-                        sortBy: sortBy,
-                        aggregateBy: aggregateBy
+                        stackBy: stackBy,
+                        sortBy: sortBy
                     }),
                     filterObj,
                     truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
@@ -132,11 +157,13 @@
                 var routePath_withoutFilter = '{{ routePath_base | constructedRoutePath(null, {
                         searchCol: searchCol,
                         searchQ: searchQ,
+                        aggregateBy: aggregateBy,
                         groupBy: groupBy,
-                        aggregateBy: aggregateBy
+                        stackBy: stackBy,
+                        sortDir: sortDir
                 }) | safe }}';
-                var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
-                var groupBy_outputInFormat = '{{ groupBy_outputInFormat }}';
+                var stackBy = '{{ stackBy if stackBy else defaultStackByColumnName_humanReadable }}';
+                var stackBy_outputInFormat = '{{ stackBy_outputInFormat }}';
 
                 var redirectBaseUrl = undefined;
                 {% if mapping_source_pKey %}
@@ -146,10 +173,15 @@
                 var words = default_view.split(/(?=[A-Z])/);
                 var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
                 redirectBaseUrl = '/array/{{ mapping_source_pKey }}/' + default_view_url
-                        + '{{ "" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
+                        + '{{ "" | constructedRoutePath(mapping_default_filterObj, mapping_stackByObj) | safe }}';
                 {% endif %}
-                var isHorizontal = {{ isHorizontal if isHorizontal else false }};
-                var options = {redirectBaseUrl: redirectBaseUrl, outputInFormat: groupBy_outputInFormat, isHorizontal: isHorizontal};
+                var options = {
+                    redirectBaseUrl: redirectBaseUrl,
+                    outputInFormat: stackBy_outputInFormat,
+                    isHorizontal: {{ isHorizontal if isHorizontal else false }},
+                    normalize: {{ isNormalized if isNormalized else false }},
+                    padding: {{ padding if padding else false }}
+                };
             </script>
 
             <div class="container-fluid">

@@ -32,6 +32,9 @@ exports.Descriptions =
                 },
                 'Pageviews': {
                     do: import_datatypes.Coercion_ops.ToInteger
+                },
+                'Session Duration': {
+                    do: import_datatypes.Coercion_ops.ToInteger
                 }
             },
 
@@ -184,6 +187,9 @@ exports.Descriptions =
                 "Pageviews",
                 "Pages Session"
             ],
+            fe_lineGraph_valuesToExcludeByOriginalKey: {
+                _all: ["", null, "NULL", "(not specified)", "NA"],
+            },
             fe_lineGraph_stackByColumnName_humanReadable: "Motivation",
             fe_lineGraph_defaultAggregateByColumnName_humanReadable: "Sessions",
             fe_lineGraph_aggregateByColumnName_numberOfRecords_notAvailable: false,
@@ -200,11 +206,12 @@ exports.Descriptions =
                 }
             },
             // bar chart
-            fe_barChart_defaultGroupByColumnName_humanReadable: "Institution",
+            fe_barChart_defaultAggregateByColumnName_humanReadable: "Sessions", // Y Axis
+            fe_barChart_aggregateByColumnName_numberOfRecords_notAvailable: false,
+            fe_barChart_defaultGroupByColumnName_humanReadable: "Institution", // X Axis
             fe_barChart_fieldsNotAvailableAsGroupByColumns: [
                 "Hour",
                 "Minute",
-                "Motivation",
                 "Session Duration",
                 "Pages Per Session",
                 "Landing Page",
@@ -219,21 +226,41 @@ exports.Descriptions =
                 "Pages Session",
                 "Date"
             ],
-            fe_barChart_stackByColumnName_humanReadable: "Motivation",
-            fe_barChart_defaultAggregateByColumnName_humanReadable: "Sessions",
-            fe_barChart_aggregateByColumnName_numberOfRecords_notAvailable: false,
-            fe_barChart_stackedBarColors: {
-                'Explorer': '#33B1B1',
-                'Facilitator': '#9533F8',
-                'Professional': '#FEB600',
-                'Recharger': '#F0141E',
-                'Seeker': '#4D8DFF',
+            fe_barChart_valuesToExcludeByOriginalKey: {
+                _all: ["", null, "NULL", "(not specified)", "NA"],
             },
+            fe_barChart_defaultStackByColumnName_humanReadable: "Motivation", // Stack
+            fe_barChart_fieldsNotAvailableAsStackByColumns: [
+                "Hour",
+                "Minute",
+                "Session Duration",
+                "Pages Per Session",
+                "Landing Page",
+                "User Type",
+                "Traffic Type",
+                "Minute Index",
+                "City",
+                "Region",
+                "Country",
+                "Sessions",
+                "Pageviews",
+                "Pages Session",
+                "Date"
+            ],
+            fe_barChart_stackedBarColors: [
+                '#33B1B1',
+                '#9533F8',
+                '#FEB600',
+                '#F0141E',
+                '#4D8DFF',
+            ],
             fe_barChart_outputInFormat: {
                 Date: {
                     format: "MMM DD"
                 }
             },
-            fe_barChart_isHorizontal: true
+            fe_barChart_isHorizontal: true,
+            fe_barChart_isNormalized: true,
+            fe_barChart_padding: 0.5
         }
     ];

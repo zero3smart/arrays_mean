@@ -1,6 +1,6 @@
 var winston = require('winston');
 var Batch = require('batch');
-var queryString = require('querystring');
+var _ = require('lodash');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
@@ -140,36 +140,37 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (err) return done(err);
 
             uniqueFieldValuesByFieldName = {};
-            for (var columnName in _uniqueFieldValuesByFieldName) {
-                if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
-                    var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
-                    if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
-                        var row = [];
-                        _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
-                            row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
-                        });
-                        row.sort();
-                        uniqueFieldValuesByFieldName[columnName] = row;
-                    } else {
-                        uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
-                    }
+            _.forOwn(_uniqueFieldValuesByFieldName, function(columnValue, columnName) {
 
-                    if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
-
-                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                            a = a.replace(/\D/g, '');
-                            a = a == '' ? 0 : parseInt(a);
-                            b = b.replace(/\D/g, '');
-                            b = b == '' ? 0 : parseInt(b);
-                            return a - b;
-                        });
-
-                    } else // Sort alphabetically by default
-                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                            return a - b;
-                        });
+                var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+                if (raw_rowObjects_coercionSchema && columnValue) {
+                    var row = [];
+                    _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
+                        row.push(import_datatypes.OriginalValue(columnValue, rowValue));
+                    });
+                    row.sort();
+                    uniqueFieldValuesByFieldName[columnName] = row;
+                } else {
+                    uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
                 }
-            }
+
+                if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                    uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                        a = a.replace(/\D/g, '');
+                        a = a == '' ? 0 : parseInt(a);
+                        b = b.replace(/\D/g, '');
+                        b = b == '' ? 0 : parseInt(b);
+                        return a - b;
+                    });
+
+                } else // Sort alphabetically by default
+                    uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                        return a - b;
+                    });
+
+            });
+
             done();
         });
     });
@@ -258,58 +259,16 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
 
             var finalizedButNotCoalesced_groupedResults = {};
-            _groupedResults.forEach(function (el, i, arr) {
+            _.forEach(_groupedResults, function (el) {
                 // Group By
-                var originalVal = el.groupBy;
-                var fe_pieSet_valuesToExcludeByOriginalKey = dataSourceDescription.fe_pieSet_valuesToExcludeByOriginalKey;
-                if (fe_pieSet_valuesToExcludeByOriginalKey != null && typeof fe_pieSet_valuesToExcludeByOriginalKey !== 'undefined') {
-                    if (fe_pieSet_valuesToExcludeByOriginalKey._all) {
-                        if (fe_pieSet_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
-                            return; // do not push to list
-                        }
-                    }
-                    var illegalValuesForThisKey = fe_pieSet_valuesToExcludeByOriginalKey[groupBy_realColumnName];
-                    if (illegalValuesForThisKey) {
-                        if (illegalValuesForThisKey.indexOf(originalVal) !== -1) {
-                            return; // do not push to list
-                        }
-                    }
-                }
-                //
-                var displayableGroupBy = originalVal;
-                if (originalVal == null) {
-                    displayableGroupBy = "(null)"; // null breaks pie-set but we don't want to lose its data
-                } else if (originalVal === "") {
-                    displayableGroupBy = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
-                } else {
-                    displayableGroupBy = func.reverseDataToBeDisplayableVal(originalVal, groupBy_realColumnName, dataSourceDescription);
-                }
+                var displayableGroupBy = func.ValueToExcludeByOriginalKey(
+                    el.groupBy, dataSourceDescription, groupBy_realColumnName, 'pieSet');
+                if (!displayableGroupBy) return;
 
                 // Chart By
-                originalVal = el.chartBy;
-                var fe_pieSet_valuesToExcludeByOriginalKey = dataSourceDescription.fe_pieSet_valuesToExcludeByOriginalKey;
-                if (fe_pieSet_valuesToExcludeByOriginalKey != null && typeof fe_pieSet_valuesToExcludeByOriginalKey !== 'undefined') {
-                    if (fe_pieSet_valuesToExcludeByOriginalKey._all) {
-                        if (fe_pieSet_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
-                            return; // do not push to list
-                        }
-                    }
-                    var illegalValuesForThisKey = fe_pieSet_valuesToExcludeByOriginalKey[chartBy_realColumnName];
-                    if (illegalValuesForThisKey) {
-                        if (illegalValuesForThisKey.indexOf(originalVal) !== -1) {
-                            return; // do not push to list
-                        }
-                    }
-                }
-                //
-                var displayableChartBy = originalVal;
-                if (originalVal == null) {
-                    displayableChartBy = "(null)"; // null breaks pie-set but we don't want to lose its data
-                } else if (originalVal === "") {
-                    displayableChartBy = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
-                } else {
-                    displayableChartBy = func.reverseDataToBeDisplayableVal(originalVal, chartBy_realColumnName, dataSourceDescription);
-                }
+                var displayableChartBy = func.ValueToExcludeByOriginalKey(
+                    el.chartBy, dataSourceDescription, chartBy_realColumnName, 'pieSet');
+                if (!displayableChartBy) return;
 
                 if (!finalizedButNotCoalesced_groupedResults[displayableChartBy]) finalizedButNotCoalesced_groupedResults[displayableChartBy] = [];
                 finalizedButNotCoalesced_groupedResults[displayableChartBy].push({
@@ -318,8 +277,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 });
             });
 
-            for (var chartBy in finalizedButNotCoalesced_groupedResults) {
-                var _groupedResultsByChart = finalizedButNotCoalesced_groupedResults[chartBy];
+            _.forOwn(finalizedButNotCoalesced_groupedResults, function(_groupedResultsByChart, chartBy) {
 
                 var summedValuesByLowercasedLabels = {};
                 var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
@@ -370,7 +328,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     title: chartBy,
                     data: data
                 });
-            };
+            });
 
             done();
         };
@@ -424,10 +382,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
             isSearchActive: isSearchActive,
             //
             defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-            colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForPieSetGroupByDropdown(sampleDoc, dataSourceDescription),
+            colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'pieSet', 'GroupBy'),
             //
             defaultChartByColumnName_humanReadable: defaultChartByColumnName_humanReadable,
-            colNames_orderedForChartByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForPieSetChartByDropdown(sampleDoc, dataSourceDescription),
+            colNames_orderedForChartByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'pieSet', 'ChartBy'),
             //
             colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
             //

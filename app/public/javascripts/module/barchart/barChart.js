@@ -6,7 +6,14 @@ function BarChart(selector, dataSet, options) {
     this._categories = dataSet.categories;
     this._data = dataSet.data;
     this._options = options;
-    this._padding = options.padding || 0.2;
+    this._padding = options.padding || 0.5;
+
+    this._colors = d3.scale.category20().range();
+    if (dataSet.colors) {
+        for(var i = 0; i < dataSet.colors.length; i ++) {
+            this._colors[i] = dataSet.colors[i];
+        }
+    }
     /**
      * Set up bar chart
      */
@@ -69,7 +76,7 @@ function BarChart(selector, dataSet, options) {
         }).attr('y', function(d, i, j) {
             return self.getBarY(d, i, j);
         }).style('fill', function(d, i, j) {
-            return dataSet.colors[i];
+            return self._colors[i % self._colors.length];
         }).on('mouseenter', function(d, i, j) {
             self._barMouseEnterEventHandler(this, d, i, j);
         }).on('mouseout', function(d, i, j) {
