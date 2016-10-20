@@ -13,6 +13,27 @@ function HorizontalBarChart(selector, dataSet, options) {
 HorizontalBarChart.prototype = Object.create(BarChart.prototype);
 
 
+HorizontalBarChart.prototype._animate = function() {
+
+    var self = this;
+
+    this._bars.attr('height', function(d, i, j) {
+            return self.getBarHeight(d, i, j);
+        }).attr('y', function(d, i, j) {
+            return self.getBarY(d, i, j);
+        }).attr('width', 0)
+        .attr('x', 0);
+
+    this._bars.transition()
+        .duration(1000)
+        .attr('width', function(d, i, j) {
+            return self.getBarWidth(d, i, j);
+        }).attr('x', function(d, i, j) {
+            return self.getBarX(d, i, j);
+        });
+};
+
+
 HorizontalBarChart.prototype.getXScale = function() {
 
     return this._xScale = d3.scale.linear()

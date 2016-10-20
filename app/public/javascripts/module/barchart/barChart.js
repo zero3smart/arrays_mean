@@ -47,7 +47,7 @@ function BarChart(selector, dataSet, options) {
     /**
      * Append bar's series.
      */
-    this._canvas.append('g')
+    this._bars = this._canvas.append('g')
         .attr('class', 'bars')
         .selectAll('g.series')
         .data(this.getChartData())
@@ -60,22 +60,16 @@ function BarChart(selector, dataSet, options) {
         }).enter()
         .append('rect')
         .attr('class', 'bar')
-        .attr('width', function(d, i, j) {
-            return self.getBarWidth(d, i, j);
-        }).attr('height', function(d, i, j) {
-            return self.getBarHeight(d, i, j)
-        }).attr('x', function(d, i, j) {
-            return self.getBarX(d, i, j);
-        }).attr('y', function(d, i, j) {
-            return self.getBarY(d, i, j);
-        }).style('fill', function(d, i, j) {
+        .style('fill', function(d, i, j) {
             return dataSet.colors[i];
         }).on('mouseenter', function(d, i, j) {
             self._barMouseEnterEventHandler(this, d, i, j);
         }).on('mouseout', function(d, i, j) {
             self._barMouseOutEventHandler(this, d, i, j);
         });
-}
+
+    this._animate();
+};
 
 
 /**

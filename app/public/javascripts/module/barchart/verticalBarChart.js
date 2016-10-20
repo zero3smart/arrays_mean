@@ -13,6 +13,27 @@ function VerticalBarChart(selector, dataSet, options) {
 VerticalBarChart.prototype = Object.create(BarChart.prototype);
 
 
+VerticalBarChart.prototype._animate = function() {
+
+    var self = this;
+
+    this._bars.attr('width', function(d, i, j) {
+            return self.getBarWidth(d, i, j);
+        }).attr('x', function(d, i, j) {
+            return self.getBarX(d, i, j);
+        }).attr('height', 0)
+        .attr('y', this._innerHeight);
+
+    this._bars.transition()
+        .duration(1000)
+        .attr('height', function(d, i, j) {
+            return self.getBarHeight(d, i, j);
+        }).attr('y', function(d, i, j) {
+            return self.getBarY(d, i, j);
+        });
+};
+
+
 VerticalBarChart.prototype.getXScale = function() {
 
     return this._xScale = d3.scale.ordinal()
