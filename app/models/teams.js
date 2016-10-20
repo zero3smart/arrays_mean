@@ -11,8 +11,8 @@ var team_scheme = Schema({
     description: String,
     logo: String,
     logoHeader: String,
-    datasourceDescriptions: [{type:Schema.Types.ObjectId, ref: 'DatasourceDescription'}]
-    
+    datasourceDescriptions: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}]
+
 });
 
 

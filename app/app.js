@@ -34,10 +34,9 @@ nunjucks.setup({
 }, app).then(require('./nunjucks/filters'));
 
 // Redirect https
-app.use(function(req, res, next){
-    if (process.env.USE_SSL === 'true' && 'https' !== req.header('x-forwarded-proto')){
-        return res.redirect('https://'+req.header('host')+req.url);
-
+app.use(function (req, res, next) {
+    if (process.env.USE_SSL === 'true' && 'https' !== req.header('x-forwarded-proto')) {
+        return res.redirect('https://' + req.header('host') + req.url);
     }
 
     next();
@@ -46,12 +45,11 @@ app.use(function(req, res, next){
 //
 app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
 app.use(express.static(path.join(__dirname, '/public')));
-app.use(bodyParser.urlencoded({ extended: false })); // application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({extended: false})); // application/x-www-form-urlencoded
 app.use(bodyParser.json()); // application/JSON
 app.use(require('compression')());
 app.set('trust proxy', true);
 app.use(cookieParser());
-
 app.use(cors());
 
 // Mongo Store to prevent a warnning.
@@ -59,7 +57,7 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
-    cookie: {maxAge: 100*60*60},
+    cookie: {maxAge: 100 * 60 * 60},
     store: new MongoSessionStore({
         url: process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/arraysdb',
         touchAfter: 24 * 3600 // time period in seconds
@@ -90,9 +88,8 @@ var datasource_descriptions = require('./datasources/descriptions');
 
 
 
-
 if (typeof process === 'object') { /* to debug promise */
-    process.on('unhandledRejection', (error, promise) => {
+    process.on('unhandledRejection', function(error, promise) {
         console.error("== Node detected an unhandled rejection! ==");
         console.error(error.stack);
     });

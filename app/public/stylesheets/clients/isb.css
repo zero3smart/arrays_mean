@@ -2,46 +2,45 @@
 	http://localhost:9080/stylesheets/clients/isb.css */
 
 .icon-tile-isb-brain {
-	background-image: url(/images/clients/isb/brain.svg);
+    background-image: url(/images/clients/isb/brain.svg);
 }
 
 .icon-tile-isb-cancers {
-	background-image: url(/images/clients/isb/cancer.svg);
+    background-image: url(/images/clients/isb/cancer.svg);
 }
 
 .icon-tile-isb-cell-dynamics {
-	background-image: url(/images/clients/isb/cell.svg);
+    background-image: url(/images/clients/isb/cell.svg);
 }
 
 .icon-tile-isb-computational-biology {
-	background-image: url(/images/clients/isb/compbio.svg);
+    background-image: url(/images/clients/isb/compbio.svg);
 }
 
 .icon-tile-isb-environment {
-	background-image: url(/images/clients/isb/environment.svg);
+    background-image: url(/images/clients/isb/environment.svg);
 }
 
 .icon-tile-isb-infectious-disease {
-	background-image: url(/images/clients/isb/infectious.svg);
+    background-image: url(/images/clients/isb/infectious.svg);
 }
 
 .icon-tile-isb-p4-medicine {
-	background-image: url(/images/clients/isb/p4med.svg);
+    background-image: url(/images/clients/isb/p4med.svg);
 }
 
 .icon-tile-isb-proteomics {
-	background-image: url(/images/clients/isb/proteomics.svg);
+    background-image: url(/images/clients/isb/proteomics.svg);
 }
 
 /* @group Quantity Queries */
 
-
 .gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+2) ~ span:last-child {
-	margin-right: 0;
+    margin-right: 0;
 }
 
 .gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+3) ~ span:last-child {
-	margin-right: 0;
+    margin-right: 0;
 }
 
 /* @end Quantity Queries */
@@ -49,7 +48,7 @@
 /* @group Object Show */
 
 .object-header-icons span {
-	margin-right: 15px;
+    margin-right: 15px;
 }
 
 /* @end Object Show */
@@ -58,12 +57,12 @@
 
 .source-isb_library-r1 .navbar-default,
 .source-ISB_keyword_frequency-r1 .navbar-default {
-	background-color: #ccc;
+    background-color: #ccc;
 }
 
 .source-isb_library-r1.array-controls-pinned .navbar-default,
 .source-ISB_keyword_frequency-r1.array-controls-pinned .navbar-default {
-	background-color: white;
+    background-color: white;
 }
 
 /* @end Custom Navbar Color */
@@ -71,17 +70,17 @@
 /* @group Timeline Icons */
 
 .timeline-link span {
-	display: none;
-	margin-top: 10px;
-	margin-left: 10px;
-	min-width: 60px;
-	min-height: 60px;
-	width: 60px;
-	height: 60px;
+    display: none;
+    margin-top: 10px;
+    margin-left: 10px;
+    min-width: 60px;
+    min-height: 60px;
+    width: 60px;
+    height: 60px;
 }
 
 .timeline-link span:first-child {
-	display: block;
+    display: block;
 }
 
 /* @end Timeline Icons */

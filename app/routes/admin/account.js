@@ -5,12 +5,12 @@ var router = express.Router();
 
 var controller = require('../../controllers/admin/account');
 
-router.get('/', ensureLoggedIn, function(req, res) {
+router.get('/', ensureLoggedIn, function (req, res) {
     res.redirect('/admin/account');
 });
 
-router.get('/account', ensureLoggedIn, function(req, res) {
-    controller.index(req, function(err, data) {
+router.get('/account', ensureLoggedIn, function (req, res) {
+    controller.index(req, function (err, data) {
         if (err) {
             winston.error("❌  Error getting bind data for Account index: ", err);
             res.status(500).send(err.response || 'Internal Server Error');
@@ -21,14 +21,14 @@ router.get('/account', ensureLoggedIn, function(req, res) {
     });
 });
 
-router.post('/account/:userId', ensureLoggedIn, function(req, res) {
+router.post('/account/:userId', ensureLoggedIn, function (req, res) {
 
     // Limit to editing own user account
     if (req.user.id !== req.params.userId) {
         return res.sendStatus(401);
     }
 
-    controller.update(req, function(err) {
+    controller.update(req, function (err) {
         if (err) {
             winston.error("❌  Error getting bind data for Account update: ", err);
             res.status(500).send(err.response || 'Internal Server Error');

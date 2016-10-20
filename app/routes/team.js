@@ -34,7 +34,6 @@ router.get('/:team_key', function (req, res) {
 
     team_show_controller.BindData(req, query, function (err, bindData) {
 
-       
 
         if (err) {
             winston.error("❌  Error getting bind data for Team show: ", err);

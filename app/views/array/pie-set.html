@@ -11,7 +11,6 @@
     <title>Arrays - {{ arrayTitle }}</title>
 {% endblock %}
 
-
 {% block content %}
     <section class="array">
 
@@ -42,19 +41,15 @@
 
                                             chartBy if chartBy else defaultChartByColumnName_humanReadable,
                                             colNames_orderedForChartByDropdown,
-
                                             routePath_base | constructedRoutePath(filterObj, {
                                                 searchCol: searchCol,
                                                 searchQ: searchQ,
                                                 aggregateBy: aggregateBy,
-
                                                 groupBy: groupBy,
                                                 chartBy: ''
-
                                             })
                                         )
                                     }}
-
 
                                     {{
                                     dropdown.sortbar
@@ -71,7 +66,6 @@
                                         })
                                     )
                                     }}
-
 
                                     {% if aggregateBy_humanReadable_available %}
                                         {{
@@ -134,8 +128,6 @@
                     var pieData = {{ groupedResults | dump | safe }};
 
                     var legendData = {{ flatResults | dump | safe }};
-
-
                     var filterObj = {{ filterObj | dump | safe }};
                     var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
@@ -143,7 +135,6 @@
                             groupBy: groupBy,
                             aggregateBy: aggregateBy
                     }) | safe }}";
-
                     var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
                 </script>
                 <div class="container-fluid">
@@ -164,7 +155,6 @@
 
                 {% if flatResults | length %}
                 <ul class="legend-list"></ul>
-
                 {% endif %}
             </nav>
 

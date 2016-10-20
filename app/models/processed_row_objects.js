@@ -103,16 +103,13 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (dataSource_ui
         var datasetQuery = dataset_uid ? {pKey: {$regex: "^" + dataset_uid + "-"}} : {};
 
 
-
-
-
         mongooseModel_ofRawRowObjectsBeingProcessed.find(datasetQuery, function (err, rowObjects) {
             if (err) {
                 winston.error("❌ [" + (new Date()).toString() + "] Error while saving processed row objects: ", err);
                 return callback(err);
             }
 
-    
+
             rowObjects.forEach(function (doc) {
                 updateDocs.push({insertOne: {document: doc._doc}});
             });
@@ -870,10 +867,10 @@ module.exports.GenerateImageURLFieldsByScraping
             var concurrencyLimit = 15; // at a time
             
             async.eachLimit(docs, concurrencyLimit, function (doc, eachCb) {
-        
+
                 // The following allows us to skip scraping for this doc if we already have done so
 
-                if (typeof doc["rowParams.imageScraped"] !== 'undefined' && doc["rowParams.imageScraped"] == true ) {
+                if (typeof doc["rowParams.imageScraped"] !== 'undefined' && doc["rowParams.imageScraped"] == true) {
                     async.setImmediate(function () { // ^ so as not to blow stack
                         eachCb(); // already done
                     });
@@ -881,7 +878,7 @@ module.exports.GenerateImageURLFieldsByScraping
                     return;
                 }
 
-         
+
                 //
                 var htmlSourceAtURL = doc["rowParams"][htmlSourceAtURLInField];
                 if (htmlSourceAtURL == null || typeof htmlSourceAtURL === 'undefined' || htmlSourceAtURL == "") {
@@ -894,9 +891,9 @@ module.exports.GenerateImageURLFieldsByScraping
                 }
                 // winston.info("📡  Scraping image URL from \"" + htmlSourceAtURL + "\"…");
                 xray_instance(htmlSourceAtURL, imageSrcSetInSelector)(function (err, scrapedString) {
-                    if (err ) {
+                    if (err) {
 
-                        if (err.code == "ENOTFOUND" || err.code == 'ETIMEDOUT' ) {
+                        if (err.code == "ENOTFOUND" || err.code == 'ETIMEDOUT') {
                             scrapedString = null;
                         } else {
                             winston.error("❌  Error while scraping " + htmlSourceAtURL + ": ", err);
@@ -904,9 +901,9 @@ module.exports.GenerateImageURLFieldsByScraping
                             return;
 
                         }
-                       
+
                     }
-                    function proceedToPersistHostedImageURLOrNull_forKey(err, hostedURLOrNull, fieldKey, lastFieldKey,persistedCb) {
+                    function proceedToPersistHostedImageURLOrNull_forKey(err, hostedURLOrNull, fieldKey, lastFieldKey, persistedCb) {
                         if (err) {
                             persistedCb(err);
                             return;
@@ -915,14 +912,14 @@ module.exports.GenerateImageURLFieldsByScraping
                         var docQuery =
                         {
                             pKey: doc.pKey,
-                            srcDocPKey: doc.srcDocPKey 
+                            srcDocPKey: doc.srcDocPKey
                         };
                         var docUpdate = {};
                         if (lastFieldKey == true) {
                             docUpdate["rowParams.imageScraped"] = true
                         }
                         docUpdate["rowParams." + fieldKey] = hostedURLOrNull; // note it's a path rather than an object, so we don't overwrite the whole top-level key of 'rowParams'      
-                        mongooseModel.update(docQuery, {$set: docUpdate}, function (err,result) {
+                        mongooseModel.update(docQuery, {$set: docUpdate}, function (err, result) {
                             persistedCb(err);
                         });
                     }
@@ -938,14 +935,14 @@ module.exports.GenerateImageURLFieldsByScraping
                             var lastEntry = false;
                             if (completed == useAndHostSrcSetSizeByField_keys.length) {
                                 lastEntry = true;
-                            } 
-                            proceedToPersistHostedImageURLOrNull_forKey(null, null, key,lastEntry, function (err) {
+                            }
+                            proceedToPersistHostedImageURLOrNull_forKey(null, null, key, lastEntry, function (err) {
                                 cb(err);
                             });
-                           
+
                         }, function (err) {
                             eachCb(err);
-                            
+
                         });
 
                         return;
@@ -979,7 +976,7 @@ module.exports.GenerateImageURLFieldsByScraping
 
                     var counter = 0;
                     async.each(useAndHostSrcSetSizeByField_keys, function (key, cb) {
-                        counter ++;
+                        counter++;
 
                         var preexisting_hostedURLForKey = doc["rowParams"][key];
                         if (typeof preexisting_hostedURLForKey !== 'undefined') {
@@ -1027,7 +1024,7 @@ module.exports.GenerateImageURLFieldsByScraping
 
                                 }
 
-                                proceedToPersistHostedImageURLOrNull_forKey(err, hostedURL, key, last,function (err) {
+                                proceedToPersistHostedImageURLOrNull_forKey(err, hostedURL, key, last, function (err) {
                                     cb(err);
                                 });
                             }
@@ -1035,7 +1032,7 @@ module.exports.GenerateImageURLFieldsByScraping
                         image_hosting.hostImageLocatedAtRemoteURL(finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, hostImageCb);
                     }, function (err) {
                         eachCb(err);
-                       
+
                     });
                 });
 
@@ -1044,13 +1041,12 @@ module.exports.GenerateImageURLFieldsByScraping
                     callback(err);
 
                 } else {
-                    mongooseModel.update(datasetQuery,{$unset:{"rowParams.imageScraped":1}},{multi:true},function(err) {
+                    mongooseModel.update(datasetQuery, {$unset: {"rowParams.imageScraped": 1}}, {multi: true}, function (err) {
                         if (err) winston.error("❌ Error while deleting rowParams.imageScraped : ", err);
                         callback(err);
 
                     })
 
-                   
 
                 }
             });

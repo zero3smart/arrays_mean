@@ -24,7 +24,7 @@ var colors = [
 ];
 
 var colorMap = {};
-legendData.forEach(function(d, i) {
+legendData.forEach(function (d, i) {
     colorMap[d.label] = d.color ? d.color : colors[i % colors.length];
 });
 
@@ -34,7 +34,8 @@ d3.select('#pie-set')
     .enter()
     .append('li')
     .attr('class', 'gallery-item gallery-item-image pie-set-item')
-    .each(function(d, i) {
+
+    .each(function (d, i) {
         pieChart = new PieChart(this, d.data, colorMap);
 
         var container = d3.select(this);
@@ -66,17 +67,17 @@ var tooltipValue = tooltip
 /**
  * Tooltip behavior on mouse hover
  */
-sectors.on('mouseover', function(d) {
+sectors.on('mouseover', function (d) {
     tooltipKey.html(d.data.label);
     tooltipValue.html(d.data.value);
     tooltip.style('display', 'block');
 });
 
-sectors.on('mousemove', function() {
-    tooltip.style('top', (d3.event.pageY-15)+'px').style('left', (d3.event.pageX)+'px');
+sectors.on('mousemove', function () {
+    tooltip.style('top', (d3.event.pageY - 15) + 'px').style('left', (d3.event.pageX) + 'px');
 });
 
-sectors.on('mouseout', function() {
+sectors.on('mouseout', function () {
     tooltip.style('display', 'none');
 });
 
@@ -88,40 +89,40 @@ var legendListItem = legendList.selectAll('.legend-list-item')
     .data(legendData)
     .enter()
     .append('li')
-        .attr('class', 'legend-list-item');
+    .attr('class', 'legend-list-item');
 
 var legendListLink = legendListItem.append('a');
 
 legendListLink.append('span')
-        .attr('class', 'legend-dot')
-        .style('background-color', function(d, i) {
-            return colorMap[d.label];
-        });
+    .attr('class', 'legend-dot')
+    .style('background-color', function (d, i) {
+        return colorMap[d.label];
+    });
 
 legendListLink.attr('class', 'legend-list-link')
     .attr('href', '#')
-    .on('mouseover', function(legendItemData, i) {
+    .on('mouseover', function (legendItemData, i) {
 
         d3.select(this).classed('active', true);
 
-        sectors.style('opacity', function(d) {
+        sectors.style('opacity', function (d) {
             if (d.data.label == legendItemData.label) {
                 return 1;
             } else {
                 return 0.25;
             }
         });
-    }).on('mouseout', function(d, i) {
-        sectors.style('opacity', 1);
-    }).append('span')
-    .html(function(d) {
+    }).on('mouseout', function (d, i) {
+    sectors.style('opacity', 1);
+}).append('span')
+    .html(function (d) {
         return d.label;
     });
 
 /**
  * Toggle legend
  */
-$('.legend-toggle').on('click', function(e) {
+$('.legend-toggle').on('click', function (e) {
     e.preventDefault();
     $('body').toggleClass('legend-open');
 });
@@ -129,7 +130,7 @@ $('.legend-toggle').on('click', function(e) {
 /**
  * Close legend
  */
-$('.legend-close').on('click', function(e) {
+$('.legend-close').on('click', function (e) {
     e.preventDefault();
     $('body').removeClass('legend-open');
 });

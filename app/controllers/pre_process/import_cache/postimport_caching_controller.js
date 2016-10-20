@@ -49,11 +49,11 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
     winston.info("🔁  " + indexInList + ": Generated post-import caches for \"" + dataSource_title + "\"");
 
 
-     _generateUniqueFilterValueCacheCollection(dataSourceDescription, function (err) {
-    if (err) {
-        winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
-        return callback(err);
-    }
+    _generateUniqueFilterValueCacheCollection(dataSourceDescription, function (err) {
+        if (err) {
+            winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
+            return callback(err);
+        }
         // Cachcing Keyword for the word cloud
         cache_keywords_controller.cacheKeywords_fromDataSourceDescription(dataSourceDescription, callback);
     });
@@ -62,8 +62,6 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
 };
 
 var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription, callback) {
-
-
 
 
     var dataSource_uid = dataSourceDescription.uid;
@@ -162,11 +160,8 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 var illegalValues = []; // default val
 
 
-
-
                 if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey) {
 
-                   
 
                     if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all) {
 

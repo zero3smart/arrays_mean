@@ -8,8 +8,9 @@ var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+var _ = require("lodash");
 
-   
+
 module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
     // urlQuery keys:
@@ -26,10 +27,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
          if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
             callback(new Error("No data source with that source pkey " + source_pKey), null);
 
+
             return;
         }
 
-        if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.barChart === 'undefined') {
+
+
+        if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.pieSet === 'undefined') {
             callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
             return;
         }
@@ -143,7 +147,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
                         }
 
-                        if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+                        if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
 
                             uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
                                 a = a.replace(/\D/g, '');
@@ -207,8 +211,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             $sort: {value: -1}
                         },
                         /* {
-                            $limit: 100 // so the pie-set can actually handle the number
-                        } */
+                         $limit: 100 // so the pie-set can actually handle the number
+                         } */
                     ]);
             } else {
                 aggregationOperators = aggregationOperators.concat(
@@ -236,8 +240,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             $sort: {value: -1}
                         },
                         /* {
-                            $limit: 100 // so the pie-set can actually handle the number
-                        } */
+                         $limit: 100 // so the pie-set can actually handle the number
+                         } */
                     ]);
             }
             //
@@ -307,8 +311,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     });
                 });
 
-                for (var chartBy in finalizedButNotCoalesced_groupedResults) {
-                    var _groupedResultsByChart = finalizedButNotCoalesced_groupedResults[chartBy];
+                _.forOwn (finalizedButNotCoalesced_groupedResults, function(_groupedResultsByChart, chartBy) {
 
                     var summedValuesByLowercasedLabels = {};
                     var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
@@ -326,7 +329,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 value: -1
                             };
                         if (existing_titleWithMostMatchesAndMatchCount.value < value) {
-                            titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = {label: label, value: value};
+                            titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = {
+                                label: label,
+                                value: value
+                            };
                         }
                     });
                     // Custom colors
@@ -359,7 +365,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         title: chartBy,
                         data: data
                     });
-                };
+                });
 
                 done();
             };
@@ -369,9 +375,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
         batch.end(function (err) {
             if (err) return callback(err);
 
-            var flatResults = groupedResults.reduce(function(groups, dataSet) {
-                dataSet.data.forEach(function(dataPoint) {
-                    if (! (dataPoint.label in groups)) {
+            var flatResults = groupedResults.reduce(function (groups, dataSet) {
+                dataSet.data.forEach(function (dataPoint) {
+                    if (!(dataPoint.label in groups)) {
                         groups[dataPoint.label] = dataPoint;
                     }
                 });
@@ -379,7 +385,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 return groups;
             }, {});
 
-            flatResults = Object.keys(flatResults).map(function(key) {
+            flatResults = Object.keys(flatResults).map(function (key) {
                 return flatResults[key];
             });
 
@@ -392,7 +398,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
-                team: dataSourceDescription._team?  dataSourceDescription._team : null,
+                team: team,
                 brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: sourceDocURL,
@@ -413,10 +419,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 isSearchActive: isSearchActive,
                 //
                 defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-                colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForPieSetGroupByDropdown(sampleDoc, dataSourceDescription),
+                colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'pieSet', 'GroupBy'),
                 //
                 defaultChartByColumnName_humanReadable: defaultChartByColumnName_humanReadable,
-                colNames_orderedForChartByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForPieSetChartByDropdown(sampleDoc, dataSourceDescription),
+                colNames_orderedForChartByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'pieSet', 'ChartBy'),
                 //
                 colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                 //
@@ -429,12 +435,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 aggregateBy: aggregateBy
             };
             callback(err, data);
-        });
+        })
+
 
 
 
 
 
     })
-   
+
+
 };

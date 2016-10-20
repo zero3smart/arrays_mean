@@ -4,7 +4,9 @@ var es = require('event-stream');
 var parse = require('csv-parse');
 var Batch = require('batch');
 
-var datasource_description = require('../../models/datasource_descriptions');
+
+var datasource_description = require('../../models/descriptions');
+
 
 /***************  Index  ***************/
 module.exports.index = function (req, next) {
@@ -63,13 +65,16 @@ module.exports.signS3 = function (req, next) {
 
     const s3 = new aws.S3({params: {Bucket: bucket}});
     const fileName = decodeURIComponent(req.query['file-name']);
-    const key = 'dataset/' + fileName;
+
+    const key = '/dataset/' + fileName;
+
     const fileType = req.query['file-type'];
     const s3Params = {
         Bucket: bucket,
         Key: key,
         ContentType: fileType,
-        ACL: 'public-read'
+        ACL: 'private'
+
     };
 
     s3.getSignedUrl('putObject', s3Params, function (err, data) {
@@ -78,7 +83,8 @@ module.exports.signS3 = function (req, next) {
         }
         const returnData = {
             signedRequest: data,
-            url: 'https://' + bucket + '.s3.amazonaws.com/' + key
+
+            // url: 'https://' + bucket + '.s3.amazonaws.com/' + key
         };
 
         next(null, returnData);
@@ -110,36 +116,36 @@ module.exports.saveSource = function (req, next) {
                     response.pause();
 
                     /* parse(cachedLines + line, {delimiter: ',', relax: true, skip_empty_lines: true},
-                        function (err, output) {
-                            if (err) {
-                                response.destroy();
-                                return done(err);
-                            }
+                     function (err, output) {
+                     if (err) {
+                     response.destroy();
+                     return done(err);
+                     }
 
-                            if (!output || output.length == 0) {
-                                cachedLines = cachedLines + line;
-                                return response.resume();
-                            }
+                     if (!output || output.length == 0) {
+                     cachedLines = cachedLines + line;
+                     return response.resume();
+                     }
 
-                            if (!Array.isArray(output[0]) || output[0].length == 1) {
-                                response.destroy();
-                                return done(new Error('Invalid File'));
-                            }
+                     if (!Array.isArray(output[0]) || output[0].length == 1) {
+                     response.destroy();
+                     return done(new Error('Invalid File'));
+                     }
 
-                            cachedLines = '';
-                            countOfLines++;
+                     cachedLines = '';
+                     countOfLines++;
 
-                            if (countOfLines == 1) {
-                                data.colNames = output[0];
-                                response.resume();
-                            } else if (countOfLines == 2) {
-                                data.firstRecord = output[0];
-                                response.resume();
-                            } else {
-                                response.destroy();
-                                if (countOfLines == 3) done(null, data);
-                            }
-                        }); */
+                     if (countOfLines == 1) {
+                     data.colNames = output[0];
+                     response.resume();
+                     } else if (countOfLines == 2) {
+                     data.firstRecord = output[0];
+                     response.resume();
+                     } else {
+                     response.destroy();
+                     if (countOfLines == 3) done(null, data);
+                     }
+                     }); */
                 }));
         }).on('error', function (err) {
             winston.error("❌  Could not read the source data " + request + ": ", err);

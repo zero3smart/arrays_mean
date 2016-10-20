@@ -17,21 +17,21 @@ module.exports.DataSource_formats =
 
 //
 //
-var fieldValueDataTypeCoercion_coercionFunctions= function(inString,field) {
+var fieldValueDataTypeCoercion_coercionFunctions = function (inString, field) {
     var opName = field.operation;
-    if (opName == 'ProxyExisting' ) {
+    if (opName == 'ProxyExisting') {
         return inString;
 
     } else if (opName == 'ToDate') {
 
-          if (inString == "") { 
+        if (inString == "") {
             return undefined;
         }
-    
+
         if (inString == "Unknown" || inString == "unknown"
             || inString == "Unkown" || inString == "unkown"
             || inString == "Various" || inString == "various"
-            || inString == "N/A" || inString == "n/a") { 
+            || inString == "N/A" || inString == "n/a") {
             return undefined;
         }
 
@@ -42,10 +42,10 @@ var fieldValueDataTypeCoercion_coercionFunctions= function(inString,field) {
             || inString == "n.d"
             || inString == "(n.d.)"
             || inString == "n. d."
-            || inString == "no date") { 
+            || inString == "no date") {
             return null;
         }
-   
+
         var dateFormatString = field.format;
         if (dateFormatString == "" || dateFormatString == null || typeof dateFormatString === 'undefined') {
             console.error("❌  No format string with which to derive formatted date \"" + inString + "\". Returning undefined.");
@@ -79,7 +79,7 @@ var fieldValueDataTypeCoercion_coercionFunctions= function(inString,field) {
 
 }
 
-var fieldValueDataTypeCoercion_revertFunctions = function(value,field) {
+var fieldValueDataTypeCoercion_revertFunctions = function (value, field) {
     var opName = field.operation;
     if (opName == "ProxyExisting") {
         return value;
@@ -120,7 +120,7 @@ module.exports.NewDataTypeCoercedValue = function (coercionSchemeForKey, rowValu
     }
 
 
-    return fieldValueDataTypeCoercion_coercionFunctions(rowValue,coercionSchemeForKey);
+    return fieldValueDataTypeCoercion_coercionFunctions(rowValue, coercionSchemeForKey);
 };
 // Public:
 module.exports.OriginalValue = function (coercionSchemeForKey, rowValue) {
@@ -133,6 +133,6 @@ module.exports.OriginalValue = function (coercionSchemeForKey, rowValue) {
         return undefined;
     }
 
-    return fieldValueDataTypeCoercion_revertFunctions(rowValue,coercionSchemeForKey);
+    return fieldValueDataTypeCoercion_revertFunctions(rowValue, coercionSchemeForKey);
 
 };

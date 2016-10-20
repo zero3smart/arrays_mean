@@ -9,15 +9,15 @@ router.get('/login', function (req, res) {
 
 router.get('/logout', function (req, res) {
     req.logout();
-    return res.redirect('/');
+    res.redirect('/');
 });
 
 router.get('/callback', passport.authenticate('auth0', {failureRedirect: '/'}), function (req, res) {
-    return res.redirect(req.session.returnTo || '/admin');
+    res.redirect(req.session.returnTo || '/admin');
 });
 
-router.get('/unauthorized', function(req, res) {
 
+router.get('/unauthorized', function (req, res) {
     res.render('auth/unauthorized', {env: env});
 });
 

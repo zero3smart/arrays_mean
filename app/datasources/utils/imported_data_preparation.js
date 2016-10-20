@@ -9,7 +9,6 @@ module.exports.HumanReadableColumnName_objectTitle = humanReadableColumnName_obj
 function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription) {
     var uid = dataSourceDescription.uid;
     var importRevision = dataSourceDescription.importRevision;
-    
     var pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(uid, importRevision);
 
     return pKey;
@@ -17,7 +16,7 @@ function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription) {
 module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromDataSourceDescription;
 
 
-var _dataSourceDescriptionWithPKey = function(source_pKey) {
+var _dataSourceDescriptionWithPKey = function (source_pKey) {
 
     var split = source_pKey.split("-");
     var uid = split[0];
@@ -34,12 +33,7 @@ var _dataSourceDescriptionWithPKey = function(source_pKey) {
 }
 
 
-
-
-
 module.exports.DataSourceDescriptionWithPKey = _dataSourceDescriptionWithPKey;
-
-
 
 
 function _realColumnNameFromHumanReadableColumnName(humanReadableColumnName, dataSourceDescription) {
@@ -64,7 +58,7 @@ module.exports.RealColumnNameFromHumanReadableColumnName = _realColumnNameFromHu
 //
 function _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription) {
 
-    console.log(sampleRowObject)
+    //console.log(sampleRowObject)
     var rowParams = sampleRowObject.rowParams;
     var rowParams_keys = Object.keys(rowParams);
     var rowParams_keys_length = rowParams_keys.length;

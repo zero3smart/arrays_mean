@@ -360,98 +360,86 @@ router.BindData = function (req, urlQuery, callback) {
                     _multigroupedResults_object[stack].push(el);
                 });
 
-                for (var stack in _multigroupedResults_object) {
-                    if (_multigroupedResults_object.hasOwnProperty(stack)) {
-                        var _groupedResults = _multigroupedResults_object[stack];
+                 _.forOwn(_multigroupedResults_object, function(_groupedResults, category) {
 
-                        var finalizedButNotCoalesced_groupedResults = [];
-                        _groupedResults.forEach(function (el, i, arr) {
-                            var originalVal = el.label;
-                            //
-                            var fe_chart_valuesToExcludeByOriginalKey = dataSourceDescription.fe_views.views.chart.valuesToExcludeByOriginalKey;
-                            if (fe_chart_valuesToExcludeByOriginalKey != null && typeof fe_chart_valuesToExcludeByOriginalKey !== 'undefined') {
-                                if (fe_chart_valuesToExcludeByOriginalKey._all) {
-                                    if (fe_chart_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
-                                        return; // do not push to list
-                                    }
-                                }
-                                var illegalValuesForThisKey = fe_chart_valuesToExcludeByOriginalKey[groupBy_realColumnName];
-                                if (illegalValuesForThisKey) {
-                                    if (illegalValuesForThisKey.indexOf(originalVal) !== -1) {
-                                        return; // do not push to list
-                                    }
-                                }
-                            }
-                            //
-                            var displayableVal = originalVal;
-                            if (originalVal == null) {
-                                displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
-                            } else if (originalVal === "") {
-                                displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
-                            } else {
-                                displayableVal = groupBy_isDate ? func.convertDateToBeRecognizable(originalVal, groupBy_realColumnName, dataSourceDescription) : originalVal;
-                            }
-                            finalizedButNotCoalesced_groupedResults.push({
-                                value: el.value,
-                                label: displayableVal
-                            });
-                        });
-                        var summedValuesByLowercasedLabels = {};
-                        var titleWithMostMatchesAndMatchAggregateByLowercasedTitle = {};
-                        finalizedButNotCoalesced_groupedResults.forEach(function (el, i, arr) {
-                            var label = el.label;
-                            var value = el.value;
-                            var label_toLowerCased = label.toLowerCase();
-                            //
-                            var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
-                            var new_valueSum = existing_valueSum + value;
-                            summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
-                            //
-                            var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] || {
-                                    label: '',
-                                    value: -1
-                                };
-                            if (existing_titleWithMostMatchesAndMatchCount.value < value) {
-                                var new_titleWithMostMatchesAndMatchCount = {label: label, value: value};
-                                titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
-                            }
-                        });
-                        var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
-                        var groupedResults = [];
-                        lowercasedLabels.forEach(function (key, i, arr) {
-                            var summedValue = summedValuesByLowercasedLabels[key];
-                            var reconstitutedDisplayableTitle = key;
-                            var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[key];
-                            if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
-                                winston.error("❌  This should never be undefined.");
-                                callback(new Error('Unexpectedly undefined title with most matches'), null);
-
-                                return;
-                            } else {
-                                reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
-                            }
-                            groupedResults.push({
-                                value: summedValue,
-                                date: reconstitutedDisplayableTitle
-                            });
-                        });
-
-                        if (stackBy)
-                            stackedResultsByGroup[stack] = groupedResults;
-                        else
-                            stackedResultsByGroup = groupedResults;
-
-                        if (!Array.isArray(stackedResultsByGroup)) {
-                            var alphabetizedStackedResultsByGroup = {};
-                            Object.keys(stackedResultsByGroup).sort().forEach(function (key) {
-                                alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
-                            });
-                            stackedResultsByGroup = alphabetizedStackedResultsByGroup;
-                        }
-
+                    var displayableCategory;
+                    if (groupBy_isDate) {
+                        displayableCategory = func.convertDateToBeRecognizable(category, groupBy_realColumnName, dataSourceDescription);
+                    } else {
+                        displayableCategory = func.ValueToExcludeByOriginalKey(
+                            category, dataSourceDescription, groupBy_realColumnName, 'barChart');
+                        if (!displayableCategory) return;
                     }
 
-                }
+                    var finalizedButNotCoalesced_groupedResults = [];
+                    _.each(_groupedResults, function (el, i) {
+                        //
+                        if (el.label) {
+                            var displayableLabel;
+
+                            displayableLabel = func.ValueToExcludeByOriginalKey(
+                                el.label, dataSourceDescription, groupBy_realColumnName, 'barChart');
+                            if (!displayableLabel) return;
+
+                            finalizedButNotCoalesced_groupedResults.push({
+                                value: el.value,
+                                label: displayableLabel
+                            });
+                        } else {
+                            finalizedButNotCoalesced_groupedResults.push({
+                                value: el.value,
+                                label: 'default'
+                            });
+                        }
+                    });
+
+                    var summedValuesByLowercasedLabels = {};
+                    var titleWithMostMatchesAndMatchAggregateByLowercasedTitle = {};
+                    _.each(finalizedButNotCoalesced_groupedResults, function (el) {
+                        var label = el.label;
+                        var value = el.value;
+                        var label_toLowerCased = label.toLowerCase();
+                        //
+                        var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
+                        var new_valueSum = existing_valueSum + value;
+                        summedValuesByLowercasedLabels[label_toLowerCased] = new_valueSum;
+                        //
+                        var existing_titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] || {
+                                label: '',
+                                value: -1
+                            };
+                        if (existing_titleWithMostMatchesAndMatchCount.value < value) {
+                            var new_titleWithMostMatchesAndMatchCount = {label: label, value: value};
+                            titleWithMostMatchesAndMatchAggregateByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
+                        }
+                    });
+                    var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
+                    var groupedResults = [];
+                    _.each(lowercasedLabels, function (key, i, arr) {
+                        var summedValue = summedValuesByLowercasedLabels[key];
+                        var reconstitutedDisplayableTitle = key;
+                        var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[key];
+                        if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
+                            winston.error("❌  This should never be undefined.");
+                            callback(new Error('Unexpectedly undefined title with most matches'), null);
+
+                            return;
+                        } else {
+                            reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
+                        }
+                        groupedResults.push({
+                            value: summedValue,
+                            label: reconstitutedDisplayableTitle
+                        });
+                    });
+
+                    stackedResultsByGroup[displayableCategory] = groupedResults;
+
+                });
+
+
+
+                
 
                 graphData = [];
 
@@ -461,6 +449,7 @@ router.BindData = function (req, urlQuery, callback) {
                     graphData = {
                         categories: [dataSourceDescription.title],
                         data: stackedResultsByGroup.map(function(row) {
+
                             row.value = Number(row.value);
                             if (groupBy_isDate) {
                                 var offsetTime = new Date(row.label);
@@ -468,6 +457,7 @@ router.BindData = function (req, urlQuery, callback) {
                                 row.label = offsetTime;
                             }
                             return row;
+
                         })
                     };
 
@@ -553,7 +543,9 @@ router.BindData = function (req, urlQuery, callback) {
                 aggregateBy: aggregateBy,
                 // graphData contains all the data rows; used by the template to create the linechart
                 graphData: graphData ,
-                isHorizontal: dataSourceDescription.fe_views.views.barChart.isHorizontal
+                isHorizontal: dataSourceDescription.fe_views.views.barChart.isHorizontal,
+                isNormalized: stackBy_realColumnName == groupBy_realColumnName ? false : dataSourceDescription.fe_views.views.barChart.isNormalized,
+                padding: dataSourceDescription.fe_views.views.barChart.padding
             };
 
             callback(err, data);
@@ -563,7 +555,6 @@ router.BindData = function (req, urlQuery, callback) {
 
     })
    
-
 };
 
 module.exports = router;

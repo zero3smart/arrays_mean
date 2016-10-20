@@ -41,25 +41,33 @@
 <!-- Fixed navbar -->
 <header id="masthead" class="site-header hidden-print" role="banner">
 
-	<nav class="navbar navbar-default navbar-fixed-top background-color-brand">
-		<div class="container-fluid container-full-width">
-			<div class="navbar-brand-container">
-				<a class="navbar-brand navbar-brand-arrays {% if team.logo | length %}navbar-brand-team-logo{% endif %}" href="{% if team.tid | length %}/team/{{ team.tid }}{% else %}/array{% endif %}">{% if team.logo_header | length %}<img src="{{ team.logo_header }}" />{% elif team.title | length %}{{ team.title }}{% else %}Arrays{% endif %}</a><br />
-				<a class="navbar-brand navbar-brand-array-title" href="/array/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
+    <nav class="navbar navbar-default navbar-fixed-top background-color-brand">
+        <div class="container-fluid container-full-width">
+            <div class="navbar-brand-container">
+                <a class="navbar-brand navbar-brand-arrays {% if team.logo | length %}navbar-brand-team-logo{% endif %}"
+                   href="{% if team.tid | length %}/team/{{ team.tid }}{% else %}/array{% endif %}">{% if team.logo_header
+                    | length %}<img src="{{ team.logo_header }}"/>{% elif team.title | length %}{{ team.title }}{% else
+                    %}Arrays{% endif %}</a><br/>
+                <a class="navbar-brand navbar-brand-array-title" href="/array/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="truncate">{{ arrayTitle }}</span></a>
-			</div>
-			<div id="navbar" class="navbar-collapse collapse">
-				<ul class="nav navbar-nav">
-					<li>
-						<a href="#" class="sidebar-filter-slide-toggle"><span class="icon-filter" aria-hidden="true"></span>{% if isFilterActive %}<span class="sidebar-filter-active background-color-brand"></span>{% endif %}</a>
-					</li>
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="icon-{{ currentView }}" aria-hidden="true"></span></a>
-						<ul class="dropdown-menu"> 
-							{% if view_visibility.gallery.visible == true %}
-							<li class="background-color-brand-hover menu-item-gallery {{ "active" if currentView == "gallery" }}"><a href="/array/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#" class="sidebar-filter-slide-toggle"><span class="icon-filter"
+                                                                              aria-hidden="true"></span>{% if
+                            isFilterActive %}<span class="sidebar-filter-active background-color-brand"></span>{% endif
+                            %}</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false"><span class="icon-{{ currentView }}" aria-hidden="true"></span></a>
+                        <ul class="dropdown-menu">
+                            {% if view_visibility.gallery.visible == true %}
+                            <li class="background-color-brand-hover menu-item-gallery {{ " active
+                            " if currentView == "gallery" }}"><a href="/array/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
 
 					searchQ: searchQ,
 					searchCol: searchCol
@@ -67,7 +75,6 @@
                             {% endif %}
 
                             {% if view_visibility.choropleth.visible == true %}
-
                             <li class="background-color-brand-hover menu-item-choropleth {{ " active
                             " if currentView == "choropleth" }}"><a href="/array/{{ array_source_key }}/{{ 'choropleth' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
@@ -76,7 +83,6 @@
                             {% endif %}
 
                             {% if view_visibility.chart.visible == true %}
-
                             <li class="background-color-brand-hover menu-item-chart {{ " active
                             " if currentView == "chart" }}"><a href="/array/{{ array_source_key }}/{{ 'chart' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
@@ -93,7 +99,6 @@
                             {% endif %}
 
                             {% if view_visibility.scatterplot.visible == true %}
-
                             <li class="background-color-brand-hover menu-item-scatterplot {{ " active
                             " if currentView == "scatterplot" }}"><a href="/array/{{ array_source_key }}/{{ 'scatterplot' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
@@ -110,8 +115,7 @@
 				}) }}"><span class="icon-word-cloud color-brand" aria-hidden="true"></span> Word cloud</a></li>
                             {% endif %}
 
-                            {% if view_visibility.lineGraph.visible == true  %}
-
+                            {% if view_visibility.lineGraph.visible == true %}
                             <li class="background-color-brand-hover menu-item-line-graph {{ " active
                             " if currentView == "line-graph" }}"><a href="/array/{{ array_source_key }}/{{ 'line-graph' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
@@ -151,7 +155,7 @@
                             <li role="separator" class="divider"></li>
                             {% endif %}
                             {% if team.title %}
-                            <li class="background-color-brand-hover"><a href="/team/{{ team.id }}">Home</a></li>
+                            <li class="background-color-brand-hover"><a href="/team/{{ team.tid }}">Home</a></li>
                             {% endif %}
                             <li class="background-color-brand-hover"><a href="#" class="share-link">Share</a></li>
                             <li role="separator" class="divider"></li>

@@ -98,22 +98,17 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
                     var choice = choices[j];
                     if (choice.title === filterVal) {
                         foundChoice = true;
-                        
+
                         var reformQuery = {};
 
-                
-                        reformQuery[choice["match"].field] =  {
-                            $exists : choice["match"].exist,
-                            $nin : choice["match"].nin
+
+                        reformQuery[choice["match"].field] = {
+                            $exists: choice["match"].exist,
+                            $nin: choice["match"].nin
 
                         }
 
                         matchConditions = [{$match: reformQuery}];
-
-
-
-                    
-
 
 
                         break; // found the applicable filter choice
@@ -186,7 +181,7 @@ var _activeFilterRange_matchCondition_orErrDescription = function (dataSourceDes
     // To coercion the date field into the valid date
     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
-        && raw_rowObjects_coercionSchema[realColumnName].oepration === "ToDate";
+        && raw_rowObjects_coercionSchema[realColumnName].operation === "ToDate";
     if (!isDate) {
         var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
         var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
@@ -273,15 +268,14 @@ var _activeFilterOR_matchCondition_orErrDescription = function (dataSourceDescri
 
                             var reformQuery = {};
 
-                             reformQuery[choice["match"].field] =  {
-                               $exists : choice["match"].exist,
-                               $nin : choice["match"].nin
+                            reformQuery[choice["match"].field] = {
+                                $exists: choice["match"].exist,
+                                $nin: choice["match"].nin
                             }
-  
+
                             matchConditions = [{$match: reformQuery}];
 
 
-                        
                             break; // found the applicable filter choice
                         }
                     }

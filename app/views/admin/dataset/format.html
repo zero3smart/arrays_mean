@@ -44,7 +44,7 @@
 					<td>
 						{% if doc.raw_rowObjects_coercionScheme %}
 
-						{{ doc.raw_rowObjects_coercionScheme[colName].operation if doc.raw_rowObjects_coercionScheme[colName]  else 'String' }}
+						{{ doc.raw_rowObjects_coercionScheme[colName].do if doc.raw_rowObjects_coercionScheme[colName]  else 'String' }}
 						{% else %}
 						String
 						{% endif %}
