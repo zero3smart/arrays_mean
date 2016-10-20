@@ -165,7 +165,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdow
     var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
     var keys_length = keys.length;
     var available_keys = [];
-    var field = 'fe_' + viewType + '_fieldsNotAvailableAs' + fieldName + 'Columns';
+    var field = 'fe_' + viewType + '_fieldsNotAvailable';
+    if (fieldName) field += ('As' + fieldName + 'Columns');
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
         if (dataSourceDescription[field]) {

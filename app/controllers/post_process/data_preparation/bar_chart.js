@@ -409,12 +409,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 stackedResultsByGroup[displayableCategory] = groupedResults;
 
-                var alphabetizedStackedResultsByGroup = {};
-                Object.keys(stackedResultsByGroup).sort().forEach(function (key) {
-                    alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
-                });
-                stackedResultsByGroup = alphabetizedStackedResultsByGroup;
-
             });
 
             graphData = [];
@@ -494,9 +488,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // graphData contains all the data rows; used by the template to create the barchart
             graphData: graphData ,
             isHorizontal: dataSourceDescription.fe_barChart_isHorizontal,
-            isNormalized: stackBy == groupBy || !stackBy ? false : dataSourceDescription.fe_barChart_isNormalized,
+            isNormalized: stackBy_realColumnName == groupBy_realColumnName ? false : dataSourceDescription.fe_barChart_isNormalized,
             padding: dataSourceDescription.fe_barChart_padding
         };
+
         callback(err, data);
     });
 };

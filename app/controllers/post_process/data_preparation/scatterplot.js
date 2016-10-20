@@ -131,7 +131,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                  * Define numeric fields list which may be used as scatterplot axes.
                  * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.
                  */
-                var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown(sampleDoc, dataSourceDescription, 'scatterplot', 'Axis').filter(function (i) {
+                var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot').filter(function (i) {
                     return dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) == -1;
                 });
                 /*
