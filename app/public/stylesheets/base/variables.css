@@ -22,10 +22,14 @@
 	--font-family-georgia: Georgia, "Times New Roman", Times, serif;
 	
 	--sidebar-width: 280px;
+	--sidebar-width-negative: -280px;
 	--legend-width: 300px;
 	
 	--box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 	--box-shadow-dark: 0 2px 4px rgba(0, 0, 0, 0.5);
+	
+	--navbar-height-mobile: 50px;
+	--navbar-height-tablet: 64px;
 }
 
 /* @group Icon colors */

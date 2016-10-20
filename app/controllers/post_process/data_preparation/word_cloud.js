@@ -15,16 +15,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // groupBy
     // searchQ
     // searchCol
+    // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
 
-     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
-    .then(function(dataSourceDescription) {
 
-      
-        if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
+    importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
+    .then(function(dataSourceDescription) { 
+         if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
             callback(new Error("No data source with that source pkey " + source_pKey), null);
-
             return;
         }
         if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.wordCloud === 'undefined') {
@@ -33,18 +32,18 @@ module.exports.BindData = function (req, urlQuery, callback) {
             return;
         }
 
- 
-
         var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
         var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
-        //
+
         var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
         var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName_humanReadable;
         var keywords = dataSourceDescription.fe_views.views.wordCloud.keywords;
-        //
+
         var routePath_base = "/array/" + source_pKey + "/word-cloud";
         var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
-        //
+        if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+
+          //
         var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
         //
         var filterObj = func.filterObjFromQueryParams(urlQuery);
@@ -61,7 +60,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
         var batch = new Batch();
         batch.concurrency(1);
 
-        // Obtain source document
         batch.push(function (done) {
             raw_source_documents.Model.findOne({primaryKey: source_pKey}, function (err, _sourceDoc) {
                 if (err) return done(err);
@@ -81,7 +79,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             });
         });
 
-        // Obtain Top Unique Field Values For Filtering
         batch.push(function (done) {
             func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                 if (err) return done(err);
@@ -225,7 +222,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             };
             callback(err, data);
         });
+        
     })
-
 
 };

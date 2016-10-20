@@ -75,6 +75,7 @@ viewTypes.forEach(function (viewType) {
 
                 return;
             }
+            bindData.embedded = req.query.embed;
             res.render('array/' + viewType, bindData);
         });
     });
@@ -108,6 +109,7 @@ router.get('/:source_key/:object_id', function (req, res) {
 
             return;
         }
+        bindData.embedded = req.query.embed;
         bindData.referer = req.headers.referer;
         res.render('object/show', bindData);
     });

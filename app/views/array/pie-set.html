@@ -1,3 +1,6 @@
+
+{% set currentView = "pie-set" %}
+
 {% extends "../layout/array.html" %}
 
 {% import "../partials/dropdown.html" as dropdown %}
@@ -8,7 +11,6 @@
     <title>Arrays - {{ arrayTitle }}</title>
 {% endblock %}
 
-{% set currentView = "chart" %}
 
 {% block content %}
     <section class="array">
@@ -37,16 +39,39 @@
                                     dropdown.sortbar
                                         (
                                             "Chart By",
-                                            groupBy if groupBy else defaultGroupByColumnName_humanReadable,
-                                            colNames_orderedForGroupByDropdown,
+
+                                            chartBy if chartBy else defaultChartByColumnName_humanReadable,
+                                            colNames_orderedForChartByDropdown,
+
                                             routePath_base | constructedRoutePath(filterObj, {
                                                 searchCol: searchCol,
                                                 searchQ: searchQ,
                                                 aggregateBy: aggregateBy,
-                                                groupBy: ''
+
+                                                groupBy: groupBy,
+                                                chartBy: ''
+
                                             })
                                         )
                                     }}
+
+
+                                    {{
+                                    dropdown.sortbar
+                                    (
+                                        "Group By",
+                                        groupBy if groupBy else defaultGroupByColumnName_humanReadable,
+                                        colNames_orderedForGroupByDropdown,
+                                        routePath_base | constructedRoutePath(filterObj, {
+                                            searchCol: searchCol,
+                                            searchQ: searchQ,
+                                            aggregateBy: aggregateBy,
+                                            chartBy: chartBy,
+                                            groupBy: ''
+                                        })
+                                    )
+                                    }}
+
 
                                     {% if aggregateBy_humanReadable_available %}
                                         {{
@@ -108,6 +133,9 @@
                 <script type="text/javascript">
                     var pieData = {{ groupedResults | dump | safe }};
 
+                    var legendData = {{ flatResults | dump | safe }};
+
+
                     var filterObj = {{ filterObj | dump | safe }};
                     var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
@@ -115,7 +143,7 @@
                             groupBy: groupBy,
                             aggregateBy: aggregateBy
                     }) | safe }}";
-                    var routePath_base = '{{ routePath_base }}';
+
                     var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
                 </script>
                 <div class="container-fluid">
@@ -133,12 +161,10 @@
             <nav class="legend" role="navigation">
                 <button type="button" class="close legend-close" aria-label="Close"><span class="icon-close-big" aria-hidden="true"></span></button>
                 <h3 class="legend-title">Legend</h3>
-                {% if groupedResults | length %}
-                <ul class="legend-list">
-                    {# {% for result in groupedResults %}
-                    <li class="legend-list-item"><span class="legend-dot"></span><a href="#" class="legend-list-link">{{ result.label }}</a></li>
-                    {% endfor %} #}
-                </ul>
+
+                {% if flatResults | length %}
+                <ul class="legend-list"></ul>
+
                 {% endif %}
             </nav>
 

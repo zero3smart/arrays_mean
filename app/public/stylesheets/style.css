@@ -29,6 +29,7 @@
 @import url('views/team-show.css');
 @import url('views/object-show.css');
 @import url('views/gallery-grid.css');
+@import url('views/svg-chart-base.css');
 @import url('views/chart.css');
 @import url('views/choropleth.css');
 @import url('views/timeline.css');
@@ -37,6 +38,7 @@
 @import url('views/word-cloud.css');
 @import url('views/pie-set.css');
 @import url('views/admin.css');
+@import url('views/bar-chart.css');
 /* @end Views */
 
 /* @group Clients */

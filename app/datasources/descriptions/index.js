@@ -209,12 +209,12 @@ var _findAllDescriptionAndSetup  = function(fn) {
 
                         } else {
                             if (exist == true) {
-                                winston.info("✅ rawrowobjects collection exists for dataset : " , keyname);
+                                winston.info("✅  rawrowobjects collection exists for dataset : " , keyname);
                                 mongoose_client.checkIfCollectionExists('processedrowobjects-'+keyname,function(err,exist) {
                                     if (err)  {
                                        eachCb(err);
                                     } else if (exist == true) {
-                                        winston.info("✅ processedrowobjects collection exists for dataset: ", keyname);
+                                        winston.info("✅  processedrowobjects collection exists for dataset: ", keyname);
                                         eachCb(null);
 
                                     } else {
@@ -267,7 +267,6 @@ var _GetDescriptionsWith_uid_importRevision =  function(uid,revision,fn) {
 };
 
 module.exports.GetDescriptionsWith_uid_importRevision = _GetDescriptionsWith_uid_importRevision
-
 
 
 

@@ -30,7 +30,8 @@
 				<thead>
 				<tr>
 					<th>#</th>
-					<th>Name</th>
+
+					<th>Column Name</th>
 					<th>Type</th>
 					<th>Sample</th>
 				</tr>
@@ -42,7 +43,8 @@
 					<td>{{ colName }}</td>
 					<td>
 						{% if doc.raw_rowObjects_coercionScheme %}
-						{{ doc.raw_rowObjects_coercionScheme[colName] if doc.raw_rowObjects_coercionScheme[colName]  else 'String' }}
+
+						{{ doc.raw_rowObjects_coercionScheme[colName].operation if doc.raw_rowObjects_coercionScheme[colName]  else 'String' }}
 						{% else %}
 						String
 						{% endif %}

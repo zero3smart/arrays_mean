@@ -295,11 +295,10 @@ scatterplot.chart.prototype.resize = function() {
     var dimension = this._container.node().getBoundingClientRect();
     /*
      * Set up chart outer and inner width and height.
-     * TODO: for different screens height should be different.
      */
     this._outerWidth = dimension.width;
     this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
-    this._outerHeight = 400;
+    this._outerHeight = dimension.height;
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
     /*
      * Check mode and change left margin and hide axes labels if necessary.

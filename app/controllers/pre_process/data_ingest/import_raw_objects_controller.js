@@ -51,20 +51,15 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
 };
 
 var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (dataSourceIsIndexInList, csvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) {
-    //
-    // var CSV_resources_path_prefix = __dirname + "/../../../datasources/resources";
 
-    var filename = csvDescription.filename;
+
+    var CSV_resources_path_prefix = __dirname + "/../../../datasources/resources";
+    var sourceURL = csvDescription.sourceURL;
     var fileEncoding = csvDescription.fileEncoding || 'utf8';
     var revisionNumber = csvDescription.importRevision;
     var importUID = csvDescription.uid;
-    winston.info("🔁  " + dataSourceIsIndexInList + ": Importing CSV \"" + filename + "\"");
-    // var filepath = CSV_resources_path_prefix + "/" + filename;
-
-    var filepath = filename;
-
-    
-
+    winston.info("🔁  " + dataSourceIsIndexInList + ": Importing CSV \"" + sourceURL + "\"");
+    var filepath = CSV_resources_path_prefix + "/" + sourceURL;
 
     //
     var raw_rowObjects_coercionScheme = csvDescription.raw_rowObjects_coercionScheme; // look up data type scheme here
@@ -194,7 +189,7 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
 
                     // process line here and call s.resume() when rdy
                     if (lineNr % 1000 == 0) {
-                        winston.info("🔁  Parsing " + lineNr + " rows in \"" + filename + "\"");
+                        winston.info("🔁  Parsing " + lineNr + " rows in \"" + sourceURL + "\"");
 
                         // Bulk for performance at volume
                         raw_row_objects.InsertManyPersistableObjectTemplates
@@ -218,7 +213,7 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
                 });
             })
             .on('error', function (err) {
-                winston.error("❌  Error encountered while trying to open CSV file. The file might not yet exist or the specified filename might contain a typo.");
+                winston.error("❌  Error encountered while trying to open CSV file. The file might not yet exist or the specified sourceURL might contain a typo.");
                 return fn(err);
             })
             .on('end', function () {
@@ -227,7 +222,7 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
 
                     winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
                     var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
-                    stringDocumentObject.filename = filename;
+                    stringDocumentObject.sourceURL = sourceURL;
 
                     raw_source_documents.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
 
@@ -245,7 +240,7 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
                         numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
 
                         var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
-                        stringDocumentObject.filename = filename;
+                        stringDocumentObject.sourceURL = sourceURL;
 
                         raw_source_documents.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
                     });
@@ -257,12 +252,12 @@ var _new_parsed_StringDocumentObject_fromCSVDataSourceDescription = function (da
 var _new_parsed_StringDocumentObject_fromTSVDataSourceDescription = function (dataSourceIsIndexInList, tsvDescription, sourceDocumentTitle, sourceDocumentRevisionKey, fn) {
     //
     var TSV_resources_path_prefix = __dirname + "/resources";
-    var filename = tsvDescription.filename;
+    var sourceURL = tsvDescription.sourceURL;
     var fileEncoding = tsvDescription.fileEncoding || 'utf8';
     var revisionNumber = tsvDescription.importRevision;
     var importUID = tsvDescription.uid;
-    winston.info("🔁  " + dataSourceIsIndexInList + ": Importing TSV \"" + filename + "\"");
-    var filepath = TSV_resources_path_prefix + "/" + filename;
+    winston.info("🔁  " + dataSourceIsIndexInList + ": Importing TSV \"" + sourceURL + "\"");
+    var filepath = TSV_resources_path_prefix + "/" + sourceURL;
     //
     var raw_rowObjects_coercionScheme = tsvDescription.raw_rowObjects_coercionScheme; // look up data type scheme here
     // so we can do translation/mapping just below
@@ -353,7 +348,7 @@ var _new_parsed_StringDocumentObject_fromTSVDataSourceDescription = function (da
 
                     // process line here and call s.resume() when rdy
                     if (lineNr % 1000 == 0) {
-                        winston.info("🔁  Parsing " + lineNr + " rows in \"" + filename + "\"");
+                        winston.info("🔁  Parsing " + lineNr + " rows in \"" + sourceURL + "\"");
 
                         // Bulk for performance at volume
                         raw_row_objects.InsertManyPersistableObjectTemplates
@@ -377,7 +372,7 @@ var _new_parsed_StringDocumentObject_fromTSVDataSourceDescription = function (da
                 });
             })
             .on('error', function (err) {
-                winston.error("❌  Error encountered while trying to open TSV file. The file might not yet exist or the specified filename might contain a typo.");
+                winston.error("❌  Error encountered while trying to open TSV file. The file might not yet exist or the specified sourceURL might contain a typo.");
                 return fn(err);
             })
             .on('end', function () {
@@ -386,7 +381,7 @@ var _new_parsed_StringDocumentObject_fromTSVDataSourceDescription = function (da
 
                     winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
                     var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
-                    stringDocumentObject.filename = filename;
+                    stringDocumentObject.sourceURL = sourceURL;
 
                     raw_source_documents.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
 
@@ -404,7 +399,7 @@ var _new_parsed_StringDocumentObject_fromTSVDataSourceDescription = function (da
                         numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
 
                         var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
-                        stringDocumentObject.filename = filename;
+                        stringDocumentObject.sourceURL = sourceURL;
 
                         raw_source_documents.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
                     });

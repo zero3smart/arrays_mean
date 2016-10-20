@@ -17,14 +17,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // sortDir
     // searchQ
     // searchCol
+    // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
 
     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
     .then(function(dataSourceDescription) {
-
-
-
 
         if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
             callback(new Error("No data source with that source pkey " + source_pKey), null);
@@ -135,6 +133,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
         //
         var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
         var routePath_base = "/array/" + source_pKey + "/gallery";
+        if (urlQuery.embed == 'true') routePath_base += '?embed=true'
         //
         var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
         //

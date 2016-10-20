@@ -19,6 +19,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
     var sourceKey = urlQuery.source_key;
 
+
     importedDataPreparation.DataSourceDescriptionWithPKey(sourceKey)
     .then(function(dataSourceDescription) {
         if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -36,6 +37,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
          */
         var processedRowObjects_mongooseContext = processed_row_objects
             .Lazy_Shared_ProcessedRowObject_MongooseContext(sourceKey);
+
         /*
          * Stash somewhat model reference.
          */
@@ -81,14 +83,27 @@ module.exports.BindData = function (req, urlQuery, callback) {
             /*
              * Run query to mongo to obtain all rows which satisfy to specified filters set.
              */
+
             processedRowObjects_mongooseModel.aggregate(_orErrDesc.matchOps).allowDiskUse(true).exec(function (err, documents) {
+
+                
+
                 /*
                  * Get single/sample document.
                  */
+
                 var sampleDoc = documents[0];
-                /*
-                 * Go deeper - collect data for filter's sidebar.
-                 */
+
+                /*for (i in sampleDoc.rowParams) {
+                 if (! (! isNaN(parseFloat(sampleDoc.rowParams[i])) && isFinite(sampleDoc.rowParams[i]) && i !== 'id')) {
+                 continue;
+                 } else if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(i) >= 0) {
+                 continue;
+                 } else {
+                 numericFields.push(i);
+                 }
+                 }*/
+ 
                 func.topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
 
                     var uniqueFieldValuesByFieldName = {}
@@ -130,6 +145,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         return dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable.indexOf(i) == -1;
                     });
 
+                    var routePath_base = '/array/' + sourceKey + '/scatterplot';
+                    if (urlQuery.embed == 'true') routePath_base += '?embed=true';
+
                     /*
                      * Then loop through document's fields and get numeric.
                      * Also checking they are not in fe_scatterplot_fieldsNotAvailable config option.
@@ -160,7 +178,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
                         sourceDoc: sourceDoc,
                         view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                        routePath_base: '/array/' + sourceKey + '/scatterplot',
+                        routePath_base: routePath_base,
                         filterObj: filterObj,
                         isFilterActive: isFilterActive,
                         urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
@@ -170,9 +188,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         // multiselectable filter fields
                         multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable
                     });
-
-
-
 
                 });
             });

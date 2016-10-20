@@ -16,10 +16,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // groupBy
     // searchQ
     // searchCol
+    // embed
     // Other filters
 
     var source_pKey = urlQuery.source_key;
-
 
     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
     .then(function(dataSourceDescription) { 
@@ -33,9 +33,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
         if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.timeline != null && dataSourceDescription.fe_views.timeline === false) {
             callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
-
-            return;
+            return 
         }
+
 
         var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
         var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
@@ -61,6 +61,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
         var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
         var routePath_base = "/array/" + source_pKey + "/timeline";
         var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+
+        if (urlQuery.embed == 'true') routePath_base += '?embed=true'
         //
         var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
         //
@@ -220,6 +222,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         });
 
+
+
         // Obtain Grouped results
         batch.push(function (done) {
             var aggregationOperators = [];
@@ -306,6 +310,26 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 groupedResults = _groupedResults;
                 if (groupedResults == undefined || groupedResults == null) groupedResults = [];
 
+                var finalizedButNotCoalesced_groupedResults = [];
+                _groupedResults.forEach(function (el, i, arr) {
+                    var results = [];
+                    el.results.forEach(function(el2, i2) {
+                        var originalVal = el2.rowParams[sortBy_realColumnName];
+                        var displayableVal = originalVal;
+                        if (originalVal == null) {
+                            displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
+                        } else if (originalVal === "") {
+                            displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
+                        } else {
+                            displayableVal = func.reverseDataToBeDisplayableVal(originalVal, sortBy_realColumnName, dataSourceDescription);
+                        }
+                        el2.rowParams[sortBy_realColumnName] = displayableVal;
+                        results.push(el2);
+                    });
+                    el.results = results;
+                    groupedResults.push(el);
+                });
+
                 done();
             };
             processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
@@ -390,7 +414,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
         batch.end(function (err) {
             if (err) return callback(err);
 
-            //
             var data =
             {
                 env: process.env,
@@ -461,6 +484,5 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
         });
     })
-
 
 };

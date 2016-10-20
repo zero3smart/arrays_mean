@@ -35,7 +35,6 @@ var _activeFilter_matchOp_orErrDescription_fromMultiFilter = function (dataSourc
     var filterCols = Object.keys(filterObj);
     var filterCols_length = filterCols.length;
     if (filterCols_length == 0) {
-        winston.error("❌  Programmer runtime check error. Filter obj had no keys.");
         return {err: new Error("No active filter despite filterObj")};
     }
     var conditions = [];
@@ -604,7 +603,7 @@ module.exports.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColum
 //
 var _filterObjFromQueryParams = function (queryParams) {
     var filterObj = {};
-    var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'mapBy', 'aggregateBy', 'searchQ', 'searchCol'];
+    var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'chartBy', 'mapBy', 'aggregateBy', 'searchQ', 'searchCol', 'embed'];
     for (var key in queryParams) {
         if (reservedKeys.indexOf(key) !== -1) continue;
 

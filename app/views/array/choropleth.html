@@ -1,3 +1,5 @@
+{% set currentView = "choropleth" %}
+
 {% extends "../layout/array.html" %}
 
 {% import "../partials/dropdown.html" as dropdown %}
@@ -9,8 +11,6 @@
     
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.css' rel='stylesheet' />
 {% endblock %}
-
-{% set currentView = "choropleth" %}
 
 {% block content %}
     <section class="array">
@@ -91,7 +91,6 @@
                     searchQ: searchQ,
                     mapBy: mapBy
             }) | safe }}";
-            var routePath_base = '{{ routePath_base }}';
             var mapBy = '{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}';
         </script>
 

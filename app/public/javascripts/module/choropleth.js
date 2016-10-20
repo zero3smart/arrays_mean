@@ -128,7 +128,7 @@ map.on('load', function () {
 
 		var feature = features[0];
 
-		var queryParamJoinChar = routePath_withoutFilter == routePath_base ? "?" : "&";
+		var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1? '&' : '?';
 
 		var filterObjForThisFilterColVal = constructedFilterObj(filterObj, mapBy, feature.properties.name, false);
 		var filterObjString = $.param(filterObjForThisFilterColVal);

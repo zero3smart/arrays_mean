@@ -16,11 +16,13 @@ var func = require('../func');
  */
 router.BindData = function (req, urlQuery, callback) {
     var self = this;
-    // urlQuery keys:
+     // urlQuery keys:
     // source_key
     // groupBy
+    // sortDir
     // searchQ
     // searchCol
+    // embed
     // filters
     var source_pKey = urlQuery.source_key;
 
@@ -47,7 +49,7 @@ router.BindData = function (req, urlQuery, callback) {
             dataSourceDescription);
         var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
         var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
-        raw_rowObjects_coercionSchema[groupBy_realColumnName].do == import_datatypes.Coercion_ops.ToDate);
+        raw_rowObjects_coercionSchema[groupBy_realColumnName].operation == "ToDate");
         var groupBy_outputInFormat = '';
         if (dataSourceDescription.fe_views.views.barChart.outputInFormat && dataSourceDescription.fe_views.views.barChart.outputInFormat[groupBy_realColumnName] && dataSourceDescription.fe_views.views.barChart.outputInFormat[groupBy_realColumnName].format) {
             groupBy_outputInFormat = dataSourceDescription.fe_views.views.barChart.outputInFormat[groupBy_realColumnName].format;
@@ -57,13 +59,18 @@ router.BindData = function (req, urlQuery, callback) {
         }
         //
         var stackBy = dataSourceDescription.fe_views.views.barChart.stackByColumnName_humanReadable;
+
+        var sortDir = urlQuery.sortDir;
+        var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
         //
 
 
-        var routePath_base = "/array/" + source_pKey + "/line-graph";
+        var routePath_base = "/array/" + source_pKey + "/bar-chart";
         var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+        if (urlQuery.embed == 'true') routePath_base += '?embed=true';
         //
         var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
+
         //
         var filterObj = func.filterObjFromQueryParams(urlQuery);
         var isFilterActive = Object.keys(filterObj).length != 0;
@@ -77,6 +84,13 @@ router.BindData = function (req, urlQuery, callback) {
         // DataSource Relationship
         var mapping_source_pKey = dataSourceDescription.fe_views.views.barChart.mapping_dataSource_pKey;
         //var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
+
+        var mapping_default_filterObj = {};
+        var mapping_default_view = "gallery";
+        var mapping_groupByObj = {};
+
+
+
         if (mapping_source_pKey) {
             var mappingDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(mapping_source_pKey).then(function(mappingDataSourceDescription) {
 
@@ -107,7 +121,7 @@ router.BindData = function (req, urlQuery, callback) {
         var aggregateBy_humanReadable_available = undefined;
         for (var colName in raw_rowObjects_coercionSchema) {
             var colValue = raw_rowObjects_coercionSchema[colName];
-            if (colValue.do == import_datatypes.Coercion_ops.ToInteger) {
+            if (colValue.operation == "ToInteger") {
                 var humanReadableColumnName = colName;
                 if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
                     humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
@@ -179,6 +193,21 @@ router.BindData = function (req, urlQuery, callback) {
                         } else {
                             uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
                         }
+
+                        if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                                a = a.replace(/\D/g, '');
+                                a = a == '' ? 0 : parseInt(a);
+                                b = b.replace(/\D/g, '');
+                                b = b == '' ? 0 : parseInt(b);
+                                return a - b;
+                            });
+
+                        } else // Sort alphabetically by default
+                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                                return a - b;
+                            });
                     }
                 }
                 done();
@@ -229,11 +258,8 @@ router.BindData = function (req, urlQuery, callback) {
                                 }
                             },
                             {
-                                $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                            }/* ,
-                            {
-                                $limit: 100000 // so the chart can actually handle the number
-                            } */
+                                $sort: {value: sortDirection} // priotize by incidence, since we're $limit-ing below
+                            }
                         ]);
 
                 } else {
@@ -256,11 +282,9 @@ router.BindData = function (req, urlQuery, callback) {
                                 }
                             },
                             {
-                                $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                            }/* ,
-                            {
-                                $limit: 100000 // so the chart can actually handle the number
-                            } */
+                                $sort: {value: sortDirection} // priotize by incidence, since we're $limit-ing below
+                            }
+                     
                         ]);
 
                 }
@@ -292,11 +316,9 @@ router.BindData = function (req, urlQuery, callback) {
                                 }
                             },
                             {
-                                $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                            },
-                            {
-                                $limit: 100000 // so the chart can actually handle the number
+                                $sort: {value: sortDirection} // priotize by incidence, since we're $limit-ing below
                             }
+                    
                         ]);
 
                 } else {
@@ -318,10 +340,7 @@ router.BindData = function (req, urlQuery, callback) {
                                 }
                             },
                             { // priotize by incidence, since we're $limit-ing below
-                                $sort: {value: -1}
-                            },
-                            {
-                                $limit: 100000 // so the chart can actually handle the number
+                                $sort: {value: sortDirection}
                             }
                         ]);
                 }
@@ -422,55 +441,58 @@ router.BindData = function (req, urlQuery, callback) {
                         else
                             stackedResultsByGroup = groupedResults;
 
-                        /* Make linegraph category colors consistent for different "Aggregate By" settings
-                          The following code alphabetizes the categories which are properties of stackedResultsByGroup */
-                        var alphabetizedStackedResultsByGroup = {};
-                        Object.keys(stackedResultsByGroup).sort().forEach(function(key) {
-                          alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
-                        });
-                        stackedResultsByGroup = alphabetizedStackedResultsByGroup;
-                        /////
+                        if (!Array.isArray(stackedResultsByGroup)) {
+                            var alphabetizedStackedResultsByGroup = {};
+                            Object.keys(stackedResultsByGroup).sort().forEach(function (key) {
+                                alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
+                            });
+                            stackedResultsByGroup = alphabetizedStackedResultsByGroup;
+                        }
+
                     }
 
                 }
 
                 graphData = [];
 
-                var lineColors = dataSourceDescription.fe_views.views.barChart.stackedLineColors ? dataSourceDescription.fe_views.views.barChart.stackedLineColors : {};
+                var barColors = dataSourceDescription.fe_views.views.barChart.stackedBarColors ? dataSourceDescription.fe_views.views.barChart.stackedBarColors : {};
 
                 if (Array.isArray(stackedResultsByGroup)) {
-
-                    graphData[0] = stackedResultsByGroup.map(function(row) {
-                        row.category = dataSourceDescription.title
-                        row.value = Number(row.value);
-                        if (groupBy_isDate) {
-                            var offsetTime = new Date(row.date);
-                            offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                            row.date = offsetTime;
-                        }
-                        return row;
-                    });
+                    graphData = {
+                        categories: [dataSourceDescription.title],
+                        data: stackedResultsByGroup.map(function(row) {
+                            row.value = Number(row.value);
+                            if (groupBy_isDate) {
+                                var offsetTime = new Date(row.label);
+                                offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                                row.label = offsetTime;
+                            }
+                            return row;
+                        })
+                    };
 
                 } else {
-
+                    graphData = {categories: [], data: []};
                     for (var category in stackedResultsByGroup) {
                         if (stackedResultsByGroup.hasOwnProperty(category)) {
-                            graphData.push(stackedResultsByGroup[category].map(function(row) {
-                                row.category = category;
-                                row.value = Number(row.value);
-                                // {% if groupBy_isDate %}
-                                if (groupBy_isDate) {
-                                    var offsetTime = new Date(row.date);
-                                    offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                                    row.date = offsetTime;
-                                }
-                                if (lineColors && lineColors[category]) row.color = lineColors[category];
+                            graphData.categories.push(category);
 
+                            graphData.data.push(stackedResultsByGroup[category].map(function(row) {
+                                row.value = Number(row.value);
+                                if (groupBy_isDate) {
+                                    var offsetTime = new Date(row.label);
+                                    offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                                    row.label = offsetTime;
+                                }
                                 return row;
                             }));
+
+                            if (barColors && barColors[category]) {
+                                if (!graphData.colors) graphData.colors = [];
+                                graphData.colors.push(barColors[category]);
+                            }
                         }
                     }
-
                 }
                 done();
             };
@@ -499,9 +521,7 @@ router.BindData = function (req, urlQuery, callback) {
                 //
                 groupBy: groupBy,
                 groupBy_isDate: groupBy_isDate,
-                // Logic has been moved from template to controller, doesn't need to be exported
-                //stackedResultsByGroup: stackedResultsByGroup,
-                // lineColors: dataSourceDescription.fe_views.views.barChart_stackedLineColors ? dataSourceDescription.fe_views.views.barChart_stackedLineColors : {},
+              // barColors: dataSourceDescription.fe_barChart_stackedBarColors ? dataSourceDescription.fe_barChart_stackedBarColors : {},
                 groupBy_outputInFormat: groupBy_outputInFormat,
                 //
                 filterObj: filterObj,
@@ -513,6 +533,8 @@ router.BindData = function (req, urlQuery, callback) {
                 searchCol: searchCol,
                 isSearchActive: isSearchActive,
                 //
+
+                sortDir: sortDir,
                 defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
                 colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForLineGraphGroupByDropdown(sampleDoc, dataSourceDescription),
                 colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
@@ -530,8 +552,10 @@ router.BindData = function (req, urlQuery, callback) {
                 defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
                 aggregateBy: aggregateBy,
                 // graphData contains all the data rows; used by the template to create the linechart
-                graphData: graphData 
+                graphData: graphData ,
+                isHorizontal: dataSourceDescription.fe_views.views.barChart.isHorizontal
             };
+
             callback(err, data);
         });
 
@@ -539,6 +563,7 @@ router.BindData = function (req, urlQuery, callback) {
 
     })
    
+
 };
 
 module.exports = router;

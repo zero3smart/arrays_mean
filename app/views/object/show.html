@@ -23,7 +23,14 @@
 
                                     {% set objectTitle = rowObject.rowParams[fieldKey_objectTitle] %}
                                     <h1 class="object-title">{{ objectTitle if objectTitle else "(Title not specified)" }}</h1>
+
+                                    {% if embedded %}
+                                    {% set mainViewURL = "/array/" + array_source_key + "/" + main_view + "?embed=true&" + default_filterJSON if default_filterJSON else "" %}
+                                    <a href="{{ mainViewURL }}">{{ arrayTitle }}</a>
+                                    {% endif %}
                                 </header><!-- .object-header -->
+
+                                {% set strParams = 'embed=true' if embedded %}
 
                                 <div class="object-content">
                                     <dl>
@@ -43,9 +50,9 @@
                                                         {% set sortedArray = columnValue | alphaSortedArray %}
                                                         {% for arrayMember in sortedArray %}
                                                             {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, arrayMember, false) %}
-                                                            {% set arrayMemberText = htmlOverrideFn(rowObject, arrayMember) | safe if htmlOverrideFn else arrayMember %}
+                                                            {% set arrayMemberText = htmlOverrideFn(rowObject, arrayMember, strParams) | safe if htmlOverrideFn else arrayMember %}
                                                             {% if shouldLink %}
-                                                                <li class="object-list-item"><a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal) }}" class="color-brand">{{ arrayMemberText }}</a></li>
+                                                                <li class="object-list-item"><a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">{{ arrayMemberText }}</a></li>
                                                             {% else %}
                                                                 <li class="object-list-item">{{ arrayMemberText | substitutePlainURLs | safe }}</li>
                                                             {% endif %}
@@ -61,9 +68,9 @@
                                                 {% if shouldLink %}
                                                     {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, columnValue, false) %}
 
-                                                    <a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal) }}" class="color-brand">
+                                                    <a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">
                                                 {% endif %}
-                                                        {{ (htmlOverrideFn(rowObject, columnValue) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe }}
+                                                        {{ (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe }}
                                                 {% if shouldLink %}
                                                     </a>
                                                 {% endif %}

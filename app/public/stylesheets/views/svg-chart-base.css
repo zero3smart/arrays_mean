@@ -1,0 +1,9 @@
+.axis path, .axis line {
+    fill: none;
+    stroke: #c9c9c9;
+    stroke-width: 1px;
+}
+
+.axis .tick text {
+    fill: #c9c9c9;
+}

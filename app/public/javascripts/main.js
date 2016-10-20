@@ -1,7 +1,13 @@
 $(window).load(function() {
 
     trackEvent("page load");
-    
+
+
+    trackEvent('page viewed', {
+       'page name' : document.title,
+       'url' : window.location.pathname
+    });
+
     /**
      * Add class to body to prevent weird page width transitions
      */
@@ -142,8 +148,16 @@ $(document).ready(function() {
 
                         $modalBody.append('<h3>Embed URL</h3>');
                         $modalBody.append('<pre id="embed-url" class="border-color-brand"></pre>');
+
+                        $modalBody.append('<h3><input type="checkbox" id="cbEmbed">  Show header and footer</h3>');
                         $('#embed-url').text(embedUrl);
 
+                        $(this).find('#cbEmbed').change(function() {
+                            embedUrl = '<iframe src="' + share_url;
+                            if (!$(this).is(":checked")) embedUrl += '?embed=true';
+                            embedUrl += '" width="640" height="480" frameborder="0"></iframe>';
+                            $('#embed-url').text(embedUrl);
+                        });
                         /**
                          * Initialize Sharrre buttons
                          */
@@ -257,6 +271,8 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
 }
 
 function convertQueryStringToObject(inputString) {
+    if (inputString == '') return {};
+
     var obj = {};
     var arr = decodeURIComponent(inputString).split('&');
 

@@ -148,6 +148,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 var displayableVal = func.reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
                 rowParams[key] = displayableVal;
             }
+
             //
             var colNames_sansObjectTitle = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject(rowObject, dataSourceDescription);
             // ^ to finalize:
@@ -232,7 +233,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 brandColor: dataSourceDescription.brandColor,
                 default_filterJSON: default_filterJSON,
                 view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                //
+                main_view:  dataSourceDescription.fe_views.default_view ? dataSourceDescription.fe_views.default_view : 'gallery',
                 rowObject: rowObject,
                 //
                 fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,

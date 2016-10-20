@@ -1,3 +1,5 @@
+{% set currentView = "line-graph" %}
+
 {% extends "../layout/array.html" %}
 
 {% import "../partials/dropdown.html" as dropdown %}
@@ -7,8 +9,6 @@
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
 {% endblock %}
-
-{% set currentView = "linegraph" %}
 
 {% block content %}
     <section class="array">
@@ -95,8 +95,6 @@
                             </div><!-- .container-fluid -->
 
                             <script type="text/javascript">
-                                // var lineColors = {{ lineColors | dump | safe }};
-                                var line;
                                 var filterObj = {{ filterObj | dump | safe }};
                                 var routePath_withoutFilter = '{{ routePath_base | constructedRoutePath(null, {
                                         searchCol: searchCol,
@@ -104,7 +102,6 @@
                                         groupBy: groupBy,
                                         aggregateBy: aggregateBy
                                 }) | safe }}';
-                                var routePath_base = '{{ routePath_base }}';
                                 var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
                                 var groupBy_outputInFormat = '{{ groupBy_outputInFormat }}';
 
@@ -113,10 +110,17 @@
                                     var default_view  = '{{ mapping_default_view if mapping_default_view else "gallery"}}';
                                     var words = default_view.split(/(?=[A-Z])/);
                                     var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
-                                    redirectBaseUrl = '/array/{{ mapping_source_pKey }}/' + default_view_url
-                                            + '{{ "" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
+                                    redirectBaseUrl = '/array/{{ mapping_source_pKey }}/' + default_view_url;
+                                    {% if embedded %}
+                                    redirectBaseUrl += '{{ "?embed=true" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
+                                    {% else %}
+                                    redirectBaseUrl += '{{ "" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
+                                    {% endif %}
                                 {% endif %}
-                                var options = {redirectBaseUrl: redirectBaseUrl, outputInFormat: groupBy_outputInFormat};
+                                var options = {
+                                    redirectBaseUrl: redirectBaseUrl,
+                                    outputInFormat: groupBy_outputInFormat
+                                };
                             </script>
 
                             <div class="container-fluid">
@@ -165,10 +169,7 @@
     <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
     <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
     <script>
-        
-        // var options = {{options | dump | safe}};
-        var graphData = {{graphData | dump | safe}};       
-        // var lineChart = new linechart.chart({{graphData | dump | safe}} , options).render("#linechart");
+        var graphData = {{graphData | dump | safe}};
         var lineChart = new linechart.chart(graphData , options).render("#linechart");
 
     </script>

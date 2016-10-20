@@ -1,3 +1,10 @@
+/**
+ * Set up pie chart
+ */
+var width = 1000,
+	height = 1000,
+	radius = Math.min(width, height) / 2;
+
 var colors = [
 	'#FEAA00',
 	'#FEBC12',
@@ -23,16 +30,10 @@ var colors = [
 	'#FB5533'
 ];
 
-
-/**
- * Set up pie chart
- */
-var width = 1000,
-	height = 1000,
-	radius = Math.min(width, height) / 2;
-
-var color = d3.scale.ordinal()
-	.range(colors);
+for (var i = 0; i < pieData.length; i ++) {
+	var row = pieData[i];
+	if (row.color) colors[i] = row.color;
+}
 
 var arc = d3.svg.arc()
 	.outerRadius(radius - 10)
@@ -116,7 +117,7 @@ var g = svg.selectAll('.arc')
 var slices = g.append('path')
 	.attr('d', arc)
 	.style('fill', function(d, i) {
-		return color(i);
+		return colors[i % colors.length];
 	})
 	.attr('id', function(d, i) {
 		return 'slice-' + i;
@@ -147,7 +148,7 @@ g.on('mouseover', function(d) {
 });
 
 g.on('mousemove', function() {
-	tooltip.style('top', (event.pageY-15)+'px').style('left', (event.pageX)+'px');
+	tooltip.style('top', (d3.event.pageY-15)+'px').style('left', (d3.event.pageX)+'px');
 });
 
 g.on('mouseout', function() {
@@ -158,7 +159,7 @@ g.on('mouseout', function() {
  * Filter slice on click
  */
 g.on('click', function(d) {
-	var queryParamJoinChar = routePath_withoutFilter == routePath_base ? "?" : "&";
+	var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1? '&' : '?';
 
 	var filterObjForThisFilterColVal = constructedFilterObj(filterObj, groupBy, d.data.label, false);
 	var filterJSONString = $.param(filterObjForThisFilterColVal);

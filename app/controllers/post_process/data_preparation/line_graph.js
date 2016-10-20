@@ -21,6 +21,7 @@ router.BindData = function (req, urlQuery, callback) {
     // groupBy
     // searchQ
     // searchCol
+    // embed
     // filters
     var source_pKey = urlQuery.source_key;
 
@@ -61,6 +62,8 @@ router.BindData = function (req, urlQuery, callback) {
         //
         var routePath_base = "/array/" + source_pKey + "/line-graph";
         var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
+
+        if (urlQuery.embed == 'true') routePath_base += '?embed=true';
         //
         var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
         //
@@ -79,6 +82,9 @@ router.BindData = function (req, urlQuery, callback) {
         var mapping_default_filterObj = {};
         var mapping_default_view = "gallery";
         var mapping_groupByObj = {};
+
+        if (urlQuery.embed == 'true') mapping_groupByObj.embed = 'true';
+
 
         if (mapping_source_pKey) {
 
@@ -102,10 +108,10 @@ router.BindData = function (req, urlQuery, callback) {
 
                 }
 
-                
             })
         }
 
+   
 
 
 
@@ -117,6 +123,8 @@ router.BindData = function (req, urlQuery, callback) {
             defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
 
         // Aggregate By Available
+
+
         var aggregateBy_humanReadable_available = undefined;
         for (var colName in raw_rowObjects_coercionSchema) {
             var colValue = raw_rowObjects_coercionSchema[colName];
@@ -146,9 +154,9 @@ router.BindData = function (req, urlQuery, callback) {
         //
         var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, stackedResultsByGroup = {};
 
-        ///
-        // graphData is exported and used by template for lineChart generation
-        var graphData;
+
+        var graphData = {};
+ 
 
 
         var batch = new Batch();
@@ -157,7 +165,7 @@ router.BindData = function (req, urlQuery, callback) {
         // Obtain source document
         batch.push(function (done) {
             raw_source_documents.Model.findOne({primaryKey: source_pKey}, function (err, _sourceDoc) {
-                if (err) return done(err);
+                if (err) return (err);
 
                 sourceDoc = _sourceDoc;
                 done();
@@ -257,11 +265,8 @@ router.BindData = function (req, urlQuery, callback) {
                                 }
                             },
                             {
-                                $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                            }/* ,
-                            {
-                                $limit: 100000 // so the chart can actually handle the number
-                            } */
+                                $sort: {label: -1} // priotize by group
+                            }
                         ]);
 
                 } else {
@@ -284,15 +289,13 @@ router.BindData = function (req, urlQuery, callback) {
                                 }
                             },
                             {
-                                $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                            }/* ,
-                            {
-                                $limit: 100000 // so the chart can actually handle the number
-                            } */
+                                $sort: {label: -1} // priotize by group
+                            }
                         ]);
 
                 }
             } else {
+
                 // Count by number of records
 
                 if (typeof stackBy !== 'undefined' && stackBy !== null && stackBy !== "") {
@@ -320,10 +323,7 @@ router.BindData = function (req, urlQuery, callback) {
                                 }
                             },
                             {
-                                $sort: {value: -1} // priotize by incidence, since we're $limit-ing below
-                            },
-                            {
-                                $limit: 100000 // so the chart can actually handle the number
+                                $sort: {label: -1} // priotize by group
                             }
                         ]);
 
@@ -346,13 +346,11 @@ router.BindData = function (req, urlQuery, callback) {
                                 }
                             },
                             { // priotize by incidence, since we're $limit-ing below
-                                $sort: {value: -1}
-                            },
-                            {
-                                $limit: 100000 // so the chart can actually handle the number
+                                $sort: {label: -1}
                             }
                         ]);
                 }
+
             }
 
             var doneFn = function (err, _multigroupedResults) {
@@ -450,61 +448,70 @@ router.BindData = function (req, urlQuery, callback) {
                         else
                             stackedResultsByGroup = groupedResults;
 
-                        /* Make linegraph category colors consistent for different "Aggregate By" settings
-                          The following code alphabetizes the categories which are properties of stackedResultsByGroup */
-                        var alphabetizedStackedResultsByGroup = {};
-                        Object.keys(stackedResultsByGroup).sort().forEach(function(key) {
-                          alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
-                        });
-                        stackedResultsByGroup = alphabetizedStackedResultsByGroup;
-                        /////
+                    /* Make linegraph category colors consistent for different "Aggregate By" settings
+                      The following code alphabetizes the categories which are properties of stackedResultsByGroup */
+                        if (!Array.isArray(stackedResultsByGroup)) {
+                            var alphabetizedStackedResultsByGroup = {};
+                            Object.keys(stackedResultsByGroup).sort().forEach(function (key) {
+                                alphabetizedStackedResultsByGroup[key] = stackedResultsByGroup[key];
+                            });
+                            stackedResultsByGroup = alphabetizedStackedResultsByGroup;
+                        }
                     }
-
                 }
-
-                graphData = [];
 
                 var lineColors = dataSourceDescription.fe_views.views.lineGraph.stackedLineColors ? dataSourceDescription.fe_views.views.lineGraph.stackedLineColors : {};
 
                 if (Array.isArray(stackedResultsByGroup)) {
 
-                    graphData[0] = stackedResultsByGroup.map(function(row) {
-                        row.category = dataSourceDescription.title
-                        row.value = Number(row.value);
-                        if (groupBy_isDate) {
-                            var offsetTime = new Date(row.date);
-                            offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                            row.date = offsetTime;
-                        }
-                        return row;
-                    });
+                    
+                    graphData = {
+                        labels: [dataSourceDescription.title],
+                        data: stackedResultsByGroup.map(function (row) {
+                            row.value = Number(row.value);
+                            if (groupBy_isDate) {
+                                var offsetTime = new Date(row.date);
+                                offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                                row.date = offsetTime;
+                            }
+                            return row;
+                        })
+                    };
 
                 } else {
-
+                    graphData = {labels: [], data: []};
                     for (var category in stackedResultsByGroup) {
                         if (stackedResultsByGroup.hasOwnProperty(category)) {
-                            graphData.push(stackedResultsByGroup[category].map(function(row) {
-                                row.category = category;
+                            graphData.labels.push(category);
+
+                            graphData.data.push(stackedResultsByGroup[category].map(function(row) {
                                 row.value = Number(row.value);
-                                // {% if groupBy_isDate %}
                                 if (groupBy_isDate) {
                                     var offsetTime = new Date(row.date);
                                     offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
                                     row.date = offsetTime;
                                 }
-                                if (lineColors && lineColors[category]) row.color = lineColors[category];
-
                                 return row;
                             }));
+
+                            if (lineColors && lineColors[category]) {
+                                if (!graphData.colors) graphData.colors = [];
+                                graphData.colors.push(lineColors[category]);
+                            }
                         }
                     }
-
                 }
+
+            
                 done();
-            };
+
+            }
+
+    
 
             processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         });
+
 
         batch.end(function (err) {
             if (err) return callback(err);
@@ -562,13 +569,9 @@ router.BindData = function (req, urlQuery, callback) {
             };
             
             callback(err, data);
-        });
+        });})
 
-    })
    
-   
-
-
 };
 
 module.exports = router;

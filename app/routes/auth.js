@@ -17,7 +17,8 @@ router.get('/callback', passport.authenticate('auth0', {failureRedirect: '/'}), 
 });
 
 router.get('/unauthorized', function(req, res) {
-    return res.render('auth/unauthorized', {env: env});
+
+    res.render('auth/unauthorized', {env: env});
 });
 
 

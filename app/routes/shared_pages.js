@@ -1,6 +1,5 @@
 var url = require('url');
 var winston = require('winston');
-var helmet = require('helmet');
 var express = require('express');
 var router = express.Router();
 
@@ -14,6 +13,8 @@ var line_graph_controller = require('../controllers/post_process/data_preparatio
 var word_cloud_controller = require('../controllers/post_process/data_preparation/word_cloud');
 var scatterplot_controller = require('../controllers/post_process/data_preparation/scatterplot');
 var chart_controller = require('../controllers/post_process/data_preparation/chart');
+var pie_set_controller = require('../controllers/post_process/data_preparation/pie_set');
+var bar_chart_controller = require('../controllers/post_process/data_preparation/bar_chart');
 
 var controllers = {
     object_details: object_details_controller,
@@ -23,10 +24,10 @@ var controllers = {
     timeline: timeline_controller,
     wordCloud: word_cloud_controller,
     choropleth: choropleth_controller,
-    scatterplot: scatterplot_controller
+    scatterplot: scatterplot_controller,
+    pieSet: pie_set_controller,
+    barChart: bar_chart_controller
 };
-
-router.use(helmet.xframe('allow-from', '*'));
 
 router.get('/:shared_page_id', function (req, res) {
     var shared_page_id = req.params.shared_page_id;
@@ -59,14 +60,14 @@ router.get('/:shared_page_id', function (req, res) {
             var viewType = doc.viewType;
             var query = doc.query || {};
 
-            var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud'];
+            var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud', 'pie-set', 'bar-chart'];
             if (viewTypes.indexOf(viewType) !== -1) {
                 query.source_key = source_key;
                 var camelCaseViewType = viewType.replace(/-([a-z])/ig, function (all, letter) {
                     return letter.toUpperCase();
                 });
 
-                controllers[camelCaseViewType].BindData(query, function (err, bindData) {
+                controllers[camelCaseViewType].BindData(req, query, function (err, bindData) {
                     if (err) {
                         winston.error("❌  Error getting bind data for Array gallery: ", err);
                         res.status(500).send(err.response || 'Internal Server Error');

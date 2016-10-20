@@ -15,8 +15,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // groupBy
     // searchQ
     // searchCol
+    // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
+
 
     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
     .then(function(dataSourceDescription) {
@@ -47,6 +49,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
         var routePath_base = "/array/" + source_pKey + "/chart";
         var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
         //
+        if (urlQuery.embed == 'true') routePath_base += '?embed=true';
         var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
         //
         var filterObj = func.filterObjFromQueryParams(urlQuery);
@@ -156,6 +159,21 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 return a - b;
                             });
                     }
+
+                    if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                            a = a.replace(/\D/g, '');
+                            a = a == '' ? 0 : parseInt(a);
+                            b = b.replace(/\D/g, '');
+                            b = b == '' ? 0 : parseInt(b);
+                            return a - b;
+                        });
+
+                    } else // Sort alphabetically by default
+                        uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                            return a - b;
+                        });
                 }
                 done();
             });
@@ -196,10 +214,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         },
                         { // priotize by incidence, since we're $limit-ing below
                             $sort: {value: -1}
-                        },
-                        {
-                            $limit: 100 // so the chart can actually handle the number
                         }
+                       
                     ]);
             } else {
                 aggregationOperators = aggregationOperators.concat(
@@ -220,9 +236,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         },
                         { // priotize by incidence, since we're $limit-ing below
                             $sort: {value: -1}
-                        },
-                        {
-                            $limit: 100 // so the chart can actually handle the number
                         }
                     ]);
             }
@@ -285,6 +298,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         titleWithMostMatchesAndMatchCountByLowercasedTitle[label_toLowerCased] = new_titleWithMostMatchesAndMatchCount;
                     }
                 });
+
+                var colors = dataSourceDescription.fe_views.views.chart.colorsInPercentOrder ? dataSourceDescription.fe_views.views.chart.colorsInPercentOrder : {};
                 var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
                 lowercasedLabels.forEach(function (key, i, arr) {
                     var summedValue = summedValuesByLowercasedLabels[key];
@@ -298,10 +313,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     } else {
                         reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
                     }
-                    groupedResults.push({
+
+                    var result = {
                         value: summedValue,
                         label: reconstitutedDisplayableTitle
-                    });
+                    };
+                    if (colors && colors[i]) result.color = colors[i];
+                    groupedResults.push(result);
                 });
                 done();
             };

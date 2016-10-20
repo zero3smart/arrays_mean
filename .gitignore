@@ -105,6 +105,12 @@ Temporary Items
 
 
 .env
+## csv files ##
+*.csv
+
+
+##csv file##
+*.csv
 
 ##csv files ###
 *.csv
