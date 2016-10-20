@@ -8,11 +8,19 @@ function BarChart(selector, dataSet, options) {
     this._options = options;
     this._padding = options.padding || 0.2;
     /**
-     * Set up bar chart
+     * Chart tooltip.
+     * @private
+     * @member {Tooltip}
      */
-    var container = d3.select(selector);
+    this._tooltip = new Tooltip();
+    /**
+     * Chart container.
+     * @private
+     * @member {Selection}
+     */
+    this._container = d3.select(selector);
 
-    var dimension = container.node().getBoundingClientRect();
+    var dimension = this._container.node().getBoundingClientRect();
 
     this._margin = {
         top : 25,
@@ -26,7 +34,7 @@ function BarChart(selector, dataSet, options) {
     this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
 
-    this._svg = container.append('svg')
+    this._svg = this._container.append('svg')
         .attr('width', this._outerWidth)
         .attr('height', this._outerHeight);
 
@@ -116,21 +124,47 @@ BarChart.prototype.getMaxValue = function() {
 };
 
 
-BarChart.prototype._barMouseEnterEventHandler = function(bar, d, i, j) {
+/**
+ * Bar mouse in event handler.
+ * @param {SVGElement} barElement - bar SVG node
+ * @param {Object} barData - bar data
+ * @param {Integer} i - bar number within series
+ * @param {Integer} j - series number
+ */
+BarChart.prototype._barMouseEnterEventHandler = function(barElement, barData, i, j) {
 
     this._canvas.selectAll('rect.bar')
-        .filter(function(a, b, c) {
-            return this != bar;
-        }).style('opacity', 0.2)
+        .filter(function() {
+            return this != barElement;
+        }).style('opacity', 0.2);
+
+    this._tooltip.setContent(
+        '<div>' +
+            '<div class="scatterplot-tooltip-title">' +
+                '<div>' + barData.label + '</div>' +
+            '</div>' +
+            '<div class="scatterplot-tooltip-content">' + barData.value + '</div>' +
+        '</div>')
+        .setPosition('top')
+        .show(barElement);
 };
 
 
-BarChart.prototype._barMouseOutEventHandler = function(bar, d, i, j) {
+/**
+ * Bar mouse out event handler.
+ * @param {SVGElement} barElement - bar SVG node
+ * @param {Object} barData - bar data
+ * @param {Integer} i - bar number within series
+ * @param {Integer} j - series number
+ */
+BarChart.prototype._barMouseOutEventHandler = function(barElement, barData, i, j) {
 
     this._canvas.selectAll('rect.bar')
-        .filter(function(a, b, c) {
-            return this != bar;
-        }).style('opacity', 1)
+        .filter(function() {
+            return this != barElement;
+        }).style('opacity', 1);
+
+    this._tooltip.hide();
 };
 
 
