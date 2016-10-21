@@ -130,6 +130,22 @@ BarChart.prototype.getMaxValue = function() {
 };
 
 
+BarChart.prototype.getValueFormatter = function() {
+
+    var self = this;
+
+    if (this._options.normalize) {
+        return function(d) {
+            return d3.round(d * 100, self._precise) + '%';
+        };
+    } else {
+        return function(d) {
+            return d3.round(d, self._precise);
+        }
+    }
+};
+
+
 /**
  * Bar mouse in event handler.
  * @param {SVGElement} barElement - bar SVG node
@@ -144,12 +160,14 @@ BarChart.prototype._barMouseEnterEventHandler = function(barElement, barData, i,
             return this != barElement;
         }).style('opacity', 0.2);
 
+    var formatter = this.getValueFormatter();
+
     this._tooltip.setContent(
         '<div>' +
             '<div class="scatterplot-tooltip-title">' +
                 '<div>' + barData.label + '</div>' +
             '</div>' +
-            '<div class="scatterplot-tooltip-content">' + d3.round(barData.value, this._precise) + '</div>' +
+            '<div class="scatterplot-tooltip-content">' + formatter(barData.value) + '</div>' +
         '</div>')
         .setPosition('top')
         .show(barElement);
