@@ -8,6 +8,18 @@ function BarChart(selector, dataSet, options) {
     this._options = options;
     this._padding = options.padding || 0.2;
     this._precise = options.precise || 2;
+        this._margin = {
+        top : 25,
+        right : 15,
+        bottom : 30,
+        left : 70
+    };
+
+    if ('margin' in options) {
+        for (var side in options.margin) {
+            this._margin[side] = options.margin[side];
+        }
+    }
     /**
      * Chart tooltip.
      * @private
@@ -22,13 +34,6 @@ function BarChart(selector, dataSet, options) {
     this._container = d3.select(selector);
 
     var dimension = this._container.node().getBoundingClientRect();
-
-    this._margin = {
-        top : 25,
-        right : 15,
-        bottom : 30,
-        left : 70
-    };
 
     this._outerWidth = dimension.width;
     this._outerHeight = dimension.height;
