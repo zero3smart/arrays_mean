@@ -7,6 +7,7 @@ function BarChart(selector, dataSet, options) {
     this._data = dataSet.data;
     this._options = options;
     this._padding = options.padding || 0.2;
+    this._precise = options.precise || 2;
     /**
      * Chart tooltip.
      * @private
@@ -143,7 +144,7 @@ BarChart.prototype._barMouseEnterEventHandler = function(barElement, barData, i,
             '<div class="scatterplot-tooltip-title">' +
                 '<div>' + barData.label + '</div>' +
             '</div>' +
-            '<div class="scatterplot-tooltip-content">' + barData.value + '</div>' +
+            '<div class="scatterplot-tooltip-content">' + d3.round(barData.value, this._precise) + '</div>' +
         '</div>')
         .setPosition('top')
         .show(barElement);
