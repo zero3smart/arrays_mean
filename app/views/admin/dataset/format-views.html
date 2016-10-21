@@ -1,4 +1,4 @@
-{% set view = 'dataset' %}
+{% set currentView = ['dataset', 'format-views'] %}
 
 {% extends "../../layout/admin.html" %}
 
@@ -16,12 +16,7 @@
 	{% endif %}
 
 	<div class="dataset format">
-		<ul class="steps">
-			<li><span class="glyphicon glyphicon-check"></span>{% if id %}<a href="source">{% endif %}1. Upload Data{% if id %}</a>{% endif %}</li>
-			<li><span class="glyphicon glyphicon-unchecked"></span>2. Format</li>
-			<li><span class="glyphicon glyphicon-unchecked"></span>{% if id %}<a href="settings">{% endif %}3. Settings{% if id %}</a>{% endif %}</li>
-			<li><span class="glyphicon glyphicon-unchecked"></span> Done!</li>
-		</ul>
+		{% include "../../partials/admin/dataset-breadcrumb.html" %}
 
 		<br />
 

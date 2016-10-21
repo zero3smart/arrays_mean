@@ -22,12 +22,12 @@
 
 .dataset ul.steps > li {
     display: inline-block;
-    min-width: 90px;
+    min-width: 120px;
     text-align: center;
 }
 
-.dataset ul.steps > li > span.glyphicon {
+.dataset ul.steps > li span.glyphicon {
     display: block;
     text-align: center;
-    font-size: 25px;
+    font-size: 22px;
 }

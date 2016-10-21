@@ -6,25 +6,18 @@ var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 //
 var DatasourceDescription_scheme = Schema({
-    sourceURL: String,
-    fileEncoding: String,
     uid: String,
-    importRevision: {
-        type: Number,
-        integer: true
-    },
+    importRevision: {type: Number,integer: true},
     schema_id: String,
-    fe_visible: {
-        type: Boolean,
-        default: true
-    },
+    fe_visible: {type: Boolean, default: true},
+    fe_listed: {type: Boolean, default: true},
     logo: String,
     _otherSources: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
     dataset_uid: String,
     format: String,
     title: String,
     brandColor: String,
-    url: Array,
+    urls: Array,
     description: String,
     fn_new_rowPrimaryKeyFromRowObject: String,
     raw_rowObjects_FieldScheme: Object,

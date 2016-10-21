@@ -148,7 +148,8 @@ module.exports.GetDescriptions = GetDescriptions
 
 var _findAllDescriptionAndSetup  = function(fn) {  
 
-    datasource_description.find({$or:[{fe_visible:true,filename:{$exists:true}},{filename:{$exists:true},fe_visible:false}]}) 
+    // TODO: Detect the datasources to be setup
+    datasource_description.find({imported:3})
         .lean()
         .exec(function(err,descriptions) {
             
