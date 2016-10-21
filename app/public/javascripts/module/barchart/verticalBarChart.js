@@ -68,7 +68,8 @@ VerticalBarChart.prototype.getYAxis = function() {
 
     return d3.svg.axis()
         .scale(this.getYScale())
-        .orient('left');
+        .orient('left')
+        .tickFormat(this.getValueFormatter());
 };
 
 

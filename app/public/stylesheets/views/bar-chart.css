@@ -8,3 +8,27 @@
     min-height: 300px;
     height: calc(100vh - 360);
 }
+
+.toggle-button {
+    border: 1px solid #9C9C9C;
+    margin: 8px 10px 0 5px;
+    color: #333333;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 5px 6px;
+    color: black;
+    display: inline-block;
+}
+
+#normalization {
+    padding: 5px 10px;
+    font-weight: bold;
+}
+
+#direction .vertical {
+    display: none;
+}
+
+#normalization .absolute {
+    display: none;
+}

@@ -7,6 +7,19 @@ function BarChart(selector, dataSet, options) {
     this._data = dataSet.data;
     this._options = options;
     this._padding = options.padding || 0.2;
+    this._precise = options.precise || 2;
+    this._margin = {
+        top : 25,
+        right : 15,
+        bottom : 30,
+        left : options.isHorizontal ? 120 : 70
+    };
+
+    if ('margin' in options) {
+        for (var side in options.margin) {
+            this._margin[side] = options.margin[side];
+        }
+    }
 
     this._colors = d3.scale.category20().range();
     if (dataSet.colors) {
@@ -28,13 +41,6 @@ function BarChart(selector, dataSet, options) {
     this._container = d3.select(selector);
 
     var dimension = this._container.node().getBoundingClientRect();
-
-    this._margin = {
-        top : 25,
-        right : 15,
-        bottom : 30,
-        left : 70
-    };
 
     this._outerWidth = dimension.width;
     this._outerHeight = dimension.height;
@@ -131,6 +137,22 @@ BarChart.prototype.getMaxValue = function() {
 };
 
 
+BarChart.prototype.getValueFormatter = function() {
+
+    var self = this;
+
+    if (this._options.normalize) {
+        return function(d) {
+            return d3.round(d * 100, self._precise) + '%';
+        };
+    } else {
+        return function(d) {
+            return d3.round(d, self._precise);
+        }
+    }
+};
+
+
 /**
  * Bar mouse in event handler.
  * @param {SVGElement} barElement - bar SVG node
@@ -145,12 +167,14 @@ BarChart.prototype._barMouseEnterEventHandler = function(barElement, barData, i,
             return this != barElement;
         }).style('opacity', 0.2);
 
+    var formatter = this.getValueFormatter();
+
     this._tooltip.setContent(
         '<div>' +
             '<div class="scatterplot-tooltip-title">' +
                 '<div>' + barData.label + '</div>' +
             '</div>' +
-            '<div class="scatterplot-tooltip-content">' + barData.value + '</div>' +
+            '<div class="scatterplot-tooltip-content">' + formatter(barData.value) + '</div>' +
         '</div>')
         .setPosition('top')
         .show(barElement);
@@ -180,7 +204,6 @@ BarChart.prototype._barMouseOutEventHandler = function(barElement, barData, i, j
  * @returns {Object[][]}
  */
 BarChart.prototype.getChartData = function() {
-
     if (this._options.normalize) {
         return this.normalize();
     } else {
@@ -198,6 +221,7 @@ BarChart.prototype.getChartData = function() {
  */
 BarChart.getInstance = function(selector, dataSet, options) {
 
+    $(selector).empty();
     if (options.isHorizontal === true) {
         return new HorizontalBarChart(selector, dataSet, options);
     } else {
