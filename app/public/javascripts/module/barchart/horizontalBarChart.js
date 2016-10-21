@@ -46,7 +46,8 @@ HorizontalBarChart.prototype.getXAxis = function() {
 
     return d3.svg.axis()
         .scale(this.getXScale())
-        .orient('bottom');
+        .orient('bottom')
+        .tickFormat(this.getValueFormatter());
 };
 
 

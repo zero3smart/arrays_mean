@@ -486,9 +486,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // multiselectable filter fields
             multiselectableFilterFields: dataSourceDescription.fe_filters_fieldsMultiSelectable,
             // graphData contains all the data rows; used by the template to create the barchart
-            graphData: graphData ,
-            isHorizontal: dataSourceDescription.fe_barChart_isHorizontal,
-            isNormalized: stackBy_realColumnName == groupBy_realColumnName ? false : dataSourceDescription.fe_barChart_isNormalized,
+            graphData: graphData,
             padding: dataSourceDescription.fe_barChart_padding
         };
 

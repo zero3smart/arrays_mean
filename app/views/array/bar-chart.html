@@ -31,10 +31,32 @@
                         <div class="sort-bar clearfix">
 
                             <nav class="sort-bar-left pull-left" role="navigation">
+                                <div class="sort-control sort-direction">
+                                    {% if sortDir == "Descending" %}
+                                    <a title="Sort Ascending" href="{{ routePath_base | constructedRoutePath(filterObj, {
+                                            searchCol: searchCol,
+                                            searchQ: searchQ,
+                                            sortDir: 'Ascending',
+                                            aggregateBy: aggregateBy,
+                                            groupBy: groupBy,
+                                            stackBy: stackBy,
+                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span></a>
+                                    {% else %}
+                                    <a title="Sort Descending" href="{{ routePath_base | constructedRoutePath(filterObj, {
+                                            searchCol: searchCol,
+                                            searchQ: searchQ,
+                                            sortDir: 'Descending',
+                                            aggregateBy: aggregateBy,
+                                            groupBy: groupBy,
+                                            stackBy: stackBy,
+                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span></a>
+                                    {% endif %}
+                                </div>
+
                                 {% if colNames_orderedForAggregateByDropdown %}
                                 {{
                                 dropdown.sortbar(
-                                    'Y Axis' if not isHorizontal else 'X Axis',
+                                    'Y Axis',
                                     aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
                                     colNames_orderedForAggregateByDropdown,
                                     routePath_base | constructedRoutePath(filterObj, {
@@ -52,7 +74,7 @@
                                 {% if colNames_orderedForGroupByDropdown %}
                                 {{
                                 dropdown.sortbar(
-                                    'X Axis' if not isHorizontal else 'Y Axis',
+                                    'X Axis',
                                     groupBy if groupBy else defaultGroupByColumnName_humanReadable,
                                     colNames_orderedForGroupByDropdown,
                                     routePath_base | constructedRoutePath(filterObj, {
@@ -86,26 +108,17 @@
                                 }}
                                 {% endif %}
 
-                                <div class="sort-control sort-direction">
-                                    {% if sortDir == "Descending" %}
-                                    <a title="Sort Ascending" href="{{ routePath_base | constructedRoutePath(filterObj, {
-                                            searchCol: searchCol,
-                                            searchQ: searchQ,
-                                            sortDir: 'Ascending',
-                                            aggregateBy: aggregateBy,
-                                            groupBy: groupBy,
-                                            stackBy: stackBy,
-                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span></a>
-                                    {% else %}
-                                    <a title="Sort Descending" href="{{ routePath_base | constructedRoutePath(filterObj, {
-                                            searchCol: searchCol,
-                                            searchQ: searchQ,
-                                            sortDir: 'Descending',
-                                            aggregateBy: aggregateBy,
-                                            groupBy: groupBy,
-                                            stackBy: stackBy,
-                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span></a>
-                                    {% endif %}
+                                <div>
+                                    <span class="ui-label">View By </span>
+                                    <div id="direction" class="toggle-button" title="Toggle to view in horizontal or vertical mode">
+                                        <span class="horizontal glyphicon glyphicon-align-left"></span>
+                                        <span class="vertical glyphicon glyphicon-stats"></span>
+                                    </div>
+
+                                    <div id="normalization" class="toggle-button" title="Toggle to view in absolute or relative mode">
+                                        <span class="absolute">#</span>
+                                        <span class="relative">%</span>
+                                    </div>
                                 </div>
                             </nav>
 
@@ -163,23 +176,8 @@
                         sortDir: sortDir
                 }) | safe }}';
                 var stackBy = '{{ stackBy if stackBy else defaultStackByColumnName_humanReadable }}';
-                var stackBy_outputInFormat = '{{ stackBy_outputInFormat }}';
 
-                var redirectBaseUrl = undefined;
-                {% if mapping_source_pKey %}
-                {% if mapping_default_view %}
-                var default_view = '{{ mapping_default_view if mapping_default_view else "gallery"}}';
-                {% endif %}
-                var words = default_view.split(/(?=[A-Z])/);
-                var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
-                redirectBaseUrl = '/array/{{ mapping_source_pKey }}/' + default_view_url
-                        + '{{ "" | constructedRoutePath(mapping_default_filterObj, mapping_stackByObj) | safe }}';
-                {% endif %}
                 var options = {
-                    redirectBaseUrl: redirectBaseUrl,
-                    outputInFormat: stackBy_outputInFormat,
-                    isHorizontal: {{ isHorizontal if isHorizontal else false }},
-                    normalize: {{ isNormalized if isNormalized else false }},
                     padding: {{ padding if padding else false }}
                 };
             </script>
@@ -208,8 +206,54 @@
     <script type="text/javascript" src="/javascripts/module/barchart/verticalBarChart.js"></script>
     <script type="text/javascript" src="/javascripts/module/barchart/horizontalBarChart.js"></script>
     <script>
-        var graphData = {{graphData | dump | safe}};
+        $(document).ready(function() {
+            if (typeof(Storage) !== "undefined") {
+                var oldVal = localStorage.getItem('normalize');
+                if (oldVal) options.normalize = oldVal == 'true';
+                oldVal = localStorage.getItem('isHorizontal');
+                if (oldVal) options.isHorizontal = oldVal == 'true';
 
-        var barChart = BarChart.getInstance('#bar-chart', graphData, options);
+                updateBarChartControls(options);
+
+                console.log(options);
+            }
+
+            var graphData = {{graphData | dump | safe}};
+            BarChart.getInstance('#bar-chart', $.extend(true, {}, graphData), options);
+
+            // Handle of the "view by" - graph direction, normalization
+            function updateBarChartControls(options) {
+                localStorage.setItem('isHorizontal', options.isHorizontal);
+                localStorage.setItem('normalize', options.normalize);
+
+                if (options.isHorizontal) {
+                    $('#direction .horizontal').hide();
+                    $('#direction .vertical').show();
+                } else {
+                    $('#direction .horizontal').show();
+                    $('#direction .vertical').hide();
+                }
+
+                if (options.normalize) {
+                    $('#normalization .relative').hide();
+                    $('#normalization .absolute').show();
+                } else {
+                    $('#normalization .relative').show();
+                    $('#normalization .absolute').hide();
+                }
+            };
+
+            $('#direction').click(function(){
+                options.isHorizontal = !options.isHorizontal;
+                updateBarChartControls(options);
+                BarChart.getInstance('#bar-chart', $.extend(true, {}, graphData), options);
+            });
+
+            $('#normalization').click(function(){
+                options.normalize = !options.normalize;
+                updateBarChartControls(options);
+                BarChart.getInstance('#bar-chart', $.extend(true, {}, graphData), options);
+            });
+        });
     </script>
 {% endblock %}
