@@ -18,9 +18,9 @@ HorizontalBarChart.prototype._animate = function() {
     var self = this;
 
     this._bars.attr('height', function(d, i, j) {
-            return self.getBarHeight(d, i, j);
+            return isNaN(self.getBarHeight(d, i, j)) ? 0 : self.getBarHeight(d, i, j);
         }).attr('y', function(d, i, j) {
-            return self.getBarY(d, i, j);
+            return isNaN(self.getBarY(d, i, j)) ? 0 : self.getBarY(d, i, j);
         }).attr('width', 0)
         .attr('x', 0);
 
