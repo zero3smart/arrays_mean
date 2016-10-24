@@ -1,5 +1,6 @@
 var winston = require('winston');
 var Batch = require('batch');
+var _ = require('lodash');
 
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
@@ -25,6 +26,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 callback(new Error("No data source with that source pkey " + source_pKey), null);
                 return;
             }
+
 
             if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views.chart != null && typeof dataSourceDescription.fe_views.views.chart === 'undefined') {
                 callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
@@ -85,6 +87,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
 
 
+
+
             if (aggregateBy_humanReadable_available) {
                 if (aggregateBy_humanReadable_available.length > 0)
                     defaultAggregateByColumnName_humanReadable = aggregateBy_humanReadable_available[0];
@@ -127,37 +131,36 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = {};
-                    for (var columnName in _uniqueFieldValuesByFieldName) {
-                        if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
-                            var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
-                            if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
-                                var row = [];
-                                _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
-                                    row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
-                                });
-                                row.sort();
-                                uniqueFieldValuesByFieldName[columnName] = row;
-                            } else {
-                                uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
-                            }
-
-                            if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
-
-                                uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                    a = a.replace(/\D/g, '');
-                                    a = a == '' ? 0 : parseInt(a);
-                                    b = b.replace(/\D/g, '');
-                                    b = b == '' ? 0 : parseInt(b);
-                                    return a - b;
-                                });
-
-                            } else // Sort alphabetically by default
-                                uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                    return a - b;
-                                });
+                     _.forOwn(_uniqueFieldValuesByFieldName, function(columnValue, columnName) {
+                        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+                        if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
+                            var row = [];
+                            columnValue.forEach(function (rowValue) {
+                                row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
+                            });
+                            row.sort();
+                            uniqueFieldValuesByFieldName[columnName] = row;
+                        } else {
+                            uniqueFieldValuesByFieldName[columnName] = columnValue;
                         }
-                    }
+
+                        if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                                a = a.replace(/\D/g, '');
+                                a = a == '' ? 0 : parseInt(a);
+                                b = b.replace(/\D/g, '');
+                                b = b == '' ? 0 : parseInt(b);
+                                return a - b;
+                            });
+
+                        } else // Sort alphabetically by default
+                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                                return a - b;
+                            });
+                    });
                     done();
+
                 });
             });
 
@@ -230,37 +233,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
                     var finalizedButNotCoalesced_groupedResults = [];
                     _groupedResults.forEach(function (el, i, arr) {
-                        var originalVal = el.label;
-                        //
-                        var fe_chart_valuesToExcludeByOriginalKey = dataSourceDescription.fe_views.views.chart.valuesToExcludeByOriginalKey;
-                        if (fe_chart_valuesToExcludeByOriginalKey != null && typeof fe_chart_valuesToExcludeByOriginalKey !== 'undefined') {
-                            if (fe_chart_valuesToExcludeByOriginalKey._all) {
-                                if (fe_chart_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
-                                    return; // do not push to list
-                                }
-                            }
+                        var displayableVal = func.ValueToExcludeByOriginalKey(
+                            el.label, dataSourceDescription, groupBy_realColumnName, 'chart');
+                        if (!displayableVal) return;
 
-                            var illegalValuesForThisKey = fe_chart_valuesToExcludeByOriginalKey[groupBy_realColumnName];
-                            if (illegalValuesForThisKey) {
-                                if (illegalValuesForThisKey.indexOf(originalVal) !== -1) {
-                                    return; // do not push to list
-                                }
-                            }
-                        }
-                        //
-                        var displayableVal = originalVal;
-                        if (originalVal == null) {
-                            displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
-                        } else if (originalVal === "") {
-                            displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
-                        } else {
-                            displayableVal = func.reverseDataToBeDisplayableVal(originalVal, groupBy_realColumnName, dataSourceDescription);
-                        }
                         finalizedButNotCoalesced_groupedResults.push({
                             value: el.value,
                             label: displayableVal
                         });
-
                     });
 
                     var summedValuesByLowercasedLabels = {};
@@ -288,7 +268,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
                     // Custom colors
-                    var colors = dataSourceDescription.fe_chart_colorsInPercentOrder ? dataSourceDescription.fe_chart_colorsInPercentOrder : {};
+                    var colors = dataSourceDescription.fe_views.views.chart.colorsInPercentOrder ? dataSourceDescription.fe_views.views.chart.colorsInPercentOrder : {};
 
                     var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
                     lowercasedLabels.forEach(function (key, i, arr) {
@@ -298,7 +278,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         if (typeof titleWithMostMatchesAndMatchCount === 'undefined') {
                             winston.error("❌  This should never be undefined.");
                             callback(new Error('Unexpectedly undefined title with most matches'), null);
-
 
                             return;
                         } else {
@@ -312,6 +291,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         groupedResults.push(result);
                     });
+
                     done();
                 };
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
@@ -349,7 +329,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     isSearchActive: isSearchActive,
                     //
                     defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-                    colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleDoc, dataSourceDescription),
+                    colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'chart', 'GroupBy'),
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     routePath_base: routePath_base,

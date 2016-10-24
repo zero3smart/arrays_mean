@@ -1,5 +1,4 @@
 var winston = require('winston');
-var Batch = require('batch');
 var queryString = require('querystring');
 var _ = require('lodash');
 //
@@ -50,6 +49,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             /*
              * Check filter active and update composed URL params.
              */
+
             if (isFilterActive) {
                 appendQuery = queryString.stringify(filterObj);
                 urlQuery_forSwitchingViews = func.urlQueryByAppendingQueryStringToExistingQueryString(urlQuery_forSwitchingViews, appendQuery);
@@ -125,7 +125,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                          * Define numeric fields list which may be used as plot axes.
                          * Filter it depending in fe_scatterplot_fieldsNotAvailable config option.
                          */
-                        var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown(sampleDoc, dataSourceDescription).filter(function (i) {
+                         var numericFields = importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'scatterplot').filter(function (i) {
                             return dataSourceDescription.fe_views.views.scatterplot.fieldsNotAvailable.indexOf(i) == -1;
                         });
 

@@ -1,6 +1,7 @@
 var winston = require('winston');
 var moment = require('moment');
 var Batch = require('batch');
+var _ = require('lodash');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
@@ -200,6 +201,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             // _id: 1,
                             _id: {
                                 "$subtract": [
+
                                     {"$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")]},
                                     {
                                         "$mod": [
@@ -309,6 +311,28 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (err) return done(err);
                     groupedResults = _groupedResults;
                     if (groupedResults == undefined || groupedResults == null) groupedResults = [];
+
+
+                    var finalizedButNotCoalesced_groupedResults = [];
+                    _groupedResults.forEach(function (el, i, arr) {
+                        var results = [];
+                        el.results.forEach(function(el2, i2) {
+                            var originalVal = el2.rowParams[sortBy_realColumnName];
+                            var displayableVal = originalVal;
+                            if (originalVal == null) {
+                                displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
+                            } else if (originalVal === "") {
+                                displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
+                            } else {
+                                displayableVal = func.reverseDataToBeDisplayableVal(originalVal, sortBy_realColumnName, dataSourceDescription);
+                            }
+                            el2.rowParams[sortBy_realColumnName] = displayableVal;
+                            results.push(el2);
+                        });
+                        el.results = results;
+                        groupedResults.push(el);
+                    });
+
 
                     done();
                 };
@@ -452,8 +476,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     routePath_base: routePath_base,
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
-
-                    tooltipDateFormat: dataSourceDescription.fe_views.views.timeline.tooltipDateFormat || null
+                  
                 };
 
 
@@ -462,6 +485,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             });
         })
+
 
 
 };

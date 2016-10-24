@@ -63,6 +63,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
+
             var filterObj = func.filterObjFromQueryParams(urlQuery);
             var isFilterActive = Object.keys(filterObj).length != 0;
             //
@@ -70,6 +71,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var searchQ = urlQuery.searchQ;
             var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
                 && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
+
 
             //
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures = [], highestValue = 0;

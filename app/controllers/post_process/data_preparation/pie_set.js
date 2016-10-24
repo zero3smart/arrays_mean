@@ -1,6 +1,6 @@
 var winston = require('winston');
 var Batch = require('batch');
-var queryString = require('querystring');
+var _ = require('lodash');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
@@ -24,14 +24,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var source_pKey = urlQuery.source_key;
      importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
     .then(function(dataSourceDescription) { 
-         if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
+        if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
             callback(new Error("No data source with that source pkey " + source_pKey), null);
-
-
             return;
         }
-
-
 
         if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.pieSet === 'undefined') {
             callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
@@ -125,7 +121,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 sampleDoc = _sampleDoc;
                 done();
             });
-        });
+        })
+
 
         // Obtain Top Unique Field Values For Filtering
         batch.push(function (done) {
@@ -165,6 +162,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
                 done();
             });
+
         });
 
         // Obtain Grouped ResultSet
@@ -287,6 +285,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 return; // do not push to list
                             }
                         }
+
                         var illegalValuesForThisKey = fe_pieSet_valuesToExcludeByOriginalKey[chartBy_realColumnName];
                         if (illegalValuesForThisKey) {
                             if (illegalValuesForThisKey.indexOf(originalVal) !== -1) {
@@ -361,16 +360,19 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         data.push(row);
                     });
 
+
                     groupedResults.push({
                         title: chartBy,
                         data: data
                     });
                 });
 
+
                 done();
             };
             processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
         });
+
 
         batch.end(function (err) {
             if (err) return callback(err);
@@ -385,6 +387,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 return groups;
             }, {});
 
+
             flatResults = Object.keys(flatResults).map(function (key) {
                 return flatResults[key];
             });
@@ -398,7 +401,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 arrayTitle: dataSourceDescription.title,
                 array_source_key: source_pKey,
-                team: team,
+                team: dataSourceDescription._team ? dataSourceDescription._team : null,
                 brandColor: dataSourceDescription.brandColor,
                 sourceDoc: sourceDoc,
                 sourceDocURL: sourceDocURL,
@@ -437,12 +440,5 @@ module.exports.BindData = function (req, urlQuery, callback) {
             callback(err, data);
         })
 
-
-
-
-
-
     })
-
-
 };

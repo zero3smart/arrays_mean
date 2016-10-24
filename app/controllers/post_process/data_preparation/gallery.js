@@ -1,5 +1,6 @@
 var winston = require('winston');
 var Batch = require('batch');
+var _ = require('lodash');
 //
 var importedDataPreparation = require('../../../datasources/utils/imported_data_preparation');
 var import_datatypes = require('../../../datasources/utils/import_datatypes');
@@ -21,6 +22,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // Other filters
     var source_pKey = urlQuery.source_key;
 
+
     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
         .then(function (dataSourceDescription) {
 
@@ -28,6 +30,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
                 callback(new Error("No data source with that source pkey " + source_pKey), null);
                 return;
+
             }
 
             if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.gallery === 'undefined') {
@@ -199,35 +202,35 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = {};
-                    for (var columnName in _uniqueFieldValuesByFieldName) {
-                        if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
-                            var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
-                            if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
-                                var row = [];
-                                _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
-                                    row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
-                                });
-                                uniqueFieldValuesByFieldName[columnName] = row;
-                            } else {
-                                uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
-                            }
-
-                            if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
-
-                                uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                    a = a.replace(/\D/g, '');
-                                    a = a == '' ? 0 : parseInt(a);
-                                    b = b.replace(/\D/g, '');
-                                    b = b == '' ? 0 : parseInt(b);
-                                    return a - b;
-                                });
-
-                            } else // Sort alphabetically by default
-                                uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                    return a - b;
-                                });
+                     _.forOwn(_uniqueFieldValuesByFieldName, function(columnValue, columnName) {
+                        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+                        if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
+                            var row = [];
+                            columnValue.forEach(function (rowValue) {
+                                row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
+                            });
+                            row.sort();
+                            uniqueFieldValuesByFieldName[columnName] = row;
+                        } else {
+                            uniqueFieldValuesByFieldName[columnName] = columnValue;
                         }
-                    }
+
+                        if (dataSourceDescription.fe_filters_fieldsSortableByInteger && dataSourceDescription.fe_filters_fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                                a = a.replace(/\D/g, '');
+                                a = a == '' ? 0 : parseInt(a);
+                                b = b.replace(/\D/g, '');
+                                b = b == '' ? 0 : parseInt(b);
+                                return a - b;
+                            });
+
+                        } else // Sort alphabetically by default
+                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
+                                return a - b;
+                            });
+                    });
+
                     done();
                 });
             });
