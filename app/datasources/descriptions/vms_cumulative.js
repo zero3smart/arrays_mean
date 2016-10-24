@@ -47,7 +47,7 @@ exports.Descriptions =
                 gallery: false,
                 choropleth: false,
                 chart: true,
-                scatterplot: true,
+                scatterplot: false,
                 timeline: false,
                 wordCloud: false,
                 lineGraph: true,
