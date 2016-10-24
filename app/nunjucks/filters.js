@@ -1,5 +1,6 @@
 var moment = require('moment');
 var url = require('url');
+var import_datatypes = require('../datasources/utils/import_datatypes.js');
 
 module.exports = function (nunjucks_env) {
     nunjucks_env.addFilter('comma', require('nunjucks-comma-filter'));
@@ -212,5 +213,10 @@ module.exports = function (nunjucks_env) {
                 return el;
             }
         }).join(' ');
+    });
+
+    // Object Row Coercion Data Type
+    nunjucks_env.addFilter('fieldDataType_coercion', function(field) {
+        return import_datatypes.fieldDataType_coercion(field);
     });
 };

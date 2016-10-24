@@ -25,9 +25,26 @@
     min-width: 120px;
     text-align: center;
 }
-
 .dataset ul.steps > li span.glyphicon {
     display: block;
     text-align: center;
     font-size: 22px;
+}
+.dataset .format-data tr.field {
+    cursor: pointer;
+}
+
+form.format-field .form-group label {
+    padding-left: 0;
+    padding-right: 0;
+    border: none;
+    -webkit-box-shadow: none;
+}
+form.format-field .form-group {
+    margin: 10px 0;
+}
+form.format-field .form-group:after {
+    content: '';
+    clear: both;
+    display: block;
 }

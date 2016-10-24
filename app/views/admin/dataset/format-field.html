@@ -1,0 +1,65 @@
+{% extends "../../layout/ajax.html" %}
+
+{% block content %}
+<form class="format-field">
+    <div class="form-group">
+        <div class="col-xs-4">
+            <label class="form-control">Name</label>
+        </div>
+        <div class="col-xs-8">
+            <input id="name" name="name" class="form-control" value="{{ field }}" disabled/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-xs-4">
+            <label for="dataType" class="form-control">Data Type</label>
+        </div>
+        <div class="col-xs-8">
+            <select id="dataType" class="form-control" name="dataType"
+                    value="{{ doc.raw_rowObjects_coercionScheme[field] | fieldDataType_coercion }}">
+                {% for operation in availableOperations_forFieldDataType_coercion %}
+                <option value="{{ operation | fieldDataType_coercion }}">{{ operation | fieldDataType_coercion }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-xs-4">
+            <label for="dataFormat" class="form-control">Data Format</label>
+        </div>
+        <div class="col-xs-8">
+            <input type="text" id="dataFormat" name="dataFormat" class="form-control"
+                   value="{{ doc.raw_rowObjects_coercionScheme[field].format | safe }}"
+                   title="Specify in which format the field is listed on the source file."/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-xs-4">
+            <label for="dataOutputFormat" class="form-control">Data Output Format</label>
+        </div>
+        <div class="col-xs-8">
+            <input type="text" id="dataOutputFormat" name="dataOutputFormat" class="form-control"
+                   value="{{ doc.raw_rowObjects_coercionScheme[field].outputFormat | safe }}"
+                   title="Specify in which output format the field will be used to display, if you want to customize the field format"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-xs-4">
+            <label for="visible" class="form-control">Visible</label>
+        </div>
+        <div class="col-xs-8">
+            <input type="checkbox" id="visible" name="visible" value="true" {{ 'checked=checked' if
+            doc.fe_visible else '' }}/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <button id="done" class="pull-right form-control">Done</button>
+    </div>
+</form>
+{% endblock %}

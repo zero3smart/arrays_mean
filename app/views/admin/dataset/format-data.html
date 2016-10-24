@@ -15,16 +15,30 @@
 	<div class="alert alert-success" role="alert">{{ flash }}</div>
 	{% endif %}
 
-	<div class="dataset format">
+	<div class="dataset format-data">
 		{% include "../../partials/admin/dataset-breadcrumb.html" %}
 
 		<br />
 
-		<div class="format">
+		<div class="format-data">
+			<div class="form-group row">
+				<label class="col-xs-4" for="fn_new_rowPrimaryKeyFromRowObject">Primary Key: </label>
+				<div class="col-xs-8">
+					<select class="form-control" id="fn_new_rowPrimaryKeyFromRowObject" name="fn_new_rowPrimaryKeyFromRowObject" class="form-control" value="{{ doc.fn_new_rowPrimaryKeyFromRowObject }}">
+						{% for colName in colNames %}
+						<option value="{{ colName }}">{{ colName }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+
+			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
+
 			<table class="table">
 				<thead>
 				<tr>
 					<th>#</th>
+					<th>Use</th>
 					<th>Column Name</th>
 					<th>Type</th>
 					<th>Sample</th>
@@ -32,15 +46,12 @@
 				</thead>
 				<tbody>
 				{% for colName in colNames %}
-				<tr>
+				<tr class="field" data-field-name="{{ colName }}">
 					<th scope="row">{{ loop.index }}</th>
+					<td><input type="checkbox" checked="checked" disabled></td>
 					<td>{{ colName }}</td>
 					<td>
-						{% if doc.raw_rowObjects_coercionScheme %}
-						{{ doc.raw_rowObjects_coercionScheme[colName].do if doc.raw_rowObjects_coercionScheme[colName]  else 'String' }}
-						{% else %}
-						String
-						{% endif %}
+						{{ doc.raw_rowObjects_coercionScheme[colName] | fieldDataType_coercion }}
 					</td>
 					<td>{{ firstRecord[loop.index0] }}</td>
 				</tr>
@@ -55,10 +66,9 @@
 			</div>
 		</div>
 
-		<form>
-
-		</form>
 	</div>
+
+	{% include "../../partials/admin/modal.html" %}
 
 {% endblock %}
 

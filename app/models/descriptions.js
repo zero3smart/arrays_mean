@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 //
 var DatasourceDescription_scheme = Schema({
     uid: String,
-    importRevision: {type: Number,integer: true},
+    importRevision: {type: Number,integer: true, default: 1},
     schema_id: String,
     fe_visible: {type: Boolean, default: true},
     fe_listed: {type: Boolean, default: true},

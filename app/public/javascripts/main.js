@@ -320,3 +320,13 @@ function trackEvent(eventName, eventPayload) {
     eventPayload = $.extend(basePayload, eventPayload);
     mixpanel.track(eventName, eventPayload);
 }
+
+
+function doesExistFormat_fieldDataType_coercion(field) {
+    if (!field) return false;
+
+    if (field.operation == 'ToDate')
+        return true;
+
+    return false;
+}

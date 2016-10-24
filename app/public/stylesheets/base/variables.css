@@ -48,6 +48,10 @@
 
 /* @end */
 
+.no-padding {
+	padding: 0 !important;
+}
+
 /* @group Primary Color */
 
 .color-brand,

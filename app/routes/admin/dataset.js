@@ -131,6 +131,18 @@ router.post('/:id/format-data', ensureLoggedIn, function (req, res) {
     });
 });
 
+router.get('/:id/format-field/:field', ensureLoggedIn, function(req, res) {
+    controller.getFormatField(req, function(err, data) {
+        if (err) {
+            winston.error("❌  Error getting bind data for dataset format field: ", err);
+            res.status(500).send(err.response || 'Internal Server Error');
+
+            return;
+        }
+        res.render('admin/dataset/format-field', data);
+    });
+});
+
 //
 router.get('/:id/format-views', ensureLoggedIn, function (req, res) {
     controller.getFormatViews(req, function (err, data) {

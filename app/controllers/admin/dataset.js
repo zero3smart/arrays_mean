@@ -9,6 +9,7 @@ var _ = require('lodash');
 
 var datasource_description = require('../../models/descriptions');
 var datasource_upload_service = require('../../../lib/datasource_process/aws-datasource-files-hosting');
+var import_datatypes = require('../../datasources/utils/import_datatypes');
 
 /***************  Index  ***************/
 module.exports.index = function (req, next) {
@@ -253,19 +254,40 @@ module.exports.saveFormatData = function (req, next) {
     var sourceURL = req.body.sourceURL;
 
     if (req.params.id) {
-        datasource_description.updateOne({_id: req.params.id}, {$set: {sourceURL: sourceURL}}, function (err) {
+        var updateObject = {fn_new_rowPrimaryKeyFromRowObject: req.body.fn_new_rowPrimaryKeyFromRowObject};
+        datasource_description.findOneAndUpdate({_id: req.params.id}, updateObject, {$upsert: true}, function (err, doc) {
             if (err) return next(err);
 
-            data.id = req.params.id;
+            if (doc != null) {
+                data.doc = doc._doc;
+            }
 
-
+            next(null, data);
         });
-    } else {
-        new datasource_description({sourceURL: sourceURL}).save();
     }
-
-    next(null, data);
 };
+
+/***************  Format Field  ***************/
+module.exports.getFormatField = function(req, next) {
+    var dataset_id = req.params.id;
+    var field_name = req.params.field;
+    if (!dataset_id || !field_name) return next(new Error('Invalid parameter!'));
+
+    var data = {
+        id: dataset_id,
+        field:field_name,
+        availableOperations_forFieldDataType_coercion: import_datatypes.availableOperations_forFieldDataType_coercion()
+    };
+
+    datasource_description.findById(dataset_id, function(err, doc) {
+        if (err) return next(err);
+
+        if (doc) {
+            data.doc = doc._doc;
+        }
+        next(null, data);
+    });
+}
 
 /***************  Format Views  ***************/
 module.exports.getFormatViews = function (req, next) {
