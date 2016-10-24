@@ -21,12 +21,23 @@ function BarChart(selector, dataSet, options) {
         }
     }
 
-    this._colors = d3.scale.category20().range();
+    var self = this;
+
+    var colors = d3.scale.category20().range();
     if (dataSet.colors) {
         for(var i = 0; i < dataSet.colors.length; i ++) {
-            this._colors[i] = dataSet.colors[i];
+            colors[i] = dataSet.colors[i];
         }
     }
+
+    this._colors = {};
+    i = 0;
+    this._data.forEach(function(col) {
+        col.forEach(function(d) {
+            if (!self._colors[d.label]) self._colors[d.label] = colors[i++];
+        });
+    });
+
     /**
      * Chart tooltip.
      * @private
@@ -64,7 +75,6 @@ function BarChart(selector, dataSet, options) {
       .attr('transform', this.getYAxisTransform())
       .call(this.getYAxis());
 
-    var self = this;
     /**
      * Append bar's series.
      */
@@ -82,7 +92,7 @@ function BarChart(selector, dataSet, options) {
         .append('rect')
         .attr('class', 'bar')
         .style('fill', function(d, i, j) {
-            return self._colors[i % self._colors.length];
+            return self._colors[d.label];
         }).on('mouseenter', function(d, i, j) {
             self._barMouseEnterEventHandler(this, d, i, j);
         }).on('mouseout', function(d, i, j) {

@@ -27,9 +27,9 @@ VerticalBarChart.prototype._animate = function() {
     this._bars.transition()
         .duration(1000)
         .attr('height', function(d, i, j) {
-            return self.getBarHeight(d, i, j);
+            return isNaN(self.getBarHeight(d, i, j)) ? 0 : self.getBarHeight(d, i, j);
         }).attr('y', function(d, i, j) {
-            return self.getBarY(d, i, j);
+            return isNaN(self.getBarY(d, i, j)) ? 0 : self.getBarY(d, i, j);
         });
 };
 
