@@ -85,7 +85,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
             }
 
-
             if (aggregateBy_humanReadable_available) {
                 if (aggregateBy_humanReadable_available.length > 0)
                     defaultAggregateByColumnName_humanReadable = aggregateBy_humanReadable_available[0];
@@ -93,7 +92,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregateBy_humanReadable_available = undefined;
             }
 
-    var aggregateBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy ? aggregateBy : defaultAggregateByColumnName_humanReadable, dataSourceDescription);
+            var aggregateBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy ? aggregateBy : defaultAggregateByColumnName_humanReadable, dataSourceDescription);
 
             //
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults = [];
@@ -283,6 +282,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         groupedResults.push(result);
                     });
+
                     done();
                 };
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
@@ -334,6 +334,5 @@ module.exports.BindData = function (req, urlQuery, callback) {
             });
 
         })
-
 
 };

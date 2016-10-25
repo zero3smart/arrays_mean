@@ -120,6 +120,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 } else {
                     done();
                 }
+
             });
 
             batch.end(function (err) {

@@ -23,6 +23,7 @@ function PieChart(selection, pieData, colorMap) {
         .attr('width', width)
         .attr('height', height)
         .append('div')
+
         .classed('svg-container', true) //container class to make it responsive
         .append('svg')
         .attr('preserveAspectRatio', 'xMinYMin meet')
@@ -78,15 +79,19 @@ function PieChart(selection, pieData, colorMap) {
         .data(pie(pieData))
         .enter()
         .append('g')
+
         .attr('class', 'arc');
+
     /**
      * Place paths
      */
     var slices = g.append('path')
         .attr('d', arc)
+
         .style('fill', function (d, i) {
             return colorMap[d.data.label];
         }).attr('id', function (d, i) {
+
             return 'slice-' + i;
         });
 }

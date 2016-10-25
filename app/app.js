@@ -86,10 +86,8 @@ var raw_source_documents = require('./models/raw_source_documents');
 var datasource_descriptions = require('./datasources/descriptions');
 
 
-
-
 if (typeof process === 'object') { /* to debug promise */
-    process.on('unhandledRejection', function(error, promise) {
+    process.on('unhandledRejection', function (error, promise) {
         console.error("== Node detected an unhandled rejection! ==");
         console.error(error.stack);
     });
@@ -98,18 +96,16 @@ if (typeof process === 'object') { /* to debug promise */
 var modelNames = [raw_source_documents.ModelName];
 mongoose_client.FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed(modelNames)
 
-mongoose_client.WhenMongoDBConnected(function() 
-{
-    mongoose_client.WhenIndexesHaveBeenBuilt(function() 
-    {
+mongoose_client.WhenMongoDBConnected(function () {
+    mongoose_client.WhenIndexesHaveBeenBuilt(function () {
 
         winston.info("💬  ready to find all source descriptions and seed the DB");
 
-        datasource_descriptions.findAllDescriptionAndSetup(function(err) {
+        datasource_descriptions.findAllDescriptionAndSetup(function (err) {
             if (err) {
                 winston.error("❌ cannot find descriptions in db and set them up");
             } else {
-                winston.info("✅ all datasources descriptions in db has been set up");
+                winston.info("✅  all datasources descriptions in db has been set up");
 
             }
 

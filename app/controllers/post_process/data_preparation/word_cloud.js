@@ -23,7 +23,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
         .then(function (dataSourceDescription) {
 
-
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
                 callback(new Error("No data source with that source pkey " + source_pKey), null);
 
@@ -89,7 +88,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = {};
-                    _.forOwn(_uniqueFieldValuesByFieldName, function(columnValue, columnName) {
+                    _.forOwn(_uniqueFieldValuesByFieldName, function (columnValue, columnName) {
                         var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
                         if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                             var row = [];
@@ -187,6 +186,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     return o.value;
                 }));
                 //
+
                 var data =
                 {
                     env: process.env,
@@ -226,6 +226,5 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 callback(err, data);
             });
         })
-
 
 };

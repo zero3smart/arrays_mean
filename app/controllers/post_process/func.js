@@ -54,7 +54,7 @@ var _activeFilter_matchOp_orErrDescription_fromMultiFilter = function (dataSourc
                 // Restore
                 filterVal = filterVals[j];
             }
-            //console.log('---------- filter', filterCol, filterVal);
+
             if (typeof filterVal === 'string' || typeof filterVal === 'number') {
 
                 matchConditions = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
@@ -469,7 +469,7 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
         }
         //
         // Now insert keyword filters
-        if (dataSourceDescription.fe_filters_keywordFilters) {
+        if (dataSourceDescription.fe_filters.keywordFilters) {
             var keywordFilters_length = dataSourceDescription.fe_filters.keywordFilters.length;
             for (var i = 0; i < keywordFilters_length; i++) {
                 var keywordFilter = dataSourceDescription.fe_filters.keywordFilters[i];
@@ -595,7 +595,7 @@ function _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnName
 module.exports.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill;
 
 //
-function _filterObjFromQueryParams (queryParams) {
+function _filterObjFromQueryParams(queryParams) {
     var filterObj = {};
     var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'chartBy', 'stackBy', 'mapBy', 'aggregateBy', 'searchQ', 'searchCol', 'embed'];
     for (var key in queryParams) {
@@ -607,11 +607,12 @@ function _filterObjFromQueryParams (queryParams) {
     }
     return filterObj;
 };
+
 module.exports.filterObjFromQueryParams = _filterObjFromQueryParams;
 
 function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupBy_realColumnName, viewType) {
     //
-    var fe_valuesToExcludeByOriginalKey = dataSourceDescription['fe_' + viewType + '_valuesToExcludeByOriginalKey'];
+    var fe_valuesToExcludeByOriginalKey = dataSourceDescription.fe_views.views[viewType]["valuesToExcludeByOriginalKey"];
     if (fe_valuesToExcludeByOriginalKey != null && typeof fe_valuesToExcludeByOriginalKey !== 'undefined') {
         if (fe_valuesToExcludeByOriginalKey._all) {
             if (fe_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
@@ -637,4 +638,5 @@ function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupB
 
     return displayableVal;
 }
+
 module.exports.ValueToExcludeByOriginalKey = _valueToExcludeByOriginalKey;

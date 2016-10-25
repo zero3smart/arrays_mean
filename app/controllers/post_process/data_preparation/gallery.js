@@ -41,7 +41,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var galleryItem_htmlWhenMissingImage;
 
-
             if (galleryViewSettings.galleryItemConditionsForIconWhenMissingImage) {
                 var cond = galleryViewSettings.galleryItemConditionsForIconWhenMissingImage;
 
@@ -60,6 +59,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 return '<span class="' + classes + '"></span>';
                             }
                         }
+
                         if (conditions[i].operator == "equal") {
 
 
@@ -195,7 +195,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = {};
-                    _.forOwn(_uniqueFieldValuesByFieldName, function(columnValue, columnName) {
+                    _.forOwn(_uniqueFieldValuesByFieldName, function (columnValue, columnName) {
                         var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
                         if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                             var row = [];
@@ -365,7 +365,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 };
                 callback(null, data);
             });
-
 
         })
         .catch(function (err) {

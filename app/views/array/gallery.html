@@ -19,7 +19,7 @@
             <div class="array-meta">{% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider hidden-xs"></span> {% endif %}<span class="array-meta-count hidden-xs">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider"></span> <span class="array-meta-updated">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span></div>
         </header><!-- .array-header -->
 
-        {% if view_descriptions %}
+        {% if view_description %}
             <div class="array-description-wrapper">
                 <p class="array-description">{{ view_description| truncate(80) }}</p>
                 <a href="#expanded"><p class="array-description-expand">Read more</p></a>

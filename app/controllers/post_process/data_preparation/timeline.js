@@ -22,7 +22,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
     var source_pKey = urlQuery.source_key;
 
-
     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
         .then(function (dataSourceDescription) {
 
@@ -76,6 +75,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             //
             var wholeFilteredSet_aggregationOperators = [];
+
             if (isSearchActive) {
                 var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
                 if (typeof _orErrDesc.err !== 'undefined') {
@@ -156,7 +156,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = {};
-                    _.forOwn(_uniqueFieldValuesByFieldName, function(columnValue, columnName) {
+                    _.forOwn(_uniqueFieldValuesByFieldName, function (columnValue, columnName) {
                         var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
                         if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                             var row = [];
@@ -308,16 +308,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     var finalizedButNotCoalesced_groupedResults = [];
                     _groupedResults.forEach(function (el, i, arr) {
                         var results = [];
-                        el.results.forEach(function(el2, i2) {
-                            var originalVal = el2.rowParams[sortBy_realColumnName];
-                            var displayableVal = originalVal;
-                            if (originalVal == null) {
-                                displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
-                            } else if (originalVal === "") {
-                                displayableVal = "(not specified)"; // we want to show a label for it rather than it appearing broken by lacking a label
-                            } else {
-                                displayableVal = func.reverseDataToBeDisplayableVal(originalVal, sortBy_realColumnName, dataSourceDescription);
-                            }
+                        el.results.forEach(function (el2, i2) {
+                            var displayableVal = func.ValueToExcludeByOriginalKey(
+                                el2.rowParams[sortBy_realColumnName], dataSourceDescription, sortBy_realColumnName, 'timeline');
+
                             el2.rowParams[sortBy_realColumnName] = displayableVal;
                             results.push(el2);
                         });
@@ -331,7 +325,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             });
 
             var galleryItem_htmlWhenMissingImage;
-
 
             if (dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage) {
                 var cond = dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage;
@@ -475,6 +468,5 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             });
         })
-
 
 };

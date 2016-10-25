@@ -34,6 +34,7 @@ d3.select('#pie-set')
     .enter()
     .append('li')
     .attr('class', 'gallery-item gallery-item-image pie-set-item')
+
     .each(function (d, i) {
         pieChart = new PieChart(this, d.data, colorMap);
 

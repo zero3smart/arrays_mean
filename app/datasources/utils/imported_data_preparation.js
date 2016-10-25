@@ -1,6 +1,5 @@
 var raw_source_documents = require('../../models/raw_source_documents');
 var dataSourceDescriptions = require('../descriptions');
-var teamDescriptions = require('../teams');
 var _ = require('lodash');
 
 var humanReadableColumnName_objectTitle = "Object Title";
@@ -23,16 +22,13 @@ var _dataSourceDescriptionWithPKey = function (source_pKey) {
     var uid = split[0];
     var revision = split[1].substring(1);
 
-    return new Promise(function(resolve,reject) {
-         dataSourceDescriptions.GetDescriptionsWith_uid_importRevision(uid,revision,function(err,data) {
+    return new Promise(function (resolve, reject) {
+        dataSourceDescriptions.GetDescriptionsWith_uid_importRevision(uid, revision, function (err, data) {
             if (err) reject(err);
             resolve(data);
-
         })
-
     })
-}
-
+};
 
 module.exports.DataSourceDescriptionWithPKey = _dataSourceDescriptionWithPKey;
 
@@ -54,6 +50,7 @@ function _realColumnNameFromHumanReadableColumnName(humanReadableColumnName, dat
 
     return humanReadableColumnName;
 };
+
 module.exports.RealColumnNameFromHumanReadableColumnName = _realColumnNameFromHumanReadableColumnName;
 
 //
@@ -74,6 +71,7 @@ function _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, 
 
     return feVisible_rowParams_keys;
 };
+
 module.exports.RowParamKeysFromSampleRowObject_sansFEExcludedFields = _rowParamKeysFromSampleRowObject_sansFEExcludedFields;
 
 //
@@ -93,6 +91,7 @@ function _rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleRowOb
 
     return filterAvailable_keys;
 };
+
 module.exports.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters = _rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters;
 
 //
@@ -133,6 +132,7 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, 
 
     return rowParams_keys;
 }
+
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject = _humanReadableFEVisibleColumnNamesWithSampleRowObject;
 
 //
@@ -146,6 +146,7 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByD
 
     return columnNames;
 };
+
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown;
 
 //
@@ -158,7 +159,7 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdow
     var available_keys = [];
     var field = 'fieldsNotAvailable';
     if (fieldName) field += ('As' + fieldName + 'Columns');
-    _.each(keys, function(key) {
+    _.each(keys, function (key) {
         if (dataSourceDescription.fe_views.views[viewType][field]) {
             if (dataSourceDescription.fe_views.views[viewType][field].indexOf(key) !== -1) {
                 return;
@@ -171,4 +172,5 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdow
 
     return available_keys;
 }
+
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown;

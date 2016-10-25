@@ -20,10 +20,9 @@ for (var i = 0; i < numCountries; i++) {
     var countryName = countryFeature.properties.name;
     var geometry = countryFeature.geometry;
     cache_countryGeometryByLowerCasedCountryName[countryName.toLowerCase()] = geometry;
-    // console.log(countryName + ": ", geometry);
 }
 winston.info("💬  Cached " + Object.keys(cache_countryGeometryByLowerCasedCountryName).length + " geometries by country name.");
-// console.log("cache_countryGeometryByLowerCasedCountryName " , cache_countryGeometryByLowerCasedCountryName);
+
 __countries_geo_json_str = undefined; // free
 __countries_geo_json = undefined; // free
 
@@ -51,6 +50,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 return;
             }
 
+
             var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
@@ -63,6 +63,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
+
             var filterObj = func.filterObjFromQueryParams(urlQuery);
             var isFilterActive = Object.keys(filterObj).length != 0;
             //
@@ -70,6 +71,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var searchQ = urlQuery.searchQ;
             var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
                 && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
+
 
             //
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures = [], highestValue = 0;
@@ -87,6 +89,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 });
             });
 
+
             // Obtain sample document
             batch.push(function (done) {
                 processedRowObjects_mongooseModel.findOne({}, function (err, _sampleDoc) {
@@ -103,7 +106,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = {};
-                    _.forOwn(_uniqueFieldValuesByFieldName, function(columnValue, columnName) {
+                    _.forOwn(_uniqueFieldValuesByFieldName, function (columnValue, columnName) {
                         var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
                         if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                             var row = [];

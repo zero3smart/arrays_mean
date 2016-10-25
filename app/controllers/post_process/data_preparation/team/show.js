@@ -28,7 +28,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var iterateeFn = async.ensureAsync(function (dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
     {
 
-        console.log(dataSourceDescription["logo"])
         var err = null;
         var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription);
 
@@ -84,6 +83,5 @@ module.exports.BindData = function (req, urlQuery, callback) {
         };
         callback(err, data);
     };
-
 
 };

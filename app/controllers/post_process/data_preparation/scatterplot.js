@@ -1,5 +1,4 @@
 var winston = require('winston');
-var Batch = require('batch');
 var queryString = require('querystring');
 var _ = require('lodash');
 //
@@ -93,7 +92,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     func.topUniqueFieldValuesForFiltering(sourceKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
 
                         var uniqueFieldValuesByFieldName = {}
-                        _.forOwn(_uniqueFieldValuesByFieldName, function(columnValue, columnName) {
+                        _.forOwn(_uniqueFieldValuesByFieldName, function (columnValue, columnName) {
                             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
                             if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                                 var row = [];

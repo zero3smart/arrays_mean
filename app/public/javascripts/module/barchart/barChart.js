@@ -34,7 +34,8 @@ function BarChart(selector, dataSet, options) {
     i = 0;
     this._data.forEach(function(col) {
         col.forEach(function(d) {
-            if (!self._colors[d.label]) self._colors[d.label] = colors[i++];
+            if (!self._colors[d.label]) self._colors[d.label] = colors[i];
+            i = (i+1) % colors.length;
         });
     });
 
