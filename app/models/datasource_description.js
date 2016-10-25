@@ -89,7 +89,6 @@ var DatasourceDescription_scheme = Schema({
 
     // WordCloud
     fe_wordCloud_defaultGroupByColumnName_humanReadable: String,
-    fe_wordCloud_fieldsNotAvailableAsGroupByColumns: Array,
     fe_wordCloud_keywords: Array,
 
     // LineGraph

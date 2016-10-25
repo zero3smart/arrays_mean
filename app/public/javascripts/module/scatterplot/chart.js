@@ -208,11 +208,13 @@ scatterplot.chart.prototype.setColor = function(color) {
  */
 scatterplot.chart.prototype.searchBy = function(key, value) {
 
-    if (key in this._metaData.fe_scatterplot_fieldsMap) {
-        key = this._metaData.fe_scatterplot_fieldsMap[key];
-    }
+    if (this._metaData.fe_scatterplot_fieldsMap) {
+        if (key in this._metaData.fe_scatterplot_fieldsMap) {
+            key = this._metaData.fe_scatterplot_fieldsMap[key];
+        }
 
-    this._searchBy = [key, value];
+        this._searchBy = [key, value];
+    }
 
     return this;
 };
