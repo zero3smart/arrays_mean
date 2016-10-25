@@ -16,10 +16,9 @@
             <label for="dataType" class="form-control">Data Type</label>
         </div>
         <div class="col-xs-8">
-            <select id="dataType" class="form-control" name="dataType"
-                    value="{{ doc.raw_rowObjects_coercionScheme[field] | fieldDataType_coercion }}">
+            <select id="dataType" class="form-control" name="dataType">
                 {% for operation in availableOperations_forFieldDataType_coercion %}
-                <option value="{{ operation | fieldDataType_coercion }}">{{ operation | fieldDataType_coercion }}
+                <option value="{{ operation | fieldDataType_coercion }}" {{ 'selected' if operation | fieldDataType_coercion == doc.raw_rowObjects_coercionScheme[field] | fieldDataType_coercion }}>{{ operation | fieldDataType_coercion }}
                 </option>
                 {% endfor %}
             </select>
@@ -28,7 +27,7 @@
 
     <div class="form-group">
         <div class="col-xs-4">
-            <label for="dataFormat" class="form-control">Data Format</label>
+            <label for="dataFormat" class="form-control">Format</label>
         </div>
         <div class="col-xs-8">
             <input type="text" id="dataFormat" name="dataFormat" class="form-control"
@@ -39,7 +38,7 @@
 
     <div class="form-group">
         <div class="col-xs-4">
-            <label for="dataOutputFormat" class="form-control">Data Output Format</label>
+            <label for="dataOutputFormat" class="form-control">Output Format</label>
         </div>
         <div class="col-xs-8">
             <input type="text" id="dataOutputFormat" name="dataOutputFormat" class="form-control"
@@ -50,13 +49,32 @@
 
     <div class="form-group">
         <div class="col-xs-4">
-            <label for="visible" class="form-control">Visible</label>
+            <label for="use" class="form-control">Use</label>
         </div>
         <div class="col-xs-8">
-            <input type="checkbox" id="visible" name="visible" value="true" {{ 'checked=checked' if
-            doc.fe_visible else '' }}/>
+            <input type="checkbox" id="use" name="use" {{ 'checked=checked' if
+            not doc.fe_excludeFields | doesArrayContain(field) }}/>
         </div>
     </div>
+
+    <div class="form-group">
+        <div class="col-xs-4">
+            <label for="titleOverride" class="form-control">Title Override</label>
+        </div>
+        <div class="col-xs-8">
+            <input type="text" id="titleOverride" class="form-control" value="{{ doc.fe_displayTitleOverrides[field] | safe }}"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-xs-4">
+            <label for="displayOrder" class="form-control">Display Order</label>
+        </div>
+        <div class="col-xs-8">
+            <input type="text" id="displayOrder" class="form-control" value="{{ doc.fe_fieldDisplayOrder[field] | safe }}"/>
+        </div>
+    </div>
+
 
     <div class="form-group">
         <button id="done" class="pull-right form-control">Done</button>

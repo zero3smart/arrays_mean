@@ -24,9 +24,9 @@
 			<div class="form-group row">
 				<label class="col-xs-4" for="fn_new_rowPrimaryKeyFromRowObject">Primary Key: </label>
 				<div class="col-xs-8">
-					<select class="form-control" id="fn_new_rowPrimaryKeyFromRowObject" name="fn_new_rowPrimaryKeyFromRowObject" class="form-control" value="{{ doc.fn_new_rowPrimaryKeyFromRowObject }}">
+					<select class="form-control" id="fn_new_rowPrimaryKeyFromRowObject" name="fn_new_rowPrimaryKeyFromRowObject" class="form-control">
 						{% for colName in colNames %}
-						<option value="{{ colName }}">{{ colName }}</option>
+						<option value="{{ colName }}" {{ 'selected' if colName == doc.fn_new_rowPrimaryKeyFromRowObject }}>{{ colName }}</option>
 						{% endfor %}
 					</select>
 				</div>
