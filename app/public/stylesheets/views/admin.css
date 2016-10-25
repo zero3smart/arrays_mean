@@ -48,3 +48,7 @@ form.format-field .form-group:after {
     clear: both;
     display: block;
 }
+
+form.format-field .form-group input[type='checkbox'] {
+    margin-top: 10px;
+}

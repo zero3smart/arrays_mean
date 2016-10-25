@@ -8,7 +8,7 @@
 
 {% block content %}
 	<header class="admin-header">
-		<h1 class="admin-title">{{ pageTitle }}</h1>
+		<h1 class="admin-title">Dataset Settings - General Settings</h1>
 	</header>
 
 	{% if flash | length %}
@@ -32,6 +32,11 @@
 			</div>
 
 			<div class="form-group row">
+				<label class="col-xs-4" for="revision">Import Revision: </label>
+				<input class="col-xs-8" type="number" id="revision" name="importRevision" value="{{ doc.importRevision }}" required/>
+			</div>
+
+			<div class="form-group row">
 				<label class="col-xs-4" for="brandColor">Brand Color: </label>
 				<input class="col-xs-8" type="text" id="brandColor" name="brandColor" value="{{ doc.brandColor }}"/>
 			</div>
@@ -39,11 +44,6 @@
 			<div class="form-group row">
 				<label class="col-xs-4" for="urls">Urls: </label>
 				<input class="col-xs-8" type="text" id="urls" name="urls" value="{{ doc.urls }}"/>
-			</div>
-
-			<div class="form-group row">
-				<label class="col-xs-4" for="logo">Logo: </label>
-				<input class="col-xs-8" type="text" id="logo" name="logo" value="{{ doc.logo }}"/>
 			</div>
 
 			<div class="form-group row">

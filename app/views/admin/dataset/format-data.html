@@ -8,7 +8,7 @@
 
 {% block content %}
 	<header class="admin-header">
-		<h1 class="admin-title">{{ pageTitle }}</h1>
+		<h1 class="admin-title">Dataset Settings - Format Data</h1>
 	</header>
 
 	{% if flash | length %}
@@ -37,7 +37,7 @@
 			<table class="table">
 				<thead>
 				<tr>
-					<th>#</th>
+					<th>Display Order</th>
 					<th>Use</th>
 					<th>Column Name</th>
 					<th>Type</th>
@@ -48,7 +48,8 @@
 				{% for colName in colNames %}
 				<tr class="field" data-field-name="{{ colName }}">
 					<th scope="row">{{ loop.index }}</th>
-					<td><input type="checkbox" checked="checked" disabled></td>
+					<td><input type="checkbox" {{ 'checked=checked' if
+						not doc.fe_excludeFields | doesArrayContain(colName) }} disabled></td>
 					<td>{{ colName }}</td>
 					<td>
 						{{ doc.raw_rowObjects_coercionScheme[colName] | fieldDataType_coercion }}
@@ -60,7 +61,7 @@
 			</table>
 
 			<div class="panel-footer">
-				<a class="btn btn-default pull-left" href="source"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
+				<a class="btn btn-default pull-left" href="/admin/dataset/{{ doc._id }}/"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
 				<button type="submit" class="btn btn-default pull-right"><span class="glyphicon glyphicon-hand-right"></span> Save</button>
 				<div class="clearfix"></div>
 			</div>

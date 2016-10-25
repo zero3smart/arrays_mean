@@ -6,8 +6,7 @@ module.exports.index = function (req, next) {
 
         flash: req.flash('message'),
 
-        user: req.user,
-        pageTitle: "Manage Users"
+        user: req.user
     };
 
     next(null, data);

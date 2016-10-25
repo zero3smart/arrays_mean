@@ -71,13 +71,87 @@
             <label for="displayOrder" class="form-control">Display Order</label>
         </div>
         <div class="col-xs-8">
-            <input type="text" id="displayOrder" class="form-control" value="{{ doc.fe_fieldDisplayOrder[field] | safe }}"/>
+            <input type="number" id="displayOrder" class="form-control" value="{{ doc.fe_fieldDisplayOrder[field] | safe }}"/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-xs-4">
+            <label for="designedField" class="form-control">Designed Field</label>
+        </div>
+        <div class="col-xs-8">
+            <select id="designedField" name="designatedField" class="form-control">
+                <option value="">Not used</option>
+                <option value="objectTitle" {{ 'selected' if doc.fe_designatedFields.objectTitle == field }}>Object Title</option>
+                <option value="originalImageURL" {{ 'selected' if doc.fe_designatedFields.originalImageURL == field }}>Original Image URL</option>
+                <option value="medThumbImageURL" {{ 'selected' if doc.fe_designatedFields.medThumbImageURL == field }}>Medium Thumb Image URL</option>
+            </select>
+        </div>
+    </div>
+
+    {# Filters #}
+    <h4>Filter</h4>
+
+    <div class="form-group">
+        <div class="col-xs-8">
+            <label for="filter_notAvailable" class="form-control">Not Available</label>
+        </div>
+        <div class="col-xs-4">
+            <input type="checkbox" id="filter_notAvailable" name="filter_notAvailable" {{ 'checked=checked' if
+            doc.fe_filters.fieldsNotAvailable | doesArrayContain(field) }}/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-xs-8">
+            <label for="filter_commanSeparatedAsIndividual" class="form-control">Comma Separated As Individual</label>
+        </div>
+        <div class="col-xs-4">
+            <input type="checkbox" id="filter_commanSeparatedAsIndividual" name="filter_commanSeparatedAsIndividual"
+                   {{ 'checked=checked' if doc.fe_filters.fieldsCommaSeparatedAsIndividual | doesArrayContain(field) }}/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-xs-8">
+            <label for="filter_multiSelectable" class="form-control">Allow Multiple Selection</label>
+        </div>
+        <div class="col-xs-4">
+            <input type="checkbox" id="filter_multiSelectable" name="filter_multiSelectable"
+                   {{ 'checked=checked' if doc.fe_filters.fieldsMultiSelectable | doesArrayContain(field) }}/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-xs-8">
+            <label for="filter_oneToOneOverrideWithValuesByTitleByFieldName" class="form-control">One To One Override Values By Title</label>
+        </div>
+        <div class="col-xs-4">
+            <input type="checkbox" id="filter_oneToOneOverrideWithValuesByTitleByFieldName" name="filter_oneToOneOverrideWithValuesByTitleByFieldName"
+                   {{ 'checked=checked' if doc.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName | doesArrayContain(field) }}/>
+        </div>
+    </div>
+
+    {# Relationships #}
+    <h4>Relationships</h4>
+
+    <div class="form-group">
+        <div class="col-xs-4">
+
+        </div>
+        <div class="col-xs-8">
+
         </div>
     </div>
 
 
     <div class="form-group">
-        <button id="done" class="pull-right form-control">Done</button>
+        <div class="col-xs-offset-4 col-xs-4">
+            <h5>Data: {{ doc.title }}</h5>
+        </div>
+        <div class="col-xs-4">
+            <button id="done" class="pull-right form-control">Done</button>
+        </div>
     </div>
 </form>
 {% endblock %}

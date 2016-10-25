@@ -1,7 +1,7 @@
 <ul class="steps">
     <li>
         {% if currentView[1] != 'settings' %}
-        <a href="settings" {% if currentView[1] != 'settings' %}class="text-muted"{% endif %}>
+        <a href="settings" class="text-muted">
         {% endif %}
             <span class="glyphicon glyphicon-{{ 'check' if doc.title else 'unchecked' }}"></span>
             1. General Settings
@@ -9,9 +9,10 @@
         </a>
         {% endif %}
     </li>
+
     <li>
         {% if currentView[1] != 'source' %}
-        <a href="source" {% if currentView[1] != 'source' %}class="text-muted"{% endif %}>
+        <a href="source" class="text-muted">
         {% endif %}
             <span class="glyphicon glyphicon-{{ 'check' if doc.uid else 'unchecked' }}"></span>
             2. Upload Data
@@ -19,9 +20,10 @@
         </a>
         {% endif %}
     </li>
+
     <li>
         {% if currentView[1] != 'format-data' %}
-        <a href="format-data" {% if currentView[1] != 'format-data' %}class="text-muted"{% endif %}>
+        <a href="format-data" class="text-muted">
         {% endif %}
             <span class="glyphicon glyphicon-{{ 'check' if doc.raw_rowObjects_coercionScheme else 'unchecked' }}"></span>
             3. Format Data
@@ -29,16 +31,18 @@
         </a>
         {% endif %}
     </li>
+
     <li>
         {% if currentView[1] != 'format-views' %}
-        <a href="format-views" {% if currentView[1] != 'format-views' %}class="text-muted"{% endif %}>
+        <a href="format-views" class="text-muted">
         {% endif %}
             <span class="glyphicon glyphicon-{{ 'check' if doc.fe_views.views else 'unchecked' }}"></span>
-            4. Format Views
+            6. Format Views
         {% if currentView[1] != 'format-views' %}
         </a>
         {% endif %}
     </li>
+
     <li {% if currentView[1] != 'done' %}class="text-muted"{% endif %}>
         <span class="glyphicon glyphicon-unchecked"></span>
         Done!

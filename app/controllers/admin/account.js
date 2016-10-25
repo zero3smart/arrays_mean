@@ -8,8 +8,7 @@ module.exports.index = function (req, next) {
 
         flash: req.flash('message'),
 
-        user: req.user,
-        pageTitle: "Account Settings"
+        user: req.user
     };
 
     next(null, data);

@@ -21,8 +21,7 @@ router.get('/', ensureLoggedIn, function (req, res) {
         res.render('admin/dataset/index', _.assign(data, {
             env: process.env,
             flash: req.flash('message'),
-            user: req.user,
-            pageTitle: "Dataset Settings",
+            user: req.user
         }));
     });
 });
@@ -33,8 +32,7 @@ router.get('/new/settings', ensureLoggedIn, function (req, res) {
     res.render('admin/dataset/settings', _.assign({}, {
         env: process.env,
         flash: req.flash('message'),
-        user: req.user,
-        pageTitle: "Dataset Settings",
+        user: req.user
     }));
 });
 
@@ -50,8 +48,7 @@ router.get('/:id/settings', ensureLoggedIn, function (req, res) {
         res.render('admin/dataset/settings', _.assign(data, {
             env: process.env,
             flash: req.flash('message'),
-            user: req.user,
-            pageTitle: "Dataset Settings",
+            user: req.user
         }));
     });
 });
@@ -82,8 +79,7 @@ router.get('/:id/source', ensureLoggedIn, function (req, res) {
         res.render('admin/dataset/source', _.assign(data, {
             env: process.env,
             flash: req.flash('message'),
-            user: req.user,
-            pageTitle: "Dataset Settings",
+            user: req.user
         }));
     });
 });
@@ -113,8 +109,7 @@ router.get('/:id/format-data', ensureLoggedIn, function (req, res) {
         res.render('admin/dataset/format-data', _.assign(data, {
             env: process.env,
             flash: req.flash('message'),
-            user: req.user,
-            pageTitle: "Dataset Settings",
+            user: req.user
         }));
     });
 });
@@ -147,7 +142,7 @@ router.get('/:id/format-field/:field', ensureLoggedIn, function(req, res) {
 router.get('/:id/format-views', ensureLoggedIn, function (req, res) {
     controller.getFormatViews(req, function (err, data) {
         if (err) {
-            winston.error("❌  Error getting bind data for Dataset format views: ", err);
+            winston.error("❌  Error getting bind data for dataset format views: ", err);
             res.status(500).send(err.response || 'Internal Server Error');
 
             return;
@@ -156,8 +151,7 @@ router.get('/:id/format-views', ensureLoggedIn, function (req, res) {
         res.render('admin/dataset/format-views', _.assign(data, {
             env: process.env,
             flash: req.flash('message'),
-            user: req.user,
-            pageTitle: "Dataset Settings",
+            user: req.user
         }));
     });
 });
@@ -165,13 +159,13 @@ router.get('/:id/format-views', ensureLoggedIn, function (req, res) {
 router.post('/:id/format-views', ensureLoggedIn, function (req, res) {
     controller.saveFormatViews(req, function (err, data) {
         if (err) {
-            winston.error("❌  Error getting bind data for Dataset done: ", err);
+            winston.error("❌  Error getting bind data for dataset format views: ", err);
             res.status(500).send(err.response || 'Internal Server Error');
 
             return;
         }
 
-        res.render('admin/dataset/' + data.id + 'done');
+        res.render('admin/dataset/' + data.id + '/done');
     });
 });
 
