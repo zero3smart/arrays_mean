@@ -207,19 +207,3 @@ legendListLink.attr('class', 'legend-list-link')
 	.html(function(d) {
 		return d.label;
 	});
-
-/**
- * Toggle legend
- */
-$('.legend-toggle').on('click', function(e) {
-	e.preventDefault();
-	$('body').toggleClass('legend-open');
-});
-
-/**
- * Close legend
- */
-$('.legend-close').on('click', function(e) {
-	e.preventDefault();
-	$('body').removeClass('legend-open');
-});

@@ -1,3 +1,29 @@
+
+
+.array-bar-chart .site-content .container-fluid {
+    transition: padding 400ms ease-in-out;
+}
+
+@media (min-width: 768px) {
+    .array-bar-chart.legend-open .site-content .container-fluid {
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+}
+
+.array-bar-chart .sort-bar {
+    border-bottom-style: none;
+    padding-bottom: 0;
+}
+
+.array-bar-chart .sort-direction {
+    display: inline-block;
+}
+
+.array-bar-chart .array-content {
+    position: relative;
+}
+
 @media (min-width: 768px) {
     .array-bar-chart .sort-direction {
         margin: 12px 0;

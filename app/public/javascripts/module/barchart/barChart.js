@@ -99,6 +99,52 @@ function BarChart(selector, dataSet, options) {
             self._barMouseOutEventHandler(this, d, i, j);
         });
 
+    /*
+     * Legend Data
+     */
+    var legendList = d3.select('.legend-list');
+    var legendListItem = legendList.selectAll('.legend-list-item')
+        .data(this.getLegendData())
+        .enter()
+        .append('li')
+        .attr('class', 'legend-list-item');
+
+    var legendListLink = legendListItem.append('a');
+
+    legendListLink.append('span')
+        .attr('class', 'legend-dot')
+        .style('background-color', function(d, i) {
+            return self._colors[d.label];
+        });
+
+    legendListLink.attr('class', 'legend-list-link')
+        .attr('href', '#')
+        .on('mouseover', function(d, i) {
+            d3.select(this)
+                .classed('active', true);
+
+            d3.select(selector)
+                .selectAll('svg')
+                .selectAll('rect.bar')
+                .style('opacity', function(bar) {
+                    if (bar.label == d.label) {
+                        return 1;
+                    } else {
+                        return 0.25;
+                    }
+                });
+        })
+        .on('mouseout', function(d, i) {
+            d3.select(selector)
+                .selectAll('svg')
+                .selectAll('rect.bar')
+                .style('opacity', 1);
+        })
+        .append('span')
+        .html(function(d) {
+            return d.label;
+        });
+
     this._animate();
 };
 
@@ -221,6 +267,23 @@ BarChart.prototype.getChartData = function() {
     }
 };
 
+/**
+ * Get legend data.
+ * @returns {Object[][]}
+ */
+BarChart.prototype.getLegendData = function() {
+    var data = {};
+    var self = this;
+
+    this._data.forEach(function(col) {
+        col.forEach(function(d) {
+            if (!data[d.label]) data[d.label] = d;
+        });
+    });
+
+    return Object.values(data);
+
+};
 
 /**
  * Factory method.

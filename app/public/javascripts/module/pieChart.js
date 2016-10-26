@@ -86,7 +86,5 @@ function PieChart(selection, pieData, colorMap) {
         .attr('d', arc)
         .style('fill', function(d, i) {
             return colorMap[d.data.label];
-        }).attr('id', function(d, i) {
-            return 'slice-' + i;
         });
 }
