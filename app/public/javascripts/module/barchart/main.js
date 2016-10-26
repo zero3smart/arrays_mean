@@ -9,7 +9,6 @@ $(document).ready(function() {
     }
 
     function renderBarChart() {
-        console.log('render');
         BarChart.getInstance('#bar-chart', $.extend(true, {}, graphData), options);
     }
 
