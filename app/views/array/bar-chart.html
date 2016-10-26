@@ -24,173 +24,183 @@
 
         <div class="array-content">
 
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-sm-12">
+            <div class="chart-container">
 
-                        <div class="sort-bar clearfix">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
 
-                            <nav class="sort-bar-left pull-left" role="navigation">
-                                <div class="sort-control sort-direction">
-                                    {% if sortDir == "Descending" %}
-                                    <a title="Sort Ascending" href="{{ routePath_base | constructedRoutePath(filterObj, {
+                            <div class="sort-bar clearfix">
+
+                                <nav class="sort-bar-left pull-left" role="navigation">
+
+                                    {% if colNames_orderedForAggregateByDropdown %}
+                                    {{
+                                    dropdown.sortbar(
+                                        'Y Axis',
+                                        aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
+                                        colNames_orderedForAggregateByDropdown,
+                                        routePath_base | constructedRoutePath(filterObj, {
                                             searchCol: searchCol,
                                             searchQ: searchQ,
-                                            sortDir: 'Ascending',
-                                            aggregateBy: aggregateBy,
-                                            groupBy: groupBy,
                                             stackBy: stackBy,
-                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span></a>
-                                    {% else %}
-                                    <a title="Sort Descending" href="{{ routePath_base | constructedRoutePath(filterObj, {
-                                            searchCol: searchCol,
-                                            searchQ: searchQ,
-                                            sortDir: 'Descending',
-                                            aggregateBy: aggregateBy,
+                                            sortDir: sortDir,
                                             groupBy: groupBy,
-                                            stackBy: stackBy,
-                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span></a>
+                                            aggregateBy: ''
+                                        })
+                                    )
+                                    }}
                                     {% endif %}
+
+                                    {% if colNames_orderedForGroupByDropdown %}
+                                    {{
+                                    dropdown.sortbar(
+                                        'X Axis',
+                                        groupBy if groupBy else defaultGroupByColumnName_humanReadable,
+                                        colNames_orderedForGroupByDropdown,
+                                        routePath_base | constructedRoutePath(filterObj, {
+                                            searchCol: searchCol,
+                                            searchQ: searchQ,
+                                            stackBy: stackBy,
+                                            sortDir: sortDir,
+                                            aggregateBy: aggregateBy,
+                                            groupBy: ''
+                                        })
+                                    )
+                                    }}
+                                    {% endif %}
+
+                                    {% if colNames_orderedForStackByDropdown %}
+                                    {{
+                                    dropdown.sortbar
+                                    (
+                                        "Stack By",
+                                        stackBy if stackBy else defaultStackByColumnName_humanReadable,
+                                        colNames_orderedForStackByDropdown,
+                                        routePath_base | constructedRoutePath(filterObj, {
+                                            searchCol: searchCol,
+                                            searchQ: searchQ,
+                                            aggregateBy: aggregateBy,
+                                            groupBy: groupBy,
+                                            sortDir: sortDir,
+                                            stackBy: ''
+                                        })
+                                    )
+                                    }}
+                                    {% endif %}
+
+                                    <div class="sort-control sort-bar-6">
+                                        <div id="direction" class="toggle-button" title="Toggle to view in horizontal or vertical mode">
+                                            <span class="horizontal glyphicon glyphicon-align-left"></span>
+                                            <span class="vertical glyphicon glyphicon-stats"></span>
+                                        </div>
+
+                                        <div id="normalization" class="toggle-button" title="Toggle to view in absolute or relative mode">
+                                            <span class="absolute">#</span>
+                                            <span class="relative">%</span>
+                                        </div>
+
+                                        <div class="sort-direction">
+                                            {% if sortDir == "Descending" %}
+                                            <a title="Sort Ascending" href="{{ routePath_base | constructedRoutePath(filterObj, {
+                                                searchCol: searchCol,
+                                                searchQ: searchQ,
+                                                sortDir: 'Ascending',
+                                                aggregateBy: aggregateBy,
+                                                groupBy: groupBy,
+                                                stackBy: stackBy,
+                                                page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span></a>
+                                            {% else %}
+                                            <a title="Sort Descending" href="{{ routePath_base | constructedRoutePath(filterObj, {
+                                                searchCol: searchCol,
+                                                searchQ: searchQ,
+                                                sortDir: 'Descending',
+                                                aggregateBy: aggregateBy,
+                                                groupBy: groupBy,
+                                                stackBy: stackBy,
+                                                page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span></a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </nav>
+
+                                <div class="sort-bar-right pull-right">
+                                    {{
+                                    search.panel(
+                                        routePath_base,
+                                        searchCol if searchCol else "Object Title",
+                                        colNames_orderedForSortByDropdown,
+                                        searchQ if searchQ else "",
+                                        null,
+                                        null,
+                                        filterObj
+                                    )
+                                    }}
+
+                                    <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
+                                        <span class="icon-legend" aria-hidden="true"></span>
+                                    </a>
                                 </div>
 
-                                {% if colNames_orderedForAggregateByDropdown %}
-                                {{
-                                dropdown.sortbar(
-                                    'Y Axis',
-                                    aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
-                                    colNames_orderedForAggregateByDropdown,
-                                    routePath_base | constructedRoutePath(filterObj, {
-                                        searchCol: searchCol,
-                                        searchQ: searchQ,
-                                        stackBy: stackBy,
-                                        sortDir: sortDir,
-                                        groupBy: groupBy,
-                                        aggregateBy: ''
-                                    })
-                                )
-                                }}
-                                {% endif %}
-
-                                {% if colNames_orderedForGroupByDropdown %}
-                                {{
-                                dropdown.sortbar(
-                                    'X Axis',
-                                    groupBy if groupBy else defaultGroupByColumnName_humanReadable,
-                                    colNames_orderedForGroupByDropdown,
-                                    routePath_base | constructedRoutePath(filterObj, {
-                                        searchCol: searchCol,
-                                        searchQ: searchQ,
-                                        stackBy: stackBy,
-                                        sortDir: sortDir,
-                                        aggregateBy: aggregateBy,
-                                        groupBy: ''
-                                    })
-                                )
-                                }}
-                                {% endif %}
-
-                                {% if colNames_orderedForStackByDropdown %}
-                                {{
-                                dropdown.sortbar
-                                (
-                                    "Stack By",
-                                    stackBy if stackBy else defaultStackByColumnName_humanReadable,
-                                    colNames_orderedForStackByDropdown,
-                                    routePath_base | constructedRoutePath(filterObj, {
-                                        searchCol: searchCol,
-                                        searchQ: searchQ,
-                                        aggregateBy: aggregateBy,
-                                        groupBy: groupBy,
-                                        sortDir: sortDir,
-                                        stackBy: ''
-                                    })
-                                )
-                                }}
-                                {% endif %}
-
-                                <div>
-                                    <span class="ui-label">View By </span>
-                                    <div id="direction" class="toggle-button" title="Toggle to view in horizontal or vertical mode">
-                                        <span class="horizontal glyphicon glyphicon-align-left"></span>
-                                        <span class="vertical glyphicon glyphicon-stats"></span>
-                                    </div>
-
-                                    <div id="normalization" class="toggle-button" title="Toggle to view in absolute or relative mode">
-                                        <span class="absolute">#</span>
-                                        <span class="relative">%</span>
-                                    </div>
-                                </div>
-                            </nav>
-
-                            <div class="sort-bar-right pull-right">
-                                {{
-                                search.panel(
-                                    routePath_base,
-                                    searchCol if searchCol else "Object Title",
-                                    colNames_orderedForSortByDropdown,
-                                    searchQ if searchQ else "",
-                                    null,
-                                    null,
-                                    filterObj
-                                )
-                                }}
-
-                                <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
-                                    <span class="icon-legend" aria-hidden="true"></span>
-                                </a>
                             </div>
+                        </div>
+                    </div><!-- .row -->
+                </div><!-- .container-fluid -->
+
+                {% if isFilterActive %}
+                    {{
+                    filter.default(
+                        routePath_base | constructedRoutePath(null, {
+                            searchCol: searchCol,
+                            searchQ: searchQ,
+                            aggregateBy: aggregateBy,
+                            groupBy: groupBy,
+                            stackBy: stackBy,
+                            sortBy: sortBy
+                        }),
+                        filterObj,
+                        truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
+                        false,
+                        'filter-bar-fixed-bottom'
+                    )
+                    }}
+                {% endif %}
+
+                <script type="text/javascript">
+                    // var barColors = {{ barColors | dump | safe }};
+                    var filterObj = {{ filterObj | dump | safe }};
+                    var routePath_withoutFilter = '{{ routePath_base | constructedRoutePath(null, {
+                            searchCol: searchCol,
+                            searchQ: searchQ,
+                            aggregateBy: aggregateBy,
+                            groupBy: groupBy,
+                            stackBy: stackBy,
+                            sortDir: sortDir
+                    }) | safe }}';
+                    var stackBy = '{{ stackBy if stackBy else defaultStackByColumnName_humanReadable }}';
+
+                    var options = {
+                        padding: {{ padding if padding else false }}
+                    };
+                </script>
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-12">
+
+                            <div id="bar-chart"></div>
 
                         </div>
-                    </div>
-                </div><!-- .row -->
-            </div><!-- .container-fluid -->
+                    </div><!-- .row -->
+                </div><!-- .container-fluid -->
 
-            {% if isFilterActive %}
-                {{
-                filter.default(
-                    routePath_base | constructedRoutePath(null, {
-                        searchCol: searchCol,
-                        searchQ: searchQ,
-                        aggregateBy: aggregateBy,
-                        groupBy: groupBy,
-                        stackBy: stackBy,
-                        sortBy: sortBy
-                    }),
-                    filterObj,
-                    truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
-                    false,
-                    'filter-bar-fixed-bottom'
-                )
-                }}
-            {% endif %}
+            </div><!-- .chart-container -->
 
-            <script type="text/javascript">
-                // var barColors = {{ barColors | dump | safe }};
-                var filterObj = {{ filterObj | dump | safe }};
-                var routePath_withoutFilter = '{{ routePath_base | constructedRoutePath(null, {
-                        searchCol: searchCol,
-                        searchQ: searchQ,
-                        aggregateBy: aggregateBy,
-                        groupBy: groupBy,
-                        stackBy: stackBy,
-                        sortDir: sortDir
-                }) | safe }}';
-                var stackBy = '{{ stackBy if stackBy else defaultStackByColumnName_humanReadable }}';
-
-                var options = {
-                    padding: {{ padding if padding else false }}
-                };
-            </script>
-
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-sm-12">
-
-                        <div id="bar-chart"></div>
-
-                    </div>
-                </div><!-- .row -->
-            </div><!-- .container-fluid -->
+            <nav class="legend" role="navigation">
+                <button type="button" class="close legend-close" aria-label="Close"><span class="icon-close-big" aria-hidden="true"></span></button>
+                <h3 class="legend-title">Legend</h3>
+                <ul class="legend-list"></ul>
+            </nav>
 
         </div><!-- .array-content -->
 
@@ -206,52 +216,8 @@
     <script type="text/javascript" src="/javascripts/module/barchart/verticalBarChart.js"></script>
     <script type="text/javascript" src="/javascripts/module/barchart/horizontalBarChart.js"></script>
     <script>
-        $(document).ready(function() {
-            if (typeof(Storage) !== "undefined") {
-                var oldVal = localStorage.getItem('normalize');
-                if (oldVal) options.normalize = oldVal == 'true';
-                oldVal = localStorage.getItem('isHorizontal');
-                if (oldVal) options.isHorizontal = oldVal == 'true';
-
-                updateBarChartControls(options);
-            }
-
-            var graphData = {{graphData | dump | safe}};
-            BarChart.getInstance('#bar-chart', $.extend(true, {}, graphData), options);
-
-            // Handle of the "view by" - graph direction, normalization
-            function updateBarChartControls(options) {
-                localStorage.setItem('isHorizontal', options.isHorizontal);
-                localStorage.setItem('normalize', options.normalize);
-
-                if (options.isHorizontal) {
-                    $('#direction .horizontal').hide();
-                    $('#direction .vertical').show();
-                } else {
-                    $('#direction .horizontal').show();
-                    $('#direction .vertical').hide();
-                }
-
-                if (options.normalize) {
-                    $('#normalization .relative').hide();
-                    $('#normalization .absolute').show();
-                } else {
-                    $('#normalization .relative').show();
-                    $('#normalization .absolute').hide();
-                }
-            };
-
-            $('#direction').click(function(){
-                options.isHorizontal = !options.isHorizontal;
-                updateBarChartControls(options);
-                BarChart.getInstance('#bar-chart', $.extend(true, {}, graphData), options);
-            });
-
-            $('#normalization').click(function(){
-                options.normalize = !options.normalize;
-                updateBarChartControls(options);
-                BarChart.getInstance('#bar-chart', $.extend(true, {}, graphData), options);
-            });
-        });
+        var graphData = {{graphData | dump | safe}};
     </script>
+    <script type="text/javascript" src="/javascripts/module/barchart/main.js"></script>
+
 {% endblock %}

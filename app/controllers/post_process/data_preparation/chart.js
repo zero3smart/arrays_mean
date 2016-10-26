@@ -193,6 +193,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             },
                             { // priotize by incidence, since we're $limit-ing below
                                 $sort: {value: -1}
+                            },
+                            {
+                                $limit: 100 // so the chart can actually handle the number
                             }
                         ]);
                 } else {
@@ -214,6 +217,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             },
                             { // priotize by incidence, since we're $limit-ing below
                                 $sort: {value: -1}
+                            },
+                            {
+                                $limit: 100 // so the chart can actually handle the number
                             }
                         ]);
                 }
