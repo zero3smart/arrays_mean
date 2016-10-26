@@ -33,7 +33,7 @@ exports.Descriptions =
                 'Pageviews': {
                     do: import_datatypes.Coercion_ops.ToInteger
                 },
-                'Session Duration': {
+                'Sessions': {
                     do: import_datatypes.Coercion_ops.ToInteger
                 }
             },
