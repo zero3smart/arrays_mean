@@ -11,7 +11,7 @@
     </li>
 
     <li>
-        {% if currentView[1] != 'source' %}
+        {% if currentView[1] != 'source' and doc.title %}
         <a href="source" class="text-muted">
         {% endif %}
             <span class="glyphicon glyphicon-{{ 'check' if doc.uid else 'unchecked' }}"></span>
@@ -22,7 +22,7 @@
     </li>
 
     <li>
-        {% if currentView[1] != 'format-data' %}
+        {% if currentView[1] != 'format-data' and doc.uid %}
         <a href="format-data" class="text-muted">
         {% endif %}
             <span class="glyphicon glyphicon-{{ 'check' if doc.raw_rowObjects_coercionScheme else 'unchecked' }}"></span>
@@ -33,7 +33,7 @@
     </li>
 
     <li>
-        {% if currentView[1] != 'format-views' %}
+        {% if currentView[1] != 'format-views' and doc.raw_rowObjects_coercionScheme %}
         <a href="format-views" class="text-muted">
         {% endif %}
             <span class="glyphicon glyphicon-{{ 'check' if doc.fe_views.views else 'unchecked' }}"></span>
