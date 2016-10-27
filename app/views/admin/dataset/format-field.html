@@ -7,7 +7,7 @@
             <label class="form-control">Name</label>
         </div>
         <div class="col-xs-8">
-            <input id="name" name="name" class="form-control" value="{{ field }}" disabled/>
+            <input id="name" class="form-control" value="{{ field }}" disabled/>
         </div>
     </div>
 
@@ -17,8 +17,9 @@
         </div>
         <div class="col-xs-8">
             <select id="dataType" class="form-control" name="dataType">
-                {% for operation in availableOperations_forFieldDataType_coercion %}
-                <option value="{{ operation | fieldDataType_coercion }}" {{ 'selected' if operation | fieldDataType_coercion == doc.raw_rowObjects_coercionScheme[field] | fieldDataType_coercion }}>{{ operation | fieldDataType_coercion }}
+                {% for coercion in available_forFieldDataType_coercions %}
+                <option value="{{ coercion.operation }}" {{ 'selected' if coercion | fieldDataType_coercion_toString == doc.raw_rowObjects_coercionScheme[field] | fieldDataType_coercion_toString }}>
+                {{ coercion | fieldDataType_coercion_toString }}
                 </option>
                 {% endfor %}
             </select>
@@ -49,11 +50,11 @@
 
     <div class="form-group">
         <div class="col-xs-4">
-            <label for="use" class="form-control">Use</label>
+            <label for="exclude" class="form-control">Exclude</label>
         </div>
         <div class="col-xs-8">
-            <input type="checkbox" id="use" name="use" {{ 'checked=checked' if
-            not doc.fe_excludeFields | doesArrayContain(field) }}/>
+            <input type="checkbox" id="exclude" name="exclude" value="true" {{ 'checked=checked' if
+            doc.fe_excludeFields | doesArrayContain(field) }} />
         </div>
     </div>
 
@@ -62,7 +63,7 @@
             <label for="titleOverride" class="form-control">Title Override</label>
         </div>
         <div class="col-xs-8">
-            <input type="text" id="titleOverride" class="form-control" value="{{ doc.fe_displayTitleOverrides[field] | safe }}"/>
+            <input type="text" id="titleOverride" name="titleOverride" class="form-control" value="{{ doc.fe_displayTitleOverrides[field] | safe }}"/>
         </div>
     </div>
 
@@ -71,16 +72,16 @@
             <label for="displayOrder" class="form-control">Display Order</label>
         </div>
         <div class="col-xs-8">
-            <input type="number" id="displayOrder" class="form-control" value="{{ doc.fe_fieldDisplayOrder[field] | safe }}"/>
+            <input type="number" id="displayOrder" name="displayOrder" class="form-control" value="{{ doc.fe_fieldDisplayOrder[field] | safe }}"/>
         </div>
     </div>
 
     <div class="form-group">
         <div class="col-xs-4">
-            <label for="designedField" class="form-control">Designed Field</label>
+            <label for="designatedField" class="form-control">Designated Field</label>
         </div>
         <div class="col-xs-8">
-            <select id="designedField" name="designatedField" class="form-control">
+            <select id="designatedField" name="designatedField" class="form-control">
                 <option value="">Not used</option>
                 <option value="objectTitle" {{ 'selected' if doc.fe_designatedFields.objectTitle == field }}>Object Title</option>
                 <option value="originalImageURL" {{ 'selected' if doc.fe_designatedFields.originalImageURL == field }}>Original Image URL</option>
@@ -89,7 +90,6 @@
         </div>
     </div>
 
-    {# Filters #}
     <h4>Filter</h4>
 
     <div class="form-group">
@@ -97,18 +97,18 @@
             <label for="filter_notAvailable" class="form-control">Not Available</label>
         </div>
         <div class="col-xs-4">
-            <input type="checkbox" id="filter_notAvailable" name="filter_notAvailable" {{ 'checked=checked' if
-            doc.fe_filters.fieldsNotAvailable | doesArrayContain(field) }}/>
+            <input type="checkbox" id="filter_notAvailable" name="filter_notAvailable" value="true"
+                   {{ 'checked=checked' if doc.fe_filters.fieldsNotAvailable | doesArrayContain(field) }}/>
         </div>
     </div>
 
     <div class="form-group">
         <div class="col-xs-8">
-            <label for="filter_commanSeparatedAsIndividual" class="form-control">Comma Separated As Individual</label>
+            <label for="filter_commaSeparatedAsIndividual" class="form-control">Comma Separated As Individual</label>
         </div>
         <div class="col-xs-4">
-            <input type="checkbox" id="filter_commanSeparatedAsIndividual" name="filter_commanSeparatedAsIndividual"
-                   {{ 'checked=checked' if doc.fe_filters.fieldsCommaSeparatedAsIndividual | doesArrayContain(field) }}/>
+            <input type="checkbox" id="filter_commaSeparatedAsIndividual" name="filter_commaSeparatedAsIndividual"
+                   value="true" {{ 'checked=checked' if doc.fe_filters.fieldsCommaSeparatedAsIndividual | doesArrayContain(field) }}/>
         </div>
     </div>
 
@@ -117,24 +117,44 @@
             <label for="filter_multiSelectable" class="form-control">Allow Multiple Selection</label>
         </div>
         <div class="col-xs-4">
-            <input type="checkbox" id="filter_multiSelectable" name="filter_multiSelectable"
+            <input type="checkbox" id="filter_multiSelectable" name="filter_multiSelectable" value="true"
                    {{ 'checked=checked' if doc.fe_filters.fieldsMultiSelectable | doesArrayContain(field) }}/>
         </div>
     </div>
 
     <div class="form-group">
         <div class="col-xs-8">
-            <label for="filter_oneToOneOverrideWithValuesByTitleByFieldName" class="form-control">One To One Override Values By Title</label>
+            <label for="filter_sortableByInteger" class="form-control">Sortable By Integer</label>
         </div>
         <div class="col-xs-4">
-            <input type="checkbox" id="filter_oneToOneOverrideWithValuesByTitleByFieldName" name="filter_oneToOneOverrideWithValuesByTitleByFieldName"
-                   {{ 'checked=checked' if doc.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName | doesArrayContain(field) }}/>
+            <input type="checkbox" id="filter_sortableByInteger" name="filter_sortableByInteger" value="true"
+                   {{ 'checked=checked' if doc.fe_filters.fieldsSortableByInteger | doesArrayContain(field) }}/>
         </div>
     </div>
 
-    {# Relationships #}
+    <div class="form-group">
+        <div class="col-xs-8">
+            <label for="filter_oneToOneOverrideWithValuesByTitleByFieldName" class="form-control">One To One Override Values By Title (Not Ready)</label>
+        </div>
+        <div class="col-xs-4">
+            <input type="checkbox" id="filter_oneToOneOverrideWithValuesByTitleByFieldName" name="filter_oneToOneOverrideWithValuesByTitleByFieldName"
+                   {{ 'checked=checked' if doc.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName | doesArrayContain(field) }} disabled/>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-xs-8">
+            <label for="filter_valuesToExcludeByOriginalKey" class="form-control">Values to exclude by original key (Not Ready)</label>
+        </div>
+        <div class="col-xs-4">
+            <input type="checkbox" id="filter_valuesToExcludeByOriginalKey" name="filter_valuesToExcludeByOriginalKey"
+                   {{ 'checked=checked' if doc.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName | doesArrayContain(field) }} disabled/>
+        </div>
+    </div>
+
     <h4>Relationships</h4>
 
+    {# Relationships
     <div class="form-group">
         <div class="col-xs-4">
 
@@ -143,14 +163,16 @@
 
         </div>
     </div>
+    #}
 
+    <h4>Nested?</h4>
 
     <div class="form-group">
-        <div class="col-xs-offset-4 col-xs-4">
+        <div class="col-xs-8 text-right">
             <h5>Data: {{ doc.title }}</h5>
         </div>
         <div class="col-xs-4">
-            <button id="done" class="pull-right form-control">Done</button>
+            <button id="format-field-done" type="button" class="pull-right form-control">Done</button>
         </div>
     </div>
 </form>

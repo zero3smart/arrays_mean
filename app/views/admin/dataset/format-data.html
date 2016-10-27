@@ -20,7 +20,7 @@
 
 		<br />
 
-		<div class="format-data">
+		<form class="format-data">
 			<div class="form-group row">
 				<label class="col-xs-4" for="fn_new_rowPrimaryKeyFromRowObject">Primary Key: </label>
 				<div class="col-xs-8">
@@ -33,12 +33,13 @@
 			</div>
 
 			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
+			<input type="hidden" id="changed" name="changed" value="false"/>
 
-			<table class="table">
+			<table id="fields" class="table">
 				<thead>
 				<tr>
 					<th>Display Order</th>
-					<th>Use</th>
+					<th>Exclude</th>
 					<th>Column Name</th>
 					<th>Type</th>
 					<th>Sample</th>
@@ -49,10 +50,10 @@
 				<tr class="field" data-field-name="{{ colName }}">
 					<th scope="row">{{ loop.index }}</th>
 					<td><input type="checkbox" {{ 'checked=checked' if
-						not doc.fe_excludeFields | doesArrayContain(colName) }} disabled></td>
+						doc.fe_excludeFields | doesArrayContain(colName) }} disabled></td>
 					<td>{{ colName }}</td>
 					<td>
-						{{ doc.raw_rowObjects_coercionScheme[colName] | fieldDataType_coercion }}
+						{{ doc.raw_rowObjects_coercionScheme[colName] | fieldDataType_coercion_toString }}
 					</td>
 					<td>{{ firstRecord[loop.index0] }}</td>
 				</tr>
@@ -60,12 +61,16 @@
 				</tbody>
 			</table>
 
+			<div class="form-group">
+				<button class="form-control" id="addCustomField">Add custom field</button>
+			</div>
+
 			<div class="panel-footer">
 				<a class="btn btn-default pull-left" href="/admin/dataset/{{ doc._id }}/"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
-				<button type="submit" class="btn btn-default pull-right"><span class="glyphicon glyphicon-hand-right"></span> Save</button>
+				<button type="submit" class="btn btn-default pull-right"><span class="glyphicon glyphicon-hand-right"></span> Import</button>
 				<div class="clearfix"></div>
 			</div>
-		</div>
+		</form>
 
 	</div>
 

@@ -338,7 +338,7 @@ function trackEvent(eventName, eventPayload) {
 }
 
 
-function doesExistFormat_fieldDataType_coercion(field) {
+function doesExistFormat_fieldDataType_coercion_toString(field) {
     if (!field) return false;
 
     if (field.operation == 'ToDate')

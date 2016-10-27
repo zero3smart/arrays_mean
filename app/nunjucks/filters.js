@@ -216,7 +216,7 @@ module.exports = function (nunjucks_env) {
     });
 
     // Object Row Coercion Data Type
-    nunjucks_env.addFilter('fieldDataType_coercion', function(field) {
-        return import_datatypes.fieldDataType_coercion(field);
+    nunjucks_env.addFilter('fieldDataType_coercion_toString', function(field) {
+        return import_datatypes.fieldDataType_coercion_toString(field);
     });
 };

@@ -159,9 +159,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
 
     // Now read
 
-    var fileName = importUID;
-    if (description.dataset_uid) fileName += '__' + description.dataset_uid;
-    var readStream = datasourceUploadService.getDatasource(fileName).createReadStream()
+    var readStream = datasourceUploadService.getDatasource(description).createReadStream()
         .pipe(es.split())
         .pipe(es.mapSync(function (line) {
                 // pause the readstream

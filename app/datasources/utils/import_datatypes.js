@@ -137,7 +137,7 @@ module.exports.OriginalValue = function (coercionSchemeForKey, rowValue) {
 
 };
 
-module.exports.fieldDataType_coercion = function(field) {
+module.exports.fieldDataType_coercion_toString = function(field) {
     if (!field) return 'String';
 
     var opName = field.operation;
@@ -156,7 +156,7 @@ module.exports.fieldDataType_coercion = function(field) {
     }
 }
 
-module.exports.doesExistFormat_fieldDataType_coercion = function(field) {
+module.exports.doesExistFormat_fieldDataType_coercion_toString = function(field) {
     if (!field) return false;
 
     var opName = field.operation;
@@ -167,9 +167,9 @@ module.exports.doesExistFormat_fieldDataType_coercion = function(field) {
     return false;
 }
 
-module.exports.availableOperations_forFieldDataType_coercion = function() {
+module.exports.available_forFieldDataType_coercions = function() {
     return [
-        null,
+        {operation: 'ToString'},
         {operation: 'ProxyExisting'},
         {operation: 'ToDate', format: 'YYYY/MM/DD', outputFormat: 'MMMM Do, YYYY'},
         {operation: 'ToInteger'},

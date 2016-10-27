@@ -192,21 +192,21 @@ module.exports.getFormatData = function (req, next) {
         datasource_description.findById(req.params.id, function (err, doc) {
             if (err || !doc) return next(err);
 
-            var row = doc._doc;
-            data.doc = row;
+            var desciption = doc._doc;
+            data.doc = desciption;
 
             var countOfLines = 0;
             var cachedLines = '';
 
             var delimiter;
-            if (row.format == 'CSV') {
+            if (desciption.format == 'CSV') {
                 delimiter = ',';
-            } else if (row.format == 'TSV') {
+            } else if (desciption.format == 'TSV') {
                 delimiter = '\t';
             } else
                 return next(new Error('Invalid File Format'));
 
-            var readStream = datasource_upload_service.getDatasource(row.uid).createReadStream()
+            var readStream = datasource_upload_service.getDatasource(desciption).createReadStream()
                 .pipe(es.split())
                 .pipe(es.mapSync(function (line) {
                     readStream.pause();
@@ -276,7 +276,117 @@ module.exports.getFormatField = function(req, next) {
     var data = {
         id: dataset_id,
         field:field_name,
-        availableOperations_forFieldDataType_coercion: import_datatypes.availableOperations_forFieldDataType_coercion()
+        available_forFieldDataType_coercions: import_datatypes.available_forFieldDataType_coercions()
+    };
+
+    datasource_description.findById(dataset_id, function(err, doc) {
+        if (err) return next(err);
+
+        if (doc) {
+            data.doc = doc._doc;
+        }
+        next(null, data);
+    });
+}
+
+module.exports.saveFormatField = function(req, next) {
+    var dataset_id = req.params.id;
+    var field = req.params.field;
+    if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
+
+    var data = {};
+
+    datasource_description.findById(dataset_id, function(err, doc) {
+        if (err) return next(err);
+
+        // Data Type Coercion
+        if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
+        doc.raw_rowObjects_coercionScheme[field] = {operation: req.body.dataType, format: req.body.dataFormat, outputFormat: req.body.dataOutputFormat};
+
+        // Exclude
+        if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
+        var index = doc.fe_excludeFields.indexOf(field);
+        if (req.body.exclude == 'true' && index == -1) {
+            doc.fe_excludeFields.push(field);
+        } else if (req.body.exclude != 'true' && index != -1) {
+            doc.fe_excludeFields.splice(index, 1);
+        }
+
+        // Title Override
+        if (!doc.fe_displayTitleOverrides) doc.fe_displayTitleOverrides = {};
+        if (req.body.titleOverride != '')
+            doc.fe_displayTitleOverrides[field] = req.body.titleOverride;
+
+        // Display Order
+        if (!doc.fe_fieldDisplayOrder) doc.fe_fieldDisplayOrder = {};
+        console.log(req.body.displayOrder);
+        if (req.body.displayOrder != 0)
+            doc.fe_fieldDisplayOrder[field] = req.body.displayOrder;
+
+        // Designated Field
+        if (!doc.fe_fieldsDesignatedFields) doc.fe_fieldsDesignatedFields = {};
+        if (req.body.designatedField != '') {
+            doc.fe_fieldsDesignatedFields[req.body.designatedField] = field;
+        }
+
+        // Filter notAvailable
+        if (!doc.fe_filters) doc.fe_filters = {};
+        if (!doc.fe_filters.fieldsNotAvailable) doc.fe_filters.fieldsNotAvailable = [];
+        index = doc.fe_filters.fieldsNotAvailable.indexOf(field);
+        if (req.body.filter_notAvailable == 'true' && index == -1) {
+            doc.fe_filters.fieldsNotAvailable.push(field);
+        } else if (req.body.filter_notAvailable != 'true' && index != -1) {
+            doc.fe_filters.fieldsNotAvailable.splice(index, 1);
+        }
+
+        // Filter commaSeparatedAsIndividual
+        if (!doc.fe_filters.fieldsCommaSeparatedAsIndividual) doc.fe_filters.fieldsCommaSeparatedAsIndividual = [];
+        index = doc.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf(field);
+        if (req.body.filter_commaSeparatedAsIndividual == 'true' && index == -1) {
+            doc.fe_filters.fieldsCommaSeparatedAsIndividual.push(field);
+        } else if (req.body.filter_commaSeparatedAsIndividual != 'true' && index != -1) {
+            doc.fe_filters.fieldsCommaSeparatedAsIndividual.splice(index, 1);
+        }
+
+        // Filter multiSelectable
+        if (!doc.fe_filters.fieldsMultiSelectable) doc.fe_filters.fieldsMultiSelectable = [];
+        index = doc.fe_filters.fieldsMultiSelectable.indexOf(field);
+        if (req.body.filter_multiSelectable == 'true' && index == -1) {
+            doc.fe_filters.fieldsMultiSelectable.push(field);
+        } else if (req.body.filter_multiSelectable != 'true' && index != -1) {
+            doc.fe_filters.fieldsMultiSelectable.splice(index, 1);
+        }
+
+        // Filter sortableByInteger
+        if (!doc.fe_filters.fieldsSortableByInteger) doc.fe_filters.fieldsSortableByInteger = [];
+        index = doc.fe_filters.fieldsSortableByInteger.indexOf(field);
+        if (req.body.filter_sortableByInteger == 'true' && index == -1) {
+            doc.fe_filters.fieldsSortableByInteger.push(field);
+        } else if (req.body.filter_sortableByInteger != 'true' && index != -1) {
+            doc.fe_filters.fieldsSortableByInteger.splice(index, 1);
+        }
+
+        // Filter oneToOneOverrideWithValuesByTitleByFieldName
+        // Filter valuesToExcludeByOriginalKey
+        // Fabricated Filters
+        // Default Filter
+
+        doc.save(function(err, updatedDoc) {
+            if (err) return next(err);
+
+            data.doc = updatedDoc;
+            next(null, data);
+        });
+    });
+}
+
+/***************  Add Custom Field  ***************/
+module.exports.getAddCustomField = function(req, next) {
+    var dataset_id = req.params.id;
+    if (!dataset_id) return next(new Error('Invalid parameter!'));
+
+    var data = {
+        id: dataset_id
     };
 
     datasource_description.findById(dataset_id, function(err, doc) {
