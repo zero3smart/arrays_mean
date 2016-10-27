@@ -36,8 +36,8 @@
         {% if currentView[1] != 'format-views' and doc.raw_rowObjects_coercionScheme %}
         <a href="format-views" class="text-muted">
         {% endif %}
-            <span class="glyphicon glyphicon-{{ 'check' if doc.fe_views.views else 'unchecked' }}"></span>
-            6. Format Views
+            <span class="glyphicon glyphicon-{{ 'check' if doc.fe_views.views|length else 'unchecked' }}"></span>
+            4. Format Views
         {% if currentView[1] != 'format-views' %}
         </a>
         {% endif %}
@@ -45,6 +45,6 @@
 
     <li {% if currentView[1] != 'done' %}class="text-muted"{% endif %}>
         <span class="glyphicon glyphicon-unchecked"></span>
-        Done!
+        5. Done!
     </li>
 </ul>
