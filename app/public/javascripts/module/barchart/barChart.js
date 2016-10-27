@@ -282,7 +282,9 @@ BarChart.prototype.getLegendData = function() {
         });
     });
 
-    return Object.values(data);
+    return Object.keys(data).map(function(key) {
+        return data[key];
+    });
 
 };
 
