@@ -6,11 +6,11 @@ var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 //
 var DatasourceDescription_scheme = Schema({
-    uid: String,
+    uid: String, // It is not changeable once it's generated automaticlly when creating a descrpition
     importRevision: {type: Number,integer: true, default: 1},
     schema_id: String,
     logo: String,
-    dataset_uid: String,
+    dataset_uid: String, // It is not changeable once it's generated automaticlly when creating a descrpition
     format: String,
     title: String,
     brandColor: String,
@@ -22,7 +22,7 @@ var DatasourceDescription_scheme = Schema({
     fn_new_rowPrimaryKeyFromRowObject: String,
     raw_rowObjects_coercionScheme: Object,
     fe_excludeFields: Array,
-    fe_displayTitleOverrides: Array,
+    fe_displayTitleOverrides: Object,
     fe_fieldsDesignatedFields: Object,
     fe_fieldDisplayOrder: Object,
 

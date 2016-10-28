@@ -39,7 +39,6 @@
     "mongoose": "^4.4.9",
     "mongoose-integer": "^0.1.1",
     "multer": "^1.2.0",
-    "node-uuid": "^1.4.7",
     "nunjucks-comma-filter": "^1.0.0",
     "passport": "^0.3.2",
     "passport-auth0": "^0.5.2",

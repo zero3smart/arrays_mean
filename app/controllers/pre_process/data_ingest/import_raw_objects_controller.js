@@ -8,7 +8,7 @@ var import_datatypes = require('../../../datasources/utils/import_datatypes');
 var raw_row_objects = require('../../../models/raw_row_objects');
 var raw_source_documents = require('../../../models/raw_source_documents');
 
-var datasourceUploadService = require('../../../.././lib/datasource_process/aws-datasource-files-hosting');
+var datasource_upload_service = require('../../../.././lib/datasource_process/aws-datasource-files-hosting');
 //
 //
 module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription, callback) {
@@ -159,7 +159,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
 
     // Now read
 
-    var readStream = datasourceUploadService.getDatasource(description).createReadStream()
+    var readStream = datasource_upload_service.getDatasource(description).createReadStream()
         .pipe(es.split())
         .pipe(es.mapSync(function (line) {
                 // pause the readstream

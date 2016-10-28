@@ -19,7 +19,7 @@
 		{% include "../../partials/admin/dataset-breadcrumb.html" %}
 
 		<br />
-
+		{{ doc.fe_fieldDisplayOrder | dump }}
 		<form class="format-data">
 			<div class="form-group row">
 				<label class="col-xs-4" for="fn_new_rowPrimaryKeyFromRowObject">Primary Key: </label>
@@ -38,11 +38,12 @@
 			<table id="fields" class="table">
 				<thead>
 				<tr>
-					<th>Display Order</th>
+					<th>#</th>
 					<th>Exclude</th>
 					<th>Column Name</th>
 					<th>Type</th>
 					<th>Sample</th>
+					<th>Display Order</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -56,6 +57,7 @@
 						{{ doc.raw_rowObjects_coercionScheme[colName] | fieldDataType_coercion_toString }}
 					</td>
 					<td>{{ firstRecord[loop.index0] }}</td>
+					<td class="order">{{ doc.fe_fieldDisplayOrder[colName] }}</td>
 				</tr>
 				{% endfor %}
 				</tbody>

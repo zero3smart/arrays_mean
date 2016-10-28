@@ -4,12 +4,12 @@ var fs = require('fs');
 var es = require('event-stream');
 var parse = require('csv-parse');
 var Batch = require('batch');
-var uuid = require('node-uuid');
 var _ = require('lodash');
 
 var datasource_description = require('../../models/descriptions');
 var datasource_upload_service = require('../../../lib/datasource_process/aws-datasource-files-hosting');
 var import_datatypes = require('../../datasources/utils/import_datatypes');
+var imported_data_preparation = require('../../datasources/utils/imported_data_preparation')
 
 /***************  Index  ***************/
 module.exports.index = function (req, next) {
@@ -94,10 +94,18 @@ module.exports.getSource = function (req, next) {
 };
 
 module.exports.saveSource = function (req, next) {
-    var uid, format;
+    var description;
 
     var batch = new Batch;
     batch.concurrency(1);
+
+    batch.push(function(done) {
+        datasource_description.findById(req.params.id, function(err, doc) {
+            if (err) return done(err);
+            description = doc._doc;
+            done();
+        })
+    });
 
     _.forEach(req.files, function(file) {
         batch.push(function (done) {
@@ -108,10 +116,10 @@ module.exports.saveSource = function (req, next) {
             var delimiter;
             if (file.mimetype == 'text/csv') {
                 delimiter = ',';
-                format = 'CSV';
+                description.format = 'CSV';
             } else if (file.mimetype == 'text/tab-separated-values') {
                 delimiter = '\t';
-                format = 'TSV';
+                description.format = 'TSV';
             } else
                 return done(new Error('Invalid File Format'));
 
@@ -155,19 +163,18 @@ module.exports.saveSource = function (req, next) {
         });
 
         batch.push(function(done) {
-            uid = uuid.v4();
-
-            datasource_upload_service.uploadDataSource(file.path, uid, file.mimetype, done);
+            if (!description.uid)
+                description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
+            var newFileName = datasource_upload_service.fileNameToUpload(description);
+            datasource_upload_service.uploadDataSource(file.path, newFileName, file.mimetype, done);
         });
 
         batch.push(function (done) {
             var query = {_id: req.params.id};
-
-            datasource_description.findOneAndUpdate(query, {uid: uid, format: format}, {$upsert: true}, function (err) {
+            description.save(function(err, updatedDescription) {
                 if (err) return done(err);
 
                 req.flash('message', 'Uploaded successfully');
-
                 done();
             });
         });
@@ -233,6 +240,12 @@ module.exports.getFormatData = function (req, next) {
 
                             if (countOfLines == 1) {
                                 data.colNames = output[0];
+                                // Sort By fe_fieldDisplayOrder
+                                //data.colNames.sort(function(a, b) {
+                                //    if (!desciption.fe_fieldDisplayOrder[b]) return -1;
+                                //    else if (!desciption.fe_fieldDisplayOrder[a]) return 1;
+                                //    return desciption.fe_fieldDisplayOrder[b] - desciption.fe_fieldDisplayOrder[a];
+                                //});
                                 readStream.resume();
                             } else if (countOfLines == 2) {
                                 data.firstRecord = output[0];
@@ -319,9 +332,8 @@ module.exports.saveFormatField = function(req, next) {
 
         // Display Order
         if (!doc.fe_fieldDisplayOrder) doc.fe_fieldDisplayOrder = {};
-        console.log(req.body.displayOrder);
-        if (req.body.displayOrder != 0)
-            doc.fe_fieldDisplayOrder[field] = req.body.displayOrder;
+        if (req.body.displayOrder)
+            doc.fe_fieldDisplayOrder[field] = parseInt(req.body.displayOrder);
 
         // Designated Field
         if (!doc.fe_fieldsDesignatedFields) doc.fe_fieldsDesignatedFields = {};
@@ -374,7 +386,7 @@ module.exports.saveFormatField = function(req, next) {
         doc.save(function(err, updatedDoc) {
             if (err) return next(err);
 
-            data.doc = updatedDoc;
+            data.doc = updatedDoc._doc;
             next(null, data);
         });
     });
