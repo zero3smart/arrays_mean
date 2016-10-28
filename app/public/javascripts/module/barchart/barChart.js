@@ -285,7 +285,6 @@ BarChart.prototype.getLegendData = function() {
     return Object.keys(data).map(function(key) {
         return data[key];
     });
-
 };
 
 /**
