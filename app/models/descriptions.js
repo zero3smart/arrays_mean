@@ -23,7 +23,7 @@ var DatasourceDescription_scheme = Schema({
     raw_rowObjects_coercionScheme: Object,
     fe_excludeFields: Array,
     fe_displayTitleOverrides: Array,
-    fe_fieldsDesignatedFields: Object,
+    fe_designatedFields: Object,
     fe_fieldDisplayOrder: Object,
 
     fe_filters: {

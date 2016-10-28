@@ -146,11 +146,13 @@
         <div class="col-xs-8">
             <label for="filter_valuesToExcludeByOriginalKey" class="form-control">Values to exclude by original key (Not Ready)</label>
         </div>
-        <div class="col-xs-4">
+    <!--     <div class="col-xs-4">
             <input type="checkbox" id="filter_valuesToExcludeByOriginalKey" name="filter_valuesToExcludeByOriginalKey"
                    {{ 'checked=checked' if doc.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName | doesArrayContain(field) }} disabled/>
-        </div>
+        </div> -->
     </div>
+    <div id="extra_valuesToExcludeByOriginalKey"></div> 
+    <div class="form-group row"><a id="add_urls" class="col-xs-offset-1 add"><span class="glyphicon glyphicon-plus"></span> Add more values</a></div>
 
     <h4>Relationships</h4>
 
