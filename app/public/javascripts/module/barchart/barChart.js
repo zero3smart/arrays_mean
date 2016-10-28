@@ -281,7 +281,7 @@ BarChart.prototype.getLegendData = function() {
         });
     });
 
-    return return Object.keys(data).map(function(key) {
+    return Object.keys(data).map(function(key) {
         return data[key];
     });
 };
