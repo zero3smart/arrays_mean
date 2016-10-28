@@ -324,7 +324,6 @@ module.exports.saveFormatField = function(req, next) {
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
 
     var data = {};
-
     datasource_description.findById(dataset_id, function(err, doc) {
         if (err) return next(err);
 
