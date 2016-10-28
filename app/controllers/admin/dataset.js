@@ -336,9 +336,9 @@ module.exports.saveFormatField = function(req, next) {
             doc.fe_fieldDisplayOrder[field] = parseInt(req.body.displayOrder);
 
         // Designated Field
-        if (!doc.fe_fieldsDesignatedFields) doc.fe_fieldsDesignatedFields = {};
+        if (!doc.fe_designatedFields) doc.fe_designatedFields = {};
         if (req.body.designatedField != '') {
-            doc.fe_fieldsDesignatedFields[req.body.designatedField] = field;
+            doc.fe_designatedFields[req.body.designatedField] = field;
         }
 
         // Filter notAvailable
