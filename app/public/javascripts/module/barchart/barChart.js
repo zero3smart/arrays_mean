@@ -4,6 +4,7 @@
 function BarChart(selector, dataSet, options) {
 
     this._categories = dataSet.categories;
+    this._categoryData = $.extend(true, [], this._categories);
     this._data = dataSet.data;
     this._options = options;
     this._padding = options.padding || 0.2;
@@ -162,8 +163,7 @@ function BarChart(selector, dataSet, options) {
  */
 BarChart.prototype.sortData = function() {
     var self = this;
-    var newCategories = $.extend(true, [], this._categories);
-    this._categories = newCategories
+    this._categories = this._categoryData
         .reduce(function(o, v, i) {
             o.push([v, self._data[i]]);
             return o;
