@@ -44,7 +44,6 @@
                                             searchCol: searchCol,
                                             searchQ: searchQ,
                                             stackBy: stackBy,
-                                            sortDir: sortDir,
                                             groupBy: groupBy,
                                             aggregateBy: ''
                                         })
@@ -62,7 +61,6 @@
                                             searchCol: searchCol,
                                             searchQ: searchQ,
                                             stackBy: stackBy,
-                                            sortDir: sortDir,
                                             aggregateBy: aggregateBy,
                                             groupBy: ''
                                         })
@@ -82,7 +80,6 @@
                                             searchQ: searchQ,
                                             aggregateBy: aggregateBy,
                                             groupBy: groupBy,
-                                            sortDir: sortDir,
                                             stackBy: ''
                                         })
                                     )
@@ -90,7 +87,7 @@
                                     {% endif %}
 
                                     <div class="sort-control sort-bar-6">
-                                        <div id="direction" class="toggle-button" title="Toggle to view in horizontal or vertical mode">
+                                        <div id="orientation" class="toggle-button" title="Toggle to view in horizontal or vertical mode">
                                             <span class="horizontal glyphicon glyphicon-align-left"></span>
                                             <span class="vertical glyphicon glyphicon-stats"></span>
                                         </div>
@@ -100,26 +97,9 @@
                                             <span class="relative">%</span>
                                         </div>
 
-                                        <div class="sort-direction">
-                                            {% if sortDir == "Descending" %}
-                                            <a title="Sort Ascending" href="{{ routePath_base | constructedRoutePath(filterObj, {
-                                                searchCol: searchCol,
-                                                searchQ: searchQ,
-                                                sortDir: 'Ascending',
-                                                aggregateBy: aggregateBy,
-                                                groupBy: groupBy,
-                                                stackBy: stackBy,
-                                                page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span></a>
-                                            {% else %}
-                                            <a title="Sort Descending" href="{{ routePath_base | constructedRoutePath(filterObj, {
-                                                searchCol: searchCol,
-                                                searchQ: searchQ,
-                                                sortDir: 'Descending',
-                                                aggregateBy: aggregateBy,
-                                                groupBy: groupBy,
-                                                stackBy: stackBy,
-                                                page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span></a>
-                                            {% endif %}
+                                        <div id="sort-direction" class="toggle-button" title="Toggle to sort by ascending or descending">
+                                            <span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span>
+                                            <span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span>
                                         </div>
                                     </div>
                                 </nav>

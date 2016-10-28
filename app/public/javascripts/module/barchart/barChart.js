@@ -12,7 +12,7 @@ function BarChart(selector, dataSet, options) {
         top : 25,
         right : 15,
         bottom : 30,
-        left : options.isHorizontal ? 120 : 70
+        left : options.horizontal ? 120 : 70
     };
 
     if ('margin' in options) {
@@ -39,6 +39,10 @@ function BarChart(selector, dataSet, options) {
         });
     });
 
+    this.sortData();
+
+    this._chartData = this.getChartData();
+
     /**
      * Chart tooltip.
      * @private
@@ -51,6 +55,10 @@ function BarChart(selector, dataSet, options) {
      * @member {Selection}
      */
     this._container = d3.select(selector);
+
+    // Vertically-responsive
+    var container = $(this._container.node());
+    container.height($(window).height() - container.offset().top - 30);
 
     var dimension = this._container.node().getBoundingClientRect();
 
@@ -82,7 +90,7 @@ function BarChart(selector, dataSet, options) {
     this._bars = this._canvas.append('g')
         .attr('class', 'bars')
         .selectAll('g.series')
-        .data(this.getChartData())
+        .data(this._chartData)
         .enter()
         .append('g')
         .attr('class', 'series')
@@ -149,6 +157,49 @@ function BarChart(selector, dataSet, options) {
     this._animate();
 };
 
+/*
+ * Sort By Order
+ */
+BarChart.prototype.sortData = function() {
+    var self = this;
+    var newCategories = $.extend(true, [], this._categories);
+    this._categories = newCategories
+        .reduce(function(o, v, i) {
+            o.push([v, self._data[i]]);
+            return o;
+        }, [])
+        .sort(this._options.sortDirection ? function(a, b) {
+            return a[1].reduce(function (sum, obj) {
+                    return sum + obj.value;
+                }, 0) - b[1].reduce(function (sum, obj) {
+                    return sum + obj.value;
+                }, 0);
+        } : function(a, b) {
+            return b[1].reduce(function (sum, obj) {
+                    return sum + obj.value;
+                }, 0) - a[1].reduce(function (sum, obj) {
+                    return sum + obj.value;
+                }, 0);
+        })
+        .map(function (d) {
+            return d[0];
+        });
+
+    this._data = $.extend(true, [], this._data);
+    this._data.sort(this._options.sortDirection ? function(a, b) {
+        return a.reduce(function (sum, obj) {
+                return sum + obj.value;
+            }, 0) - b.reduce(function (sum, obj) {
+                return sum + obj.value;
+            }, 0);
+    } : function(a, b) {
+        return b.reduce(function (sum, obj) {
+                return sum + obj.value;
+            }, 0) - a.reduce(function (sum, obj) {
+                return sum + obj.value;
+            }, 0);
+    });
+}
 
 /**
  * Normalize input data.
@@ -167,8 +218,9 @@ BarChart.prototype.normalize = function() {
          * Devide every column's value to the max value.
          */
         return series.map(function(d) {
-            d.value = d.value / columnMax;
-            return d;
+            var newD = Object.assign({}, d);
+            newD.value = newD.value / columnMax;
+            return newD;
         });
     });
 };
@@ -186,7 +238,7 @@ BarChart.prototype.getMaxValue = function() {
     /*
      * Evaluate max value.
      */
-    return d3.max(this._data.reduce(function(values, series) {
+    return d3.max(this._chartData.reduce(function(values, series) {
         return values.concat(d3.sum(series.map(function(d) {
             return d.value;
         })));
@@ -297,9 +349,16 @@ BarChart.prototype.getLegendData = function() {
 BarChart.getInstance = function(selector, dataSet, options) {
 
     $(selector).empty();
-    if (options.isHorizontal === true) {
+    if (options.horizontal === true) {
         return new HorizontalBarChart(selector, dataSet, options);
     } else {
         return new VerticalBarChart(selector, dataSet, options);
     }
+};
+
+BarChart.prototype.updateSortDirection = function(sortDirection) {
+    if (sortDirection)
+        this._options.sortDirection = sortDirection;
+
+    this._animateForSort();
 };

@@ -21,7 +21,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // aggregateBy
     // groupBy
     // stackBy
-    // sortDir
     // searchQ
     // searchCol
     // embed
@@ -65,11 +64,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultStackByColumnName_humanReadable = dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName_humanReadable;
             var stackBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(
                 stackBy ? stackBy : defaultStackByColumnName_humanReadable, dataSourceDescription);
-
-
-            var sortDir = urlQuery.sortDir;
-            var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
-            //
 
 
             var routePath_base = "/array/" + source_pKey + "/bar-chart";
@@ -234,9 +228,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         value: 1
                                     }
                                 },
-                                {
-                                    $sort: {value: sortDirection} // priotize by incidence
-                                }
+                                //{
+                                //    $sort: {value: 1} // priotize by incidence
+                                //}
                             ]);
 
                     } else {
@@ -258,10 +252,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                         value: 1
                                     }
                                 },
-                                {
-                                    $sort: {value: sortDirection} // priotize by incidence, since we're $limit-ing below
-
-                                }
+                                //{
+                                //    $sort: {value: 1} // priotize by incidence, since we're $limit-ing below
+                                //
+                                //}
 
                             ]);
 
@@ -293,7 +287,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     }
                                 },
                                 {
-                                    $sort: {value: sortDirection} // priotize by incidence, since we're $limit-ing below
+                                    $sort: {value: 1} // priotize by incidence, since we're $limit-ing below
                                 }
 
                             ]);
@@ -317,7 +311,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     }
                                 },
                                 { // priotize by incidence, since we're $limit-ing below
-                                    $sort: {value: sortDirection}
+                                    $sort: {value: 1}
                                 }
                             ]);
                     }
@@ -491,7 +485,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     searchCol: searchCol,
                     isSearchActive: isSearchActive,
                     //
-                    sortDir: sortDir,
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     routePath_base: routePath_base,

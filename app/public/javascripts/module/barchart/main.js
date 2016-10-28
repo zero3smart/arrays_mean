@@ -2,27 +2,31 @@ $(document).ready(function() {
     if (typeof(Storage) !== "undefined") {
         var oldVal = localStorage.getItem('normalize');
         if (oldVal) options.normalize = oldVal == 'true';
-        oldVal = localStorage.getItem('isHorizontal');
-        if (oldVal) options.isHorizontal = oldVal == 'true';
+        oldVal = localStorage.getItem('horizontal');
+        if (oldVal) options.horizontal = oldVal == 'true';
+        oldVal = localStorage.getItem('sortDirection');
+        if (oldVal) options.sortDirection = oldVal == 'true';
 
         updateBarChartControls(options);
     }
 
+    var barChart;
     function renderBarChart() {
-        BarChart.getInstance('#bar-chart', $.extend(true, {}, graphData), options);
+        barChart = BarChart.getInstance('#bar-chart', graphData, options);
     }
 
-    // Handle of the "view by" - graph direction, normalization
+    // Handle of the "view by" - graph orientation, normalization
     function updateBarChartControls(options) {
-        localStorage.setItem('isHorizontal', options.isHorizontal);
+        localStorage.setItem('horizontal', options.horizontal);
         localStorage.setItem('normalize', options.normalize);
+        localStorage.setItem('sortDirection', options.sortDirection);
 
-        if (options.isHorizontal) {
-            $('#direction .horizontal').hide();
-            $('#direction .vertical').show();
+        if (options.horizontal) {
+            $('#orientation .horizontal').hide();
+            $('#orientation .vertical').show();
         } else {
-            $('#direction .horizontal').show();
-            $('#direction .vertical').hide();
+            $('#orientation .horizontal').show();
+            $('#orientation .vertical').hide();
         }
 
         if (options.normalize) {
@@ -32,10 +36,18 @@ $(document).ready(function() {
             $('#normalization .relative').show();
             $('#normalization .absolute').hide();
         }
+
+        if (options.sortDirection) {
+            $('#sort-direction .icon-sort-descending').hide();
+            $('#sort-direction .icon-sort-ascending').show();
+        } else {
+            $('#sort-direction .icon-sort-descending').show();
+            $('#sort-direction .icon-sort-ascending').hide();
+        }
     };
 
-    $('#direction').click(function(){
-        options.isHorizontal = !options.isHorizontal;
+    $('#orientation').click(function(){
+        options.horizontal = !options.horizontal;
         updateBarChartControls(options);
         renderBarChart();
     });
@@ -44,6 +56,12 @@ $(document).ready(function() {
         options.normalize = !options.normalize;
         updateBarChartControls(options);
         renderBarChart();
+    });
+
+    $('#sort-direction').click(function(){
+        options.sortDirection = !options.sortDirection;
+        updateBarChartControls(options);
+        barChart.updateSortDirection(options.sortDirection);
     });
 
     renderBarChart();

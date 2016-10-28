@@ -33,6 +33,54 @@ HorizontalBarChart.prototype._animate = function() {
         });
 };
 
+HorizontalBarChart.prototype._animateForSort = function() {
+
+    var self = this;
+
+    var newCategories = this._categories
+        .reduce(function(o, v, i) {
+            o.push([v, self._data[i]]);
+            return o;
+        }, [])
+        .sort(this._options.sortDirection ? function(a, b) {
+            return a[1].reduce(function (sum, obj) {
+                    return sum + obj.value;
+                }, 0) - b[1].reduce(function (sum, obj) {
+                    return sum + obj.value;
+                }, 0);
+        } : function(a, b) {
+            return b[1].reduce(function (sum, obj) {
+                    return sum + obj.value;
+                }, 0) - a[1].reduce(function (sum, obj) {
+                    return sum + obj.value;
+                }, 0);
+        })
+        .map(function (d) {
+            return d[0];
+        });
+
+    // Copy-on-write since tweens are evaluated after a delay.
+    var y0 = d3.scale.ordinal()
+        .rangeRoundBands([0, this._innerHeight], this._padding)
+        .domain(newCategories)
+        .copy();
+
+    var delay = function(d, i, j) { return j * 50; };
+
+    this._bars.transition()
+        .duration(750)
+        .delay(delay)
+        .attr("y", function(d, i, j) { return y0(self._categories[j]); });
+
+    this._categories = newCategories;
+
+    this._yAxisContainer.transition()
+        .duration(750)
+        .call(self.getYAxis())
+        .selectAll("g")
+        .delay(delay);
+};
+
 
 HorizontalBarChart.prototype.getXScale = function() {
 
@@ -96,7 +144,7 @@ HorizontalBarChart.prototype.getBarX = function(d, i, j) {
     var x = 0;
 
     for (var k = 0; k < i; k ++) {
-        x += this._xScale(this._data[j][k].value);
+        x += this._xScale(this._chartData[j][k].value);
     }
 
     return x;
