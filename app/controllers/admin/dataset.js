@@ -312,92 +312,95 @@ module.exports.saveFormatField = function(req, next) {
 
     var data = {};
 
-    datasource_description.findById(dataset_id, function(err, doc) {
-        if (err) return next(err);
 
-        // Data Type Coercion
-        if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
+    console.log(req.body);
 
-        doc.raw_rowObjects_coercionScheme[field] = {operation: req.body.dataType, format: req.body.dataFormat, outputFormat: req.body.dataOutputFormat};
-        doc.markModified("raw_rowObjects_coercionScheme");
+    // datasource_description.findById(dataset_id, function(err, doc) {
+    //     if (err) return next(err);
 
-        // Exclude
-        if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
-        var index = doc.fe_excludeFields.indexOf(field);
-        if (req.body.exclude == 'true' && index == -1) {
-            doc.fe_excludeFields.push(field);
+    //     // Data Type Coercion
+    //     if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
 
-        } else if (req.body.exclude != 'true' && index != -1) {
-            doc.fe_excludeFields.splice(index, 1);
-        }
+    //     doc.raw_rowObjects_coercionScheme[field] = {operation: req.body.dataType, format: req.body.dataFormat, outputFormat: req.body.dataOutputFormat};
+    //     doc.markModified("raw_rowObjects_coercionScheme");
 
-        // Title Override
-        if (!doc.fe_displayTitleOverrides) doc.fe_displayTitleOverrides = {};
-        if (req.body.titleOverride != '')
-            doc.fe_displayTitleOverrides[field] = req.body.titleOverride;
+    //     // Exclude
+    //     if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
+    //     var index = doc.fe_excludeFields.indexOf(field);
+    //     if (req.body.exclude == 'true' && index == -1) {
+    //         doc.fe_excludeFields.push(field);
 
-        // Display Order
-        if (!doc.fe_fieldDisplayOrder) doc.fe_fieldDisplayOrder = {};
-        console.log(req.body.displayOrder);
-        if (req.body.displayOrder != 0)
-            doc.fe_fieldDisplayOrder[field] = req.body.displayOrder;
+    //     } else if (req.body.exclude != 'true' && index != -1) {
+    //         doc.fe_excludeFields.splice(index, 1);
+    //     }
 
-        // Designated Field
-        if (!doc.fe_designatedFields) doc.fe_designatedFields = {};
-        if (req.body.designatedField != '') {
-            doc.fe_designatedFields[req.body.designatedField] = field;
-        }
+    //     // Title Override
+    //     if (!doc.fe_displayTitleOverrides) doc.fe_displayTitleOverrides = {};
+    //     if (req.body.titleOverride != '')
+    //         doc.fe_displayTitleOverrides[field] = req.body.titleOverride;
+
+    //     // Display Order
+    //     if (!doc.fe_fieldDisplayOrder) doc.fe_fieldDisplayOrder = {};
+    //     console.log(req.body.displayOrder);
+    //     if (req.body.displayOrder != 0)
+    //         doc.fe_fieldDisplayOrder[field] = req.body.displayOrder;
+
+    //     // Designated Field
+    //     if (!doc.fe_designatedFields) doc.fe_designatedFields = {};
+    //     if (req.body.designatedField != '') {
+    //         doc.fe_designatedFields[req.body.designatedField] = field;
+    //     }
 
 
-        // Filter notAvailable
-        if (!doc.fe_filters) doc.fe_filters = {};
-        if (!doc.fe_filters.fieldsNotAvailable) doc.fe_filters.fieldsNotAvailable = [];
-        index = doc.fe_filters.fieldsNotAvailable.indexOf(field);
-        if (req.body.filter_notAvailable == 'true' && index == -1) {
-            doc.fe_filters.fieldsNotAvailable.push(field);
-        } else if (req.body.filter_notAvailable != 'true' && index != -1) {
-            doc.fe_filters.fieldsNotAvailable.splice(index, 1);
-        }
+    //     // Filter notAvailable
+    //     if (!doc.fe_filters) doc.fe_filters = {};
+    //     if (!doc.fe_filters.fieldsNotAvailable) doc.fe_filters.fieldsNotAvailable = [];
+    //     index = doc.fe_filters.fieldsNotAvailable.indexOf(field);
+    //     if (req.body.filter_notAvailable == 'true' && index == -1) {
+    //         doc.fe_filters.fieldsNotAvailable.push(field);
+    //     } else if (req.body.filter_notAvailable != 'true' && index != -1) {
+    //         doc.fe_filters.fieldsNotAvailable.splice(index, 1);
+    //     }
 
-        // Filter commaSeparatedAsIndividual
-        if (!doc.fe_filters.fieldsCommaSeparatedAsIndividual) doc.fe_filters.fieldsCommaSeparatedAsIndividual = [];
-        index = doc.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf(field);
-        if (req.body.filter_commaSeparatedAsIndividual == 'true' && index == -1) {
-            doc.fe_filters.fieldsCommaSeparatedAsIndividual.push(field);
-        } else if (req.body.filter_commaSeparatedAsIndividual != 'true' && index != -1) {
-            doc.fe_filters.fieldsCommaSeparatedAsIndividual.splice(index, 1);
-        }
+    //     // Filter commaSeparatedAsIndividual
+    //     if (!doc.fe_filters.fieldsCommaSeparatedAsIndividual) doc.fe_filters.fieldsCommaSeparatedAsIndividual = [];
+    //     index = doc.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf(field);
+    //     if (req.body.filter_commaSeparatedAsIndividual == 'true' && index == -1) {
+    //         doc.fe_filters.fieldsCommaSeparatedAsIndividual.push(field);
+    //     } else if (req.body.filter_commaSeparatedAsIndividual != 'true' && index != -1) {
+    //         doc.fe_filters.fieldsCommaSeparatedAsIndividual.splice(index, 1);
+    //     }
 
-        // Filter multiSelectable
-        if (!doc.fe_filters.fieldsMultiSelectable) doc.fe_filters.fieldsMultiSelectable = [];
-        index = doc.fe_filters.fieldsMultiSelectable.indexOf(field);
-        if (req.body.filter_multiSelectable == 'true' && index == -1) {
-            doc.fe_filters.fieldsMultiSelectable.push(field);
-        } else if (req.body.filter_multiSelectable != 'true' && index != -1) {
-            doc.fe_filters.fieldsMultiSelectable.splice(index, 1);
-        }
+    //     // Filter multiSelectable
+    //     if (!doc.fe_filters.fieldsMultiSelectable) doc.fe_filters.fieldsMultiSelectable = [];
+    //     index = doc.fe_filters.fieldsMultiSelectable.indexOf(field);
+    //     if (req.body.filter_multiSelectable == 'true' && index == -1) {
+    //         doc.fe_filters.fieldsMultiSelectable.push(field);
+    //     } else if (req.body.filter_multiSelectable != 'true' && index != -1) {
+    //         doc.fe_filters.fieldsMultiSelectable.splice(index, 1);
+    //     }
 
-        // Filter sortableByInteger
-        if (!doc.fe_filters.fieldsSortableByInteger) doc.fe_filters.fieldsSortableByInteger = [];
-        index = doc.fe_filters.fieldsSortableByInteger.indexOf(field);
-        if (req.body.filter_sortableByInteger == 'true' && index == -1) {
-            doc.fe_filters.fieldsSortableByInteger.push(field);
-        } else if (req.body.filter_sortableByInteger != 'true' && index != -1) {
-            doc.fe_filters.fieldsSortableByInteger.splice(index, 1);
-        }
+    //     // Filter sortableByInteger
+    //     if (!doc.fe_filters.fieldsSortableByInteger) doc.fe_filters.fieldsSortableByInteger = [];
+    //     index = doc.fe_filters.fieldsSortableByInteger.indexOf(field);
+    //     if (req.body.filter_sortableByInteger == 'true' && index == -1) {
+    //         doc.fe_filters.fieldsSortableByInteger.push(field);
+    //     } else if (req.body.filter_sortableByInteger != 'true' && index != -1) {
+    //         doc.fe_filters.fieldsSortableByInteger.splice(index, 1);
+    //     }
 
-        // Filter oneToOneOverrideWithValuesByTitleByFieldName
-        // Filter valuesToExcludeByOriginalKey
-        // Fabricated Filters
-        // Default Filter
+    //     // Filter oneToOneOverrideWithValuesByTitleByFieldName
+    //     // Filter valuesToExcludeByOriginalKey
+    //     // Fabricated Filters
+    //     // Default Filter
 
-        doc.save(function(err, updatedDoc) {
-            if (err) return next(err);
+    //     doc.save(function(err, updatedDoc) {
+    //         if (err) return next(err);
 
-            data.doc = updatedDoc;
-            next(null, data);
-        });
-    });
+    //         data.doc = updatedDoc;
+    //         next(null, data);
+    //     });
+    // });
 }
 
 /***************  Add Custom Field  ***************/

@@ -1,7 +1,6 @@
 $(document).ready(function () {
 
     $('#add_urls').on('click',function(e) {
-        console.log(this)
         $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
     })
 
@@ -62,9 +61,19 @@ $(document).ready(function () {
             .done(function(data) {
 
             // TODO: Update the column on the parent table
-
             $('#changed').val(true);
             $('#modal').modal('hide');
         }, 'json');
     })
+
+
+    $('#modal').on('click','a#add_valuesToExcludeByOriginalKey',function(e) {
+         $('#extra_valuesToExcludeByOriginalKey').append("<div class='form-group row'><input class='col-xs-2 col-xs-offset-1' name='valuesToExcludeByOriginalKey[]' type='text' value=''></div>");
+    })
+
+
+
+
+
+
 });
