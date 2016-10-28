@@ -1,4 +1,10 @@
 $(document).ready(function () {
+
+    $('#add_urls').on('click',function(e) {
+        console.log(this)
+        $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
+    })
+
     $('#file').on('change', function (e) {
         const files = $('#file')[0].files;
         const file = files[0];

@@ -32,6 +32,7 @@ module.exports.getSettings = function (req, next) {
 
     if (req.params.id) {
         datasource_description.findById(req.params.id, function (err, doc) {
+
             if (err) return next(err);
 
             if (doc) {
@@ -46,7 +47,22 @@ module.exports.getSettings = function (req, next) {
 };
 
 module.exports.saveSettings = function (req, next) {
+
     var data = {};
+
+    for (var field in req.body) {
+        if (field.indexOf('[]') >= 0) {
+            var arrayField = field.replace('[]','');
+
+            for (var i = 0; i < req.body[field].length; i++) { /*splicing empty string in array */
+                if (req.body[field][i] == "") {
+                    req.body[field].splice(i,1);
+                }
+            }
+            req.body[arrayField] = req.body[field];
+            delete req.body[field];
+        }
+    }
 
     req.body.fe_listed = req.body.fe_listed == 'true';
 
@@ -314,13 +330,16 @@ module.exports.saveFormatField = function(req, next) {
 
         // Data Type Coercion
         if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
+
         doc.raw_rowObjects_coercionScheme[field] = {operation: req.body.dataType, format: req.body.dataFormat, outputFormat: req.body.dataOutputFormat};
+        doc.markModified("raw_rowObjects_coercionScheme");
 
         // Exclude
         if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
         var index = doc.fe_excludeFields.indexOf(field);
         if (req.body.exclude == 'true' && index == -1) {
             doc.fe_excludeFields.push(field);
+
         } else if (req.body.exclude != 'true' && index != -1) {
             doc.fe_excludeFields.splice(index, 1);
         }
@@ -340,6 +359,7 @@ module.exports.saveFormatField = function(req, next) {
         if (req.body.designatedField != '') {
             doc.fe_designatedFields[req.body.designatedField] = field;
         }
+
 
         // Filter notAvailable
         if (!doc.fe_filters) doc.fe_filters = {};

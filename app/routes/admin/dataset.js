@@ -45,6 +45,9 @@ router.get('/:id/settings', ensureLoggedIn, function (req, res) {
             return;
         }
 
+
+
+
         res.render('admin/dataset/settings', _.assign(data, {
             env: process.env,
             flash: req.flash('message'),
@@ -54,6 +57,8 @@ router.get('/:id/settings', ensureLoggedIn, function (req, res) {
 });
 
 router.post('/:id/settings', ensureLoggedIn, function (req, res) {
+
+    
     controller.saveSettings(req, function (err, data) {
         if (err) {
             winston.error("❌  Error getting bind data for Dataset settings: ", err);
