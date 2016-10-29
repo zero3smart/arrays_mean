@@ -12,7 +12,7 @@ function BarChart(selector, dataSet, options) {
     this._margin = {
         top : 25,
         right : 15,
-        bottom : 30,
+        bottom : 126,
         left : options.horizontal ? 120 : 70
     };
 
@@ -78,7 +78,10 @@ function BarChart(selector, dataSet, options) {
     this._xAxisContainer = this._canvas.append('g')
       .attr('class', 'axis axis-x')
       .attr('transform', this.getXAxisTransform())
-      .call(this.getXAxis());
+      .call(this.getXAxis())
+
+    //Rotate horizontal bar chart x-axis labels
+    this.rotateLabel();
 
     this._yAxisContainer = this._canvas.append('g')
       .attr('class', 'axis axis-y')
@@ -361,4 +364,5 @@ BarChart.prototype.updateSortDirection = function(sortDirection) {
         this._options.sortDirection = sortDirection;
 
     this._animateForSort();
+    this.rotateLabel();
 };
