@@ -32,6 +32,11 @@ module.exports = function (nunjucks_env) {
         }
         return false;
     });
+
+
+
+
+
     nunjucks_env.addFilter('isObjectEmpty', function (obj) {
         return Object.keys(obj).length === 0;
     });

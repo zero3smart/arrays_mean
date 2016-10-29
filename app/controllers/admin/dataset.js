@@ -120,15 +120,20 @@ module.exports.getSource = function (req, next) {
 };
 
 module.exports.saveSource = function (req, next) {
+
     var description;
 
     var batch = new Batch;
     batch.concurrency(1);
 
     batch.push(function(done) {
-        datasource_description.findById(req.params.id, function(err, doc) {
+        datasource_description.findById(req.params.id)
+            .exec(function(err, doc) {
             if (err) return done(err);
-            description = doc._doc;
+
+            description = doc
+
+
             done();
         })
     });
@@ -188,7 +193,9 @@ module.exports.saveSource = function (req, next) {
                 }));
         });
 
+
         batch.push(function(done) {
+        
             if (!description.uid)
                 description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
             var newFileName = datasource_upload_service.fileNameToUpload(description);
@@ -198,6 +205,8 @@ module.exports.saveSource = function (req, next) {
         batch.push(function (done) {
             var query = {_id: req.params.id};
             description.save(function(err, updatedDescription) {
+                console.log(err);
+
                 if (err) return done(err);
 
                 req.flash('message', 'Uploaded successfully');
@@ -219,27 +228,28 @@ module.exports.saveSource = function (req, next) {
 
 /***************  Format Data  ***************/
 module.exports.getFormatData = function (req, next) {
+
     if (req.params.id) {
         var data = {};
 
         datasource_description.findById(req.params.id, function (err, doc) {
             if (err || !doc) return next(err);
 
-            var desciption = doc._doc;
-            data.doc = desciption;
+            var description = doc._doc;
+            data.doc = description;
 
             var countOfLines = 0;
             var cachedLines = '';
 
             var delimiter;
-            if (desciption.format == 'CSV') {
+            if (description.format == 'CSV') {
                 delimiter = ',';
-            } else if (desciption.format == 'TSV') {
+            } else if (description.format == 'TSV') {
                 delimiter = '\t';
             } else
                 return next(new Error('Invalid File Format'));
 
-            var readStream = datasource_upload_service.getDatasource(desciption).createReadStream()
+            var readStream = datasource_upload_service.getDatasource(description).createReadStream()
                 .pipe(es.split())
                 .pipe(es.mapSync(function (line) {
                     readStream.pause();
@@ -268,9 +278,9 @@ module.exports.getFormatData = function (req, next) {
                                 data.colNames = output[0];
                                 // Sort By fe_fieldDisplayOrder
                                 //data.colNames.sort(function(a, b) {
-                                //    if (!desciption.fe_fieldDisplayOrder[b]) return -1;
+                                //    if (!description.fe_fieldDisplayOrder[b]) return -1;
                                 //    else if (!desciption.fe_fieldDisplayOrder[a]) return 1;
-                                //    return desciption.fe_fieldDisplayOrder[b] - desciption.fe_fieldDisplayOrder[a];
+                                //    return description.fe_fieldDisplayOrder[b] - description.fe_fieldDisplayOrder[a];
                                 //});
                                 readStream.resume();
                             } else if (countOfLines == 2) {
@@ -329,96 +339,103 @@ module.exports.getFormatField = function(req, next) {
 }
 
 module.exports.saveFormatField = function(req, next) {
+
+
     var dataset_id = req.params.id;
     var field = req.params.field;
+
+    console.log(req.body);
+    
+
+
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
 
     var data = {};
-    datasource_description.findById(dataset_id, function(err, doc) {
-        if (err) return next(err);
+    // datasource_description.findById(dataset_id, function(err, doc) {
+    //     if (err) return next(err);
 
-        // Data Type Coercion
-        if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
+    //     // Data Type Coercion
+    //     if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
 
-        doc.raw_rowObjects_coercionScheme[field] = {operation: req.body.dataType, format: req.body.dataFormat, outputFormat: req.body.dataOutputFormat};
-        doc.markModified("raw_rowObjects_coercionScheme");
+    //     doc.raw_rowObjects_coercionScheme[field] = {operation: req.body.dataType, format: req.body.dataFormat, outputFormat: req.body.dataOutputFormat};
+    //     doc.markModified("raw_rowObjects_coercionScheme");
 
-        // Exclude
-        if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
-        var index = doc.fe_excludeFields.indexOf(field);
-        if (req.body.exclude == 'true' && index == -1) {
-            doc.fe_excludeFields.push(field);
+    //     // Exclude
+    //     if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
+    //     var index = doc.fe_excludeFields.indexOf(field);
+    //     if (req.body.exclude == 'true' && index == -1) {
+    //         doc.fe_excludeFields.push(field);
 
-        } else if (req.body.exclude != 'true' && index != -1) {
-            doc.fe_excludeFields.splice(index, 1);
-        }
+    //     } else if (req.body.exclude != 'true' && index != -1) {
+    //         doc.fe_excludeFields.splice(index, 1);
+    //     }
 
-        // Title Override
-        if (!doc.fe_displayTitleOverrides) doc.fe_displayTitleOverrides = {};
-        if (req.body.titleOverride != '')
-            doc.fe_displayTitleOverrides[field] = req.body.titleOverride;
+    //     // Title Override
+    //     if (!doc.fe_displayTitleOverrides) doc.fe_displayTitleOverrides = {};
+    //     if (req.body.titleOverride != '')
+    //         doc.fe_displayTitleOverrides[field] = req.body.titleOverride;
 
-        // Display Order
-        if (!doc.fe_fieldDisplayOrder) doc.fe_fieldDisplayOrder = {};
-        if (req.body.displayOrder)
-            doc.fe_fieldDisplayOrder[field] = parseInt(req.body.displayOrder);
+    //     // Display Order
+    //     if (!doc.fe_fieldDisplayOrder) doc.fe_fieldDisplayOrder = {};
+    //     if (req.body.displayOrder)
+    //         doc.fe_fieldDisplayOrder[field] = parseInt(req.body.displayOrder);
 
-        // Designated Field
-        if (!doc.fe_designatedFields) doc.fe_designatedFields = {};
-        if (req.body.designatedField != '') {
-            doc.fe_designatedFields[req.body.designatedField] = field;
-        }
+    //     // Designated Field
+    //     if (!doc.fe_designatedFields) doc.fe_designatedFields = {};
+    //     if (req.body.designatedField != '') {
+    //         doc.fe_designatedFields[req.body.designatedField] = field;
+    //     }
 
 
-        // Filter notAvailable
-        if (!doc.fe_filters) doc.fe_filters = {};
-        if (!doc.fe_filters.fieldsNotAvailable) doc.fe_filters.fieldsNotAvailable = [];
-        index = doc.fe_filters.fieldsNotAvailable.indexOf(field);
-        if (req.body.filter_notAvailable == 'true' && index == -1) {
-            doc.fe_filters.fieldsNotAvailable.push(field);
-        } else if (req.body.filter_notAvailable != 'true' && index != -1) {
-            doc.fe_filters.fieldsNotAvailable.splice(index, 1);
-        }
+    //     // Filter notAvailable
+    //     if (!doc.fe_filters) doc.fe_filters = {};
+    //     if (!doc.fe_filters.fieldsNotAvailable) doc.fe_filters.fieldsNotAvailable = [];
+    //     index = doc.fe_filters.fieldsNotAvailable.indexOf(field);
+    //     if (req.body.filter_notAvailable == 'true' && index == -1) {
+    //         doc.fe_filters.fieldsNotAvailable.push(field);
+    //     } else if (req.body.filter_notAvailable != 'true' && index != -1) {
+    //         doc.fe_filters.fieldsNotAvailable.splice(index, 1);
+    //     }
 
-        // Filter commaSeparatedAsIndividual
-        if (!doc.fe_filters.fieldsCommaSeparatedAsIndividual) doc.fe_filters.fieldsCommaSeparatedAsIndividual = [];
-        index = doc.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf(field);
-        if (req.body.filter_commaSeparatedAsIndividual == 'true' && index == -1) {
-            doc.fe_filters.fieldsCommaSeparatedAsIndividual.push(field);
-        } else if (req.body.filter_commaSeparatedAsIndividual != 'true' && index != -1) {
-            doc.fe_filters.fieldsCommaSeparatedAsIndividual.splice(index, 1);
-        }
+    //     // Filter commaSeparatedAsIndividual
+    //     if (!doc.fe_filters.fieldsCommaSeparatedAsIndividual) doc.fe_filters.fieldsCommaSeparatedAsIndividual = [];
+    //     index = doc.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf(field);
+    //     if (req.body.filter_commaSeparatedAsIndividual == 'true' && index == -1) {
+    //         doc.fe_filters.fieldsCommaSeparatedAsIndividual.push(field);
+    //     } else if (req.body.filter_commaSeparatedAsIndividual != 'true' && index != -1) {
+    //         doc.fe_filters.fieldsCommaSeparatedAsIndividual.splice(index, 1);
+    //     }
 
-        // Filter multiSelectable
-        if (!doc.fe_filters.fieldsMultiSelectable) doc.fe_filters.fieldsMultiSelectable = [];
-        index = doc.fe_filters.fieldsMultiSelectable.indexOf(field);
-        if (req.body.filter_multiSelectable == 'true' && index == -1) {
-            doc.fe_filters.fieldsMultiSelectable.push(field);
-        } else if (req.body.filter_multiSelectable != 'true' && index != -1) {
-            doc.fe_filters.fieldsMultiSelectable.splice(index, 1);
-        }
+    //     // Filter multiSelectable
+    //     if (!doc.fe_filters.fieldsMultiSelectable) doc.fe_filters.fieldsMultiSelectable = [];
+    //     index = doc.fe_filters.fieldsMultiSelectable.indexOf(field);
+    //     if (req.body.filter_multiSelectable == 'true' && index == -1) {
+    //         doc.fe_filters.fieldsMultiSelectable.push(field);
+    //     } else if (req.body.filter_multiSelectable != 'true' && index != -1) {
+    //         doc.fe_filters.fieldsMultiSelectable.splice(index, 1);
+    //     }
 
-        // Filter sortableByInteger
-        if (!doc.fe_filters.fieldsSortableByInteger) doc.fe_filters.fieldsSortableByInteger = [];
-        index = doc.fe_filters.fieldsSortableByInteger.indexOf(field);
-        if (req.body.filter_sortableByInteger == 'true' && index == -1) {
-            doc.fe_filters.fieldsSortableByInteger.push(field);
-        } else if (req.body.filter_sortableByInteger != 'true' && index != -1) {
-            doc.fe_filters.fieldsSortableByInteger.splice(index, 1);
-        }
+    //     // Filter sortableByInteger
+    //     if (!doc.fe_filters.fieldsSortableByInteger) doc.fe_filters.fieldsSortableByInteger = [];
+    //     index = doc.fe_filters.fieldsSortableByInteger.indexOf(field);
+    //     if (req.body.filter_sortableByInteger == 'true' && index == -1) {
+    //         doc.fe_filters.fieldsSortableByInteger.push(field);
+    //     } else if (req.body.filter_sortableByInteger != 'true' && index != -1) {
+    //         doc.fe_filters.fieldsSortableByInteger.splice(index, 1);
+    //     }
 
-        // Filter oneToOneOverrideWithValuesByTitleByFieldName
-        // Filter valuesToExcludeByOriginalKey
-        // Fabricated Filters
-        // Default Filter
+    //     // Filter oneToOneOverrideWithValuesByTitleByFieldName
+    //     // Filter valuesToExcludeByOriginalKey
+    //     // Fabricated Filters
+    //     // Default Filter
 
-        doc.save(function(err, updatedDoc) {
-            if (err) return next(err);
+    //     doc.save(function(err, updatedDoc) {
+    //         if (err) return next(err);
 
-            data.doc = updatedDoc._doc;
-            next(null, data);
-        });
-    });
+    //         data.doc = updatedDoc._doc;
+    //         next(null, data);
+    //     });
+    // });
 
 }
 

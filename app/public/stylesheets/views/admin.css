@@ -64,3 +64,7 @@ a.add {
     cursor: pointer;
 }
 
+form.format-field a#add_valuesToExcludeByOriginalKey {
+    margin-right:10px;
+}
+
