@@ -43,7 +43,6 @@
 
 			<div class="form-group row">
 				<label class="col-xs-4" for="urls">Urls: </label>
-<<<<<<< HEAD
 
 			{% if doc.urls and doc.urls.length > 0 %}
 				{% for url in doc.urls %}
@@ -57,34 +56,14 @@
 				{% endif %}
 				{% endfor %}
 
-
-
 			{% else %}
-=======
-			{% for url in doc.urls %}
-			{% if loop.index == 1 %} 
->>>>>>> 6dd19f0ab2a3ebc9648996ba8c30b49385c858a2
 				<input class="col-xs-8 urls" type="text" name="urls[]" value="{{url}}" />
 			</div>
-			{% else %}
-			<div class="form-group row"> 
-				<input class="col-xs-8 col-xs-offset-4 urls" name="urls[]" type="text" value="{{url}}"/>
-			</div>
 			{% endif %}
-			{% endfor %}
+		
 			<div id="extra_urls"></div>
 			<div class="form-group row"><a id="add_urls" class="col-xs-offset-4 add" ><span class="glyphicon glyphicon-plus"></span> Add more Urls</a></div>
-		
-
-
-			{% endif %}
-
-			<div id="extra_urls"></div>
-			<div class="form-group row"><a id="add_urls" class="col-xs-offset-4 add" ><span class="glyphicon glyphicon-plus"></span> Add more Urls</a></div>
-
-
-
-		
+	
 
 			<div class="form-group row">
 				<label class="col-xs-4" for="fe_listed">Listed: </label>

@@ -54,22 +54,22 @@ module.exports.saveSettings = function (req, next) {
         if (field.indexOf('[]') >= 0) {
             var arrayField = field.replace('[]','');
 
-            for (var i = 0; i < req.body[field].length; i++) { /*splicing empty string in array */
-                if (req.body[field][i] == "") {
-                    req.body[field].splice(i,1);
+            if (typeof req.body[field] == 'string') {
+                if (req.body[field] == "") {
+                    req.body[arrayField] = []
+                } else {
+                    req.body[arrayField] = [req.body[field]];
                 }
-            }
-<<<<<<< HEAD
-            if (typeof req.body[field] == "string" && req.body[field] == "") {
-                req.body[arrayField] = [];
 
-            } else {
+            } else if (Array.isArray(req.body[field])) {
+                for (var i = 0; i < req.body[field].length; i++) {  /*splicing empty string in array */
+                    if (req.body[field][i] == "") {
+                        req.body[field].splice(i,1);
+                    }
+                }
                 req.body[arrayField] = req.body[field];
 
             }
-=======
-            req.body[arrayField] = req.body[field];
->>>>>>> 6dd19f0ab2a3ebc9648996ba8c30b49385c858a2
             delete req.body[field];
         }
     }
