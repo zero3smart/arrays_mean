@@ -59,6 +59,7 @@ module.exports.saveSettings = function (req, next) {
                     req.body[field].splice(i,1);
                 }
             }
+<<<<<<< HEAD
             if (typeof req.body[field] == "string" && req.body[field] == "") {
                 req.body[arrayField] = [];
 
@@ -66,6 +67,9 @@ module.exports.saveSettings = function (req, next) {
                 req.body[arrayField] = req.body[field];
 
             }
+=======
+            req.body[arrayField] = req.body[field];
+>>>>>>> 6dd19f0ab2a3ebc9648996ba8c30b49385c858a2
             delete req.body[field];
         }
     }
@@ -415,6 +419,7 @@ module.exports.saveFormatField = function(req, next) {
             next(null, data);
         });
     });
+
 }
 
 /***************  Add Custom Field  ***************/
