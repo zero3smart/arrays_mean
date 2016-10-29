@@ -59,7 +59,13 @@ module.exports.saveSettings = function (req, next) {
                     req.body[field].splice(i,1);
                 }
             }
-            req.body[arrayField] = req.body[field];
+            if (typeof req.body[field] == "string" && req.body[field] == "") {
+                req.body[arrayField] = [];
+
+            } else {
+                req.body[arrayField] = req.body[field];
+
+            }
             delete req.body[field];
         }
     }
