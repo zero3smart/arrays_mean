@@ -20,47 +20,80 @@
 
 		<br />
 
-		<div class="format">
-			<table class="table">
+		<form class="format-views">
+
+			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
+
+			<div class="form-group row">
+				<div class="col-xs-8">
+					Select Default View 
+					<select id="viewType" class="from-control" name="viewType">
+						{% for view in available_forViewTypes %}
+						<option value="{{view}}"> {{view}}
+						</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+
+			<div >
+				<table id="views" class="table">
 				<thead>
 				<tr>
-					<th>#</th>
-
-					<th>Column Name</th>
-					<th>Type</th>
-					<th>Sample</th>
+					<th id="view_visibility">Visibility</th>
+					<th>View Type</th>
 				</tr>
 				</thead>
 				<tbody>
-				{% for colName in colNames %}
-				<tr>
-					<th scope="row">{{ loop.index }}</th>
-					<td>{{ colName }}</td>
-					<td>
-						{% if doc.raw_rowObjects_coercionScheme %}
-
-						{{ doc.raw_rowObjects_coercionScheme[colName].do if doc.raw_rowObjects_coercionScheme[colName]  else 'String' }}
-						{% else %}
-						String
-						{% endif %}
-					</td>
-					<td>{{ firstRecord[loop.index0] }}</td>
+				{% for view in available_forViewTypes %}
+				<tr class="views" view-type-name="{{ view }}">
+					<td><input type="checkbox" {{ 'checked=checked' if
+						doc.fe_views.views and doc.fe_views.views[view].visibility == true }} disabled></td>
+					<td><span class="{{ view |strip_nameForIcon }}"></span>{{ view | displayViewTitle }}</td>
+					
 				</tr>
 				{% endfor %}
 				</tbody>
 			</table>
-
-			<div class="panel-footer">
-				<a class="btn btn-default pull-left" href="/admin/dataset/{{ doc._id }}/join-merge"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
-				<button type="submit" class="btn btn-default pull-right"><span class="glyphicon glyphicon-hand-right"></span> Save</button>
-				<div class="clearfix"></div>
 			</div>
+		</form>
+		
+
+	
+
+
+
+
+
+		
+
+		
+
+
+	
+
+
+
+
+
+
+
+		<div class="format">
+			
 		</div>
 
-		<form>
-
-		</form>
 	</div>
+
+
+	<div class="panel-footer">
+		<a class="btn btn-default pull-left" href="/admin/dataset/"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
+		<button type="submit" class="btn btn-default pull-right"><span class="glyphicon glyphicon-hand-right"></span> Save</button>
+		<div class="clearfix"></div>
+	</div>
+
+
+
+
 
 {% endblock %}
 

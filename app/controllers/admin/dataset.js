@@ -460,12 +460,49 @@ module.exports.getAddCustomField = function(req, next) {
 
 /***************  Format Views  ***************/
 module.exports.getFormatViews = function (req, next) {
-    var data = {};
 
-    if (req.params.id) {
-    }
 
-    next(null, data);
+    var dataset_id = req.params.id;
+    if (!dataset_id ) return next(new Error('Invalid parameter!'));
+
+    var data = {
+        id: dataset_id,
+        available_forViewTypes: import_datatypes.available_forViewTypes()
+    };
+
+
+    datasource_description.findById(dataset_id, function(err, doc) {
+        if (err) return next(err);
+
+        if (doc) {
+            data.doc = doc._doc;
+        }
+        next(null, data);
+    });
+
+}
+
+
+module.exports.getFormatView = function(req,next) {
+
+
+    var dataset_id = req.params.id;
+    var view_name = req.params.view
+    if (!dataset_id || !view_name) return next(new Error('Invalid parameter!'));
+
+    var data = {
+        id: dataset_id,
+        view:view_name
+    };
+
+
+    datasource_description.findById(dataset_id, function(err, doc) {
+        if (err) return next(err);
+        if (doc) {
+            data.doc = doc._doc;
+        }
+        next(null, data);
+    });
 }
 
 module.exports.saveFormatViews = function(req, next) {

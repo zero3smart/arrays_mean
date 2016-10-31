@@ -177,3 +177,11 @@ module.exports.available_forFieldDataType_coercions = function() {
         {operation: 'ToStringTrim'}
         ];
 }
+
+
+module.exports.available_forViewTypes = function() {
+    return [
+        "gallery", "barChart", "lineGraph", "scatterplot", "pieSet",
+        "chart", "timeline"
+    ]
+}

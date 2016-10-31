@@ -30,9 +30,11 @@
     text-align: center;
     font-size: 22px;
 }
-.dataset .format-data tr.field {
+.dataset .format-data tr.field, a.add, .format-views tr.views {
     cursor: pointer;
 }
+
+
 
 
 form.format-field .form-group label {
@@ -60,11 +62,17 @@ form#settings textarea#description {
 }
 
 
-a.add {
-    cursor: pointer;
-}
+
 
 form.format-field a#add_valuesToExcludeByOriginalKey {
     margin-right:10px;
+}
+
+th#view_visibility {
+    width:30%;
+}
+
+table#views {
+    width:80%;
 }
 

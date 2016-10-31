@@ -143,6 +143,24 @@ router.get('/:id/format-field/:field', ensureLoggedIn, function(req, res) {
     });
 });
 
+router.get('/:id/format-views/:view',ensureLoggedIn,function(req,res) {
+
+    controller.getFormatView(req,function(err,data) {
+        if (err) {
+            winston.error("❌  Error getting bind data for dataset format views: ", err);
+            res.status(500).send(err.response || 'Internal Server Error');
+
+            return;
+
+        }
+        res.render('admin/dataset/format-view',data);
+
+    })
+});
+
+
+
+
 router.post('/:id/format-field/:field', ensureLoggedIn, function (req, res) {
     controller.saveFormatField(req, function (err, data) {
         if (err) {
@@ -186,17 +204,21 @@ router.get('/:id/format-views', ensureLoggedIn, function (req, res) {
     });
 });
 
-router.post('/:id/format-views', ensureLoggedIn, function (req, res) {
-    controller.saveFormatViews(req, function (err, data) {
-        if (err) {
-            winston.error("❌  Error getting bind data for dataset format views: ", err);
-            res.status(500).send(err.response || 'Internal Server Error');
 
-            return;
-        }
 
-        res.render('admin/dataset/' + data.id + '/done');
-    });
-});
+
+
+// router.post('/:id/format-views', ensureLoggedIn, function (req, res) {
+//     controller.saveFormatViews(req, function (err, data) {
+//         if (err) {
+//             winston.error("❌  Error getting bind data for dataset format views: ", err);
+//             res.status(500).send(err.response || 'Internal Server Error');
+
+//             return;
+//         }
+
+//         res.render('admin/dataset/' + data.id + '/done');
+//     });
+// });
 
 module.exports = router;

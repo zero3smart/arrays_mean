@@ -33,6 +33,18 @@ module.exports = function (nunjucks_env) {
         return false;
     });
 
+    nunjucks_env.addFilter('strip_nameForIcon',function(name) {
+        name = name.split(/(?=[A-Z])/).join(" ");
+        var viewTypeIconClass = name.toLowerCase().replace(/ /g,'-');
+        return "icon-" + viewTypeIconClass;
+    })
+
+    nunjucks_env.addFilter('displayViewTitle',function(viewType) {
+        viewType = viewType.split(/(?=[A-Z])/).join(" ");
+        return viewType.charAt(0).toUpperCase() + viewType.slice(1);
+
+    })
+
 
 
 
