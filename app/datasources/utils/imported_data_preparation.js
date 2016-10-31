@@ -186,7 +186,7 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdow
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown;
 
 function _dataSourceUIDFromTitle(title) {
-    if (title) return new Error('Title is not provided!');
+    if (!title) return new Error('Title is not provided!');
 
     return title.toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
 }

@@ -32,6 +32,7 @@ module.exports.getSettings = function (req, next) {
 
     if (req.params.id) {
         datasource_description.findById(req.params.id, function (err, doc) {
+
             if (err) return next(err);
 
             if (doc) {
@@ -46,7 +47,32 @@ module.exports.getSettings = function (req, next) {
 };
 
 module.exports.saveSettings = function (req, next) {
+
     var data = {};
+
+    for (var field in req.body) {
+        if (field.indexOf('[]') >= 0) {
+            var arrayField = field.replace('[]','');
+
+            if (typeof req.body[field] == 'string') {
+                if (req.body[field] == "") {
+                    req.body[arrayField] = []
+                } else {
+                    req.body[arrayField] = [req.body[field]];
+                }
+
+            } else if (Array.isArray(req.body[field])) {
+                for (var i = 0; i < req.body[field].length; i++) {  /*splicing empty string in array */
+                    if (req.body[field][i] == "") {
+                        req.body[field].splice(i,1);
+                    }
+                }
+                req.body[arrayField] = req.body[field];
+
+            }
+            delete req.body[field];
+        }
+    }
 
     req.body.fe_listed = req.body.fe_listed == 'true';
 
@@ -94,15 +120,20 @@ module.exports.getSource = function (req, next) {
 };
 
 module.exports.saveSource = function (req, next) {
+
     var description;
 
     var batch = new Batch;
     batch.concurrency(1);
 
     batch.push(function(done) {
-        datasource_description.findById(req.params.id, function(err, doc) {
+        datasource_description.findById(req.params.id)
+            .exec(function(err, doc) {
             if (err) return done(err);
-            description = doc._doc;
+
+            description = doc
+
+
             done();
         })
     });
@@ -162,7 +193,9 @@ module.exports.saveSource = function (req, next) {
                 }));
         });
 
+
         batch.push(function(done) {
+        
             if (!description.uid)
                 description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
             var newFileName = datasource_upload_service.fileNameToUpload(description);
@@ -172,6 +205,8 @@ module.exports.saveSource = function (req, next) {
         batch.push(function (done) {
             var query = {_id: req.params.id};
             description.save(function(err, updatedDescription) {
+                console.log(err);
+
                 if (err) return done(err);
 
                 req.flash('message', 'Uploaded successfully');
@@ -193,27 +228,28 @@ module.exports.saveSource = function (req, next) {
 
 /***************  Format Data  ***************/
 module.exports.getFormatData = function (req, next) {
+
     if (req.params.id) {
         var data = {};
 
         datasource_description.findById(req.params.id, function (err, doc) {
             if (err || !doc) return next(err);
 
-            var desciption = doc._doc;
-            data.doc = desciption;
+            var description = doc._doc;
+            data.doc = description;
 
             var countOfLines = 0;
             var cachedLines = '';
 
             var delimiter;
-            if (desciption.format == 'CSV') {
+            if (description.format == 'CSV') {
                 delimiter = ',';
-            } else if (desciption.format == 'TSV') {
+            } else if (description.format == 'TSV') {
                 delimiter = '\t';
             } else
                 return next(new Error('Invalid File Format'));
 
-            var readStream = datasource_upload_service.getDatasource(desciption).createReadStream()
+            var readStream = datasource_upload_service.getDatasource(description).createReadStream()
                 .pipe(es.split())
                 .pipe(es.mapSync(function (line) {
                     readStream.pause();
@@ -242,9 +278,9 @@ module.exports.getFormatData = function (req, next) {
                                 data.colNames = output[0];
                                 // Sort By fe_fieldDisplayOrder
                                 //data.colNames.sort(function(a, b) {
-                                //    if (!desciption.fe_fieldDisplayOrder[b]) return -1;
+                                //    if (!description.fe_fieldDisplayOrder[b]) return -1;
                                 //    else if (!desciption.fe_fieldDisplayOrder[a]) return 1;
-                                //    return desciption.fe_fieldDisplayOrder[b] - desciption.fe_fieldDisplayOrder[a];
+                                //    return description.fe_fieldDisplayOrder[b] - description.fe_fieldDisplayOrder[a];
                                 //});
                                 readStream.resume();
                             } else if (countOfLines == 2) {
@@ -303,24 +339,33 @@ module.exports.getFormatField = function(req, next) {
 }
 
 module.exports.saveFormatField = function(req, next) {
+
+
     var dataset_id = req.params.id;
     var field = req.params.field;
+
+    console.log(req.body);
+    
+
+
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
 
     var data = {};
-
     datasource_description.findById(dataset_id, function(err, doc) {
         if (err) return next(err);
 
         // Data Type Coercion
         if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
+
         doc.raw_rowObjects_coercionScheme[field] = {operation: req.body.dataType, format: req.body.dataFormat, outputFormat: req.body.dataOutputFormat};
+        doc.markModified("raw_rowObjects_coercionScheme");
 
         // Exclude
         if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
         var index = doc.fe_excludeFields.indexOf(field);
         if (req.body.exclude == 'true' && index == -1) {
             doc.fe_excludeFields.push(field);
+
         } else if (req.body.exclude != 'true' && index != -1) {
             doc.fe_excludeFields.splice(index, 1);
         }
@@ -340,6 +385,7 @@ module.exports.saveFormatField = function(req, next) {
         if (req.body.designatedField != '') {
             doc.fe_designatedFields[req.body.designatedField] = field;
         }
+
 
         // Filter notAvailable
         if (!doc.fe_filters) doc.fe_filters = {};
@@ -390,6 +436,7 @@ module.exports.saveFormatField = function(req, next) {
             next(null, data);
         });
     });
+
 }
 
 /***************  Add Custom Field  ***************/

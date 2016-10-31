@@ -34,6 +34,7 @@
     cursor: pointer;
 }
 
+
 form.format-field .form-group label {
     padding-left: 0;
     padding-right: 0;
@@ -52,3 +53,18 @@ form.format-field .form-group:after {
 form.format-field .form-group input[type='checkbox'] {
     margin-top: 10px;
 }
+
+
+form#settings textarea#description {
+    height: 100px;
+}
+
+
+a.add {
+    cursor: pointer;
+}
+
+form.format-field a#add_valuesToExcludeByOriginalKey {
+    margin-right:10px;
+}
+
