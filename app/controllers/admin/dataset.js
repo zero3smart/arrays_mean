@@ -321,6 +321,8 @@ module.exports.saveFormatData = function (req, next) {
         datasource_description.findOneAndUpdate({_id: req.params.id}, updateObject, {$upsert: true}, function (err, doc) {
             if (err) return next(err);
 
+            // TODO: Import datasource
+
             if (doc != null) {
                 data.doc = doc._doc;
             }
@@ -364,10 +366,19 @@ module.exports.saveFormatField = function(req, next) {
     datasource_description.findById(dataset_id, function(err, doc) {
         if (err) return next(err);
 
+        var dataTypeCoercionChanged = false;
+
         // Data Type Coercion
         if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
-        doc.raw_rowObjects_coercionScheme[field] = {operation: req.body.dataType, format: req.body.dataFormat, outputFormat: req.body.dataOutputFormat};
-        doc.markModified("raw_rowObjects_coercionScheme");
+        if (doc.raw_rowObjects_coercionScheme[field]) {
+            schemaChanged = true;
+            doc.raw_rowObjects_coercionScheme[field] = {
+                operation: req.body.dataType,
+                format: req.body.dataFormat,
+                outputFormat: req.body.dataOutputFormat
+            };
+            doc.markModified("raw_rowObjects_coercionScheme");
+        }
 
         // Exclude
         if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
@@ -439,17 +450,19 @@ module.exports.saveFormatField = function(req, next) {
         } else if (req.body.filter_sortableByInteger != 'true' && index != -1) {
             doc.fe_filters.fieldsSortableByInteger.splice(index, 1);
         }
-        doc.markModified('fe_filters');
 
         // Filter oneToOneOverrideWithValuesByTitleByFieldName
         // Filter valuesToExcludeByOriginalKey
         // Fabricated Filters
         // Default Filter
+        // Filter keywordFilters
+        doc.markModified('fe_filters');
 
         doc.save(function(err, updatedDoc) {
             if (err) return next(err);
 
             data.doc = updatedDoc._doc;
+            data.dataTypeCoercionChanged = dataTypeCoercionChanged;
             next(null, data);
         });
     });

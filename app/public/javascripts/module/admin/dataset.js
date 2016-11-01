@@ -2,7 +2,12 @@ $(document).ready(function () {
 
     $('#add_urls').on('click', function (e) {
         $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
-    })
+    });
+
+    $(window).on('click', 'a#removeRow', function(e) {
+        e.preventDefault();
+        $(this).closest('.form-group.row').remove();
+    });
 
     $('#file').on('change', function (e) {
         const files = $('#file')[0].files;
@@ -66,10 +71,20 @@ $(document).ready(function () {
                 $('tr.field[data-field-name="' + field + '"] td:nth-child(6)').html(data.doc.fe_fieldDisplayOrder[field]);
 
                 $('#changed').val(true);
+                $('#dataTypeCoercionChanged').val(data.dataTypeCoercionChanged);
                 $('#modal').modal('hide');
             }, 'json');
     });
 
+    $('#modal').on('click', 'a#add_oneToOneOverrideWithValuesByTitle', function(e) {
+        $('#extra_oneToOneOverrideWithValuesByTitle').append(
+            "<div class='form-group row'>" +
+                + "<label>Title</label><input type='text' name='oneToOneOverrideWithTitle[]' class='col-xs-4 col-xs-offset-1 form-control' value=''>" +
+                + "<label>Override</label><input type='text' name='oneToOneOverrideWithValue[]' class='col-xs-4 col-xs-offset-1 form-control' value=''>" +
+                + "<a class='removeRow'><span class='glyphicon glyphicon-remove'></span></a>" +
+                + "</div>"
+        );
+    });
 
     $('#modal').on('click', 'a#add_valuesToExcludeByOriginalKey', function (e) {
         $('#extra_valuesToExcludeByOriginalKey').append("<div class='form-group row'><input class='col-xs-2 col-xs-offset-1' name='valuesToExcludeByOriginalKey[]' type='text' value=''></div>");
