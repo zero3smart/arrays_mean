@@ -312,6 +312,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
+                    view_description: dataSourceDescription.fe_views.views.chart.description ? dataSourceDescription.fe_views.views.chart.description : "",
                     //
                     groupedResults: groupedResults,
                     groupBy: groupBy,
