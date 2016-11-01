@@ -240,74 +240,72 @@ module.exports.getFormatData = function (req, next) {
             var description = doc
             data.doc = description;
 
-            var countOfLines = 0;
-            var cachedLines = '';
+            if (req.session.uploadData_firstRecord == null || req.session.uploadData_columnNames == null ) {
+                var countOfLines = 0;
+                var cachedLines = '';
 
-            var delimiter;
-            if (description.format == 'CSV') {
-                delimiter = ',';
-            } else if (description.format == 'TSV') {
-                delimiter = '\t';
-            } else
-                return next(new Error('Invalid File Format'));
+                var delimiter;
+                if (description.format == 'CSV') {
+                    delimiter = ',';
+                } else if (description.format == 'TSV') {
+                    delimiter = '\t';
+                } else
+                    return next(new Error('Invalid File Format'));
 
-            var readStream = datasource_upload_service.getDatasource(description).createReadStream()
-                .pipe(es.split())
-                .pipe(es.mapSync(function (line) {
-                    readStream.pause();
+                var readStream = datasource_upload_service.getDatasource(description).createReadStream()
+                    .pipe(es.split())
+                    .pipe(es.mapSync(function (line) {
+                        readStream.pause();
 
-                    parse(cachedLines + line, {delimiter: delimiter, relax: true, skip_empty_lines: true},
-                        function (err, output) {
-                            if (err) {
-                                readStream.destroy();
-                                return next(err);
-                            }
-
-                            if (!output || output.length == 0) {
-                                cachedLines = cachedLines + line;
-                                return readStream.resume();
-                            }
-
-                            if (!Array.isArray(output[0]) || output[0].length == 1) {
-                                readStream.destroy();
-                                return done(new Error('Invalid File'));
-                            }
-
-                            cachedLines = '';
-                            countOfLines++;
-
-                            if (countOfLines == 1) {
-                                data.colNames = output[0];
-                                // Sort By fe_fieldDisplayOrder
-                                //data.colNames.sort(function(a, b) {
-                                //    if (!description.fe_fieldDisplayOrder[b]) return -1;
-                                //    else if (!desciption.fe_fieldDisplayOrder[a]) return 1;
-                                //    return description.fe_fieldDisplayOrder[b] - description.fe_fieldDisplayOrder[a];
-                                //});
-                                if (!description.raw_rowObjects_coercionScheme) description.raw_rowObjects_coercionScheme = {};
-                                if (description.raw_rowObjects_coercionScheme.length !== data.colNames.length) {
-                                     data.colNames.map(function(col) {
-                                        if (!description.raw_rowObjects_coercionScheme[col]) {
-                                            description.raw_rowObjects_coercionScheme[col] = {operation: "ToString"}
-                                        }
-                                    
-                                    })
-                                    description.markModified("raw_rowObjects_coercionScheme");
-                                    description.save();
-
+                        parse(cachedLines + line, {delimiter: delimiter, relax: true, skip_empty_lines: true},
+                            function (err, output) {
+                                if (err) {
+                                    readStream.destroy();
+                                    return next(err);
                                 }
-                                readStream.resume();
-                            } else if (countOfLines == 2) {
-                                data.firstRecord = output[0];
-                                readStream.resume();
-                            } else {
-                                readStream.destroy();
-                                if (countOfLines == 3) next(null, data);
-                            }
-                        });
-                }));
-            }
-        );
+
+                                if (!output || output.length == 0) {
+                                    cachedLines = cachedLines + line;
+                                    return readStream.resume();
+                                }
+
+                                if (!Array.isArray(output[0]) || output[0].length == 1) {
+                                    readStream.destroy();
+                                    return done(new Error('Invalid File'));
+                                }
+
+                                cachedLines = '';
+                                countOfLines++;
+
+                                if (countOfLines == 1) {
+                                    data.colNames = output[0];
+                                    req.session.uploadData_columnNames = data.colNames;
+                                    // Sort By fe_fieldDisplayOrder
+                                    // data.colNames.sort(function(a, b) {
+                                    //    if (!description.fe_fieldDisplayOrder[b]) return -1;
+                                    //    else if (!desciption.fe_fieldDisplayOrder[a]) return 1;
+                                    //    return description.fe_fieldDisplayOrder[b] - description.fe_fieldDisplayOrder[a];
+                                    // });
+                                    readStream.resume();
+                                } else if (countOfLines == 2) {
+                                    req.session.uploadData_firstRecord = output[0];
+                                    data.firstRecord = output[0];
+                                    readStream.resume();
+                                } else {
+                                    readStream.destroy();
+                                    if (countOfLines == 3) next(null, data);
+                                }
+                            });
+                        })
+                    );
+            
+
+            } else {
+                data.colNames = req.session.uploadData_columnNames;
+                data.firstRecord = req.session.uploadData_firstRecord;
+                next(null,data);
+            }            
+        });
     }
 };
 

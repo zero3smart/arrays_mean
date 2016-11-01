@@ -104,6 +104,8 @@ $(document).ready(function () {
         $.post("/admin/dataset/" + doc_id + "/format-field/" + field, params)
             .done(function(data) {
 
+                
+
 
             // TODO: Update the column on the parent table
             $('#changed').val(true);
