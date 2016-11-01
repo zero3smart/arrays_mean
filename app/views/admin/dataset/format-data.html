@@ -19,7 +19,7 @@
 		{% include "../../partials/admin/dataset-breadcrumb.html" %}
 
 		<br />
-		{{ doc.fe_fieldDisplayOrder | dump }}
+
 		<form class="format-data">
 			<div class="form-group row">
 				<label class="col-xs-4" for="fn_new_rowPrimaryKeyFromRowObject">Primary Key: </label>
@@ -33,6 +33,7 @@
 			</div>
 
 			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
+			<input type="hidden" id="dataTypeCoercionChanged" name="dataTypeCoercionChanged" value="false"/>
 			<input type="hidden" id="changed" name="changed" value="false"/>
 
 			<table id="fields" class="table">
@@ -84,4 +85,7 @@
 	{{ super() }}
 
 	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
+	<script type="text/javascript" src="/javascripts/lib/bootstrap-multiselect/bootstrap-multiselect.js"></script>
+
+
 {% endblock %}

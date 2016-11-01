@@ -18,9 +18,9 @@
 	<dive class="dataset">
 		{% include "../../partials/admin/dataset-breadcrumb.html" %}
 
-		<br />
+		<br /> 
 
-		<form class="settings" method="post">
+		<form id="settings" method="post">
 			<div class="form-group row">
 				<label class="col-xs-4" for="title">Title: </label>
 				<input class="col-xs-8" type="text" id="title" name="title" value="{{ doc.title }}" required/>
@@ -28,7 +28,7 @@
 
 			<div class="form-group row">
 				<label class="col-xs-4" for="description">Description: </label>
-				<input class="col-xs-8" type="text" id="description" name="description" value="{{ doc.description }}" required/>
+				<textarea class="col-xs-8" id="description" name="description" required> {{ doc.description }}</textarea>
 			</div>
 
 			<div class="form-group row">
@@ -43,8 +43,27 @@
 
 			<div class="form-group row">
 				<label class="col-xs-4" for="urls">Urls: </label>
-				<input class="col-xs-8" type="text" id="urls" name="urls" value="{{ doc.urls }}"/>
+
+			{% if doc.urls and doc.urls.length > 0 %}
+				{% for url in doc.urls %}
+				{% if loop.index == 1 %} 
+					<input class="col-xs-8 urls" type="text" name="urls[]" value="{{url}}" />
+				</div>
+				{% else %}
+				<div class="form-group row"> 
+					<input class="col-xs-8 col-xs-offset-4 urls" name="urls[]" type="text" value="{{url}}"/>
+				</div>
+				{% endif %}
+				{% endfor %}
+
+			{% else %}
+				<input class="col-xs-8 urls" type="text" name="urls[]" value="{{url}}" />
 			</div>
+			{% endif %}
+		
+			<div id="extra_urls"></div>
+			<div class="form-group row"><a id="add_urls" class="col-xs-offset-4 add" ><span class="glyphicon glyphicon-plus"></span> Add more Urls</a></div>
+	
 
 			<div class="form-group row">
 				<label class="col-xs-4" for="fe_listed">Listed: </label>
@@ -56,6 +75,9 @@
 				<button type="submit" class="btn btn-default pull-right"><span class="glyphicon glyphicon-hand-right"></span> Save</button>
 				<div class="clearfix"></div>
 			</div>
+
+
+
 		</form>
 
 		<form>

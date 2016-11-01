@@ -10,6 +10,8 @@ var datasource_description = require('../../models/descriptions');
 var datasource_upload_service = require('../../../lib/datasource_process/aws-datasource-files-hosting');
 var import_datatypes = require('../../datasources/utils/import_datatypes');
 var imported_data_preparation = require('../../datasources/utils/imported_data_preparation')
+var views = require('../../models/views');
+
 
 /***************  Index  ***************/
 module.exports.index = function (req, next) {
@@ -32,6 +34,7 @@ module.exports.getSettings = function (req, next) {
 
     if (req.params.id) {
         datasource_description.findById(req.params.id, function (err, doc) {
+
             if (err) return next(err);
 
             if (doc) {
@@ -46,7 +49,32 @@ module.exports.getSettings = function (req, next) {
 };
 
 module.exports.saveSettings = function (req, next) {
+
     var data = {};
+
+    for (var field in req.body) {
+        if (field.indexOf('[]') >= 0) {
+            var arrayField = field.replace('[]','');
+
+            if (typeof req.body[field] == 'string') {
+                if (req.body[field] == "") {
+                    req.body[arrayField] = []
+                } else {
+                    req.body[arrayField] = [req.body[field]];
+                }
+
+            } else if (Array.isArray(req.body[field])) {
+                for (var i = 0; i < req.body[field].length; i++) {  /*splicing empty string in array */
+                    if (req.body[field][i] == "") {
+                        req.body[field].splice(i,1);
+                    }
+                }
+                req.body[arrayField] = req.body[field];
+
+            }
+            delete req.body[field];
+        }
+    }
 
     req.body.fe_listed = req.body.fe_listed == 'true';
 
@@ -94,15 +122,20 @@ module.exports.getSource = function (req, next) {
 };
 
 module.exports.saveSource = function (req, next) {
+
     var description;
 
     var batch = new Batch;
     batch.concurrency(1);
 
     batch.push(function(done) {
-        datasource_description.findById(req.params.id, function(err, doc) {
+        datasource_description.findById(req.params.id)
+            .exec(function(err, doc) {
             if (err) return done(err);
-            description = doc._doc;
+
+            description = doc
+
+
             done();
         })
     });
@@ -162,7 +195,9 @@ module.exports.saveSource = function (req, next) {
                 }));
         });
 
+
         batch.push(function(done) {
+        
             if (!description.uid)
                 description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
             var newFileName = datasource_upload_service.fileNameToUpload(description);
@@ -172,6 +207,8 @@ module.exports.saveSource = function (req, next) {
         batch.push(function (done) {
             var query = {_id: req.params.id};
             description.save(function(err, updatedDescription) {
+                console.log(err);
+
                 if (err) return done(err);
 
                 req.flash('message', 'Uploaded successfully');
@@ -193,27 +230,28 @@ module.exports.saveSource = function (req, next) {
 
 /***************  Format Data  ***************/
 module.exports.getFormatData = function (req, next) {
+
     if (req.params.id) {
         var data = {};
 
         datasource_description.findById(req.params.id, function (err, doc) {
             if (err || !doc) return next(err);
 
-            var desciption = doc._doc;
-            data.doc = desciption;
+            var description = doc
+            data.doc = description;
 
             var countOfLines = 0;
             var cachedLines = '';
 
             var delimiter;
-            if (desciption.format == 'CSV') {
+            if (description.format == 'CSV') {
                 delimiter = ',';
-            } else if (desciption.format == 'TSV') {
+            } else if (description.format == 'TSV') {
                 delimiter = '\t';
             } else
                 return next(new Error('Invalid File Format'));
 
-            var readStream = datasource_upload_service.getDatasource(desciption).createReadStream()
+            var readStream = datasource_upload_service.getDatasource(description).createReadStream()
                 .pipe(es.split())
                 .pipe(es.mapSync(function (line) {
                     readStream.pause();
@@ -242,10 +280,22 @@ module.exports.getFormatData = function (req, next) {
                                 data.colNames = output[0];
                                 // Sort By fe_fieldDisplayOrder
                                 //data.colNames.sort(function(a, b) {
-                                //    if (!desciption.fe_fieldDisplayOrder[b]) return -1;
+                                //    if (!description.fe_fieldDisplayOrder[b]) return -1;
                                 //    else if (!desciption.fe_fieldDisplayOrder[a]) return 1;
-                                //    return desciption.fe_fieldDisplayOrder[b] - desciption.fe_fieldDisplayOrder[a];
+                                //    return description.fe_fieldDisplayOrder[b] - description.fe_fieldDisplayOrder[a];
                                 //});
+                                if (!description.raw_rowObjects_coercionScheme) description.raw_rowObjects_coercionScheme = {};
+                                if (description.raw_rowObjects_coercionScheme.length !== data.colNames.length) {
+                                     data.colNames.map(function(col) {
+                                        if (!description.raw_rowObjects_coercionScheme[col]) {
+                                            description.raw_rowObjects_coercionScheme[col] = {operation: "ToString"}
+                                        }
+
+                                    })
+                                    description.markModified("raw_rowObjects_coercionScheme");
+                                    description.save();
+
+                                }
                                 readStream.resume();
                             } else if (countOfLines == 2) {
                                 data.firstRecord = output[0];
@@ -270,6 +320,8 @@ module.exports.saveFormatData = function (req, next) {
         var updateObject = {fn_new_rowPrimaryKeyFromRowObject: req.body.fn_new_rowPrimaryKeyFromRowObject};
         datasource_description.findOneAndUpdate({_id: req.params.id}, updateObject, {$upsert: true}, function (err, doc) {
             if (err) return next(err);
+
+            // TODO: Import datasource
 
             if (doc != null) {
                 data.doc = doc._doc;
@@ -305,16 +357,28 @@ module.exports.getFormatField = function(req, next) {
 module.exports.saveFormatField = function(req, next) {
     var dataset_id = req.params.id;
     var field = req.params.field;
+
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
 
     var data = {};
+    field = field.replace(/\./g, "_");
 
     datasource_description.findById(dataset_id, function(err, doc) {
         if (err) return next(err);
 
+        var dataTypeCoercionChanged = false;
+
         // Data Type Coercion
         if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
-        doc.raw_rowObjects_coercionScheme[field] = {operation: req.body.dataType, format: req.body.dataFormat, outputFormat: req.body.dataOutputFormat};
+        if (doc.raw_rowObjects_coercionScheme[field]) {
+            schemaChanged = true;
+            doc.raw_rowObjects_coercionScheme[field] = {
+                operation: req.body.dataType,
+                format: req.body.dataFormat,
+                outputFormat: req.body.dataOutputFormat
+            };
+            doc.markModified("raw_rowObjects_coercionScheme");
+        }
 
         // Exclude
         if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
@@ -324,22 +388,31 @@ module.exports.saveFormatField = function(req, next) {
         } else if (req.body.exclude != 'true' && index != -1) {
             doc.fe_excludeFields.splice(index, 1);
         }
+        doc.markModified('fe_excludeFields');
 
         // Title Override
         if (!doc.fe_displayTitleOverrides) doc.fe_displayTitleOverrides = {};
-        if (req.body.titleOverride != '')
+        if (req.body.titleOverride != '') {
             doc.fe_displayTitleOverrides[field] = req.body.titleOverride;
+        } else {
+            delete doc.fe_displayTitleOverrides[field];
+        }
+        doc.markModified('fe_displayTitleOverrides');
 
         // Display Order
         if (!doc.fe_fieldDisplayOrder) doc.fe_fieldDisplayOrder = {};
         if (req.body.displayOrder)
             doc.fe_fieldDisplayOrder[field] = parseInt(req.body.displayOrder);
+        doc.markModified('fe_fieldDisplayOrder');
 
         // Designated Field
         if (!doc.fe_designatedFields) doc.fe_designatedFields = {};
         if (req.body.designatedField != '') {
             doc.fe_designatedFields[req.body.designatedField] = field;
+        } else {
+            delete doc.fe_designatedFields[req.body.designatedField];
         }
+        doc.markModified('fe_designatedFields');
 
         // Filter notAvailable
         if (!doc.fe_filters) doc.fe_filters = {};
@@ -382,14 +455,18 @@ module.exports.saveFormatField = function(req, next) {
         // Filter valuesToExcludeByOriginalKey
         // Fabricated Filters
         // Default Filter
+        // Filter keywordFilters
+        doc.markModified('fe_filters');
 
         doc.save(function(err, updatedDoc) {
             if (err) return next(err);
 
             data.doc = updatedDoc._doc;
+            data.dataTypeCoercionChanged = dataTypeCoercionChanged;
             next(null, data);
         });
     });
+
 }
 
 /***************  Add Custom Field  ***************/
@@ -413,12 +490,57 @@ module.exports.getAddCustomField = function(req, next) {
 
 /***************  Format Views  ***************/
 module.exports.getFormatViews = function (req, next) {
-    var data = {};
 
-    if (req.params.id) {
-    }
 
-    next(null, data);
+    var dataset_id = req.params.id;
+    if (!dataset_id ) return next(new Error('Invalid parameter!'));
+
+    views.find({},{name:1,displayAs:1,icon:1},function(err,allViews) {
+        if (err) return next(new Error('error when getting views'));
+        var data = {id: dataset_id,available_forViewTypes: allViews};
+        datasource_description.findById(dataset_id, function(err, doc) {
+            if (err) return next(err);
+            if (doc) {
+                data.doc = doc._doc;
+            }
+            next(null, data);
+        });
+
+
+    })
+
+}
+
+
+module.exports.getFormatView = function(req,next) {
+
+
+    var dataset_id = req.params.id;
+    var view_name = req.params.view
+    if (!dataset_id || !view_name) return next(new Error('Invalid parameter!'));
+
+    var data = {
+        id: dataset_id,
+        view:view_name
+    };
+
+    views.findOne({name: view_name},function(err,foundView) {
+        if (err) return next(new Error('error when getting specific view for customization'));
+        var data = {
+            id: dataset_id,
+            view: foundView
+        };
+        datasource_description.findById(dataset_id, function(err, doc) {
+            if (err) return next(err);
+            if (doc) {
+                data.doc = doc._doc;
+            }
+            next(null, data);
+        });
+    })
+
+
+
 }
 
 module.exports.saveFormatViews = function(req, next) {

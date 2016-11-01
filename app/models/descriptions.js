@@ -23,7 +23,7 @@ var DatasourceDescription_scheme = Schema({
     raw_rowObjects_coercionScheme: Object,
     fe_excludeFields: Array,
     fe_displayTitleOverrides: Object,
-    fe_fieldsDesignatedFields: Object,
+    fe_designatedFields: Object,
     fe_fieldDisplayOrder: Object,
 
     fe_filters: {
@@ -35,6 +35,7 @@ var DatasourceDescription_scheme = Schema({
         fieldsCommaSeparatedAsIndividual: Array,
         fieldsMultiSelectable: Array,
         fieldsNotAvailable: Array,
+        keywordFilters: Array,
     },
 
     _otherSources: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
@@ -55,6 +56,8 @@ var DatasourceDescription_scheme = Schema({
 
         }
     },
+
+    
     _team: {type: Schema.Types.ObjectId, ref: "Team"},
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,

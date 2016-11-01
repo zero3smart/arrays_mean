@@ -132,25 +132,42 @@
         </div>
     </div>
 
-    <div class="form-group">
+    <div class="form-group row">
         <div class="col-xs-8">
-            <label for="filter_oneToOneOverrideWithValuesByTitleByFieldName" class="form-control">One To One Override Values By Title (Not Ready)</label>
+            <label class="form-control">One To One Override Values By Title</label>
         </div>
         <div class="col-xs-4">
-            <input type="checkbox" id="filter_oneToOneOverrideWithValuesByTitleByFieldName" name="filter_oneToOneOverrideWithValuesByTitleByFieldName"
-                   {{ 'checked=checked' if doc.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName | doesArrayContain(field) }} disabled/>
+            <a id="add_oneToOneOverrideWithValuesByTitle" class="col-xs-offset-1 add">
+                <span class="glyphicon glyphicon-plus"></span> Add more values
+            </a>
         </div>
+    </div>
+    <div id="extra_oneToOneOverrideWithValuesByTitle">
+        {{doc.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[field]}}
+        {% for value, title in doc.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[field] %}
+            <div class="form-group row">
+                <input type="text" value="{{ title }}" name="oneToOneOverrideWithTitle[]" class="form-control col-xs-4 col-xs-offset-1">
+                <input type="text" value="{{ value }}" name="oneToOneOverrideWithValue[]" class="form-control col-xs-4 col-xs-offset-1">
+                <a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>
+            </div>
+        {% endfor %}
     </div>
 
     <div class="form-group">
         <div class="col-xs-8">
-            <label for="filter_valuesToExcludeByOriginalKey" class="form-control">Values to exclude by original key (Not Ready)</label>
-        </div>
-        <div class="col-xs-4">
-            <input type="checkbox" id="filter_valuesToExcludeByOriginalKey" name="filter_valuesToExcludeByOriginalKey"
-                   {{ 'checked=checked' if doc.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName | doesArrayContain(field) }} disabled/>
+            <label class="form-control">Values to exclude by original key (Not Ready)</label>
         </div>
     </div>
+    <div id="extra_valuesToExcludeByOriginalKey"></div>
+
+    <div class="form-group row"><a id="add_valuesToExcludeByOriginalKey" class="col-xs-offset-1 add">
+
+        <span class="glyphicon glyphicon-plus"></span> Add more values</a>
+        <input type="checkbox" id="filter_valuesToExcludeByOriginalKey_applyAll" name="filter_valuesToExcludeByOriginalKey_applyAll"
+                       {{ 'checked=checked' if doc.fe_filters.valuesToExcludeByOriginalKey and doc.fe_filters.valuesToExcludeByOriginalKey["_all"]  }} /> Apply to All
+
+    </div>
+
 
     <h4>Relationships</h4>
 
@@ -177,3 +194,9 @@
     </div>
 </form>
 {% endblock %}
+
+
+
+
+
+
