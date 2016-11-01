@@ -22,6 +22,7 @@
 
 		<form class="format-views">
 
+
 			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
 
 			<div class="form-group row">
@@ -29,7 +30,8 @@
 					Select Default View 
 					<select id="viewType" class="from-control" name="viewType">
 						{% for view in available_forViewTypes %}
-						<option value="{{view}}"> {{view}}
+						{{view}}
+						<option value="{{view.name}}"> {{view.displayAs}} 
 						</option>
 						{% endfor %}
 					</select>
@@ -46,11 +48,10 @@
 				</thead>
 				<tbody>
 				{% for view in available_forViewTypes %}
-				<tr class="views" view-type-name="{{ view }}">
+				<tr class="views" view-type-name="{{ view.name }}">
 					<td><input type="checkbox" {{ 'checked=checked' if
-						doc.fe_views.views and doc.fe_views.views[view].visibility == true }} disabled></td>
-					<td><span class="{{ view |strip_nameForIcon }}"></span>{{ view | displayViewTitle }}</td>
-					
+						doc.fe_views.views and doc.fe_views.views[view.name].visibility == true }} disabled></td>
+					<td><span class="{{ view.icon }}"></span>{{ view.displayAs }}</td>
 				</tr>
 				{% endfor %}
 				</tbody>
@@ -58,26 +59,6 @@
 			</div>
 		</form>
 		
-
-	
-
-
-
-
-
-		
-
-		
-
-
-	
-
-
-
-
-
-
-
 		<div class="format">
 			
 		</div>
@@ -91,6 +72,8 @@
 		<div class="clearfix"></div>
 	</div>
 
+	{% include "../../partials/admin/modal.html" %}
+
 
 
 
@@ -101,4 +84,8 @@
 	{{ super() }}
 
 	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
+
+	<script type="text/javascript" src="/javascripts/lib/bootstrap-multiselect/bootstrap-multiselect.js"></script>
+
+
 {% endblock %}

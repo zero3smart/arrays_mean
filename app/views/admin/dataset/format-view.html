@@ -1,1 +1,65 @@
-<p> HI </p>
+{% extends "../../layout/ajax.html" %}
+
+
+{% block content %}
+<form>
+
+    <div class="form-group row">
+        <div class="col-xs-4">
+              <input type="checkbox"/> Visible
+        </div>
+        <div class="col-xs-4">
+
+             <input type="checkbox"/> Default view
+        </div>
+    </div>
+
+
+
+    <div class="form-group row">
+        <div class="col-xs-4">
+            <label >Name</label>
+        </div>
+        <div class="col-xs-8"> 
+            <input id="name" class="form-control" value="{{ view.displayAs }}" disabled/> 
+        </div>
+    </div>
+
+
+
+
+
+    {% for setting in view.settings %} 
+        <div class="form-group row">
+            <div class="col-xs-4">
+                <label for="setting.name"> {{setting.displayAs}} </label>
+            </div>
+            <div class="col-xs-8">
+                {% if setting.inputType == "textarea" %}
+                    <textarea class="form-control"> {{doc.fe_views.views[view.name][setting.name]}}</textarea>
+                {% elseif setting.inputType == "select" or setting.inputType == "multiselect" %}
+                    <select {%if setting.inputType=="multiselect"%} multiple="multiple"  class="multiselect from-control" {% endif %}>
+                    {% if setting.selectFrom == "column" %}
+                        {% for col , value in doc.raw_rowObjects_coercionScheme %}  
+                            <option value="{{col}}"> {{col}}</option>
+                        {% endfor %}
+                    {% endif %}
+                    </select>
+
+                
+
+
+                {% endif %}
+
+            </div>
+        </div>
+
+
+    {% endfor %}
+ 
+</form>
+{% endblock %}
+
+
+
+

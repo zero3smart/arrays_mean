@@ -35,6 +35,7 @@
 			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
 			<input type="hidden" id="changed" name="changed" value="false"/>
 
+
 			<table id="fields" class="table">
 				<thead>
 				<tr>
@@ -54,9 +55,9 @@
 						doc.fe_excludeFields | doesArrayContain(colName) }} disabled></td>
 					<td>{{ colName }}</td>
 					<td>
-						{{ doc.raw_rowObjects_coercionScheme[colName] | fieldDataType_coercion_toString }}
+						{{ doc.raw_rowObjects_coercionScheme[colName]| fieldDataType_coercion_toString }}
 					</td>
-					<td>{{ firstRecord[loop.index0] }}</td>
+					<td>{{ firstRecord[loop.index] }}</td>
 					<td class="order">{{ doc.fe_fieldDisplayOrder[colName] }}</td>
 				</tr>
 				{% endfor %}
@@ -84,4 +85,11 @@
 	{{ super() }}
 
 	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
+	<script type="text/javascript" src="/javascripts/lib/bootstrap-multiselect/bootstrap-multiselect.js"></script>
+
+
 {% endblock %}
+
+
+
+

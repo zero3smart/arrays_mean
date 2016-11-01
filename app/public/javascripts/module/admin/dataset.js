@@ -1,5 +1,8 @@
 $(document).ready(function () {
 
+
+  
+
     $('#add_urls').on('click',function(e) {
         $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
     })
@@ -20,6 +23,8 @@ $(document).ready(function () {
         var doc_id = $('#doc_id').val();
 
         $.get("/admin/dataset/" + doc_id + "/format-field/" + field_name, null, function (data) {
+
+
 
             $('#modal')
                 .on('show.bs.modal', function (e) {
@@ -47,13 +52,23 @@ $(document).ready(function () {
 
         $.get("/admin/dataset/" + doc_id + "/format-views/" + viewType, null, function (data) {
 
+
+
             $('#modal')
                 .on('show.bs.modal', function (e) {
                     var $modalTitle = $(this).find('.modal-title');
                     var $modalBody = $(this).find('.modal-body');
 
+                    
+
                     $modalTitle.html('Format View');
                     $modalBody.html(data);
+                    $('.multiselect').multiselect(
+                        {buttonClass: 'form-control'}
+                                            
+                    )
+
+
                 })
                 .modal();
 
@@ -88,6 +103,7 @@ $(document).ready(function () {
 
         $.post("/admin/dataset/" + doc_id + "/format-field/" + field, params)
             .done(function(data) {
+
 
             // TODO: Update the column on the parent table
             $('#changed').val(true);
