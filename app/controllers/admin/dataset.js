@@ -10,6 +10,8 @@ var datasource_description = require('../../models/descriptions');
 var datasource_upload_service = require('../../../lib/datasource_process/aws-datasource-files-hosting');
 var import_datatypes = require('../../datasources/utils/import_datatypes');
 var imported_data_preparation = require('../../datasources/utils/imported_data_preparation')
+var views = require('../../models/views');
+
 
 /***************  Index  ***************/
 module.exports.index = function (req, next) {
@@ -235,7 +237,7 @@ module.exports.getFormatData = function (req, next) {
         datasource_description.findById(req.params.id, function (err, doc) {
             if (err || !doc) return next(err);
 
-            var description = doc._doc;
+            var description = doc
             data.doc = description;
 
             var countOfLines = 0;
@@ -277,11 +279,23 @@ module.exports.getFormatData = function (req, next) {
                             if (countOfLines == 1) {
                                 data.colNames = output[0];
                                 // Sort By fe_fieldDisplayOrder
-                                // data.colNames.sort(function(a, b) {
-                                //     if (!description.fe_fieldDisplayOrder[b]) return -1;
-                                //     else if (!description.fe_fieldDisplayOrder[a]) return 1;
-                                //     return description.fe_fieldDisplayOrder[a] - description.fe_fieldDisplayOrder[b];
-                                // });
+                                //data.colNames.sort(function(a, b) {
+                                //    if (!description.fe_fieldDisplayOrder[b]) return -1;
+                                //    else if (!desciption.fe_fieldDisplayOrder[a]) return 1;
+                                //    return description.fe_fieldDisplayOrder[b] - description.fe_fieldDisplayOrder[a];
+                                //});
+                                if (!description.raw_rowObjects_coercionScheme) description.raw_rowObjects_coercionScheme = {};
+                                if (description.raw_rowObjects_coercionScheme.length !== data.colNames.length) {
+                                     data.colNames.map(function(col) {
+                                        if (!description.raw_rowObjects_coercionScheme[col]) {
+                                            description.raw_rowObjects_coercionScheme[col] = {operation: "ToString"}
+                                        }
+
+                                    })
+                                    description.markModified("raw_rowObjects_coercionScheme");
+                                    description.save();
+
+                                }
                                 readStream.resume();
                             } else if (countOfLines == 2) {
                                 data.firstRecord = output[0];
@@ -463,12 +477,57 @@ module.exports.getAddCustomField = function(req, next) {
 
 /***************  Format Views  ***************/
 module.exports.getFormatViews = function (req, next) {
-    var data = {};
 
-    if (req.params.id) {
-    }
 
-    next(null, data);
+    var dataset_id = req.params.id;
+    if (!dataset_id ) return next(new Error('Invalid parameter!'));
+
+    views.find({},{name:1,displayAs:1,icon:1},function(err,allViews) {
+        if (err) return next(new Error('error when getting views'));
+        var data = {id: dataset_id,available_forViewTypes: allViews};
+        datasource_description.findById(dataset_id, function(err, doc) {
+            if (err) return next(err);
+            if (doc) {
+                data.doc = doc._doc;
+            }
+            next(null, data);
+        });
+
+
+    })
+
+}
+
+
+module.exports.getFormatView = function(req,next) {
+
+
+    var dataset_id = req.params.id;
+    var view_name = req.params.view
+    if (!dataset_id || !view_name) return next(new Error('Invalid parameter!'));
+
+    var data = {
+        id: dataset_id,
+        view:view_name
+    };
+
+    views.findOne({name: view_name},function(err,foundView) {
+        if (err) return next(new Error('error when getting specific view for customization'));
+        var data = {
+            id: dataset_id,
+            view: foundView
+        };
+        datasource_description.findById(dataset_id, function(err, doc) {
+            if (err) return next(err);
+            if (doc) {
+                data.doc = doc._doc;
+            }
+            next(null, data);
+        });
+    })
+
+
+
 }
 
 module.exports.saveFormatViews = function(req, next) {

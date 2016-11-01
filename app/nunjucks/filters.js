@@ -36,7 +36,6 @@ module.exports = function (nunjucks_env) {
 
 
 
-
     nunjucks_env.addFilter('isObjectEmpty', function (obj) {
         return Object.keys(obj).length === 0;
     });

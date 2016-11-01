@@ -94,4 +94,36 @@ $(document).ready(function () {
         }
     }
 
+    $('.format-views tr.views').on('click', function(e) {
+        e.preventDefault();
+
+        var viewType = $(this).attr('view-type-name');
+        var doc_id = $('#doc_id').val();
+
+
+        $.get("/admin/dataset/" + doc_id + "/format-views/" + viewType, null, function (data) {
+
+            $('#modal')
+                .on('show.bs.modal', function (e) {
+                    var $modalTitle = $(this).find('.modal-title');
+                    var $modalBody = $(this).find('.modal-body');
+
+                    $modalTitle.html('Format View');
+                    $modalBody.html(data);
+                    $('.multiselect').multiselect(
+                        {buttonClass: 'form-control'}
+
+                    )
+
+                })
+                .modal();
+
+        }, "html");
+
+
+
+    });
+
+
+
 });
