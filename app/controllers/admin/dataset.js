@@ -277,11 +277,11 @@ module.exports.getFormatData = function (req, next) {
                             if (countOfLines == 1) {
                                 data.colNames = output[0];
                                 // Sort By fe_fieldDisplayOrder
-                                //data.colNames.sort(function(a, b) {
-                                //    if (!description.fe_fieldDisplayOrder[b]) return -1;
-                                //    else if (!desciption.fe_fieldDisplayOrder[a]) return 1;
-                                //    return description.fe_fieldDisplayOrder[b] - description.fe_fieldDisplayOrder[a];
-                                //});
+                                // data.colNames.sort(function(a, b) {
+                                //     if (!description.fe_fieldDisplayOrder[b]) return -1;
+                                //     else if (!description.fe_fieldDisplayOrder[a]) return 1;
+                                //     return description.fe_fieldDisplayOrder[a] - description.fe_fieldDisplayOrder[b];
+                                // });
                                 readStream.resume();
                             } else if (countOfLines == 2) {
                                 data.firstRecord = output[0];
@@ -339,24 +339,19 @@ module.exports.getFormatField = function(req, next) {
 }
 
 module.exports.saveFormatField = function(req, next) {
-
-
     var dataset_id = req.params.id;
     var field = req.params.field;
-
-    console.log(req.body);
-    
-
 
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
 
     var data = {};
+    field = field.replace(/\./g, "_");
+
     datasource_description.findById(dataset_id, function(err, doc) {
         if (err) return next(err);
 
         // Data Type Coercion
         if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
-
         doc.raw_rowObjects_coercionScheme[field] = {operation: req.body.dataType, format: req.body.dataFormat, outputFormat: req.body.dataOutputFormat};
         doc.markModified("raw_rowObjects_coercionScheme");
 
@@ -365,27 +360,34 @@ module.exports.saveFormatField = function(req, next) {
         var index = doc.fe_excludeFields.indexOf(field);
         if (req.body.exclude == 'true' && index == -1) {
             doc.fe_excludeFields.push(field);
-
         } else if (req.body.exclude != 'true' && index != -1) {
             doc.fe_excludeFields.splice(index, 1);
         }
+        doc.markModified('fe_excludeFields');
 
         // Title Override
         if (!doc.fe_displayTitleOverrides) doc.fe_displayTitleOverrides = {};
-        if (req.body.titleOverride != '')
+        if (req.body.titleOverride != '') {
             doc.fe_displayTitleOverrides[field] = req.body.titleOverride;
+        } else {
+            delete doc.fe_displayTitleOverrides[field];
+        }
+        doc.markModified('fe_displayTitleOverrides');
 
         // Display Order
         if (!doc.fe_fieldDisplayOrder) doc.fe_fieldDisplayOrder = {};
         if (req.body.displayOrder)
             doc.fe_fieldDisplayOrder[field] = parseInt(req.body.displayOrder);
+        doc.markModified('fe_fieldDisplayOrder');
 
         // Designated Field
         if (!doc.fe_designatedFields) doc.fe_designatedFields = {};
         if (req.body.designatedField != '') {
             doc.fe_designatedFields[req.body.designatedField] = field;
+        } else {
+            delete doc.fe_designatedFields[req.body.designatedField];
         }
-
+        doc.markModified('fe_designatedFields');
 
         // Filter notAvailable
         if (!doc.fe_filters) doc.fe_filters = {};
@@ -423,6 +425,7 @@ module.exports.saveFormatField = function(req, next) {
         } else if (req.body.filter_sortableByInteger != 'true' && index != -1) {
             doc.fe_filters.fieldsSortableByInteger.splice(index, 1);
         }
+        doc.markModified('fe_filters');
 
         // Filter oneToOneOverrideWithValuesByTitleByFieldName
         // Filter valuesToExcludeByOriginalKey
