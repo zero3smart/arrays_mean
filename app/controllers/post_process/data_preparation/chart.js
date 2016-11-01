@@ -265,7 +265,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     });
 
                     // Custom colors
-                    var colors = dataSourceDescription.fe_chart_colorsInPercentOrder ? dataSourceDescription.fe_chart_colorsInPercentOrder : {};
+                    var colors = dataSourceDescription.fe_views.views.chart.colorsInPercentOrder ? dataSourceDescription.fe_views.views.chart.colorsInPercentOrder : {};
+
 
                     var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
                     lowercasedLabels.forEach(function (key, i, arr) {
