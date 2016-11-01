@@ -78,10 +78,14 @@ $(document).ready(function () {
 
     $('#modal').on('click', 'a#add_oneToOneOverrideWithValuesByTitle', function(e) {
         $('#extra_oneToOneOverrideWithValuesByTitle').append(
-            "<div class='form-group row'>" +
-                + "<label>Title</label><input type='text' name='oneToOneOverrideWithTitle[]' class='col-xs-4 col-xs-offset-1 form-control' value=''>" +
-                + "<label>Override</label><input type='text' name='oneToOneOverrideWithValue[]' class='col-xs-4 col-xs-offset-1 form-control' value=''>" +
-                + "<a class='removeRow'><span class='glyphicon glyphicon-remove'></span></a>" +
+            "<div class='form-group row'>"
+                + "<div class='col-xs-4 col-xs-offset-1'>"
+                + "<label>Title</label><input type='text' name='oneToOneOverrideWithTitle[]' class='form-control' value=''>"
+                + "</div>"
+                + "<div class='col-xs-4 col-xs-offset-1'>"
+                + "<label>Override</label><input type='text' name='oneToOneOverrideWithValue[]' class='col-xs-4 col-xs-offset-1 form-control' value=''>"
+                + "</div>"
+                + "<div class='col-xs-1'><a class='removeRow'><span class='glyphicon glyphicon-remove'></span></a></div>"
                 + "</div>"
         );
     });
