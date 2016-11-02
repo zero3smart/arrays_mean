@@ -5,5 +5,5 @@
 }
 
 .axis .tick text {
-    fill: #c9c9c9;
+    fill: var(--color-text-light);
 }

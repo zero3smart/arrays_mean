@@ -416,6 +416,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
+                    view_description: dataSourceDescription.fe_views.views.timeline.description ? dataSourceDescription.fe_views.views.timeline.description : "",
                     //
                     pageSize: config.timelineGroups < nonpagedCount ? config.pageSize : nonpagedCount,
                     onPageNum: pageNumber,
