@@ -160,6 +160,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
                             sourceDoc: sourceDoc,
                             view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
+                            view_description: dataSourceDescription.fe_views.views.scatterplot.description ? dataSourceDescription.fe_views.views.scatterplot.description : "",
+                            //
                             routePath_base: routePath_base,
                             filterObj: filterObj,
                             isFilterActive: isFilterActive,

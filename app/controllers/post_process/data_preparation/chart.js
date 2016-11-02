@@ -265,7 +265,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     });
 
                     // Custom colors
-                    var colors = dataSourceDescription.fe_chart_colorsInPercentOrder ? dataSourceDescription.fe_chart_colorsInPercentOrder : {};
+                    var colors = dataSourceDescription.fe_views.views.chart.colorsInPercentOrder ? dataSourceDescription.fe_views.views.chart.colorsInPercentOrder : {};
+
 
                     var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
                     lowercasedLabels.forEach(function (key, i, arr) {
@@ -311,6 +312,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
+                    view_description: dataSourceDescription.fe_views.views.chart.description ? dataSourceDescription.fe_views.views.chart.description : "",
                     //
                     groupedResults: groupedResults,
                     groupBy: groupBy,

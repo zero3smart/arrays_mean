@@ -200,6 +200,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
+                    view_description: dataSourceDescription.fe_views.views.wordCloud.description ? dataSourceDescription.fe_views.views.wordCloud.description : "",
                     //
                     groupedResults: groupedResults,
                     minGroupedResultsValue: minGroupedResultsValue,

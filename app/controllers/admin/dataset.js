@@ -15,7 +15,11 @@ var views = require('../../models/views');
 
 /***************  Index  ***************/
 module.exports.index = function (req, next) {
-    datasource_description.find({schema_id:{$exists:false}}, {_id: 1, title: 1, importRevision: 1}, function (err, datasets) {
+    datasource_description.find({schema_id: {$exists: false}}, {
+        _id: 1,
+        title: 1,
+        importRevision: 1
+    }, function (err, datasets) {
         if (err) {
             return next(err);
         }
@@ -54,7 +58,7 @@ module.exports.saveSettings = function (req, next) {
 
     for (var field in req.body) {
         if (field.indexOf('[]') >= 0) {
-            var arrayField = field.replace('[]','');
+            var arrayField = field.replace('[]', '');
 
             if (typeof req.body[field] == 'string') {
                 if (req.body[field] == "") {
@@ -66,7 +70,7 @@ module.exports.saveSettings = function (req, next) {
             } else if (Array.isArray(req.body[field])) {
                 for (var i = 0; i < req.body[field].length; i++) {  /*splicing empty string in array */
                     if (req.body[field][i] == "") {
-                        req.body[field].splice(i,1);
+                        req.body[field].splice(i, 1);
                     }
                 }
                 req.body[arrayField] = req.body[field];
@@ -79,7 +83,7 @@ module.exports.saveSettings = function (req, next) {
     req.body.fe_listed = req.body.fe_listed == 'true';
 
     if (req.params.id == 'new') {
-        datasource_description.create(req.body, function(err, doc) {
+        datasource_description.create(req.body, function (err, doc) {
             if (err) return next(err);
 
             data.id = doc.id;
@@ -122,26 +126,25 @@ module.exports.getSource = function (req, next) {
 };
 
 module.exports.saveSource = function (req, next) {
-
     var description;
 
     var batch = new Batch;
     batch.concurrency(1);
 
-    batch.push(function(done) {
+    batch.push(function (done) {
         datasource_description.findById(req.params.id)
-            .exec(function(err, doc) {
-            if (err) return done(err);
+            .exec(function (err, doc) {
+                if (err) return done(err);
 
-            description = doc
+                description = doc._doc;
 
-
-            done();
-        })
+                done();
+            })
     });
 
-    _.forEach(req.files, function(file) {
+    _.forEach(req.files, function (file) {
         batch.push(function (done) {
+
             // Verify that the file is readable & in the valid format.
             var countOfLines = 0;
             var cachedLines = '';
@@ -196,8 +199,8 @@ module.exports.saveSource = function (req, next) {
         });
 
 
-        batch.push(function(done) {
-        
+        batch.push(function (done) {
+
             if (!description.uid)
                 description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
             var newFileName = datasource_upload_service.fileNameToUpload(description);
@@ -206,7 +209,7 @@ module.exports.saveSource = function (req, next) {
 
         batch.push(function (done) {
             var query = {_id: req.params.id};
-            description.save(function(err, updatedDescription) {
+            description.save(function (err, updatedDescription) {
                 console.log(err);
 
                 if (err) return done(err);
@@ -228,68 +231,69 @@ module.exports.saveSource = function (req, next) {
 };
 
 
-module.exports.loadDatasourceColumnsAndSampleRecords = function(req,description,next) {
-
+/***************  Format Data  ***************/
+function _loadDatasourceColumnsAndSampleRecords(req, description, next) {
     var obj = {};
-
 
     var countOfLines = 0;
     var cachedLines = '';
 
     var delimiter;
+    if (description.format == 'CSV') {
+        delimiter = ',';
+    } else if (description.format == 'TSV') {
+        delimiter = '\t';
+    }
 
     var readStream = datasource_upload_service.getDatasource(description).createReadStream()
         .pipe(es.split())
         .pipe(es.mapSync(function (line) {
-            readStream.pause();
+                readStream.pause();
 
-            parse(cachedLines + line, {delimiter: delimiter, relax: true, skip_empty_lines: true},
-                function (err, output) {
-                    if (err) {
-                        readStream.destroy();
-                        return next(err);
-                    }
+                parse(cachedLines + line, {delimiter: delimiter, relax: true, skip_empty_lines: true},
+                    function (err, output) {
+                        if (err) {
+                            readStream.destroy();
+                            return next(err);
+                        }
 
-                    if (!output || output.length == 0) {
-                        cachedLines = cachedLines + line;
-                        return readStream.resume();
-                    }
+                        if (!output || output.length == 0) {
+                            cachedLines = cachedLines + line;
+                            return readStream.resume();
+                        }
 
-                    if (!Array.isArray(output[0]) || output[0].length == 1) {
-                        readStream.destroy();
-                        return next(new Error('Invalid File'));
-                    }
+                        if (!Array.isArray(output[0]) || output[0].length == 1) {
+                            readStream.destroy();
+                            return next(new Error('Invalid File'));
+                        }
 
-                    cachedLines = '';
-                    countOfLines++;
+                        cachedLines = '';
+                        countOfLines++;
 
-                    if (countOfLines == 1) {
-                        obj.colNames = output[0];
-                        req.session.uploadData_columnNames = obj.colNames;
-                        // Sort By fe_fieldDisplayOrder
-                        // data.colNames.sort(function(a, b) {
-                        //    if (!description.fe_fieldDisplayOrder[b]) return -1;
-                        //    else if (!desciption.fe_fieldDisplayOrder[a]) return 1;
-                        //    return description.fe_fieldDisplayOrder[b] - description.fe_fieldDisplayOrder[a];
-                        // });
-                        readStream.resume();
-                    } else if (countOfLines == 2) {
-                        req.session.uploadData_firstRecord = output[0];
-                        obj.firstRecord = output[0];
-                        readStream.resume();
-                    } else {
-                        readStream.destroy();
-                        if (countOfLines == 3) next(null, obj);
-                    }
-                });
+                        if (countOfLines == 1) {
+                            obj.colNames = output[0];
+                            req.session.uploadData_columnNames = obj.colNames;
+                            // Sort By fe_fieldDisplayOrder
+                            // data.colNames.sort(function(a, b) {
+                            //    if (!description.fe_fieldDisplayOrder[b]) return -1;
+                            //    else if (!desciption.fe_fieldDisplayOrder[a]) return 1;
+                            //    return description.fe_fieldDisplayOrder[b] - description.fe_fieldDisplayOrder[a];
+                            // });
+                            readStream.resume();
+                        } else if (countOfLines == 2) {
+                            req.session.uploadData_firstRecord = output[0];
+                            obj.firstRecord = output[0];
+                            readStream.resume();
+                        } else {
+                            readStream.destroy();
+                            if (countOfLines == 3) next(null, obj);
+                        }
+                    });
             })
-        );      
+        );
 }
 
-
-/***************  Format Data  ***************/
 module.exports.getFormatData = function (req, next) {
-
     if (req.params.id) {
         var data = {};
 
@@ -299,35 +303,22 @@ module.exports.getFormatData = function (req, next) {
             var description = doc
             data.doc = description;
 
-            if (req.session.uploadData_firstRecord == null || req.session.uploadData_columnNames == null ) {
-                // var countOfLines = 0;
-                // var cachedLines = '';
-
-                // var delimiter;
-                if (description.format == 'CSV') {
-                    delimiter = ',';
-                } else if (description.format == 'TSV') {
-                    delimiter = '\t';
-                } else
-                    return next(new Error('Invalid File Format'));
-
-
-                module.exports.loadDatasourceColumnsAndSampleRecords(req,description,function(err,obj) {
+            if (req.session.uploadData_firstRecord == null || req.session.uploadData_columnNames == null) {
+                _loadDatasourceColumnsAndSampleRecords(req, description, function (err, obj) {
                     if (!err) {
                         data.colNames = obj.colNames;
                         data.firstRecord = obj.firstRecord;
-                        return next(null,data);
+                        return next(null, data);
                     } else {
                         return next(err);
 
                     }
                 });
-
             } else {
                 data.colNames = req.session.uploadData_columnNames;
                 data.firstRecord = req.session.uploadData_firstRecord;
-                next(null,data);
-            }            
+                next(null, data);
+            }
         });
 
     }
@@ -355,18 +346,18 @@ module.exports.saveFormatData = function (req, next) {
 };
 
 /***************  Format Field  ***************/
-module.exports.getFormatField = function(req, next) {
+module.exports.getFormatField = function (req, next) {
     var dataset_id = req.params.id;
     var field_name = req.params.field;
     if (!dataset_id || !field_name) return next(new Error('Invalid parameter!'));
 
     var data = {
         id: dataset_id,
-        field:field_name,
+        field: field_name,
         available_forFieldDataType_coercions: import_datatypes.available_forFieldDataType_coercions()
     };
 
-    datasource_description.findById(dataset_id, function(err, doc) {
+    datasource_description.findById(dataset_id, function (err, doc) {
         if (err) return next(err);
 
         if (doc) {
@@ -376,7 +367,7 @@ module.exports.getFormatField = function(req, next) {
     });
 }
 
-module.exports.saveFormatField = function(req, next) {
+module.exports.saveFormatField = function (req, next) {
     var dataset_id = req.params.id;
     var field = req.params.field;
 
@@ -385,7 +376,7 @@ module.exports.saveFormatField = function(req, next) {
     var data = {};
     field = field.replace(/\./g, "_");
 
-    datasource_description.findById(dataset_id, function(err, doc) {
+    datasource_description.findById(dataset_id, function (err, doc) {
         if (err) return next(err);
 
         var dataTypeCoercionChanged = false;
@@ -480,7 +471,7 @@ module.exports.saveFormatField = function(req, next) {
         // Filter keywordFilters
         doc.markModified('fe_filters');
 
-        doc.save(function(err, updatedDoc) {
+        doc.save(function (err, updatedDoc) {
             if (err) return next(err);
 
             data.doc = updatedDoc._doc;
@@ -492,7 +483,7 @@ module.exports.saveFormatField = function(req, next) {
 }
 
 /***************  Add Custom Field  ***************/
-module.exports.getAddCustomField = function(req, next) {
+module.exports.getAddCustomField = function (req, next) {
     var dataset_id = req.params.id;
     if (!dataset_id) return next(new Error('Invalid parameter!'));
 
@@ -500,7 +491,7 @@ module.exports.getAddCustomField = function(req, next) {
         id: dataset_id
     };
 
-    datasource_description.findById(dataset_id, function(err, doc) {
+    datasource_description.findById(dataset_id, function (err, doc) {
         if (err) return next(err);
 
         if (doc) {
@@ -512,76 +503,71 @@ module.exports.getAddCustomField = function(req, next) {
 
 /***************  Format Views  ***************/
 module.exports.getFormatViews = function (req, next) {
-
-
     var dataset_id = req.params.id;
-    if (!dataset_id ) return next(new Error('Invalid parameter!'));
+    if (!dataset_id) return next(new Error('Invalid parameter!'));
 
-    views.find({},{name:1,displayAs:1,icon:1},function(err,allViews) {
+    views.find({}, {name: 1, displayAs: 1, icon: 1}, function (err, allViews) {
         if (err) return next(new Error('error when getting views'));
-        var data = {id: dataset_id,available_forViewTypes: allViews};
-        datasource_description.findById(dataset_id, function(err, doc) {
+
+        var data = {id: dataset_id, available_forViewTypes: allViews};
+        datasource_description.findById(dataset_id, function (err, doc) {
             if (err) return next(err);
             if (doc) {
                 data.doc = doc._doc;
             }
             next(null, data);
         });
-
-
-    })
-
+    });
 }
 
 
-module.exports.getFormatView = function(req,next) {
-
-
+module.exports.getFormatView = function (req, next) {
     var dataset_id = req.params.id;
     var view_name = req.params.view;
-    var data = {id:dataset_id};
-    data.available_forDateFormat = import_datatypes.available_forDateFormat();
 
     if (!dataset_id || !view_name) return next(new Error('Invalid parameter!'));
 
+    var data = {id: dataset_id};
+    data.available_forDateFormat = import_datatypes.available_forDateFormat();
+
+    var batch = new Batch();
+    batch.concurrency(1);
+
+    batch.push(function(done) {
+        datasource_description.findById(dataset_id, function (err, doc) {
+            if (err) return done(new Error("Invalid dataset"));
+
+            data.doc = doc._doc;
+            done();
+        });
+    });
+
     if (!req.session.uploadData_columnNames) {
-        datasource_description.findById(dataset_id,function(err,doc) {
-            module.exports.loadDatasourceColumnsAndSampleRecords(req,doc,function(err,obj) {
-                if (err) return next(err);
-                data.colNames = req.session.uploadData_columnNames;
-                views.findOne({name: view_name},function(err,foundView) {
-                    if (err) return next(new Error('error when getting specific view for customization'));
-                    data.view = foundView;
-                    datasource_description.findById(dataset_id, function(err, doc) {
-                        if (err) return next(err);
-                        if (doc) {
-                            data.doc = doc._doc;
-                        }
-                        return next(null, data);
-                    });
-                })
-
-            })
-        })
-      
-    } else {
-        data.colNames =  req.session.uploadData_columnNames;
-
-        views.findOne({name: view_name},function(err,foundView) {
-            if (err) return next(new Error('error when getting specific view for customization'));
-            data.view = foundView;
-            datasource_description.findById(dataset_id, function(err, doc) {
-                if (err) return next(err);
-                if (doc) {
-                    data.doc = doc._doc;
-                }
-                return next(null, data);
+        batch.push(function(done) {
+            _loadDatasourceColumnsAndSampleRecords(req, doc, function (err, obj) {
+                if (err) return done(err);
             });
-        })
+        });
     }
+
+    batch.push(function(done) {
+        views.findOne({name: view_name}, function (err, foundView) {
+            if (err) return next(new Error('error when getting specific view for customization'));
+
+            data.view = foundView;
+            done();
+        });
+    });
+
+
+    batch.end(function(err) {
+        data.colNames = req.session.uploadData_columnNames;
+
+        next(err, data);
+    });
 }
 
-module.exports.saveFormatViews = function(req, next) {
+module.exports.saveFormatViews = function (req, next) {
     var data = {};
 
     if (req.params.id) {
