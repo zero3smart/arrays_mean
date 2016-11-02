@@ -329,6 +329,7 @@ module.exports.getFormatData = function (req, next) {
                 next(null,data);
             }            
         });
+
     }
 };
 
@@ -341,6 +342,8 @@ module.exports.saveFormatData = function (req, next) {
         var updateObject = {fn_new_rowPrimaryKeyFromRowObject: req.body.fn_new_rowPrimaryKeyFromRowObject};
         datasource_description.findOneAndUpdate({_id: req.params.id}, updateObject, {$upsert: true}, function (err, doc) {
             if (err) return next(err);
+
+            // TODO: Import datasource
 
             if (doc != null) {
                 data.doc = doc._doc;
@@ -374,50 +377,64 @@ module.exports.getFormatField = function(req, next) {
 }
 
 module.exports.saveFormatField = function(req, next) {
-
-
     var dataset_id = req.params.id;
     var field = req.params.field;
-
 
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
 
     var data = {};
+    field = field.replace(/\./g, "_");
+
     datasource_description.findById(dataset_id, function(err, doc) {
         if (err) return next(err);
 
+        var dataTypeCoercionChanged = false;
+
         // Data Type Coercion
         if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
-
-        doc.raw_rowObjects_coercionScheme[field] = {operation: req.body.dataType, format: req.body.dataFormat, outputFormat: req.body.dataOutputFormat};
-        doc.markModified("raw_rowObjects_coercionScheme");
+        if (doc.raw_rowObjects_coercionScheme[field]) {
+            schemaChanged = true;
+            doc.raw_rowObjects_coercionScheme[field] = {
+                operation: req.body.dataType,
+                format: req.body.dataFormat,
+                outputFormat: req.body.dataOutputFormat
+            };
+            doc.markModified("raw_rowObjects_coercionScheme");
+        }
 
         // Exclude
         if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
         var index = doc.fe_excludeFields.indexOf(field);
         if (req.body.exclude == 'true' && index == -1) {
             doc.fe_excludeFields.push(field);
-
         } else if (req.body.exclude != 'true' && index != -1) {
             doc.fe_excludeFields.splice(index, 1);
         }
+        doc.markModified('fe_excludeFields');
 
         // Title Override
         if (!doc.fe_displayTitleOverrides) doc.fe_displayTitleOverrides = {};
-        if (req.body.titleOverride != '')
+        if (req.body.titleOverride != '') {
             doc.fe_displayTitleOverrides[field] = req.body.titleOverride;
+        } else {
+            delete doc.fe_displayTitleOverrides[field];
+        }
+        doc.markModified('fe_displayTitleOverrides');
 
         // Display Order
         if (!doc.fe_fieldDisplayOrder) doc.fe_fieldDisplayOrder = {};
         if (req.body.displayOrder)
             doc.fe_fieldDisplayOrder[field] = parseInt(req.body.displayOrder);
+        doc.markModified('fe_fieldDisplayOrder');
 
         // Designated Field
         if (!doc.fe_designatedFields) doc.fe_designatedFields = {};
         if (req.body.designatedField != '') {
             doc.fe_designatedFields[req.body.designatedField] = field;
+        } else {
+            delete doc.fe_designatedFields[req.body.designatedField];
         }
-
+        doc.markModified('fe_designatedFields');
 
         // Filter notAvailable
         if (!doc.fe_filters) doc.fe_filters = {};
@@ -460,11 +477,14 @@ module.exports.saveFormatField = function(req, next) {
         // Filter valuesToExcludeByOriginalKey
         // Fabricated Filters
         // Default Filter
+        // Filter keywordFilters
+        doc.markModified('fe_filters');
 
         doc.save(function(err, updatedDoc) {
             if (err) return next(err);
 
             data.doc = updatedDoc._doc;
+            data.dataTypeCoercionChanged = dataTypeCoercionChanged;
             next(null, data);
         });
     });

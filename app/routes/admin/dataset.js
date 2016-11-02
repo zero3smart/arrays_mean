@@ -45,9 +45,6 @@ router.get('/:id/settings', ensureLoggedIn, function (req, res) {
             return;
         }
 
-
-
-
         res.render('admin/dataset/settings', _.assign(data, {
             env: process.env,
             flash: req.flash('message'),
@@ -57,8 +54,6 @@ router.get('/:id/settings', ensureLoggedIn, function (req, res) {
 });
 
 router.post('/:id/settings', ensureLoggedIn, function (req, res) {
-
-    
     controller.saveSettings(req, function (err, data) {
         if (err) {
             winston.error("❌  Error getting bind data for Dataset settings: ", err);
@@ -113,7 +108,7 @@ router.get('/:id/format-data', ensureLoggedIn, function (req, res) {
 
         res.render('admin/dataset/format-data', _.assign(data, {
             env: process.env,
-            flash: req.flash('message'),
+            flash: req.flash(),
             user: req.user
         }));
     });
@@ -131,7 +126,7 @@ router.post('/:id/format-data', ensureLoggedIn, function (req, res) {
     });
 });
 
-router.get('/:id/format-field/:field', ensureLoggedIn, function(req, res) {
+router.get('/:id/format-data/:field', ensureLoggedIn, function(req, res) {
     controller.getFormatField(req, function(err, data) {
         if (err) {
             winston.error("❌  Error getting bind data for dataset format field: ", err);
@@ -143,25 +138,7 @@ router.get('/:id/format-field/:field', ensureLoggedIn, function(req, res) {
     });
 });
 
-router.get('/:id/format-views/:view',ensureLoggedIn,function(req,res) {
-
-    controller.getFormatView(req,function(err,data) {
-        if (err) {
-            winston.error("❌  Error getting bind data for dataset format views: ", err);
-            res.status(500).send(err.response || 'Internal Server Error');
-
-            return;
-
-        }
-        res.render('admin/dataset/format-view',data);
-
-    })
-});
-
-
-
-
-router.post('/:id/format-field/:field', ensureLoggedIn, function (req, res) {
+router.post('/:id/format-data/:field', ensureLoggedIn, function (req, res) {
     controller.saveFormatField(req, function (err, data) {
         if (err) {
             winston.error("❌  Error getting bind data for Dataset format data: ", err);
@@ -187,6 +164,21 @@ router.get('/:id/add-custom-field', ensureLoggedIn, function(req, res) {
 });
 
 //
+router.get('/:id/format-views/:view',ensureLoggedIn,function(req,res) {
+
+    controller.getFormatView(req,function(err,data) {
+        if (err) {
+            winston.error("❌  Error getting bind data for dataset format views: ", err);
+            res.status(500).send(err.response || 'Internal Server Error');
+
+            return;
+
+        }
+        res.render('admin/dataset/format-view',data);
+
+    })
+});
+
 router.get('/:id/format-views', ensureLoggedIn, function (req, res) {
     controller.getFormatViews(req, function (err, data) {
         if (err) {
@@ -204,21 +196,17 @@ router.get('/:id/format-views', ensureLoggedIn, function (req, res) {
     });
 });
 
+router.post('/:id/format-views', ensureLoggedIn, function (req, res) {
+    controller.saveFormatViews(req, function (err, data) {
+        if (err) {
+            winston.error("❌  Error getting bind data for dataset format views: ", err);
+            res.status(500).send(err.response || 'Internal Server Error');
 
+            return;
+        }
 
-
-
-// router.post('/:id/format-views', ensureLoggedIn, function (req, res) {
-//     controller.saveFormatViews(req, function (err, data) {
-//         if (err) {
-//             winston.error("❌  Error getting bind data for dataset format views: ", err);
-//             res.status(500).send(err.response || 'Internal Server Error');
-
-//             return;
-//         }
-
-//         res.render('admin/dataset/' + data.id + '/done');
-//     });
-// });
+        res.render('admin/dataset/' + data.id + '/done');
+    });
+});
 
 module.exports = router;

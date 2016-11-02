@@ -33,6 +33,10 @@ HorizontalBarChart.prototype._animate = function() {
         });
 };
 
+HorizontalBarChart.prototype.rotateLabel = function() {
+    return true;
+};
+
 HorizontalBarChart.prototype._animateForSort = function() {
 
     var self = this;

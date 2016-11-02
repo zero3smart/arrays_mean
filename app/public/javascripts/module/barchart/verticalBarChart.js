@@ -81,6 +81,15 @@ VerticalBarChart.prototype._animateForSort = function () {
         .delay(delay);
 };
 
+VerticalBarChart.prototype.rotateLabel = function () {
+    // rotate x-axis labels 90 degrees
+    return this._canvas.selectAll("text")  
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", "-.2em")
+        .attr("transform", "rotate(-90)" );
+};
+
 
 VerticalBarChart.prototype.getXScale = function () {
 

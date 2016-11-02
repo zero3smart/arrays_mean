@@ -68,6 +68,11 @@ form.format-field a#add_valuesToExcludeByOriginalKey {
     margin-right:10px;
 }
 
+form.format-field a#add_oneToOneOverrideWithValuesByTitle {
+    margin-top: 5px;
+    display: inline-block;
+}
+
 th#view_visibility {
     width:30%;
 }
