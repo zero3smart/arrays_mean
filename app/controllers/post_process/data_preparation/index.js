@@ -39,8 +39,8 @@ module.exports.BindData = function (req, callback) {
 
             var default_filterJSON = undefined;
             if (type == "array" && typeof dataSourceDescription.fe_filters !== 'undefined' &&
-                dataSourceDescription.fe_filters.default_filter) {
-                default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default_filter || {}); // "|| {}" for safety
+                dataSourceDescription.fe_filters.default) {
+                default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default || {}); // "|| {}" for safety
             }
             var default_listed = true; // list Arrays by default
             if (dataSourceDescription.fe_listed === false) {

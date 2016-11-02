@@ -214,7 +214,7 @@
             {% for filter in doc.fe_filters.keywords %}
                 {% if filter.title == titleOverride %}
                     {% for choice in filter.choices %}
-                        {% if doc.fe_filters.default_filter and doc.fe_filters.default_filter[title] | doesArrayContain(choice) %}
+                        {% if doc.fe_filters.default and doc.fe_filters.default[title] | doesArrayContain(choice) %}
                             {% set is_default_filter = true %}
                         {% endif %}
                         <div class="form-group row">
@@ -238,7 +238,7 @@
                 <label class="form-control">Fabricated</label>
             </div>
             <div class="col-xs-4">
-                <input type="checkbox" name="default_filter" {{ 'checked=checked' if key == '_all' }} value="true"/> Use default
+                <input type="checkbox" name="default" {{ 'checked=checked' if key == '_all' }} value="true"/> Use default
             </div>
         </div>
 

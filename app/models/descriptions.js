@@ -30,7 +30,7 @@ var DatasourceDescription_scheme = Schema({
         excludeFields: Array,
         valuesToExclude: Object,
         fabricated: Array,
-        default_filter: Object,
+        default: Object,
         fieldsSortableByInteger: Array,
         fieldsCommaSeparatedAsIndividual: Array,
         fieldsMultiSelectable: Array,

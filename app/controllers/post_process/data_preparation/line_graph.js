@@ -86,8 +86,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     if (mappingDataSourceDescription !== null) {
 
-                        if (typeof mappingDataSourceDescription.fe_filters.default_filter !== 'undefined') {
-                            mapping_default_filterObj = mappingDataSourceDescription.fe_filters.default_filter;
+                        if (typeof mappingDataSourceDescription.fe_filters.default !== 'undefined') {
+                            mapping_default_filterObj = mappingDataSourceDescription.fe_filters.default;
                         }
 
                         mapping_default_view = mappingDataSourceDescription.fe_views.default_view;
