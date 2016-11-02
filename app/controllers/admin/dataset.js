@@ -222,8 +222,6 @@ module.exports.saveSource = function (req, next) {
         batch.push(function (done) {
             var query = {_id: req.params.id};
             description.save(function (err, updatedDescription) {
-                console.log(err);
-
                 if (err) return done(err);
 
                 req.flash('message', 'Uploaded successfully');

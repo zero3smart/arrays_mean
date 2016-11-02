@@ -32,6 +32,13 @@
     font-size: 22px;
 }
 
+/* Upload */
+form .removeDataset {
+    margin-top: 10px;
+    cursor: pointer;
+    display: inline-block;
+}
+
 /* Format data */
 .dataset .format-data tr.field, a.add, .format-views tr.views {
     cursor: pointer;
