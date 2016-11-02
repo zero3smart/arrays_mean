@@ -108,7 +108,7 @@ router.get('/:id/format-data', ensureLoggedIn, function (req, res) {
 
         res.render('admin/dataset/format-data', _.assign(data, {
             env: process.env,
-            flash: req.flash(),
+            flash: req.flash('message'),
             user: req.user
         }));
     });
