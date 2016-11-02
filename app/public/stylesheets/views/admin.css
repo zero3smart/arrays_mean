@@ -13,6 +13,7 @@
     width: 100%;
 }
 
+/* Breadcrumb */
 .dataset ul.steps {
     list-style: none;
     padding: 0;
@@ -30,13 +31,18 @@
     text-align: center;
     font-size: 22px;
 }
+
+/* Format data */
 .dataset .format-data tr.field, a.add, .format-views tr.views {
     cursor: pointer;
 }
 
+th#view_visibility {
+    width:30%;
+}
 
 
-
+/* Format field */
 form.format-field .form-group label {
     padding-left: 0;
     padding-right: 0;
@@ -56,27 +62,44 @@ form.format-field .form-group input[type='checkbox'] {
     margin-top: 10px;
 }
 
-
-form#settings textarea#description {
-    height: 100px;
+form .removeRow {
+    display: inline-block;
+    cursor: pointer;
+    margin-top: 5px;
 }
 
-
-
-
-form.format-field a#add_valuesToExcludeByOriginalKey {
-    margin-right:10px;
-}
-
-form.format-field a#add_oneToOneOverrideWithValuesByTitle {
+form.format-field a#add_oneToOneOverrideWithValuesByTitle,
+form.format-field a#add_valueToExcludeByOriginalKey,
+form.format-field a#add_filterKeyword
+{
     margin-top: 5px;
     display: inline-block;
 }
 
-th#view_visibility {
-    width:30%;
+form.format-field #extra_oneToOneOverrideWithValuesByTitle .form-group {
+    text-align: right;
 }
 
+form.format-field #extra_oneToOneOverrideWithValuesByTitle label {
+    font-weight: normal;
+    margin-top: 4px;
+    margin-right: 10px;
+}
+
+form.format-field #extra_oneToOneOverrideWithValuesByTitle .form-control {
+    display: inline-block;
+    width: 135px;
+}
+
+form.format-field .more-settings {
+    display: none;
+}
+
+form.format-field #extra_valuesToExcludeByOriginalKey,
+form.format-field #extra_keywords
+{
+    padding-left: 10px;
+}
 
 /* -----------   for toggle slider  ----------------  */
 .switch {
@@ -135,6 +158,3 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 /*--------------------------------------------------------*/
-
-
-

@@ -84,10 +84,10 @@ module.exports.activeFilter_matchOp_orErrDescription_fromMultiFilter = _activeFi
 var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescription, filterCol, filterVal) {
     var matchConditions = undefined;
     var isAFabricatedFilter = false; // finalize
-    if (dataSourceDescription.fe_filters.fabricatedFilters) {
-        var fabricatedFilters_length = dataSourceDescription.fe_filters.fabricatedFilters.length;
+    if (dataSourceDescription.fe_filters.fabricated) {
+        var fabricatedFilters_length = dataSourceDescription.fe_filters.fabricated.length;
         for (var i = 0; i < fabricatedFilters_length; i++) {
-            var fabricatedFilter = dataSourceDescription.fe_filters.fabricatedFilters[i];
+            var fabricatedFilter = dataSourceDescription.fe_filters.fabricated[i];
             if (fabricatedFilter.title === filterCol) {
                 isAFabricatedFilter = true;
                 // Now find the applicable filter choice
@@ -248,10 +248,10 @@ module.exports.activeFilterRange_matchCondition_orErrDescription = _activeFilter
 var _activeFilterOR_matchCondition_orErrDescription = function (dataSourceDescription, filterCol, filterVal) {
     var matchConditions = undefined;
     var isAFabricatedFilter = false; // finalize
-    if (dataSourceDescription.fe_filters.fabricatedFilters) {
-        var fabricatedFilters_length = dataSourceDescription.fe_filters.fabricatedFilters.length;
+    if (dataSourceDescription.fe_filters.fabricated) {
+        var fabricatedFilters_length = dataSourceDescription.fe_filters.fabricated.length;
         for (var i = 0; i < fabricatedFilters_length; i++) {
-            var fabricatedFilter = dataSourceDescription.fe_filters.fabricatedFilters[i];
+            var fabricatedFilter = dataSourceDescription.fe_filters.fabricated[i];
             if (fabricatedFilter.title === filterCol) {
                 isAFabricatedFilter = true;
                 // Now find the applicable filter choice
@@ -446,10 +446,10 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
         }
         //
         // Now insert fabricated filters
-        if (dataSourceDescription.fe_filters.fabricatedFilters) {
-            var fabricatedFilters_length = dataSourceDescription.fe_filters.fabricatedFilters.length;
+        if (dataSourceDescription.fe_filters.fabricated) {
+            var fabricatedFilters_length = dataSourceDescription.fe_filters.fabricated.length;
             for (var i = 0; i < fabricatedFilters_length; i++) {
-                var fabricatedFilter = dataSourceDescription.fe_filters.fabricatedFilters[i];
+                var fabricatedFilter = dataSourceDescription.fe_filters.fabricated[i];
                 var choices = fabricatedFilter.choices;
                 var choices_length = choices.length;
                 var values = [];
@@ -469,10 +469,10 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
         }
         //
         // Now insert keyword filters
-        if (dataSourceDescription.fe_filters.keywordFilters) {
-            var keywordFilters_length = dataSourceDescription.fe_filters.keywordFilters.length;
+        if (dataSourceDescription.fe_filters.keywords) {
+            var keywordFilters_length = dataSourceDescription.fe_filters.keywords.length;
             for (var i = 0; i < keywordFilters_length; i++) {
-                var keywordFilter = dataSourceDescription.fe_filters.keywordFilters[i];
+                var keywordFilter = dataSourceDescription.fe_filters.keywords[i];
                 var choices = keywordFilter.choices;
                 var choices_length = choices.length;
                 var values = [];
@@ -571,7 +571,7 @@ module.exports.convertDateToBeRecognizable = _convertDateToBeRecognizable;
 //
 function _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription) {
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = {};
-    var fe_filters_fabricatedFilters = dataSourceDescription.fe_filters.fabricatedFilters;
+    var fe_filters_fabricatedFilters = dataSourceDescription.fe_filters.fabricated;
     if (typeof fe_filters_fabricatedFilters !== 'undefined') {
         var fe_filters_fabricatedFilters_length = fe_filters_fabricatedFilters.length;
         for (var i = 0; i < fe_filters_fabricatedFilters_length; i++) {

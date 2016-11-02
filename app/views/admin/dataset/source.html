@@ -15,28 +15,51 @@
 	<div class="alert alert-success" role="alert">{{ flash }}</div>
 	{% endif %}
 
-	<dive class="dataset">
+	<div class="dataset">
 		{% include "../../partials/admin/dataset-breadcrumb.html" %}
 
 		<br />
 
-		<form class="upload" enctype="multipart/form-data" method="post">
-			<div class="form-group">
-				<label for="file">Select a CSV/TSV file To Upload</label>
-				<input type="file" id="file" name="files" accept=".csv,.tsv|text/csv,text/csv-schema" required/>
-			</div>
+		{% for dataset in sub_datasets %}
 
-			<div class="panel-footer">
-				<a class="btn btn-default pull-left" href="/admin/dataset/"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
-				<button type="submit" class="btn btn-default pull-right" disabled="disabled"><span class="glyphicon glyphicon-hand-right"></span> Upload</button>
-				<div class="clearfix"></div>
-			</div>
-		</form>
+			<form class="upload" enctype="multipart/form-data" method="post">
+				<div class="form-group">
+					<div class="row">
+						<div class="col-xs-11">
+							<label class="form-control">Dataset {{ loop.index }}</label>
+						</div>
+						{% if loop.index != 1 %}
+						<div class="col-xs-1">
+							<a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>
+						</div>
+						{% endif %}
+					</div>
+					<div class="row">
+						<div class="col-xs-5">
+							<label for="file">Select a CSV/TSV file To Upload</label>
+						</div>
+						<div class="col-xs-6">
+							<input type="file" id="file" name="files[]" accept=".csv,.tsv|text/csv,text/csv-schema" required/>
+						</div>
+					</div>
+				</div>
 
-		<form>
+				<div class="row">
+					<button type="submit" class="btn btn-default pull-right" disabled="disabled"><span class="glyphicon glyphicon-hand-right"></span> Upload</button>
+				</div>
+			</form>
 
-		</form>
-	</dive>
+		{% endfor %}
+
+	</div>
+
+	<div class="form-group row"><a id="add_dataset" class="add" ><span class="glyphicon glyphicon-plus"></span> Add more</a></div>
+
+	<div class="panel-footer">
+		<a class="btn btn-default pull-left" href="/admin/dataset/"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
+		<a href="format-data" class="btn btn-default pull-right"><span class="glyphicon glyphicon-hand-right"></span> Skip</a>
+		<div class="clearfix"></div>
+	</div>
 
 {% endblock %}
 

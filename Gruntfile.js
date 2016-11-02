@@ -137,7 +137,25 @@ module.exports = function(grunt) {
         cwd: 'bower_components/moment',
         src: 'moment.js',
         dest: 'app/public/javascripts/lib/moment'
-      }
+      },
+      colorpickerJs: {
+        expand: true,
+        cwd: 'bower_components/bootstrap-colorpicker/dist/js',
+        src: '**',
+        dest: 'app/public/javascripts/lib/colorpicker/'
+      },
+      colorpickerImg: {
+        expand: true,
+        cwd: 'bower_components/bootstrap-colorpicker/dist/img',
+        src: '**',
+        dest: 'app/public/images/lib/'
+      },
+      colorpickerCss: {
+        expand: true,
+        cwd: 'bower_components/bootstrap-colorpicker/dist/css',
+        src: '**',
+        dest: 'app/public/stylesheets/lib/bootstrap-colorpicker'
+      },
     },
 
     sass: {

@@ -1,13 +1,7 @@
 $(document).ready(function () {
 
-
     $('#add_urls').on('click', function (e) {
         $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
-    });
-
-    $(window).on('click', 'a#removeRow', function(e) {
-        e.preventDefault();
-        $(this).closest('.form-group.row').remove();
     });
 
     $('#file').on('change', function (e) {
@@ -17,6 +11,29 @@ $(document).ready(function () {
             return alert('No file selected');
         }
         $('.upload button').removeAttr('disabled');
+    });
+
+    $('#add_dataset').on('click', function(e) {
+        $('.dataset').append(
+            '<div class="form-group">' +
+            '<div class="row">' +
+            '<div class="col-xs-1">' +
+            '<a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>' +
+            '</div>' +
+            '<div class="col-xs-11">' +
+            '<label class="form-control">Dataset ' + + '</label>' +
+            '</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<div class="col-xs-5 col-xs-offset-1">' +
+            '<label for="file">Select a CSV/TSV file To Upload</label>' +
+            '</div>' +
+            '<div class="col-xs-6">' +
+            '<input type="file" id="file" name="files[]" accept=".csv,.tsv|text/csv,text/csv-schema" required/>' +
+            '</div>' +
+            '</div>' +
+            '</div>'
+        );
     });
 
     $('.format-data tr.field').on('click', function (e) {
@@ -77,22 +94,69 @@ $(document).ready(function () {
             }, 'json');
     });
 
-    $('#modal').on('click', 'a#add_oneToOneOverrideWithValuesByTitle', function(e) {
+    $('#modal').on('click', '#add_oneToOneOverrideWithValuesByTitle', function(e) {
+        e.preventDefault();
         $('#extra_oneToOneOverrideWithValuesByTitle').append(
-            "<div class='form-group row'>"
-                + "<div class='col-xs-4 col-xs-offset-1'>"
-                + "<label>Title</label><input type='text' name='oneToOneOverrideWithTitle[]' class='form-control' value=''>"
-                + "</div>"
-                + "<div class='col-xs-4 col-xs-offset-1'>"
-                + "<label>Override</label><input type='text' name='oneToOneOverrideWithValue[]' class='col-xs-4 col-xs-offset-1 form-control' value=''>"
-                + "</div>"
-                + "<div class='col-xs-1'><a class='removeRow'><span class='glyphicon glyphicon-remove'></span></a></div>"
-                + "</div>"
+            "<div class='form-group row'>" +
+                "<div class='col-xs-5'>" +
+                "<label>Title</label>" +
+                "<input type='text' name='oneToOneOverrideWithTitle[]' class='form-control' value=''>" +
+                "</div>" +
+                "<div class='col-xs-6'>" +
+                "<label>Override</label>" +
+                "<input type='text' name='oneToOneOverrideWithValue[]' class='form-control' value=''>" +
+                "</div>" +
+                "<div class='col-xs-1'><a class='removeRow'><span class='glyphicon glyphicon-remove'></span></a></div>" +
+                "</div>"
         );
     });
 
-    $('#modal').on('click', 'a#add_valuesToExcludeByOriginalKey', function (e) {
-        $('#extra_valuesToExcludeByOriginalKey').append("<div class='form-group row'><input class='col-xs-2 col-xs-offset-1' name='valuesToExcludeByOriginalKey[]' type='text' value=''></div>");
+    $('#modal').on('click', '.removeRow', function(e) {
+        e.preventDefault();
+        $(this).closest('.form-group.row').remove();
+    });
+
+    $('#modal').on('click', '#add_valueToExcludeByOriginalKey', function (e) {
+        e.preventDefault();
+        $('#extra_valuesToExcludeByOriginalKey').append(
+            '<div class="form-group row">' +
+            '<div class="col-xs-6">' +
+            '<input type="text" class="form-control" name="valuesToExcludeByOriginalKey[]" value="">' +
+            '</div>' +
+            '<div class="col-xs-5">' +
+            '<input type="checkbox" name="valuesToExcludeByOriginalKey_applyTo[]" value="true"/> Apply to All' +
+            '</div>' +
+            '<div class="col-xs-1">' +
+            '<a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>' +
+            '</div>' +
+            '</div>');
+    });
+
+    $('#modal').on('click', '.show-more-settings', function(e) {
+        if ($('.format-field .more-settings').is(':visible')) {
+            $('.format-field .more-settings').hide();
+            $('.format-field .show-more-settings').html('Show More Settings');
+        } else {
+            $('.format-field .more-settings').show();
+            $('.format-field .show-more-settings').html('Hide Settings');
+        }
+    });
+
+    $('#modal').on('click', '#add_filterKeyword', function(e) {
+        e.preventDefault();
+        $('#extra_keywords').append(
+            '<div class="form-group row">' +
+            '<div class="col-xs-6">' +
+            '<input type="text" class="form-control" name="keywords[]" value="">' +
+            '</div>' +
+            '<div class="col-xs-5">' +
+            '<input type="checkbox" name="default_filter_keywords[]" values="true"> Use default' +
+            '</div>' +
+            '<div class="col-xs-1">' +
+            '<a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>' +
+            '</div>' +
+            '</div>'
+        );
     });
 
     function fieldDataType_coercion_toString(field) {

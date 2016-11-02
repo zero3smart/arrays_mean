@@ -29,13 +29,13 @@ var DatasourceDescription_scheme = Schema({
     fe_filters: {
         excludeFields: Array,
         valuesToExclude: Object,
-        fabricatedFilters: Array,
+        fabricated: Array,
         default_filter: Object,
         fieldsSortableByInteger: Array,
         fieldsCommaSeparatedAsIndividual: Array,
         fieldsMultiSelectable: Array,
         fieldsNotAvailable: Array,
-        keywordFilters: Array,
+        keywords: Array,
     },
 
     _otherSources: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],

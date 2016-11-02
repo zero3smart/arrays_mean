@@ -13,6 +13,9 @@
 @import url('layout/body.css');
 @import url('layout/embedded.css');
 /* @end Layout */
+/* @group Lib */
+@import url('lib/bootstrap-colorpicker/bootstrap-colorpicker.min.css');
+/* @end Lib */
 /* @group Module */
 @import url('module/header-bar.css');
 @import url('module/sidebar-filter.css');
@@ -37,7 +40,6 @@
 @import url('views/pie-set.css');
 @import url('views/admin.css');
 @import url('views/bar-chart.css');
-
 /* @end Views */
 /* @group Clients */
 @import url('clients/isb.css');
