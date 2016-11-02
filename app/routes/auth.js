@@ -16,7 +16,8 @@ router.get('/callback', passport.authenticate('auth0', {failureRedirect: '/'}), 
     res.redirect(req.session.returnTo || '/admin');
 });
 
-router.get('/unauthorized', function(req, res) {
+
+router.get('/unauthorized', function (req, res) {
     res.render('auth/unauthorized', {env: env});
 });
 

@@ -4,6 +4,7 @@
 function BarChart(selector, dataSet, options) {
 
     this._categories = dataSet.categories;
+    this._categoryData = $.extend(true, [], this._categories);
     this._data = dataSet.data;
     this._options = options;
     this._padding = options.padding || 0.2;
@@ -11,8 +12,8 @@ function BarChart(selector, dataSet, options) {
     this._margin = {
         top : 25,
         right : 15,
-        bottom : 30,
-        left : options.isHorizontal ? 120 : 70
+        bottom : 144 + $('.filter-bar').height(),  //Add more margin if filters present
+        left : options.horizontal ? 120 : 70
     };
 
     if ('margin' in options) {
@@ -34,9 +35,14 @@ function BarChart(selector, dataSet, options) {
     i = 0;
     this._data.forEach(function(col) {
         col.forEach(function(d) {
-            if (!self._colors[d.label]) self._colors[d.label] = colors[i++];
+            if (!self._colors[d.label]) self._colors[d.label] = colors[i];
+            i = (i+1) % colors.length;
         });
     });
+
+    this.sortData();
+
+    this._chartData = this.getChartData();
 
     /**
      * Chart tooltip.
@@ -50,6 +56,10 @@ function BarChart(selector, dataSet, options) {
      * @member {Selection}
      */
     this._container = d3.select(selector);
+
+    // Vertically-responsive
+    var container = $(this._container.node());
+    container.height($(window).height() - container.offset().top - 30);
 
     var dimension = this._container.node().getBoundingClientRect();
 
@@ -68,7 +78,10 @@ function BarChart(selector, dataSet, options) {
     this._xAxisContainer = this._canvas.append('g')
       .attr('class', 'axis axis-x')
       .attr('transform', this.getXAxisTransform())
-      .call(this.getXAxis());
+      .call(this.getXAxis())
+
+    //Rotate horizontal bar chart x-axis labels
+    this.rotateLabel();
 
     this._yAxisContainer = this._canvas.append('g')
       .attr('class', 'axis axis-y')
@@ -81,7 +94,7 @@ function BarChart(selector, dataSet, options) {
     this._bars = this._canvas.append('g')
         .attr('class', 'bars')
         .selectAll('g.series')
-        .data(this.getChartData())
+        .data(this._chartData)
         .enter()
         .append('g')
         .attr('class', 'series')
@@ -148,6 +161,48 @@ function BarChart(selector, dataSet, options) {
     this._animate();
 };
 
+/*
+ * Sort By Order
+ */
+BarChart.prototype.sortData = function() {
+    var self = this;
+    this._categories = this._categoryData
+        .reduce(function(o, v, i) {
+            o.push([v, self._data[i]]);
+            return o;
+        }, [])
+        .sort(this._options.sortDirection ? function(a, b) {
+            return a[1].reduce(function (sum, obj) {
+                    return sum + obj.value;
+                }, 0) - b[1].reduce(function (sum, obj) {
+                    return sum + obj.value;
+                }, 0);
+        } : function(a, b) {
+            return b[1].reduce(function (sum, obj) {
+                    return sum + obj.value;
+                }, 0) - a[1].reduce(function (sum, obj) {
+                    return sum + obj.value;
+                }, 0);
+        })
+        .map(function (d) {
+            return d[0];
+        });
+
+    this._data = $.extend(true, [], this._data);
+    this._data.sort(this._options.sortDirection ? function(a, b) {
+        return a.reduce(function (sum, obj) {
+                return sum + obj.value;
+            }, 0) - b.reduce(function (sum, obj) {
+                return sum + obj.value;
+            }, 0);
+    } : function(a, b) {
+        return b.reduce(function (sum, obj) {
+                return sum + obj.value;
+            }, 0) - a.reduce(function (sum, obj) {
+                return sum + obj.value;
+            }, 0);
+    });
+}
 
 /**
  * Normalize input data.
@@ -166,8 +221,9 @@ BarChart.prototype.normalize = function() {
          * Devide every column's value to the max value.
          */
         return series.map(function(d) {
-            d.value = d.value / columnMax;
-            return d;
+            var newD = Object.assign({}, d);
+            newD.value = newD.value / columnMax;
+            return newD;
         });
     });
 };
@@ -185,7 +241,7 @@ BarChart.prototype.getMaxValue = function() {
     /*
      * Evaluate max value.
      */
-    return d3.max(this._data.reduce(function(values, series) {
+    return d3.max(this._chartData.reduce(function(values, series) {
         return values.concat(d3.sum(series.map(function(d) {
             return d.value;
         })));
@@ -296,9 +352,17 @@ BarChart.prototype.getLegendData = function() {
 BarChart.getInstance = function(selector, dataSet, options) {
 
     $(selector).empty();
-    if (options.isHorizontal === true) {
+    if (options.horizontal === true) {
         return new HorizontalBarChart(selector, dataSet, options);
     } else {
         return new VerticalBarChart(selector, dataSet, options);
     }
+};
+
+BarChart.prototype.updateSortDirection = function(sortDirection) {
+    if (sortDirection)
+        this._options.sortDirection = sortDirection;
+
+    this._animateForSort();
+    this.rotateLabel();
 };

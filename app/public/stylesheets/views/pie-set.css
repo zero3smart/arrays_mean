@@ -1,19 +1,21 @@
 .pie-set-item {
+
     height: 270px;
     position: relative;
     padding: 20px;
     margin: 10px 6px;
     border-radius: 5px;
-    box-shadow: var(--box-shadow);
 }
 
 .pie-set-item .title {
     padding-right: 40px;
+
     height: 30px;
     line-height: 30px;
     vertical-align: middle;
     text-align: center;
     position: absolute;
+
     bottom: 10px;
     width: 100%;
 }
@@ -36,4 +38,8 @@
 
 .array-pie-set .array-content {
     position: relative;
+}
+
+.array-pie-set .filter-bar-fixed-bottom {
+    margin-bottom: -100px;
 }

@@ -8,8 +8,8 @@ linechart.viewport = function (data, options) {
      * @private
      * @member {Object[][]}
      */
-    this._data = data.data.map(function(lineData) {
-        return lineData.map(function(d) {
+    this._data = data.data.map(function (lineData) {
+        return lineData.map(function (d) {
             d.date = new Date(d.date);
             return d;
         })
@@ -137,7 +137,7 @@ linechart.viewport = function (data, options) {
      */
     this._colors = d3.scale.category20().range();
     if (data.colors) {
-        for(var i = 0; i < data.colors.length; i ++) {
+        for (var i = 0; i < data.colors.length; i++) {
             this._colors[i] = data.colors[i];
         }
     }

@@ -13,8 +13,10 @@ var cache_keywords_controller = require('./cache_keywords_controller');
 
 //
 //
-module.exports.GeneratePostImportCaches = function (dataSourceDescriptions) {
+module.exports.GeneratePostImportCaches = function (dataSourceDescriptions,fn) {
     var i = 1;
+
+
     async.eachSeries(dataSourceDescriptions, function (dataSourceDescription, callback) {
         _dataSourcePostImportCachingFunction(i, dataSourceDescription, callback);
         i++;
@@ -24,7 +26,14 @@ module.exports.GeneratePostImportCaches = function (dataSourceDescriptions) {
             process.exit(1); // error code
         } else {
             winston.info("✅  Post-import caching done.");
-            process.exit(0); // all good
+            if (!fn) {
+                process.exit(0); // all good
+            }
+
+            return fn();
+
+
+           
         }
     });
 };
@@ -32,23 +41,29 @@ module.exports.GeneratePostImportCaches = function (dataSourceDescriptions) {
 var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDescription, callback) {
     var dataSource_title = dataSourceDescription.title;
     var fe_visible = dataSourceDescription.fe_visible;
+    // var isCustom = dataSourceDescription.isCustom;
     if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
         winston.warn("⚠️  The data source \"" + dataSource_title + "\" had fe_visible=false, so not going to generate its unique filter value cache.");
         return callback(null);
     }
     winston.info("🔁  " + indexInList + ": Generated post-import caches for \"" + dataSource_title + "\"");
+
+
     _generateUniqueFilterValueCacheCollection(dataSourceDescription, function (err) {
         if (err) {
             winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
             return callback(err);
         }
-
         // Cachcing Keyword for the word cloud
         cache_keywords_controller.cacheKeywords_fromDataSourceDescription(dataSourceDescription, callback);
     });
+
+
 };
 
 var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription, callback) {
+
+
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_title = dataSourceDescription.title;
     var dataSource_importRevision = dataSourceDescription.importRevision;
@@ -95,7 +110,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                     return;
                 }
                 var valuesRaw;
-                if (dataSourceDescription.fe_filters_fieldsCommaSeparatedAsIndividual && dataSourceDescription.fe_filters_fieldsCommaSeparatedAsIndividual.indexOf(key) !== -1) {
+                if (dataSourceDescription.fe_filters.fieldsCommaSeparatedAsIndividual && dataSourceDescription.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf(key) !== -1) {
                     var raw = {}
                     results.forEach(function (el) {
                         if (Array.isArray(el._id) || typeof el._id === 'string') {
@@ -143,11 +158,16 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 //
                 // remove illegal values
                 var illegalValues = []; // default val
-                if (dataSourceDescription.fe_filters_valuesToExcludeByOriginalKey) {
-                    if (dataSourceDescription.fe_filters_valuesToExcludeByOriginalKey._all) {
-                        illegalValues = illegalValues.concat(dataSourceDescription.fe_filters_valuesToExcludeByOriginalKey._all);
+
+
+                if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey) {
+
+
+                    if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all) {
+
+                        illegalValues = illegalValues.concat(dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all);
                     }
-                    var illegalValuesForThisKey = dataSourceDescription.fe_filters_valuesToExcludeByOriginalKey[key];
+                    var illegalValuesForThisKey = dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey[key];
                     if (illegalValuesForThisKey) {
                         illegalValues = illegalValues.concat(illegalValuesForThisKey);
                     }
@@ -177,7 +197,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 return;
             }
             // Override values
-            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
             var fieldNamesToOverride = Object.keys(oneToOneOverrideWithValuesByTitleByFieldName);
             async.each(fieldNamesToOverride, function (fieldName, cb) {
                 var oneToOneOverrideWithValuesByTitle = oneToOneOverrideWithValuesByTitleByFieldName[fieldName];

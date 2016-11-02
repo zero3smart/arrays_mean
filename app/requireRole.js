@@ -1,5 +1,5 @@
 module.exports = function requireRole(role) {
-    return function(req, res, next) {
+    return function (req, res, next) {
         var appMetadata = req.user.Profile._json.app_metadata || {};
         var roles = appMetadata.roles || [];
 

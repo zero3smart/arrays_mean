@@ -1,78 +1,225 @@
-$(document).ready(function() {
-     $('#url').on('change', function() {
-        var url = $('#url').val();
-        if (url != '') {
-            /* var xhr = new XMLHttpRequest();
+$(document).ready(function () {
 
-            // "withCredentials" only exists on XMLHTMLRequest2 objects
-            if ("withCredentials" in xhr) {
-                xhr.open('HEAD', url, true)
-            } else if (typeof XDomainRequest != "undefined") {
-                // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
-                xhr = new XDomainRequest();
-                xhr.open('HEAD', url);
-            } else {
-                // Otherwise, CORS is not supported by the browser
-                xhr = null;
-            }
-
-            if (!xhr) {
-                return console.log('CORS not supported');
-            }
-
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    if (xhr.status == 404) {
-                        console.log('File Existence - Failed');
-                        alert('The URL is invalid');
-                        $('#url').val('');
-                    }
-                }
-            }
-            xhr.send(); */
-            $('.upload button').removeAttr('disabled');
-        }
+    $('#add_urls').on('click', function (e) {
+        $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
     });
 
-    $('#file-input').on('change', function() {
-        const files = $('#file-input')[0].files;
+    $('#file').on('change', function (e) {
+        const files = $('#file')[0].files;
         const file = files[0];
         if (file == null) {
             return alert('No file selected');
         }
-        getSignedRequest(file);
+        $('.upload button').removeAttr('disabled');
     });
 
-    function getSignedRequest(file) {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', "/admin/dataset/sign-s3?file-name=" + encodeURIComponent(file.name) + "&file-type=" + file.type);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    uploadFile(file, response.signedRequest, response.url);
-                } else {
-                    alert('Could not get signed URL.');
-                    $('.upload button').removeAttr('disabled');
-                }
-            }
-        };
-        xhr.send();
+    $('#add_dataset').on('click', function(e) {
+        $('.dataset').append(
+            '<div class="form-group">' +
+            '<div class="row">' +
+            '<div class="col-xs-1">' +
+            '<a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>' +
+            '</div>' +
+            '<div class="col-xs-11">' +
+            '<label class="form-control">Dataset ' + + '</label>' +
+            '</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<div class="col-xs-5 col-xs-offset-1">' +
+            '<label for="file">Select a CSV/TSV file To Upload</label>' +
+            '</div>' +
+            '<div class="col-xs-6">' +
+            '<input type="file" id="file" name="files[]" accept=".csv,.tsv|text/csv,text/csv-schema" required/>' +
+            '</div>' +
+            '</div>' +
+            '</div>'
+        );
+    });
+
+    $('.format-data tr.field').on('click', function (e) {
+        e.preventDefault();
+
+        var field_name = $(this).attr('data-field-name');
+        var doc_id = $('#doc_id').val();
+
+        $.get("/admin/dataset/" + doc_id + "/format-data/" + field_name, null, function (data) {
+
+            $('#modal')
+                .on('show.bs.modal', function (e) {
+                    var $modalTitle = $(this).find('.modal-title');
+                    var $modalBody = $(this).find('.modal-body');
+
+                    $modalTitle.html('Format Field');
+                    $modalBody.html(data);
+                })
+                .modal();
+
+        }, "html");
+    });
+
+    $('#addCustomField').on('click', function (e) {
+        var doc_id = $('#doc_id').val();
+
+        $.get("/admin/dataset/" + doc_id + "/add-custom-field", null, function (data) {
+            $('#modal')
+                .on('show.bs.modal', function (e) {
+                    var $modalTitle = $(this).find('.modal-title');
+                    var $modalBody = $(this).find('.modal-body');
+
+                    $modalTitle.html('Add Custom Field');
+                    $modalBody.html(data);
+                })
+                .modal('show');
+        }, "html");
+    });
+
+    $('#modal').on('click', '#format-field-done', function (e) {
+        var doc_id = $('#doc_id').val();
+        var field = $('#name').val();
+
+        var params = $('form.format-field').serialize();
+        // TODO: Consider to ask for user to login since of expiration
+
+        $.post("/admin/dataset/" + doc_id + "/format-data/" + field, params)
+            .done(function (data) {
+                var field_name = field.replace(/\./g, "_");
+                //
+                $('tr.field[data-field-name="' + field + '"] td:nth-child(2) input[type="checkbox"]').prop("checked", data.doc.fe_excludeFields.indexOf(field) != -1);
+                $('tr.field[data-field-name="' + field + '"] td:nth-child(4)').html(fieldDataType_coercion_toString(data.doc.raw_rowObjects_coercionScheme[field_name]));
+                $('tr.field[data-field-name="' + field + '"] td:nth-child(6)').html(data.doc.fe_fieldDisplayOrder[field]);
+
+                $('#changed').val(true);
+                $('#dataTypeCoercionChanged').val(data.dataTypeCoercionChanged);
+                $('#modal').modal('hide');
+            }, 'json');
+    });
+
+    $('#modal').on('click', '#add_oneToOneOverrideWithValuesByTitle', function(e) {
+        e.preventDefault();
+        $('#extra_oneToOneOverrideWithValuesByTitle').append(
+            "<div class='form-group row'>" +
+                "<div class='col-xs-5'>" +
+                "<label>Title</label>" +
+                "<input type='text' name='oneToOneOverrideWithTitle[]' class='form-control' value=''>" +
+                "</div>" +
+                "<div class='col-xs-6'>" +
+                "<label>Override</label>" +
+                "<input type='text' name='oneToOneOverrideWithValue[]' class='form-control' value=''>" +
+                "</div>" +
+                "<div class='col-xs-1'><a class='removeRow'><span class='glyphicon glyphicon-remove'></span></a></div>" +
+                "</div>"
+        );
+    });
+
+    $('#modal').on('click', '.removeRow', function(e) {
+        e.preventDefault();
+        $(this).closest('.form-group.row').remove();
+    });
+
+    $('#modal').on('click', '#add_valueToExcludeByOriginalKey', function (e) {
+        e.preventDefault();
+        $('#extra_valuesToExcludeByOriginalKey').append(
+            '<div class="form-group row">' +
+            '<div class="col-xs-6">' +
+            '<input type="text" class="form-control" name="valuesToExcludeByOriginalKey[]" value="">' +
+            '</div>' +
+            '<div class="col-xs-5">' +
+            '<input type="checkbox" name="valuesToExcludeByOriginalKey_applyTo[]" value="true"/> Apply to All' +
+            '</div>' +
+            '<div class="col-xs-1">' +
+            '<a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>' +
+            '</div>' +
+            '</div>');
+    });
+
+    $('#modal').on('click', '.show-more-settings', function(e) {
+        if ($('.format-field .more-settings').is(':visible')) {
+            $('.format-field .more-settings').hide();
+            $('.format-field .show-more-settings').html('Show More Settings');
+        } else {
+            $('.format-field .more-settings').show();
+            $('.format-field .show-more-settings').html('Hide Settings');
+        }
+    });
+
+    $('#modal').on('click', '#add_filterKeyword', function(e) {
+        e.preventDefault();
+        $('#extra_keywords').append(
+            '<div class="form-group row">' +
+            '<div class="col-xs-6">' +
+            '<input type="text" class="form-control" name="keywords[]" value="">' +
+            '</div>' +
+            '<div class="col-xs-5">' +
+            '<input type="checkbox" name="default_filter_keywords[]" values="true"> Use default' +
+            '</div>' +
+            '<div class="col-xs-1">' +
+            '<a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>' +
+            '</div>' +
+            '</div>'
+        );
+    });
+
+    function fieldDataType_coercion_toString(field) {
+        if (!field) return 'String';
+
+        var opName = field.operation;
+        if (opName == 'ProxyExisting') {
+            return 'Proxy';
+        } else if (opName == 'ToDate') {
+            return 'Date';
+        } else if (opName == 'ToInteger') {
+            return 'Integer';
+        } else if (opName == 'ToFloat') {
+            return 'Float';
+        } else if (opName == 'ToStringTrim') {
+            return 'String Trim';
+        } else {
+            return 'String'; // 'Unknown'
+        }
     }
 
-    function uploadFile(file, signedRequest, url) {
-        const xhr = new XMLHttpRequest();
-        xhr.open('PUT', signedRequest);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    $('#url').val(url);
-                } else {
-                    alert('Could not upload file.');
-                }
-                $('.upload button').removeAttr('disabled');
-            }
-        };
-        xhr.send(file);
-    }
+    $('.format-views tr.views').on('click', function(e) {
+        e.preventDefault();
+
+        var viewType = $(this).attr('view-type-name');
+        var doc_id = $('#doc_id').val();
+
+
+        $.get("/admin/dataset/" + doc_id + "/format-views/" + viewType, null, function (data) {
+            $('#modal')
+                .on('show.bs.modal', function (e) {
+                    var $modalTitle = $(this).find('.modal-title');
+                    var $modalBody = $(this).find('.modal-body');
+                    $modalTitle.html('Format View');
+                    $modalBody.html(data);
+                    $(".chosen-select").chosen({width: "100%"});  /* start multiselect */
+                    $(".startEmpty").spectrum({allowEmpty:true,showInput:true}) /*start colorpicker */
+                    
+                })
+                .modal();
+
+        }, "html");
+
+    });
+
+
+
+    $('#modal').on('click','.addTemplateInView ',function(e) {
+        var field_name = $(this).attr('field-name');
+        var template = $('.template').clone();
+        $('#addMoreTemplates').append(template.html());
+    })
+
+    $('#modal').on('click','.addColors',function(e) {
+
+        var color_html = "<div class='col-xs-2'><input type='text' class='startEmpty form-control' value=''</div>";
+        $('#addColorsTo').append(color_html);
+        $('.startEmpty').spectrum({allowEmpty:true});
+ 
+          
+    })
+
+
+
+
 });

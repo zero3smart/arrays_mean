@@ -1,4 +1,4 @@
-{% set view = 'dataset' %}
+{% set currentView = ['dataset', 'settings'] %}
 
 {% extends "../../layout/admin.html" %}
 
@@ -8,7 +8,7 @@
 
 {% block content %}
 	<header class="admin-header">
-		<h1 class="admin-title">{{ pageTitle }}</h1>
+		<h1 class="admin-title">Dataset Settings - General Settings</h1>
 	</header>
 
 	{% if flash | length %}
@@ -16,22 +16,74 @@
 	{% endif %}
 
 	<dive class="dataset">
-		<ul class="steps">
-			<li><span class="glyphicon glyphicon-check"></span>{% if id %}<a href="source">{% endif %}1. Upload Data{% if id %}</a>{% endif %}</li>
-			<li><span class="glyphicon glyphicon-check"></span>{% if id %}<a href="format">{% endif %}2. Format{% if id %}</a>{% endif %}</li>
-			<li><span class="glyphicon glyphicon-unchecked"></span>3. Settings</li>
-			<li><span class="glyphicon glyphicon-unchecked"></span> Done!</li>
-		</ul>
+		{% include "../../partials/admin/dataset-breadcrumb.html" %}
 
-		<br />
+		<br /> 
 
-		<form class="upload" method="post">
+		<form id="settings" method="post">
+			<div class="form-group row">
+				<label class="col-xs-4" for="title">Title: </label>
+				<input class="col-xs-8" type="text" id="title" name="title" value="{{ doc.title }}" required/>
+			</div>
+
+			<div class="form-group row">
+				<label class="col-xs-4" for="description">Description: </label>
+				<textarea class="col-xs-8" id="description" name="description" required> {{ doc.description }}</textarea>
+			</div>
+
+			<div class="form-group row">
+				<label class="col-xs-4" for="revision">Import Revision: </label>
+				<input class="col-xs-8" type="number" id="revision" name="importRevision" value="{{ doc.importRevision }}" required/>
+			</div>
+
+			<div class="form-group row">
+				<label class="col-xs-4" for="brandColor">Brand Color: </label>
+				<div id="brandColor" class="input-group colorpicker-component col-xs-8">
+					<input type="text" name="brandColor" value="{{ doc.brandColor }}" class="form-control" />
+					<span class="input-group-addon"><i></i></span>
+				</div>
+				<script>
+					$(function() {
+						$('#brandColor').colorpicker();
+					});
+				</script>
+			</div>
+
+			<div class="form-group row">
+				<label class="col-xs-4" for="urls">Urls: </label>
+
+			{% if doc.urls and doc.urls.length > 0 %}
+				{% for url in doc.urls %}
+				{% if loop.index == 1 %} 
+					<input class="col-xs-8 urls" type="text" name="urls[]" value="{{url}}" />
+				</div>
+				{% else %}
+				<div class="form-group row"> 
+					<input class="col-xs-8 col-xs-offset-4 urls" name="urls[]" type="text" value="{{url}}"/>
+				</div>
+				{% endif %}
+				{% endfor %}
+
+			{% else %}
+				<input class="col-xs-8 urls" type="text" name="urls[]" value="{{url}}" />
+			</div>
+			{% endif %}
+		
+			<div id="extra_urls"></div>
+			<div class="form-group row"><a id="add_urls" class="col-xs-offset-4 add" ><span class="glyphicon glyphicon-plus"></span> Add more Urls</a></div>
+	
+
+			<div class="form-group row">
+				<label class="col-xs-4" for="fe_listed">Listed: </label>
+				<input type="checkbox" id="fe_listed" name="fe_listed" {{ 'checked=checked' if doc.fe_listed else '' }} value="true"/>
+			</div>
 
 			<div class="panel-footer">
 				<a class="btn btn-default pull-left" href="/admin/dataset/"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
-				<button type="submit" class="btn btn-default pull-right"{% if not id %}disabled="disabled" {% endif %}><span class="glyphicon glyphicon-hand-right"></span> Next</button>
+				<button type="submit" class="btn btn-default pull-right"><span class="glyphicon glyphicon-hand-right"></span> Save</button>
 				<div class="clearfix"></div>
 			</div>
+
 		</form>
 
 		<form>
@@ -44,5 +96,6 @@
 {% block inlineScript %}
 	{{ super() }}
 
+	<script type="text/javascript" src="/javascripts/lib/colorpicker/bootstrap-colorpicker.min.js"></script>
 	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
 {% endblock %}

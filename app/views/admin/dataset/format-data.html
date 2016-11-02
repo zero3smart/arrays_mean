@@ -1,0 +1,90 @@
+{% set currentView = ['dataset', 'format-data'] %}
+
+{% extends "../../layout/admin.html" %}
+
+{% block headSuffix %}
+	<title>Admin - Arrays</title>
+{% endblock %}
+
+{% block content %}
+	<header class="admin-header">
+		<h1 class="admin-title">Dataset Settings - Format Data</h1>
+	</header>
+
+	{% if flash | length %}
+	<div class="alert alert-success" role="alert">{{ flash }}</div>
+	{% endif %}
+
+	<div class="dataset format-data">
+		{% include "../../partials/admin/dataset-breadcrumb.html" %}
+
+		<br />
+
+		<form class="format-data">
+			<div class="form-group row">
+				<label class="col-xs-4" for="fn_new_rowPrimaryKeyFromRowObject">Primary Key: </label>
+				<div class="col-xs-8">
+					<select id="fn_new_rowPrimaryKeyFromRowObject" name="fn_new_rowPrimaryKeyFromRowObject" class="form-control">
+						{% for colName in colNames %}
+						<option value="{{ colName }}" {{ 'selected' if colName == doc.fn_new_rowPrimaryKeyFromRowObject }}>{{ colName }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+
+			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
+			<input type="hidden" id="dataTypeCoercionChanged" name="dataTypeCoercionChanged" value="false"/>
+			<input type="hidden" id="changed" name="changed" value="false"/>
+
+			<table id="fields" class="table">
+				<thead>
+				<tr>
+					<th>#</th>
+					<th>Exclude</th>
+					<th>Column Name</th>
+					<th>Type</th>
+					<th>Sample</th>
+					<th>Display Order</th>
+				</tr>
+				</thead>
+				<tbody>
+				{% for colName in colNames %}
+				<tr class="field" data-field-name="{{ colName }}">
+					<th scope="row">{{ loop.index }}</th>
+					<td><input type="checkbox" {{ 'checked=checked' if
+						doc.fe_excludeFields | doesArrayContain(colName) }} disabled></td>
+					<td>{{ colName }}</td>
+					<td>
+						{{ doc.raw_rowObjects_coercionScheme[colName] | fieldDataType_coercion_toString }}
+					</td>
+					<td>{{ firstRecord[loop.index0] }}</td>
+					<td class="order">{{ doc.fe_fieldDisplayOrder[colName] }}</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+
+			<div class="form-group">
+				<button class="form-control" id="addCustomField">Add custom field</button>
+			</div>
+
+			<div class="panel-footer">
+				<a class="btn btn-default pull-left" href="/admin/dataset/{{ doc._id }}/"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
+				<button type="submit" class="btn btn-default pull-right"><span class="glyphicon glyphicon-hand-right"></span> Import</button>
+				<div class="clearfix"></div>
+			</div>
+		</form>
+
+	</div>
+
+
+
+	{% include "../../partials/admin/modal.html" %}
+
+{% endblock %}
+
+{% block inlineScript %}
+	{{ super() }}
+
+	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
+{% endblock %}

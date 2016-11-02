@@ -3,7 +3,7 @@
  * @constructor
  * @param {Object[]} data
  */
-linechart.chart = function(data, options) {
+linechart.chart = function (data, options) {
     /**
      * Chart data.
      * @private
@@ -36,7 +36,7 @@ linechart.chart = function(data, options) {
      * Set up window resize event handler.
      */
     var self = this;
-    d3.select(window).on('resize.line-graph', function() {
+    d3.select(window).on('resize.line-graph', function () {
         self.resize();
         self.update();
     });
@@ -49,7 +49,7 @@ linechart.chart = function(data, options) {
  * @param {String} selector
  * @returns {linechart.chart}
  */
-linechart.chart.prototype.render = function(selector) {
+linechart.chart.prototype.render = function (selector) {
     /*
      * Select chart container.
      */
@@ -86,7 +86,7 @@ linechart.chart.prototype.render = function(selector) {
  * @public
  * @returns {linechart.chart}
  */
-linechart.chart.prototype.resize = function() {
+linechart.chart.prototype.resize = function () {
     /*
      * Change chart's container height. But min height is 400px.
      */
@@ -108,7 +108,7 @@ linechart.chart.prototype.resize = function() {
  * @param {Object[]} [data]
  * @returns {linechart.chart}
  */
-linechart.chart.prototype.update = function(data) {
+linechart.chart.prototype.update = function (data) {
 
     this._viewport.update(data);
     this._navigation.update(data);

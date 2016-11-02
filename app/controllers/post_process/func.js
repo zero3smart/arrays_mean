@@ -54,8 +54,9 @@ var _activeFilter_matchOp_orErrDescription_fromMultiFilter = function (dataSourc
                 // Restore
                 filterVal = filterVals[j];
             }
-            //console.log('---------- filter', filterCol, filterVal);
+
             if (typeof filterVal === 'string' || typeof filterVal === 'number') {
+
                 matchConditions = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
             } else if (filterVal.min != undefined || filterVal.max != undefined) {
                 matchConditions = _activeFilterRange_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal.min, filterVal.max);
@@ -83,10 +84,10 @@ module.exports.activeFilter_matchOp_orErrDescription_fromMultiFilter = _activeFi
 var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescription, filterCol, filterVal) {
     var matchConditions = undefined;
     var isAFabricatedFilter = false; // finalize
-    if (dataSourceDescription.fe_filters_fabricatedFilters) {
-        var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
+    if (dataSourceDescription.fe_filters.fabricated) {
+        var fabricatedFilters_length = dataSourceDescription.fe_filters.fabricated.length;
         for (var i = 0; i < fabricatedFilters_length; i++) {
-            var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
+            var fabricatedFilter = dataSourceDescription.fe_filters.fabricated[i];
             if (fabricatedFilter.title === filterCol) {
                 isAFabricatedFilter = true;
                 // Now find the applicable filter choice
@@ -97,7 +98,18 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
                     var choice = choices[j];
                     if (choice.title === filterVal) {
                         foundChoice = true;
-                        matchConditions = [{$match: choice["$match"]}];
+
+                        var reformQuery = {};
+
+
+                        reformQuery[choice["match"].field] = {
+                            $exists: choice["match"].exist,
+                            $nin: choice["match"].nin
+
+                        }
+
+                        matchConditions = [{$match: reformQuery}];
+
 
                         break; // found the applicable filter choice
                     }
@@ -122,10 +134,10 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
         // To coercion the date field into the valid date
         var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
         var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
-            && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+            && raw_rowObjects_coercionSchema[realColumnName].operation === "ToDate";
 
         if (!isDate) {
-            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
             var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
             if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
                 var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[filterVal];
@@ -169,9 +181,9 @@ var _activeFilterRange_matchCondition_orErrDescription = function (dataSourceDes
     // To coercion the date field into the valid date
     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
-        && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+        && raw_rowObjects_coercionSchema[realColumnName].operation === "ToDate";
     if (!isDate) {
-        var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+        var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
         var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
         if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
             var overrideValueMin = oneToOneOverrideWithValuesByTitle_forThisColumn[filterValMin];
@@ -236,10 +248,10 @@ module.exports.activeFilterRange_matchCondition_orErrDescription = _activeFilter
 var _activeFilterOR_matchCondition_orErrDescription = function (dataSourceDescription, filterCol, filterVal) {
     var matchConditions = undefined;
     var isAFabricatedFilter = false; // finalize
-    if (dataSourceDescription.fe_filters_fabricatedFilters) {
-        var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
+    if (dataSourceDescription.fe_filters.fabricated) {
+        var fabricatedFilters_length = dataSourceDescription.fe_filters.fabricated.length;
         for (var i = 0; i < fabricatedFilters_length; i++) {
-            var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
+            var fabricatedFilter = dataSourceDescription.fe_filters.fabricated[i];
             if (fabricatedFilter.title === filterCol) {
                 isAFabricatedFilter = true;
                 // Now find the applicable filter choice
@@ -253,7 +265,16 @@ var _activeFilterOR_matchCondition_orErrDescription = function (dataSourceDescri
                         var choice = choices[j];
                         if (choice.title === filterVal[k]) {
                             foundChoice = true;
-                            matchConditions = [{$match: choice["$match"]}];
+
+                            var reformQuery = {};
+
+                            reformQuery[choice["match"].field] = {
+                                $exists: choice["match"].exist,
+                                $nin: choice["match"].nin
+                            }
+
+                            matchConditions = [{$match: reformQuery}];
+
 
                             break; // found the applicable filter choice
                         }
@@ -280,12 +301,12 @@ var _activeFilterOR_matchCondition_orErrDescription = function (dataSourceDescri
         // To coercion the date field into the valid date
         var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
         var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
-            && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+            && raw_rowObjects_coercionSchema[realColumnName].operation === "ToDate";
 
         if (!isDate) {
             for (var i = 0; i < filterVal.length; i++) {
                 var realFilterValue = filterVal[i]; // To finalize in case of override…
-                var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters_oneToOneOverrideWithValuesByTitleByFieldName || {};
+                var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
                 var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
                 if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
                     var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[realFilterValue];
@@ -332,7 +353,7 @@ var _activeSearch_matchOp_orErrDescription = function (dataSourceDescription, se
 
     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
-        && raw_rowObjects_coercionSchema[realColumnName].do === import_datatypes.Coercion_ops.ToDate;
+        && raw_rowObjects_coercionSchema[realColumnName].operation === "ToDate";
     if (!isDate) {
         if (Array.isArray(searchQ)) {
             var match = [];
@@ -425,10 +446,10 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
         }
         //
         // Now insert fabricated filters
-        if (dataSourceDescription.fe_filters_fabricatedFilters) {
-            var fabricatedFilters_length = dataSourceDescription.fe_filters_fabricatedFilters.length;
+        if (dataSourceDescription.fe_filters.fabricated) {
+            var fabricatedFilters_length = dataSourceDescription.fe_filters.fabricated.length;
             for (var i = 0; i < fabricatedFilters_length; i++) {
-                var fabricatedFilter = dataSourceDescription.fe_filters_fabricatedFilters[i];
+                var fabricatedFilter = dataSourceDescription.fe_filters.fabricated[i];
                 var choices = fabricatedFilter.choices;
                 var choices_length = choices.length;
                 var values = [];
@@ -448,10 +469,10 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
         }
         //
         // Now insert keyword filters
-        if (dataSourceDescription.fe_filters_keywordFilters) {
-            var keywordFilters_length = dataSourceDescription.fe_filters_keywordFilters.length;
+        if (dataSourceDescription.fe_filters.keywords) {
+            var keywordFilters_length = dataSourceDescription.fe_filters.keywords.length;
             for (var i = 0; i < keywordFilters_length; i++) {
-                var keywordFilter = dataSourceDescription.fe_filters_keywordFilters[i];
+                var keywordFilter = dataSourceDescription.fe_filters.keywords[i];
                 var choices = keywordFilter.choices;
                 var choices_length = choices.length;
                 var values = [];
@@ -490,20 +511,20 @@ var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescr
     if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
         var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
         if (coersionSchemeOfKey && typeof coersionSchemeOfKey !== 'undefined') {
-            var _do = coersionSchemeOfKey.do;
-            if (_do === import_datatypes.Coercion_ops.ToDate) {
+            var _do = coersionSchemeOfKey.operation;
+            if (_do === "ToDate") {
                 if (originalVal == null || originalVal == "") {
                     return originalVal; // do not attempt to format
                 }
                 var dateFormat = null;
-                var fe_outputInFormat = dataSourceDescription.fe_outputInFormat;
+                var fe_outputInFormat = coersionSchemeOfKey.outputFormat;
                 if (fe_outputInFormat && typeof fe_outputInFormat !== 'undefined') {
                     var outputInFormat_ofKey = fe_outputInFormat["" + key];
                     if (outputInFormat_ofKey && typeof outputInFormat_ofKey !== 'undefined') {
                         dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
                     }
                 }
-                if (dateFormat == null || dateFormat == import_datatypes.Coercion_optionsPacks.ToDate.ISO_8601.format) { // still null? use default
+                if (dateFormat == null || dateFormat == "ISO_8601") { // still null? use default
                     dateFormat = config.defaultDateFormat;
                 }
                 displayableVal = moment(originalVal, moment.ISO_8601).utc().format(dateFormat);
@@ -533,8 +554,8 @@ var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescrip
     if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
         var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
         if (coersionSchemeOfKey && typeof coersionSchemeOfKey !== 'undefined') {
-            var _do = coersionSchemeOfKey.do;
-            if (_do === import_datatypes.Coercion_ops.ToDate) {
+            var _do = coersionSchemeOfKey.operation;
+            if (_do === "ToDate") {
                 if (originalVal == null || originalVal == "") {
                     return originalVal; // do not attempt to format
                 }
@@ -550,7 +571,7 @@ module.exports.convertDateToBeRecognizable = _convertDateToBeRecognizable;
 //
 function _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription) {
     var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = {};
-    var fe_filters_fabricatedFilters = dataSourceDescription.fe_filters_fabricatedFilters;
+    var fe_filters_fabricatedFilters = dataSourceDescription.fe_filters.fabricated;
     if (typeof fe_filters_fabricatedFilters !== 'undefined') {
         var fe_filters_fabricatedFilters_length = fe_filters_fabricatedFilters.length;
         for (var i = 0; i < fe_filters_fabricatedFilters_length; i++) {
@@ -574,7 +595,7 @@ function _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnName
 module.exports.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = _new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill;
 
 //
-function _filterObjFromQueryParams (queryParams) {
+function _filterObjFromQueryParams(queryParams) {
     var filterObj = {};
     var reservedKeys = ['source_key', 'sortBy', 'sortDir', 'page', 'groupBy', 'chartBy', 'stackBy', 'mapBy', 'aggregateBy', 'searchQ', 'searchCol', 'embed'];
     for (var key in queryParams) {
@@ -586,11 +607,12 @@ function _filterObjFromQueryParams (queryParams) {
     }
     return filterObj;
 };
+
 module.exports.filterObjFromQueryParams = _filterObjFromQueryParams;
 
 function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupBy_realColumnName, viewType) {
     //
-    var fe_valuesToExcludeByOriginalKey = dataSourceDescription['fe_' + viewType + '_valuesToExcludeByOriginalKey'];
+    var fe_valuesToExcludeByOriginalKey = dataSourceDescription.fe_views.views[viewType]["valuesToExcludeByOriginalKey"];
     if (fe_valuesToExcludeByOriginalKey != null && typeof fe_valuesToExcludeByOriginalKey !== 'undefined') {
         if (fe_valuesToExcludeByOriginalKey._all) {
             if (fe_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
@@ -616,4 +638,5 @@ function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupB
 
     return displayableVal;
 }
+
 module.exports.ValueToExcludeByOriginalKey = _valueToExcludeByOriginalKey;

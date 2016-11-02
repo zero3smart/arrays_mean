@@ -33,24 +33,24 @@ function Tooltip() {
      */
     this._position = 'left';
     /**
-     * 
+     *
      */
     this._element = undefined;
     /**
-     * 
+     *
      */
     this._width = undefined;
 }
 
 
-Tooltip.prototype.setWidth = function(width) {
+Tooltip.prototype.setWidth = function (width) {
 
     this._width = width;
     return this;
 };
 
 
-Tooltip.prototype.getWidth = function(deafultWidth) {
+Tooltip.prototype.getWidth = function (deafultWidth) {
 
     if (this._width) {
         return this._width;
@@ -66,7 +66,7 @@ Tooltip.prototype.getWidth = function(deafultWidth) {
  * @param {'top'|'right'|'bottom'|'left'} position
  * @returns {Tooltip}
  */
-Tooltip.prototype.setPosition = function(position) {
+Tooltip.prototype.setPosition = function (position) {
 
     this._position = position;
     return this;
@@ -78,7 +78,7 @@ Tooltip.prototype.setPosition = function(position) {
  * @public
  * @returns {Tooltip}
  */
-Tooltip.prototype.hide = function() {
+Tooltip.prototype.hide = function () {
 
     if (this._container && this._container.size() > 0) {
         this._container.remove();
@@ -96,7 +96,7 @@ Tooltip.prototype.hide = function() {
  * @param {Integer} [value]
  * @returns {Tooltip}
  */
-Tooltip.prototype.setOffset = function(offset, value) {
+Tooltip.prototype.setOffset = function (offset, value) {
 
     if (offset instanceof Object) {
         for (i in offset) {
@@ -116,7 +116,7 @@ Tooltip.prototype.setOffset = function(offset, value) {
  * @param {String} content
  * @returns {Tooltip}
  */
-Tooltip.prototype.setContent = function(content) {
+Tooltip.prototype.setContent = function (content) {
 
     this._content = content;
     return this;
@@ -128,7 +128,7 @@ Tooltip.prototype.setContent = function(content) {
  * @param element
  * @returns {Tooltip}
  */
-Tooltip.prototype.setOn = function(element, cls) {
+Tooltip.prototype.setOn = function (element, cls) {
     /*
      * Stash current element.
      */
@@ -137,7 +137,7 @@ Tooltip.prototype.setOn = function(element, cls) {
     /*
      * Append tooltip container to the document body.
      */
-    if (! this._container) {
+    if (!this._container) {
         this._container = d3.select(document.body).append('div')
             .attr('class', 'arrays-co-tooltip ' + cls)
             .style('background-color', '#fff');
@@ -152,7 +152,7 @@ Tooltip.prototype.setOn = function(element, cls) {
  * @param {HTMLElement|SVGElement} element
  * @returns {Tooltip}
  */
-Tooltip.prototype.show = function(element) {
+Tooltip.prototype.show = function (element) {
     /*
      * Use previously stashed element if not prvided.
      */
@@ -208,7 +208,7 @@ Tooltip.prototype.show = function(element) {
  * @param {DOMRect} elementDimensions
  * @returns {Object}
  */
-Tooltip.prototype._getLeftPosition = function(position, tooltipDimension, elementDimensions) {
+Tooltip.prototype._getLeftPosition = function (position, tooltipDimension, elementDimensions) {
     /*
      * Evaluate tooltip x and y positions.
      */
@@ -234,8 +234,8 @@ Tooltip.prototype._getLeftPosition = function(position, tooltipDimension, elemen
     }
 
     return {
-        'x' : x,
-        'y' : y
+        'x': x,
+        'y': y
     };
 };
 
@@ -250,7 +250,7 @@ Tooltip.prototype._getLeftPosition = function(position, tooltipDimension, elemen
  * @param {DOMRect} elementDimensions
  * @returns {Object}
  */
-Tooltip.prototype._getTopPosition = function(position, tooltipDimension, elementDimensions) {
+Tooltip.prototype._getTopPosition = function (position, tooltipDimension, elementDimensions) {
     /*
      * Evaluate tooltip x and y positions.
      */
@@ -276,8 +276,8 @@ Tooltip.prototype._getTopPosition = function(position, tooltipDimension, element
     }
 
     return {
-        'x' : x,
-        'y' : y
+        'x': x,
+        'y': y
     };
 };
 
@@ -292,7 +292,7 @@ Tooltip.prototype._getTopPosition = function(position, tooltipDimension, element
  * @param {DOMRect} elementDimensions
  * @returns {Object}
  */
-Tooltip.prototype._getRightPosition = function(position, tooltipDimension, elementDimensions) {
+Tooltip.prototype._getRightPosition = function (position, tooltipDimension, elementDimensions) {
     /*
      * Evaluate tooltip x and y positions.
      */
@@ -318,8 +318,8 @@ Tooltip.prototype._getRightPosition = function(position, tooltipDimension, eleme
     }
 
     return {
-        'x' : x,
-        'y' : y
+        'x': x,
+        'y': y
     };
 
 };
@@ -335,7 +335,7 @@ Tooltip.prototype._getRightPosition = function(position, tooltipDimension, eleme
  * @param {DOMRect} elementDimensions
  * @returns {Object}
  */
-Tooltip.prototype._getBottomPosition = function(position, tooltipDimension, elementDimensions) {
+Tooltip.prototype._getBottomPosition = function (position, tooltipDimension, elementDimensions) {
 
     throw new Error('Tooltip#_getBottomPosition not implemented');
 };

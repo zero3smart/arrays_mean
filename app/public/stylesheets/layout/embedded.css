@@ -1,28 +1,28 @@
 /* @override 
 	http://localhost:9080/stylesheets/layout/embedded.css */
-	
+
 .view-embedded .array-header,
 .view-embedded .site-footer,
 .view-embedded .navbar,
 .view-embedded .sort-bar {
-	display: none;
+    display: none;
 }
 
 .view-embedded .array-controls {
-	top: 0;
+    top: 0;
 }
 
 .view-embedded .site-content {
-	padding-top: 0;
+    padding-top: 0;
 }
 
 .view-embedded #chart {
-	max-width: calc(100vw - 40px);
-	width: 100vh;
-	height: 100vh;
+    max-width: calc(100vw - 40px);
+    width: 100vh;
+    height: 100vh;
 }
 
 .view-embedded #scatterplot {
-	height: calc(100vh - 70px);
-	min-height: calc(100vh - 70px);
+    height: calc(100vh - 70px);
+    min-height: calc(100vh - 70px);
 }

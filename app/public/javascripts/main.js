@@ -1,11 +1,11 @@
-$(window).load(function() {
+$(window).load(function () {
 
     trackEvent("page load");
 
 
     trackEvent('page viewed', {
-       'page name' : document.title,
-       'url' : window.location.pathname
+        'page name': document.title,
+        'url': window.location.pathname
     });
 
     /**
@@ -14,14 +14,14 @@ $(window).load(function() {
     $('body').addClass('app-ready');
 });
 
-$(document).ready(function() {
+$(document).ready(function () {
 
     console.log('app loaded');
 
     /**
      * Select source dataset on click
      */
-    $('.js-panel-array').on('click', function(e) {
+    $('.js-panel-array').on('click', function (e) {
         e.preventDefault();
         var $parent = $(this).parent();
         var sourceKey = $parent.find("[name='source_key']").val();
@@ -31,7 +31,9 @@ $(document).ready(function() {
             default_view = 'gallery';
         }
         var words = default_view.split(/(?=[A-Z])/);
-        var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
+        var default_view_url = words.map(function (word) {
+            return word.toLowerCase();
+        }).join('-');
         var href = '/array/' + sourceKey + '/' + default_view_url;
         if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
             href += "?" + default_filterJSON;
@@ -42,7 +44,7 @@ $(document).ready(function() {
     /**
      * Select team on click
      */
-    $('.js-panel-team').on('click', function(e) {
+    $('.js-panel-team').on('click', function (e) {
         e.preventDefault();
         var $parent = $(this).parent();
         var sourceKey = $parent.find("[name='team_key']").val();
@@ -53,14 +55,14 @@ $(document).ready(function() {
     /**
      * Allow click on source dataset URL within the panel
      */
-    $('.source-link').on('click', function(e) {
+    $('.source-link').on('click', function (e) {
         e.stopPropagation();
     });
 
     /**
      * Show sidebar filter on header bar click
      */
-    $('.sidebar-filter-slide-toggle').click(function(e) {
+    $('.sidebar-filter-slide-toggle').click(function (e) {
         e.preventDefault();
         $(this).parents('li').toggleClass('active');
         $('body').toggleClass('sidebar-filter-in');
@@ -69,14 +71,14 @@ $(document).ready(function() {
     /**
      * Stop sidebar child events from bubbling up and causing content width bug
      */
-    $('.sidebar-filter-subgroup').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function(e) {
+    $('.sidebar-filter-subgroup').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function (e) {
         e.stopPropagation();
     });
 
     /**
      * Resize content width after sidebar slide out animation complete
      */
-    $('.sidebar-filter').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function(e) {
+    $('.sidebar-filter').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function (e) {
         console.log('slide out complete');
         $('body').toggleClass('sidebar-filter-complete');
         $('body').hide().show(0);
@@ -85,7 +87,7 @@ $(document).ready(function() {
     /**
      * Sidebar filter accordion using Bootstrap
      */
-    $('.collapse-trigger').on('click', function(e) {
+    $('.collapse-trigger').on('click', function (e) {
         e.preventDefault();
         $(this).parent('li').siblings().find('.collapse').collapse('hide');
         $(this).parent('li').find('.collapse').collapse('toggle');
@@ -94,7 +96,7 @@ $(document).ready(function() {
     /**
      * Search criteria click dropdown item to select
      */
-    $('.search-dropdown-item a').on('click', function(e) {
+    $('.search-dropdown-item a').on('click', function (e) {
         e.preventDefault();
         var colname = $(this).data('colname');
 
@@ -108,7 +110,7 @@ $(document).ready(function() {
     /**
      * Mobile search popover
      */
-    $('.search-toggle').on('click', function(e) {
+    $('.search-toggle').on('click', function (e) {
         e.preventDefault();
         $(this).toggleClass('search-active');
         $('.mobile-search-popover').toggleClass('search-open');
@@ -117,18 +119,16 @@ $(document).ready(function() {
     /**
      * Popup modal on embed code click
      */
-    $('.share-link').on('click', function(e) 
-    {
+    $('.share-link').on('click', function (e) {
         e.preventDefault();
-        _POST_toGetURLForSharingCurrentPage(function(err, share_url)
-        {
+        _POST_toGetURLForSharingCurrentPage(function (err, share_url) {
             if (err) {
                 console.log(err);
             } else {
                 $('#modal')
                     .on('show.bs.modal', function (e) {
-                        var $modalTitle  = $(this).find('.modal-title');
-                        var $modalBody  = $(this).find('.modal-body');
+                        var $modalTitle = $(this).find('.modal-title');
+                        var $modalBody = $(this).find('.modal-body');
 
                         var $arrayTitle = $('.array-title');
                         var arrayTitle = '';
@@ -152,7 +152,7 @@ $(document).ready(function() {
                         $modalBody.append('<h3><input type="checkbox" id="cbEmbed">  Show header and footer</h3>');
                         $('#embed-url').text(embedUrl);
 
-                        $(this).find('#cbEmbed').change(function() {
+                        $(this).find('#cbEmbed').change(function () {
                             embedUrl = '<iframe src="' + share_url;
                             if (!$(this).is(":checked")) embedUrl += '?embed=true';
                             embedUrl += '" width="640" height="480" frameborder="0"></iframe>';
@@ -167,8 +167,8 @@ $(document).ready(function() {
                             },
                             template: '<a href="#" class="btn btn-social background-color-brand"><span class="icon-twitter" aria-hidden="true"></span>Twitter</a>',
                             enableHover: false,
-                            buttons: { twitter: {via: 'arrays'}},
-                            click: function(api, options){
+                            buttons: {twitter: {via: 'arrays'}},
+                            click: function (api, options) {
                                 api.openPopup('twitter');
                             }
                         });
@@ -179,7 +179,7 @@ $(document).ready(function() {
                             },
                             template: '<a href="#" class="btn btn-social background-color-brand"><span class="icon-facebook" aria-hidden="true"></span>Facebook</a>',
                             enableHover: false,
-                            click: function(api, options){
+                            click: function (api, options) {
                                 api.openPopup('facebook');
                             }
                         });
@@ -187,52 +187,51 @@ $(document).ready(function() {
                     .modal();
             }
         });
-        
+
         return false;
     });
-    
+
     /**
      * For back links with no referer, do a browser "back"
      */
-    $('.browser-back-on-click').on('click', function(e) 
-    {
+    $('.browser-back-on-click').on('click', function (e) {
         e.preventDefault();
         window.history.back();
-        
+
         return false;
     });
 
     /**
      * Missing image fallback
      */
-    // Small
-    $('.gallery-image, .timeline-image').error(function(){
+        // Small
+    $('.gallery-image, .timeline-image').error(function () {
         $(this).attr('src', '/images/image-not-found-sm.png');
     });
 
     // Large
-    $('.object-featured').error(function(){
+    $('.object-featured').error(function () {
         $(this).attr('src', '/images/image-not-found-lg.png');
     });
 
     /**
-    * Array description expand/collapse text
-    */
-    $('.array-description-expand').on('click', function(e){
+     * Array description expand/collapse text
+     */
+    $('.array-description-expand').on('click', function (e) {
         $('.array-description').css("display", "none");
         $('.array-description-full').css("display", "inline");
         $('.array-description-expand').css("display", "none");
         $('.array-description-collapse').css("display", "inline");
     });
 
-    $('.array-description-collapse').on('click', function(e){
+    $('.array-description-collapse').on('click', function (e) {
         $('.array-description').css("display", "inline");
         $('.array-description-full').css("display", "none");
         $('.array-description-collapse').css("display", "none");
         $('.array-description-expand').css("display", "inline-block");
     });
 
-    $('#signup').on('click', function(e) {
+    $('#signup').on('click', function (e) {
         if (lock) lock.show();
     });
 
@@ -263,9 +262,9 @@ function constructedFilterObj(existing_filterObj, this_filterCol, this_filterVal
     var existing_filterCols = Object.keys(existing_filterObj);
     var existing_filterCols_length = existing_filterCols.length;
     var filterVals;
-    for (var i = 0 ; i < existing_filterCols_length ; i++) {
+    for (var i = 0; i < existing_filterCols_length; i++) {
         var existing_filterCol = existing_filterCols[i];
-        if (existing_filterCol == this_filterCol) { 
+        if (existing_filterCol == this_filterCol) {
             continue; // never push other active values of this is filter col is already active
             // which means we never allow more than one filter on the same column at present
         }
@@ -292,7 +291,7 @@ function convertQueryStringToObject(inputString) {
     var obj = {};
     var arr = decodeURIComponent(inputString).split('&');
 
-    for (var i = 0; i < arr.length; i ++) {
+    for (var i = 0; i < arr.length; i++) {
         var bits = arr[i].split('=');
         var key = bits[0];
         var value = bits[1];
@@ -315,12 +314,11 @@ function convertQueryStringToObject(inputString) {
 }
 
 function _POST_toGetURLForSharingCurrentPage(callback) { // callback: (err:Error, share_url:String) -> Void
-    var parameters = { 
+    var parameters = {
         url: window.location.href
     };
 
-    $.post("/v1/share", parameters, function(data) 
-    {
+    $.post("/v1/share", parameters, function (data) {
         var share_url = data.share_url;
         var err = null;
         if (!share_url) {
@@ -330,12 +328,21 @@ function _POST_toGetURLForSharingCurrentPage(callback) { // callback: (err:Error
     }, "json");
 }
 
-function trackEvent(eventName, eventPayload)
-{
+function trackEvent(eventName, eventPayload) {
     if (typeof eventPayload === 'undefined' || eventPayload === null) {
         eventPayload = {};
     }
-    var basePayload = { source: "client" }; // this lets us identify the source vs the server
+    var basePayload = {source: "client"}; // this lets us identify the source vs the server
     eventPayload = $.extend(basePayload, eventPayload);
     mixpanel.track(eventName, eventPayload);
+}
+
+
+function doesExistFormat_fieldDataType_coercion_toString(field) {
+    if (!field) return false;
+
+    if (field.operation == 'ToDate')
+        return true;
+
+    return false;
 }

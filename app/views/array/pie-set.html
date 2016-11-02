@@ -1,3 +1,4 @@
+
 {% set currentView = "pie-set" %}
 
 {% extends "../layout/array.html" %}
@@ -22,6 +23,15 @@
             </div>
         </header><!-- .array-header -->
 
+        {% if view_description %}
+            <div class="array-description-wrapper">
+                <p class="array-description">{{ view_description | truncate(80) }}</p>
+                <a href="#expanded"><p class="array-description-expand">Read more</p></a>
+                <p class="array-description-full">{{ view_description }}
+                <a href="#"><p class="array-description-collapse">less</p></a>
+            </div>
+        {% endif %}
+
         <div class="array-content">
 
             <div class="chart-container">
@@ -37,6 +47,7 @@
                                     dropdown.sortbar
                                         (
                                             "Chart By",
+
                                             chartBy if chartBy else defaultChartByColumnName_humanReadable,
                                             colNames_orderedForChartByDropdown,
                                             routePath_base | constructedRoutePath(filterObj, {
@@ -124,8 +135,8 @@
 
                 <script type="text/javascript">
                     var pieData = {{ groupedResults | dump | safe }};
-                    var legendData = {{ flatResults | dump | safe }};
 
+                    var legendData = {{ flatResults | dump | safe }};
                     var filterObj = {{ filterObj | dump | safe }};
                     var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
@@ -150,6 +161,7 @@
             <nav class="legend" role="navigation">
                 <button type="button" class="close legend-close" aria-label="Close"><span class="icon-close-big" aria-hidden="true"></span></button>
                 <h3 class="legend-title">Legend</h3>
+
                 {% if flatResults | length %}
                 <ul class="legend-list"></ul>
                 {% endif %}

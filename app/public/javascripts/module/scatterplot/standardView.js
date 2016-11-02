@@ -4,7 +4,7 @@
  * @param {scatterplot.chart} chart
  * @constructor
  */
-scatterplot.view.standard = function(chart) {
+scatterplot.view.standard = function (chart) {
     /*
      * Call parent class constructor.
      */
@@ -18,7 +18,7 @@ scatterplot.view.standard.prototype = Object.create(scatterplot.view.main.protot
 /**
  * @override
  */
-scatterplot.view.standard.prototype.getDensityMatrix = function(data) {
+scatterplot.view.standard.prototype.getDensityMatrix = function (data) {
     /*
      * Definde reference to the chart.
      */
@@ -29,16 +29,16 @@ scatterplot.view.standard.prototype.getDensityMatrix = function(data) {
 
     var densityMatrix = {};
 
-    data.forEach(function(d) {
+    data.forEach(function (d) {
         xValue = Number(chart._xAccessor(d));
         yValue = Number(chart._yAccessor(d));
 
-        if (! densityMatrix[xValue]) {
+        if (!densityMatrix[xValue]) {
             densityMatrix[xValue] = {};
         }
 
         if (densityMatrix[xValue][yValue]) {
-            densityMatrix[xValue][yValue].density ++;
+            densityMatrix[xValue][yValue].density++;
         } else {
             d.density = 1;
             densityMatrix[xValue][yValue] = d;
@@ -52,7 +52,7 @@ scatterplot.view.standard.prototype.getDensityMatrix = function(data) {
 /**
  * @override
  */
-scatterplot.view.standard.prototype.render = function(data) {
+scatterplot.view.standard.prototype.render = function (data) {
     /*
      * Definde reference to the chart.
      */
@@ -71,10 +71,10 @@ scatterplot.view.standard.prototype.render = function(data) {
      * Select bubbles.
      */
     var bubbles = chart._canvas.selectAll('circle.bubble')
-        .data(chartData.map(function(d) {
+        .data(chartData.map(function (d) {
             d.radius = chart._radius;
             return d;
-        }), function(d) {
+        }), function (d) {
             return d.id;
         });
     /*
@@ -82,17 +82,17 @@ scatterplot.view.standard.prototype.render = function(data) {
      */
     bubbles.transition()
         .duration(1000)
-        .attr('cx', function(d) {
+        .attr('cx', function (d) {
             return chart._xScale(chart._xAccessor(d));
-        }).attr('cy', function(d) {
-            return chart._yScale(chart._yAccessor(d));
-        }).attr('r', chart._radius);
+        }).attr('cy', function (d) {
+        return chart._yScale(chart._yAccessor(d));
+    }).attr('r', chart._radius);
     /*
      * Render new bubbles.
      */
     bubbles.enter()
         .append('a')
-        .attr('xlink:href', function(d, i) {
+        .attr('xlink:href', function (d, i) {
             /*
              * Create new URI object from current location.
              */
@@ -119,11 +119,11 @@ scatterplot.view.standard.prototype.render = function(data) {
                  */
                 filterObj[chart._xLabel] = JSON.stringify({
                     min: chart._xAccessor(d),
-                    max: chart._xAccessor(d)+1
+                    max: chart._xAccessor(d) + 1
                 });
                 filterObj[chart._yLabel] = JSON.stringify({
                     min: chart._yAccessor(d),
-                    max: chart._yAccessor(d)+1
+                    max: chart._yAccessor(d) + 1
                 });
                 /*
                  * Generate URL to gallery with prepared filters.
@@ -139,16 +139,16 @@ scatterplot.view.standard.prototype.render = function(data) {
         .attr('class', 'bubble')
         .style('opacity', 0.5)
         .style('fill', chart._color)
-        .attr('cx', function(d) {
+        .attr('cx', function (d) {
             return chart._xScale(chart._xAccessor.call(undefined, d));
-        }).attr('cy', function(d) {
-            return chart._yScale(chart._yAccessor.call(undefined, d));
-        }).attr('r', 0)
-        .on('mouseover', function(d) {
+        }).attr('cy', function (d) {
+        return chart._yScale(chart._yAccessor.call(undefined, d));
+    }).attr('r', 0)
+        .on('mouseover', function (d) {
             chart._bubbleMouseOverEventHandler(this, d);
-        }).on('mouseout', function(d) {
-            chart._bubbleMouseOutEventHandler(this);
-        }).transition()
+        }).on('mouseout', function (d) {
+        chart._bubbleMouseOutEventHandler(this);
+    }).transition()
         .duration(1000)
         .attr('r', chart._radius);
     /*
@@ -165,7 +165,7 @@ scatterplot.view.standard.prototype.render = function(data) {
 /**
  * @override
  */
-scatterplot.view.standard.prototype.showTooltip = function(bubble, data) {
+scatterplot.view.standard.prototype.showTooltip = function (bubble, data) {
     /*
      * Stash reference to the chart.
      */
@@ -179,7 +179,7 @@ scatterplot.view.standard.prototype.showTooltip = function(bubble, data) {
      */
     if (data.density === 1) {
         content += '<div class="scatterplot-tooltip-image" style="background-image:url(' + data[chart._metaData.fe_designatedFields.medThumbImageURL] + ')"></div>' +
-        '<div class="scatterplot-tooltip-title">' + data[chart._metaData.fe_designatedFields.objectTitle] + '</div>';
+            '<div class="scatterplot-tooltip-title">' + data[chart._metaData.fe_designatedFields.objectTitle] + '</div>';
     }
     /*
      * Open tooltip's text container.
@@ -190,17 +190,17 @@ scatterplot.view.standard.prototype.showTooltip = function(bubble, data) {
      */
     if (data.density > 1) {
         // If data description specifies tooltip terminology it will be displayed, otherwise it will default to  'Records'
-        content += '<div>' + data.density + ' ' + (chart._metaData.fe_scatterplot_tooltip_term ? chart._metaData.fe_scatterplot_tooltip_term : 'Records') + ' </div>';  
+        content += '<div>' + data.density + ' ' + (chart._metaData.fe_scatterplot_tooltip_term ? chart._metaData.fe_scatterplot_tooltip_term : 'Records') + ' </div>';
     }
     /*
      * Append common information.
      */
     content += '<div>' +
-                chart._xAccessor(data) + ' ' + chart._xLabel.replace('_', ' ') + ', ' +
-                chart._yAccessor(data) + ' ' + chart._yLabel.replace('_', ' ') +
-            '</div>' +
+        chart._xAccessor(data) + ' ' + chart._xLabel.replace('_', ' ') + ', ' +
+        chart._yAccessor(data) + ' ' + chart._yLabel.replace('_', ' ') +
         '</div>' +
-    '</div>';
+        '</div>' +
+        '</div>';
     /*
      * Set up and show tooltip.
      */

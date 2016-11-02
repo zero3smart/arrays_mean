@@ -23,9 +23,8 @@
 
                                     {% set objectTitle = rowObject.rowParams[fieldKey_objectTitle] %}
                                     <h1 class="object-title">{{ objectTitle if objectTitle else "(Title not specified)" }}</h1>
-
                                     {% if embedded %}
-                                    {% set mainViewURL = "/array/" + array_source_key + "/" + main_view + "?embed=true&" + default_filterJSON if default_filterJSON else "" %}
+                                    {% set mainViewURL = "/array/" + array_source_key + "/" + main_view + "?embed=true" + ("&" + default_filterJSON if default_filterJSON else "") %}
                                     <a href="{{ mainViewURL }}">{{ arrayTitle }}</a>
                                     {% endif %}
                                 </header><!-- .object-header -->
@@ -37,6 +36,8 @@
                                     {% for columnName in ordered_colNames_sansObjectTitleAndImages %}
                                         {% set htmlOverrideFn = fe_objectShow_customHTMLOverrideFnsByColumnName[columnName] %}
                                         {% set columnValue = rowObject.rowParams[columnName] %}
+
+                                        
                                         {% if columnValue %}
                                             {% if columnValue | isArray %}
                                                 {% if columnValue.length > 0 %}
@@ -75,6 +76,8 @@
                                                 </dd>
                                             {% endif %}
                                         {% endif %}
+
+
                                     {% endfor %}
                                     </dl>
 

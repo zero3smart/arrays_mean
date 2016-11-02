@@ -22,6 +22,15 @@
             </div>
         </header><!-- .array-header -->
 
+        {% if view_description %}
+            <div class="array-description-wrapper">
+                <p class="array-description">{{ view_description | truncate(80) }}</p>
+                <a href="#expanded"><p class="array-description-expand">Read more</p></a>
+                <p class="array-description-full">{{ view_description }}
+                <a href="#"><p class="array-description-collapse">less</p></a>
+            </div>
+        {% endif %}
+
         <div class="array-content">
 
             <div class="container-fluid">
@@ -30,12 +39,12 @@
 
                         <div class="sort-bar clearfix">
 
-                            <nav class="sort-bar-left pull-left" role="navigation">
+                              <nav class="sort-bar-left pull-left" role="navigation">
                                 {{
                                 dropdown.axis(
                                     'y',
                                     'Y-Axis',
-                                    metaData.fe_scatterplot_defaults.yAxisField,
+                                    metaData.fe_views.views.scatterplot.defaults.yAxisField,
                                     renderableFields
                                 )
                                 }}
@@ -44,13 +53,20 @@
                                 dropdown.axis(
                                     'x',
                                     'X-Axis',
-                                    metaData.fe_scatterplot_defaults.xAxisField,
+                                    metaData.fe_views.views.scatterplot.defaults.xAxisField,
                                     renderableFields
                                 )
                                 }}
                             </nav>
 
-                            <div class="sort-bar-right pull-right">
+
+
+
+
+
+
+
+                             <div class="sort-bar-right pull-right">
                                 {{
                                 search.panel(
                                     routePath_base,
@@ -68,10 +84,21 @@
                                 </a>
                             </div>
 
+
+
+
+                      
+
+
+
+
+                     
+
                         </div>
                     </div>
                 </div><!-- .row -->
             </div><!-- .container-fluid -->
+
 
             <div class="container-fluid">
                 <div class="row">
@@ -97,7 +124,7 @@
                 }}
             {% endif %}
 
-        </div><!-- .array-content -->
+        </div><!-- .array-content --> 
 
     </section>
 {% endblock %}
@@ -125,11 +152,11 @@
             d.rowParams.id = d._id;
             return d.rowParams;
         }), metaData).setXAccessor(function(d) {
-                    return d['{{ metaData.fe_scatterplot_defaults.xAxisField }}']
-                }, '{{ metaData.fe_scatterplot_defaults.xAxisField }}')
+                    return d['{{ metaData.fe_views.views.scatterplot.defaults.xAxisField }}']
+                }, '{{ metaData.fe_views.views.scatterplot.defaults.xAxisField }}')
                 .setYAccessor(function(d) {
-                    return d['{{ metaData.fe_scatterplot_defaults.yAxisField }}'];
-                }, '{{ metaData.fe_scatterplot_defaults.yAxisField }}')
+                    return d['{{ metaData.fe_views.views.scatterplot.defaults.yAxisField }}'];
+                }, '{{ metaData.fe_views.views.scatterplot.defaults.yAxisField }}')
                 .searchBy({{ searchCol | dump | safe }}, {{ searchQ | dump | safe }})
         .setColor('{{ metaData.brandColor }}')
                 .render('#scatterplot');
@@ -164,9 +191,9 @@
             });
         }
 
-        // Hide axis controls initial values.
-        hideAxisItem('x', '{{ metaData.fe_scatterplot_defaults.yAxisField | replace(r/_/g, ' ') }}');
-        hideAxisItem('y', '{{ metaData.fe_scatterplot_defaults.xAxisField | replace(r/_/g, ' ') }}');
+       
+        hideAxisItem('x', '{{ metaData.fe_views.views.scatterplot.defaults.yAxisField | replace(r/_/g, ' ') }}');
+        hideAxisItem('y', '{{ metaData.fe_views.views.scatterplot.defaults.xAxisField | replace(r/_/g, ' ') }}');
 
         // Set up search dropdown click handler.
         jQuery('ul.search-dropdown-menu a').click(function(e) {

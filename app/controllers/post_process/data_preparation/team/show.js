@@ -1,18 +1,37 @@
 var async = require('async');
 var queryString = require('querystring');
+var _ = require("lodash");
 
-var dataSourceDescriptions = require('../../../../datasources/descriptions').GetDescriptions();
-var teamDescriptions = require('../../../../datasources/teams').GetTeams();
+var dataSourceDescriptions = require('../../../../datasources/descriptions');
+var teamDescriptions = require('../../../../datasources/teams')
 var importedDataPreparation = require('../../../../datasources/utils/imported_data_preparation');
 var raw_source_documents = require('../../../../models/raw_source_documents');
 
 module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
 
+
+    var team;
+    var team_dataSourceDescriptions;
+
+
+    teamDescriptions.findOneByTidAndPopulateDatasourceDescription(urlQuery.team_key, function (err, objReturned) {
+
+
+        team = objReturned.team;
+        team_dataSourceDescriptions = objReturned.team_dataSourceDescriptions;
+
+        async.map(team_dataSourceDescriptions, iterateeFn, completionFn);
+    })
+
+
     var iterateeFn = async.ensureAsync(function (dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
     {
+
         var err = null;
         var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription);
+
+
         raw_source_documents.Model.findOne({
             primaryKey: source_pKey
         }, function (err, doc) {
@@ -24,16 +43,16 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 return cb(err, {});
 
             var default_filterJSON = undefined;
-            if (typeof dataSourceDescription.fe_filters_default !== 'undefined') {
-                default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters_default || {}); // "|| {}" for safety
+            if (typeof dataSourceDescription.fe_filters.default !== 'undefined') {
+                default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default || {}); // "|| {}" for safety
             }
             var default_listed = true; // list Arrays by default
             if (dataSourceDescription.fe_listed === false) {
                 default_listed = false;
             }
             var default_view = 'gallery';
-            if (typeof dataSourceDescription.fe_default_view !== 'undefined') {
-                default_view = dataSourceDescription.fe_default_view;
+            if (typeof dataSourceDescription.fe_views.default_view !== 'undefined') {
+                default_view = dataSourceDescription.fe_views.default_view;
             }
             var sourceDescription = {
                 key: source_pKey,
@@ -65,47 +84,4 @@ module.exports.BindData = function (req, urlQuery, callback) {
         callback(err, data);
     };
 
-    /**
-     * Get team description from team key
-     */
-    var team;
-    async.each(teamDescriptions, function (teamDescription, cb) {
-        if (teamDescription.id === urlQuery.team_key) {
-            team = teamDescription;
-        }
-    });
-
-    /**
-     * Show only arrays belonging to team with matching team_id
-     */
-    var team_dataSourceDescriptions = [];
-    async.each(dataSourceDescriptions, function (dataSourceDescription, cb) {
-        var isTeam = false;
-        var team_id = dataSourceDescription.team_id;
-        if (typeof team_id !== 'undefined' && team_id !== null) {
-            team_dataSourceDescriptions.push(dataSourceDescription);
-        }
-    }, function (err) {
-
-    });
-
-    /**
-     * Show only arrays in team that are front-end visible
-     */
-    var feVisible_dataSourceDescriptions = [];
-    async.each(team_dataSourceDescriptions, function (dataSourceDescription, cb) {
-        var isVisible = true;
-        var fe_visible = dataSourceDescription.fe_visible;
-        if (typeof fe_visible !== 'undefined' && fe_visible !== null && fe_visible === false) {
-            isVisible = dataSourceDescription.fe_visible;
-        }
-        if (isVisible === true) {
-            feVisible_dataSourceDescriptions.push(dataSourceDescription);
-        }
-    }, function (err) {
-
-    });
-
-    async.map(feVisible_dataSourceDescriptions, iterateeFn, completionFn);
-    //    ^ parallel execution, but ordered results
 };

@@ -1,21 +1,20 @@
 var request = require("request");
 
-module.exports.index = function(req, next) {
+module.exports.index = function (req, next) {
     var self = this;
 
     var data = {
         env: process.env,
 
         flash: req.flash('message'),
-        
-        user: req.user,
-        pageTitle: "Account Settings"
+
+        user: req.user
     };
 
     next(null, data);
 };
 
-module.exports.update = function(req, next) {
+module.exports.update = function (req, next) {
 
     var body = {
         user_metadata: {
@@ -26,7 +25,7 @@ module.exports.update = function(req, next) {
         }
     };
 
-    if ( req.body.password.length ) {
+    if (req.body.password.length) {
         body.password = req.body.password;
     }
 

@@ -1,4 +1,4 @@
-{% set view = 'dataset' %}
+{% set currentView = ['dataset'] %}
 
 {% extends "../../layout/admin.html" %}
 
@@ -8,7 +8,7 @@
 
 {% block content %}
 <header class="admin-header">
-    <h1 class="admin-title">{{ pageTitle }}</h1>
+    <h1 class="admin-title">Dataset Settings</h1>
 </header>
 
 {% if flash | length %}
@@ -19,13 +19,13 @@
 
     <h4><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Select a dataset to edit</h4>
     {% for doc in docs %}
-        <p><a href="/admin/dataset/{{ doc._id }}/source">{{ loop.index }}. {{ doc.title }} ({{ doc.importRevision }})</a></p>
+        <p><a href="/admin/dataset/{{ doc._id }}/settings">{{ loop.index }}. {{ doc.title }} ({{ doc.importRevision }})</a></p>
     {% endfor %}
 
     <br />
 
     <p> Or </p>
-    <h4><a href="/admin/dataset/new/source"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload new dataset</a></h4>
+    <h4><a href="/admin/dataset/new/settings"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload new dataset</a></h4>
 
 </div>
 
@@ -35,4 +35,5 @@
 {{ super() }}
 
 <script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
+
 {% endblock %}
