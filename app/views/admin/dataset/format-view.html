@@ -4,6 +4,9 @@
 {% block content %}
 <form>
 
+
+
+
     <div class="form-group row">
         <div class="col-xs-4">
               <input type="checkbox"/> Visible
@@ -16,6 +19,7 @@
 
 
 
+
     <div class="form-group row">
         <div class="col-xs-4">
             <label >Name</label>
@@ -25,40 +29,115 @@
         </div>
     </div>
 
+    <div class="form-group row">
+        <div class="col-xs-4">
+            <label for="description"> Description </label>
+        </div>
+        <div class="col-xs-8">
+            <textarea class="form-control">{{doc.fe_views.views[view.name].descripton}}</textarea>
+        </div>
+    </div>
 
 
 
 
     {% for setting in view.settings %} 
+        {% if setting.inputType == "select" or setting.inputType == "multiselect" %}
         <div class="form-group row">
             <div class="col-xs-4">
                 <label for="setting.name"> {{setting.displayAs}} </label>
             </div>
             <div class="col-xs-8">
-                {% if setting.inputType == "textarea" %}
-                    <textarea class="form-control"> {{doc.fe_views.views[view.name][setting.name]}}</textarea>
-                {% elseif setting.inputType == "select" or setting.inputType == "multiselect" %}
-                    <select {%if setting.inputType=="multiselect"%} multiple="multiple"  class="multiselect from-control" {% endif %}>
-                    {% if setting.selectFrom == "column" %}
-                        {% for col , value in doc.raw_rowObjects_coercionScheme %}  
-                            <option value="{{col}}"> {{col}}</option>
-                        {% endfor %}
-                    {% endif %}
-                    </select>
-
-                
-
-
+                <select tabindex="4" {%if setting.inputType=="multiselect"%} multiple class="chosen-select" {%else%} class="form-control" {% endif %}>
+                    <option value=""></option>
+                {% if setting.selectFrom == "column" %}
+                    {% for col in colNames %}  
+                        <option value="{{col}}"> {{col}}</option>
+                    {% endfor %}
+                {% elif setting.selectFrom == "dateFormat" %}
+                    {% for date in available_forDateFormat %}
+                        <option value="{{date}}">{{date}}</option>
+                    {% endfor %}
                 {% endif %}
-
+                </select>
             </div>
         </div>
+        {% elif setting.inputType=="keyValue"%}
+         <div class="form-group row">
+            <div class="col-xs-6">
+                <label for="setting.name"> {{setting.displayAs}} </label>
+            </div>
 
+            {% if setting.valueInputType == "multivalueTextbox" %}
+            <div class="col-xs-6">
+                <small> ** use comma to separate values </small>
+            </div>
+            {% endif %}
+        </div>
+
+
+        <div class="template">
+            <div class="form-group row">
+                <div class="col-xs-4">
+                {% if setting.keyInputType == "select" and setting.keySelectFrom == "column" %}
+                    <select class="form-control">
+                        <option value=""> </option>
+                        <option value="_all"> ** All Fields ** </option>
+                    {% for col in colNames %}
+                        <option value="{{col}}">{{col}}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="col-xs-8">
+                {% if setting.valueInputType == "multivalueTextbox" %}
+                    <div class="from-group col-xs-8">
+                        <input class="form-control" type="text">
+                    </div>
+                {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+        <div id="addMoreTemplates">
+        </div>    
+        <div class="form-group row"><a class="addTemplateInView add col-xs-offset-1"><span class="glyphicon glyphicon-plus"></span> Add more key value pairs</a></div>
+        {% elif setting.inputType == "toggle" %}
+        <div class="form-group row">
+            <div class="col-xs-8">
+                <label for="{{setting.name}}}"> {{setting.displayAs}} </label>
+            </div>
+            <div class="col-xs-4">
+                  <label class="switch">
+              <input type="checkbox" checked>
+              <div class="slider round"></div>
+            </label>
+            </div>
+        </div>
+        {% elif setting.inputType == "multiColorpicker"%}
+        <div class="form-group row">
+            <div class="col-xs-6">
+                <label for="setting.name"> {{setting.displayAs}} </label>
+            </div>
+        </div>
+        <div id="addColorsTo" class="form-group row">
+            <div class="col-xs-2">
+                <input type="text" class="startEmpty form-control" name="{{setting.name}}[]" value='' /> 
+            </div>
+
+
+        </div>
+        <div class="form-group row">
+            <a class="add addColors col-xs-offset-1"><span class="glyphicon glyphicon-plus"></span> Add more colors</a></div>
+        </div>
+
+        {% endif %}
 
     {% endfor %}
  
 </form>
 {% endblock %}
+
 
 
 

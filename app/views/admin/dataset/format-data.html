@@ -24,7 +24,7 @@
 			<div class="form-group row">
 				<label class="col-xs-4" for="fn_new_rowPrimaryKeyFromRowObject">Primary Key: </label>
 				<div class="col-xs-8">
-					<select class="form-control" id="fn_new_rowPrimaryKeyFromRowObject" name="fn_new_rowPrimaryKeyFromRowObject" class="form-control">
+					<select id="fn_new_rowPrimaryKeyFromRowObject" name="fn_new_rowPrimaryKeyFromRowObject" class="form-control">
 						{% for colName in colNames %}
 						<option value="{{ colName }}" {{ 'selected' if colName == doc.fn_new_rowPrimaryKeyFromRowObject }}>{{ colName }}</option>
 						{% endfor %}
@@ -56,7 +56,7 @@
 					<td>
 						{{ doc.raw_rowObjects_coercionScheme[colName] | fieldDataType_coercion_toString }}
 					</td>
-					<td>{{ firstRecord[loop.index0] }}</td>
+					<td>{{ firstRecord[loop.index-1] }}</td>
 					<td class="order">{{ doc.fe_fieldDisplayOrder[colName] }}</td>
 				</tr>
 				{% endfor %}
@@ -75,6 +75,8 @@
 		</form>
 
 	</div>
+
+
 
 	{% include "../../partials/admin/modal.html" %}
 

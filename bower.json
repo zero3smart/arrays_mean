@@ -24,5 +24,6 @@
     "scrollmagic": "^2.0.5",
     "lodash": "^4.15.0",
     "moment": "^2.15.1",
+    "spectrum": "^1.8.0"
   }
 }

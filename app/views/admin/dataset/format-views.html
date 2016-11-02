@@ -20,19 +20,21 @@
 
 		<br />
 
+
+
 		<form class="format-views">
 
 
 			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
 
 			<div class="form-group row">
+				
+				<label class="col-xs-4" for="default_view">Select Default View : </label>
 				<div class="col-xs-8">
-					Select Default View 
-					<select id="viewType" class="from-control" name="viewType">
+					<select id="viewType" class="form-control" name="viewType">
 						{% for view in available_forViewTypes %}
 						{{view}}
-						<option value="{{view.name}}"> {{view.displayAs}} 
-						</option>
+						<option value="{{view.name}}"> {{view.displayAs}} </option>
 						{% endfor %}
 					</select>
 				</div>
@@ -72,6 +74,8 @@
 		<div class="clearfix"></div>
 	</div>
 
+
+
 	{% include "../../partials/admin/modal.html" %}
 
 
@@ -85,7 +89,9 @@
 
 	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
 
-	<script type="text/javascript" src="/javascripts/lib/bootstrap-multiselect/bootstrap-multiselect.js"></script>
+	<script type="text/javascript" src="/javascripts/lib/chosen/chosen.jquery.js"></script>
+
+	<script type="text/javascript" src="/javascripts/lib/spectrum/spectrum.js"></script>
 
 
 {% endblock %}
