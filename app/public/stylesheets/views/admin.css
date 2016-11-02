@@ -30,7 +30,7 @@
     text-align: center;
     font-size: 22px;
 }
-.dataset .format-data tr.field, a.add, .format-views tr.views {
+.dataset .format-data tr.field, a.add, .format-views tr.views,a.removeRow {
     cursor: pointer;
 }
 
@@ -76,6 +76,7 @@ form.format-field a#add_oneToOneOverrideWithValuesByTitle {
 th#view_visibility {
     width:30%;
 }
+
 
 
 /* -----------   for toggle slider  ----------------  */

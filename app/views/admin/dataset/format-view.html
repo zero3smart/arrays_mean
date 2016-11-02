@@ -2,20 +2,21 @@
 
 
 {% block content %}
-<form>
+<form id="format-view">
 
 
 
 
     <div class="form-group row">
         <div class="col-xs-4">
-              <input type="checkbox"/> Visible
+              <input name="visible" type="checkbox"/> Visible
         </div>
         <div class="col-xs-4">
-
-             <input type="checkbox"/> Default view
+             <input name="default_view" type="checkbox"/> Default view
         </div>
     </div>
+
+    <input type="hidden" id="name" value="{{view.name}}">
 
 
 
@@ -25,7 +26,7 @@
             <label >Name</label>
         </div>
         <div class="col-xs-8"> 
-            <input id="name" class="form-control" value="{{ view.displayAs }}" disabled/> 
+            <input class="form-control" value="{{ view.displayAs}}" disabled/> 
         </div>
     </div>
 
@@ -34,7 +35,7 @@
             <label for="description"> Description </label>
         </div>
         <div class="col-xs-8">
-            <textarea class="form-control">{{doc.fe_views.views[view.name].descripton}}</textarea>
+            <textarea name="description" value="{{doc.fe_views.views[view.name].descripton}}" class="form-control">{{doc.fe_views.views[view.name].descripton}}</textarea>
         </div>
     </div>
 
@@ -48,7 +49,7 @@
                 <label for="setting.name"> {{setting.displayAs}} </label>
             </div>
             <div class="col-xs-8">
-                <select tabindex="4" {%if setting.inputType=="multiselect"%} multiple class="chosen-select" {%else%} class="form-control" {% endif %}>
+                <select tabindex="4" {%if setting.inputType=="multiselect"%} name="{{setting.name}}[]" multiple class="chosen-select" {%else%} class="form-control" name="{{setting.name}}" {% endif %}>
                     <option value=""></option>
                 {% if setting.selectFrom == "column" %}
                     {% for col in colNames %}  
@@ -64,23 +65,28 @@
         </div>
         {% elif setting.inputType=="keyValue"%}
          <div class="form-group row">
-            <div class="col-xs-6">
+            <div class="col-xs-12">
                 <label for="setting.name"> {{setting.displayAs}} </label>
             </div>
 
             {% if setting.valueInputType == "multivalueTextbox" %}
-            <div class="col-xs-6">
-                <small> ** use comma to separate values </small>
+            <div class="col-xs-12">
+                <small> ** use comma to separate values, any NULL will cover null and string type </small>
             </div>
             {% endif %}
         </div>
 
 
-        <div class="template">
+        <div id="templateDiv" class="template">
             <div class="form-group row">
+                
+                <div class="pull-right col-xs-1">
+                    <a class="removeRow hideTemplate"><span class="glyphicon glyphicon-remove"></span></a>
+                </div>
                 <div class="col-xs-4">
+
                 {% if setting.keyInputType == "select" and setting.keySelectFrom == "column" %}
-                    <select class="form-control">
+                    <select id="reset" name="{{setting.name}}[][key]" class="form-control">
                         <option value=""> </option>
                         <option value="_all"> ** All Fields ** </option>
                     {% for col in colNames %}
@@ -88,20 +94,21 @@
                     {% endfor %}
                     </select>
                 </div>
-                <div class="col-xs-8">
+                <div class="col-xs-7">
                 {% if setting.valueInputType == "multivalueTextbox" %}
-                    <div class="from-group col-xs-8">
-                        <input class="form-control" type="text">
+                    <div class="from-group">
+                        <input name="{{setting.name}}[][value]" class="form-control" type="text">
                     </div>
                 {% endif %}
                 </div>
                 {% endif %}
             </div>
-
         </div>
+
         <div id="addMoreTemplates">
-        </div>    
-        <div class="form-group row"><a class="addTemplateInView add col-xs-offset-1"><span class="glyphicon glyphicon-plus"></span> Add more key value pairs</a></div>
+        </div>  
+
+        <div class="form-group row"><a class="addTemplateInView add col-xs-offset-1"><span class="glyphicon glyphicon-plus"></span> Add key value pairs</a></div>
         {% elif setting.inputType == "toggle" %}
         <div class="form-group row">
             <div class="col-xs-8">
@@ -125,10 +132,9 @@
                 <input type="text" class="startEmpty form-control" name="{{setting.name}}[]" value='' /> 
             </div>
 
-
         </div>
         <div class="form-group row">
-            <a class="add addColors col-xs-offset-1"><span class="glyphicon glyphicon-plus"></span> Add more colors</a></div>
+            <a field-name="{{setting.name}}" class="add addColors col-xs-offset-1"><span class="glyphicon glyphicon-plus"></span> Add colors</a></div>
         </div>
 
 
@@ -139,7 +145,7 @@
 
     <div class="form-group row">
         <div class="col-xs-4 pull-right">
-            <button type="button" class="form-control">Done</button>
+            <button id="saveFormatView" type="button" class="form-control">Done</button>
         </div>
     </div>
 

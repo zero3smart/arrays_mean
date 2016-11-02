@@ -163,7 +163,7 @@ router.get('/:id/add-custom-field', ensureLoggedIn, function(req, res) {
     });
 });
 
-//
+
 router.get('/:id/format-views/:view',ensureLoggedIn,function(req,res) {
 
     controller.getFormatView(req,function(err,data) {
@@ -196,17 +196,21 @@ router.get('/:id/format-views', ensureLoggedIn, function (req, res) {
     });
 });
 
-router.post('/:id/format-views', ensureLoggedIn, function (req, res) {
-    controller.saveFormatViews(req, function (err, data) {
+router.post('/:id/format-view/:view', ensureLoggedIn, function (req, res) {
+    controller.saveFormatView(req, function (err, data) {
         if (err) {
             winston.error("❌  Error getting bind data for dataset format views: ", err);
             res.status(500).send(err.response || 'Internal Server Error');
 
             return;
         }
+        res.setHeader('Content-Type','application/json');
 
-        res.render('admin/dataset/' + data.id + '/done');
+        res.send(JSON.stringify(data));
     });
 });
+
+
+
 
 module.exports = router;

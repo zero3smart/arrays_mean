@@ -129,7 +129,7 @@ $(document).ready(function () {
                     $modalTitle.html('Format View');
                     $modalBody.html(data);
                     $(".chosen-select").chosen({width: "100%"});  /* start multiselect */
-                    $(".startEmpty").spectrum({allowEmpty:true,showInput:true}) /*start colorpicker */
+                    $(".startEmpty").spectrum({allowEmpty:true,showInput:true,preferredFormat: "hex",appendTo:"#modal"}) /*start colorpicker */
                     
                 })
                 .modal();
@@ -147,15 +147,43 @@ $(document).ready(function () {
     })
 
     $('#modal').on('click','.addColors',function(e) {
-
-        var color_html = "<div class='col-xs-2'><input type='text' class='startEmpty form-control' value=''</div>";
+        var field = $(this).attr('field-name');
+        var color_html = "<div class='col-xs-2'><input type='text' name='" + field + "[]' class='startEmpty form-control' value=''</div>";
         $('#addColorsTo').append(color_html);
-        $('.startEmpty').spectrum({allowEmpty:true});
- 
-          
+        $('.startEmpty').spectrum({allowEmpty:true,showInput:true,preferredFormat: "hex",appendTo:"#modal"});
+
     })
 
+    $('#modal').on('click','#saveFormatView',function(e) {
+
+        var doc_id = $('#doc_id').val();
+        var view = $('#name').val();
+
+        var params = $('form#format-view').serialize();
+        console.log(params);
+
+        $.post("/admin/dataset/" + doc_id + "/format-view/" + view,params)
+            .done(function(data) {
+
+            })
+
+    })
+
+    $('#modal').on('click','div#templateDiv a.hideTemplate',function(e) {
+        e.preventDefault();
+        $('#reset').val('');
+        $(this).closest('.template').addClass('hidden')
+    })
+    $('#modal').on('click','div#addMoreTemplates a.removeRow',function(e) {
+        console.log("hi")
+        e.preventDefault();
+        $(this).closest('.row').remove();
+    })
+
+        
+
+})
 
 
-
-});
+    
+       
