@@ -150,12 +150,12 @@ module.exports = function(grunt) {
         src: '**',
         dest: 'app/public/images/lib/'
       },
-      colorpickerCss: {
+      /* colorpickerCss: {
         expand: true,
         cwd: 'bower_components/bootstrap-colorpicker/dist/css',
         src: '**',
         dest: 'app/public/stylesheets/lib/bootstrap-colorpicker'
-      },
+      }, */
     },
 
     sass: {
