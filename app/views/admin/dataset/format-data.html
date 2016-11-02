@@ -24,7 +24,7 @@
 			<div class="form-group row">
 				<label class="col-xs-4" for="fn_new_rowPrimaryKeyFromRowObject">Primary Key: </label>
 				<div class="col-xs-8">
-					<select class="form-control" id="fn_new_rowPrimaryKeyFromRowObject" name="fn_new_rowPrimaryKeyFromRowObject" class="form-control">
+					<select id="fn_new_rowPrimaryKeyFromRowObject" name="fn_new_rowPrimaryKeyFromRowObject" class="form-control">
 						{% for colName in colNames %}
 						<option value="{{ colName }}" {{ 'selected' if colName == doc.fn_new_rowPrimaryKeyFromRowObject }}>{{ colName }}</option>
 						{% endfor %}
@@ -77,6 +77,8 @@
 
 	</div>
 
+
+
 	{% include "../../partials/admin/modal.html" %}
 
 {% endblock %}
@@ -85,7 +87,4 @@
 	{{ super() }}
 
 	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
-	<script type="text/javascript" src="/javascripts/lib/bootstrap-multiselect/bootstrap-multiselect.js"></script>
-
-
 {% endblock %}

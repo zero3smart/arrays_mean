@@ -228,6 +228,65 @@ module.exports.saveSource = function (req, next) {
 };
 
 
+module.exports.loadDatasourceColumnsAndSampleRecords = function(req,description,next) {
+
+    var obj = {};
+
+
+    var countOfLines = 0;
+    var cachedLines = '';
+
+    var delimiter;
+
+    var readStream = datasource_upload_service.getDatasource(description).createReadStream()
+        .pipe(es.split())
+        .pipe(es.mapSync(function (line) {
+            readStream.pause();
+
+            parse(cachedLines + line, {delimiter: delimiter, relax: true, skip_empty_lines: true},
+                function (err, output) {
+                    if (err) {
+                        readStream.destroy();
+                        return next(err);
+                    }
+
+                    if (!output || output.length == 0) {
+                        cachedLines = cachedLines + line;
+                        return readStream.resume();
+                    }
+
+                    if (!Array.isArray(output[0]) || output[0].length == 1) {
+                        readStream.destroy();
+                        return next(new Error('Invalid File'));
+                    }
+
+                    cachedLines = '';
+                    countOfLines++;
+
+                    if (countOfLines == 1) {
+                        obj.colNames = output[0];
+                        req.session.uploadData_columnNames = obj.colNames;
+                        // Sort By fe_fieldDisplayOrder
+                        // data.colNames.sort(function(a, b) {
+                        //    if (!description.fe_fieldDisplayOrder[b]) return -1;
+                        //    else if (!desciption.fe_fieldDisplayOrder[a]) return 1;
+                        //    return description.fe_fieldDisplayOrder[b] - description.fe_fieldDisplayOrder[a];
+                        // });
+                        readStream.resume();
+                    } else if (countOfLines == 2) {
+                        req.session.uploadData_firstRecord = output[0];
+                        obj.firstRecord = output[0];
+                        readStream.resume();
+                    } else {
+                        readStream.destroy();
+                        if (countOfLines == 3) next(null, obj);
+                    }
+                });
+            })
+        );      
+}
+
+
 /***************  Format Data  ***************/
 module.exports.getFormatData = function (req, next) {
 
@@ -240,74 +299,37 @@ module.exports.getFormatData = function (req, next) {
             var description = doc
             data.doc = description;
 
-            var countOfLines = 0;
-            var cachedLines = '';
+            if (req.session.uploadData_firstRecord == null || req.session.uploadData_columnNames == null ) {
+                // var countOfLines = 0;
+                // var cachedLines = '';
 
-            var delimiter;
-            if (description.format == 'CSV') {
-                delimiter = ',';
-            } else if (description.format == 'TSV') {
-                delimiter = '\t';
-            } else
-                return next(new Error('Invalid File Format'));
+                // var delimiter;
+                if (description.format == 'CSV') {
+                    delimiter = ',';
+                } else if (description.format == 'TSV') {
+                    delimiter = '\t';
+                } else
+                    return next(new Error('Invalid File Format'));
 
-            var readStream = datasource_upload_service.getDatasource(description).createReadStream()
-                .pipe(es.split())
-                .pipe(es.mapSync(function (line) {
-                    readStream.pause();
 
-                    parse(cachedLines + line, {delimiter: delimiter, relax: true, skip_empty_lines: true},
-                        function (err, output) {
-                            if (err) {
-                                readStream.destroy();
-                                return next(err);
-                            }
+                module.exports.loadDatasourceColumnsAndSampleRecords(req,description,function(err,obj) {
+                    if (!err) {
+                        data.colNames = obj.colNames;
+                        data.firstRecord = obj.firstRecord;
+                        return next(null,data);
+                    } else {
+                        return next(err);
 
-                            if (!output || output.length == 0) {
-                                cachedLines = cachedLines + line;
-                                return readStream.resume();
-                            }
+                    }
+                });
 
-                            if (!Array.isArray(output[0]) || output[0].length == 1) {
-                                readStream.destroy();
-                                return done(new Error('Invalid File'));
-                            }
+            } else {
+                data.colNames = req.session.uploadData_columnNames;
+                data.firstRecord = req.session.uploadData_firstRecord;
+                next(null,data);
+            }            
+        });
 
-                            cachedLines = '';
-                            countOfLines++;
-
-                            if (countOfLines == 1) {
-                                data.colNames = output[0];
-                                // Sort By fe_fieldDisplayOrder
-                                //data.colNames.sort(function(a, b) {
-                                //    if (!description.fe_fieldDisplayOrder[b]) return -1;
-                                //    else if (!desciption.fe_fieldDisplayOrder[a]) return 1;
-                                //    return description.fe_fieldDisplayOrder[b] - description.fe_fieldDisplayOrder[a];
-                                //});
-                                if (!description.raw_rowObjects_coercionScheme) description.raw_rowObjects_coercionScheme = {};
-                                if (description.raw_rowObjects_coercionScheme.length !== data.colNames.length) {
-                                     data.colNames.map(function(col) {
-                                        if (!description.raw_rowObjects_coercionScheme[col]) {
-                                            description.raw_rowObjects_coercionScheme[col] = {operation: "ToString"}
-                                        }
-
-                                    })
-                                    description.markModified("raw_rowObjects_coercionScheme");
-                                    description.save();
-
-                                }
-                                readStream.resume();
-                            } else if (countOfLines == 2) {
-                                data.firstRecord = output[0];
-                                readStream.resume();
-                            } else {
-                                readStream.destroy();
-                                if (countOfLines == 3) next(null, data);
-                            }
-                        });
-                }));
-            }
-        );
     }
 };
 
@@ -516,31 +538,47 @@ module.exports.getFormatView = function(req,next) {
 
 
     var dataset_id = req.params.id;
-    var view_name = req.params.view
+    var view_name = req.params.view;
+    var data = {id:dataset_id};
+    data.available_forDateFormat = import_datatypes.available_forDateFormat();
+
     if (!dataset_id || !view_name) return next(new Error('Invalid parameter!'));
 
-    var data = {
-        id: dataset_id,
-        view:view_name
-    };
+    if (!req.session.uploadData_columnNames) {
+        datasource_description.findById(dataset_id,function(err,doc) {
+            module.exports.loadDatasourceColumnsAndSampleRecords(req,doc,function(err,obj) {
+                if (err) return next(err);
+                data.colNames = req.session.uploadData_columnNames;
+                views.findOne({name: view_name},function(err,foundView) {
+                    if (err) return next(new Error('error when getting specific view for customization'));
+                    data.view = foundView;
+                    datasource_description.findById(dataset_id, function(err, doc) {
+                        if (err) return next(err);
+                        if (doc) {
+                            data.doc = doc._doc;
+                        }
+                        return next(null, data);
+                    });
+                })
 
-    views.findOne({name: view_name},function(err,foundView) {
-        if (err) return next(new Error('error when getting specific view for customization'));
-        var data = {
-            id: dataset_id,
-            view: foundView
-        };
-        datasource_description.findById(dataset_id, function(err, doc) {
-            if (err) return next(err);
-            if (doc) {
-                data.doc = doc._doc;
-            }
-            next(null, data);
-        });
-    })
+            })
+        })
+      
+    } else {
+        data.colNames =  req.session.uploadData_columnNames;
 
-
-
+        views.findOne({name: view_name},function(err,foundView) {
+            if (err) return next(new Error('error when getting specific view for customization'));
+            data.view = foundView;
+            datasource_description.findById(dataset_id, function(err, doc) {
+                if (err) return next(err);
+                if (doc) {
+                    data.doc = doc._doc;
+                }
+                return next(null, data);
+            });
+        })
+    }
 }
 
 module.exports.saveFormatViews = function(req, next) {

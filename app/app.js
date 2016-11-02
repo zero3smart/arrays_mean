@@ -27,11 +27,16 @@ var app = express();
 // Configure app
 app.set('view engine', 'html');
 app.set('views', __dirname + '/views');
+
 var nunjucks = require('express-nunjucks');
 nunjucks.setup({
     watch: isDev,
     noCache: isDev,
-}, app).then(require('./nunjucks/filters'));
+}, app).then(require('./nunjucks/filters'))
+
+
+
+
 
 // Redirect https
 app.use(function (req, res, next) {

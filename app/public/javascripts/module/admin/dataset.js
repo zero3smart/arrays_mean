@@ -1,5 +1,6 @@
 $(document).ready(function () {
 
+
     $('#add_urls').on('click', function (e) {
         $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
     });
@@ -121,27 +122,39 @@ $(document).ready(function () {
 
 
         $.get("/admin/dataset/" + doc_id + "/format-views/" + viewType, null, function (data) {
-
             $('#modal')
                 .on('show.bs.modal', function (e) {
                     var $modalTitle = $(this).find('.modal-title');
                     var $modalBody = $(this).find('.modal-body');
-
                     $modalTitle.html('Format View');
                     $modalBody.html(data);
-                    $('.multiselect').multiselect(
-                        {buttonClass: 'form-control'}
-
-                    )
-
+                    $(".chosen-select").chosen({width: "100%"});  /* start multiselect */
+                    $(".startEmpty").spectrum({allowEmpty:true,showInput:true}) /*start colorpicker */
+                    
                 })
                 .modal();
 
         }, "html");
 
-
-
     });
+
+
+
+    $('#modal').on('click','.addTemplateInView ',function(e) {
+        var field_name = $(this).attr('field-name');
+        var template = $('.template').clone();
+        $('#addMoreTemplates').append(template.html());
+    })
+
+    $('#modal').on('click','.addColors',function(e) {
+
+        var color_html = "<div class='col-xs-2'><input type='text' class='startEmpty form-control' value=''</div>";
+        $('#addColorsTo').append(color_html);
+        $('.startEmpty').spectrum({allowEmpty:true});
+ 
+          
+    })
+
 
 
 
