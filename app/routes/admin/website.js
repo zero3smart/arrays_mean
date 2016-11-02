@@ -16,3 +16,5 @@ router.get('/', ensureLoggedIn, function (req, res) {
         res.render('admin/website', data);
     });
 });
+
+module.exports = router;
