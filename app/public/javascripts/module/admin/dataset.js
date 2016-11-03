@@ -28,7 +28,7 @@ $(document).ready(function () {
             '<div class="form-group">' +
             '<div class="row">' +
             '<div class="col-xs-11">' +
-            '<h4>Datasource ' + dataset_count + '</h4>' +
+            '<h4>Dataset ' + dataset_count + '</h4>' +
             '</div>' +
             '<div class="col-xs-1">' +
             '<a class="removeDataset"><span class="glyphicon glyphicon-remove"></span></a>' +
@@ -52,9 +52,6 @@ $(document).ready(function () {
 
     $('.dataset').on('click', '.removeDataset', function (e) {
         e.preventDefault();
-        var dataset_count = $('#dataset_count').val();
-    
-
         $(this).closest('form').remove();
 
         // TODO - Remove the datsource schema from the database.
