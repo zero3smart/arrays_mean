@@ -16,7 +16,7 @@
         {% endif %}
             <span class="glyphicon glyphicon-{{ 'check' if doc.uid else 'unchecked' }}"></span>
             2. Upload Data
-        {% if currentView[1] != 'source' %}
+        {% if currentView[1] != 'source' and doc.title %}
         </a>
         {% endif %}
     </li>
@@ -27,7 +27,18 @@
         {% endif %}
             <span class="glyphicon glyphicon-{{ 'check' if doc.raw_rowObjects_coercionScheme else 'unchecked' }}"></span>
             3. Format Data
-        {% if currentView[1] != 'format-data' %}
+        {% if currentView[1] != 'format-data'  and doc.uid %}
+        </a>
+        {% endif %}
+    </li>
+
+    <li>
+        {% if currentView[1] != 'filters' and doc.raw_rowObjects_coercionScheme %}
+        <a href="filters" class="text-muted">
+            {% endif %}
+            <span class="glyphicon glyphicon-{{ 'check' if doc.fe_filters else 'unchecked' }}"></span>
+            4. Filters
+            {% if currentView[1] != 'filters' and doc.raw_rowObjects_coercionScheme %}
         </a>
         {% endif %}
     </li>
@@ -36,15 +47,15 @@
         {% if currentView[1] != 'format-views' and doc.raw_rowObjects_coercionScheme %}
         <a href="format-views" class="text-muted">
         {% endif %}
-            <span class="glyphicon glyphicon-{{ 'check' if doc.fe_views.views|length else 'unchecked' }}"></span>
-            4. Format Views
-        {% if currentView[1] != 'format-views' %}
+            <span class="glyphicon glyphicon-{{ 'check' if doc.fe_views.views | length else 'unchecked' }}"></span>
+            5. Format Views
+        {% if currentView[1] != 'format-views' and doc.raw_rowObjects_coercionScheme %}
         </a>
         {% endif %}
     </li>
 
     <li {% if currentView[1] != 'done' %}class="text-muted"{% endif %}>
         <span class="glyphicon glyphicon-unchecked"></span>
-        5. Done!
+        6. Done!
     </li>
 </ul>

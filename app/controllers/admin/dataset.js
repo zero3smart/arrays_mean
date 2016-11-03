@@ -99,8 +99,8 @@ module.exports.saveSettings = function (req, next) {
         datasource_description.findOneAndUpdate(query, req.body, {$upsert: true}, function (err, doc) {
             if (err) return next(err);
 
-            data.id = doc._doc._id;
-
+            if (doc)
+                data.id = doc._doc._id;
             req.flash('message', 'Your settings are saved!');
 
             next(null, data);
@@ -148,7 +148,7 @@ module.exports.saveSource = function (req, next) {
             .exec(function (err, doc) {
                 if (err) return done(err);
 
-                description = doc._doc;
+                description = doc;
 
                 done();
             })
@@ -212,7 +212,6 @@ module.exports.saveSource = function (req, next) {
 
 
         batch.push(function (done) {
-
             if (!description.uid)
                 description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
             var newFileName = datasource_upload_service.fileNameToUpload(description);
@@ -220,7 +219,6 @@ module.exports.saveSource = function (req, next) {
         });
 
         batch.push(function (done) {
-            var query = {_id: req.params.id};
             description.save(function (err, updatedDescription) {
                 if (err) return done(err);
 
@@ -236,6 +234,7 @@ module.exports.saveSource = function (req, next) {
 
             req.session.uploadData_columnNames = null;
             req.session.uploadData_firstRecord = null;
+            return next(err);
         }
 
         next();
@@ -375,7 +374,8 @@ module.exports.getFormatField = function (req, next) {
     datasource_description.findById(dataset_id, function (err, doc) {
         if (err) return next(err);
 
-        data.doc = doc._doc;
+        if (doc)
+            data.doc = doc._doc;
         next(null, data);
     });
 }
@@ -391,8 +391,6 @@ module.exports.saveFormatField = function (req, next) {
 
     datasource_description.findById(dataset_id, function (err, doc) {
         if (err) return next(err);
-
-        var dataTypeCoercionChanged = false;
 
         // Data Type Coercion
         if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
@@ -488,7 +486,6 @@ module.exports.saveFormatField = function (req, next) {
             if (err) return next(err);
 
             data.doc = updatedDoc._doc;
-            data.dataTypeCoercionChanged = dataTypeCoercionChanged;
             next(null, data);
         });
     });
@@ -513,6 +510,30 @@ module.exports.getAddCustomField = function (req, next) {
         next(null, data);
     });
 }
+
+
+/***************  Filters  ***************/
+module.exports.saveFilters = function (req, next) {
+    var data = {};
+
+    var sourceURL = req.body.sourceURL;
+
+    if (req.params.id) {
+        next(data);
+    }
+};
+
+module.exports.getFieldFilter = function (req, next) {
+    var data = {};
+
+    next(data);
+}
+
+module.exports.saveFieldFilter = function (req, next) {
+    var data = {};
+    next(data);
+}
+
 
 /***************  Format Views  ***************/
 module.exports.getFormatViews = function (req, next) {

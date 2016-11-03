@@ -84,13 +84,12 @@ router.get('/:id/source', ensureLoggedIn, function (req, res) {
     });
 });
 
-router.post('/:id/source', ensureLoggedIn, upload.array('files', 12), function (req, res) {
+router.post('/:id/source', ensureLoggedIn, upload.array('files[]', 12), function (req, res) {
     controller.saveSource(req, function (err) {
         if (err) {
             winston.error("❌  Error getting bind data for saving the dataset source: ", err);
-            res.status(500).send(err.response || 'Internal Server Error');
 
-            return;
+            return res.redirect('/admin/dataset/' + req.params.id + '/source');;
         }
         res.redirect('/admin/dataset/' + req.params.id + '/format-data');
     });
@@ -122,11 +121,11 @@ router.post('/:id/format-data', ensureLoggedIn, function (req, res) {
 
             return;
         }
-        res.redirect('admin/dataset/' + data.id + '/format-views');
+        res.redirect('admin/dataset/' + data.id + '/filters');
     });
 });
 
-router.get('/:id/format-data/:field', ensureLoggedIn, function(req, res) {
+router.get('/:id/format-field/:field', ensureLoggedIn, function(req, res) {
     controller.getFormatField(req, function(err, data) {
         if (err) {
             winston.error("❌  Error getting bind data for dataset format field: ", err);
@@ -138,7 +137,7 @@ router.get('/:id/format-data/:field', ensureLoggedIn, function(req, res) {
     });
 });
 
-router.post('/:id/format-data/:field', ensureLoggedIn, function (req, res) {
+router.post('/:id/format-field/:field', ensureLoggedIn, function (req, res) {
     controller.saveFormatField(req, function (err, data) {
         if (err) {
             winston.error("❌  Error getting bind data for Dataset format data: ", err);
@@ -160,6 +159,61 @@ router.get('/:id/add-custom-field', ensureLoggedIn, function(req, res) {
             return;
         }
         res.render('admin/dataset/add-custom-field', data);
+    });
+});
+
+//
+router.get('/:id/filters', ensureLoggedIn, function (req, res) {
+    controller.getFormatData(req, function (err, data) {
+        if (err) {
+            winston.error("❌  Error getting bind data for Dataset filters: ", err);
+            res.status(500).send(err.response || 'Internal Server Error');
+
+            return;
+        }
+
+        res.render('admin/dataset/filters', _.assign(data, {
+            env: process.env,
+            flash: req.flash('message'),
+            user: req.user
+        }));
+    });
+});
+
+router.post('/:id/filters', ensureLoggedIn, function (req, res) {
+    controller.saveFilters(req, function (err, data) {
+        if (err) {
+            winston.error("❌  Error getting bind data for Dataset filters: ", err);
+            res.status(500).send(err.response || 'Internal Server Error');
+
+            return;
+        }
+        res.redirect('admin/dataset/' + data.id + '/format-views');
+    });
+});
+
+router.get('/:id/field-filter/:field', ensureLoggedIn, function(req, res) {
+    controller.getFieldFilter(req, function(err, data) {
+        if (err) {
+            winston.error("❌  Error getting bind data for dataset field filter: ", err);
+            res.status(500).send(err.response || 'Internal Server Error');
+
+            return;
+        }
+        res.render('admin/dataset/filter-field', data);
+    });
+});
+
+router.post('/:id/field-filter/:field', ensureLoggedIn, function (req, res) {
+    controller.saveFieldFilter(req, function (err, data) {
+        if (err) {
+            winston.error("❌  Error getting bind data for Dataset field filter: ", err);
+            res.status(500).send(err.response || 'Internal Server Error');
+
+            return;
+        }
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(data));
     });
 });
 

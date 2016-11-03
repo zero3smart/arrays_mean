@@ -4,23 +4,27 @@ $(document).ready(function () {
         $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
     });
 
-    // TODO : Doesn't work for the dynamically created form
-    $('[id^="file_"]').on('change', function (e) {
-        const files = $(this)[0].files;
-        const file = files[0];
-        if (file == null) {
-            $(this).closest('.form-group').find('button[type=submit]').attr('disabled');
-            return alert('No file selected');
+    $('form.upload').on('submit', function(e) {
+        var files = $(this).find('input[type=file]');
+        var foundSource = false;
+        for (var i = 0; i < files.length; i ++) {
+            if (files[i].files[0]) {
+                foundSource = true;
+                break;
+            }
         }
-        $(this).closest('.form-group').find('button[type=submit]').removeAttr('disabled');
+        if (!foundSource) {
+            alert('You should select at least a dataset to upload');
+            return false;
+        }
+        return true;
     });
 
     $('#add_dataset').on('click', function (e) {
         var dataset_count = $('#dataset_count').val();
         $('#dataset_count').val(++dataset_count);
 
-        $('.dataset').append(
-            '<form class="upload/' + (dataset_count - 1) + '" enctype="multipart/form-data" method="post">' +
+        $('#add_dataset').parent().before(
             '<div class="form-group">' +
             '<div class="row">' +
             '<div class="col-xs-11">' +
@@ -35,20 +39,20 @@ $(document).ready(function () {
             '<label for="file_' + dataset_count + '">Select a CSV/TSV file To Upload</label>' +
             '</div>' +
             '<div class="col-xs-6">' +
-            '<input type="file" id="file_' + dataset_count + '" name="files[]" accept=".csv,.tsv|text/csv,text/csv-schema" required/>' +
+            '<input type="file" id="file_' + dataset_count + '" name="files[]" accept=".csv,.tsv|text/csv,text/csv-schema" />' +
             '</div>' +
             '</div>' +
-            '</div>' +
-            '<div class="row">' +
-            '<button type="submit" class="btn btn-default pull-right" disabled="disabled"><span class="glyphicon glyphicon-hand-right"></span> Upload</button>' +
-            '</div>' +
-            '</form>'
+            '</div>'
         );
     });
 
     $('.dataset').on('click', '.removeDataset', function (e) {
         e.preventDefault();
-        $(this).closest('form').remove();
+        var dataset_count = $('.upload input[type=file]').length;
+        if (dataset_count == 1) {
+            return alert('You should have at least a datasource');
+        }
+        $(this).closest('.form-group').remove();
 
         // TODO - Remove the datsource schema from the database.
     });
@@ -59,7 +63,7 @@ $(document).ready(function () {
         var field_name = $(this).attr('data-field-name');
         var doc_id = $('#doc_id').val();
 
-        $.get("/admin/dataset/" + doc_id + "/format-data/" + field_name, null, function (data) {
+        $.get("/admin/dataset/" + doc_id + "/format-field/" + field_name, null, function (data) {
 
             $('#modal')
                 .on('show.bs.modal', function (e) {
@@ -97,7 +101,7 @@ $(document).ready(function () {
         var params = $('form.format-field').serialize();
         // TODO: Consider to ask for user to login since of expiration
 
-        $.post("/admin/dataset/" + doc_id + "/format-data/" + field, params)
+        $.post("/admin/dataset/" + doc_id + "/format-field/" + field, params)
             .done(function (data) {
                 var field_name = field.replace(/\./g, "_");
                 //
@@ -106,7 +110,6 @@ $(document).ready(function () {
                 $('tr.field[data-field-name="' + field + '"] td:nth-child(6)').html(data.doc.fe_fieldDisplayOrder[field]);
 
                 $('#changed').val(true);
-                $('#dataTypeCoercionChanged').val(data.dataTypeCoercionChanged);
                 $('#modal').modal('hide');
             }, 'json');
     });
@@ -147,6 +150,24 @@ $(document).ready(function () {
             '<a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>' +
             '</div>' +
             '</div>');
+    });
+
+    $('#modal').on('click', '#add_nested_valueOverride', function(e) {
+        e.preventDefault();
+        $('#extra_nested_valueOverrides').append(
+            '<div class="form-group row">' +
+            '<div class="col-xs-offset-1 col-xs-4">' +
+            '<input type="text" class="form-control" name="nested_valueOverride_keys[]" value=""/>' +
+            '</div>' +
+            '<div class="col-xs-1">=></div>' +
+            '<div class="col-xs-4">' +
+            '<input type="text" class="form-control" name="nested_valueOverride_values[]" value=""/>' +
+            '</div>' +
+            '<div class="col-xs-2">' +
+            '<a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>' +
+            '</div>' +
+            '</div>'
+        );
     });
 
     $('#modal').on('click', '.show-more-settings', function (e) {

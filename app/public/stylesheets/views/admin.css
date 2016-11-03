@@ -40,8 +40,15 @@ form .removeDataset {
 }
 
 /* Format data */
-.dataset .format-data tr.field, a.add, .format-views tr.views {
+.format-data tr.field,
+a.add,
+.filters tr.field,
+.format-views tr.views {
     cursor: pointer;
+}
+
+.word-break {
+    word-break: break-word;
 }
 
 th#view_visibility {
@@ -77,7 +84,8 @@ form .removeRow {
 
 form.format-field a#add_oneToOneOverrideWithValuesByTitle,
 form.format-field a#add_valueToExcludeByOriginalKey,
-form.format-field a#add_filterKeyword
+form.format-field a#add_filterKeyword,
+form.format-field a#add_nested_valueOverride
 {
     margin-top: 5px;
     display: inline-block;

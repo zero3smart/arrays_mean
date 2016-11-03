@@ -327,7 +327,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         eachCtx.cached = [];
     }
 
-
     startIterations();
 
     function startIterations() {
@@ -343,8 +342,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                 dataSource_importRevision,
                 dataset_uid,
                 function (doc, eachCb) {
-
-
                     afterGeneratingProcessedRowObjects_eachRowFn(eachCtx, doc, eachCb);
                 },
                 function (err) {
