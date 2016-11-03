@@ -27,7 +27,7 @@ var getSchemaDescriptionAndCombine = function (schemaId, desc) {
 
 
     return new Promise(function (resolve, reject) {
-        datasource_description.findOne({uid: schemaId})
+        datasource_description.findById(schemaId)
             .lean()
             .exec(function (err, schemaDesc) {
 

@@ -446,6 +446,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.end(function (err) {
                 if (err) return callback(err);
 
+                console.log('--- %j', dataSourceDescription.fe_views.views.barChart.description);
                 //
                 var data =
                 {
@@ -460,7 +461,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                    view_description: dataSourceDescription.fe_views.views.barChart.description ? dataSourceDescription.fe_views.views.barChart.description : {},
+                    view_description: dataSourceDescription.fe_views.views.barChart.description ? dataSourceDescription.fe_views.views.barChart.description : "",
                     // Group By
                     groupBy: groupBy,
                     defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,

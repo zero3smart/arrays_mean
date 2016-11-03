@@ -4,36 +4,53 @@ $(document).ready(function () {
         $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
     });
 
-    $('#file').on('change', function (e) {
-        const files = $('#file')[0].files;
+    // TODO : Doesn't work for the dynamically created form
+    $('[id^="file_"]').on('change', function (e) {
+        const files = $(this)[0].files;
         const file = files[0];
         if (file == null) {
+            $(this).closest('.form-group').find('button[type=submit]').attr('disabled');
             return alert('No file selected');
         }
-        $('.upload button').removeAttr('disabled');
+        $(this).closest('.form-group').find('button[type=submit]').removeAttr('disabled');
     });
 
-    $('#add_dataset').on('click', function(e) {
+    $('#add_dataset').on('click', function (e) {
+        var dataset_count = $('#dataset_count').val();
+        $('#dataset_count').val(++dataset_count);
+
         $('.dataset').append(
+            '<form class="upload/' + (dataset_count - 1) + '" enctype="multipart/form-data" method="post">' +
             '<div class="form-group">' +
             '<div class="row">' +
-            '<div class="col-xs-1">' +
-            '<a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>' +
-            '</div>' +
             '<div class="col-xs-11">' +
-            '<label class="form-control">Dataset ' + + '</label>' +
+            '<h4>Dataset ' + dataset_count + '</h4>' +
+            '</div>' +
+            '<div class="col-xs-1">' +
+            '<a class="removeDataset"><span class="glyphicon glyphicon-remove"></span></a>' +
             '</div>' +
             '</div>' +
             '<div class="row">' +
-            '<div class="col-xs-5 col-xs-offset-1">' +
-            '<label for="file">Select a CSV/TSV file To Upload</label>' +
+            '<div class="col-xs-5">' +
+            '<label for="file_' + dataset_count + '">Select a CSV/TSV file To Upload</label>' +
             '</div>' +
             '<div class="col-xs-6">' +
-            '<input type="file" id="file" name="files[]" accept=".csv,.tsv|text/csv,text/csv-schema" required/>' +
+            '<input type="file" id="file_' + dataset_count + '" name="files[]" accept=".csv,.tsv|text/csv,text/csv-schema" required/>' +
             '</div>' +
             '</div>' +
-            '</div>'
+            '</div>' +
+            '<div class="row">' +
+            '<button type="submit" class="btn btn-default pull-right" disabled="disabled"><span class="glyphicon glyphicon-hand-right"></span> Upload</button>' +
+            '</div>' +
+            '</form>'
         );
+    });
+
+    $('.dataset').on('click', '.removeDataset', function (e) {
+        e.preventDefault();
+        $(this).closest('form').remove();
+
+        // TODO - Remove the datsource schema from the database.
     });
 
     $('.format-data tr.field').on('click', function (e) {
@@ -94,24 +111,24 @@ $(document).ready(function () {
             }, 'json');
     });
 
-    $('#modal').on('click', '#add_oneToOneOverrideWithValuesByTitle', function(e) {
+    $('#modal').on('click', '#add_oneToOneOverrideWithValuesByTitle', function (e) {
         e.preventDefault();
         $('#extra_oneToOneOverrideWithValuesByTitle').append(
             "<div class='form-group row'>" +
-                "<div class='col-xs-5'>" +
-                "<label>Title</label>" +
-                "<input type='text' name='oneToOneOverrideWithTitle[]' class='form-control' value=''>" +
-                "</div>" +
-                "<div class='col-xs-6'>" +
-                "<label>Override</label>" +
-                "<input type='text' name='oneToOneOverrideWithValue[]' class='form-control' value=''>" +
-                "</div>" +
-                "<div class='col-xs-1'><a class='removeRow'><span class='glyphicon glyphicon-remove'></span></a></div>" +
-                "</div>"
+            "<div class='col-xs-5'>" +
+            "<label>Title</label>" +
+            "<input type='text' name='oneToOneOverrideWithTitle[]' class='form-control' value=''>" +
+            "</div>" +
+            "<div class='col-xs-6'>" +
+            "<label>Override</label>" +
+            "<input type='text' name='oneToOneOverrideWithValue[]' class='form-control' value=''>" +
+            "</div>" +
+            "<div class='col-xs-1'><a class='removeRow'><span class='glyphicon glyphicon-remove'></span></a></div>" +
+            "</div>"
         );
     });
 
-    $('#modal').on('click', '.removeRow', function(e) {
+    $('#modal').on('click', '.removeRow', function (e) {
         e.preventDefault();
         $(this).closest('.form-group.row').remove();
     });
@@ -132,7 +149,7 @@ $(document).ready(function () {
             '</div>');
     });
 
-    $('#modal').on('click', '.show-more-settings', function(e) {
+    $('#modal').on('click', '.show-more-settings', function (e) {
         if ($('.format-field .more-settings').is(':visible')) {
             $('.format-field .more-settings').hide();
             $('.format-field .show-more-settings').html('Show More Settings');
@@ -142,7 +159,7 @@ $(document).ready(function () {
         }
     });
 
-    $('#modal').on('click', '#add_filterKeyword', function(e) {
+    $('#modal').on('click', '#add_filterKeyword', function (e) {
         e.preventDefault();
         $('#extra_keywords').append(
             '<div class="form-group row">' +
@@ -178,7 +195,7 @@ $(document).ready(function () {
         }
     }
 
-    $('.format-views tr.views').on('click', function(e) {
+    $('.format-views tr.views').on('click', function (e) {
         e.preventDefault();
 
         var viewType = $(this).attr('view-type-name');
@@ -192,9 +209,11 @@ $(document).ready(function () {
                     var $modalBody = $(this).find('.modal-body');
                     $modalTitle.html('Format View');
                     $modalBody.html(data);
-                    $(".chosen-select").chosen({width: "100%"});  /* start multiselect */
-                    $(".startEmpty").spectrum({allowEmpty:true,showInput:true}) /*start colorpicker */
-                    
+                    $(".chosen-select").chosen({width: "100%"});
+                    /* start multiselect */
+                    $(".startEmpty").spectrum({allowEmpty: true, showInput: true})
+                    /*start colorpicker */
+
                 })
                 .modal();
 
@@ -203,23 +222,20 @@ $(document).ready(function () {
     });
 
 
-
-    $('#modal').on('click','.addTemplateInView ',function(e) {
+    $('#modal').on('click', '.addTemplateInView ', function (e) {
         var field_name = $(this).attr('field-name');
         var template = $('.template').clone();
         $('#addMoreTemplates').append(template.html());
     })
 
-    $('#modal').on('click','.addColors',function(e) {
+    $('#modal').on('click', '.addColors', function (e) {
 
         var color_html = "<div class='col-xs-2'><input type='text' class='startEmpty form-control' value=''</div>";
         $('#addColorsTo').append(color_html);
-        $('.startEmpty').spectrum({allowEmpty:true});
- 
-          
+        $('.startEmpty').spectrum({allowEmpty: true});
+
+
     })
-
-
 
 
 });
