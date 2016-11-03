@@ -99,49 +99,48 @@
         </div>
     </div>
 
-    <h4>Filter</h4>
-
-    <div class="form-group">
-        <div class="col-xs-8">
-            <label for="filter_notAvailable" class="form-control">Not Available</label>
-        </div>
-        <div class="col-xs-4">
-            <input type="checkbox" id="filter_notAvailable" name="filter_notAvailable" value="true"
-                   {{ 'checked=checked' if doc.fe_filters.fieldsNotAvailable | doesArrayContain(field) }}/>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-xs-8">
-            <label for="filter_commaSeparatedAsIndividual" class="form-control">Comma Separated As Individual</label>
-        </div>
-        <div class="col-xs-4">
-            <input type="checkbox" id="filter_commaSeparatedAsIndividual" name="filter_commaSeparatedAsIndividual"
-                   value="true" {{ 'checked=checked' if doc.fe_filters.fieldsCommaSeparatedAsIndividual | doesArrayContain(field) }}/>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-xs-8">
-            <label for="filter_multiSelectable" class="form-control">Allow Multiple Selection</label>
-        </div>
-        <div class="col-xs-4">
-            <input type="checkbox" id="filter_multiSelectable" name="filter_multiSelectable" value="true"
-                   {{ 'checked=checked' if doc.fe_filters.fieldsMultiSelectable | doesArrayContain(field) }}/>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="col-xs-8">
-            <label for="filter_sortableByInteger" class="form-control">Sortable By Integer</label>
-        </div>
-        <div class="col-xs-4">
-            <input type="checkbox" id="filter_sortableByInteger" name="filter_sortableByInteger" value="true"
-                   {{ 'checked=checked' if doc.fe_filters.fieldsSortableByInteger | doesArrayContain(field) }}/>
-        </div>
-    </div>
-
     <div class="more-settings">
+        <h4>Filter</h4>
+
+        <div class="form-group">
+            <div class="col-xs-8">
+                <label for="filter_notAvailable" class="form-control">Not Available</label>
+            </div>
+            <div class="col-xs-4">
+                <input type="checkbox" id="filter_notAvailable" name="filter_notAvailable" value="true"
+                       {{ 'checked=checked' if doc.fe_filters.fieldsNotAvailable | doesArrayContain(field) }}/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-xs-8">
+                <label for="filter_commaSeparatedAsIndividual" class="form-control">Comma Separated As Individual</label>
+            </div>
+            <div class="col-xs-4">
+                <input type="checkbox" id="filter_commaSeparatedAsIndividual" name="filter_commaSeparatedAsIndividual"
+                       value="true" {{ 'checked=checked' if doc.fe_filters.fieldsCommaSeparatedAsIndividual | doesArrayContain(field) }}/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-xs-8">
+                <label for="filter_multiSelectable" class="form-control">Allow Multiple Selection</label>
+            </div>
+            <div class="col-xs-4">
+                <input type="checkbox" id="filter_multiSelectable" name="filter_multiSelectable" value="true"
+                       {{ 'checked=checked' if doc.fe_filters.fieldsMultiSelectable | doesArrayContain(field) }}/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-xs-8">
+                <label for="filter_sortableByInteger" class="form-control">Sortable By Integer</label>
+            </div>
+            <div class="col-xs-4">
+                <input type="checkbox" id="filter_sortableByInteger" name="filter_sortableByInteger" value="true"
+                       {{ 'checked=checked' if doc.fe_filters.fieldsSortableByInteger | doesArrayContain(field) }}/>
+            </div>
+        </div>
 
         <div class="form-group row">
             <div class="col-xs-8">
@@ -156,17 +155,17 @@
         <div id="extra_oneToOneOverrideWithValuesByTitle">
             {% set titleOverride = doc.fe_displayTitleOverrides[field] if doc.fe_displayTitleOverrides[field] else field %}
             {% for value, title in doc.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[titleOverride] %}
-                <div class="form-group row">
-                    <div class="col-xs-5">
-                        <label>Title</label><input type="text" value="{{ title }}" name="oneToOneOverrideWithTitle[]" class="form-control">
-                    </div>
-                    <div class="col-xs-6">
-                        <label>Override</label><input type="text" value="{{ value }}" name="oneToOneOverrideWithValue[]" class="form-control">
-                    </div>
-                    <div class="col-xs-1">
-                        <a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>
-                    </div>
+            <div class="form-group row">
+                <div class="col-xs-5">
+                    <label>Title</label><input type="text" value="{{ title }}" name="oneToOneOverrideWithTitle[]" class="form-control">
                 </div>
+                <div class="col-xs-6">
+                    <label>Override</label><input type="text" value="{{ value }}" name="oneToOneOverrideWithValue[]" class="form-control">
+                </div>
+                <div class="col-xs-1">
+                    <a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>
+                </div>
+            </div>
             {% endfor %}
         </div>
 
@@ -182,23 +181,23 @@
         </div>
         <div id="extra_valuesToExcludeByOriginalKey">
             {% for key, values in doc.fe_filters.valuesToExcludeByOriginalKey %}
-                {% if key == '_all' or key == field %}
-                    {% for value in values %}
-                        <div class="form-group row">
-                            <div class="col-xs-6">
-                                <input type="text" class="form-control" name="valuesToExcludeByOriginalKey[]" value="{{ value if value or value != '' else 'null' }}">
-                            </div>
-                            <div class="col-xs-5">
-                                <input type="checkbox" name="valuesToExcludeByOriginalKey_applyTo[]" {{ 'checked=checked' if key == '_all' }} value="true"/> Apply to All
-                            </div>
-                            <div class="col-xs-1">
-                                <a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% endif %}
+            {% if key == '_all' or key == field %}
+            {% for value in values %}
+            <div class="form-group row">
+                <div class="col-xs-6">
+                    <input type="text" class="form-control" name="valuesToExcludeByOriginalKey[]" value="{{ value if value or value != '' else 'null' }}">
+                </div>
+                <div class="col-xs-5">
+                    <input type="checkbox" name="valuesToExcludeByOriginalKey_applyTo[]" {{ 'checked=checked' if key == '_all' }} value="true"/> Apply to All
+                </div>
+                <div class="col-xs-1">
+                    <a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>
+                </div>
+            </div>
             {% endfor %}
-       </div>
+            {% endif %}
+            {% endfor %}
+        </div>
 
         <div class="form-group">
             <div class="col-xs-8">
@@ -212,24 +211,24 @@
         </div>
         <div id="extra_keywords">
             {% for filter in doc.fe_filters.keywords %}
-                {% if filter.title == titleOverride %}
-                    {% for choice in filter.choices %}
-                        {% if doc.fe_filters.default and doc.fe_filters.default[title] | doesArrayContain(choice) %}
-                            {% set is_default_filter = true %}
-                        {% endif %}
-                        <div class="form-group row">
-                            <div class="col-xs-6">
-                                <input type="text" class="form-control" name="keywords[]" value="{{ choice }}">
-                            </div>
-                            <div class="col-xs-5">
-                                <input type="checkbox" name="default_filter_keywords[]" values="true" {{ 'checked=checked' if is_default_filter }}> Use default
-                            </div>
-                            <div class="col-xs-1">
-                                <a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>
-                            </div>
-                        </div>
-                    {% endfor %}
-                {% endif %}
+            {% if filter.title == titleOverride %}
+            {% for choice in filter.choices %}
+            {% if doc.fe_filters.default and doc.fe_filters.default[title] | doesArrayContain(choice) %}
+            {% set is_default_filter = true %}
+            {% endif %}
+            <div class="form-group row">
+                <div class="col-xs-6">
+                    <input type="text" class="form-control" name="keywords[]" value="{{ choice }}">
+                </div>
+                <div class="col-xs-5">
+                    <input type="checkbox" name="default_filter_keywords[]" values="true" {{ 'checked=checked' if is_default_filter }}> Use default
+                </div>
+                <div class="col-xs-1">
+                    <a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
             {% endfor %}
         </div>
 
@@ -244,7 +243,6 @@
 
         <h4>Relationships</h4>
 
-        {# Relationships
         <div class="form-group">
             <div class="col-xs-4">
 
@@ -253,9 +251,73 @@
 
             </div>
         </div>
-        #}
 
-        <h4>Nested?</h4>
+        <h4>Nested</h4>
+
+        <div class="form-group">
+            <div class="col-xs-4">
+                <label for="chk_nested" class="form-control">Is Nested?</label>
+            </div>
+            <div class="col-xs-8">
+                <input type="checkbox" id="chk_nested" class="chk_nested" name="nested_field" {{ 'checked="checked"' if doc.fe_nestedObject and doc.fe_nestedObject.fields | doesArrayContain(field) and not (doc.fe_nestedObject.criteria and doc.fe_nestedObject.criteria.fieldName == field) }} value="true">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-xs-4">
+                <label for="nested_criteria" class="form-control">Is Criteria?</label>
+            </div>
+            <div class="col-xs-8">
+                <input type="checkbox" id="nested_criteria" name="nested_criteria" {{ 'checked="checked"' if doc.fe_nestedObject and doc.fe_nestedObject.criteria and doc.fe_nestedObject.criteria.fieldName == field }} value="true"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-xs-4">
+                <label for="nested_prefix" class="form-control">Prefix</label>
+            </div>
+            <div class="col-xs-8">
+                <input type="text" id="nested_prefix" class="form-control" name="nested_prefix" value="{{ doc.fe_nestedObject.prefix if doc.fe_nestedObject }}"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-xs-4">
+                <label for="nested_fieldOverride" class="form-control">Field Name Override</label>
+            </div>
+            <div class="col-xs-8">
+                <input type="text" id="nested_fieldOverride" class="form-control" name="nested_fieldOverride" value="{{ doc.fe_nestedObject.fieldOverrides[field] if doc.fe_nestedObject and doc.fe_nestedObject.fieldOverrides and doc.fe_nestedObject.fieldOverrides[field] }}"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-xs-4">
+                <label class="form-control">Value Overrides</label>
+            </div>
+            <div class="col-xs-8">
+                <a id="add_nested_valueOverride" class="add">
+                    <span class="glyphicon glyphicon-plus"></span> Add more
+                </a>
+            </div>
+        </div>
+        <div id="extra_nested_valueOverrides">
+            {% if doc.fe_nestedObject and doc.fe_nestedObject.valueOverrides and doc.fe_nestedObject.valueOverrides[field] %}
+                {% for key,value in doc.fe_nestedObject.valueOverrides[field] %}
+                    <div class="form-group row">
+                        <div class="col-xs-offset-1 col-xs-4">
+                            <input type="text" class="form-control" name="nested_valueOverride_keys[]" value="{{ key }}"/>
+                        </div>
+                        <div class="col-xs-1">=></div>
+                        <div class="col-xs-4">
+                            <input type="text" class="form-control" name="nested_valueOverride_values[]" value="{{ value }}"/>
+                        </div>
+                        <div class="col-xs-2">
+                            <a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
 
     </div>
 

@@ -5,12 +5,17 @@ var es = require('event-stream');
 var parse = require('csv-parse');
 var Batch = require('batch');
 var _ = require('lodash');
+var async = require("async");
 
 var datasource_description = require('../../models/descriptions');
 var datasource_upload_service = require('../../../lib/datasource_process/aws-datasource-files-hosting');
 var import_datatypes = require('../../datasources/utils/import_datatypes');
 var imported_data_preparation = require('../../datasources/utils/imported_data_preparation')
 var views = require('../../models/views');
+var import_raw_objects_controller = require('../pre_process/data_ingest/import_raw_objects_controller');
+var raw_row_objects = require('../../models/raw_row_objects');
+var processed_row_objects = require('../../models/processed_row_objects')
+var raw_source_documents = require('../../models/raw_source_documents');
 
 
 /***************  Index  ***************/
@@ -118,8 +123,8 @@ module.exports.saveSettings = function (req, next) {
         datasource_description.findOneAndUpdate(query, req.body, {$upsert: true}, function (err, doc) {
             if (err) return next(err);
 
-            data.id = doc._doc._id;
-
+            if (doc)
+                data.id = doc._doc._id;
             req.flash('message', 'Your settings are saved!');
 
             next(null, data);
@@ -241,7 +246,6 @@ module.exports.saveSource = function (req, next) {
 
 
         batch.push(function (done) {
-
             if (!description.uid)
                 description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
             var newFileName = datasource_upload_service.fileNameToUpload(description);
@@ -249,7 +253,6 @@ module.exports.saveSource = function (req, next) {
         });
 
         batch.push(function (done) {
-            var query = {_id: req.params.id};
             description.save(function (err, updatedDescription) {
                 if (err) return done(err);
                 req.flash('message', 'Uploaded successfully');
@@ -260,7 +263,13 @@ module.exports.saveSource = function (req, next) {
 
     batch.end(function (err) {
         if (err) {
+
             req.flash('error',err.message);
+
+
+            req.session.uploadData_columnNames = null;
+            req.session.uploadData_firstRecord = null;
+
             return next(err);
         }
 
@@ -364,22 +373,31 @@ module.exports.getFormatData = function (req, next) {
 };
 
 module.exports.saveFormatData = function (req, next) {
-    var data = {};
-
-    var sourceURL = req.body.sourceURL;
+    var data = {id: req.params.id};
 
     if (req.params.id) {
         var updateObject = {fn_new_rowPrimaryKeyFromRowObject: req.body.fn_new_rowPrimaryKeyFromRowObject};
+
         datasource_description.findOneAndUpdate({_id: req.params.id}, updateObject, {$upsert: true}, function (err, doc) {
             if (err) return next(err);
 
-            // TODO: Import datasource
-
             if (doc != null) {
                 data.doc = doc._doc;
-            }
 
-            next(null, data);
+                // TODO: We should not remove the rows if it's second uploaded file - schema_id is valid
+                raw_row_objects.RemoveRows(doc, function(err) {
+                    if (err) return next(err, data);
+
+                    import_raw_objects_controller.ParseAndImportRaw(0, doc, function(err) {
+                        if (err)
+                            winston.info("❌  Error encountered during raw objects import:", err);
+
+                        next(err, data);
+                    });
+                });
+            } else {
+                return next(err, data);
+            }
         });
     }
 };
@@ -402,7 +420,8 @@ module.exports.getFormatField = function (req, next) {
     datasource_description.findById(dataset_id, function (err, doc) {
         if (err) return next(err);
 
-        data.doc = doc._doc;
+        if (doc)
+            data.doc = doc._doc;
         next(null, data);
     });
 }
@@ -421,19 +440,16 @@ module.exports.saveFormatField = function (req, next) {
     datasource_description.findById(dataset_id, function (err, doc) {
         if (err) return next(err);
 
-        var dataTypeCoercionChanged = false;
-
         // Data Type Coercion
         if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
-        if (typeof doc.raw_rowObjects_coercionScheme[field] == 'undefined' || doc.raw_rowObjects_coercionScheme[field]) {
-            schemaChanged = true;
-            doc.raw_rowObjects_coercionScheme[field] = {
-                operation: req.body.dataType,
-                format: req.body.dataFormat,
-                outputFormat: req.body.dataOutputFormat
-            };
-            doc.markModified("raw_rowObjects_coercionScheme");
-        }
+
+        var coercion = {};
+        coercion.operation = req.body.dataType;
+        if (req.body.dataFormat) coercion.format = req.body.dataFormat;
+        if (req.body.dataOutputFormat) coercion.outputFormat = req.body.dataOutputFormat;
+
+        doc.raw_rowObjects_coercionScheme[field] = coercion;
+        doc.markModified("raw_rowObjects_coercionScheme");
 
         // Exclude
         if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
@@ -517,7 +533,6 @@ module.exports.saveFormatField = function (req, next) {
             if (err) return next(err);
 
             data.doc = updatedDoc._doc;
-            data.dataTypeCoercionChanged = dataTypeCoercionChanged;
             next(null, data);
         });
     });

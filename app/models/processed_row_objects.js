@@ -732,8 +732,7 @@ module.exports.EnumerateProcessedDataset = function (dataSource_uid,
         } else {
             for (var opt in query_optl) {
                 query[opt] = query_optl[opt];
-            }
-            ;
+            };
         }
 
         nativeCollection_ofTheseProcessedRowObjects.find(query, {sort: {_id: 1}}, function (err, cursor) {
@@ -1051,5 +1050,35 @@ module.exports.GenerateImageURLFieldsByScraping
                 }
             });
         });
+    });
+};
+
+// fn: (err, [Schema.Types.ObjectId])
+module.exports.RemoveRows = function (description, fn) {
+    var pKeyPrefix = description.dataset_uid;
+    var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+
+    winston.info("📡  [" + (new Date()).toString() + "] Deleting processed rows for \"" + description.title + "\".");
+
+    var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+    var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
+    var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
+    //
+    var query =
+    {
+        srcDocPKey: pKey_ofDataSrcDocBeingProcessed
+    };
+    if (pKeyPrefix) query.pKeyPrefix = {
+        $regex: "^" + pKeyPrefix + "-",
+        $options: 'i'
+    }
+
+    nativeCollection_ofTheseProcessedRowObjects.find(query).remove().exec(function (err) {
+        if (err) {
+            winston.error("❌ [" + (new Date()).toString() + "] Error while removing raw row objects: ", err);
+        } else {
+            winston.info("✅  [" + (new Date()).toString() + "] Removed raw row objects.");
+        }
+        fn(err);
     });
 };

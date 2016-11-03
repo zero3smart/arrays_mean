@@ -62,6 +62,9 @@ var DatasourceDescription_scheme = Schema({
             fieldName: String,
             operatorName: String,
             value: String,
+        },
+        valueOverrides: {
+
         }
     },
 });

@@ -85,7 +85,8 @@ router.get('/:id/source', ensureLoggedIn, function (req, res) {
     });
 });
 
-router.post('/:id/source', ensureLoggedIn, upload.array('files', 12), function (req, res) {
+
+router.post('/:id/source', ensureLoggedIn, upload.array('files[]', 12), function (req, res) {
 
     controller.saveSource(req, function (err) {
 
@@ -94,6 +95,7 @@ router.post('/:id/source', ensureLoggedIn, upload.array('files', 12), function (
             res.redirect('/admin/dataset/' + req.params.id + '/source') ;
             return;
         } 
+
         res.redirect('/admin/dataset/' + req.params.id + '/format-data');
     });
 });
@@ -120,27 +122,27 @@ router.post('/:id/format-data', ensureLoggedIn, function (req, res) {
     controller.saveFormatData(req, function (err, data) {
         if (err) {
             winston.error("❌  Error getting bind data for Dataset format data: ", err);
-            res.status(500).send(err.response || 'Internal Server Error');
+            req.flash('message', err.message);
 
-            return;
+            return res.redirect('/admin/dataset/' + data.id + '/format-data');
         }
-        res.redirect('admin/dataset/' + data.id + '/format-views');
+        res.redirect('/admin/dataset/' + req.params.id + '/format-views');
     });
 });
 
-router.get('/:id/format-data/:field', ensureLoggedIn, function(req, res) {
+router.get('/:id/format-field/:field', ensureLoggedIn, function(req, res) {
     controller.getFormatField(req, function(err, data) {
         if (err) {
             winston.error("❌  Error getting bind data for dataset format field: ", err);
-            res.status(500).send(err.response || 'Internal Server Error');
+            req.flash('message', err.message);
 
-            return;
+            return res.redirect('/admin/dataset/' + req.params.id + '/format-data');
         }
         res.render('admin/dataset/format-field', data);
     });
 });
 
-router.post('/:id/format-data/:field', ensureLoggedIn, function (req, res) {
+router.post('/:id/format-field/:field', ensureLoggedIn, function (req, res) {
     controller.saveFormatField(req, function (err, data) {
         if (err) {
             winston.error("❌  Error getting bind data for Dataset format data: ", err);
