@@ -71,55 +71,25 @@ function _castSerializeElementToArray(field,reqBody) {
     delete reqBody[field];
 }
 
-function _castSerializeElementToObject(key,value,reqBody) {
-    var correctFieldName = key.replace('[][key]','');
-    reqBody[correctFieldName] = {};
-    if (typeof reqBody[key] == 'string' && reqBody[key] !== '') {
-        reqBody[correctFieldName][reqBody[key]] = [];
 
-        if (typeof reqBody[value] == 'string') {
-            reqBody[correctFieldName][reqBody[key]] = reqBody[value].split(",");
-            if (reqBody[value].toLowerCase().indexOf('null') >= 0 && reqBody[correctFieldName][reqBody[key]].indexOf(null) == -1) {
-                reqBody[correctFieldName][reqBody[key]].push(null);
-            }
+function _castSerializeElementToObject(key,value,commaSeparated) {
+    var objToReturn = {};
+    for (var i = 0; i < key.length; i++) {
+        if (i >= value.length) break;
+        if (commaSeparated == true) {
+             objToReturn[key] = value[i].split(",");
 
-        } else if (Array.isArray(reqBody[value])) {
-            
-
-            reqBody[correctFieldName][reqBody[key]].push(reqBody[value][0].split(','));
-            if (reqBody[value][0].toLowerCase().indexOf('null') >= 0 && reqBody[correctFieldName][reqBody[key]].indexOf(null) == -1) {
-                reqBody[correctFieldName][reqBody[key]].push(null);
-            }
-        }
-
-    } else if (Array.isArray(reqBody[key])) {
-        if (typeof reqBody[value] == 'string') {
-            reqBody[correctFieldName][reqBody[key][0]] = reqBody[value].split(',');
-            if (reqBody[value].toLowerCase().indexOf('null') >= 0 && reqBody[correctFieldName][reqBody[key][0]].indexOf(null) == -1) {
-                reqBody[correctFieldName][reqBody[key][0]].push(null);
-            }
-
-        } else if (Array.isArray(reqBody[value])) {
-            for (var i = 0; i < reqBody[key].length; i++) {
-                if ( i >= reqBody[value].length) {
-                    break;
-                }
-                if (reqBody[key][i] == '') continue;
-                reqBody[correctFieldName][reqBody[key][i]] = [];
-                var split = reqBody[value][i].split(',');
-                reqBody[correctFieldName][reqBody[key][i]] = split;
-
-                if (reqBody[value][i].toLowerCase().indexOf('null') >= 0 && reqBody[correctFieldName][reqBody[key][i]].indexOf(null) == -1) {
-                    reqBody[correctFieldName][reqBody[key][i]].push(null);
-                }
-            }
+        } else {
+            objToReturn[key[i]] = value[i]
 
         }
+
+
     }
-    delete reqBody[key];
-    delete reqBody[value];
-
+    return objToReturn;
 }
+
+
 
 module.exports.saveSettings = function (req, next) {
 
@@ -372,8 +342,6 @@ module.exports.getFormatData = function (req, next) {
             var description = doc
             data.doc = description;
 
-
-
             if (req.session.uploadData_firstRecord == null || req.session.uploadData_columnNames == null) {
                 _loadDatasourceColumnsAndSampleRecords(req, description, function (err, obj) {
                     if (!err) {
@@ -602,7 +570,6 @@ module.exports.getFormatView = function (req, next) {
     if (!dataset_id || !view_name) return next(new Error('Invalid parameter!'));
 
     var data = {id: dataset_id};
-    data.available_forDateFormat = import_datatypes.available_forDateFormat();
     data.available_forDuration = import_datatypes.available_forDuration();
 
     var batch = new Batch();
@@ -643,6 +610,8 @@ module.exports.getFormatView = function (req, next) {
 }
 
 module.exports.saveFormatView = function (req, next) {
+
+
     var dataset_id = req.params.id;
     var field = req.params.view;
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
@@ -666,69 +635,61 @@ module.exports.saveFormatView = function (req, next) {
         });
     }
 
+
     batch.push(function(done) {
+
+
+
 
         datasource_description.findById(dataset_id,function(err,datasetDesc) {
 
             doc = datasetDesc;
 
-            var changedObj = {};
+    
             if (!doc.fe_views) doc.fe_views = {};
             if (!doc.fe_views.views) doc.fe_views.views = {};
             if (!doc.fe_views.views[field]) doc.fe_views.views[field] = {};
-            if (req.body.default_view && req.body.default_view == 'on' && (typeof doc.fe_views.default_view != undefined &&
-                doc.fe_views.default_view !== field || !doc.fe_views.default_view)) {
+            if (req.body.default_view == true) {
                 changedObj.default_view = field;
                 doc.fe_views.default_view = field;
-
             }
-            if (typeof doc.fe_views.views[field].visible == undefined ) {
-                if (req.body.visible == 'on') {
-                    changedObj.visible = true;
-                }
-
-            } else if (doc.fe_views.views[field].visible == true) {
-                if (!req.body.visible) {
-                    changedObj.visible = false;
-                }
-
-            } else { /* == false */
-                if (req.body.visible == 'on') {
-                    changedObj.visible = true;
-                }
-            }
-            doc.fe_views.views[field].visible = req.body.visible? true : false
+     
+            doc.fe_views.views[field].visible = req.body.visible;
+            changedObj.visible = req.body.visible
+    
 
             var rest = _.omit(req.body,'default_view','visible');
             for (var attr in rest) {
+                if (attr.indexOf('_value') == -1) {
+                    if (attr.indexOf('_key') >= 0) {
+                        var index = attr.indexOf('_key');
+                        var value = attr.substring(0,index);
+                        
+                        if (rest[value+"_value"] !== null && typeof rest[value + "_value"] !== 'undefined') {
 
+                            var obj =_castSerializeElementToObject(rest[attr], rest[value + "_value"],false);
+                            doc.fe_views.views[field][value] = obj;
 
-                if (attr.indexOf('[value]') == -1) { /* value is already paired when we loop the key */
+                            delete rest[value + "_value"];
 
-                    if (attr.indexOf('[]') > -1) {
-                        if (attr.indexOf('[key]') == -1) {
-                            _castSerializeElementToArray(attr,rest);
-                            attr = attr.replace('[]','');
-                        } else {
-                            var valueAttr = attr.replace('key','value');
-                            _castSerializeElementToObject(attr,valueAttr,rest);
-                            attr = attr.replace('[][key]','');
-
-                        }
-                    }
-                    var value = rest[attr];
-                    if (typeof doc.fe_views.views[field][attr] !== 'undefined' && value =='') {
-                        delete doc.fe_views.views[field][attr];
-                    }
-                    if (value !== '' ) {
-                        if (typeof value == 'string' && req.session.uploadData_columnNames.indexOf(value) > -1) {
-                            value = value.replace(/\./g, "_");
                         } 
-                        doc.fe_views.views[field][attr] = value
-                    }
+                        if (rest[value + "_value_separatedByComma"] !== null && typeof rest[value + "_value_separatedByComma"]
+                            !== 'undefined') {
+                            var obj =_castSerializeElementToObject(rest[attr], rest[value + "_value_separatedByComma"],true);
 
+
+                            doc.fe_views.views[field][value] = obj;
+                            delete rest[value + "_value_separatedByComma"];
+                        }
+                    } else {
+                        doc.fe_views.views[field][attr] = rest[attr];
+
+                    }
+                    
                 }
+
             }
+            console.log( doc.fe_views.views[field]);
             doc.markModified('fe_views');
             done();
         })

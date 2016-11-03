@@ -228,9 +228,11 @@ $(document).ready(function () {
 
 
     $('#modal').on('click','.addTemplateInView ',function(e) {
-        var template = $('.template').clone().find(':selected').removeAttr('selected').end();
-        template.find("input").attr("value","")
-        $('#addMoreTemplates').append(template.html());
+        var settingName = $(this).attr('field-name');
+        var template = $('#template_'+settingName).clone().find(':selected').removeAttr('selected').end();
+        template.find("input").attr("value","");
+        var className = "templateClone_"+settingName;
+        $('#addMoreTemplates_' + settingName).append("<div class='templateClone " + className+"'>" + template.html()+ "</div>");
     })
 
     $('#modal').on('click','.addColors',function(e) {
@@ -246,41 +248,49 @@ $(document).ready(function () {
         var doc_id = $('#doc_id').val();
         var view = $('#name').val();
 
-        var params = $('form#format-view').serialize();
+        var params = form2js('format-view','.',true);
 
-        $.post("/admin/dataset/" + doc_id + "/format-view/" + view,params)
-            .done(function(data) {
-                if (!jQuery.isEmptyObject(data)) {
-                    if (data.default_view) {
-                        $('select#viewType').removeAttr("disabled");
-                        $('select#viewType').find(":selected").removeAttr('selected');
-                        $('select#viewType').find('option[value="'+data.default_view+'"]').prop('selected', true);
-                        $('select#viewType').attr("disabled",true);
+        console.log(params)
 
-                       
+        // 'form#format-view'
 
-                    } 
-                    if (typeof data.visible != undefined) {
-                        $('td.visibility').children('input[value="'+view+'"]').prop("checked",data.visible);                      
-                    }
+        jQuery.ajax ({
+            url: "/admin/dataset/" + doc_id + "/format-view/" + view,
+            type: "POST",
+            data: JSON.stringify(params) ,
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function(data){
+                 if (data.default_view) {
+                    $('select#viewType').removeAttr("disabled");
+                    $('select#viewType').find(":selected").removeAttr('selected');
+                    $('select#viewType').find('option[value="'+data.default_view+'"]').prop('selected', true);
+                    $('select#viewType').attr("disabled",true);
 
-
-
+                } 
+                if (typeof data.visible != undefined) {
+                    $('td.visibility').children('input[value="'+view+'"]').prop("checked",data.visible);                      
                 }
+
                 $('#modal').modal('hide');
 
-            },'json')
+                
+            }
+        });
+
 
     })
 
-    $('#modal').on('click','div#templateDiv a.hideTemplate',function(e) {
+    $('#modal').on('click','div.templateDiv a.hideTemplate',function(e) {
         e.preventDefault();
-        $('#reset').val('');
-        $(this).closest('.template').addClass('hidden')
+        var set = $(this).attr('field-name');
+        $('.reset').val('');
+        $(this).closest('#template_'+set).addClass('hidden');
     })
-    $('#modal').on('click','div#addMoreTemplates a.removeRow',function(e) {
+    $('#modal').on('click','div.templateClone a.hideTemplate',function(e) {
         e.preventDefault();
-        $(this).closest('.row').remove();
+        var settingName = $(this).attr('field-name');
+        $(this).closest('.templateClone_' + settingName).remove();
     })
 })
 

@@ -38,6 +38,9 @@ module.exports = function (nunjucks_env) {
 
 
     nunjucks_env.addFilter('isObjectEmpty', function (obj) {
+        if (typeof obj == 'undefined' || obj == null) {
+            return true;
+        }
         return Object.keys(obj).length === 0;
     });
     nunjucks_env.addFilter('alphaSortedArray', function (array) {
@@ -55,6 +58,16 @@ module.exports = function (nunjucks_env) {
         }
         return 1;
     });
+
+    nunjucks_env.addFilter('doesNestedObjectContain',function(doc,nameWithDot,field) {
+        var split_array = nameWithDot.split(".");
+        var key = split_array[0];
+        var nestedKey = split_array[1];
+        if (doc[key] && doc[key][nestedKey] && doc[key][nestedKey] == field) {
+            return true;
+        }
+        return false;
+    })
 
     nunjucks_env.addFilter('castArrayToStringSeparatedByComma',function(array) {
         if (Array.isArray(array)) {
