@@ -54,21 +54,18 @@ module.exports.getSettings = function (req, next) {
 
 function _castSerializeElementToArray(field,reqBody) {
     var arrayField = field.replace('[]','');
+    reqBody[arrayField] = [];
 
     if (typeof reqBody[field] == 'string') {
-        if (reqBody[field] == "") {
-            reqBody[arrayField] = []
-        } else {
-
-            reqBody[arrayField] = [reqBody[field]]
+        if (reqBody[field] !== "") {
+            reqBody[arrayField].push(reqBody[field]);
         }
     } else if (Array.isArray(reqBody[field])) {
         for (var i = 0; i < reqBody[field].length; i++) {
-            if (reqBody[field][i] == "") {
-                reqBody[field].splice(i,1);
+            if (reqBody[field][i] !== "") {
+                reqBody[arrayField].push(reqBody[field][i])
             }
         }
-        reqBody[arrayField] = reqBody[field];
     }
     delete reqBody[field];
 }
@@ -120,8 +117,6 @@ function _castSerializeElementToObject(key,value,reqBody) {
     }
     delete reqBody[key];
     delete reqBody[value];
-
-    // console.log(reqBody);
 
 }
 
@@ -183,6 +178,11 @@ module.exports.getSource = function (req, next) {
 module.exports.saveSource = function (req, next) {
     var description;
 
+
+
+    req.session.uploadData_columnNames = null;
+    req.session.uploadData_firstRecord = null;
+
     var batch = new Batch;
     batch.concurrency(1);
 
@@ -191,11 +191,13 @@ module.exports.saveSource = function (req, next) {
             .exec(function (err, doc) {
                 if (err) return done(err);
 
-                description = doc._doc;
+                description = doc;
 
                 done();
             })
     });
+
+
 
     _.forEach(req.files, function (file) {
         batch.push(function (done) {
@@ -211,13 +213,15 @@ module.exports.saveSource = function (req, next) {
             } else if (file.mimetype == 'text/tab-separated-values') {
                 delimiter = '\t';
                 description.format = 'TSV';
-            } else
+            } else {
                 return done(new Error('Invalid File Format'));
+
+            }
+                
 
             var readStream = fs.createReadStream(file.path)
                 .pipe(es.split())
                 .pipe(es.mapSync(function (line) {
-
                     // pause the readstream
                     readStream.pause();
 
@@ -254,6 +258,7 @@ module.exports.saveSource = function (req, next) {
         });
 
 
+
         batch.push(function (done) {
 
             if (!description.uid)
@@ -265,10 +270,7 @@ module.exports.saveSource = function (req, next) {
         batch.push(function (done) {
             var query = {_id: req.params.id};
             description.save(function (err, updatedDescription) {
-                console.log(err);
-
                 if (err) return done(err);
-
                 req.flash('message', 'Uploaded successfully');
                 done();
             });
@@ -277,8 +279,8 @@ module.exports.saveSource = function (req, next) {
 
     batch.end(function (err) {
         if (err) {
-            req.flash('message', err.message);
-            // return next();
+            req.flash('error',err.message);
+            return next(err);
         }
 
         next();
@@ -432,6 +434,8 @@ module.exports.saveFormatField = function (req, next) {
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
 
     var data = {};
+
+
     field = field.replace(/\./g, "_");
 
     datasource_description.findById(dataset_id, function (err, doc) {
@@ -441,7 +445,7 @@ module.exports.saveFormatField = function (req, next) {
 
         // Data Type Coercion
         if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
-        if (doc.raw_rowObjects_coercionScheme[field]) {
+        if (typeof doc.raw_rowObjects_coercionScheme[field] == 'undefined' || doc.raw_rowObjects_coercionScheme[field]) {
             schemaChanged = true;
             doc.raw_rowObjects_coercionScheme[field] = {
                 operation: req.body.dataType,
@@ -587,6 +591,7 @@ module.exports.getFormatView = function (req, next) {
 
     var data = {id: dataset_id};
     data.available_forDateFormat = import_datatypes.available_forDateFormat();
+    data.available_forDuration = import_datatypes.available_forDuration();
 
     var batch = new Batch();
     batch.concurrency(1);
@@ -620,8 +625,7 @@ module.exports.getFormatView = function (req, next) {
 
 
     batch.end(function(err) {
-        data.colNames = req.session.uploadData_columnNames;
-
+    data.colNames = req.session.uploadData_columnNames;
         next(err, data);
     });
 }
@@ -629,66 +633,110 @@ module.exports.getFormatView = function (req, next) {
 module.exports.saveFormatView = function (req, next) {
     var dataset_id = req.params.id;
     var field = req.params.view;
-
-
-
-    // console.log(req.body)
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
-    datasource_description.findById(dataset_id,function(err,doc) {
-        if (!doc.fe_views) doc.fe_views = {};
-        if (!doc.fe_views.views) doc.fe_views.views = {};
-        if (!doc.fe_views.views[field]) doc.fe_views.views[field] = {};
-        if (req.body.default_view && req.body.default_view == 'on' && (typeof doc.fe_views.default_view != undefined &&
-            doc.fe_views.default_view !== field || !doc.fe_views.default_view)) {
-            doc.fe_views.default_view = field;
-        }
 
 
 
-        var rest = _.omit(req.body,'default_view');
-        for (var attr in rest) {
+    var batch = new Batch();
+    batch.concurrency(1);
+
+    var doc;
+    var changedObj = {};
 
 
-            if (attr.indexOf('[value]') == -1) { /* value is already paired when we loop the key */
-                if (attr.indexOf('[]') > -1) {
-                    if (attr.indexOf('[key]') == -1) {
-                        attr = attr.replace('[]','');
-                        _castSerializeElementToArray(attr,rest);
-                    } else {
-                        var valueAttr = attr.replace('key','value');
-                        _castSerializeElementToObject(attr,valueAttr,rest);
-                        attr = attr.replace('[][key]','');
 
-                    }
-                }
-                var value = rest[attr];
-                if (rest[attr] == 'on') value = true;
-                if (value !== '') {
-                    if (typeof value == 'string') value = value.replace(/\./g, "_");
-                    doc.fe_views.views[field][attr] = value
-                }
+    if (!req.session.uploadData_columnNames) {
+        batch.push(function(done) {
+            _loadDatasourceColumnsAndSampleRecords(req, data.doc, function (err, obj) {
+                if (err) return done(err);
+                done();
+            });
+        });
+    }
+
+    batch.push(function(done) {
+
+        datasource_description.findById(dataset_id,function(err,datasetDesc) {
+
+            doc = datasetDesc;
+
+            var changedObj = {};
+            if (!doc.fe_views) doc.fe_views = {};
+            if (!doc.fe_views.views) doc.fe_views.views = {};
+            if (!doc.fe_views.views[field]) doc.fe_views.views[field] = {};
+            if (req.body.default_view && req.body.default_view == 'on' && (typeof doc.fe_views.default_view != undefined &&
+                doc.fe_views.default_view !== field || !doc.fe_views.default_view)) {
+                changedObj.default_view = field;
+                doc.fe_views.default_view = field;
 
             }
-        }
-        console.log(JSON.stringify(doc.fe_views))
-        doc.markModified('fe_views');
+            if (typeof doc.fe_views.views[field].visible == undefined ) {
+                if (req.body.visible == 'on') {
+                    changedObj.visible = true;
+                }
 
-        // doc.save(function(err,updatedDoc) {
-        //     if (err) console.log(err);
-        //     console.log(updatedDoc)
-        // })
+            } else if (doc.fe_views.views[field].visible == true) {
+                if (!req.body.visible) {
+                    changedObj.visible = false;
+                }
 
-        
+            } else { /* == false */
+                if (req.body.visible == 'on') {
+                    changedObj.visible = true;
+                }
+            }
+            doc.fe_views.views[field].visible = req.body.visible? true : false
 
-        
+            var rest = _.omit(req.body,'default_view','visible');
+            for (var attr in rest) {
 
 
+                if (attr.indexOf('[value]') == -1) { /* value is already paired when we loop the key */
 
+                    if (attr.indexOf('[]') > -1) {
+                        if (attr.indexOf('[key]') == -1) {
+                            _castSerializeElementToArray(attr,rest);
+                            attr = attr.replace('[]','');
+                        } else {
+                            var valueAttr = attr.replace('key','value');
+                            _castSerializeElementToObject(attr,valueAttr,rest);
+                            attr = attr.replace('[][key]','');
 
+                        }
+                    }
+                    var value = rest[attr];
+                    if (typeof doc.fe_views.views[field][attr] !== 'undefined' && value =='') {
+                        delete doc.fe_views.views[field][attr];
+                    }
+                    if (value !== '' ) {
+                        if (typeof value == 'string' && req.session.uploadData_columnNames.indexOf(value) > -1) {
+                            value = value.replace(/\./g, "_");
+                        } 
+                        doc.fe_views.views[field][attr] = value
+                    }
+
+                }
+            }
+            doc.markModified('fe_views');
+            done();
+        })
 
     })
 
+    batch.end(function(err) {
+        doc.save(function(err,updatedDoc) {
+            if (err) return next(err);
+            return next(null,changedObj);
+        })
+    })
 
+
+
+
+
+
+
+    
 }
 
 

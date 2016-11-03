@@ -79,6 +79,7 @@ router.get('/:id/source', ensureLoggedIn, function (req, res) {
         res.render('admin/dataset/source', _.assign(data, {
             env: process.env,
             flash: req.flash('message'),
+            error: req.flash('error'),
             user: req.user
         }));
     });
@@ -86,12 +87,12 @@ router.get('/:id/source', ensureLoggedIn, function (req, res) {
 
 router.post('/:id/source', ensureLoggedIn, upload.array('files', 12), function (req, res) {
     controller.saveSource(req, function (err) {
+
         if (err) {
             winston.error("❌  Error getting bind data for saving the dataset source: ", err);
-            res.status(500).send(err.response || 'Internal Server Error');
-
+            res.redirect('/admin/dataset/' + req.params.id + '/source') ;
             return;
-        }
+        } 
         res.redirect('/admin/dataset/' + req.params.id + '/format-data');
     });
 });

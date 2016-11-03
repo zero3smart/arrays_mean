@@ -1,5 +1,7 @@
 $(document).ready(function () {
 
+    $('[data-toggle="tooltip"]').tooltip();
+
 
     $('#add_urls').on('click', function (e) {
         $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
@@ -141,8 +143,8 @@ $(document).ready(function () {
 
 
     $('#modal').on('click','.addTemplateInView ',function(e) {
-        var field_name = $(this).attr('field-name');
-        var template = $('.template').clone();
+        var template = $('.template').clone().find(':selected').removeAttr('selected').end();
+        template.find("input").attr("value","")
         $('#addMoreTemplates').append(template.html());
     })
 
@@ -160,12 +162,29 @@ $(document).ready(function () {
         var view = $('#name').val();
 
         var params = $('form#format-view').serialize();
-        console.log(params);
 
         $.post("/admin/dataset/" + doc_id + "/format-view/" + view,params)
             .done(function(data) {
+                if (!jQuery.isEmptyObject(data)) {
+                    if (data.default_view) {
+                        $('select#viewType').removeAttr("disabled");
+                        $('select#viewType').find(":selected").removeAttr('selected');
+                        $('select#viewType').find('option[value="'+data.default_view+'"]').prop('selected', true);
+                        $('select#viewType').attr("disabled",true);
 
-            })
+                       
+
+                    } 
+                    if (typeof data.visible != undefined) {
+                        $('td.visibility').children('input[value="'+view+'"]').prop("checked",data.visible);                      
+                    }
+
+
+
+                }
+                $('#modal').modal('hide');
+
+            },'json')
 
     })
 
@@ -175,7 +194,6 @@ $(document).ready(function () {
         $(this).closest('.template').addClass('hidden')
     })
     $('#modal').on('click','div#addMoreTemplates a.removeRow',function(e) {
-        console.log("hi")
         e.preventDefault();
         $(this).closest('.row').remove();
     })

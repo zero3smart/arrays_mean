@@ -28,6 +28,7 @@ module.exports = function (nunjucks_env) {
                 if (Array.isArray(obj))
                     return obj.indexOf(member) !== -1 || obj.indexOf(parseInt(member)) !== -1;
             } catch (e) {
+                console.log(e);
             }
         }
         return false;
@@ -54,6 +55,18 @@ module.exports = function (nunjucks_env) {
         }
         return 1;
     });
+
+    nunjucks_env.addFilter('castArrayToStringSeparatedByComma',function(array) {
+        if (Array.isArray(array)) {
+            var indexOfNullType = array.indexOf(null);
+            array.splice(indexOfNullType,1);
+            return array.toString()
+
+        }
+    
+       
+    })
+    
     // Array views - Filter obj construction
     nunjucks_env.addFilter('constructedFilterObj', function (existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter, isMultiselectable) {
         var filterObj = {};

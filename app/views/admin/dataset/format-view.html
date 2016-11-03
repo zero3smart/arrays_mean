@@ -1,18 +1,22 @@
 {% extends "../../layout/ajax.html" %}
 
 
-{% block content %}
-<form id="format-view">
 
+
+{% block content %}
+
+
+
+<form id="format-view">
 
 
 
     <div class="form-group row">
         <div class="col-xs-4">
-              <input name="visible" type="checkbox"/> Visible
+              <input name="visible" type="checkbox" {{'checked' if doc.fe_views.views[view.name].visible == true}}/> Visible
         </div>
         <div class="col-xs-4">
-             <input name="default_view" type="checkbox"/> Default view
+             <input name="default_view" type="checkbox" {{ 'checked' if doc.fe_views.default_view == view.name}}/> Default view
         </div>
     </div>
 
@@ -35,10 +39,9 @@
             <label for="description"> Description </label>
         </div>
         <div class="col-xs-8">
-            <textarea name="description" value="{{doc.fe_views.views[view.name].descripton}}" class="form-control">{{doc.fe_views.views[view.name].descripton}}</textarea>
+        <textarea name="description" value="{{doc.fe_views.views[view.name].description}}" class="form-control">{{doc.fe_views.views[view.name].description}}</textarea>
         </div>
     </div>
-
 
 
 
@@ -49,15 +52,25 @@
                 <label for="setting.name"> {{setting.displayAs}} </label>
             </div>
             <div class="col-xs-8">
+
                 <select tabindex="4" {%if setting.inputType=="multiselect"%} name="{{setting.name}}[]" multiple class="chosen-select" {%else%} class="form-control" name="{{setting.name}}" {% endif %}>
                     <option value=""></option>
                 {% if setting.selectFrom == "column" %}
+                    {% if doc.fe_designatedFields.objectTitle %}
+                        <option value="Object Title" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == "Object Title" %}  selected {%elif setting.inputType == "multiselect" 
+                        and doc.fe_views.views[view.name][setting.name] | doesArrayContain("Object Title") %} selected  {%endif%}> ** Object Title ** </option>
+                    {% endif %}
                     {% for col in colNames %}  
-                        <option value="{{col}}"> {{col}}</option>
+                        <option value="{{col}}" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == col %}  selected {%elif setting.inputType == "multiselect" 
+                        and doc.fe_views.views[view.name][setting.name] | doesArrayContain(col) %} selected  {%endif%} > {{col}}</option>
                     {% endfor %}
                 {% elif setting.selectFrom == "dateFormat" %}
                     {% for date in available_forDateFormat %}
                         <option value="{{date}}">{{date}}</option>
+                    {% endfor %}
+                {% elif setting.selectFrom == "duration" %}
+                    {% for dur in available_forDuration %}
+                        <option value="{{dur}}" {{ 'selected' if doc.fe_views.views[view.name][setting.name] == dur }}>{{dur}}</option>
                     {% endfor %}
                 {% endif %}
                 </select>
@@ -88,7 +101,7 @@
                 {% if setting.keyInputType == "select" and setting.keySelectFrom == "column" %}
                     <select id="reset" name="{{setting.name}}[][key]" class="form-control">
                         <option value=""> </option>
-                        <option value="_all"> ** All Fields ** </option>
+                        <option value="_all" {%if doc.fe_views.views[view.name][setting.name]._all %} selected {%endif%}> ** All Fields ** </option>
                     {% for col in colNames %}
                         <option value="{{col}}">{{col}}</option>
                     {% endfor %}
@@ -97,7 +110,7 @@
                 <div class="col-xs-7">
                 {% if setting.valueInputType == "multivalueTextbox" %}
                     <div class="from-group">
-                        <input name="{{setting.name}}[][value]" class="form-control" type="text">
+                        <input value="{{ doc.fe_views.views[view.name][setting.name]._all | castArrayToStringSeparatedByComma() }}" name="{{setting.name}}[][value]" class="form-control value" type="text">
                     </div>
                 {% endif %}
                 </div>
@@ -128,9 +141,24 @@
             </div>
         </div>
         <div id="addColorsTo" class="form-group row">
-            <div class="col-xs-2">
-                <input type="text" class="startEmpty form-control" name="{{setting.name}}[]" value='' /> 
-            </div>
+
+            {% if doc.fe_views.views[view.name][setting.name].length > 0 %}
+                {% for color in doc.fe_views.views[view.name][setting.name]%}
+                    <div class="col-xs-2">
+
+                        <input type="text" class="startEmpty form-control" name="{{setting.name}}[]" value='{{color}}' /> 
+                    </div>
+
+                {%endfor%}
+
+            {% else %}
+                <div class="col-xs-2">
+
+                    <input type="text" class="startEmpty form-control" name="{{setting.name}}[]" value='' /> 
+                </div>
+
+            {%endif%}
+
 
         </div>
         <div class="form-group row">
