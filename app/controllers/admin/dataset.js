@@ -5,12 +5,17 @@ var es = require('event-stream');
 var parse = require('csv-parse');
 var Batch = require('batch');
 var _ = require('lodash');
+var async = require("async");
 
 var datasource_description = require('../../models/descriptions');
 var datasource_upload_service = require('../../../lib/datasource_process/aws-datasource-files-hosting');
 var import_datatypes = require('../../datasources/utils/import_datatypes');
 var imported_data_preparation = require('../../datasources/utils/imported_data_preparation')
 var views = require('../../models/views');
+var import_raw_objects_controller = require('../pre_process/data_ingest/import_raw_objects_controller');
+var raw_row_objects = require('../../models/raw_row_objects');
+var processed_row_objects = require('../../models/processed_row_objects')
+var raw_source_documents = require('../../models/raw_source_documents');
 
 
 /***************  Index  ***************/
@@ -336,22 +341,31 @@ module.exports.getFormatData = function (req, next) {
 };
 
 module.exports.saveFormatData = function (req, next) {
-    var data = {};
-
-    var sourceURL = req.body.sourceURL;
+    var data = {id: req.params.id};
 
     if (req.params.id) {
         var updateObject = {fn_new_rowPrimaryKeyFromRowObject: req.body.fn_new_rowPrimaryKeyFromRowObject};
+
         datasource_description.findOneAndUpdate({_id: req.params.id}, updateObject, {$upsert: true}, function (err, doc) {
             if (err) return next(err);
 
-            // TODO: Import datasource
-
             if (doc != null) {
                 data.doc = doc._doc;
-            }
 
-            next(null, data);
+                // TODO: We should not remove the rows if it's second uploaded file - schema_id is valid
+                raw_row_objects.RemoveRows(doc, function(err) {
+                    if (err) return next(err, data);
+
+                    import_raw_objects_controller.ParseAndImportRaw(0, doc, function(err) {
+                        if (err)
+                            winston.info("❌  Error encountered during raw objects import:", err);
+
+                        next(err, data);
+                    });
+                });
+            } else {
+                return next(err, data);
+            }
         });
     }
 };
@@ -394,15 +408,13 @@ module.exports.saveFormatField = function (req, next) {
 
         // Data Type Coercion
         if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
-        if (doc.raw_rowObjects_coercionScheme[field]) {
-            schemaChanged = true;
-            doc.raw_rowObjects_coercionScheme[field] = {
-                operation: req.body.dataType,
-                format: req.body.dataFormat,
-                outputFormat: req.body.dataOutputFormat
-            };
-            doc.markModified("raw_rowObjects_coercionScheme");
-        }
+        var coercion = {};
+        coercion.operation = req.body.dataType;
+        if (req.body.dataFormat) coercion.format = req.body.dataFormat;
+        if (req.body.dataOutputFormat) coercion.outputFormat = req.body.dataOutputFormat;
+
+        doc.raw_rowObjects_coercionScheme[field] = coercion;
+        doc.markModified("raw_rowObjects_coercionScheme");
 
         // Exclude
         if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
@@ -510,30 +522,6 @@ module.exports.getAddCustomField = function (req, next) {
         next(null, data);
     });
 }
-
-
-/***************  Filters  ***************/
-module.exports.saveFilters = function (req, next) {
-    var data = {};
-
-    var sourceURL = req.body.sourceURL;
-
-    if (req.params.id) {
-        next(data);
-    }
-};
-
-module.exports.getFieldFilter = function (req, next) {
-    var data = {};
-
-    next(data);
-}
-
-module.exports.saveFieldFilter = function (req, next) {
-    var data = {};
-    next(data);
-}
-
 
 /***************  Format Views  ***************/
 module.exports.getFormatViews = function (req, next) {

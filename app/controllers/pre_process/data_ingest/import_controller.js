@@ -19,7 +19,6 @@ var import_raw_objects_controller = require('./import_raw_objects_controller');
 module.exports.Import_dataSourceDescriptions = function (dataSourceDescriptions,fn) {
     var i = 1;
 
-
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
@@ -32,15 +31,7 @@ module.exports.Import_dataSourceDescriptions = function (dataSourceDescriptions,
                 process.exit(1); // error code
             } else {
                 winston.info("✅  Raw objects import done. Proceeding to post-processing.");
-
-                if (!fn) {
-                    _PostProcessRawObjects(dataSourceDescriptions);
-                } else {
-                    _PostProcessRawObjects(dataSourceDescriptions,function() {
-                        return fn();
-                     });
-                }
-                
+                _PostProcessRawObjects(dataSourceDescriptions, fn);
             }
         }
     );

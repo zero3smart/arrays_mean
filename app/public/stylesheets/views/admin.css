@@ -42,7 +42,6 @@ form .removeDataset {
 /* Format data */
 .format-data tr.field,
 a.add,
-.filters tr.field,
 .format-views tr.views {
     cursor: pointer;
 }

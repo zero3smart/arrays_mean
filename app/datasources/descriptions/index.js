@@ -7,9 +7,7 @@ var _ = require("lodash");
 var async = require('async');
 
 var imported_data_preparation = require('.././utils/imported_data_preparation');
-
 var import_controller = require('../.././controllers/pre_process/data_ingest/import_controller');
-
 
 /* -----------   helper function ----------- */
 var mergeObject = function (obj1, obj2) {
@@ -23,8 +21,7 @@ var mergeObject = function (obj1, obj2) {
     return obj3;
 }
 
-var getSchemaDescriptionAndCombine = function (schemaId, desc) {
-
+function _getSchemaDescriptionAndCombine(schemaId, desc) {
 
     return new Promise(function (resolve, reject) {
         datasource_description.findById(schemaId)
@@ -50,10 +47,9 @@ var getSchemaDescriptionAndCombine = function (schemaId, desc) {
     })
 }
 
+module.exports.GetSchemaDescriptionAndCombine = _getSchemaDescriptionAndCombine;
 
 /* -------   end helper function ------------  */
-
-
 var GetDescriptions = function (fn) {
 
     mongoose_client.WhenMongoDBConnected(function () {
@@ -97,7 +93,6 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
                 .populate('_otherSources')
                 .exec(function (err, description) {
 
-
                     if (err) {
                         winston.error("❌ Error occurred when finding datasource description: ", err);
                     } else {
@@ -110,12 +105,13 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
                                 descriptions.push(excludeOtherSource);
                             })
                             cb();
+
                         } else if (!description.schema_id) {
                             descriptions.push(description);
                             cb();
 
                         } else {
-                            getSchemaDescriptionAndCombine(description.schema_id, description).then(function (des) {
+                            _getSchemaDescriptionAndCombine(description.schema_id, description).then(function (des) {
                                 descriptions.push(des);
                                 cb();
                             })
@@ -150,7 +146,7 @@ var _findAllDescriptionAndSetup = function (fn) {
 
                 var keyname;
                 if (typeof desc.schema_id !== 'undefined') {
-                    getSchemaDescriptionAndCombine(desc.schema_id, desc).then(function (descr) {
+                    _getSchemaDescriptionAndCombine(desc.schema_id, desc).then(function (descr) {
                         desc = descr;
 
                         keyname = imported_data_preparation.DataSourcePKeyFromDataSourceDescription(desc).toLowerCase();

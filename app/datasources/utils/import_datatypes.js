@@ -75,6 +75,8 @@ var fieldValueDataTypeCoercion_coercionFunctions = function (inString, field) {
     } else if (opName == 'ToStringTrim') {
         return inString.trim();
 
+    } else {
+        return inString;
     }
 
 }
@@ -103,6 +105,8 @@ var fieldValueDataTypeCoercion_revertFunctions = function (value, field) {
         } else {
             return moment.utc(date).format(dateFormatString);
         }
+    } else {
+        return value;
     }
 
 
