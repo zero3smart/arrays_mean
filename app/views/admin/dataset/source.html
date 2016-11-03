@@ -13,9 +13,14 @@
 
 	{% if flash | length %}
 	<div class="alert alert-success" role="alert">{{ flash }}</div>
+	{% elif error | length %}
+	<div class="alert alert-danger" role="alert">{{ error }}</div>
+
 	{% endif %}
 
+
 	<div class="dataset">
+
 		{% include "../../partials/admin/dataset-breadcrumb.html" %}
 
 		<br />
@@ -49,6 +54,7 @@
 			{% endfor %}
 
 			<div class="form-group row"><a id="add_dataset" class="add" ><span class="glyphicon glyphicon-plus"></span> Add more</a></div>
+
 
 			<div class="panel-footer">
 				<a class="btn btn-default pull-left" href="/admin/dataset/"><span class="glyphicon glyphicon-hand-left"></span> Back</a>

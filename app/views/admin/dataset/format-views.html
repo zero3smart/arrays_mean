@@ -22,19 +22,21 @@
 
 
 
-		<form class="format-views">
 
+		<form class="format-views">
 
 			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
 
-			<div class="form-group row">
+				<div class="form-group row">
+					<a class="add pull-right col-xs-1" data-placement="bottom" data-toggle="tooltip" title="Click individual view to customize this "><span class="glyphicon glyphicon-question-sign"></span></a>
 				
-				<label class="col-xs-4" for="default_view">Select Default View : </label>
-				<div class="col-xs-8">
-					<select id="viewType" class="form-control" name="viewType">
+				<label class="col-xs-4" for="default_view">Default View : </label>
+				<div class="col-xs-7"> 
+
+					<select id="viewType" class="form-control" disabled>
 						{% for view in available_forViewTypes %}
-						{{view}}
-						<option value="{{view.name}}"> {{view.displayAs}} </option>
+					
+						<option value="{{view.name}}" {{'selected' if doc.fe_views.default_view == view.name}}/> {{view.displayAs}}</option>
 						{% endfor %}
 					</select>
 				</div>
@@ -51,8 +53,8 @@
 				<tbody>
 				{% for view in available_forViewTypes %}
 				<tr class="views" view-type-name="{{ view.name }}">
-					<td><input type="checkbox" {{ 'checked=checked' if
-						doc.fe_views.views and doc.fe_views.views[view.name].visibility == true }} disabled></td>
+					<td class="visibility"><input value="{{view.name}}" type="checkbox" {{ 'checked' if
+						doc.fe_views.views[view.name].visible == true  }} disabled></td>
 					<td><span class="{{ view.icon }}"></span>{{ view.displayAs }}</td>
 				</tr>
 				{% endfor %}
@@ -70,7 +72,7 @@
 
 	<div class="panel-footer">
 		<a class="btn btn-default pull-left" href="/admin/dataset/"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
-		<button type="submit" class="btn btn-default pull-right"><span class="glyphicon glyphicon-hand-right"></span> Save</button>
+		<button type="submit" class="btn btn-default pull-right"><span class="glyphicon glyphicon-hand-right"></span> Next </button>
 		<div class="clearfix"></div>
 	</div>
 
@@ -92,6 +94,9 @@
 	<script type="text/javascript" src="/javascripts/lib/chosen/chosen.jquery.js"></script>
 
 	<script type="text/javascript" src="/javascripts/lib/spectrum/spectrum.js"></script>
+	<script type="text/javascript" src="/javascripts/lib/form2js/form2js.js"></script>
+	<script type="text/javascript" src="/javascripts/lib/form2js/jquery.toObject.js"></script>
+	<script type="text/javascript" src="/javascripts/lib/form2js/js2form.js"></script>
 
 
 {% endblock %}

@@ -183,6 +183,7 @@ module.exports.available_forFieldDataType_coercions = function() {
 }
 
 
-module.exports.available_forDateFormat = function() {
-    return [ "YYYY/MM/DD", "MMMM Do, YYYY", "YYYY"]
+
+module.exports.available_forDuration = function() {
+    return ["Decade", "Year", "Month", "Day"]
 }

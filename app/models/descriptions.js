@@ -44,17 +44,7 @@ var DatasourceDescription_scheme = Schema({
 
     fe_views: {
         default_view: String,
-        views: {
-            gallery: Object,
-            chart: Object,
-            timeline: Object,
-            wordCloud: Object,
-            scatterplot: Object,
-            pieSet: Object,
-            lineGraph: Object,
-            barChart: Object
-
-        }
+        views: Object
     },
 
     

@@ -32,6 +32,7 @@
     font-size: 22px;
 }
 
+
 /* Upload */
 form .removeDataset {
     margin-top: 10px;
@@ -114,6 +115,7 @@ form.format-field #extra_keywords
 {
     padding-left: 10px;
 }
+
 
 /* -----------   for toggle slider  ----------------  */
 .switch {

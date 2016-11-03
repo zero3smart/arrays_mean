@@ -1,5 +1,9 @@
 $(document).ready(function () {
 
+
+    $('[data-toggle="tooltip"]').tooltip();
+
+
     $('#add_urls').on('click', function (e) {
         $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
     });
@@ -230,9 +234,9 @@ $(document).ready(function () {
                     var $modalBody = $(this).find('.modal-body');
                     $modalTitle.html('Format View');
                     $modalBody.html(data);
-                    $(".chosen-select").chosen({width: "100%"});
+                    $(".chosen-select").chosen({width: "100%"});  
                     /* start multiselect */
-                    $(".startEmpty").spectrum({allowEmpty: true, showInput: true})
+                    $(".startEmpty").spectrum({allowEmpty:true,showInput:true,preferredFormat: "hex",appendTo:"#modal"}) 
                     /*start colorpicker */
 
                 })
@@ -243,20 +247,75 @@ $(document).ready(function () {
     });
 
 
-    $('#modal').on('click', '.addTemplateInView ', function (e) {
-        var field_name = $(this).attr('field-name');
-        var template = $('.template').clone();
-        $('#addMoreTemplates').append(template.html());
+
+    $('#modal').on('click','.addTemplateInView ',function(e) {
+        var settingName = $(this).attr('field-name');
+        var template = $('#template_'+settingName).clone().find(':selected').removeAttr('selected').end();
+        template.find("input").attr("value","");
+        var className = "templateClone_"+settingName;
+        $('#addMoreTemplates_' + settingName).append("<div class='templateClone " + className+"'>" + template.html()+ "</div>");
     })
 
-    $('#modal').on('click', '.addColors', function (e) {
-
-        var color_html = "<div class='col-xs-2'><input type='text' class='startEmpty form-control' value=''</div>";
+    $('#modal').on('click','.addColors',function(e) {
+        var field = $(this).attr('field-name');
+        var color_html = "<div class='col-xs-2'><input type='text' name='" + field + "[]' class='startEmpty form-control' value=''</div>";
         $('#addColorsTo').append(color_html);
-        $('.startEmpty').spectrum({allowEmpty: true});
+        $('.startEmpty').spectrum({allowEmpty:true,showInput:true,preferredFormat: "hex",appendTo:"#modal"});
+
+    })
+
+    $('#modal').on('click','#saveFormatView',function(e) {
+
+        var doc_id = $('#doc_id').val();
+        var view = $('#name').val();
+
+        var params = form2js('format-view','.',true);
+
+        console.log(params)
+
+        // 'form#format-view'
+
+        jQuery.ajax ({
+            url: "/admin/dataset/" + doc_id + "/format-view/" + view,
+            type: "POST",
+            data: JSON.stringify(params) ,
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function(data){
+                 if (data.default_view) {
+                    $('select#viewType').removeAttr("disabled");
+                    $('select#viewType').find(":selected").removeAttr('selected');
+                    $('select#viewType').find('option[value="'+data.default_view+'"]').prop('selected', true);
+                    $('select#viewType').attr("disabled",true);
+
+                } 
+                if (typeof data.visible != undefined) {
+                    $('td.visibility').children('input[value="'+view+'"]').prop("checked",data.visible);                      
+                }
+
+                $('#modal').modal('hide');
+
+                
+            }
+        });
 
 
     })
 
+    $('#modal').on('click','div.templateDiv a.hideTemplate',function(e) {
+        e.preventDefault();
+        var set = $(this).attr('field-name');
+        $('.reset').val('');
+        $(this).closest('#template_'+set).addClass('hidden');
+    })
+    $('#modal').on('click','div.templateClone a.hideTemplate',function(e) {
+        e.preventDefault();
+        var settingName = $(this).attr('field-name');
+        $(this).closest('.templateClone_' + settingName).remove();
+    })
+})
 
-});
+
+
+    
+       
