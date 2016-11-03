@@ -5,7 +5,6 @@
     padding: 20px;
     margin: 10px 6px;
     border-radius: 5px;
-    box-shadow: var(--box-shadow);
 }
 
 .pie-set-item .title {
@@ -39,4 +38,8 @@
 
 .array-pie-set .array-content {
     position: relative;
+}
+
+.array-pie-set .filter-bar-fixed-bottom {
+    margin-bottom: -100px;
 }

@@ -12,7 +12,7 @@ function BarChart(selector, dataSet, options) {
     this._margin = {
         top : 25,
         right : 15,
-        bottom : 126,
+        bottom : 144 + $('.filter-bar').height(),  //Add more margin if filters present
         left : options.horizontal ? 120 : 70
     };
 

@@ -1,5 +1,6 @@
 $(document).ready(function () {
 
+
     $('[data-toggle="tooltip"]').tooltip();
 
 
@@ -7,18 +8,56 @@ $(document).ready(function () {
         $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
     });
 
-    $(window).on('click', 'a#removeRow', function(e) {
-        e.preventDefault();
-        $(this).closest('.form-group.row').remove();
-    });
-
-    $('#file').on('change', function (e) {
-        const files = $('#file')[0].files;
+    // TODO : Doesn't work for the dynamically created form
+    $('[id^="file_"]').on('change', function (e) {
+        const files = $(this)[0].files;
         const file = files[0];
         if (file == null) {
+            $(this).closest('.form-group').find('button[type=submit]').attr('disabled');
             return alert('No file selected');
         }
-        $('.upload button').removeAttr('disabled');
+        $(this).closest('.form-group').find('button[type=submit]').removeAttr('disabled');
+    });
+
+    $('#add_dataset').on('click', function (e) {
+        var dataset_count = $('#dataset_count').val();
+        $('#dataset_count').val(++dataset_count);
+
+        $('.dataset').append(
+            '<form class="upload/' + (dataset_count - 1) + '" enctype="multipart/form-data" method="post">' +
+            '<div class="form-group">' +
+            '<div class="row">' +
+            '<div class="col-xs-11">' +
+            '<h4>Datasource ' + dataset_count + '</h4>' +
+            '</div>' +
+            '<div class="col-xs-1">' +
+            '<a class="removeDataset"><span class="glyphicon glyphicon-remove"></span></a>' +
+            '</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<div class="col-xs-5">' +
+            '<label for="file_' + dataset_count + '">Select a CSV/TSV file To Upload</label>' +
+            '</div>' +
+            '<div class="col-xs-6">' +
+            '<input type="file" id="file_' + dataset_count + '" name="files[]" accept=".csv,.tsv|text/csv,text/csv-schema" required/>' +
+            '</div>' +
+            '</div>' +
+            '</div>' +
+            '<div class="row">' +
+            '<button type="submit" class="btn btn-default pull-right" disabled="disabled"><span class="glyphicon glyphicon-hand-right"></span> Upload</button>' +
+            '</div>' +
+            '</form>'
+        );
+    });
+
+    $('.dataset').on('click', '.removeDataset', function (e) {
+        e.preventDefault();
+        var dataset_count = $('#dataset_count').val();
+    
+
+        $(this).closest('form').remove();
+
+        // TODO - Remove the datsource schema from the database.
     });
 
     $('.format-data tr.field').on('click', function (e) {
@@ -79,22 +118,69 @@ $(document).ready(function () {
             }, 'json');
     });
 
-    $('#modal').on('click', 'a#add_oneToOneOverrideWithValuesByTitle', function(e) {
+    $('#modal').on('click', '#add_oneToOneOverrideWithValuesByTitle', function (e) {
+        e.preventDefault();
         $('#extra_oneToOneOverrideWithValuesByTitle').append(
-            "<div class='form-group row'>"
-                + "<div class='col-xs-4 col-xs-offset-1'>"
-                + "<label>Title</label><input type='text' name='oneToOneOverrideWithTitle[]' class='form-control' value=''>"
-                + "</div>"
-                + "<div class='col-xs-4 col-xs-offset-1'>"
-                + "<label>Override</label><input type='text' name='oneToOneOverrideWithValue[]' class='col-xs-4 col-xs-offset-1 form-control' value=''>"
-                + "</div>"
-                + "<div class='col-xs-1'><a class='removeRow'><span class='glyphicon glyphicon-remove'></span></a></div>"
-                + "</div>"
+            "<div class='form-group row'>" +
+            "<div class='col-xs-5'>" +
+            "<label>Title</label>" +
+            "<input type='text' name='oneToOneOverrideWithTitle[]' class='form-control' value=''>" +
+            "</div>" +
+            "<div class='col-xs-6'>" +
+            "<label>Override</label>" +
+            "<input type='text' name='oneToOneOverrideWithValue[]' class='form-control' value=''>" +
+            "</div>" +
+            "<div class='col-xs-1'><a class='removeRow'><span class='glyphicon glyphicon-remove'></span></a></div>" +
+            "</div>"
         );
     });
 
-    $('#modal').on('click', 'a#add_valuesToExcludeByOriginalKey', function (e) {
-        $('#extra_valuesToExcludeByOriginalKey').append("<div class='form-group row'><input class='col-xs-2 col-xs-offset-1' name='valuesToExcludeByOriginalKey[]' type='text' value=''></div>");
+    $('#modal').on('click', '.removeRow', function (e) {
+        e.preventDefault();
+        $(this).closest('.form-group.row').remove();
+    });
+
+    $('#modal').on('click', '#add_valueToExcludeByOriginalKey', function (e) {
+        e.preventDefault();
+        $('#extra_valuesToExcludeByOriginalKey').append(
+            '<div class="form-group row">' +
+            '<div class="col-xs-6">' +
+            '<input type="text" class="form-control" name="valuesToExcludeByOriginalKey[]" value="">' +
+            '</div>' +
+            '<div class="col-xs-5">' +
+            '<input type="checkbox" name="valuesToExcludeByOriginalKey_applyTo[]" value="true"/> Apply to All' +
+            '</div>' +
+            '<div class="col-xs-1">' +
+            '<a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>' +
+            '</div>' +
+            '</div>');
+    });
+
+    $('#modal').on('click', '.show-more-settings', function (e) {
+        if ($('.format-field .more-settings').is(':visible')) {
+            $('.format-field .more-settings').hide();
+            $('.format-field .show-more-settings').html('Show More Settings');
+        } else {
+            $('.format-field .more-settings').show();
+            $('.format-field .show-more-settings').html('Hide Settings');
+        }
+    });
+
+    $('#modal').on('click', '#add_filterKeyword', function (e) {
+        e.preventDefault();
+        $('#extra_keywords').append(
+            '<div class="form-group row">' +
+            '<div class="col-xs-6">' +
+            '<input type="text" class="form-control" name="keywords[]" value="">' +
+            '</div>' +
+            '<div class="col-xs-5">' +
+            '<input type="checkbox" name="default_filter_keywords[]" values="true"> Use default' +
+            '</div>' +
+            '<div class="col-xs-1">' +
+            '<a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>' +
+            '</div>' +
+            '</div>'
+        );
     });
 
     function fieldDataType_coercion_toString(field) {
@@ -116,7 +202,7 @@ $(document).ready(function () {
         }
     }
 
-    $('.format-views tr.views').on('click', function(e) {
+    $('.format-views tr.views').on('click', function (e) {
         e.preventDefault();
 
         var viewType = $(this).attr('view-type-name');
@@ -130,9 +216,11 @@ $(document).ready(function () {
                     var $modalBody = $(this).find('.modal-body');
                     $modalTitle.html('Format View');
                     $modalBody.html(data);
-                    $(".chosen-select").chosen({width: "100%"});  /* start multiselect */
-                    $(".startEmpty").spectrum({allowEmpty:true,showInput:true,preferredFormat: "hex",appendTo:"#modal"}) /*start colorpicker */
-                    
+                    $(".chosen-select").chosen({width: "100%"});  
+                    /* start multiselect */
+                    $(".startEmpty").spectrum({allowEmpty:true,showInput:true,preferredFormat: "hex",appendTo:"#modal"}) 
+                    /*start colorpicker */
+
                 })
                 .modal();
 
@@ -197,10 +285,8 @@ $(document).ready(function () {
         e.preventDefault();
         $(this).closest('.row').remove();
     })
-
-        
-
 })
+
 
 
     

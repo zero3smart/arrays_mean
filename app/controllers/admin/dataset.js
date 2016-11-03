@@ -52,6 +52,7 @@ module.exports.getSettings = function (req, next) {
     }
 };
 
+
 function _castSerializeElementToArray(field,reqBody) {
     var arrayField = field.replace('[]','');
     reqBody[arrayField] = [];
@@ -168,7 +169,17 @@ module.exports.getSource = function (req, next) {
                 data.doc = doc._doc;
             }
 
-            next(null, data);
+            // Get sub datasets
+            datasource_description.find({schema_id: req.params.id}, {}, function(err, docs) {
+                if (err) return next(err);
+
+                if (docs && docs.length > 0)
+                    data.sub_datasets = docs;
+                else
+                    data.sub_datasets = [doc._doc];
+
+                next(null, data);
+            });
         });
     } else {
         next(null, data);
@@ -409,20 +420,21 @@ module.exports.saveFormatData = function (req, next) {
 module.exports.getFormatField = function (req, next) {
     var dataset_id = req.params.id;
     var field_name = req.params.field;
-    if (!dataset_id || !field_name) return next(new Error('Invalid parameter!'));
+    var columnIndex = req.session.uploadData_columnNames.indexOf(field_name);
+
+    if (!dataset_id || !field_name || columnIndex == -1) return next(new Error('Invalid parameter!'));
 
     var data = {
         id: dataset_id,
         field: field_name,
+        firstRecord: req.session.uploadData_firstRecord[columnIndex],
         available_forFieldDataType_coercions: import_datatypes.available_forFieldDataType_coercions()
     };
 
     datasource_description.findById(dataset_id, function (err, doc) {
         if (err) return next(err);
 
-        if (doc) {
-            data.doc = doc._doc;
-        }
+        data.doc = doc._doc;
         next(null, data);
     });
 }
@@ -530,7 +542,7 @@ module.exports.saveFormatField = function (req, next) {
         // Filter valuesToExcludeByOriginalKey
         // Fabricated Filters
         // Default Filter
-        // Filter keywordFilters
+        // Filter keywords
         doc.markModified('fe_filters');
 
         doc.save(function (err, updatedDoc) {
