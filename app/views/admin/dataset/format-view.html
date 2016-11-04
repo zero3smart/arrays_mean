@@ -22,9 +22,6 @@
 
     <input type="hidden" id="name" value="{{view.name}}">
 
-
-
-
     <div class="form-group row">
         <div class="col-xs-4">
             <label >Name</label>
@@ -56,14 +53,27 @@
                 <select tabindex="4" name="{{setting.name}}" {%if setting.inputType=="multiselect"%}  multiple class="chosen-select" {%else%} class="form-control" {% endif %}>
                     <option value=""></option>
                 {% if setting.selectFrom == "column" %}
-                    {% if doc.fe_designatedFields.objectTitle %}
+                    {% if doc.fe_designatedFields.objectTitle and (not setting.restrictColumnDataType or setting.restrictColumnDataType == 'string')%}
                         <option value="Object Title" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == "Object Title" %}  selected {%elif setting.inputType == "multiselect" 
                         and doc.fe_views.views[view.name][setting.name] | doesArrayContain("Object Title") %} selected  {%endif%}> ** Object Title ** </option>
                     {% endif %}
                     {% for col in colNames %}  
-                        <option value="{{col}}" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == col %}  selected {%elif setting.inputType == "multiselect" 
-                        and doc.fe_views.views[view.name][setting.name] | doesArrayContain(col) %} selected {% elif 
-                        setting.inputType=="select_nested" and doc.fe_views.views[view.name] | doesNestedObjectContain(setting.name,col) %} selected {%endif%} > {{col}}</option>
+                        {% if not doc.fe_excludeFields | doesArrayContain(col) %}
+                            {% if setting.restrictColumnDataType and setting.restrictColumnDataType != "string" %}
+
+                                {% if setting.restrictColumnDataType | colHasDataType(col,doc.raw_rowObjects_coercionScheme) %}
+
+<option value="{{col}}" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == col %}  selected {%elif setting.inputType == "multiselect" and doc.fe_views.views[view.name][setting.name] | doesArrayContain(col) %} selected {% elif 
+                                setting.inputType=="select_nested" and doc.fe_views.views[view.name] | doesNestedObjectContain(setting.name,col) %} selected {%endif%} > {{col}}</option>
+
+                                {% endif %}
+                            {% else %}
+<option value="{{col}}" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == col %}  selected {%elif setting.inputType == "multiselect" and doc.fe_views.views[view.name][setting.name] | doesArrayContain(col) %} selected {% elif 
+                                setting.inputType=="select_nested" and doc.fe_views.views[view.name] | doesNestedObjectContain(setting.name,col) %} selected {%endif%} > {{col}}</option>
+                            {% endif %}
+
+                        {%endif%}
+                       
                     {% endfor %}
                 {% elif setting.selectFrom == "duration" %}
                     {% for dur in available_forDuration %}
@@ -89,9 +99,6 @@
             {% endif %}
         </div>
 
-
-
-       
             <div class="templateDiv {% if not doc.fe_views.views[view.name][setting.name] | isObjectEmpty %} hidden {%endif%}"  id="template_{{setting.name}}">
        
                 <div class="form-group row">
@@ -107,7 +114,9 @@
                             <option value=""> </option>
                             <option value="_all"> ** All Fields ** </option>
                         {% for col in colNames %}
-                            <option value="{{col}}">{{col}}</option>
+                             {% if not doc.fe_excludeFields | doesArrayContain(col) %}
+                                <option value="{{col}}">{{col}}</option>
+                             {% endif %}
                         {% endfor %}
                         </select>
                     {% elif setting.keyInputType == "textbox" %}
@@ -132,7 +141,9 @@
                             <option value=""> </option>
                             <option value="_all"> ** All Fields ** </option>
                             {% for col in colNames %}
-                                <option value="{{col}}">{{col}}</option>
+                                {% if not doc.fe_excludeFields | doesArrayContain(col) %}
+                                    <option value="{{col}}">{{col}}</option>
+                                 {% endif %}
                             {% endfor %}
                             </select>
 
@@ -161,7 +172,10 @@
                         <option value=""> </option>
                         <option value="_all" {%if doc.fe_views.views[view.name][setting.name]._all %} selected {%endif%}> ** All Fields ** </option>
                     {% for col in colNames %}
-                        <option value="{{col}}" {{'selected' if  key == col }}>{{col}}</option>
+                        {% if not doc.fe_excludeFields | doesArrayContain(col) %}
+                                <option value="{{col}}" {{'selected' if  key == col }}>{{col}}</option>
+                        {% endif %}
+                        
                     {% endfor %}
                     </select>
                 {% endif %}

@@ -42,6 +42,10 @@ module.exports.getSettings = function (req, next) {
     var data = {};
 
     if (req.params.id) {
+
+        req.session.uploadData_columnNames = null;
+        req.session.uploadData_firstRecord = null;
+
         datasource_description.findById(req.params.id, function (err, doc) {
 
             if (err) return next(err);
@@ -166,8 +170,7 @@ module.exports.saveSource = function (req, next) {
 
 
 
-    req.session.uploadData_columnNames = null;
-    req.session.uploadData_firstRecord = null;
+    
 
     var batch = new Batch;
     batch.concurrency(1);
@@ -341,6 +344,9 @@ function _loadDatasourceColumnsAndSampleRecords(req, description, next) {
 }
 
 module.exports.getFormatData = function (req, next) {
+
+
+
 
     if (req.params.id) {
         var data = {};
@@ -619,7 +625,7 @@ module.exports.getFormatView = function (req, next) {
 
 
     batch.end(function(err) {
-    data.colNames = req.session.uploadData_columnNames;
+        data.colNames = req.session.uploadData_columnNames;
         next(err, data);
     });
 }

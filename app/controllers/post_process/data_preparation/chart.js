@@ -77,6 +77,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     if (!aggregateBy_humanReadable_available) {
                         aggregateBy_humanReadable_available = [];
+
+                       
+
                         if (!numberOfRecords_notAvailable)
                             aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
                     }
