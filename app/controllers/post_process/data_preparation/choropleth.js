@@ -226,7 +226,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                    view_description: dataSourceDescription.fe_views.views.choloropleth.description ? dataSourceDescription.fe_views.views.choloropleth.description : "",
+                    view_description: dataSourceDescription.fe_views.views.choropleth.description ? dataSourceDescription.fe_views.views.choropleth.description : "",
                     //
                     highestValue: highestValue,
                     featureCollection: {

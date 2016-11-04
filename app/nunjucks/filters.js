@@ -88,6 +88,7 @@ module.exports = function (nunjucks_env) {
 
 
     nunjucks_env.addFilter('colHasDataType',function(expectedDataType,col,coercionScheme) {
+        col = col.replace(/\./g, "_");
         if (typeof coercionScheme[col] !== 'undefined' && coercionScheme[col].operation ) {
             var lowercase = coercionScheme[col].operation.toLowerCase();
             return lowercase.indexOf(expectedDataType) >= 0;

@@ -44,7 +44,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName_humanReadable;
             var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
                 dataSourceDescription);
-            var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+            var raw_rowObjects_coercionSchema = dataSourceDesPription.raw_rowObjects_coercionScheme;
             var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
             raw_rowObjects_coercionSchema[groupBy_realColumnName].operation == "ToDate");
             var groupBy_outputInFormat = '';
@@ -364,7 +364,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             if (groupBy_isDate) {
                                 displayableVal = func.convertDateToBeRecognizable(el.label, groupBy_realColumnName, dataSourceDescription);
                             } else {
-                                displayableVal = importedDataPreparation.ValueToExcludeByOriginalKey(
+                                displayableVal = func.ValueToExcludeByOriginalKey(
                                     el.label, dataSourceDescription, groupBy_realColumnName, 'lineGraph');
                                 if (!displayableVal) return;
                             }
