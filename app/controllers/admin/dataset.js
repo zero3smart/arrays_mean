@@ -168,10 +168,6 @@ module.exports.getSource = function (req, next) {
 module.exports.saveSource = function (req, next) {
     var description;
 
-
-
-    
-
     var batch = new Batch;
     batch.concurrency(1);
 
@@ -266,9 +262,7 @@ module.exports.saveSource = function (req, next) {
 
     batch.end(function (err) {
         if (err) {
-
             req.flash('error',err.message);
-
 
             req.session.uploadData_columnNames = null;
             req.session.uploadData_firstRecord = null;
@@ -344,9 +338,6 @@ function _loadDatasourceColumnsAndSampleRecords(req, description, next) {
 }
 
 module.exports.getFormatData = function (req, next) {
-
-
-
 
     if (req.params.id) {
         var data = {};

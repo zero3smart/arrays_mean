@@ -66,6 +66,7 @@ $(document).ready(function () {
 
         var field_name = $(this).attr('data-field-name');
         var doc_id = $('#doc_id').val();
+        var doc_title = $('#doc_title').val();
 
         $.get("/admin/dataset/" + doc_id + "/format-field/" + field_name, null, function (data) {
 
@@ -74,7 +75,7 @@ $(document).ready(function () {
                     var $modalTitle = $(this).find('.modal-title');
                     var $modalBody = $(this).find('.modal-body');
 
-                    $modalTitle.html('Format Field');
+                    $modalTitle.html('Format Field - ' + doc_title);
                     $modalBody.html(data);
                 })
                 .modal();
@@ -84,6 +85,7 @@ $(document).ready(function () {
 
     $('#addCustomField').on('click', function (e) {
         var doc_id = $('#doc_id').val();
+        var doc_title = $('#doc_title').val();
 
         $.get("/admin/dataset/" + doc_id + "/add-custom-field", null, function (data) {
             $('#modal')
@@ -91,7 +93,7 @@ $(document).ready(function () {
                     var $modalTitle = $(this).find('.modal-title');
                     var $modalBody = $(this).find('.modal-body');
 
-                    $modalTitle.html('Add Custom Field');
+                    $modalTitle.html('Add Custom Field - ' + doc_title);
                     $modalBody.html(data);
                 })
                 .modal('show');
@@ -225,14 +227,15 @@ $(document).ready(function () {
 
         var viewType = $(this).attr('view-type-name');
         var doc_id = $('#doc_id').val();
-
+        var doc_title = $('#doc_title').val();
 
         $.get("/admin/dataset/" + doc_id + "/format-views/" + viewType, null, function (data) {
             $('#modal')
                 .on('show.bs.modal', function (e) {
                     var $modalTitle = $(this).find('.modal-title');
                     var $modalBody = $(this).find('.modal-body');
-                    $modalTitle.html('Format View');
+
+                    $modalTitle.html('Format View - ' + doc_title);
                     $modalBody.html(data);
                     $(".chosen-select").chosen({width: "100%"});  
                     /* start multiselect */

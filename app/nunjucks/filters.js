@@ -93,9 +93,11 @@ module.exports = function (nunjucks_env) {
             return array.toString()
 
         }
-    
-       
     })
+
+    nunjucks_env.addFilter('finalizeColumnName', function(colName) {
+        return colName.replace(/\./g, "_");
+    });
     
     // Array views - Filter obj construction
     nunjucks_env.addFilter('constructedFilterObj', function (existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter, isMultiselectable) {

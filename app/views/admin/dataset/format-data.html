@@ -11,6 +11,9 @@
 		<h1 class="admin-title">{{doc.title}} - Format Data</h1>
 	</header>
 
+	<input type="hidden" id="doc_title" value="{{ doc.title }}" />
+	<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
+
 	{% if flash | length %}
 	<div class="alert alert-success" role="alert">{{ flash }}</div>
 	{% endif %}
@@ -32,7 +35,6 @@
 				</div>
 			</div>
 
-			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
 			<input type="hidden" id="changed" name="changed" value="false"/>
 
 			<table id="fields" class="table">
@@ -47,13 +49,14 @@
 				</thead>
 				<tbody>
 				{% for colName in colNames %}
+				{% set finalizedColName = colName | finalizeColumnName %}
 				<tr class="field" data-field-name="{{ colName }}">
 					<th scope="row">{{ loop.index }}</th>
 					<td><input type="checkbox" {{ 'checked=checked' if
-						doc.fe_excludeFields | doesArrayContain(colName) }} disabled></td>
+						doc.fe_excludeFields | doesArrayContain(finalizedColName) }} disabled></td>
 					<td>{{ colName }}</td>
 					<td>
-						{{ doc.raw_rowObjects_coercionScheme[colName] | fieldDataType_coercion_toString }}
+						{{ doc.raw_rowObjects_coercionScheme[finalizedColName] | fieldDataType_coercion_toString }}
 					</td>
 					<td class="word-break">{{ firstRecord[loop.index0] }}</td>
 				</tr>
@@ -62,7 +65,7 @@
 			</table>
 
 			<div class="form-group">
-				<button type="button" class="form-control" id="addCustomField">Add custom field</button>
+				<button type="button" class="form-control" id="customFields">Custom Fields</button>
 			</div>
 
 			<div class="panel-footer">

@@ -66,11 +66,14 @@ var fieldValueDataTypeCoercion_coercionFunctions = function (inString, field) {
 
 
     } else if (opName == 'ToInteger') {
-        return parseInt(inString);
-
+        if (!isNaN(parseInt(inString)))
+            return parseInt(inString);
+        return 0;
 
     } else if (opName == 'ToFloat') {
-        return parseFloat(inString);
+        if (!isNaN(parseFloat(inString)));
+            return parseFloat(inString);
+        return 0;
 
     } else if (opName == 'ToStringTrim') {
         return inString.trim();
