@@ -104,6 +104,7 @@ module.exports.saveSettings = function (req, next) {
 
     var data = {};
 
+
     for (var field in req.body) {
         if (field.indexOf('[]') >= 0) {
             _castSerializeElementToArray(field,req.body);
@@ -338,6 +339,8 @@ function _loadDatasourceColumnsAndSampleRecords(req, description, next) {
 }
 
 module.exports.getFormatData = function (req, next) {
+
+
 
     if (req.params.id) {
         var data = {};

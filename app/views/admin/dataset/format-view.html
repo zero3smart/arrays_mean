@@ -48,13 +48,25 @@
             <div class="col-xs-4">
                 <label for="setting.name"> {{setting.displayAs}}</label>
             </div>
+
+
+
         </div>
 
         {% elseif setting.inputType == "select" or setting.inputType == "multiselect" or setting.inputType == "select_nested" %}
         <div class="form-group row">
             <div class="col-xs-4">
                 <label for="setting.name"> {{setting.displayAs}}</label>
+
+                {% if setting.restrictColumnDataType %}
+                    <small> ** only accept {{setting.restrictColumnDataType}} type </small>
+                {% endif %}
+
+
             </div>
+
+
+
             <div class="col-xs-8">
 
                 <select tabindex="4" name="{{setting.name}}" {%if setting.inputType=="multiselect"%}  multiple class="chosen-select" {%else%} class="form-control" {% endif %}>
@@ -64,6 +76,7 @@
                         <option value="Object Title" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == "Object Title" %}  selected {%elif setting.inputType == "multiselect" 
                         and doc.fe_views.views[view.name][setting.name] | doesArrayContain("Object Title") %} selected  {%endif%}> ** Object Title ** </option>
                     {% endif %}
+
                     {% for col in colNames %}  
                         {% if not doc.fe_excludeFields | doesArrayContain(col) %}
                             {% if setting.restrictColumnDataType and setting.restrictColumnDataType != "string" %}
@@ -75,13 +88,18 @@
 
                                 {% endif %}
                             {% else %}
+
+
 <option value="{{col}}" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == col %}  selected {%elif setting.inputType == "multiselect" and doc.fe_views.views[view.name][setting.name] | doesArrayContain(col) %} selected {% elif 
-                                setting.inputType=="select_nested" and doc.fe_views.views[view.name] | doesNestedObjectContain(setting.name,col) %} selected {%endif%} > {{col}}</option>
+                                setting.inputType=="select_nested" and (doc.fe_views.views[view.name] | doesNestedObjectContain(setting.name,col)) %} selected {%endif%} > {{col}}</option>
                             {% endif %}
 
                         {%endif%}
                        
                     {% endfor %}
+
+
+
                 {% elif setting.selectFrom == "duration" %}
                     {% for dur in available_forDuration %}
                         <option value="{{dur}}" {{ 'selected' if doc.fe_views.views[view.name][setting.name] == dur }}>{{dur}}</option>

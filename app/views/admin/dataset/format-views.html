@@ -28,14 +28,9 @@
 				<a class="add pull-right col-xs-1" data-placement="bottom" data-toggle="tooltip" title="Click individual view to customize this "><span class="glyphicon glyphicon-question-sign"></span></a>
 				
 				<label class="col-xs-4" for="default_view">Default View : </label>
-				<div class="col-xs-7"> 
+				<div class="col-xs-7  text-center"> 
+					<label id="showDefault_view"> {{ available_forViewTypes | findViewDisplayName(doc.fe_views.default_view) }}</label>
 
-					<select id="viewType" class="form-control" disabled>
-						{% for view in available_forViewTypes %}
-					
-						<option value="{{view.name}}" {{'selected' if doc.fe_views.default_view == view.name}}/> {{view.displayAs}}</option>
-						{% endfor %}
-					</select>
 				</div>
 			</div>
 

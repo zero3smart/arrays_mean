@@ -36,6 +36,18 @@ module.exports = function (nunjucks_env) {
     });
 
 
+    nunjucks_env.addFilter('findViewDisplayName',function(array,default_view) {
+        if (Array.isArray(array)) {
+            for (var i = 0; i < array.length; i++) {
+                if (array[i].name == default_view) {
+                    return array[i].displayAs;
+                }
+            }
+        }
+        return "Gallery";
+    })
+
+
 
 
     nunjucks_env.addFilter('isObjectEmpty', function (obj) {
@@ -61,6 +73,10 @@ module.exports = function (nunjucks_env) {
     });
 
     nunjucks_env.addFilter('doesNestedObjectContain',function(doc,nameWithDot,field) {
+        if (typeof doc == "undefined" || doc == null) {
+            return false;
+        }
+
         var split_array = nameWithDot.split(".");
         var key = split_array[0];
         var nestedKey = split_array[1];

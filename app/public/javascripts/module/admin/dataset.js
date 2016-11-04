@@ -105,6 +105,7 @@ $(document).ready(function () {
         var field = $('#name').val();
 
         var params = $('form.format-field').serialize();
+
         // TODO: Consider to ask for user to login since of expiration
 
         $.post("/admin/dataset/" + doc_id + "/format-field/" + field, params)
