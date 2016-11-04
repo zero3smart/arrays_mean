@@ -570,6 +570,9 @@ module.exports.getFormatViews = function (req, next) {
     if (!dataset_id) return next(new Error('Invalid parameter!'));
 
     views.find({}, {name: 1, displayAs: 1, icon: 1}, function (err, allViews) {
+
+
+
         if (err) return next(new Error('error when getting views'));
 
         var data = {id: dataset_id, available_forViewTypes: allViews};
