@@ -275,8 +275,6 @@ $(document).ready(function () {
 
         var params = form2js('format-view','.',true);
 
-        console.log(params)
-
         // 'form#format-view'
 
         jQuery.ajax ({
@@ -286,13 +284,9 @@ $(document).ready(function () {
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             success: function(data){
-                 if (data.default_view) {
-                    $('select#viewType').removeAttr("disabled");
-                    $('select#viewType').find(":selected").removeAttr('selected');
-                    $('select#viewType').find('option[value="'+data.default_view+'"]').prop('selected', true);
-                    $('select#viewType').attr("disabled",true);
 
-                } 
+                var display_name = $('td span#' + data.default_view).attr('view-display-name');
+                $('#showDefault_view').text(display_name);
                 if (typeof data.visible != undefined) {
                     $('td.visibility').children('input[value="'+view+'"]').prop("checked",data.visible);                      
                 }

@@ -670,6 +670,8 @@ module.exports.saveFormatView = function (req, next) {
             if (req.body.default_view == true) {
                 changedObj.default_view = field;
                 doc.fe_views.default_view = field;
+            } else {
+                changedObj.default_view = "gallery";
             }
      
             doc.fe_views.views[field].visible = req.body.visible;
@@ -707,7 +709,6 @@ module.exports.saveFormatView = function (req, next) {
                 }
 
             }
-            console.log( doc.fe_views.views[field]);
             doc.markModified('fe_views');
             done();
         })

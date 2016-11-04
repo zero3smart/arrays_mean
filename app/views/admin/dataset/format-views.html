@@ -47,7 +47,7 @@
 				<tr class="views" view-type-name="{{ view.name }}">
 					<td class="visibility"><input value="{{view.name}}" type="checkbox" {{ 'checked' if
 						doc.fe_views.views[view.name].visible == true  }} disabled></td>
-					<td><span class="{{ view.icon }}"></span>{{ view.displayAs }}</td>
+					<td><span class="{{ view.icon }}" id="{{view.name}}" view-display-name="{{view.displayAs}}"></span>{{ view.displayAs }}</td>
 				</tr>
 				{% endfor %}
 				</tbody>
