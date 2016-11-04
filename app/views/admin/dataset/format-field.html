@@ -1,6 +1,7 @@
 {% extends "../../layout/ajax.html" %}
 
 {% block content %}
+{% set finalizedFieldName = field | finalizeColumnName %}
 <form class="format-field">
     <div class="form-group">
         <div class="col-xs-4">
@@ -27,7 +28,7 @@
         <div class="col-xs-8">
             <select id="dataType" class="form-control" name="dataType">
                 {% for coercion in available_forFieldDataType_coercions %}
-                <option value="{{ coercion.operation }}" {{ 'selected' if coercion | fieldDataType_coercion_toString == doc.raw_rowObjects_coercionScheme[field] | fieldDataType_coercion_toString }}>
+                <option value="{{ coercion.operation }}" {{ 'selected' if coercion | fieldDataType_coercion_toString == doc.raw_rowObjects_coercionScheme[finalizedFieldName] | fieldDataType_coercion_toString }}>
                 {{ coercion | fieldDataType_coercion_toString }}
                 </option>
                 {% endfor %}
@@ -41,7 +42,7 @@
         </div>
         <div class="col-xs-8">
             <input type="text" id="dataFormat" name="dataFormat" class="form-control"
-                   value="{{ doc.raw_rowObjects_coercionScheme[field].format | safe }}"
+                   value="{{ doc.raw_rowObjects_coercionScheme[finalizedFieldName].format | safe }}"
                    title="Specify in which format the field is listed on the source file."/>
         </div>
     </div>
@@ -52,7 +53,7 @@
         </div>
         <div class="col-xs-8">
             <input type="text" id="dataOutputFormat" name="dataOutputFormat" class="form-control"
-                   value="{{ doc.raw_rowObjects_coercionScheme[field].outputFormat | safe }}"
+                   value="{{ doc.raw_rowObjects_coercionScheme[finalizedFieldName].outputFormat | safe }}"
                    title="Specify in which output format the field will be used to display, if you want to customize the field format"/>
         </div>
     </div>
@@ -63,7 +64,7 @@
         </div>
         <div class="col-xs-8">
             <input type="checkbox" id="exclude" name="exclude" value="true" {{ 'checked=checked' if
-            doc.fe_excludeFields | doesArrayContain(field) }} />
+            doc.fe_excludeFields | doesArrayContain(finalizedFieldName) }} />
         </div>
     </div>
 
@@ -72,7 +73,7 @@
             <label for="titleOverride" class="form-control">Title Override</label>
         </div>
         <div class="col-xs-8">
-            <input type="text" id="titleOverride" name="titleOverride" class="form-control" value="{{ doc.fe_displayTitleOverrides[field] | safe }}"/>
+            <input type="text" id="titleOverride" name="titleOverride" class="form-control" value="{{ doc.fe_displayTitleOverrides[finalizedFieldName] | safe }}"/>
         </div>
     </div>
 
@@ -81,7 +82,7 @@
             <label for="displayOrder" class="form-control">Display Order</label>
         </div>
         <div class="col-xs-8">
-            <input type="number" id="displayOrder" name="displayOrder" class="form-control" value="{{ doc.fe_fieldDisplayOrder[field] | safe }}"/>
+            <input type="number" id="displayOrder" name="displayOrder" class="form-control" value="{{ doc.fe_fieldDisplayOrder[finalizedFieldName] | safe }}"/>
         </div>
     </div>
 
@@ -92,9 +93,9 @@
         <div class="col-xs-8">
             <select id="designatedField" name="designatedField" class="form-control">
                 <option value="">Not used</option>
-                <option value="objectTitle" {{ 'selected' if doc.fe_designatedFields.objectTitle == field }}>Object Title</option>
-                <option value="originalImageURL" {{ 'selected' if doc.fe_designatedFields.originalImageURL == field }}>Original Image URL</option>
-                <option value="medThumbImageURL" {{ 'selected' if doc.fe_designatedFields.medThumbImageURL == field }}>Medium Thumb Image URL</option>
+                <option value="objectTitle" {{ 'selected' if doc.fe_designatedFields.objectTitle == finalizedFieldName }}>Object Title</option>
+                <option value="originalImageURL" {{ 'selected' if doc.fe_designatedFields.originalImageURL == finalizedFieldName }}>Original Image URL</option>
+                <option value="medThumbImageURL" {{ 'selected' if doc.fe_designatedFields.medThumbImageURL == finalizedFieldName }}>Medium Thumb Image URL</option>
             </select>
         </div>
     </div>
@@ -108,7 +109,7 @@
             </div>
             <div class="col-xs-4">
                 <input type="checkbox" id="filter_notAvailable" name="filter_notAvailable" value="true"
-                       {{ 'checked=checked' if doc.fe_filters.fieldsNotAvailable | doesArrayContain(field) }}/>
+                       {{ 'checked=checked' if doc.fe_filters.fieldsNotAvailable | doesArrayContain(finalizedFieldName) }}/>
             </div>
         </div>
 
@@ -118,7 +119,7 @@
             </div>
             <div class="col-xs-4">
                 <input type="checkbox" id="filter_commaSeparatedAsIndividual" name="filter_commaSeparatedAsIndividual"
-                       value="true" {{ 'checked=checked' if doc.fe_filters.fieldsCommaSeparatedAsIndividual | doesArrayContain(field) }}/>
+                       value="true" {{ 'checked=checked' if doc.fe_filters.fieldsCommaSeparatedAsIndividual | doesArrayContain(finalizedFieldName) }}/>
             </div>
         </div>
 
@@ -128,7 +129,7 @@
             </div>
             <div class="col-xs-4">
                 <input type="checkbox" id="filter_multiSelectable" name="filter_multiSelectable" value="true"
-                       {{ 'checked=checked' if doc.fe_filters.fieldsMultiSelectable | doesArrayContain(field) }}/>
+                       {{ 'checked=checked' if doc.fe_filters.fieldsMultiSelectable | doesArrayContain(finalizedFieldName) }}/>
             </div>
         </div>
 
@@ -138,7 +139,7 @@
             </div>
             <div class="col-xs-4">
                 <input type="checkbox" id="filter_sortableByInteger" name="filter_sortableByInteger" value="true"
-                       {{ 'checked=checked' if doc.fe_filters.fieldsSortableByInteger | doesArrayContain(field) }}/>
+                       {{ 'checked=checked' if doc.fe_filters.fieldsSortableByInteger | doesArrayContain(finalizedFieldName) }}/>
             </div>
         </div>
 
@@ -153,7 +154,7 @@
             </div>
         </div>
         <div id="extra_oneToOneOverrideWithValuesByTitle">
-            {% set titleOverride = doc.fe_displayTitleOverrides[field] if doc.fe_displayTitleOverrides[field] else field %}
+            {% set titleOverride = doc.fe_displayTitleOverrides[finalizedFieldName] if doc.fe_displayTitleOverrides[finalizedFieldName] else finalizedFieldName %}
             {% for value, title in doc.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[titleOverride] %}
             <div class="form-group row">
                 <div class="col-xs-5">
@@ -181,7 +182,7 @@
         </div>
         <div id="extra_valuesToExcludeByOriginalKey">
             {% for key, values in doc.fe_filters.valuesToExcludeByOriginalKey %}
-            {% if key == '_all' or key == field %}
+            {% if key == '_all' or key == finalizedFieldName %}
             {% for value in values %}
             <div class="form-group row">
                 <div class="col-xs-6">
@@ -241,17 +242,6 @@
             </div>
         </div>
 
-        <h4>Relationships</h4>
-
-        <div class="form-group">
-            <div class="col-xs-4">
-
-            </div>
-            <div class="col-xs-8">
-
-            </div>
-        </div>
-
         <h4>Nested</h4>
 
         <div class="form-group">
@@ -259,7 +249,7 @@
                 <label for="chk_nested" class="form-control">Is Nested?</label>
             </div>
             <div class="col-xs-8">
-                <input type="checkbox" id="chk_nested" class="chk_nested" name="nested_field" {{ 'checked="checked"' if doc.fe_nestedObject and doc.fe_nestedObject.fields | doesArrayContain(field) and not (doc.fe_nestedObject.criteria and doc.fe_nestedObject.criteria.fieldName == field) }} value="true">
+                <input type="checkbox" id="chk_nested" class="chk_nested" name="nested_field" {{ 'checked="checked"' if doc.fe_nestedObject and doc.fe_nestedObject.fields | doesArrayContain(finalizedFieldName) and not (doc.fe_nestedObject.criteria and doc.fe_nestedObject.criteria.fieldName == finalizedFieldName) }} value="true">
             </div>
         </div>
 
@@ -268,7 +258,7 @@
                 <label for="nested_criteria" class="form-control">Is Criteria?</label>
             </div>
             <div class="col-xs-8">
-                <input type="checkbox" id="nested_criteria" name="nested_criteria" {{ 'checked="checked"' if doc.fe_nestedObject and doc.fe_nestedObject.criteria and doc.fe_nestedObject.criteria.fieldName == field }} value="true"/>
+                <input type="checkbox" id="nested_criteria" name="nested_criteria" {{ 'checked="checked"' if doc.fe_nestedObject and doc.fe_nestedObject.criteria and doc.fe_nestedObject.criteria.fieldName == finalizedFieldName }} value="true"/>
             </div>
         </div>
 
@@ -286,7 +276,7 @@
                 <label for="nested_fieldOverride" class="form-control">Field Name Override</label>
             </div>
             <div class="col-xs-8">
-                <input type="text" id="nested_fieldOverride" class="form-control" name="nested_fieldOverride" value="{{ doc.fe_nestedObject.fieldOverrides[field] if doc.fe_nestedObject and doc.fe_nestedObject.fieldOverrides and doc.fe_nestedObject.fieldOverrides[field] }}"/>
+                <input type="text" id="nested_fieldOverride" class="form-control" name="nested_fieldOverride" value="{{ doc.fe_nestedObject.fieldOverrides[finalizedFieldName] if doc.fe_nestedObject and doc.fe_nestedObject.fieldOverrides and doc.fe_nestedObject.fieldOverrides[finalizedFieldName] }}"/>
             </div>
         </div>
 
@@ -301,8 +291,8 @@
             </div>
         </div>
         <div id="extra_nested_valueOverrides">
-            {% if doc.fe_nestedObject and doc.fe_nestedObject.valueOverrides and doc.fe_nestedObject.valueOverrides[field] %}
-                {% for key,value in doc.fe_nestedObject.valueOverrides[field] %}
+            {% if doc.fe_nestedObject and doc.fe_nestedObject.valueOverrides and doc.fe_nestedObject.valueOverrides[finalizedFieldName] %}
+                {% for key,value in doc.fe_nestedObject.valueOverrides[finalizedFieldName] %}
                     <div class="form-group row">
                         <div class="col-xs-offset-1 col-xs-4">
                             <input type="text" class="form-control" name="nested_valueOverride_keys[]" value="{{ key }}"/>
@@ -319,15 +309,23 @@
             {% endif %}
         </div>
 
+        <h4>Relationships</h4>
+
+        <div class="form-group">
+            <div class="col-xs-4">
+
+            </div>
+            <div class="col-xs-8">
+
+            </div>
+        </div>
+
     </div>
 
     <button type="button" class="form-control show-more-settings">Show More Settings</button>
 
     <div class="form-group">
-        <div class="col-xs-4 text-right">
-            {# <h5>Data: {{ doc.title }}</h5> #}
-        </div>
-        <div class="col-xs-4">
+        <div class="col-xs-4 col-xs-offset-4">
             <button id="format-field-reset" type="button" class="pull-right form-control">Reset</button>
         </div>
         <div class="col-xs-4">

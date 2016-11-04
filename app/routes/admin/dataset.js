@@ -39,8 +39,8 @@ router.get('/new/settings', ensureLoggedIn, function (req, res) {
 router.get('/:id/settings', ensureLoggedIn, function (req, res) {
     controller.getSettings(req, function (err, data) {
         if (err) {
-            winston.error("❌  Error getting bind data for Dataset settings: ", err);
-            res.status(500).send(err.response || 'Internal Server Error');
+            winston.error("❌  Error getting bind data for dataset settings: ", err);
+            err.
 
             return;
         }

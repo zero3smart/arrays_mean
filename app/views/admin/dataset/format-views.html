@@ -11,6 +11,9 @@
 		<h1 class="admin-title">{{doc.title}} - Format Views</h1>
 	</header>
 
+	<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
+	<input type="hidden" id="doc_title" value="{{ doc.title }}"/>
+
 	{% if flash | length %}
 	<div class="alert alert-success" role="alert">{{ flash }}</div>
 	{% endif %}
@@ -20,15 +23,9 @@
 
 		<br />
 
-
-
-
 		<form class="format-views">
-
-			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
-
-				<div class="form-group row">
-					<a class="add pull-right col-xs-1" data-placement="bottom" data-toggle="tooltip" title="Click individual view to customize this "><span class="glyphicon glyphicon-question-sign"></span></a>
+			<div class="form-group row">
+				<a class="add pull-right col-xs-1" data-placement="bottom" data-toggle="tooltip" title="Click individual view to customize this "><span class="glyphicon glyphicon-question-sign"></span></a>
 				
 				<label class="col-xs-4" for="default_view">Default View : </label>
 				<div class="col-xs-7"> 
@@ -77,12 +74,7 @@
 	</div>
 
 
-
 	{% include "../../partials/admin/modal.html" %}
-
-
-
-
 
 {% endblock %}
 

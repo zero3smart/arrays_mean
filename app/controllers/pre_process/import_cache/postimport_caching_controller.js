@@ -159,9 +159,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 // remove illegal values
                 var illegalValues = []; // default val
 
-
                 if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey) {
-
 
                     if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all) {
 
