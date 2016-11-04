@@ -350,7 +350,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         var finalizedButNotCoalesced_groupedResults = [];
 
-
                         _.each(_groupedResults, function (el, i) {
                             //
                             if (el.label) {
@@ -394,7 +393,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         });
                         var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
                         var groupedResults = [];
-
 
                         _.each(lowercasedLabels, function (key, i, arr) {
                             var summedValue = summedValuesByLowercasedLabels[key];
@@ -446,7 +444,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.end(function (err) {
                 if (err) return callback(err);
 
-                console.log('--- %j', dataSourceDescription.fe_views.views.barChart.description);
                 //
                 var data =
                 {
