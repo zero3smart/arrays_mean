@@ -310,7 +310,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     var eachCtx;
     var eachCtx = dataSourceDescription.customFieldsToProcess;
-    if (typeof dataSourceDescription.fe_nestedObject != 'undefined') {
+    if (typeof dataSourceDescription.fe_nestedObject != 'undefined' && dataSourceDescription.fe_nestedObject.field) {
         eachCtx = dataSourceDescription.fe_nestedObject;
         eachCtx.nested = true;
         eachCtx.numberOfInsertedRows = 0;
@@ -321,9 +321,10 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     startIterations();
 
     function startIterations() {
+    
 
-
-        if (eachCtx == null || typeof eachCtx == 'undefined') {
+        if (eachCtx == null || typeof eachCtx == 'undefined' || (Array.isArray(eachCtx) && eachCtx.length==0)) {
+            console.log("continueToAfterIterating");
             continueToAfterIterating();
         } else {
             eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation

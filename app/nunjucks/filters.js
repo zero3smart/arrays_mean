@@ -18,6 +18,7 @@ module.exports = function (nunjucks_env) {
         return Array.isArray(val);
     });
     nunjucks_env.addFilter('doesArrayContain', function (array, member) {
+
         if (Array.isArray(array))
             return array.indexOf(member) !== -1 || array.indexOf(parseInt(member)) !== -1;
         else if (typeof array === 'string') {
@@ -69,10 +70,26 @@ module.exports = function (nunjucks_env) {
         return false;
     })
 
+
+    nunjucks_env.addFilter('colHasDataType',function(expectedDataType,col,coercionScheme) {
+        if (typeof coercionScheme[col] !== 'undefined' && coercionScheme[col].operation ) {
+            var lowercase = coercionScheme[col].operation.toLowerCase();
+            return lowercase.indexOf(expectedDataType) >= 0;
+
+        }
+        return false;
+
+
+    })
     nunjucks_env.addFilter('castArrayToStringSeparatedByComma',function(array) {
         if (Array.isArray(array)) {
             var indexOfNullType = array.indexOf(null);
-            array.splice(indexOfNullType,1);
+     
+            if (indexOfNullType >= 0) {
+                array.splice(indexOfNullType,1);
+
+            }
+        
             return array.toString()
 
         }
