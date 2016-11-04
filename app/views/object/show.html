@@ -62,6 +62,7 @@
                                                 {% endif %}
                                             {% else %}
                                                 <dt>{{ columnName }}</dt>
+
                                                 <dd>
                                                 {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
                                                 {% if shouldLink %}
@@ -74,6 +75,8 @@
                                                     </a>
                                                 {% endif %}
                                                 </dd>
+
+                                                
                                             {% endif %}
                                         {% endif %}
 

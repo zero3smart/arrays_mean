@@ -189,6 +189,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName !== 'undefined') {
 
                     for (var relationshipFieldName in dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName) {
+                        
                         fe_objectShow_customHTMLOverrideFnsByColumnName[relationshipFieldName] = function (rowObject, eachValue, strParams) {
                             var relationshipObjectShowLink = "/array/" + eachValue.srcDocPKey + "/" + eachValue._id;
                             if (strParams && strParams != '') relationshipObjectShowLink += '?' + strParams;

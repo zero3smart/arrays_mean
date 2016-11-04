@@ -269,7 +269,8 @@ module.exports = function (nunjucks_env) {
     });
     // Object detail view - Detect/substitute the url string in the parameter with the wrapped a tag
     nunjucks_env.addFilter('substitutePlainURLs', function (str) {
-        return str.split(/[\s]+/).map(function (el) {
+
+        return str.toString().split(/[\s]+/).map(function (el) {
             var result = url.parse(el);
             if ((result.protocol == 'http:' || result.protocol == 'https:')
                 && result.hostname != null && result.hostname != '') {
@@ -278,6 +279,9 @@ module.exports = function (nunjucks_env) {
                 return el;
             }
         }).join(' ');
+
+
+
     });
 
     // Object Row Coercion Data Type
