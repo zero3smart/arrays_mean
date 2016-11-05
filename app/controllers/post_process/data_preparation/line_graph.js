@@ -364,7 +364,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             if (groupBy_isDate) {
                                 displayableVal = func.convertDateToBeRecognizable(el.label, groupBy_realColumnName, dataSourceDescription);
                             } else {
-                                displayableVal = importedDataPreparation.ValueToExcludeByOriginalKey(
+                                displayableVal = func.ValueToExcludeByOriginalKey(
                                     el.label, dataSourceDescription, groupBy_realColumnName, 'lineGraph');
                                 if (!displayableVal) return;
                             }
