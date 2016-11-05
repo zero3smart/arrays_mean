@@ -103,6 +103,9 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 }
                                 rowObjectsOfRelationship_mongooseModel.find(findQuery, function (err, hydrationFetchResults) {
                                     if (err) return done(err);
+                                    console.log(findQuery);
+                                    console.log("after finding rowObjectmodel");
+
 
 
                                     var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
@@ -125,6 +128,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
             batch.end(function (err) {
                 if (err) return callback(err);
+
+                console.log("batchEnd");
 
                 //
                 var fieldsNotToLinkAsGalleryFilter_byColName = {}; // we will translate any original keys to human-readable later
