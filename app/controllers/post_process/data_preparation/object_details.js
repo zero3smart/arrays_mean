@@ -103,7 +103,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 }
                                 rowObjectsOfRelationship_mongooseModel.find(findQuery, function (err, hydrationFetchResults) {
                                     if (err) return done(err);
-                                    console.log(findQuery);
                                     console.log("after finding rowObjectmodel");
 
 
