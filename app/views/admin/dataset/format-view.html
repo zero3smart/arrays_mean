@@ -65,21 +65,24 @@
 
             </div>
 
-
-
             <div class="col-xs-8">
 
                 <select tabindex="4" name="{{setting.name}}" {%if setting.inputType=="multiselect"%}  multiple class="chosen-select" {%else%} class="form-control" {% endif %}>
                     <option value=""></option>
                 {% if setting.selectFrom == "column" %}
+
                     {% if doc.fe_designatedFields.objectTitle and (not setting.restrictColumnDataType or setting.restrictColumnDataType == 'string')%}
                         <option value="Object Title" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == "Object Title" %}  selected {%elif setting.inputType == "multiselect" 
                         and doc.fe_views.views[view.name][setting.name] | doesArrayContain("Object Title") %} selected  {%endif%}> ** Object Title ** </option>
                     {% endif %}
 
                     {% for col in colNames %}  
+
                         {% if not doc.fe_excludeFields | doesArrayContain(col) %}
+
+
                             {% if setting.restrictColumnDataType and setting.restrictColumnDataType != "string" %}
+
 
                                 {% if setting.restrictColumnDataType | colHasDataType(col,doc.raw_rowObjects_coercionScheme) %}
 
@@ -90,11 +93,15 @@
                             {% else %}
 
 
+
+
 <option value="{{col}}" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == col %}  selected {%elif setting.inputType == "multiselect" and doc.fe_views.views[view.name][setting.name] | doesArrayContain(col) %} selected {% elif 
                                 setting.inputType=="select_nested" and (doc.fe_views.views[view.name] | doesNestedObjectContain(setting.name,col)) %} selected {%endif%} > {{col}}</option>
                             {% endif %}
 
                         {%endif%}
+
+
                        
                     {% endfor %}
 
@@ -174,7 +181,11 @@
 
 
                         {% endif %}
-                     
+                    {% elif setting.valueInputType == "colorpicker" %}
+    
+                        <input type="text" class="startEmpty form-control" name="{{setting.name}}_value[]" value='{{color}}' /> 
+               
+                
 
                     {% endif %}
                     </div>
@@ -185,10 +196,10 @@
             {% for key,value in doc.fe_views.views[view.name][setting.name]  %}
 
    
-            <div class="form-group row">
+            <div class="templateDiv form-group row">
                 
                 <div class="pull-right col-xs-1">
-                    <a field-name="{{setting.name}}" class="hideTemplate"><span class="glyphicon glyphicon-remove"></span></a>
+                    <a delete-this="true" field-name="{{setting.name}}" class="hideTemplate"><span class="glyphicon glyphicon-remove"></span></a>
                 </div>
                 
                 <div class="col-xs-4">
@@ -217,7 +228,7 @@
                     </div>
                 {% elif setting.valueInputType == "textbox" %}
                     <div class="from-group">
-                        <input value="{{value}}" name="{{setting.name}}_value[]" class="form-control" type="text">
+                        <input {%if setting.valueNestedField %}value="{{value[setting.valueNestedField]}}" name="{{setting.name+'_value'}}[].{{setting.valueNestedField}}" {%else%} value="{{value}}" name="{{setting.name}}_value[]"  {%endif%} class="form-control" type="text">
                     </div>
                 {% elif setting.valueInputType == "select" %}
 
@@ -232,6 +243,8 @@
                             {% endfor %}
                         </select>
                     {% endif %}
+                {% elif setting.valueInputType == "colorpicker" %}
+                     <input type="text" class="startEmpty form-control" name="{{setting.name}}_value[]" value='{{value}}' /> 
 
                  
 

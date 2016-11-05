@@ -89,7 +89,9 @@ function _castSerializeElementToObject(key,value,commaSeparated) {
              objToReturn[key] = value[i].split(",");
 
         } else {
+
             objToReturn[key[i]] = value[i]
+  
 
         }
 
@@ -685,7 +687,12 @@ module.exports.saveFormatView = function (req, next) {
                         var index = attr.indexOf('_key');
                         var value = attr.substring(0,index);
                         
+
+                        
+
+
                         if (rest[value+"_value"] !== null && typeof rest[value + "_value"] !== 'undefined') {
+
 
                             var obj =_castSerializeElementToObject(rest[attr], rest[value + "_value"],false);
                             doc.fe_views.views[field][value] = obj;
@@ -709,6 +716,7 @@ module.exports.saveFormatView = function (req, next) {
                 }
 
             }
+            console.log(doc.fe_views.views[field]);
             doc.markModified('fe_views');
             done();
         })
@@ -716,10 +724,10 @@ module.exports.saveFormatView = function (req, next) {
     })
 
     batch.end(function(err) {
-        doc.save(function(err,updatedDoc) {
-            if (err) return next(err);
-            return next(null,changedObj);
-        })
+        // doc.save(function(err,updatedDoc) {
+        //     if (err) return next(err);
+        //     return next(null,changedObj);
+        // })
     })
 
 
