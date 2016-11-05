@@ -106,11 +106,15 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 } else {
                                     findQuery._id = {$in: valueInDocAtField};
                                 }
-                                var fieldToAcquire = {source_pKey:1};
+                                var fieldToAcquire = {};
                                 if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName !== 'undefined') {
-
+                                    fieldToAcquire ={ srcDocPKey:1,_id:1};
+                                    var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName[field].showField;
+                                    fieldToAcquire["rowParams."+wantedfield] = 1;
                                 }
-                                rowObjectsOfRelationship_mongooseModel.find(findQuery, function (err, hydrationFetchResults) {
+                                rowObjectsOfRelationship_mongooseModel.find(findQuery)
+                                .select(fieldToAcquire)
+                                .exec(function (err, hydrationFetchResults) {
                                     if (err) return done(err);
 
 
