@@ -35,9 +35,6 @@ nunjucks.setup({
 }, app).then(require('./nunjucks/filters'))
 
 
-
-
-
 // Redirect https
 app.use(function (req, res, next) {
     if (process.env.USE_SSL === 'true' && 'https' !== req.header('x-forwarded-proto')) {
