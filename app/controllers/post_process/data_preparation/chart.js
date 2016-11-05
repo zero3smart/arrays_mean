@@ -39,9 +39,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
 
 
-            var defaultGroupByColumnName_humanReadable = chartViewSettings.defaultGroupByColumnName_humanReadable;
-            var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
-                dataSourceDescription);
+            var defaultGroupByColumnName_humanReadable = 
+            dataSourceDescription.fe_displayTitleOverrides[chartViewSettings.defaultGroupByColumnName] || 
+            chartViewSettings.defaultGroupByColumnName;
+
+
+            var groupBy_realColumnName = groupBy? 
+            importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,
+                dataSourceDescription) : chartViewSettings.defaultGroupByColumnName;
+
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             //
             var routePath_base = "/array/" + source_pKey + "/chart";
@@ -60,7 +66,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Aggregate By
             var aggregateBy = urlQuery.aggregateBy;
-            var defaultAggregateByColumnName_humanReadable = chartViewSettings.defaultAggregateByColumnName_humanReadable;
+            var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[chartViewSettings.defaultAggregateByColumnName] ||
+            chartViewSettings.defaultAggregateByColumnName ;
             var numberOfRecords_notAvailable = chartViewSettings.aggregateByColumnName_numberOfRecords_notAvailable
 
             if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
@@ -68,6 +75,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Aggregate By Available
             var aggregateBy_humanReadable_available = undefined;
+
             for (var colName in raw_rowObjects_coercionSchema) {
                 var colValue = raw_rowObjects_coercionSchema[colName];
                 if (colValue.operation == "ToInteger") {
@@ -95,8 +103,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregateBy_humanReadable_available = undefined;
             }
 
-            var aggregateBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy ? aggregateBy : defaultAggregateByColumnName_humanReadable, dataSourceDescription);
-
+            var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
+            chartViewSettings.defaultAggregateByColumnName;
+            
             //
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults = [];
 

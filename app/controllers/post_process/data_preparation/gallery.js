@@ -123,8 +123,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var limitToNResults = config.pageSize;
 
             var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
-            var defaultSortByColumnName_humanReadable = galleryViewSettings.defaultSortByColumnName_humanReadable;
-            var sortBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy ? sortBy : defaultSortByColumnName_humanReadable, dataSourceDescription);
+            var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[galleryViewSettings.defaultSortByColumnName] || galleryViewSettings.defaultSortByColumnName;
+
+            var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) :
+            dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName;
+
+
+        
 
             var sortDir = urlQuery.sortDir;
             var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;

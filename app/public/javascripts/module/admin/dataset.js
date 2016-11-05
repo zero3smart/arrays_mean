@@ -277,6 +277,7 @@ $(document).ready(function () {
 
         // 'form#format-view'
 
+
         jQuery.ajax ({
             url: "/admin/dataset/" + doc_id + "/format-view/" + view,
             type: "POST",
@@ -302,12 +303,28 @@ $(document).ready(function () {
 
     $('#modal').on('click','div.templateDiv a.hideTemplate',function(e) {
         e.preventDefault();
-        var set = $(this).attr('field-name');
-        $('.reset').val('');
-        $(this).closest('#template_'+set).addClass('hidden');
+
+        if ($(this).attr('delete-this') == 'true') {
+             $(this).closest('.templateDiv').remove();
+
+            
+
+        } else {
+            var set = $(this).attr('field-name');
+
+            $('div#template_' + set+ ' .reset').val('');
+            $(this).closest('#template_'+set).addClass('hidden');
+
+        }
+        
     })
     $('#modal').on('click','div.templateClone a.hideTemplate',function(e) {
+
+
         e.preventDefault();
+
+
+
         var settingName = $(this).attr('field-name');
         $(this).closest('.templateClone_' + settingName).remove();
     })
