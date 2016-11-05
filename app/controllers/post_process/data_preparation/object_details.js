@@ -126,8 +126,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
             batch.end(function (err) {
                 if (err) return callback(err);
 
-                console.log("batchEnd");
-
                 //
                 var fieldsNotToLinkAsGalleryFilter_byColName = {}; // we will translate any original keys to human-readable later
                 var fe_filters_fieldsNotAvailable = dataSourceDescription.fe_filters.fieldsNotAvailable;
@@ -217,7 +215,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default || {}); // "|| {}" for safety
                 }
 
-                console.log("binding data");
                 //
                 var data =
                 {
@@ -248,6 +245,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: dataSourceDescription.fe_galleryItem_htmlForIconFromRowObjWhenMissingImage
                 };
+
+                console.log("return cb")
                 callback(null, data);
             });
 
