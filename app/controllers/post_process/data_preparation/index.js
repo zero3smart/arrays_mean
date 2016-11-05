@@ -19,6 +19,8 @@ module.exports.BindData = function (req, callback) {
         raw_source_documents.Model.findOne({
             primaryKey: source_pKey
         }, function (err, doc) {
+
+    
             if (err)
                 return callback(err, null);
 
@@ -104,6 +106,8 @@ module.exports.BindData = function (req, callback) {
     var getTeamDescriptionsFn = new Promise(function (resolve, reject) {
         teamDescriptions.GetTeams(function (err, all_teamDescriptions) {
             if (err) reject(err);
+        
+
             resolve(all_teamDescriptions);
         })
 

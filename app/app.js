@@ -35,9 +35,6 @@ nunjucks.setup({
 }, app).then(require('./nunjucks/filters'))
 
 
-
-
-
 // Redirect https
 app.use(function (req, res, next) {
     if (process.env.USE_SSL === 'true' && 'https' !== req.header('x-forwarded-proto')) {
@@ -89,7 +86,6 @@ app.use(expressWinston.logger({
 var mongoose_client = require('../lib/mongoose_client/mongoose_client');
 var raw_source_documents = require('./models/raw_source_documents');
 var datasource_descriptions = require('./datasources/descriptions');
-
 
 if (typeof process === 'object') { /* to debug promise */
     process.on('unhandledRejection', function (error, promise) {
