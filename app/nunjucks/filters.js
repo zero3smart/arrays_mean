@@ -234,6 +234,9 @@ module.exports = function (nunjucks_env) {
     });
     // Object detail view - Detect/substitute the url string in the parameter with the wrapped a tag
     nunjucks_env.addFilter('substitutePlainURLs', function (str) {
+
+        console.log(str);
+        
         return str.split(/[\s]+/).map(function (el) {
             var result = url.parse(el);
             if ((result.protocol == 'http:' || result.protocol == 'https:')

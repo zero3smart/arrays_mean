@@ -96,8 +96,7 @@ router.get('/:source_key/:object_id', function (req, res) {
     }
 
     object_details_controller.BindData(req, source_key, object_id, function (err, bindData) {
-        console.log(err);
-        console.log(JSON.stringify(bindData));
+
         if (err) {
             winston.error("❌  Error getting bind data for Array source_key " + source_key + " object " + object_id + " details: ", err);
             res.status(500).send(err.response || 'Internal Server Error');
@@ -111,8 +110,6 @@ router.get('/:source_key/:object_id', function (req, res) {
         }
         bindData.embedded = req.query.embed;
         bindData.referer = req.headers.referer;
-        
-        console.log("rendering");
         res.render('object/show', bindData);
     });
 });

@@ -78,6 +78,11 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
             batch.push(function (done) {
                 var afterImportingAllSources_generate = dataSourceDescription.relationshipFields;
                 if (typeof afterImportingAllSources_generate !== 'undefined') {
+
+                
+
+
+
                     var batch = new Batch();
                     batch.concurrency(1);
 
@@ -101,6 +106,10 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 } else {
                                     findQuery._id = {$in: valueInDocAtField};
                                 }
+                                var fieldToAcquire = {source_pKey:1};
+                                if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName !== 'undefined') {
+
+                                }
                                 rowObjectsOfRelationship_mongooseModel.find(findQuery, function (err, hydrationFetchResults) {
                                     if (err) return done(err);
 
@@ -114,6 +123,13 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 done(); // nothing to hydrate
                             }
                         });
+
+
+
+
+
+
+
                     });
 
                     batch.end(done);
@@ -186,8 +202,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
                 var fe_objectShow_customHTMLOverrideFnsByColumnName = {};
 
-                console.log("gett")
-
                 if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName !== 'undefined') {
 
                     for (var relationshipFieldName in dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName) {
@@ -245,8 +259,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: dataSourceDescription.fe_galleryItem_htmlForIconFromRowObjWhenMissingImage
                 };
-
-                console.log("return cb")
                 callback(null, data);
             });
 
