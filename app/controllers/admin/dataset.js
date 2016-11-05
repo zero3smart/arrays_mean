@@ -704,7 +704,6 @@ module.exports.saveFormatView = function (req, next) {
                 }
 
             }
-            console.log( doc.fe_views.views[field]);
             doc.markModified('fe_views');
             done();
         })
