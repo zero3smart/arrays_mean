@@ -19,6 +19,8 @@
 
 		<br />
 		<h2>Congratulations!  You're all done!</h2>
+		{% set url = ["../../../array/", doc.uid, "-r", doc.importRevision, "/", doc.fe_views.default_view] %}
+		<h2>View your <strong><a href={{ url | join }}>array</a></strong></h2>
 
 	</div>
 
