@@ -39,7 +39,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
-            var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName_humanReadable;
+            var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName] ||
+            dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName
+
+
             var keywords = dataSourceDescription.fe_views.views.wordCloud.keywords;
             //
             var routePath_base = "/array/" + source_pKey + "/word-cloud";
@@ -122,8 +125,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain grouped results
             batch.push(function (done) {
-                var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
-                    dataSourceDescription);
+                var groupBy_realColumnName = groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
+                dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName;
+            
                 //
                 var aggregationOperators = [];
                 if (isSearchActive) {
