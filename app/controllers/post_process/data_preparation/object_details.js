@@ -103,8 +103,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 }
                                 rowObjectsOfRelationship_mongooseModel.find(findQuery, function (err, hydrationFetchResults) {
                                     if (err) return done(err);
-                                    console.log("after finding rowObjectmodel");
-
 
 
                                     var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
@@ -190,6 +188,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
                 var fe_objectShow_customHTMLOverrideFnsByColumnName = {};
 
+                console.log("gett")
+
                 if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName !== 'undefined') {
 
                     for (var relationshipFieldName in dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName) {
@@ -216,6 +216,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 if (typeof dataSourceDescription.fe_filters.default !== 'undefined') {
                     default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default || {}); // "|| {}" for safety
                 }
+
+                console.log("binding data");
                 //
                 var data =
                 {
