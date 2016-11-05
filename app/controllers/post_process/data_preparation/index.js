@@ -19,6 +19,8 @@ module.exports.BindData = function (req, callback) {
         raw_source_documents.Model.findOne({
             primaryKey: source_pKey
         }, function (err, doc) {
+
+            console.log("raw_source_documents");
             if (err)
                 return callback(err, null);
 
@@ -97,6 +99,7 @@ module.exports.BindData = function (req, callback) {
     var getDatasourceDescriptionsFn = new Promise(function (resolve, reject) {
         dataSourceDescriptions.GetDescriptions(function (err, all_datasourceDescriptions) {
             if (err) reject(err);
+            console.log("getting all descriptions");
             resolve(all_datasourceDescriptions);
         })
     })
@@ -104,6 +107,8 @@ module.exports.BindData = function (req, callback) {
     var getTeamDescriptionsFn = new Promise(function (resolve, reject) {
         teamDescriptions.GetTeams(function (err, all_teamDescriptions) {
             if (err) reject(err);
+            console.log("getting all teams");
+
             resolve(all_teamDescriptions);
         })
 
