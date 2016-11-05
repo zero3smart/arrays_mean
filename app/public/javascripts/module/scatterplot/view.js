@@ -4,7 +4,7 @@
  * @abstract
  * @class
  */
-scatterplot.view.main = function(chart) {
+scatterplot.view.main = function (chart) {
     /**
      * Scatterplot instance.
      * @private
@@ -26,7 +26,7 @@ scatterplot.view.main = function(chart) {
  * @abstract
  * @param {Object[]} data
  */
-scatterplot.view.main.prototype.render = function(data) {
+scatterplot.view.main.prototype.render = function (data) {
 
     throw new Error('scatterplot.view#render not implemented!');
 };
@@ -41,7 +41,7 @@ scatterplot.view.main.prototype.render = function(data) {
  * @param {Number[]} yTicks
  * @return {Integer[][]|Object}
  */
-scatterplot.view.main.prototype.getDensityMatrix = function(data, xTicks, yTicks) {
+scatterplot.view.main.prototype.getDensityMatrix = function (data, xTicks, yTicks) {
 
     throw new Error('scatterplot.view#getDensityMatrix not implemented!');
 };
@@ -54,7 +54,7 @@ scatterplot.view.main.prototype.getDensityMatrix = function(data, xTicks, yTicks
  * @param {SVGElement} bubble
  * @param {Object} data
  */
-scatterplot.view.main.prototype.showTooltip = function(bubble, data) {
+scatterplot.view.main.prototype.showTooltip = function (bubble, data) {
 
     throw new Error('scatterplot.view#showTooltip not implemented!');
 };
@@ -64,7 +64,7 @@ scatterplot.view.main.prototype.showTooltip = function(bubble, data) {
  * Hide tooltip.
  * @public
  */
-scatterplot.view.main.prototype.hideTooltip = function() {
+scatterplot.view.main.prototype.hideTooltip = function () {
 
     this._tooltip.hide();
 };

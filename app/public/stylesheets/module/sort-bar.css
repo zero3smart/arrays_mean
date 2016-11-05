@@ -204,8 +204,8 @@
 
 @media (max-width: 767px) {
 	.sort-bar-left {
-		position: absolute;
-		width: calc(100% - 45px);
+		/*position: absolute;*/
+		width: calc(100% - 46px);
 	}
 
 	.sort-bar-left .dropdown-toggle {

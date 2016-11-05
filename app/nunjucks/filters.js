@@ -1,5 +1,6 @@
 var moment = require('moment');
 var url = require('url');
+var import_datatypes = require('../datasources/utils/import_datatypes.js');
 
 module.exports = function (nunjucks_env) {
     nunjucks_env.addFilter('comma', require('nunjucks-comma-filter'));
@@ -17,6 +18,7 @@ module.exports = function (nunjucks_env) {
         return Array.isArray(val);
     });
     nunjucks_env.addFilter('doesArrayContain', function (array, member) {
+
         if (Array.isArray(array))
             return array.indexOf(member) !== -1 || array.indexOf(parseInt(member)) !== -1;
         else if (typeof array === 'string') {
@@ -27,11 +29,31 @@ module.exports = function (nunjucks_env) {
                 if (Array.isArray(obj))
                     return obj.indexOf(member) !== -1 || obj.indexOf(parseInt(member)) !== -1;
             } catch (e) {
+                console.log(e);
             }
         }
         return false;
     });
+
+
+    nunjucks_env.addFilter('findViewDisplayName',function(array,default_view) {
+        if (Array.isArray(array)) {
+            for (var i = 0; i < array.length; i++) {
+                if (array[i].name == default_view) {
+                    return array[i].displayAs;
+                }
+            }
+        }
+        return "Gallery";
+    })
+
+
+
+
     nunjucks_env.addFilter('isObjectEmpty', function (obj) {
+        if (typeof obj == 'undefined' || obj == null) {
+            return true;
+        }
         return Object.keys(obj).length === 0;
     });
     nunjucks_env.addFilter('alphaSortedArray', function (array) {
@@ -49,6 +71,51 @@ module.exports = function (nunjucks_env) {
         }
         return 1;
     });
+
+    nunjucks_env.addFilter('doesNestedObjectContain',function(doc,nameWithDot,field) {
+        if (typeof doc == "undefined" || doc == null) {
+            return false;
+        }
+
+        var split_array = nameWithDot.split(".");
+        var key = split_array[0];
+        var nestedKey = split_array[1];
+        if (doc[key] && doc[key][nestedKey] && doc[key][nestedKey] == field) {
+            return true;
+        }
+        return false;
+    })
+
+
+    nunjucks_env.addFilter('colHasDataType',function(expectedDataType,col,coercionScheme) {
+        col = col.replace(/\./g, "_");
+        if (typeof coercionScheme[col] !== 'undefined' && coercionScheme[col].operation ) {
+            var lowercase = coercionScheme[col].operation.toLowerCase();
+            return lowercase.indexOf(expectedDataType) >= 0;
+
+        }
+        return false;
+
+
+    })
+    nunjucks_env.addFilter('castArrayToStringSeparatedByComma',function(array) {
+        if (Array.isArray(array)) {
+            var indexOfNullType = array.indexOf(null);
+     
+            if (indexOfNullType >= 0) {
+                array.splice(indexOfNullType,1);
+
+            }
+        
+            return array.toString()
+
+        }
+    })
+
+    nunjucks_env.addFilter('finalizeColumnName', function(colName) {
+        return colName.replace(/\./g, "_");
+    });
+    
     // Array views - Filter obj construction
     nunjucks_env.addFilter('constructedFilterObj', function (existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter, isMultiselectable) {
         var filterObj = {};
@@ -203,7 +270,8 @@ module.exports = function (nunjucks_env) {
     });
     // Object detail view - Detect/substitute the url string in the parameter with the wrapped a tag
     nunjucks_env.addFilter('substitutePlainURLs', function (str) {
-        return str.split(/[\s]+/).map(function (el) {
+
+        return str.toString().split(/[\s]+/).map(function (el) {
             var result = url.parse(el);
             if ((result.protocol == 'http:' || result.protocol == 'https:')
                 && result.hostname != null && result.hostname != '') {
@@ -212,5 +280,13 @@ module.exports = function (nunjucks_env) {
                 return el;
             }
         }).join(' ');
+
+
+
+    });
+
+    // Object Row Coercion Data Type
+    nunjucks_env.addFilter('fieldDataType_coercion_toString', function(field) {
+        return import_datatypes.fieldDataType_coercion_toString(field);
     });
 };

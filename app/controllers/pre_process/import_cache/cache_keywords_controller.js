@@ -5,7 +5,7 @@ var raw_source_documents = require('../../../models/raw_source_documents');
 //
 //
 var _cacheKeywords_fromDataSourceDescription = function (dataSourceDescription, callback) {
-    if (!dataSourceDescription.fe_wordCloud_defaultGroupByColumnName_humanReadable) return callback();
+    if (dataSourceDescription.fe_views.views == null || typeof dataSourceDescription.fe_views.views.wordCloud == 'undefined' || !dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName_humanReadable) return callback();
 
     mongoose_client.WhenMongoDBConnected(function () {
         var dataSource_uid = dataSourceDescription.uid;
@@ -15,12 +15,12 @@ var _cacheKeywords_fromDataSourceDescription = function (dataSourceDescription, 
         //
         winston.info("🔁  Caching keywords operation for \"" + dataSource_title + "\"");
 
-        var realFieldName = dataSourceDescription.fe_wordCloud_defaultGroupByColumnName_humanReadable;
+        var realFieldName = dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName_humanReadable;
         var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
         var originalKeys = Object.keys(fe_displayTitleOverrides);
         for (var i = 0; i < originalKeys.length; i++) {
             var overrideTitle = fe_displayTitleOverrides[originalKeys[i]];
-            if (overrideTitle === dataSourceDescription.fe_wordCloud_defaultGroupByColumnName_humanReadable) {
+            if (overrideTitle === dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName_humanReadable) {
                 realFieldName = originalKeys[i];
                 break;
             }
@@ -54,7 +54,7 @@ var _cacheKeywords_fromDataSourceDescription = function (dataSourceDescription, 
 
                 var updateFragment = {$set: {}};
 
-                dataSourceDescription.fe_wordCloud_keywords.forEach(function (keyword) {
+                dataSourceDescription.fe_views.views.wordCloud.keywords.forEach(function (keyword) {
                     var existence = false;
                     fieldValues.forEach(function (fieldValue) {
                         if (fieldValue.toLowerCase().indexOf(keyword) != -1) {

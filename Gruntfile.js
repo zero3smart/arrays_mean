@@ -64,7 +64,7 @@ module.exports = function(grunt) {
     watch: {
       gruntfile: {
         files: '<%= jshint.gruntfile.src %>',
-        tasks: ['jshint:gruntfile']
+        tasks: ['jshint:gruntfile', 'postcss']
       },
       css : {
         files : ['app/public/stylesheets/**/*.css', '!app/public/stylesheets/style.min.css'],
@@ -100,7 +100,7 @@ module.exports = function(grunt) {
       // }
     },
 
-    // Copy assets
+    // Copy assets from bower_components to public folder
     copy: {
       d3: {
         expand: true,
@@ -137,7 +137,25 @@ module.exports = function(grunt) {
         cwd: 'bower_components/moment',
         src: 'moment.js',
         dest: 'app/public/javascripts/lib/moment'
-      }
+      },
+      colorpickerJs: {
+        expand: true,
+        cwd: 'bower_components/bootstrap-colorpicker/dist/js',
+        src: '**',
+        dest: 'app/public/javascripts/lib/colorpicker/'
+      },
+      colorpickerImg: {
+        expand: true,
+        cwd: 'bower_components/bootstrap-colorpicker/dist/img',
+        src: '**',
+        dest: 'app/public/images/lib/'
+      },
+      /* colorpickerCss: {
+        expand: true,
+        cwd: 'bower_components/bootstrap-colorpicker/dist/css',
+        src: '**',
+        dest: 'app/public/stylesheets/lib/bootstrap-colorpicker'
+      }, */
     },
 
     sass: {
@@ -161,19 +179,16 @@ module.exports = function(grunt) {
           require('postcss-custom-properties')({
             //
           }),
-          // require('postcss-opacity')(),
-          // require('pleeease-filters')(),
-          // require('css-mqpacker')(),
           require('autoprefixer')({
             browsers: ['> 1%', 'IE 9', 'IE 10', 'IE 11'],
             remove: false
           }),
-          // require('cssnano')({
-          //   autoprefixer: false,
-          //   reduceTransforms: false,
-          //   discardUnused: false,
-          //   zindex: false
-          // })
+          require('cssnano')({
+            autoprefixer: false,
+            reduceTransforms: false,
+            discardUnused: false,
+            zindex: false
+          })
         ]
       },
       dist: {

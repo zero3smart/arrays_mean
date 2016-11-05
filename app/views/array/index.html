@@ -46,7 +46,7 @@
                                                 <h2 class="panel-body-title">{{ source.title }}</h2>
                                                 <div class="panel-body-meta">
                                                     <div>
-                                                        <a class="panel-view-array color-brand">View Array</a>
+                                                        <a class="panel-view-array color-brand">View Dataset</a>
                                                     </div>
                                                     {% set comma = joiner() %}
                                                     {% for url in source.urls -%}
@@ -87,7 +87,7 @@
                                                     <div>
                                                         <a class="panel-view-array color-brand">View Team</a>
                                                     </div>
-                                                    <span class="source-count hidden-xs">{{ source.arrayCount | comma }} Array{{ "s" if source.arrayCount != 1 else "" }}</span>
+                                                    <span class="source-count hidden-xs">{{ source.arrayCount | comma }} Dataset{{ "s" if source.arrayCount != 1 else "" }}</span>
                                                 </div>
                                                 <p class="panel-body-description">{{ source.description }}</p>
                                             </div>

@@ -1,13 +1,10 @@
 var url = require('url');
 var winston = require('winston');
-var helmet = require('helmet');
 var queryString = require('querystring');
 var express = require('express');
 var passport = require('passport');
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 var router = express.Router();
-
-router.use(helmet.xframe('allow-from', '*'));
 
 router.get('/create', function (req, res) {
     // Temporarily redirect to array index
@@ -18,6 +15,8 @@ var index_controller = require('../controllers/post_process/data_preparation');
 
 router.get('/', function (req, res) {
     index_controller.BindData(req, function (err, bindData) {
+
+
         if (err) {
             winston.error("❌  Error getting bind data for Array index: ", err);
             res.status(500).send(err.response || 'Internal Server Error');
@@ -64,7 +63,10 @@ viewTypes.forEach(function (viewType) {
         var query = queryString.parse(req.url.replace(/^.*\?/, ''));
         query.source_key = source_key;
         var camelCaseViewType = viewType.replace('-', '_');
+
+
         controllers[camelCaseViewType].BindData(req, query, function (err, bindData) {
+
             if (err) {
                 winston.error("❌  Error getting bind data for Array gallery: ", err);
                 res.status(500).send(err.response || 'Internal Server Error');

@@ -3,12 +3,12 @@
 }
 
 .linechart .y-axis path {
-	visibility: hidden;
+    visibility: hidden;
 }
 
 .linechart svg.viewport .line {
-	fill: none;
-	stroke-width: 2;
+    fill: none;
+    stroke-width: 2;
 }
 
 .linechart svg.viewport line.pointer {
@@ -22,11 +22,11 @@
 }
 
 .linechart svg.viewport .y-axis g.tick:first-child line {
-	display: none;
+    display: none;
 }
 
 .linechart svg.viewport .x-axis line, .linechart svg.viewport .x-axis path {
-	stroke: #979797;
+    stroke: #979797;
 }
 
 .linechart .brush-background {

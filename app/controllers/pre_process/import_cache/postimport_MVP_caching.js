@@ -8,8 +8,14 @@ require('dotenv').config({
 });
 //
 var datasources = require('../cmd_parser').GetDatasources();
-var dataSourceDescriptions = require('../../../datasources/descriptions').GetDescriptionsToSetup(datasources);
+var datasourceDescriptions = require('../../../datasources/descriptions')
 //
 //
 var postimport_caching_controller = require('./postimport_caching_controller');
-postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions);
+
+
+datasourceDescriptions.GetDescriptionsToSetup(datasources, function (descriptions_array) {
+
+    postimport_caching_controller.GeneratePostImportCaches(descriptions_array);
+});
+

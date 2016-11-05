@@ -1,4 +1,4 @@
-{% set view = 'dataset' %}
+{% set currentView = ['dataset', 'source'] %}
 
 {% extends "../../layout/admin.html" %}
 
@@ -8,44 +8,62 @@
 
 {% block content %}
 	<header class="admin-header">
-		<h1 class="admin-title">{{ pageTitle }}</h1>
+		<h1 class="admin-title">{{doc.title}} - Upload </h1>
 	</header>
 
 	{% if flash | length %}
 	<div class="alert alert-success" role="alert">{{ flash }}</div>
+	{% elif error | length %}
+	<div class="alert alert-danger" role="alert">{{ error }}</div>
+
 	{% endif %}
 
-	<dive class="dataset">
-		<ul class="steps">
-			<li><span class="glyphicon glyphicon-unchecked"></span>1. Upload Data</li>
-			<li><span class="glyphicon glyphicon-unchecked"></span>{% if id %}<a href="format">{% endif %}2. Format{% if id %}</a>{% endif %}</li>
-			<li><span class="glyphicon glyphicon-unchecked"></span>{% if id %}<a href="settings">{% endif %}3. Settings{% if id %}</a>{% endif %}</li>
-			<li><span class="glyphicon glyphicon-unchecked"></span> Done!</li>
-		</ul>
+
+	<div class="dataset">
+
+		{% include "../../partials/admin/dataset-breadcrumb.html" %}
 
 		<br />
 
-		<form class="upload" method="post">
-			<div class="form-group">
-				<label for="file-input">Select a CSV/TSV file To Upload</label>
-				<input type="file" id="file-input" accept=".csv,.tsv|text/csv,text/csv-schema"/>
-			</div>
+		<input type="hidden" id="dataset_count" value="{{ sub_datasets | length }}"/>
 
-			<div class="form-group">
-				<label for="url">Public URL: </label>
-				<input class="url" type="text" id="url" name="sourceURL" value="{{ sourceURL }}" required/>
-			</div>
+		<form class="upload" enctype="multipart/form-data" method="post">
+			{% for dataset in sub_datasets %}
+
+				<div class="form-group">
+					<div class="row">
+						<div class="col-xs-11">
+							<h4>Dataset {{ loop.index }}</h4>
+						</div>
+						<div class="col-xs-1">
+							<a class="removeDataset"><span class="glyphicon glyphicon-remove"></span></a>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-xs-5">
+							<label for="file_{{loop.index0}}">Select a CSV/TSV file To Upload</label>
+						</div>
+						<div class="col-xs-6">
+							<input type="file" id="file_{{loop.index0}}" name="files[]" accept=".csv,.tsv|text/csv,text/csv-schema,text/tsv"/>
+						</div>
+					</div>
+
+				</div>
+
+			{% endfor %}
+
+			<div class="form-group row"><a id="add_dataset" class="add" ><span class="glyphicon glyphicon-plus"></span> Add more</a></div>
+
+
 			<div class="panel-footer">
 				<a class="btn btn-default pull-left" href="/admin/dataset/"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
-				<button type="submit" class="btn btn-default pull-right"{% if not id %}disabled="disabled" {% endif %}><span class="glyphicon glyphicon-hand-right"></span> Next</button>
+				<button type="submit" class="btn btn-default pull-right"><span class="glyphicon glyphicon-hand-right"></span> Upload</button>
 				<div class="clearfix"></div>
 			</div>
-		</form>
+	</form>
 
-		<form>
-
-		</form>
-	</dive>
+	</div>
 
 {% endblock %}
 

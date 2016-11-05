@@ -3,17 +3,19 @@
 @import url('base/fontello-embedded.css');
 @import url('base/variables.css');
 @import url('base/typography.css');
+@import url('base/bootstrap-chosen.css');
+@import url('base/spectrum.css');
+
 /* @end Base */
-
 /* @group Lib */
-
 /* @end Lib */
-
 /* @group Layout */
 @import url('layout/body.css');
 @import url('layout/embedded.css');
 /* @end Layout */
-
+/* @group Lib */
+@import url('lib/bootstrap-colorpicker/bootstrap-colorpicker.min.css');
+/* @end Lib */
 /* @group Module */
 @import url('module/header-bar.css');
 @import url('module/sidebar-filter.css');
@@ -23,12 +25,12 @@
 @import url('module/tooltip.css');
 @import url('module/splash.css');
 /* @end Module */
-
 /* @group Views */
 @import url('views/array-create.css');
 @import url('views/team-show.css');
 @import url('views/object-show.css');
 @import url('views/gallery-grid.css');
+@import url('views/svg-chart-base.css');
 @import url('views/chart.css');
 @import url('views/choropleth.css');
 @import url('views/timeline.css');
@@ -39,7 +41,6 @@
 @import url('views/admin.css');
 @import url('views/bar-chart.css');
 /* @end Views */
-
 /* @group Clients */
 @import url('clients/isb.css');
 /* @end Clients */

@@ -109,8 +109,13 @@ Temporary Items
 *.csv
 
 
-##csv file##
+## custom generated user folder */
+user/
+
+
+##csv files ###
 *.csv
+
 
 ### Webstorm Env ###
 .idea/

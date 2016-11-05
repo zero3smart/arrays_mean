@@ -4,6 +4,8 @@ var raw_source_documents = require('./raw_source_documents');
 var raw_row_objects = require('./raw_row_objects');
 var mongoose_client = require('../../lib/mongoose_client/mongoose_client');
 
+var import_processing = require('.././datasources/utils/import_processing');
+
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 var New_RowObjectsModelName = function (srcDocPKey) {
@@ -46,6 +48,7 @@ module.exports.New_templateForPersistableObject = function (rowObject_primaryKey
         rowParams: rowParams
     };
 };
+
 
 var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (srcDocPKey) {
     var mongooseContext = MongooseContextsBySrcDocPKey[srcDocPKey];
@@ -96,12 +99,17 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (dataSource_ui
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
 
         var updateDocs = [];
+
         var datasetQuery = dataset_uid ? {pKey: {$regex: "^" + dataset_uid + "-"}} : {};
+
+
         mongooseModel_ofRawRowObjectsBeingProcessed.find(datasetQuery, function (err, rowObjects) {
             if (err) {
                 winston.error("❌ [" + (new Date()).toString() + "] Error while saving processed row objects: ", err);
                 return callback(err);
             }
+
+
             rowObjects.forEach(function (doc) {
                 updateDocs.push({insertOne: {document: doc._doc}});
             });
@@ -313,7 +321,7 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSour
                             // }
                             var fromProcessedRowObjectDoc = fromProcessedRowObjectDocs[k];
                             var foreignFieldValue = fromProcessedRowObjectDoc.rowParams[matchOnField];
-                            var doesFieldMatch = doesFieldMatch_fn(localFieldValue, foreignFieldValue);
+                            var doesFieldMatch = import_processing.MatchFns[doesFieldMatch_fn](localFieldValue, foreignFieldValue);
                             if (doesFieldMatch == true) {
                                 wasFound = true;
                                 if (typeof obtainingValueFromField_orUndefined === 'undefined') {
@@ -717,14 +725,14 @@ module.exports.EnumerateProcessedDataset = function (dataSource_uid,
         var query = {};
         if (dataset_uid && typeof dataset_uid === 'string' && dataset_uid != '') {
             query = {pKey: {$regex: "^" + dataset_uid + "-"}};
+            query = {};
         }
         if (query_optl == null || typeof query_optl === 'undefined') {
             query = {};
         } else {
             for (var opt in query_optl) {
                 query[opt] = query_optl[opt];
-            }
-            ;
+            };
         }
 
         nativeCollection_ofTheseProcessedRowObjects.find(query, {sort: {_id: 1}}, function (err, cursor) {
@@ -770,6 +778,8 @@ module.exports.EnumerateProcessedDataset = function (dataSource_uid,
                 function _finishedWithDoc() {
                     numberOfDocumentsFoundButNotYetProcessed -= 1; // finished with this doc - decrement
                     //
+
+
                     if (hasReachedEndOfCursor == true) {
                         if (numberOfDocumentsFoundButNotYetProcessed == 0) {
                             // console.log("Reached end of cursor and finished processing all")
@@ -854,26 +864,20 @@ module.exports.GenerateImageURLFieldsByScraping
         var datasetQuery = dataset_uid ? {pKey: {$regex: "^" + dataset_uid + "-"}} : {};
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously
             var concurrencyLimit = 15; // at a time
+            
             async.eachLimit(docs, concurrencyLimit, function (doc, eachCb) {
-                var anyImagesNeedToBeScraped = false;
+
                 // The following allows us to skip scraping for this doc if we already have done so
-                for (var i = 0; i < useAndHostSrcSetSizeByField_keys.length; i++) {
-                    var key = useAndHostSrcSetSizeByField_keys[i];
-                    var hostedURLForKey = doc["rowParams"][key];
-                    if (typeof hostedURLForKey === 'undefined') {
-                        // != null b/c null means scraped but no image
-                        anyImagesNeedToBeScraped = true;
-                        break;
-                    }
-                }
-                if (anyImagesNeedToBeScraped == false) {
-                    winston.info("💬  Already scraped all images for row at idx " + doc.rowIdxInDoc + " for fields ", useAndHostSrcSetSizeByField_keys);
+
+                if (typeof doc["rowParams.imageScraped"] !== 'undefined' && doc["rowParams.imageScraped"] == true) {
                     async.setImmediate(function () { // ^ so as not to blow stack
                         eachCb(); // already done
                     });
 
                     return;
                 }
+
+
                 //
                 var htmlSourceAtURL = doc["rowParams"][htmlSourceAtURLInField];
                 if (htmlSourceAtURL == null || typeof htmlSourceAtURL === 'undefined' || htmlSourceAtURL == "") {
@@ -884,41 +888,60 @@ module.exports.GenerateImageURLFieldsByScraping
 
                     return;
                 }
-                winston.info("📡  Scraping image URL from \"" + htmlSourceAtURL + "\"…");
+                // winston.info("📡  Scraping image URL from \"" + htmlSourceAtURL + "\"…");
                 xray_instance(htmlSourceAtURL, imageSrcSetInSelector)(function (err, scrapedString) {
                     if (err) {
-                        winston.error("❌  Error while scraping " + htmlSourceAtURL + ": ", err);
-                        eachCb(err);
 
-                        return;
+                        if (err.code == "ENOTFOUND" || err.code == 'ETIMEDOUT') {
+                            scrapedString = null;
+                        } else {
+                            winston.error("❌  Error while scraping " + htmlSourceAtURL + ": ", err);
+                            eachCb(err);
+                            return;
+
+                        }
+
                     }
-                    function proceedToPersistHostedImageURLOrNull_forKey(err, hostedURLOrNull, fieldKey, persistedCb) {
+                    function proceedToPersistHostedImageURLOrNull_forKey(err, hostedURLOrNull, fieldKey, lastFieldKey, persistedCb) {
                         if (err) {
                             persistedCb(err);
                             return;
                         }
-                        winston.info("📝  Saving " + hostedURLOrNull + " at " + fieldKey + " of " + doc.pKey);
+                        // winston.info("📝  Saving " + hostedURLOrNull + " at " + fieldKey + " of " + doc.pKey);
                         var docQuery =
                         {
                             pKey: doc.pKey,
-                            srcDocPKey: doc.srcDocPKey // not necessary since we're in one collection but just in case that gets changed..
+                            srcDocPKey: doc.srcDocPKey
                         };
                         var docUpdate = {};
-                        docUpdate["rowParams." + fieldKey] = hostedURLOrNull; // note it's a path rather than an object, so we don't overwrite the whole top-level key of 'rowParams'
-                        mongooseModel.update(docQuery, docUpdate, function (err) {
+                        if (lastFieldKey == true) {
+                            docUpdate["rowParams.imageScraped"] = true
+                        }
+                        docUpdate["rowParams." + fieldKey] = hostedURLOrNull; // note it's a path rather than an object, so we don't overwrite the whole top-level key of 'rowParams'      
+                        mongooseModel.update(docQuery, {$set: docUpdate}, function (err, result) {
                             persistedCb(err);
                         });
                     }
 
                     if (scrapedString == null || typeof scrapedString === 'undefined' || scrapedString == "") {
-                        winston.info("💬  No images available for " + doc.srcDocPKey + " row with pKey " + doc.pKey + ". Saving nulls in image fields.");
+                        // winston.info("💬  No images available for " + doc.srcDocPKey + " row with pKey " + doc.pKey + ". Saving nulls in image fields.");
                         // persist this as a 'null' in the db for all keys by calling proceedToPersistHostedImageURLOrNull_forKey for each key, as there were no images available on site src
+                        var completed = 0;
+
+
                         async.each(useAndHostSrcSetSizeByField_keys, function (key, cb) {
-                            proceedToPersistHostedImageURLOrNull_forKey(null, null, key, function (err) {
+                            completed += 1;
+                            var lastEntry = false;
+                            if (completed == useAndHostSrcSetSizeByField_keys.length) {
+                                lastEntry = true;
+                            }
+                            proceedToPersistHostedImageURLOrNull_forKey(null, null, key, lastEntry, function (err) {
                                 cb(err);
                             });
+
                         }, function (err) {
                             eachCb(err);
+
                         });
 
                         return;
@@ -949,10 +972,14 @@ module.exports.GenerateImageURLFieldsByScraping
                         rawURLsBySize[size] = rawURL;
                     }
                     // console.log("rawURLsBySize " , rawURLsBySize)
+
+                    var counter = 0;
                     async.each(useAndHostSrcSetSizeByField_keys, function (key, cb) {
+                        counter++;
+
                         var preexisting_hostedURLForKey = doc["rowParams"][key];
                         if (typeof preexisting_hostedURLForKey !== 'undefined') {
-                            winston.warn("⚠️  " + key + " has already been downloaded as " + preexisting_hostedURLForKey);
+                            // winston.warn("⚠️  " + key + " has already been downloaded as " + preexisting_hostedURLForKey);
                             cb();
 
                             return;
@@ -983,30 +1010,75 @@ module.exports.GenerateImageURLFieldsByScraping
                         {
                             overwrite: false // if already exists, do not re-upload
                         };
-                        var destinationFilenameSansExt = doc.srcDocPKey + "__" + doc.pKey + "__" + key;
+                        var destinationFilenameSansExt = doc.srcDocPKey + "/" + doc.pKey + "__" + key;
                         var hostImageCb = function (err, hostedURL) {
                             if (err) {
                                 cb(err);
 
                                 return;
                             } else {
-                                proceedToPersistHostedImageURLOrNull_forKey(err, hostedURL, key, function (err) {
+                                var last = false;
+                                if (counter == useAndHostSrcSetSizeByField_keys.length) {
+                                    last = true;
+
+                                }
+
+                                proceedToPersistHostedImageURLOrNull_forKey(err, hostedURL, key, last, function (err) {
                                     cb(err);
                                 });
                             }
                         };
                         image_hosting.hostImageLocatedAtRemoteURL(finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, hostImageCb);
                     }, function (err) {
-                        if (err) {
-                            winston.error("❌  Error while downloading, uploading, or storing URLs for images: ", err);
-                        }
                         eachCb(err);
+
                     });
                 });
 
             }, function (err) {
-                callback(err);
+                if (err) {
+                    callback(err);
+
+                } else {
+                    mongooseModel.update(datasetQuery, {$unset: {"rowParams.imageScraped": 1}}, {multi: true}, function (err) {
+                        if (err) winston.error("❌ Error while deleting rowParams.imageScraped : ", err);
+                        callback(err);
+
+                    })
+
+
+                }
             });
         });
+    });
+};
+
+// fn: (err, [Schema.Types.ObjectId])
+module.exports.RemoveRows = function (description, fn) {
+    var pKeyPrefix = description.dataset_uid;
+    var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+
+    winston.info("📡  [" + (new Date()).toString() + "] Deleting processed rows for \"" + description.title + "\".");
+
+    var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+    var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
+    var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
+    //
+    var query =
+    {
+        srcDocPKey: pKey_ofDataSrcDocBeingProcessed
+    };
+    if (pKeyPrefix) query.pKeyPrefix = {
+        $regex: "^" + pKeyPrefix + "-",
+        $options: 'i'
+    }
+
+    nativeCollection_ofTheseProcessedRowObjects.find(query).remove().exec(function (err) {
+        if (err) {
+            winston.error("❌ [" + (new Date()).toString() + "] Error while removing raw row objects: ", err);
+        } else {
+            winston.info("✅  [" + (new Date()).toString() + "] Removed raw row objects.");
+        }
+        fn(err);
     });
 };

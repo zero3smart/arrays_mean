@@ -58,7 +58,10 @@ module.exports.UpsertWithOnePersistableObjectTemplate = function (persistableObj
     if (persistableObjectTemplate.title) updatedDocument['title'] = persistableObjectTemplate.title;
     if (persistableObjectTemplate.revisionNumber) updatedDocument['revisionNumber'] = persistableObjectTemplate.revisionNumber;
     if (persistableObjectTemplate.importUID) updatedDocument['importUID'] = persistableObjectTemplate.importUID;
-    if (persistableObjectTemplate.numberOfRows) updatedDocument['numberOfRows'] = persistableObjectTemplate.numberOfRows;
+    var numberOfRowsUpdateQuery = {};
+    if (persistableObjectTemplate.numberOfRows)  {
+        numberOfRowsUpdateQuery = {numberOfRows: persistableObjectTemplate.numberOfRows}
+    }
     updatedDocument['dateOfLastImport'] = new Date();
 
     var findOneAndUpdate_queryParameters =
@@ -66,7 +69,7 @@ module.exports.UpsertWithOnePersistableObjectTemplate = function (persistableObj
         primaryKey: persistableObjectTemplate.primaryKey
     };
     RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {
-        $set: updatedDocument
+        $set: updatedDocument, $inc: numberOfRowsUpdateQuery
     }, {
         upsert: true
     }, function (err, doc) {
@@ -80,18 +83,24 @@ module.exports.UpsertWithOnePersistableObjectTemplate = function (persistableObj
 };
 
 module.exports.IncreaseNumberOfRawRows = function (pKey, numberOfRows, fn) {
+
     winston.log("📡  [" + (new Date()).toString() + "] Going to increase the number of raw rows in the source document.");
+
+
 
     var findOneAndUpdate_queryParameters =
     {
         primaryKey: pKey
     };
+
     RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {
         $set: {dateOfLastImport: new Date()},
         $inc: {numberOfRows: numberOfRows},
     }, {
         upsert: true
     }, function (err, doc) {
+
+
         if (err) {
             winston.error("❌ [" + (new Date()).toString() + "] Error while increasing the number of raw rows in a raw source document: ", err);
         } else {

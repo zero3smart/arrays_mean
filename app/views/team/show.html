@@ -20,7 +20,7 @@
                                     {% if team.logo %}
                                     <img src="{{ team.logo }}" class="team-logo" alt="{{ team.title }}"/>
                                     {% else %}
-                                    <h2 class="section-title">{{ team.title }}</h2>
+                                    <h2 class="section-title">{{ team.title}}</h2>
                                     {% endif %}
                                     {% if team.description%}
                                       <p class="team-header-description">{{ team.description }}</p>
@@ -59,7 +59,7 @@
                                                 <h2 class="panel-body-title">{{ source.title }}</h2>
                                                 <div class="panel-body-meta">
                                                     <div>
-                                                        <a class="panel-view-array color-brand">View Array</a>
+                                                        <a class="panel-view-array color-brand">View Dataset</a>
                                                     </div>
                                                     {% set comma = joiner() %}
                                                     {% for url in source.urls -%}

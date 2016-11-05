@@ -2,48 +2,48 @@
 	http://localhost:9080/stylesheets/base/typography.css */
 
 @font-face {
-	font-family: "Calibre";
-	src: url("/fonts/calibre/CalibreWeb-Regular.eot?#iefix");
-	src: url("/fonts/calibre/CalibreWeb-Regular.eot?#iefix") format("eot"),
-		url("/fonts/calibre/CalibreWeb-Regular.woff2") format("woff2"),
-		url("/fonts/calibre/CalibreWeb-Regular.woff") format("woff");
-	font-weight: normal;
+    font-family: "Calibre";
+    src: url("/fonts/calibre/CalibreWeb-Regular.eot?#iefix");
+    src: url("/fonts/calibre/CalibreWeb-Regular.eot?#iefix") format("eot"),
+    url("/fonts/calibre/CalibreWeb-Regular.woff2") format("woff2"),
+    url("/fonts/calibre/CalibreWeb-Regular.woff") format("woff");
+    font-weight: normal;
 }
 
 @font-face {
-	font-family: "Calibre";
-	src: url("/fonts/calibre/CalibreWeb-Semibold.eot?#iefix");
-	src: url("/fonts/calibre/CalibreWeb-Semibold.eot?#iefix") format("eot"),
-		url("/fonts/calibre/CalibreWeb-Semibold.woff2") format("woff2"),
-		url("/fonts/calibre/CalibreWeb-Semibold.woff") format("woff");
-	font-weight: 600; /* Semibold */
+    font-family: "Calibre";
+    src: url("/fonts/calibre/CalibreWeb-Semibold.eot?#iefix");
+    src: url("/fonts/calibre/CalibreWeb-Semibold.eot?#iefix") format("eot"),
+    url("/fonts/calibre/CalibreWeb-Semibold.woff2") format("woff2"),
+    url("/fonts/calibre/CalibreWeb-Semibold.woff") format("woff");
+    font-weight: 600; /* Semibold */
 }
 
 @font-face {
-	font-family: "Calibre";
-	src: url("/fonts/calibre/CalibreWeb-Bold.eot?#iefix");
-	src: url("/fonts/calibre/CalibreWeb-Bold.eot?#iefix") format("eot"),
-		url("/fonts/calibre/CalibreWeb-Bold.woff2") format("woff2"),
-		url("/fonts/calibre/CalibreWeb-Bold.woff") format("woff");
-	font-weight: bold;
+    font-family: "Calibre";
+    src: url("/fonts/calibre/CalibreWeb-Bold.eot?#iefix");
+    src: url("/fonts/calibre/CalibreWeb-Bold.eot?#iefix") format("eot"),
+    url("/fonts/calibre/CalibreWeb-Bold.woff2") format("woff2"),
+    url("/fonts/calibre/CalibreWeb-Bold.woff") format("woff");
+    font-weight: bold;
 }
 
 body {
-	font-family: var(--font-family-calibre);
-	
-	/* Render fonts thinner and smoother */
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+    font-family: var(--font-family-calibre);
+
+    /* Render fonts thinner and smoother */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 [class^="icon-"] {
-	font-size: 24px;
+    font-size: 24px;
 }
 
 .ui-label {
-	text-transform: uppercase;
-	letter-spacing: 2px;
-	font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 16px;
 }
 
 .ui-label,
@@ -54,6 +54,6 @@ body {
 .sort-control.open > .ui-label:hover,
 .sort-control.open > .ui-label:focus,
 .sort-control.open > .ui-label:active {
-	color: var(--color-text-light);
-	text-align: left;
+    color: var(--color-text-light);
+    text-align: left;
 }

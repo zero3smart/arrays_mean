@@ -22,11 +22,11 @@
             </div>
         </header><!-- .array-header -->
 
-        {% if view_descriptions.lineGraph%}
+        {% if view_description %}
             <div class="array-description-wrapper">
-                <p class="array-description">{{ view_descriptions.lineGraph | truncate(80) }}</p>
+                <p class="array-description">{{ view_description | truncate(80) }}</p>
                 <a href="#expanded"><p class="array-description-expand">Read more</p></a>
-                <p class="array-description-full">{{ view_descriptions.lineGraph }}
+                <p class="array-description-full">{{ view_description }}
                 <a href="#"><p class="array-description-collapse">less</p></a>
             </div>
         {% endif %}
@@ -95,7 +95,6 @@
                             </div><!-- .container-fluid -->
 
                             <script type="text/javascript">
-                                // var lineColors = {{ lineColors | dump | safe }};
                                 var filterObj = {{ filterObj | dump | safe }};
                                 var routePath_withoutFilter = '{{ routePath_base | constructedRoutePath(null, {
                                         searchCol: searchCol,
@@ -108,15 +107,20 @@
 
                                 var redirectBaseUrl = undefined;
                                 {% if mapping_source_pKey %}
-                                    {% if mapping_default_view %}
-                                        var default_view = '{{ mapping_default_view if mapping_default_view else "gallery"}}';
-                                    {% endif %}
+                                    var default_view  = '{{ mapping_default_view if mapping_default_view else "gallery"}}';
                                     var words = default_view.split(/(?=[A-Z])/);
                                     var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
-                                    redirectBaseUrl = '/array/{{ mapping_source_pKey }}/' + default_view_url
-                                            + '{{ "" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
+                                    redirectBaseUrl = '/array/{{ mapping_source_pKey }}/' + default_view_url;
+                                    {% if embedded %}
+                                    redirectBaseUrl += '{{ "?embed=true" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
+                                    {% else %}
+                                    redirectBaseUrl += '{{ "" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
+                                    {% endif %}
                                 {% endif %}
-                                var options = {redirectBaseUrl: redirectBaseUrl, outputInFormat: groupBy_outputInFormat};
+                                var options = {
+                                    redirectBaseUrl: redirectBaseUrl,
+                                    outputInFormat: groupBy_outputInFormat
+                                };
                             </script>
 
                             <div class="container-fluid">
@@ -167,5 +171,6 @@
     <script>
         var graphData = {{graphData | dump | safe}};
         var lineChart = new linechart.chart(graphData , options).render("#linechart");
+
     </script>
 {% endblock %}

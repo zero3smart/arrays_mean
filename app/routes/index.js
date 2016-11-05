@@ -26,7 +26,8 @@ var _mountRoutes_ensureWWW = function (app) {
         if (host.match(/^www\..*/i)) {
             next();
         } else {
-            res.redirect(301, protocol + "://www." + host + req.originalUrl);
+            return res.redirect(301, protocol + "://www." + host + req.originalUrl);
+
         }
     });
 };
@@ -70,7 +71,7 @@ var _mountRoutes_endPoints = function (app) {
     app.use('/admin', require('./admin/account'));
     app.use('/admin/dataset', require('./admin/dataset'));
     app.use('/admin/users', require('./admin/users'));
-    //app.use('/admin/website', require('./admin/website'));
+    app.use('/admin/website', require('./admin/website'));
 };
 
 module.exports.MountRoutes = function (app) {

@@ -1,6 +1,6 @@
 var raw_source_documents = require('../../models/raw_source_documents');
-var dataSourceDescriptions = require('../descriptions').GetDescriptions();
-var teamDescriptions = require('../teams').GetTeams();
+var dataSourceDescriptions = require('../descriptions');
+var _ = require('lodash');
 
 var humanReadableColumnName_objectTitle = "Object Title";
 
@@ -15,36 +15,24 @@ function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription) {
 };
 module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromDataSourceDescription;
 
-//
-function _dataSourceDescriptionWithPKey(source_pKey) {
-    var dataSourceDescriptions_length = dataSourceDescriptions.length;
-    for (var i = 0; i < dataSourceDescriptions_length; i++) {
-        var dataSourceDescription = dataSourceDescriptions[i];
-        var dataSourceDescription_pKey = _dataSourcePKeyFromDataSourceDescription(dataSourceDescription);
-        if (dataSourceDescription_pKey === source_pKey) {
-            return dataSourceDescription;
-        }
-    }
 
-    return null;
+var _dataSourceDescriptionWithPKey = function (source_pKey) {
+
+    var split = source_pKey.split("-");
+    var uid = split[0];
+    var revision = split[1].substring(1);
+
+    return new Promise(function (resolve, reject) {
+        dataSourceDescriptions.GetDescriptionsWith_uid_importRevision(uid, revision, function (err, data) {
+            if (err) reject(err);
+            resolve(data);
+        })
+    })
 };
+
 module.exports.DataSourceDescriptionWithPKey = _dataSourceDescriptionWithPKey;
 
-//
-function _teamDescription(team_key) {
-    var teamDescriptions_length = teamDescriptions.length;
-    for (var i = 0; i < teamDescriptions_length; i++) {
-        var teamDescription = teamDescriptions[i];
-        if (teamDescription.id === team_key) {
-            return teamDescription;
-        }
-    }
 
-    return null;
-}
-module.exports.TeamDescription = _teamDescription;
-
-//
 function _realColumnNameFromHumanReadableColumnName(humanReadableColumnName, dataSourceDescription) {
     if (humanReadableColumnName === humanReadableColumnName_objectTitle) {
         return dataSourceDescription.fe_designatedFields.objectTitle;
@@ -62,6 +50,7 @@ function _realColumnNameFromHumanReadableColumnName(humanReadableColumnName, dat
 
     return humanReadableColumnName;
 };
+
 module.exports.RealColumnNameFromHumanReadableColumnName = _realColumnNameFromHumanReadableColumnName;
 
 //
@@ -82,6 +71,7 @@ function _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, 
 
     return feVisible_rowParams_keys;
 };
+
 module.exports.RowParamKeysFromSampleRowObject_sansFEExcludedFields = _rowParamKeysFromSampleRowObject_sansFEExcludedFields;
 
 //
@@ -91,8 +81,8 @@ function _rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleRowOb
     var filterAvailable_keys = [];
     for (var i = 0; i < keys_length; i++) {
         var key = keys[i];
-        if (dataSourceDescription.fe_filters_fieldsNotAvailable) {
-            if (dataSourceDescription.fe_filters_fieldsNotAvailable.indexOf(key) !== -1) {
+        if (dataSourceDescription.fe_filters.fieldsNotAvailable) {
+            if (dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key) !== -1) {
                 continue;
             }
         }
@@ -101,6 +91,7 @@ function _rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleRowOb
 
     return filterAvailable_keys;
 };
+
 module.exports.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters = _rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters;
 
 //
@@ -127,12 +118,22 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, 
     // Then sort by custom order if defined
     var fe_fieldDisplayOrder = dataSourceDescription.fe_fieldDisplayOrder;
     if (fe_fieldDisplayOrder) {
+        var sortedFieldsByDisplayOrder = [];
+        for (var field in fe_fieldDisplayOrder)
+            sortedFieldsByDisplayOrder.push([field, fe_fieldDisplayOrder[field]])
+
+        sortedFieldsByDisplayOrder.sort(
+            function(a, b) {
+                return a[1] - b[1]
+            }
+        );
+
         var rowParams_keys_customSorted = [];
-        for (i = 0; i < fe_fieldDisplayOrder.length; i++) {
-            var index = rowParams_keys.indexOf(fe_fieldDisplayOrder[i]);
+        for (i = 0; i < sortedFieldsByDisplayOrder.length; i++) {
+            var index = rowParams_keys.indexOf(sortedFieldsByDisplayOrder[i][0]);
             if (index > -1) {
                 rowParams_keys.splice(index, 1);
-                rowParams_keys_customSorted.push(fe_fieldDisplayOrder[i]);
+                rowParams_keys_customSorted.push(sortedFieldsByDisplayOrder[i][0]);
             }
         }
 
@@ -141,6 +142,7 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, 
 
     return rowParams_keys;
 }
+
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject = _humanReadableFEVisibleColumnNamesWithSampleRowObject;
 
 //
@@ -154,229 +156,38 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByD
 
     return columnNames;
 };
+
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown;
 
 //
-function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelineSortByDropdown(sampleRowObject, dataSourceDescription) {
+function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleRowObject, dataSourceDescription, viewType, fieldName) {
     var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
     // add in "Object Title" so we use the same machinery as the hand-specified ones
     fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
     //
     var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    var keys_length = keys.length;
     var available_keys = [];
-    for (var i = 0; i < keys_length; i++) {
-        var key = keys[i];
-        if (dataSourceDescription.fe_timeline_fieldsNotAvailableAsSortByColumns) {
-            if (dataSourceDescription.fe_timeline_fieldsNotAvailableAsSortByColumns.indexOf(key) !== -1) {
-                continue;
+    var field = 'fieldsNotAvailable';
+    if (fieldName) field += ('As' + fieldName + 'Columns');
+    _.each(keys, function (key) {
+        if (dataSourceDescription.fe_views.views[viewType][field]) {
+            if (dataSourceDescription.fe_views.views[viewType][field].indexOf(key) !== -1) {
+                return;
             }
         }
         var displayTitleForKey = fe_displayTitleOverrides[key];
         var humanReadable_key = displayTitleForKey || key;
         available_keys.push(humanReadable_key);
-    }
+    });
 
     return available_keys;
 }
-module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelineSortByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForTimelineSortByDropdown;
 
-//
-function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown(sampleRowObject, dataSourceDescription) {
-    var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
-    // add in "Object Title" so we use the same machinery as the hand-specified ones
-    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
-    //
-    var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    var keys_length = keys.length;
-    var available_keys = [];
-    for (var i = 0; i < keys_length; i++) {
-        var key = keys[i];
-        if (dataSourceDescription.fe_chart_fieldsNotAvailableAsGroupByColumns) {
-            if (dataSourceDescription.fe_chart_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
-                continue;
-            }
-        }
-        var displayTitleForKey = fe_displayTitleOverrides[key];
-        var humanReadable_key = displayTitleForKey || key;
-        available_keys.push(humanReadable_key);
-    }
+module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown;
 
-    return available_keys;
+function _dataSourceUIDFromTitle(title) {
+    if (!title) return new Error('Title is not provided!');
+
+    return title.toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
 }
-module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChartGroupByDropdown;
-
-//
-function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChoroplethMapByDropdown(sampleRowObject, dataSourceDescription) {
-    var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
-    // add in "Object Title" so we use the same machinery as the hand-specified ones
-    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
-    //
-    var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    var keys_length = keys.length;
-    var available_keys = [];
-    for (var i = 0; i < keys_length; i++) {
-        var key = keys[i];
-        if (dataSourceDescription.fe_choropleth_fieldsNotAvailableAsMapByColumns) {
-            if (dataSourceDescription.fe_choropleth_fieldsNotAvailableAsMapByColumns.indexOf(key) !== -1) {
-                continue;
-            }
-        }
-        var displayTitleForKey = fe_displayTitleOverrides[key];
-        var humanReadable_key = displayTitleForKey || key;
-        available_keys.push(humanReadable_key);
-    }
-
-    return available_keys;
-}
-module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChoroplethMapByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForChoroplethMapByDropdown;
-
-//
-function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown(sampleRowObject, dataSourceDescription) {
-    var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
-    // add in "Object Title" so we use the same machinery as the hand-specified ones
-    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
-    //
-    var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    var keys_length = keys.length;
-    var available_keys = [];
-    for (var i = 0; i < keys_length; i++) {
-        var key = keys[i];
-        if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable) {
-            if (dataSourceDescription.fe_scatterplot_fieldsNotAvailable.indexOf(key) !== -1) {
-                continue;
-            }
-        }
-        var displayTitleForKey = fe_displayTitleOverrides[key];
-        var humanReadable_key = displayTitleForKey || key;
-        available_keys.push(humanReadable_key);
-    }
-
-    return available_keys;
-}
-module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForScatterplotAxisDropdown;
-
-//
-function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForwordCloudGroupByDropdown(sampleRowObject, dataSourceDescription) {
-    var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
-    // add in "Object Title" so we use the same machinery as the hand-specified ones
-    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
-    //
-    var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    var keys_length = keys.length;
-    var available_keys = [];
-    for (var i = 0; i < keys_length; i++) {
-        var key = keys[i];
-        if (dataSourceDescription.fe_wordCloud_fieldsNotAvailableAsGroupByColumns) {
-            if (dataSourceDescription.fe_wordCloud_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
-                continue;
-            }
-        }
-        var displayTitleForKey = fe_displayTitleOverrides[key];
-        var humanReadable_key = displayTitleForKey || key;
-        available_keys.push(humanReadable_key);
-    }
-
-    return available_keys;
-}
-module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForwordCloudGroupByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForwordCloudGroupByDropdown;
-
-//
-function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForLineGraphGroupByDropdown(sampleRowObject, dataSourceDescription) {
-    var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
-    // add in "Object Title" so we use the same machinery as the hand-specified ones
-    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
-    //
-    var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    var keys_length = keys.length;
-    var available_keys = [];
-    for (var i = 0; i < keys_length; i++) {
-        var key = keys[i];
-        if (dataSourceDescription.fe_lineGraph_fieldsNotAvailableAsGroupByColumns) {
-            if (dataSourceDescription.fe_lineGraph_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
-                continue;
-            }
-        }
-        var displayTitleForKey = fe_displayTitleOverrides[key];
-        var humanReadable_key = displayTitleForKey || key;
-        available_keys.push(humanReadable_key);
-    }
-
-    return available_keys;
-}
-module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForLineGraphGroupByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForLineGraphGroupByDropdown;
-
-//
-function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForPieSetGroupByDropdown(sampleRowObject, dataSourceDescription) {
-    var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
-    // add in "Object Title" so we use the same machinery as the hand-specified ones
-    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
-    //
-    var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    var keys_length = keys.length;
-    var available_keys = [];
-    for (var i = 0; i < keys_length; i++) {
-        var key = keys[i];
-        if (dataSourceDescription.fe_pieSet_fieldsNotAvailableAsGroupByColumns) {
-            if (dataSourceDescription.fe_pieSet_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
-                continue;
-            }
-        }
-        var displayTitleForKey = fe_displayTitleOverrides[key];
-        var humanReadable_key = displayTitleForKey || key;
-        available_keys.push(humanReadable_key);
-    }
-
-    return available_keys;
-}
-module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForPieSetGroupByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForPieSetGroupByDropdown;
-
-//
-function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForPieSetChartByDropdown(sampleRowObject, dataSourceDescription) {
-    var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
-    // add in "Object Title" so we use the same machinery as the hand-specified ones
-    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
-    //
-    var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    var keys_length = keys.length;
-    var available_keys = [];
-    for (var i = 0; i < keys_length; i++) {
-        var key = keys[i];
-        if (dataSourceDescription.fe_pieSet_fieldsNotAvailableAsGroupByColumns) {
-            if (dataSourceDescription.fe_pieSet_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
-                continue;
-            }
-        }
-        var displayTitleForKey = fe_displayTitleOverrides[key];
-        var humanReadable_key = displayTitleForKey || key;
-        available_keys.push(humanReadable_key);
-    }
-
-    return available_keys;
-}
-module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForPieSetChartByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForPieSetChartByDropdown;
-
-//
-function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForBarChartGroupByDropdown(sampleRowObject, dataSourceDescription) {
-    var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
-    // add in "Object Title" so we use the same machinery as the hand-specified ones
-    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
-    //
-    var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    var keys_length = keys.length;
-    var available_keys = [];
-    for (var i = 0; i < keys_length; i++) {
-        var key = keys[i];
-        if (dataSourceDescription.fe_barChart_fieldsNotAvailableAsGroupByColumns) {
-            if (dataSourceDescription.fe_barChart_fieldsNotAvailableAsGroupByColumns.indexOf(key) !== -1) {
-                continue;
-            }
-        }
-        var displayTitleForKey = fe_displayTitleOverrides[key];
-        var humanReadable_key = displayTitleForKey || key;
-        available_keys.push(humanReadable_key);
-    }
-
-    return available_keys;
-}
-module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForBarChartGroupByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForBarChartGroupByDropdown;
+module.exports.DataSourceUIDFromTitle = _dataSourceUIDFromTitle

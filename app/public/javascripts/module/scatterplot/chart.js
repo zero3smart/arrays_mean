@@ -3,7 +3,7 @@
  * @param {Object[]} data
  * @param {Object} metaData
  */
-scatterplot.chart = function(data, metaData) {
+scatterplot.chart = function (data, metaData) {
     /**
      * Chart data.
      * @private
@@ -180,7 +180,7 @@ scatterplot.chart = function(data, metaData) {
      * Set up window resize event handler.
      */
     var self = this;
-    window.onresize = function() {
+    window.onresize = function () {
         self.resize();
         self.update();
     };
@@ -192,7 +192,7 @@ scatterplot.chart = function(data, metaData) {
  * @param {String} color
  * @returns {scatterplot.chart}
  */
-scatterplot.chart.prototype.setColor = function(color) {
+scatterplot.chart.prototype.setColor = function (color) {
 
     this._color = color;
 
@@ -208,11 +208,13 @@ scatterplot.chart.prototype.setColor = function(color) {
  */
 scatterplot.chart.prototype.searchBy = function(key, value) {
 
-    if (key in this._metaData.fe_scatterplot_fieldsMap) {
-        key = this._metaData.fe_scatterplot_fieldsMap[key];
-    }
+    if (this._metaData.fe_scatterplot_fieldsMap) {
+        if (key in this._metaData.fe_scatterplot_fieldsMap) {
+            key = this._metaData.fe_scatterplot_fieldsMap[key];
+        }
 
-    this._searchBy = [key, value];
+        this._searchBy = [key, value];
+    }
 
     return this;
 };
@@ -224,7 +226,7 @@ scatterplot.chart.prototype.searchBy = function(key, value) {
  * @param {String} selector
  * @returns {scatterplot.chart}
  */
-scatterplot.chart.prototype.render = function(selector) {
+scatterplot.chart.prototype.render = function (selector) {
     /*
      * Select chart container.
      */

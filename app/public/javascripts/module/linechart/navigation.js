@@ -1,27 +1,34 @@
 /**
  * @constructor
- * @param {Object[]} data
+ * @param {Object{data, labels, colors}} data
  * @param {linechart.viewport}
  */
-linechart.navigation = function(data, viewport) {
+linechart.navigation = function (data, viewport) {
     /**
      * Chart data.
      * @private
      * @member {Object[]}
      */
-    this._data = data;
+    this._data = data.data.map(function (lineData) {
+        return lineData.map(function (d) {
+            d.date = new Date(d.date);
+            return d;
+        })
+    });
+
     /**
      * Time series names.
      * @private
      * @member {String[]}
      */
-    this._labelsList = this._getLablesList(data);
+    this._labels = data.labels;
+
     /**
      * Chart to upadte.
      * @private
      * @member {linechart.viewport}
      */
-    this._viewport = viewport.setLabels(this._labelsList);
+    this._viewport = viewport;
     /**
      * Chart container.
      * @private
@@ -80,14 +87,30 @@ linechart.navigation = function(data, viewport) {
      * Custom date format in X axis
      */
     this._customTimeFormat = d3.time.format.multi([
-        [".%L", function(d) { return d.getMilliseconds(); }],
-        [":%S", function(d) { return d.getSeconds(); }],
-        ["%I:%M", function(d) { return d.getMinutes(); }],
-        ["%I %p", function(d) { return d.getHours(); }],
-        ["%a %d", function(d) { return d.getDay() && d.getDate() != 1; }],
-        ["%b %d", function(d) { return d.getDate() != 1; }],
-        ["%B", function(d) { return d.getMonth(); }],
-        ["'%y", function() { return true; }]
+        [".%L", function (d) {
+            return d.getMilliseconds();
+        }],
+        [":%S", function (d) {
+            return d.getSeconds();
+        }],
+        ["%I:%M", function (d) {
+            return d.getMinutes();
+        }],
+        ["%I %p", function (d) {
+            return d.getHours();
+        }],
+        ["%a %d", function (d) {
+            return d.getDay() && d.getDate() != 1;
+        }],
+        ["%b %d", function (d) {
+            return d.getDate() != 1;
+        }],
+        ["%B", function (d) {
+            return d.getMonth();
+        }],
+        ["'%y", function () {
+            return true;
+        }]
     ]);
     /**
      * Chart x axis.
@@ -110,11 +133,11 @@ linechart.navigation = function(data, viewport) {
      * @member {String[]}
      */
     this._colors = d3.scale.category10().range();
-    var self = this;
-    data.forEach(function(el, i) {
-        if (el && el.length > 0 && el[0].color)
-            self._colors[i] = el[0].color;
-    });
+    if (data.colors) {
+        for (var i = 0; i < data.colors.length; i++) {
+            this._colors[i] = data.colors[i];
+        }
+    }
     /*
      * Stash reference to this object.
      */
@@ -125,9 +148,9 @@ linechart.navigation = function(data, viewport) {
      * @member {Function}
      */
     this._lineGenerator = d3.svg.line()
-        .x(function(d) {
+        .x(function (d) {
             return self._xScale(d.date);
-        }).y(function(d) {
+        }).y(function (d) {
             return self._yScale(d.value);
         });
     /**
@@ -143,7 +166,7 @@ linechart.navigation = function(data, viewport) {
      */
     this._brush = d3.svg.brush()
         .x(self._xScale)
-        .on('brush', function() {
+        .on('brush', function () {
             self._brushEventHandler();
         });
     /**
@@ -158,10 +181,10 @@ linechart.navigation = function(data, viewport) {
      * @member {Object}
      */
     this._margin = {
-        top : 25,
-        right : 15,
-        bottom : 30,
-        left : this._brushHandleRadius
+        top: 25,
+        right: 15,
+        bottom: 30,
+        left: this._brushHandleRadius
     };
 };
 
@@ -174,7 +197,7 @@ linechart.navigation.prototype = Object.create(linechart.base.prototype);
  * @private
  * @returns
  */
-linechart.navigation.prototype._brushEventHandler = function() {
+linechart.navigation.prototype._brushEventHandler = function () {
     /*
      * Restore viewport if brush empty.
      */
@@ -191,8 +214,8 @@ linechart.navigation.prototype._brushEventHandler = function() {
     /*
      * Filter data depending on extent.
      */
-    var data = this._data.map(function(series) {
-        return series.filter(function(d) {
+    var data = this._data.map(function (series) {
+        return series.filter(function (d) {
             if (d.date >= min && d.date <= max) {
                 return true;
             }
@@ -223,7 +246,7 @@ linechart.navigation.prototype._brushEventHandler = function() {
  * @param {String} selector
  * @returns {linechart.navigation}
  */
-linechart.navigation.prototype.render = function(container) {
+linechart.navigation.prototype.render = function (container) {
     /*
      * Select chart container.
      */
@@ -309,7 +332,7 @@ linechart.navigation.prototype.render = function(container) {
  * @public
  * @returns {linechart.navigation}
  */
-linechart.navigation.prototype.resize = function() {
+linechart.navigation.prototype.resize = function () {
     /*
      * Get brush extent before we redraw charts.
      */
@@ -344,7 +367,7 @@ linechart.navigation.prototype.resize = function() {
     /*
      * Update grid.
      */
-    this._xAxis.tickSize(- this._innerHeight, 0);
+    this._xAxis.tickSize(-this._innerHeight, 0);
     /*
      * Move x axis corresponding with chart height.
      */
@@ -384,13 +407,13 @@ linechart.navigation.prototype.resize = function() {
     /*
      * Resize brush gate's leafs.
      */
-    if (! this._brush.empty()) {
+    if (!this._brush.empty()) {
         extent = this._brush.extent();
         var min = extent[0];
         var max = extent[1];
         this._leftSide.attr('x', 1)
             .attr('width', this._xScale(min));
-        if (this._xScale.range()[1] > this._xScale(max)+1)
+        if (this._xScale.range()[1] > this._xScale(max) + 1)
             this._rightSide.attr('x', this._xScale(max))
                 .attr('width', this._xScale.range()[1] - this._xScale(max) - 1);
     }
@@ -409,15 +432,11 @@ linechart.navigation.prototype.resize = function() {
  * @param {Object[]} [data]
  * @returns {linechart.chart}
  */
-linechart.navigation.prototype.update = function(data) {
+linechart.navigation.prototype.update = function (data) {
     /*
      * Use current data if not provided.
      */
     data = data || this._data;
-    /*
-     * Update labels list.
-     */
-    this._viewport.setLabels(this._getLablesList(data));
     /*
      * Stash reference to this object.
      */
@@ -443,7 +462,7 @@ linechart.navigation.prototype.update = function(data) {
      * Update lines.
      */
     this._line.attr('d', this._lineGenerator)
-        .style('stroke', function(d, i) {
+        .style('stroke', function (d, i) {
             return self._colors[i];
         });
     /*
@@ -469,9 +488,9 @@ linechart.navigation.prototype.update = function(data) {
  * @param {Object[][]} data
  * @returns {String[]}
  */
-linechart.navigation.prototype._getLablesList = function(data) {
+linechart.navigation.prototype._getLablesList = function (data) {
 
-    return data.reduce(function(list, dataSet) {
+    return data.reduce(function (list, dataSet) {
         list.push(dataSet[0].category);
         return list;
     }, []);
@@ -482,7 +501,7 @@ linechart.navigation.prototype._getLablesList = function(data) {
  * Reset brush.
  * @private
  */
-linechart.navigation.prototype._resetBrush = function() {
+linechart.navigation.prototype._resetBrush = function () {
     /*
      * Reset brush gate leafs.
      */

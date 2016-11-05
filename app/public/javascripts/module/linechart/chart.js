@@ -3,25 +3,14 @@
  * @constructor
  * @param {Object[]} data
  */
-linechart.chart = function(data, options) {
+linechart.chart = function (data, options) {
     /**
      * Chart data.
      * @private
      * @member {Object[]}
      */
+    this._data = data;
 
-     //for loop added to change all row.date properties to date objects, necessary to show the lines in D3
-     for (var i = 0; i < data.length; i += 1) {
-        for (var k = 0; k < data[i].length; k += 1) {
-            data[i][k].date = new Date(data[i][k].date);
-        }
-    }
-
-    this._data = data.map(function(series) {
-        return series.sort(function(a, b) {
-            return a.date - b.date;
-        });
-    });
     /**
      * {redirectBaseUrl: redirectBaseUrl, outputInFormat: outputInFormat}
      *
@@ -47,7 +36,7 @@ linechart.chart = function(data, options) {
      * Set up window resize event handler.
      */
     var self = this;
-    d3.select(window).on('resize.line-graph', function() {
+    d3.select(window).on('resize.line-graph', function () {
         self.resize();
         self.update();
     });
@@ -60,7 +49,7 @@ linechart.chart = function(data, options) {
  * @param {String} selector
  * @returns {linechart.chart}
  */
-linechart.chart.prototype.render = function(selector) {
+linechart.chart.prototype.render = function (selector) {
     /*
      * Select chart container.
      */
@@ -97,7 +86,7 @@ linechart.chart.prototype.render = function(selector) {
  * @public
  * @returns {linechart.chart}
  */
-linechart.chart.prototype.resize = function() {
+linechart.chart.prototype.resize = function () {
     /*
      * Change chart's container height. But min height is 400px.
      */
@@ -119,7 +108,7 @@ linechart.chart.prototype.resize = function() {
  * @param {Object[]} [data]
  * @returns {linechart.chart}
  */
-linechart.chart.prototype.update = function(data) {
+linechart.chart.prototype.update = function (data) {
 
     this._viewport.update(data);
     this._navigation.update(data);
