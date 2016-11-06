@@ -47,6 +47,17 @@ module.exports = function (nunjucks_env) {
         return "Gallery";
     })
 
+    nunjucks_env.addFilter('displayValueForCol',function(displayTitleOverridesMap,col) {
+   
+
+        if (typeof displayTitleOverridesMap !== 'undefined' && displayTitleOverridesMap[col]) {
+            return displayTitleOverridesMap[col]
+        } else {
+            return col;
+        }
+
+    })
+
 
 
 
