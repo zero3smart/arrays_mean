@@ -40,14 +40,20 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
-            var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName_humanReadable;
-            var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
-                dataSourceDescription);
+            var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName] ||
+            dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName;
+
+            var groupBy_realColumnName = groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
+            dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName;
+
             //
             var chartBy = urlQuery.chartBy; // the human readable col name - real col name derived below
-            var defaultChartByColumnName_humanReadable = dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName_humanReadable;
-            var chartBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartBy ? chartBy : defaultChartByColumnName_humanReadable,
-                dataSourceDescription);
+            var defaultChartByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName] ||
+            dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName;
+
+            var chartBy_realColumnName = chartBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartBy.dataSourceDescription) :
+            dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName
+
             //
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             //
@@ -67,7 +73,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Aggregate By
             var aggregateBy = urlQuery.aggregateBy;
-            var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_views.views.pieSet.defaultAggregateByColumnName_humanReadable;
+            var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.pieSet.defaultAggregateByColumnName] ||
+                dataSourceDescription.fe_views.views.pieSet.defaultAggregateByColumnName
+
+
             var numberOfRecords_notAvailable = dataSourceDescription.fe_views.views.pieSet.aggregateByColumnName_numberOfRecords_notAvailable;
             if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
                 defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
@@ -97,7 +106,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregateBy_humanReadable_available = undefined;
             }
 
-            var aggregateBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy ? aggregateBy : defaultAggregateByColumnName_humanReadable, dataSourceDescription);
+            var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
+                dataSourceDescription.fe_views.views.pieSet.defaultAggregateByColumnName
+
 
             //
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, groupedResults = [];

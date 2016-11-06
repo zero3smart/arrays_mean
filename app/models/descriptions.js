@@ -54,19 +54,7 @@ var DatasourceDescription_scheme = Schema({
 
     imageScrapping: Array,
 
-    fe_nestedObject: {
-        prefix: String,
-        fields: Array,
-        fieldOverrides: Object,
-        criteria: {
-            fieldName: String,
-            operatorName: String,
-            value: String,
-        },
-        valueOverrides: {
-
-        }
-    },
+    fe_nestedObject: Object
 });
 
 

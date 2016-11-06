@@ -310,7 +310,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     var eachCtx;
     var eachCtx = dataSourceDescription.customFieldsToProcess;
-    if (typeof dataSourceDescription.fe_nestedObject != 'undefined') {
+    if (typeof dataSourceDescription.fe_nestedObject != 'undefined' && Object.keys(dataSourceDescription.fe_nestedObject).length) {
         eachCtx = dataSourceDescription.fe_nestedObject;
         eachCtx.nested = true;
         eachCtx.numberOfInsertedRows = 0;
@@ -323,7 +323,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     function startIterations() {
 
 
-        if (eachCtx == null || typeof eachCtx == 'undefined') {
+        if (eachCtx == null || typeof eachCtx == 'undefined' || (Array.isArray(eachCtx) && eachCtx.length==0) || !Object.keys(eachCtx).length) {
             continueToAfterIterating();
         } else {
             eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation
@@ -450,7 +450,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
             } //other conditions to implement
 
-
         }
 
         return true;
@@ -502,18 +501,14 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     cb(err);
                 }
 
-
-
             }
-
-
         });
     }
 
 
     function continueToAfterIterating(eachCtx) {
 
-        if (eachCtx != null || typeof eachCtx != 'undefined') {
+        if (eachCtx != null && typeof eachCtx != 'undefined' && !Object.keys(eachCtx).length) {
 
             afterGeneratingProcessedRowObjects_afterIterating_eachRowFn(
                 eachCtx,

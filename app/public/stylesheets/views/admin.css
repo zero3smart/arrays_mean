@@ -116,6 +116,10 @@ form.format-field #extra_keywords
     padding-left: 10px;
 }
 
+label#showDefault_view {
+  font-size: 20px;
+}
+
 
 /* -----------   for toggle slider  ----------------  */
 .switch {

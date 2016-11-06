@@ -66,6 +66,7 @@ $(document).ready(function () {
 
         var field_name = $(this).attr('data-field-name');
         var doc_id = $('#doc_id').val();
+        var doc_title = $('#doc_title').val();
 
         $.get("/admin/dataset/" + doc_id + "/format-field/" + field_name, null, function (data) {
 
@@ -74,7 +75,7 @@ $(document).ready(function () {
                     var $modalTitle = $(this).find('.modal-title');
                     var $modalBody = $(this).find('.modal-body');
 
-                    $modalTitle.html('Format Field');
+                    $modalTitle.html('Format Field - ' + doc_title);
                     $modalBody.html(data);
                 })
                 .modal();
@@ -84,6 +85,7 @@ $(document).ready(function () {
 
     $('#addCustomField').on('click', function (e) {
         var doc_id = $('#doc_id').val();
+        var doc_title = $('#doc_title').val();
 
         $.get("/admin/dataset/" + doc_id + "/add-custom-field", null, function (data) {
             $('#modal')
@@ -91,7 +93,7 @@ $(document).ready(function () {
                     var $modalTitle = $(this).find('.modal-title');
                     var $modalBody = $(this).find('.modal-body');
 
-                    $modalTitle.html('Add Custom Field');
+                    $modalTitle.html('Add Custom Field - ' + doc_title);
                     $modalBody.html(data);
                 })
                 .modal('show');
@@ -103,6 +105,7 @@ $(document).ready(function () {
         var field = $('#name').val();
 
         var params = $('form.format-field').serialize();
+
         // TODO: Consider to ask for user to login since of expiration
 
         $.post("/admin/dataset/" + doc_id + "/format-field/" + field, params)
@@ -225,14 +228,15 @@ $(document).ready(function () {
 
         var viewType = $(this).attr('view-type-name');
         var doc_id = $('#doc_id').val();
-
+        var doc_title = $('#doc_title').val();
 
         $.get("/admin/dataset/" + doc_id + "/format-views/" + viewType, null, function (data) {
             $('#modal')
                 .on('show.bs.modal', function (e) {
                     var $modalTitle = $(this).find('.modal-title');
                     var $modalBody = $(this).find('.modal-body');
-                    $modalTitle.html('Format View');
+
+                    $modalTitle.html('Format View - ' + doc_title);
                     $modalBody.html(data);
                     $(".chosen-select").chosen({width: "100%"});  
                     /* start multiselect */
@@ -271,9 +275,8 @@ $(document).ready(function () {
 
         var params = form2js('format-view','.',true);
 
-        console.log(params)
-
         // 'form#format-view'
+
 
         jQuery.ajax ({
             url: "/admin/dataset/" + doc_id + "/format-view/" + view,
@@ -282,13 +285,9 @@ $(document).ready(function () {
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             success: function(data){
-                 if (data.default_view) {
-                    $('select#viewType').removeAttr("disabled");
-                    $('select#viewType').find(":selected").removeAttr('selected');
-                    $('select#viewType').find('option[value="'+data.default_view+'"]').prop('selected', true);
-                    $('select#viewType').attr("disabled",true);
 
-                } 
+                var display_name = $('td span#' + data.default_view).attr('view-display-name');
+                $('#showDefault_view').text(display_name);
                 if (typeof data.visible != undefined) {
                     $('td.visibility').children('input[value="'+view+'"]').prop("checked",data.visible);                      
                 }
@@ -304,12 +303,28 @@ $(document).ready(function () {
 
     $('#modal').on('click','div.templateDiv a.hideTemplate',function(e) {
         e.preventDefault();
-        var set = $(this).attr('field-name');
-        $('.reset').val('');
-        $(this).closest('#template_'+set).addClass('hidden');
+
+        if ($(this).attr('delete-this') == 'true') {
+             $(this).closest('.templateDiv').remove();
+
+            
+
+        } else {
+            var set = $(this).attr('field-name');
+
+            $('div#template_' + set+ ' .reset').val('');
+            $(this).closest('#template_'+set).addClass('hidden');
+
+        }
+        
     })
     $('#modal').on('click','div.templateClone a.hideTemplate',function(e) {
+
+
         e.preventDefault();
+
+
+
         var settingName = $(this).attr('field-name');
         $(this).closest('.templateClone_' + settingName).remove();
     })

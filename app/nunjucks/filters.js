@@ -18,6 +18,7 @@ module.exports = function (nunjucks_env) {
         return Array.isArray(val);
     });
     nunjucks_env.addFilter('doesArrayContain', function (array, member) {
+
         if (Array.isArray(array))
             return array.indexOf(member) !== -1 || array.indexOf(parseInt(member)) !== -1;
         else if (typeof array === 'string') {
@@ -33,6 +34,18 @@ module.exports = function (nunjucks_env) {
         }
         return false;
     });
+
+
+    nunjucks_env.addFilter('findViewDisplayName',function(array,default_view) {
+        if (Array.isArray(array)) {
+            for (var i = 0; i < array.length; i++) {
+                if (array[i].name == default_view) {
+                    return array[i].displayAs;
+                }
+            }
+        }
+        return "Gallery";
+    })
 
 
 
@@ -60,6 +73,10 @@ module.exports = function (nunjucks_env) {
     });
 
     nunjucks_env.addFilter('doesNestedObjectContain',function(doc,nameWithDot,field) {
+        if (typeof doc == "undefined" || doc == null) {
+            return false;
+        }
+
         var split_array = nameWithDot.split(".");
         var key = split_array[0];
         var nestedKey = split_array[1];
@@ -69,16 +86,39 @@ module.exports = function (nunjucks_env) {
         return false;
     })
 
+
+    nunjucks_env.addFilter('colHasDataType',function(expectedDataType,col,coercionScheme) {
+        col = col.replace(/\./g, "_");
+
+
+        if (typeof coercionScheme[col] !== 'undefined' && coercionScheme[col].operation ) {
+            var lowercase = coercionScheme[col].operation.toLowerCase();
+
+
+            return lowercase.indexOf(expectedDataType.toLowerCase()) >= 0;
+
+        }
+        return false;
+
+
+    })
     nunjucks_env.addFilter('castArrayToStringSeparatedByComma',function(array) {
         if (Array.isArray(array)) {
             var indexOfNullType = array.indexOf(null);
-            array.splice(indexOfNullType,1);
+     
+            if (indexOfNullType >= 0) {
+                array.splice(indexOfNullType,1);
+
+            }
+        
             return array.toString()
 
         }
-    
-       
     })
+
+    nunjucks_env.addFilter('finalizeColumnName', function(colName) {
+        return colName.replace(/\./g, "_");
+    });
     
     // Array views - Filter obj construction
     nunjucks_env.addFilter('constructedFilterObj', function (existing_filterObj, this_filterCol, this_filterVal, isThisAnActiveFilter, isMultiselectable) {
@@ -234,7 +274,8 @@ module.exports = function (nunjucks_env) {
     });
     // Object detail view - Detect/substitute the url string in the parameter with the wrapped a tag
     nunjucks_env.addFilter('substitutePlainURLs', function (str) {
-        return str.split(/[\s]+/).map(function (el) {
+
+        return str.toString().split(/[\s]+/).map(function (el) {
             var result = url.parse(el);
             if ((result.protocol == 'http:' || result.protocol == 'https:')
                 && result.hostname != null && result.hostname != '') {
@@ -243,6 +284,9 @@ module.exports = function (nunjucks_env) {
                 return el;
             }
         }).join(' ');
+
+
+
     });
 
     // Object Row Coercion Data Type

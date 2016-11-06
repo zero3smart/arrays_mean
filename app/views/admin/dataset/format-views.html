@@ -8,8 +8,11 @@
 
 {% block content %}
 	<header class="admin-header">
-		<h1 class="admin-title">Dataset Settings - Format Views</h1>
+		<h1 class="admin-title">{{doc.title}} - Format Views</h1>
 	</header>
+
+	<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
+	<input type="hidden" id="doc_title" value="{{ doc.title }}"/>
 
 	{% if flash | length %}
 	<div class="alert alert-success" role="alert">{{ flash }}</div>
@@ -20,25 +23,14 @@
 
 		<br />
 
-
-
-
 		<form class="format-views">
-
-			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
-
-				<div class="form-group row">
-					<a class="add pull-right col-xs-1" data-placement="bottom" data-toggle="tooltip" title="Click individual view to customize this "><span class="glyphicon glyphicon-question-sign"></span></a>
+			<div class="form-group row">
+				<a class="add pull-right col-xs-1" data-placement="bottom" data-toggle="tooltip" title="Click individual view to customize this "><span class="glyphicon glyphicon-question-sign"></span></a>
 				
 				<label class="col-xs-4" for="default_view">Default View : </label>
-				<div class="col-xs-7"> 
+				<div class="col-xs-7  text-center"> 
+					<label id="showDefault_view"> {{ available_forViewTypes | findViewDisplayName(doc.fe_views.default_view) }}</label>
 
-					<select id="viewType" class="form-control" disabled>
-						{% for view in available_forViewTypes %}
-					
-						<option value="{{view.name}}" {{'selected' if doc.fe_views.default_view == view.name}}/> {{view.displayAs}}</option>
-						{% endfor %}
-					</select>
 				</div>
 			</div>
 
@@ -55,7 +47,7 @@
 				<tr class="views" view-type-name="{{ view.name }}">
 					<td class="visibility"><input value="{{view.name}}" type="checkbox" {{ 'checked' if
 						doc.fe_views.views[view.name].visible == true  }} disabled></td>
-					<td><span class="{{ view.icon }}"></span>{{ view.displayAs }}</td>
+					<td><span class="{{ view.icon }}" id="{{view.name}}" view-display-name="{{view.displayAs}}"></span>{{ view.displayAs }}</td>
 				</tr>
 				{% endfor %}
 				</tbody>
@@ -71,18 +63,13 @@
 
 
 	<div class="panel-footer">
-		<a class="btn btn-default pull-left" href="/admin/dataset/"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
-		<button type="submit" class="btn btn-default pull-right"><span class="glyphicon glyphicon-hand-right"></span> Next </button>
+		<a class="btn btn-default pull-left" href="format-data"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
+		<a type="submit" class="btn btn-default pull-right" href="done"><span class="glyphicon glyphicon-hand-right"></span> Next </a>
 		<div class="clearfix"></div>
 	</div>
 
 
-
 	{% include "../../partials/admin/modal.html" %}
-
-
-
-
 
 {% endblock %}
 

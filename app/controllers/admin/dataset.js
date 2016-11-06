@@ -42,6 +42,10 @@ module.exports.getSettings = function (req, next) {
     var data = {};
 
     if (req.params.id) {
+
+        req.session.uploadData_columnNames = null;
+        req.session.uploadData_firstRecord = null;
+
         datasource_description.findById(req.params.id, function (err, doc) {
 
             if (err) return next(err);
@@ -85,7 +89,9 @@ function _castSerializeElementToObject(key,value,commaSeparated) {
              objToReturn[key] = value[i].split(",");
 
         } else {
+
             objToReturn[key[i]] = value[i]
+  
 
         }
 
@@ -99,6 +105,7 @@ function _castSerializeElementToObject(key,value,commaSeparated) {
 module.exports.saveSettings = function (req, next) {
 
     var data = {};
+
 
     for (var field in req.body) {
         if (field.indexOf('[]') >= 0) {
@@ -163,11 +170,6 @@ module.exports.getSource = function (req, next) {
 
 module.exports.saveSource = function (req, next) {
     var description;
-
-
-
-    req.session.uploadData_columnNames = null;
-    req.session.uploadData_firstRecord = null;
 
     var batch = new Batch;
     batch.concurrency(1);
@@ -263,9 +265,7 @@ module.exports.saveSource = function (req, next) {
 
     batch.end(function (err) {
         if (err) {
-
             req.flash('error',err.message);
-
 
             req.session.uploadData_columnNames = null;
             req.session.uploadData_firstRecord = null;
@@ -341,6 +341,8 @@ function _loadDatasourceColumnsAndSampleRecords(req, description, next) {
 }
 
 module.exports.getFormatData = function (req, next) {
+
+
 
     if (req.params.id) {
         var data = {};
@@ -564,6 +566,9 @@ module.exports.getFormatViews = function (req, next) {
     if (!dataset_id) return next(new Error('Invalid parameter!'));
 
     views.find({}, {name: 1, displayAs: 1, icon: 1}, function (err, allViews) {
+
+
+
         if (err) return next(new Error('error when getting views'));
 
         var data = {id: dataset_id, available_forViewTypes: allViews};
@@ -619,7 +624,7 @@ module.exports.getFormatView = function (req, next) {
 
 
     batch.end(function(err) {
-    data.colNames = req.session.uploadData_columnNames;
+        data.colNames = req.session.uploadData_columnNames;
         next(err, data);
     });
 }
@@ -667,6 +672,8 @@ module.exports.saveFormatView = function (req, next) {
             if (req.body.default_view == true) {
                 changedObj.default_view = field;
                 doc.fe_views.default_view = field;
+            } else {
+                changedObj.default_view = "gallery";
             }
      
             doc.fe_views.views[field].visible = req.body.visible;
@@ -680,7 +687,12 @@ module.exports.saveFormatView = function (req, next) {
                         var index = attr.indexOf('_key');
                         var value = attr.substring(0,index);
                         
+
+                        
+
+
                         if (rest[value+"_value"] !== null && typeof rest[value + "_value"] !== 'undefined') {
+
 
                             var obj =_castSerializeElementToObject(rest[attr], rest[value + "_value"],false);
                             doc.fe_views.views[field][value] = obj;
@@ -704,6 +716,7 @@ module.exports.saveFormatView = function (req, next) {
                 }
 
             }
+            console.log(doc.fe_views.views[field]);
             doc.markModified('fe_views');
             done();
         })

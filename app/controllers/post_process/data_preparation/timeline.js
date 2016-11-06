@@ -46,8 +46,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var limitToNResults = config.timelineGroups;
             //
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
-            var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName_humanReadable;
-            var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable, dataSourceDescription);
+            var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName] ||
+            dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
+
+            var groupBy_realColumnName = groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
+            dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
+
             var groupedResultsLimit = config.timelineGroupSize;
             var groupsLimit = config.timelineGroups;
             var groupByDateFormat;
@@ -55,9 +59,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
             var sortDir = urlQuery.sortDir;
             var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
-            var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName_humanReadable;
-            var sortBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy ? sortBy : defaultSortByColumnName_humanReadable, dataSourceDescription);
-            //
+            var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName] || dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName;
+
+
+            var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) : 
+            dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName
+
+
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
             var routePath_base = "/array/" + source_pKey + "/timeline";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
