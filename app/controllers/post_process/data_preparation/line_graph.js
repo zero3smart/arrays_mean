@@ -41,10 +41,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
-            var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName_humanReadable;
-            var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable,
-                dataSourceDescription);
+
+            var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName] ||
+            dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName
+
+            var groupBy_realColumnName = groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
+                dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName;
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+
             var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
             raw_rowObjects_coercionSchema[groupBy_realColumnName].operation == "ToDate");
             var groupBy_outputInFormat = '';
@@ -55,7 +59,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 groupBy_outputInFormat = raw_rowObjects_coercionSchema[groupBy_realColumnName].outputFormat;
             }
             //
-            var stackBy = dataSourceDescription.fe_views.views.lineGraph.defaultStackByColumnName_humanReadable;
+            var stackBy = dataSourceDescription.fe_views.views.lineGraph.defaultStackByColumnName;
             //
             var routePath_base = "/array/" + source_pKey + "/line-graph";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
@@ -227,7 +231,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
 
                     if (typeof stackBy !== 'undefined' && stackBy !== null && stackBy !== "") {
-                        var stackBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(stackBy, dataSourceDescription);
+                        var stackBy_realColumnName = stackBy;
 
                         aggregationOperators = aggregationOperators.concat(
                             [
@@ -284,7 +288,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // Count by number of records
 
                     if (typeof stackBy !== 'undefined' && stackBy !== null && stackBy !== "") {
-                        var stackBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(stackBy, dataSourceDescription);
+                        var stackBy_realColumnName = stackBy
 
                         aggregationOperators = aggregationOperators.concat(
                             [

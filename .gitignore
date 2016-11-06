@@ -108,8 +108,6 @@ Temporary Items
 ## csv files ##
 *.csv
 
-##csv file##
-*.csv
 
 ## custom generated user folder */
 user/

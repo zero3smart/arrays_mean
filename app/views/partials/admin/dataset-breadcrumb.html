@@ -43,8 +43,14 @@
         {% endif %}
     </li>
 
-    <li {% if currentView[1] != 'done' %}class="text-muted"{% endif %}>
-        <span class="glyphicon glyphicon-unchecked"></span>
-        5. Done!
+    <li>
+        {% if currentView[1] != 'done' and doc.fe_views.views %}
+        <a href="done" class="text-muted">
+        {% endif %}
+            <span class="glyphicon glyphicon-{{ 'check' if doc.fe_views.views | length else 'unchecked' }}"></span>
+            5. Done!
+        {% if currentView[1] != 'done' and doc.fe_views.views %}
+        </a>
+        {% endif %}
     </li>
 </ul>

@@ -78,6 +78,11 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
             batch.push(function (done) {
                 var afterImportingAllSources_generate = dataSourceDescription.relationshipFields;
                 if (typeof afterImportingAllSources_generate !== 'undefined') {
+
+                
+
+
+
                     var batch = new Batch();
                     batch.concurrency(1);
 
@@ -101,7 +106,15 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 } else {
                                     findQuery._id = {$in: valueInDocAtField};
                                 }
-                                rowObjectsOfRelationship_mongooseModel.find(findQuery, function (err, hydrationFetchResults) {
+                                var fieldToAcquire = {};
+                                if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName !== 'undefined') {
+                                    fieldToAcquire ={ srcDocPKey:1,_id:1};
+                                    var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName[field].showField;
+                                    fieldToAcquire["rowParams."+wantedfield] = 1;
+                                }
+                                rowObjectsOfRelationship_mongooseModel.find(findQuery)
+                                .select(fieldToAcquire)
+                                .exec(function (err, hydrationFetchResults) {
                                     if (err) return done(err);
 
 
@@ -114,6 +127,13 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 done(); // nothing to hydrate
                             }
                         });
+
+
+
+
+
+
+
                     });
 
                     batch.end(done);
@@ -213,6 +233,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 if (typeof dataSourceDescription.fe_filters.default !== 'undefined') {
                     default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default || {}); // "|| {}" for safety
                 }
+
                 //
                 var data =
                 {
