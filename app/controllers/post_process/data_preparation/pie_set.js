@@ -51,7 +51,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultChartByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName] ||
             dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName;
 
-            var chartBy_realColumnName = chartBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartBy.dataSourceDescription) :
+            var chartBy_realColumnName = chartBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartBy,dataSourceDescription) :
             dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName
 
             //

@@ -12,7 +12,7 @@ var imported_data_preparation = require('.././utils/imported_data_preparation');
 var import_controller = require('../.././controllers/pre_process/data_ingest/import_controller');
 
 /* -----------   helper function ----------- */
-var mergeObject = function (obj1, obj2) {
+var _mergeObject = function (obj1, obj2) {
     var obj3 = {};
     for (var attrname in obj1) {
         obj3[attrname] = obj1[attrname]
@@ -34,7 +34,7 @@ var _consolidate_descriptions_hasSchema = function(description) {
             } else if (typeof desc[attrname] == 'string') {
 
             } else if (typeof desc[attrname] == 'object') {
-                desc[attrname] = mergeObject(schemaDesc[attrname], desc[attrname]);
+                desc[attrname] = _mergeObject(schemaDesc[attrname], desc[attrname]);
 
             }
         } else {
@@ -44,6 +44,90 @@ var _consolidate_descriptions_hasSchema = function(description) {
     return desc;
 }
 
+
+var _checkCollection = function(datasource_description,schemaKey,eachCb) {
+
+  
+    if (schemaKey != null) {
+        mongoose_client.checkIfDatasetImportedInSchemaCollection('rawrowobjects-' + schemaKey, datasource_description.dataset_uid, function (err, existInRaw) {
+            console.log("here?");
+            if (err) {
+                winston.error("❌ err when checking mongo collection exists, from callback ");
+                eachCb(err);
+            } else {
+                if (existInRaw == true) {
+                    winston.info("✅ rawrowobjects collection exists for dataset_uid: ", datasource_description.dataset_uid);
+                    mongoose_client.checkIfDatasetImportedInSchemaCollection('processedrowobjects-' + keyname, datasource_description.dataset_uid, function (err, existInProcessed) {
+                        if (err) {
+                            eachCb(err);
+                        } else if (existInProcessed == true) {
+                            winston.info("✅ processedrowobjects collection exists for dataset_uid: ", datasource_description.dataset_uid);
+                            eachCb(null);
+                        } else {
+                            winston.info("❗ processedrowobjects collection does not exists for dataset_uid: ", datasource_description.dataset_uid);
+                            winston.info("💬  will build it right now....");
+
+                            var descriptions = [];
+
+                            import_controller.PostProcessRawObjects([datasource_description], function () {
+                                eachCb(null);
+                            })
+                        }
+                    })
+                } else {
+
+                    winston.info("❗ rawrowobjects collection does not exists for dataset_uid: " + schemaKey);
+                    winston.info("💬  will build it right now....");
+                    import_controller.Import_dataSourceDescriptions([datasource_description], function () {
+                        eachCb(null);
+                    });
+   
+                }
+
+            }
+
+         })
+
+    } else {
+        keyname = imported_data_preparation.DataSourcePKeyFromDataSourceDescription(datasource_description).toLowerCase();
+        mongoose_client.checkIfCollectionExists('rawrowobjects-' + keyname, function (err, exist) {
+            if (err) {
+                winston.error("❌ err when checking mongo collection exists, from callback ");
+                eachCb(err);
+            } else {
+                if (exist == true) {
+                    winston.info("✅  rawrowobjects collection exists for dataset : ", keyname);
+                    mongoose_client.checkIfCollectionExists('processedrowobjects-' + keyname, function (err, exist) {
+                        if (err) {
+                            eachCb(err);
+                        } else if (exist == true) {
+                            winston.info("✅  processedrowobjects collection exists for dataset: ", keyname);
+                            eachCb(null);
+
+                        } else {
+                            winston.info("❗ processedrowobjects collection does not exists for dataset: " + keyname);
+                            winston.info("💬  will build it right now....");
+
+                            var descriptions = [];
+
+                            import_controller.PostProcessRawObjects([datasource_description], function () {
+                                eachCb(null);
+                            })
+                        }
+                    })
+                } else {
+                    winston.info("❗ rawrowobjects collection does not exists for dataset: " + keyname);
+                    winston.info("💬  will build it right now....");
+                    import_controller.Import_dataSourceDescriptions([datasource_description], function () {
+                        eachCb(null);
+                    });
+                }
+            }
+        })
+
+    }
+
+}
 
 
 
@@ -135,113 +219,72 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
 
 module.exports.GetDescriptionsToSetup = _GetDescriptionsToSetupByFilenames
 
-
-var _findAllDescriptionAndSetup = function (fn) {
-
-    // TODO: Detect the datasources to be setup
-    datasource_description.find({imported: 3})
+var _findAllDescriptionAndSetup = function(fn) {
+    datasource_description.find({imported:3})
         .lean()
         .deepPopulate('schema_id _team')
-        .exec(function (err, descriptions) {
-
-            async.each(descriptions, function (desc, eachCb) {
-
-                var keyname;
-              
-
-                if (typeof desc.schema_id !== 'undefined') {
-
-                    
-                        desc = _consolidate_descriptions_hasSchema(desc);
-                     
-
-                        keyname = imported_data_preparation.DataSourcePKeyFromDataSourceDescription(desc).toLowerCase();
-
-                        /*  special check for datasets that uses a schema since multiple datasets stored in same mongo collections  */
-                        mongoose_client.checkIfDatasetImportedInSchemaCollection('rawrowobjects-' + keyname, desc.dataset_uid, function (err, existInRaw) {
-
-                            if (err) {
-                                winston.error("❌ err when checking mongo collection exists, from callback ");
-                                eachCb(err);
-
-                            } else {
-                                if (existInRaw == true) {
-                                    winston.info("✅ rawrowobjects collection exists for dataset_uid: ", desc.dataset_uid);
-                                    mongoose_client.checkIfDatasetImportedInSchemaCollection('processedrowobjects-' + keyname, desc.dataset_uid, function (err, existInProcessed) {
-                                        if (err) {
-                                            eachCb(err);
-                                        } else if (existInProcessed == true) {
-                                            winston.info("✅ processedrowobjects collection exists for dataset_uid: ", desc.dataset_uid);
-                                            eachCb(null);
-                                        } else {
-                                            winston.info("❗ processedrowobjects collection does not exists for dataset_uid: ", desc.dataset_uid);
-                                            winston.info("💬  will build it right now....");
-
-                                            var descriptions = [];
-
-                                            import_controller.PostProcessRawObjects([desc], function () {
-                                                eachCb(null);
-                                            })
-                                        }
-                                    })
-                                } else {
-                                    winston.info("❗ rawrowobjects collection does not exists for dataset_uid: ", desc.dataset_uid);
-                                    winston.info("💬  will build it right now....");
-                                    import_controller.Import_dataSourceDescriptions([desc], function () {
-                                        eachCb(null);
-                                    });
-                                }
-                            }
-                        })
-
-                    
-                } else {
+        .exec(function(err,descriptions) {
+         
+            /* avoid write operation lock for datasource depend on others */
+            var dependentOnSchemaToBeLoaded = {};
+            async.each(descriptions,function(desc,eachCb) {
+                if (typeof desc.schema_id !== 'undefined' ) {
+                
+                    desc = _consolidate_descriptions_hasSchema(desc);
                     keyname = imported_data_preparation.DataSourcePKeyFromDataSourceDescription(desc).toLowerCase();
+                    dependentOnSchemaToBeLoaded[keyname] = [];
+                    dependentOnSchemaToBeLoaded[keyname].push(desc);
 
-                    mongoose_client.checkIfCollectionExists('rawrowobjects-' + keyname, function (err, exist) {
-                        if (err) {
-                            winston.error("❌ err when checking mongo collection exists, from callback ");
-                            eachCb(err);
-
-                        } else {
-                            if (exist == true) {
-                                winston.info("✅  rawrowobjects collection exists for dataset : ", keyname);
-                                mongoose_client.checkIfCollectionExists('processedrowobjects-' + keyname, function (err, exist) {
-                                    if (err) {
-                                        eachCb(err);
-                                    } else if (exist == true) {
-                                        winston.info("✅  processedrowobjects collection exists for dataset: ", keyname);
-                                        eachCb(null);
-
-                                    } else {
-                                        winston.info("❗ processedrowobjects collection does not exists for dataset: " + keyname);
-                                        winston.info("💬  will build it right now....");
-
-                                        var descriptions = [];
-
-                                        import_controller.PostProcessRawObjects([desc], function () {
-                                            eachCb(null);
-                                        })
-                                    }
-                                })
-                            } else {
-                                winston.info("❗ rawrowobjects collection does not exists for dataset: " + keyname);
-                                winston.info("💬  will build it right now....");
-                                import_controller.Import_dataSourceDescriptions([desc], function () {
-                                    eachCb(null);
-                                });
-                            }
-                        }
-                    })
+                    eachCb(null);
+                } else {
+                    _checkCollection(desc,null,eachCb);
 
                 }
 
-            }, function (err) {
+            },function(err) {
 
-                fn(err);
+
+                if (Object.keys(dependentOnSchemaToBeLoaded).length !== 0) {
+
+
+
+                    async.forEachOf(dependentOnSchemaToBeLoaded,function(value,key,eachCbForEachOf) {
+
+
+                        async.eachSeries(value,function(single_desc,eachCb) {
+
+                           
+
+                            _checkCollection(single_desc,key,eachCb);
+
+                        },function(err) {
+                          
+                            eachCbForEachOf(err);
+
+                        })
+
+                    },function(err) {
+                        fn(err);
+                    })
+
+
+                } else {
+                    fn(err);
+                }
+
             })
         })
 }
+
+
+
+
+
+
+
+
+
+
 module.exports.findAllDescriptionAndSetup = _findAllDescriptionAndSetup
 
 
