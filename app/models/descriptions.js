@@ -8,7 +8,7 @@ var Schema = mongoose.Schema;
 var DatasourceDescription_scheme = Schema({
     uid: String, // It is not changeable once it's generated automaticlly when creating a descrpition
     importRevision: {type: Number,integer: true, default: 1},
-    schema_id: {type: Schema.Types.ObjectId},
+    schema_id: {type: Schema.Types.ObjectId, ref:'DatasourceDescription'},
     logo: String,
     dataset_uid: String, // It is not changeable once it's generated automaticlly when creating a descrpition
     format: String,
@@ -48,7 +48,7 @@ var DatasourceDescription_scheme = Schema({
     },
 
     
-    _team: {type: Schema.Types.ObjectId, ref: "Team"},
+    _team: {type: Schema.Types.ObjectId, ref: 'Team'},
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
 
@@ -57,8 +57,12 @@ var DatasourceDescription_scheme = Schema({
     fe_nestedObject: Object
 });
 
-
+var deepPopulate = require('mongoose-deep-populate')(mongoose);
 DatasourceDescription_scheme.plugin(integerValidator);
+
+DatasourceDescription_scheme.plugin(deepPopulate,{whitelist:['_otherSources','_otherSources._team','schema_id','_team']})
+
+
 
 var modelName = 'DatasourceDescription';
 

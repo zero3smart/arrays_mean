@@ -1,7 +1,9 @@
 var fs = require('fs');
 var winston = require('winston');
 var mongoose_client = require('../../../lib/mongoose_client/mongoose_client');
+require('../../models/teams')
 var datasource_description = require('../../models/descriptions');
+
 var Promise = require('q').Promise;
 var _ = require("lodash");
 var async = require('async');
@@ -21,33 +23,30 @@ var mergeObject = function (obj1, obj2) {
     return obj3;
 }
 
-function _getSchemaDescriptionAndCombine(schemaId, desc) {
+var _consolidate_descriptions_hasSchema = function(description) {
+    var desc = _.omit(description,['schema_id'])
+    var schemaDesc = description.schema_id
+    for (var attrname in schemaDesc) {
+        if (desc[attrname]) {
+            if (Array.isArray(desc[attrname])) {
+                desc[attrname] = schemaDesc[attrname].concat(desc[attrname]);
 
-    return new Promise(function (resolve, reject) {
-        datasource_description.findById(schemaId)
-            .lean()
-            .exec(function (err, schemaDesc) {
+            } else if (typeof desc[attrname] == 'string') {
 
-                for (var attrname in schemaDesc) {
-                    if (desc[attrname]) {
-                        if (Array.isArray(desc[attrname])) {
-                            desc[attrname] = schemaDesc[attrname].concat(desc[attrname]);
-                        } else if (typeof desc[attrname] === 'string') {
-                            // Nothing to do
-                        } else if (typeof desc[attrname] === 'object') {
-                            desc[attrname] = mergeObject(schemaDesc[attrname], desc[attrname]);
-                        }
-                    } else {
-                        desc[attrname] = schemaDesc[attrname];
-                    }
-                }
+            } else if (typeof desc[attrname] == 'object') {
+                desc[attrname] = mergeObject(schemaDesc[attrname], desc[attrname]);
 
-                resolve(desc);
-            })
-    })
+            }
+        } else {
+            desc[attrname] = schemaDesc[attrname]
+        }
+    }
+    return desc;
 }
 
-module.exports.GetSchemaDescriptionAndCombine = _getSchemaDescriptionAndCombine;
+
+
+
 
 /* -------   end helper function ------------  */
 var GetDescriptions = function (fn) {
@@ -76,12 +75,16 @@ var GetDescriptions = function (fn) {
 
 }
 
+
+
+
+
 module.exports.GetDescriptions = GetDescriptions
 
 
+
+
 var _GetDescriptionsToSetupByFilenames = function (files, fn) {
-    if (!files || files.length == 0)
-        files = require('./default.js').Datasources;
 
     var descriptions = [];
 
@@ -90,7 +93,7 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
 
             datasource_description.findOne({$or: [{uid: file}, {dataset_uid: file}]})
                 .lean()
-                .populate('_otherSources')
+                .deepPopulate('_otherSources schema_id _team _otherSources._team')
                 .exec(function (err, description) {
 
                     if (err) {
@@ -111,10 +114,8 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
                             cb();
 
                         } else {
-                            _getSchemaDescriptionAndCombine(description.schema_id, description).then(function (des) {
-                                descriptions.push(des);
-                                cb();
-                            })
+                            descriptions.push(_consolidate_descriptions_hasSchema(description));
+                            cb();
                         }
                     }
                 })
@@ -140,14 +141,19 @@ var _findAllDescriptionAndSetup = function (fn) {
     // TODO: Detect the datasources to be setup
     datasource_description.find({imported: 3})
         .lean()
+        .deepPopulate('schema_id _team')
         .exec(function (err, descriptions) {
 
             async.each(descriptions, function (desc, eachCb) {
 
                 var keyname;
+              
+
                 if (typeof desc.schema_id !== 'undefined') {
-                    _getSchemaDescriptionAndCombine(desc.schema_id, desc).then(function (descr) {
-                        desc = descr;
+
+                    
+                        desc = _consolidate_descriptions_hasSchema(desc);
+                     
 
                         keyname = imported_data_preparation.DataSourcePKeyFromDataSourceDescription(desc).toLowerCase();
 
@@ -188,7 +194,7 @@ var _findAllDescriptionAndSetup = function (fn) {
                             }
                         })
 
-                    })
+                    
                 } else {
                     keyname = imported_data_preparation.DataSourcePKeyFromDataSourceDescription(desc).toLowerCase();
 
