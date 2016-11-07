@@ -498,6 +498,10 @@ module.exports.topUniqueFieldValuesForFiltering = _topUniqueFieldValuesForFilter
 
 //
 var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescription) {
+
+ 
+   
+
     var displayableVal = originalVal;
     // var prototypeName = Object.prototype.toString.call(originalVal);
     // if (prototypeName === '[object Date]') {
@@ -516,17 +520,22 @@ var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescr
                 if (originalVal == null || originalVal == "") {
                     return originalVal; // do not attempt to format
                 }
-                var dateFormat = null;
-                var fe_outputInFormat = coersionSchemeOfKey.outputFormat;
-                if (fe_outputInFormat && typeof fe_outputInFormat !== 'undefined') {
-                    var outputInFormat_ofKey = fe_outputInFormat["" + key];
-                    if (outputInFormat_ofKey && typeof outputInFormat_ofKey !== 'undefined') {
-                        dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
-                    }
-                }
+
+                var dateFormat = coersionSchemeOfKey.outputFormat;
+
+
+                // if (!fe_outputInFormat && typeof fe_outputInFormat == 'undefined') {
+                //     var outputInFormat_ofKey = fe_outputInFormat["" + key];
+                //     if (outputInFormat_ofKey && typeof outputInFormat_ofKey !== 'undefined') {
+                //         dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
+                //     }
+                // }
                 if (dateFormat == null || dateFormat == "ISO_8601") { // still null? use default
                     dateFormat = config.defaultDateFormat;
                 }
+
+             
+
                 displayableVal = moment(originalVal, moment.ISO_8601).utc().format(dateFormat);
             } else { // nothing to do? (no other types yet)
             }
@@ -535,6 +544,8 @@ var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescr
     } else { // nothing to do?
     }
     //
+
+
     return displayableVal;
 };
 module.exports.reverseDataToBeDisplayableVal = _reverseDataToBeDisplayableVal;

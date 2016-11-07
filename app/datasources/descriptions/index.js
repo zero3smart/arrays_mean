@@ -50,7 +50,7 @@ var _checkCollection = function(datasource_description,schemaKey,eachCb) {
   
     if (schemaKey != null) {
         mongoose_client.checkIfDatasetImportedInSchemaCollection('rawrowobjects-' + schemaKey, datasource_description.dataset_uid, function (err, existInRaw) {
-            console.log("here?");
+      
             if (err) {
                 winston.error("❌ err when checking mongo collection exists, from callback ");
                 eachCb(err);
