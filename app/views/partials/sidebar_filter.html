@@ -61,7 +61,7 @@
                     {% set isMultiselectable = multiselectableFilterFields | doesArrayContain(fieldName) %}
 
                     <a class="collapse-trigger" role="button" href="#column-{{ loop.index }}" aria-expanded="false" aria-controls="column-{{ loop.index }}">
-                        <span class="sidebar-filter-fieldname">{{ fieldName }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">{{ filterObj[fieldName] | filterCount }}</span>{%endif %}
+                        <span class="sidebar-filter-fieldname">{{ displayTitleOverrides[fieldName] or fieldName }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">{{ filterObj[fieldName] | filterCount }}</span>{%endif %}
                     </a>
                     <ul id="column-{{ loop.index }}" class="sidebar-filter-subgroup collapse" aria-expanded="false">
                         {% for fieldValue in fieldValues %}

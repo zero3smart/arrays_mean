@@ -235,6 +235,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         features: mapFeatures
                     },
                     mapBy: mapBy,
+                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     //
                     filterObj: filterObj,
                     isFilterActive: isFilterActive,

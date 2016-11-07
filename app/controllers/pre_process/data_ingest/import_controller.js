@@ -322,8 +322,10 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     function startIterations() {
 
+        /*eachCtx could be array or object*/
 
-        if (eachCtx == null || typeof eachCtx == 'undefined' || (Array.isArray(eachCtx) && eachCtx.length==0) || !Object.keys(eachCtx).length) {
+        if (eachCtx == null || typeof eachCtx == 'undefined' || (Array.isArray(eachCtx) && eachCtx.length==0) || 
+            (typeof eachCtx == 'object' && !Object.keys(eachCtx).length) ) {
             continueToAfterIterating();
         } else {
             eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation
@@ -415,16 +417,20 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                 var newFieldType = eachCtx[i].fieldType;
                 if (newFieldType == 'array') {
                     var fieldsToMergeIntoArray = eachCtx[i].fieldsToMergeIntoArray;
-                    var new_array = mergeAllFieldsToArray(fieldsToMergeIntoArray, rowDoc, null);
-                    var updateQuery = addToSet(newFieldName, new_array);
+                    var delimiterArrays = eachCtx[i].delimiterOnFields;
+                    var new_array = mergeAllFieldsToArray(fieldsToMergeIntoArray,delimiterArrays, rowDoc, null);
+             
 
+                    var updateQuery = addToSet(newFieldName, new_array);
+    
                     bulkOperationQueryFragment =
                     {
                         pKey: rowDoc.pKey,
                         srcDocPKey: rowDoc.srcDocPKey
                     };
-                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateQuery);
 
+                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateQuery);
+                     
                 } else if (newFieldType == 'object') {
 
 
@@ -433,6 +439,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         }
         cb();
     }
+
+
 
     function ifHasAndMeetCriteria(ctx, rowDoc) {
 
@@ -456,13 +464,19 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     }
 
-    function mergeAllFieldsToArray(withValuesInFieldsNamed, rowDoc) {
+    function mergeAllFieldsToArray(withValuesInFieldsNamed,delimiterArrays, rowDoc) {
+
         var generatedArray = [];
         for (var i = 0; i < withValuesInFieldsNamed.length; i++) {
             var fieldName = withValuesInFieldsNamed[i];
             var fieldValue = rowDoc["rowParams"][fieldName];
             if (typeof fieldValue !== 'undefined' && fieldValue !== null && fieldValue !== "") {
-                generatedArray.push(fieldValue);
+                if (typeof delimiterArrays !== 'undefined' && Array.isArray(delimiterArrays)) {
+                    fieldValue = fieldValue.split(delimiterArrays[i]);
+                    generatedArray = generatedArray.concat(fieldValue);
+                } else {
+                    generatedArray.push(fieldValue);
+                }
             }
         }
         return generatedArray;
@@ -477,6 +491,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     }
 
     function afterGeneratingProcessedRowObjects_afterIterating_eachRowFn(eachCtx, cb) {
+
         var writeConcern =
         {
             upsert: true
@@ -485,7 +500,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             if (err) {
                 winston.error("❌ [" + (new Date()).toString() + "] Error while saving raw row objects: ", err);
             } else {
-
 
                 winston.info("✅  [" + (new Date()).toString() + "] Saved raw row objects.");
 
@@ -508,7 +522,9 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     function continueToAfterIterating(eachCtx) {
 
-        if (eachCtx != null && typeof eachCtx != 'undefined' && !Object.keys(eachCtx).length) {
+        /* check object key length would not be appropriate because eacCtx could be array */
+
+        if (eachCtx != null && typeof eachCtx != 'undefined' ) {
 
             afterGeneratingProcessedRowObjects_afterIterating_eachRowFn(
                 eachCtx,

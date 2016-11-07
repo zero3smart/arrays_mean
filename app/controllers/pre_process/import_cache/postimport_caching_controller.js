@@ -61,6 +61,18 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
 
 };
 
+
+var _findFieldSeparateIndexInArray = function(fieldsToSeparate,targetField) {
+    for (var i = 0; i < fieldsToSeparate.length; i++) {
+        if (fieldsToSeparate[i].field == targetField) {
+            return i;
+
+        }
+    }
+    return -1;
+}
+
+
 var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription, callback) {
 
 
@@ -99,6 +111,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 {$sort: {count: -1}},
                 //{ $limit : limitToNTopValues }
             ]).allowDiskUse(true).exec(function (err, results) {
+
                 if (err) {
                     cb(err);
 
@@ -109,47 +122,11 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
 
                     return;
                 }
-                var valuesRaw;
-                if (dataSourceDescription.fe_filters.fieldsCommaSeparatedAsIndividual && dataSourceDescription.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf(key) !== -1) {
-                    var raw = {}
-                    results.forEach(function (el) {
-                        if (Array.isArray(el._id) || typeof el._id === 'string') {
-                            var _newId;
-                            if (Array.isArray(el._id)) {
-                                _newId = []
-                                el._id.forEach(function (_id) {
-                                    if (typeof _id === 'string') _newId.concat(_id.split(/[\s]*[,]+[\s]*/));
-                                });
-                            } else {
-                                _newId = el._id.split(/[\s]*[,]+[\s]*/);
-                            }
-
-                            _newId.filter(function (elem, index, self) {
-                                return elem != '' && index === _newId.indexOf(elem);
-                            }).forEach(function (_newIdEl) {
-                                raw[_newIdEl] = raw[_newIdEl] !== undefined ? raw[_newIdEl] + el.count : el.count;
-                            });
-                        } else {
-                            raw[el._id] = el.count;
-                        }
-                    });
-
-                    // Sort raw by values
-                    valuesRaw = [];
-                    for (var id in raw) {
-                        valuesRaw.push({id: id, count: raw[id]});
-                    }
-                    valuesRaw.sort(function (a, b) {
-                        return a.count < b.count;
-                    });
-                    valuesRaw = valuesRaw.map(function (el) {
-                        return el.id;
-                    });
-                } else {
-                    valuesRaw = results.map(function (el) {
-                        return el._id;
-                    });
-                }
+                
+                valuesRaw = results.map(function (el) {
+                    return el._id;
+                });
+                
 
                 // flatten array of arrays (for nested tables)
                 var values = [].concat.apply([], valuesRaw).filter(function (elem, index, self) {
@@ -179,13 +156,10 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                         values.splice(idxOfIllegalVal, 1);
                     }
                 }
-                //
+
                 values.sort();
-                //
-                // Note here we use the human-readable key. We decode it back to the original key at query-time
-                delete uniqueFieldValuesByFieldName[key]; // so no stale values persist in hash
-                var finalizedStorageKey = dataSourceDescription.fe_displayTitleOverrides[key] || key;
-                uniqueFieldValuesByFieldName[finalizedStorageKey] = values;
+
+                uniqueFieldValuesByFieldName[key] = values;
                 cb();
             });
         }, function (err) {
@@ -211,7 +185,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 var persistableDoc =
                 {
                     srcDocPKey: dataSourceRevision_pKey,
-                    limitedUniqValsByHumanReadableColName: uniqueFieldValuesByFieldName
+                    limitedUniqValsByColName: uniqueFieldValuesByFieldName
                 };
                 var cached_values = require('../../../models/cached_values');
                 cached_values.findOneAndUpdate({srcDocPKey: dataSourceRevision_pKey}, persistableDoc, {
