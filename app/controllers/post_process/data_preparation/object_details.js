@@ -79,10 +79,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 var afterImportingAllSources_generate = dataSourceDescription.relationshipFields;
                 if (typeof afterImportingAllSources_generate !== 'undefined') {
 
-                
-
-
-
                     var batch = new Batch();
                     batch.concurrency(1);
 
@@ -116,7 +112,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 .select(fieldToAcquire)
                                 .exec(function (err, hydrationFetchResults) {
                                     if (err) return done(err);
-
 
                                     var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
                                     rowObject.rowParams[field] = hydrationValue; // a doc or list of docs

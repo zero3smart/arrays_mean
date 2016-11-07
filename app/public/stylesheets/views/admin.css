@@ -43,6 +43,7 @@ form .removeDataset {
 /* Format data */
 .format-data tr.field,
 a.add,
+.format-data tr.custom-field,
 .format-views tr.views {
     cursor: pointer;
 }
@@ -53,6 +54,12 @@ a.add,
 
 th#view_visibility {
     width:30%;
+}
+
+.format-data .custom-field-seperator td {
+    text-align: center;
+    font-weight: bold;
+    font-size: 23px;
 }
 
 

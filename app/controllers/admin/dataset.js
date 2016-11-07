@@ -37,6 +37,7 @@ module.exports.index = function (req, next) {
     });
 };
 
+
 /***************  Settings  ***************/
 module.exports.getSettings = function (req, next) {
     var data = {};
@@ -61,7 +62,6 @@ module.exports.getSettings = function (req, next) {
     }
 };
 
-
 function _castSerializeElementToArray(field,reqBody) {
     var arrayField = field.replace('[]','');
     reqBody[arrayField] = [];
@@ -79,7 +79,6 @@ function _castSerializeElementToArray(field,reqBody) {
     }
     delete reqBody[field];
 }
-
 
 function _castSerializeElementToObject(key,value,commaSeparated) {
     var objToReturn = {};
@@ -100,12 +99,9 @@ function _castSerializeElementToObject(key,value,commaSeparated) {
     return objToReturn;
 }
 
-
-
 module.exports.saveSettings = function (req, next) {
 
     var data = {};
-
 
     for (var field in req.body) {
         if (field.indexOf('[]') >= 0) {
@@ -138,6 +134,7 @@ module.exports.saveSettings = function (req, next) {
         });
     }
 };
+
 
 /***************  Upload/Source  ***************/
 module.exports.getSource = function (req, next) {
@@ -184,8 +181,6 @@ module.exports.saveSource = function (req, next) {
                 done();
             })
     });
-
-
 
     _.forEach(req.files, function (file) {
         batch.push(function (done) {
@@ -244,8 +239,6 @@ module.exports.saveSource = function (req, next) {
                         });
                 }));
         });
-
-
 
         batch.push(function (done) {
             if (!description.uid)
@@ -342,8 +335,6 @@ function _loadDatasourceColumnsAndSampleRecords(req, description, next) {
 
 module.exports.getFormatData = function (req, next) {
 
-
-
     if (req.params.id) {
         var data = {};
 
@@ -404,6 +395,7 @@ module.exports.saveFormatData = function (req, next) {
     }
 };
 
+
 /***************  Format Field  ***************/
 module.exports.getFormatField = function (req, next) {
     var dataset_id = req.params.id;
@@ -435,7 +427,6 @@ module.exports.saveFormatField = function (req, next) {
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
 
     var data = {};
-
 
     field = field.replace(/\./g, "_");
 
@@ -541,13 +532,62 @@ module.exports.saveFormatField = function (req, next) {
 
 }
 
-/***************  Add Custom Field  ***************/
-module.exports.getAddCustomField = function (req, next) {
+
+/***************  Format Custom Field  ***************/
+module.exports.getFormatCustomField = function (req, next) {
+    var dataset_id = req.params.id;
+    var field_name = req.params.field;
+    if (!dataset_id) return next(new Error('Invalid parameter!'));
+
+    var data = {
+        id: dataset_id,
+        field: field_name,
+        firstRecords: req.session.uploadData_firstRecord,
+        customMode: true
+    };
+
+    datasource_description.findById(dataset_id, function (err, doc) {
+        if (err) return next(err);
+
+        if (doc) {
+            var _doc = doc._doc;
+            data.doc = _doc;
+            data.colNames = req.session.uploadData_columnNames;
+
+            var finalizedFieldName = field_name.replace(/\./g, "_");
+
+            if (!_doc.customFieldsToProcess || _doc.customFieldsToProcess.length == 0) return next(new Error('No custom field for ' + field_name));
+
+            var customField =  _doc.customFieldsToProcess.find(function(element) {
+                return element.fieldName == finalizedFieldName;
+            });
+
+            if (customField == null) return next(new Error('Invalid custom field for ' + field_name));
+
+            data.customField = customField;
+
+            if (!customField.fieldsToMergeIntoArray) return next(new Error('No corresponding fields to merge into array - ' + field_name));
+
+            var firstRecordsToMergeIntoArray = customField.fieldsToMergeIntoArray.map(function(field) {
+                var colName = req.session.uploadData_columnNames.find(function(colName) {
+                    return colName.replace(/\./g, '_') == field;
+                });
+                return req.session.uploadData_firstRecord[req.session.uploadData_columnNames.indexOf(colName)];
+            });
+
+            data.firstRecord = firstRecordsToMergeIntoArray;
+        }
+        next(null, data);
+    });
+}
+
+module.exports.getFormatNewCustomField = function (req, next) {
     var dataset_id = req.params.id;
     if (!dataset_id) return next(new Error('Invalid parameter!'));
 
     var data = {
-        id: dataset_id
+        id: dataset_id,
+        custom: true,
     };
 
     datasource_description.findById(dataset_id, function (err, doc) {
@@ -559,6 +599,7 @@ module.exports.getAddCustomField = function (req, next) {
         next(null, data);
     });
 }
+
 
 /***************  Format Views  ***************/
 module.exports.getFormatViews = function (req, next) {
@@ -581,7 +622,6 @@ module.exports.getFormatViews = function (req, next) {
         });
     });
 }
-
 
 module.exports.getFormatView = function (req, next) {
     var dataset_id = req.params.id;
@@ -630,10 +670,7 @@ module.exports.getFormatView = function (req, next) {
         });
     });
 
-
     batch.end(function(err) {
-
-
         data.colNames = data.colNames.concat(req.session.uploadData_columnNames);
         next(err, data);
     });
@@ -641,20 +678,15 @@ module.exports.getFormatView = function (req, next) {
 
 module.exports.saveFormatView = function (req, next) {
 
-
     var dataset_id = req.params.id;
     var field = req.params.view;
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
-
-
 
     var batch = new Batch();
     batch.concurrency(1);
 
     var doc;
     var changedObj = {};
-
-
 
     if (!req.session.uploadData_columnNames) {
         batch.push(function(done) {
@@ -668,13 +700,9 @@ module.exports.saveFormatView = function (req, next) {
 
     batch.push(function(done) {
 
-
-
-
         datasource_description.findById(dataset_id,function(err,datasetDesc) {
 
             doc = datasetDesc;
-
     
             if (!doc.fe_views) doc.fe_views = {};
             if (!doc.fe_views.views) doc.fe_views.views = {};
@@ -714,7 +742,6 @@ module.exports.saveFormatView = function (req, next) {
                             !== 'undefined') {
                             var obj =_castSerializeElementToObject(rest[attr], rest[value + "_value_separatedByComma"],true);
 
-
                             doc.fe_views.views[field][value] = obj;
                             delete rest[value + "_value_separatedByComma"];
                         }
@@ -729,10 +756,8 @@ module.exports.saveFormatView = function (req, next) {
                              doc.fe_views.views[field][attr] = rest[attr];
 
                         }
-                       
 
                     }
-                    
                 }
 
             }
@@ -748,14 +773,6 @@ module.exports.saveFormatView = function (req, next) {
             return next(null,changedObj);
         })
     })
-
-
-
-
-
-
-
-    
 }
 
 

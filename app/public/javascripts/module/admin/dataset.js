@@ -83,17 +83,41 @@ $(document).ready(function () {
         }, "html");
     });
 
-    $('#addCustomField').on('click', function (e) {
+    $('.format-data tr.custom-field').on('click', function (e) {
+        e.preventDefault();
+
+        var field_name = $(this).attr('data-field-name');
         var doc_id = $('#doc_id').val();
         var doc_title = $('#doc_title').val();
 
-        $.get("/admin/dataset/" + doc_id + "/add-custom-field", null, function (data) {
+        $.get("/admin/dataset/" + doc_id + "/format-custom-field/" + field_name, null, function (data) {
+
             $('#modal')
                 .on('show.bs.modal', function (e) {
                     var $modalTitle = $(this).find('.modal-title');
                     var $modalBody = $(this).find('.modal-body');
 
-                    $modalTitle.html('Add Custom Field - ' + doc_title);
+                    $modalTitle.html('Format Custom Field - ' + doc_title);
+                    $modalBody.html(data);
+                    $(".chosen-select").chosen({width: "100%"});
+                    /* start multiselect */
+                })
+                .modal();
+
+        }, "html");
+    });
+
+    $('#newCustomField').on('click', function (e) {
+        var doc_id = $('#doc_id').val();
+        var doc_title = $('#doc_title').val();
+
+        $.get("/admin/dataset/" + doc_id + "/format-custom-field/new", null, function (data) {
+            $('#modal')
+                .on('show.bs.modal', function (e) {
+                    var $modalTitle = $(this).find('.modal-title');
+                    var $modalBody = $(this).find('.modal-body');
+
+                    $modalTitle.html('Format New Custom Field');
                     $modalBody.html(data);
                 })
                 .modal('show');
@@ -320,10 +344,7 @@ $(document).ready(function () {
     })
     $('#modal').on('click','div.templateClone a.hideTemplate',function(e) {
 
-
         e.preventDefault();
-
-
 
         var settingName = $(this).attr('field-name');
         $(this).closest('.templateClone_' + settingName).remove();

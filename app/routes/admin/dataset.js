@@ -155,19 +155,34 @@ router.post('/:id/format-field/:field', ensureLoggedIn, function (req, res) {
     });
 });
 
-router.get('/:id/add-custom-field', ensureLoggedIn, function(req, res) {
-    controller.getAddCustomField(req, function(err, data) {
+
+// Custom Field
+router.get('/:id/format-custom-field/new', ensureLoggedIn, function(req, res) {
+    controller.getFormatNewCustomField(req, function(err, data) {
         if (err) {
-            winston.error("❌  Error getting bind data for dataset add custom field: ", err);
+            winston.error("❌  Error getting bind data for dataset new custom field: ", err);
             res.status(500).send(err.response || 'Internal Server Error');
 
             return;
         }
-        res.render('admin/dataset/add-custom-field', data);
+        res.render('admin/dataset/format-field', data);
+    });
+});
+
+router.get('/:id/format-custom-field/:field', ensureLoggedIn, function(req, res) {
+    controller.getFormatCustomField(req, function(err, data) {
+        if (err) {
+            winston.error("❌  Error getting bind data for dataset custom field: ", err);
+            res.status(500).send(err.response || 'Internal Server Error');
+
+            return;
+        }
+        res.render('admin/dataset/format-field', data);
     });
 });
 
 
+// Format Views
 router.get('/:id/format-views/:view',ensureLoggedIn,function(req,res) {
 
     controller.getFormatView(req,function(err,data) {
