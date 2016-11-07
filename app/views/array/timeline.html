@@ -122,6 +122,8 @@
                     <div class="row">
                         <div class="col-sm-12">
 
+
+
                         <div class="timeline">
 
                         {# <pre>{{ groupedResults | dump | safe }}</pre> #}
@@ -134,6 +136,7 @@
                                     {% for group in groupedResults %}
                                         {% if group.results | length %}
                                             <li class="timeline-group">
+                                
                                                 <span class="timeline-group-label">{{ group.startDate | dateFormat(groupByDateFormat) }}{% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}&ndash;{{ group.endDate | dateFormat(groupByDateFormat) }}{% endif %}</span>
                                                 <ul class="timeline-group-list">
 

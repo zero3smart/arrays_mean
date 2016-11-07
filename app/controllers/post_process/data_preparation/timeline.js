@@ -223,6 +223,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     } else {
                         nonpagedCount = results.length;
                     }
+
+
+
                     done();
                 };
                 processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
@@ -263,6 +266,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         projects['$project']['rowParams.' + rowParamsField] = 1;
                     }
                 });
+
 
 
                 aggregationOperators = aggregationOperators.concat(
@@ -308,10 +312,17 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 var doneFn = function (err, _groupedResults) {
                     if (err) return done(err);
-                    groupedResults = _groupedResults;
-                    if (groupedResults == undefined || groupedResults == null) groupedResults = [];
+              
+                   
 
-                    var finalizedButNotCoalesced_groupedResults = [];
+                  
+
+
+
+                    if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
+
+               
+
                     _groupedResults.forEach(function (el, i, arr) {
                         var results = [];
                         el.results.forEach(function (el2, i2) {
@@ -327,6 +338,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     done();
                 };
+
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 
