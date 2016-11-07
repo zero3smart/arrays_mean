@@ -117,6 +117,11 @@ user/
 *.csv
 
 
+# staging sever files# 
+config.json
+github-post-receive.sh
+
+
 ### Webstorm Env ###
 .idea/
 

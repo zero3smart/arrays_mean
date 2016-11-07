@@ -602,12 +602,16 @@ module.exports.getFormatView = function (req, next) {
 
             data.doc = doc._doc;
 
-            data.colNames = [];
-            for (var i = 0; i < data.doc.customFieldsToProcess.length; i++) {
-                var custField = data.doc.customFieldsToProcess[i].fieldName;
-                data.colNames.push(custField);
 
+            data.colNames = [];
+            if (data.doc.customFieldsToProcess) {
+                for (var i = 0; i < data.doc.customFieldsToProcess.length; i++) {
+                    var custField = data.doc.customFieldsToProcess[i].fieldName;
+                    data.colNames.push(custField);
+
+                }
             }
+            
             done();
         });
     });
