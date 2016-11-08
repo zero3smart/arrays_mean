@@ -92,6 +92,27 @@ module.exports.removeDataset = function(req, next) {
         description.remove(done);
     });
 
+    // Remove datasource description with schema_id
+    batch.push(function(done) {
+        datasource_description.find({schema_id: description._id}, function(err, results) {
+            if (err) return done(err);
+
+            var batch = new Batch();
+            batch.concurrency(1);
+
+            results.forEach(function(element) {
+                batch.push(function(done) {
+                    element.remove(done);
+                });
+            });
+
+            batch.end(function(err) {
+                done(err);
+            });
+
+        });
+    });
+
     batch.end(function(err) {
         if (err) return next(err);
 
