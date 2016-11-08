@@ -130,6 +130,7 @@ module.exports = function (nunjucks_env) {
     })
 
     nunjucks_env.addFilter('finalizeColumnName', function(colName) {
+        if (!colName) return '';
         return colName.replace(/\./g, "_");
     });
     

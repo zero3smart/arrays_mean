@@ -640,7 +640,7 @@ module.exports.getFormatNewCustomField = function (req, next) {
 
     var data = {
         id: dataset_id,
-        custom: true,
+        customMode: true
     };
 
     datasource_description.findById(dataset_id, function (err, doc) {
@@ -648,8 +648,124 @@ module.exports.getFormatNewCustomField = function (req, next) {
 
         if (doc) {
             data.doc = doc._doc;
+            data.colNames = req.session.uploadData_columnNames;
         }
         next(null, data);
+    });
+}
+
+module.exports.saveFormatCustomField = function (req, isNew, next) {
+    var dataset_id = req.params.id;
+    var name = req.body.name;
+    var fieldsToMergeIntoArray = req.body.fieldsToMergeIntoArray;
+    if (!dataset_id || !name || !fieldsToMergeIntoArray) return next(new Error('Invalid parameter!'));
+
+    var data = {};
+    var name = name.replace(/\./g, '_');
+
+    datasource_description.findById(dataset_id, function (err, doc) {
+        if (err) return next(err);
+
+        if (!doc) return next(new Error('No description exists : ' + dataset_id));
+
+        var customFieldsToProcess = doc._doc.customFieldsToProcess;
+        if (!customFieldsToProcess) customFieldsToProcess = [];
+
+        // Verify that the name is unique
+        var duplicated = false;
+        var indexDuplicated = customFieldsToProcess.length;
+        for (var i = 0; i < customFieldsToProcess.length; i ++) {
+            if (customFieldsToProcess[i].fieldName.toLowerCase() == name.toLowerCase()) {
+                duplicated = true;
+                indexDuplicated = i;
+                break;
+            }
+        }
+
+        if (isNew && duplicated) return next(new Error('Duplicated Field Name'));
+        if (!isNew && !duplicated) return next(new Error('No field exists with ' + name));
+
+        // Verify that the fieldType is "array"
+        if (req.body.dataType == 'Array') {
+
+            console.log('deleted : ' + indexDuplicated);
+
+            var customField = {
+                fieldName: name,
+                fieldType: 'array',
+                fieldsToMergeIntoArray: fieldsToMergeIntoArray
+            };
+
+            customFieldsToProcess.splice(indexDuplicated, 1, customField);
+
+            doc.customFieldsToProcess = customFieldsToProcess;
+            doc.markModified('customFieldsToProcess');
+
+            doc.save(function(err, updatedDescription) {
+                if (err) return next(err);
+                req.flash('message', 'Save successfully');
+
+                data.doc = updatedDescription._doc;
+                data.columnIndex = req.session.uploadData_columnNames + updatedDescription._doc.customFieldsToProcess.length;
+                data.customField = customField;
+
+                next(null, data);
+            });
+
+        }
+    });
+}
+
+module.exports.removeFormatCustomField = function (req, next) {
+    var dataset_id = req.params.id;
+    var name = req.body.name;
+    if (!dataset_id || !name) return next(new Error('Invalid parameter!'));
+
+    var data = {};
+    var name = name.replace(/\./g, '_');
+
+    datasource_description.findById(dataset_id, function (err, doc) {
+        if (err) return next(err);
+
+        if (!doc) return next(new Error('No description exists : ' + dataset_id));
+
+        var customFieldsToProcess = doc._doc.customFieldsToProcess;
+        if (!customFieldsToProcess) return next(new Error('Custom Fields does not exist'));
+
+        // Verify that the name is unique
+        var duplicated = false;
+        var indexDuplicated = customFieldsToProcess.length;
+        for (var i = 0; i < customFieldsToProcess.length; i ++) {
+            if (customFieldsToProcess[i].fieldName.toLowerCase() == name.toLowerCase()) {
+                duplicated = true;
+                indexDuplicated = i;
+                break;
+            }
+        }
+
+        if (!duplicated) return next(new Error('No field exists with ' + name));
+
+        // Verify that the fieldType is "array"
+        if (req.body.dataType == 'Array') {
+
+            console.log('deleted : ' + indexDuplicated);
+
+            customFieldsToProcess.splice(indexDuplicated, 1);
+
+            doc.customFieldsToProcess = customFieldsToProcess;
+            doc.markModified('customFieldsToProcess');
+
+            doc.save(function(err, updatedDescription) {
+                if (err) return next(err);
+                req.flash('message', 'Save successfully');
+
+                data.doc = updatedDescription._doc;
+                data.columnIndex = req.session.uploadData_columnNames + updatedDescription._doc.customFieldsToProcess.length;
+
+                next(null, data);
+            });
+
+        }
     });
 }
 

@@ -3,14 +3,20 @@
 {% block content %}
 {% set finalizedFieldName = field | finalizeColumnName %}
 <form class="format-field">
+    <div class="alert alert-danger hidden" role="alert">{{ error }}</div>
+
+    <input type="hidden" id="field" value="{{ finalizedFieldName }}">
+
     <div class="form-group">
         <div class="col-xs-4">
             <label for="name" class="form-control">Name</label>
         </div>
         <div class="col-xs-8">
-            <input id="name" class="form-control" value="{{ field }}" disabled/>
+            <input id="name" class="form-control" name="name" value="{{ field }}" {{ 'readonly' if not customMode or finalizedFieldName != '' }} required/>
         </div>
     </div>
+
+    <input type="hidden" id="custom_mode" value="{{ customMode }}"/>
 
     {% if not customMode %}
 
@@ -19,7 +25,7 @@
             <label for="firstRecord" class="form-control">First Record</label>
         </div>
         <div class="col-xs-8">
-            <input id="firstRecord" class="form-control" value="{{ firstRecord }}" disabled/>
+            <input id="firstRecord" class="form-control" value="{{ firstRecord }}" readonly/>
         </div>
     </div>
 
@@ -66,7 +72,7 @@
             <label for="dataType" class="form-control">Data Type</label>
         </div>
         <div class="col-xs-8">
-            <input type="text" class="form-control" name="dataType" value="Array" disabled>
+            <input type="text" class="form-control" name="dataType" value="Array" readonly>
         </div>
     </div>
 
@@ -75,7 +81,7 @@
             <label for="fieldsToMergeIntoArray" class="form-control">Fields To Merge</label>
         </div>
         <div class="col-xs-8">
-            <select multiple name="fieldsToMergeIntoArray" id="fieldsToMergeIntoArray" class="chosen-select">
+            <select multiple name="fieldsToMergeIntoArray" id="fieldsToMergeIntoArray" class="chosen-select" required>
                 <option value=""></option>
                 {% for colName in colNames %}
                 <option value="{{ colName | finalizeColumnName }}" {{ 'selected' if customField.fieldsToMergeIntoArray | doesArrayContain(colName | finalizeColumnName) }}>{{ colName }}</option>
@@ -372,7 +378,12 @@
     <button type="button" class="form-control show-more-settings">Show More Settings</button>
 
     <div class="form-group">
-        <div class="col-xs-4 col-xs-offset-4">
+        <div class="col-xs-4">
+            {% if customMode and field %}
+            <button id="format-field-remove" type="button" class="pull-right form-control">Remove</button>
+            {% endif %}
+        </div>
+        <div class="col-xs-4">
             <button id="format-field-reset" type="button" class="pull-right form-control">Reset</button>
         </div>
         <div class="col-xs-4">
