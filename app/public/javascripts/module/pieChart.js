@@ -87,4 +87,17 @@ function PieChart(selection, pieData, colorMap) {
         .style('fill', function(d, i) {
             return colorMap[d.data.label];
         });
+
+    /**
+     * Filter slice on click
+     */
+    g.on('click', function(d) {
+        var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1? '&' : '?';
+
+        var filterObjForThisFilterColVal = constructedFilterObj(filterObj, groupBy, d.data.label, false);
+        var filterJSONString = $.param(filterObjForThisFilterColVal);
+        var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterJSONString;
+
+        window.location = urlForFilterValue;
+    });
 }

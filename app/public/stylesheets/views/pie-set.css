@@ -43,3 +43,7 @@
 .array-pie-set .filter-bar-fixed-bottom {
     margin-bottom: -100px;
 }
+
+#pie-set path:hover {
+    cursor: pointer;
+}
