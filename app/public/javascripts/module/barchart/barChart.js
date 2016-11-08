@@ -171,7 +171,7 @@ BarChart.prototype.sortData = function() {
             o.push([v, self._data[i]]);
             return o;
         }, [])
-        .sort(this._options.sortDirection ? function(a, b) {
+        .sort(!this._options.sortDirection ? function(a, b) {
             return a[1].reduce(function (sum, obj) {
                     return sum + obj.value;
                 }, 0) - b[1].reduce(function (sum, obj) {
@@ -189,7 +189,7 @@ BarChart.prototype.sortData = function() {
         });
 
     this._data = $.extend(true, [], this._data);
-    this._data.sort(this._options.sortDirection ? function(a, b) {
+    this._data.sort(!this._options.sortDirection ? function(a, b) {
         return a.reduce(function (sum, obj) {
                 return sum + obj.value;
             }, 0) - b.reduce(function (sum, obj) {

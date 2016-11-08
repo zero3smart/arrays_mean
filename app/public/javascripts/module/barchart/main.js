@@ -1,15 +1,4 @@
 $(document).ready(function() {
-    if (typeof(Storage) !== "undefined") {
-        var oldVal = localStorage.getItem('normalize');
-        if (oldVal) options.normalize = oldVal == 'true';
-        oldVal = localStorage.getItem('horizontal');
-        if (oldVal) options.horizontal = oldVal == 'true';
-        oldVal = localStorage.getItem('sortDirection');
-        if (oldVal) options.sortDirection = oldVal == 'true';
-
-        updateBarChartControls(options);
-    }
-
     var barChart;
     function renderBarChart() {
         barChart = BarChart.getInstance('#bar-chart', graphData, options);
@@ -17,32 +6,28 @@ $(document).ready(function() {
 
     // Handle of the "view by" - graph orientation, normalization
     function updateBarChartControls(options) {
-        localStorage.setItem('horizontal', options.horizontal);
-        localStorage.setItem('normalize', options.normalize);
-        localStorage.setItem('sortDirection', options.sortDirection);
-
         if (options.horizontal) {
-            $('#orientation .horizontal').hide();
-            $('#orientation .vertical').show();
-        } else {
             $('#orientation .horizontal').show();
             $('#orientation .vertical').hide();
+        } else {
+            $('#orientation .horizontal').hide();
+            $('#orientation .vertical').show();
         }
 
         if (options.normalize) {
-            $('#normalization .relative').hide();
-            $('#normalization .absolute').show();
-        } else {
             $('#normalization .relative').show();
             $('#normalization .absolute').hide();
+        } else {
+            $('#normalization .relative').hide();
+            $('#normalization .absolute').show();
         }
 
         if (options.sortDirection) {
-            $('#sort-direction .icon-sort-descending').hide();
-            $('#sort-direction .icon-sort-ascending').show();
-        } else {
             $('#sort-direction .icon-sort-descending').show();
             $('#sort-direction .icon-sort-ascending').hide();
+        } else {
+            $('#sort-direction .icon-sort-descending').hide();
+            $('#sort-direction .icon-sort-ascending').show();
         }
     };
 

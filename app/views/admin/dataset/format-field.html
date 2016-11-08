@@ -188,6 +188,16 @@
             </div>
         </div>
 
+        <div class="form-group">
+            <div class="col-xs-8">
+                <label for="filter_sortableInReverseOrder" class="form-control">Sortable In Reverse Order</label>
+            </div>
+            <div class="col-xs-4">
+                <input type="checkbox" id="filter_sortableInReverseOrder" name="filter_sortableInReverseOrder" value="true"
+                       {{ 'checked=checked' if doc.fe_filters.fieldsSortableInReverseOrder | doesArrayContain(finalizedFieldName) }}/>
+            </div>
+        </div>
+
         {% if not customMode %}
 
         <div class="form-group row">

@@ -939,9 +939,6 @@ module.exports.saveFormatView = function (req, next) {
                         var value = attr.substring(0,index);
 
 
-
-
-
                         if (rest[value+"_value"] !== null && typeof rest[value + "_value"] !== 'undefined') {
 
 

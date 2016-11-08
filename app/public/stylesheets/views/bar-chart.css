@@ -50,8 +50,8 @@
     padding: 13px 16px 9px;
 }
 
-#orientation .vertical,
-#normalization .absolute,
+#orientation .horizontal,
+#normalization .relative,
 #sort-direction .icon-sort-descending {
     display: none;
 }

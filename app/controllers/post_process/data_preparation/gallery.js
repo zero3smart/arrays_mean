@@ -119,13 +119,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
             (dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName,dataSourceDescription) :
              dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName;
 
-
-
-
-        
-
             var sortDir = urlQuery.sortDir;
-            var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
+            var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : dataSourceDescription.fe_views.views.gallery.defaultSortOrderDescending ? -1 : 1;
+            console.log(sortDirection);
+
             //
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
             var routePath_base = "/array/" + source_pKey + "/gallery";
@@ -317,6 +314,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sortBy: sortBy,
                     sortDir: sortDir,
                     defaultSortByColumnName_humanReadable: defaultSortByColumnName_humanReadable,
+                    defaultSortOrderDescending: dataSourceDescription.fe_views.views.gallery.defaultSortOrderDescending,
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     filterObj: filterObj,

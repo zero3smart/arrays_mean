@@ -38,20 +38,20 @@
                             <nav class="pull-left" role="navigation">
 
                                 <div class="sort-control sort-direction">
-                                    {% if sortDir == "Descending" %}
+                                    {% if sortDir == "Descending" or (not sortDir and defaultSortOrderDescending) %}
                                         <a href="{{ routePath_base | constructedRoutePath(filterObj, {
                                             searchCol: searchCol,
                                             searchQ: searchQ,
                                             sortBy: sortBy,
                                             sortDir: 'Ascending',
-                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span></a>
+                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span></a>
                                     {% else %}
                                         <a href="{{ routePath_base | constructedRoutePath(filterObj, {
                                             searchCol: searchCol,
                                             searchQ: searchQ,
                                             sortBy: sortBy,
                                             sortDir: 'Descending',
-                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span></a>
+                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span></a>
                                     {% endif %}
                                 </div>
 

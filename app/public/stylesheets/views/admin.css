@@ -38,7 +38,7 @@
 
 
 /* Upload */
-form .removeDataset {
+form .removeDatasource {
     margin-top: 10px;
     cursor: pointer;
     display: inline-block;
@@ -87,7 +87,6 @@ form.format-field .form-group input[type='checkbox'] {
     margin-top: 10px;
 }
 
-.removeDataset,
 form .removeRow {
     display: inline-block;
     cursor: pointer;
