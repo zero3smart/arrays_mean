@@ -41,7 +41,7 @@
 }
 
 .array-pie-set .filter-bar-fixed-bottom {
-    margin-bottom: -100px;
+   position: fixed;
 }
 
 #pie-set path:hover {
