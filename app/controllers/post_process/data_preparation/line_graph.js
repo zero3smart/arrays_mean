@@ -145,7 +145,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregateBy_humanReadable_available = undefined;
             }
 
-            var aggregateBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy ? aggregateBy : defaultAggregateByColumnName_humanReadable, dataSourceDescription);
+           
+            var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
+            (typeof doc.fe_views.views.lineGraph.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
+            doc.fe_views.views.lineGraph.defaultAggregateByColumnName;
 
             //
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, stackedResultsByGroup = {};

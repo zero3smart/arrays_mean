@@ -73,7 +73,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var stackBy_realColumnName =  stackBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(stackBy,dataSourceDescription) : 
             (dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName,dataSourceDescription) :
-             dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName;
+            dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName;
            
 
 
@@ -127,9 +127,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     colNames_orderedForAggregateByDropdown = undefined;
             }
 
-            var aggregateBy_realColumnName = aggregateBy ? 
-            importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
-            dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName_humanReadable;
+      
+
+
+            var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
+            (typeof doc.fe_views.views.barChart.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
+            doc.fe_views.views.barChart.defaultAggregateByColumnName;
 
 
             //
