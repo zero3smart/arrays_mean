@@ -162,6 +162,7 @@ $(document).ready(function () {
         var doc_id = $('#doc_id').val();
         var params = $('form.format-field').serialize();
 
+
         var valid = true;
 
         $('form.format-field').find('[required]').each(function(){
@@ -205,8 +206,13 @@ $(document).ready(function () {
                 }, 'json');
 
         } else {
+
+
             var field_name = $('#name').val(); /* un-finalized, contains . */
             var field = $('#field').val(); /* finalized */
+
+
+         
 
             $.post("/admin/dataset/" + doc_id + "/format-field/" + field, params)
                 .done(function (data) {

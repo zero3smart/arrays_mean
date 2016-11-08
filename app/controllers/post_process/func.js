@@ -355,6 +355,13 @@ var _activeSearch_matchOp_orErrDescription = function (dataSourceDescription, se
     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
         && raw_rowObjects_coercionSchema[realColumnName].operation === "ToDate";
+
+    var isInteger = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
+        && raw_rowObjects_coercionSchema[realColumnName].operation === "ToInteger" ;
+
+    var isFloat = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
+        && raw_rowObjects_coercionSchema[realColumnName].operation === "ToFloat" ;
+
     if (!isDate) {
         if (Array.isArray(searchQ)) {
             var match = [];
@@ -365,7 +372,13 @@ var _activeSearch_matchOp_orErrDescription = function (dataSourceDescription, se
             }
             matchOp["$match"]["$or"] = match;
         } else {
-            matchOp["$match"][realColumnName_path] = {$regex: searchQ, $options: "i"};
+            if (isInteger) {
+                matchOp["$match"][realColumnName_path] = parseInt(searchQ)
+            } else if (isFloat) {
+                 matchOp["$match"][realColumnName_path] = parseFloat(searchQ)
+            } else {
+                matchOp["$match"][realColumnName_path] = {$regex: searchQ, $options: "i"};
+            }
         }
     } else {
         var realSearchValueMin, realSearchValueMax, searchDate;

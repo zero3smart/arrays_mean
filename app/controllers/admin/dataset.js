@@ -509,11 +509,13 @@ module.exports.saveFormatField = function (req, next) {
 
 
 
+
+
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
 
     var data = {};
 
-    field = field.replace(/\./g, "_");
+    // field = field.replace(/\./g, "_");
 
 
 
@@ -527,7 +529,7 @@ module.exports.saveFormatField = function (req, next) {
 
       
 
-        if (req.body.dataType != null && typeof req.body.dataType == 'undefined') coercion.operation = req.body.dataType;
+        if (req.body.dataType != null && typeof req.body.dataType != 'undefined') coercion.operation = req.body.dataType;
         if (req.body.dataFormat) coercion.format = req.body.dataFormat;
         if (req.body.dataOutputFormat) coercion.outputFormat = req.body.dataOutputFormat;
 

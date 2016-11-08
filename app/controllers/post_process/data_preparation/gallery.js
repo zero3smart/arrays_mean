@@ -121,7 +121,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var sortDir = urlQuery.sortDir;
             var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : dataSourceDescription.fe_views.views.gallery.defaultSortOrderDescending ? -1 : 1;
-            console.log(sortDirection);
+      
 
             //
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
@@ -131,6 +131,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
             var filterObj = func.filterObjFromQueryParams(urlQuery);
+
+          
+
             var isFilterActive = Object.keys(filterObj).length != 0;
             //
             var searchCol = urlQuery.searchCol;
@@ -155,6 +158,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     return;
                 }
+
+                console.log(JSON.stringify(_orErrDesc.matchOps))
                 wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
             }
 
