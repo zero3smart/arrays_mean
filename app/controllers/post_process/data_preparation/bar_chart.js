@@ -131,8 +131,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
-            (typeof doc.fe_views.views.barChart.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
-            doc.fe_views.views.barChart.defaultAggregateByColumnName;
+            (typeof dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
+            dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName;
 
 
             //
