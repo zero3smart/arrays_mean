@@ -205,18 +205,19 @@ $(document).ready(function () {
                 }, 'json');
 
         } else {
-            var field_name = $('#name').val();
+            var field_name = $('#name').val(); /* un-finalized, contains . */
+            var field = $('#field').val(); /* finalized */
 
-            $.post("/admin/dataset/" + doc_id + "/format-field/" + field_name, params)
+            $.post("/admin/dataset/" + doc_id + "/format-field/" + field, params)
                 .done(function (data) {
 
                     $('.format-field .alert-danger').html(data.error).addClass('hidden');
 
-                    var field_name = field.replace(/\./g, "_");
+                
                     //
-                    $('tr.field[data-field-name="' + field + '"] td:nth-child(2) input[type="checkbox"]').prop("checked", data.doc.fe_excludeFields.indexOf(field) != -1);
-                    $('tr.field[data-field-name="' + field + '"] td:nth-child(4)').html(fieldDataType_coercion_toString(data.doc.raw_rowObjects_coercionScheme[field_name]));
-                    $('tr.field[data-field-name="' + field + '"] td:nth-child(6)').html(data.doc.fe_fieldDisplayOrder[field]);
+                    $('tr.field[data-field-name="' + field_name + '"] td:nth-child(2) input[type="checkbox"]').prop("checked", data.doc.fe_excludeFields.indexOf(field) != -1);
+                    $('tr.field[data-field-name="' + field_name + '"] td:nth-child(4)').html(fieldDataType_coercion_toString(data.doc.raw_rowObjects_coercionScheme[field]));
+                    $('tr.field[data-field-name="' + field_name + '"] td:nth-child(6)').html(data.doc.fe_fieldDisplayOrder[field]);
 
                     $('#changed').val(true);
                     $('#modal').modal('hide');
