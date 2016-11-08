@@ -114,7 +114,6 @@ $(document).ready(function () {
 
     $('#newCustomField').on('click', function (e) {
         var doc_id = $('#doc_id').val();
-        var doc_title = $('#doc_title').val();
 
         $.get("/admin/dataset/" + doc_id + "/format-custom-field/new", null, function (data) {
             $('#modal')
@@ -295,10 +294,10 @@ $(document).ready(function () {
         e.preventDefault();
         $('#extra_keywords').append(
             '<div class="form-group row">' +
-            '<div class="col-xs-6">' +
+            '<div class="col-xs-8">' +
             '<input type="text" class="form-control" name="keywords[]" value="">' +
             '</div>' +
-            '<div class="col-xs-5">' +
+            '<div class="col-xs-3">' +
             '<input type="checkbox" name="default_filter_keywords[]" values="true"> Use default' +
             '</div>' +
             '<div class="col-xs-1">' +
@@ -326,6 +325,23 @@ $(document).ready(function () {
             return 'String'; // 'Unknown'
         }
     }
+
+    $('#fabricatedFilters').on('click', function(e) {
+        var doc_id = $('#doc_id').val();
+
+        $.get("/admin/dataset/" + doc_id + "/fabricated-filters", null, function (data) {
+            $('#modal')
+                .on('show.bs.modal', function (e) {
+                    var $modalTitle = $(this).find('.modal-title');
+                    var $modalBody = $(this).find('.modal-body');
+
+                    $modalTitle.html('Fabricated Filters');
+                    $modalBody.html(data);
+                    $(".chosen-select").chosen({width: "100%"});
+                })
+                .modal('show');
+        }, "html");
+    });
 
     $('.format-views tr.views').on('click', function (e) {
         e.preventDefault();

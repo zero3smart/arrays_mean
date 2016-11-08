@@ -122,7 +122,8 @@ form.format-field .more-settings {
 }
 
 form.format-field #extra_valuesToExcludeByOriginalKey,
-form.format-field #extra_keywords
+form.format-field #extra_keywords,
+form.format-field #extra_filterFabricated
 {
     padding-left: 10px;
 }

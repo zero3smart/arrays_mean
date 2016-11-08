@@ -265,10 +265,10 @@
             {% set is_default_filter = true %}
             {% endif %}
             <div class="form-group row">
-                <div class="col-xs-6">
-                    <input type="text" class="form-control" name="keywords[]" value="{{ choice }}">
+                <div class="col-xs-8">
+                    <input type="text" class="form-control" name="filter_keywords[]" value="{{ choice }}">
                 </div>
-                <div class="col-xs-5">
+                <div class="col-xs-3">
                     <input type="checkbox" name="default_filter_keywords[]" values="true" {{ 'checked=checked' if is_default_filter }}> Use default
                 </div>
                 <div class="col-xs-1">
@@ -281,15 +281,6 @@
         </div>
 
         {% endif %}
-
-        <div class="form-group">
-            <div class="col-xs-8">
-                <label class="form-control">Fabricated</label>
-            </div>
-            <div class="col-xs-4">
-                <input type="checkbox" name="default" {{ 'checked=checked' if key == '_all' }} value="true"/> Use default
-            </div>
-        </div>
 
         {% if not customMode %}
 
