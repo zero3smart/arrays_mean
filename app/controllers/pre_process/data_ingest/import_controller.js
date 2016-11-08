@@ -473,7 +473,11 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             if (typeof fieldValue !== 'undefined' && fieldValue !== null && fieldValue !== "") {
                 if (typeof delimiterArrays !== 'undefined' && Array.isArray(delimiterArrays)) {
                     fieldValue = fieldValue.split(delimiterArrays[i]);
-                    generatedArray = generatedArray.concat(fieldValue);
+                    var refinedValue = [];
+                    fieldValue.forEach(function(value) {
+                        refinedValue.push(value.toString().trim());
+                    })
+                    generatedArray = generatedArray.concat(refinedValue);
                 } else {
                     generatedArray.push(fieldValue);
                 }

@@ -75,6 +75,9 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
     processedRowObjects_mongooseModel.findOne({}, function (err, sampleDoc) {
+
+        // console.log(JSON.stringify(sampleDoc));
+
         if (err) {
             callback(err, null);
 
@@ -85,19 +88,16 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
 
         var filterKeys = Object.keys(sampleDoc.rowParams);
 
-
         if (typeof dataSourceDescription.fe_excludeFields != 'undefined' && Array.isArray(dataSourceDescription.fe_excludeFields) && dataSourceDescription.fe_excludeFields.length > 0) {
             for (var i = 0 ; i < dataSourceDescription.fe_excludeFields.length; i++) {
                 var index = filterKeys.indexOf(dataSourceDescription.fe_excludeFields[i]);
-                filterKeys.splice(index,1);
+                if (filterKeys[index] == dataSourceDescription.fe_excludeFields[i]) {
+                    filterKeys.splice(index,1);
+                }
             }
         }
 
-     
-
- 
-
-
+    
         // var feVisible_filter_keys_length = feVisible_filter_keys.length;
         var uniqueFieldValuesByFieldName = {};
 
@@ -105,6 +105,8 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
             var key = filterKeys[i];
             uniqueFieldValuesByFieldName[key] = [];
         }
+
+
 
         async.each(filterKeys, function (key, cb) {
             // Commented out the count section for the comma-separated as individual filters.
@@ -139,6 +141,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 var values = [].concat.apply([], valuesRaw).filter(function (elem, index, self) {
                     return elem != '';
                 }).splice(0, limitToNTopValues);
+                values.sort();
   
                 uniqueFieldValuesByFieldName[key] = values;
                 cb();
