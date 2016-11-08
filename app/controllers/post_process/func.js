@@ -436,11 +436,6 @@ var _neededFilterValues = function(dataSourceDescription) {
     for (var i = 0 ; i < dataSourceDescription.fe_filters.fieldsNotAvailable.length; i++) {
         excluding["limitedUniqValsByColName." + dataSourceDescription.fe_filters.fieldsNotAvailable[i]] = 0
     }
-    if (typeof dataSourceDescription.fe_excludeFields != 'undefined' && Array.isArray(dataSourceDescription.fe_excludeFields) && dataSourceDescription.fe_excludeFields.length > 0) {
-        for (var i = 0 ; i < dataSourceDescription.fe_excludeFields.length; i++) {
-            excluding["limitedUniqValsByColName." + dataSourceDescription.fe_excludeFields[i]] = 0
-        }
-    }
     return excluding;
 
 

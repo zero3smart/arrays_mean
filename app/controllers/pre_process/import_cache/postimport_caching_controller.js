@@ -85,6 +85,16 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
 
         var filterKeys = Object.keys(sampleDoc.rowParams);
 
+
+        if (typeof dataSourceDescription.fe_excludeFields != 'undefined' && Array.isArray(dataSourceDescription.fe_excludeFields) && dataSourceDescription.fe_excludeFields.length > 0) {
+            for (var i = 0 ; i < dataSourceDescription.fe_excludeFields.length; i++) {
+                var index = filterKeys.indexOf(dataSourceDescription.fe_excludeFields[i]);
+                filterKeys.splice(index,1);
+            }
+        }
+
+     
+
  
 
 
