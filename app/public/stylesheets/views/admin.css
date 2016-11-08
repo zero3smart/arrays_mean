@@ -9,6 +9,10 @@
     padding: 15px 0;
 }
 
+.dataset_item {
+    padding-right: 30px;
+}
+
 .dataset .upload input[type="text"].url {
     width: 100%;
 }
@@ -43,6 +47,7 @@ form .removeDataset {
 /* Format data */
 .format-data tr.field,
 a.add,
+.format-data tr.custom-field,
 .format-views tr.views {
     cursor: pointer;
 }
@@ -53,6 +58,12 @@ a.add,
 
 th#view_visibility {
     width:30%;
+}
+
+.format-data .custom-field-seperator td {
+    text-align: center;
+    font-weight: bold;
+    font-size: 23px;
 }
 
 
@@ -76,6 +87,7 @@ form.format-field .form-group input[type='checkbox'] {
     margin-top: 10px;
 }
 
+.removeDataset,
 form .removeRow {
     display: inline-block;
     cursor: pointer;

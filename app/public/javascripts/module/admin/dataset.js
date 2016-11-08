@@ -1,8 +1,6 @@
 $(document).ready(function () {
 
-
     $('[data-toggle="tooltip"]').tooltip();
-
 
     $('#add_urls').on('click', function (e) {
         $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
@@ -18,42 +16,42 @@ $(document).ready(function () {
             }
         }
         if (!foundSource) {
-            alert('You should select at least a dataset to upload');
+            alert('You should select at least a datasource to upload');
             return false;
         }
         return true;
     });
 
-    $('#add_dataset').on('click', function (e) {
-        var dataset_count = $('#dataset_count').val();
-        $('#dataset_count').val(++dataset_count);
+    $('#add_datasource').on('click', function (e) {
+        var datasource_count = $('#datasource_count').val();
+        $('#datasource_count').val(++datasource_count);
 
-        $('#add_dataset').parent().before(
+        $('#add_datasource').parent().before(
             '<div class="form-group">' +
             '<div class="row">' +
             '<div class="col-xs-11">' +
-            '<h4>Dataset ' + dataset_count + '</h4>' +
+            '<h4>Datasource ' + datasource_count + '</h4>' +
             '</div>' +
             '<div class="col-xs-1">' +
-            '<a class="removeDataset"><span class="glyphicon glyphicon-remove"></span></a>' +
+            '<a class="removeDatasource"><span class="glyphicon glyphicon-remove"></span></a>' +
             '</div>' +
             '</div>' +
             '<div class="row">' +
             '<div class="col-xs-5">' +
-            '<label for="file_' + dataset_count + '">Select a CSV/TSV file To Upload</label>' +
+            '<label for="file_' + datasource_count + '">Select a CSV/TSV file To Upload</label>' +
             '</div>' +
             '<div class="col-xs-6">' +
-            '<input type="file" id="file_' + dataset_count + '" name="files[]" accept=".csv,.tsv|text/csv,text/csv-schema" />' +
+            '<input type="file" id="file_' + datasource_count + '" name="files[]" accept=".csv,.tsv|text/csv,text/csv-schema" />' +
             '</div>' +
             '</div>' +
             '</div>'
         );
     });
 
-    $('.dataset').on('click', '.removeDataset', function (e) {
+    $('.datasource').on('click', '.removeDatasource', function (e) {
         e.preventDefault();
-        var dataset_count = $('.upload input[type=file]').length;
-        if (dataset_count == 1) {
+        var datasource_count = $('.upload input[type=file]').length;
+        if (datasource_count == 1) {
             return alert('You should have at least a datasource');
         }
         $(this).closest('.form-group').remove();
@@ -83,17 +81,41 @@ $(document).ready(function () {
         }, "html");
     });
 
-    $('#addCustomField').on('click', function (e) {
+    $('.format-data tr.custom-field').on('click', function (e) {
+        e.preventDefault();
+
+        var field_name = $(this).attr('data-field-name');
         var doc_id = $('#doc_id').val();
         var doc_title = $('#doc_title').val();
 
-        $.get("/admin/dataset/" + doc_id + "/add-custom-field", null, function (data) {
+        $.get("/admin/dataset/" + doc_id + "/format-custom-field/" + field_name, null, function (data) {
+
             $('#modal')
                 .on('show.bs.modal', function (e) {
                     var $modalTitle = $(this).find('.modal-title');
                     var $modalBody = $(this).find('.modal-body');
 
-                    $modalTitle.html('Add Custom Field - ' + doc_title);
+                    $modalTitle.html('Format Custom Field - ' + doc_title);
+                    $modalBody.html(data);
+                    $(".chosen-select").chosen({width: "100%"});
+                    /* start multiselect */
+                })
+                .modal();
+
+        }, "html");
+    });
+
+    $('#newCustomField').on('click', function (e) {
+        var doc_id = $('#doc_id').val();
+        var doc_title = $('#doc_title').val();
+
+        $.get("/admin/dataset/" + doc_id + "/format-custom-field/new", null, function (data) {
+            $('#modal')
+                .on('show.bs.modal', function (e) {
+                    var $modalTitle = $(this).find('.modal-title');
+                    var $modalBody = $(this).find('.modal-body');
+
+                    $modalTitle.html('Format New Custom Field');
                     $modalBody.html(data);
                 })
                 .modal('show');
@@ -320,10 +342,7 @@ $(document).ready(function () {
     })
     $('#modal').on('click','div.templateClone a.hideTemplate',function(e) {
 
-
         e.preventDefault();
-
-
 
         var settingName = $(this).attr('field-name');
         $(this).closest('.templateClone_' + settingName).remove();

@@ -5,7 +5,7 @@
 <form class="format-field">
     <div class="form-group">
         <div class="col-xs-4">
-            <label class="form-control">Name</label>
+            <label for="name" class="form-control">Name</label>
         </div>
         <div class="col-xs-8">
             <input id="name" class="form-control" value="{{ field }}" disabled/>
@@ -14,12 +14,14 @@
 
     <div class="form-group">
         <div class="col-xs-4">
-            <label class="form-control">First Record</label>
+            <label for="firstRecord" class="form-control">First Record</label>
         </div>
         <div class="col-xs-8">
-            <input id="name" class="form-control" value="{{ firstRecord }}" disabled/>
+            <input id="firstRecord" class="form-control" value="{{ firstRecord }}" disabled/>
         </div>
     </div>
+
+    {% if not customMode %}
 
     <div class="form-group">
         <div class="col-xs-4">
@@ -58,6 +60,31 @@
         </div>
     </div>
 
+    {% else %}
+    <div class="form-group">
+        <div class="col-xs-4">
+            <label for="dataType" class="form-control">Data Type</label>
+        </div>
+        <div class="col-xs-8">
+            <input type="text" class="form-control" name="dataType" value="Array" disabled>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-xs-4">
+            <label for="fieldsToMergeIntoArray" class="form-control">Fields To Merge</label>
+        </div>
+        <div class="col-xs-8">
+            <select multiple name="fieldsToMergeIntoArray" id="fieldsToMergeIntoArray" class="chosen-select">
+                <option value=""></option>
+                {% for colName in colNames %}
+                <option value="{{ colName | finalizeColumnName }}" {{ 'selected' if customField.fieldsToMergeIntoArray | doesArrayContain(colName | finalizeColumnName) }}>{{ colName }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    {% endif %}
+
     <div class="form-group">
         <div class="col-xs-4">
             <label for="exclude" class="form-control">Exclude</label>
@@ -68,6 +95,8 @@
         </div>
     </div>
 
+    {% if not customMode %}
+
     <div class="form-group">
         <div class="col-xs-4">
             <label for="titleOverride" class="form-control">Title Override</label>
@@ -77,6 +106,8 @@
         </div>
     </div>
 
+    {% endif %}
+
     <div class="form-group">
         <div class="col-xs-4">
             <label for="displayOrder" class="form-control">Display Order</label>
@@ -85,6 +116,8 @@
             <input type="number" id="displayOrder" name="displayOrder" class="form-control" value="{{ doc.fe_fieldDisplayOrder[finalizedFieldName] | safe }}"/>
         </div>
     </div>
+
+    {% if not customMode %}
 
     <div class="form-group">
         <div class="col-xs-4">
@@ -100,6 +133,8 @@
         </div>
     </div>
 
+    {% endif %}
+
     <div class="more-settings">
         <h4>Filter</h4>
 
@@ -112,6 +147,8 @@
                        {{ 'checked=checked' if doc.fe_filters.fieldsNotAvailable | doesArrayContain(finalizedFieldName) }}/>
             </div>
         </div>
+
+        {% if not customMode %}
 
         <div class="form-group">
             <div class="col-xs-8">
@@ -133,6 +170,8 @@
             </div>
         </div>
 
+        {% endif %}
+
         <div class="form-group">
             <div class="col-xs-8">
                 <label for="filter_sortableByInteger" class="form-control">Sortable By Integer</label>
@@ -142,6 +181,8 @@
                        {{ 'checked=checked' if doc.fe_filters.fieldsSortableByInteger | doesArrayContain(finalizedFieldName) }}/>
             </div>
         </div>
+
+        {% if not customMode %}
 
         <div class="form-group row">
             <div class="col-xs-8">
@@ -233,6 +274,8 @@
             {% endfor %}
         </div>
 
+        {% endif %}
+
         <div class="form-group">
             <div class="col-xs-8">
                 <label class="form-control">Fabricated</label>
@@ -241,6 +284,8 @@
                 <input type="checkbox" name="default" {{ 'checked=checked' if key == '_all' }} value="true"/> Use default
             </div>
         </div>
+
+        {% if not customMode %}
 
         <h4>Nested</h4>
 
@@ -319,6 +364,8 @@
 
             </div>
         </div>
+
+        {% endif %}
 
     </div>
 

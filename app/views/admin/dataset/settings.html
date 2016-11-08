@@ -13,6 +13,8 @@
 
 	{% if flash | length %}
 	<div class="alert alert-success" role="alert">{{ flash }}</div>
+	{% elif error | length %}
+	<div class="alert alert-danger" role="alert">{{ error }}</div>
 	{% endif %}
 
 	<dive class="dataset">

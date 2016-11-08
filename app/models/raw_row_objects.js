@@ -130,12 +130,10 @@ module.exports.InsertManyPersistableObjectTemplates = function (ordered_persista
 module.exports.RemoveRows = function (description, fn) {
     winston.info("📡  [" + (new Date()).toString() + "] Deleting parsed rows for \"" + description.title + "\".");
 
-    var pKeyPrefix = doc.dataset_uid;
-    var srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(doc.uid, doc.importRevision);
+    var pKeyPrefix = description.dataset_uid;
+    var srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
 
     var forThisDataSource_mongooseContext = _Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey);
-    var forThisDataSource_RawRowObject_scheme = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_scheme;
-    var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.forThisDataSource_rowObjects_modelName;
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model;
     //
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods

@@ -11,11 +11,10 @@
 		<h1 class="admin-title">{{doc.title}} - Format Data</h1>
 	</header>
 
-	<input type="hidden" id="doc_title" value="{{ doc.title }}" />
-	<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
-
 	{% if flash | length %}
 	<div class="alert alert-success" role="alert">{{ flash }}</div>
+	{% elif error | length %}
+	<div class="alert alert-danger" role="alert">{{ error }}</div>
 	{% endif %}
 
 	<div class="dataset">
@@ -24,6 +23,10 @@
 		<br />
 
 		<form class="format-data" method="post">
+
+			<input type="hidden" id="doc_title" value="{{ doc.title }}" />
+			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
+
 			<div class="form-group row">
 				<label class="col-xs-4" for="fn_new_rowPrimaryKeyFromRowObject">Primary Key: </label>
 				<div class="col-xs-8">
@@ -61,12 +64,29 @@
 					<td class="word-break">{{ firstRecord[loop.index0] }}</td>
 				</tr>
 				{% endfor %}
+
+				<tr class="custom-field-seperator">
+					<td colspan="5">Custom Fields</td>
+				</tr>
+				{% if doc.customFieldsToProcess | length != 0 %}
+					{% for customField in doc.customFieldsToProcess %}
+					{% set finalizedColName = customField.fieldName | finalizeColumnName %}
+					<tr class="custom-field" data-field-name="{{ customField.fieldName }}">
+						<th scape="row">{{ colNames | length + loop.index }}</th>
+						<td><input type="checkbox" {{ 'checked=checked' if
+							doc.fe_excludeFields | doesArrayContain(finalizedColName) }} disabled></td>
+						<td>{{ finalizedColName }}</td>
+						<td>{{ customField.fieldType | capitalize }}</td>
+						<td></td>
+					</tr>
+					{% endfor %}
+				{% endif %}
+
+				<tr class="form-group">
+					<td colspan="5"><button type="button" class="form-control" id="newCustomField">Add a Custom Field</button></td>
+				</tr>
 				</tbody>
 			</table>
-
-			<div class="form-group">
-				<button type="button" class="form-control" id="customFields">Custom Fields</button>
-			</div>
 
 			<div class="panel-footer">
 				<a class="btn btn-default pull-left" href="source"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
@@ -85,4 +105,5 @@
 	{{ super() }}
 
 	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
+	<script type="text/javascript" src="/javascripts/lib/chosen/chosen.jquery.js"></script>
 {% endblock %}
