@@ -315,6 +315,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sortDir: sortDir,
                     defaultSortByColumnName_humanReadable: defaultSortByColumnName_humanReadable,
                     defaultSortOrderDescending: dataSourceDescription.fe_views.views.gallery.defaultSortOrderDescending,
+                    colNames_orderedForGallerySortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'gallery', 'SortBy'),
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     filterObj: filterObj,
