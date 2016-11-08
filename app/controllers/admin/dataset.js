@@ -629,15 +629,6 @@ module.exports.getFormatCustomField = function (req, next) {
             data.customField = customField;
 
             if (!customField.fieldsToMergeIntoArray) return next(new Error('No corresponding fields to merge into array - ' + field_name));
-
-            var firstRecordsToMergeIntoArray = customField.fieldsToMergeIntoArray.map(function(field) {
-                var colName = req.session.uploadData_columnNames.find(function(colName) {
-                    return colName.replace(/\./g, '_') == field;
-                });
-                return req.session.uploadData_firstRecord[req.session.uploadData_columnNames.indexOf(colName)];
-            });
-
-            data.firstRecord = firstRecordsToMergeIntoArray;
         }
         next(null, data);
     });

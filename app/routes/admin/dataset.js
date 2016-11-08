@@ -184,7 +184,7 @@ router.get('/:id/format-custom-field/new', ensureLoggedIn, function(req, res) {
     });
 });
 
-router.get('/:id/format-custom-field/:field', ensureLoggedIn, function(req, res) {
+router.get('/:id/format-custom-field/:field/edit', ensureLoggedIn, function(req, res) {
     controller.getFormatCustomField(req, function(err, data) {
         if (err) {
             winston.error("❌  Error getting bind data for dataset add custom field: ", err);
