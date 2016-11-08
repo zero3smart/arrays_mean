@@ -95,17 +95,20 @@ module.exports.BindData = function (req, urlQuery, callback) {
             for (var colName in raw_rowObjects_coercionSchema) {
                 var colValue = raw_rowObjects_coercionSchema[colName];
                 if (colValue.operation == "ToInteger") {
-                    var humanReadableColumnName = colName;
-                    if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
-                        humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
+                    var index = typeof dataSourceDescription.fe_excludeFields == 'undefined' || (dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields.length == 0) ? -1 : dataSourceDescription.fe_excludeFields.indexOf(colName);
+                    if (index == -1 ) {
+                        var humanReadableColumnName = colName;
+                        if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
+                            humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
 
-                    if (!aggregateBy_humanReadable_available) {
-                        aggregateBy_humanReadable_available = [];
-                        if (!numberOfRecords_notAvailable)
-                            aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                        if (!aggregateBy_humanReadable_available) {
+                            aggregateBy_humanReadable_available = [];
+                            if (!numberOfRecords_notAvailable)
+                                aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                        }
+
+                        aggregateBy_humanReadable_available.push(humanReadableColumnName);
                     }
-
-                    aggregateBy_humanReadable_available.push(humanReadableColumnName);
                 }
             }
             if (aggregateBy_humanReadable_available) {
@@ -269,7 +272,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         _groupedResultsByChart.forEach(function (el, i, arr) {
                             var label = el.label;
                             var value = el.value;
-                            var label_toLowerCased = label.toLowerCase();
+                            var label_toLowerCased = label.toString().toLowerCase();
                             //
                             var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
                             var new_valueSum = existing_valueSum + value;

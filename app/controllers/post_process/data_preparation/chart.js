@@ -80,6 +80,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // Aggregate By Available
             var aggregateBy_humanReadable_available = undefined;
 
+
             for (var colName in raw_rowObjects_coercionSchema) {
                 var colValue = raw_rowObjects_coercionSchema[colName];
                 if (colValue.operation == "ToInteger") {
@@ -91,13 +92,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
                             humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
 
-                        if (!colNames_orderedForAggregateByDropdown) {
-                            colNames_orderedForAggregateByDropdown = [];
+                        if (!aggregateBy_humanReadable_available) {
+                            aggregateBy_humanReadable_available = [];
                             if (!numberOfRecords_notAvailable)
-                                colNames_orderedForAggregateByDropdown.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                                aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
                         }
 
-                        colNames_orderedForAggregateByDropdown.push(humanReadableColumnName);
+                        aggregateBy_humanReadable_available.push(humanReadableColumnName);
                     }
                 }
             }
@@ -237,7 +238,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     finalizedButNotCoalesced_groupedResults.forEach(function (el, i, arr) {
                         var label = el.label;
                         var value = el.value;
-                        var label_toLowerCased = label.toLowerCase();
+                        var label_toLowerCased = label.toString().toLowerCase();
                         //
                         var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
                         var new_valueSum = existing_valueSum + value;

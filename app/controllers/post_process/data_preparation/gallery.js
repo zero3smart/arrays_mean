@@ -159,7 +159,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     return;
                 }
 
-                console.log(JSON.stringify(_orErrDesc.matchOps))
+            
                 wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
             }
 

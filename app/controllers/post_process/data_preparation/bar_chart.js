@@ -373,7 +373,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         _.each(finalizedButNotCoalesced_groupedResults, function (el) {
                             var label = el.label;
                             var value = el.value;
-                            var label_toLowerCased = label.toLowerCase();
+                            var label_toLowerCased = label.toString().toLowerCase();
                             //
                             var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
                             var new_valueSum = existing_valueSum + value;
