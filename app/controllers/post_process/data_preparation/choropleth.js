@@ -183,17 +183,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             });
 
                         } else {// Sort alphabetically by default
-                             if (typeof uniqueFieldValuesByFieldName[columnName] !== 'object') {
-                                uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                    return a - b;
-                                });
+                            uniqueFieldValuesByFieldName[columnName].sort();
 
-                            } else {
-                                uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                    return a.label - b.label;
-                                });
-
-                            }
                         }
 
 
