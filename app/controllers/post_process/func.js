@@ -510,7 +510,7 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
             }
         }
 
-        var _uniqueFieldValuesByFieldName = {};
+        var finalizedUniqueFieldValuesByFieldName = [];
 
         _.forOwn(uniqueFieldValuesByFieldName, function (columnValue, columnName) {
             /* getting illegal values list */
@@ -565,18 +565,9 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                 }
             })
 
-            _uniqueFieldValuesByFieldName[columnName] = row;
-
-        });
-
-        var finalizedUniqueFieldValuesByFieldName = [];
-
-        _.each(Object.keys(_uniqueFieldValuesByFieldName).sort(), function(columnName) {
-            var values = _uniqueFieldValuesByFieldName[columnName];
-
             if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
 
-                values.sort(function (a, b) {
+                row.sort(function (a, b) {
                     a = a.replace(/\D/g, '');
                     a = a == '' ? 0 : parseInt(a);
                     b = b.replace(/\D/g, '');
@@ -584,16 +575,58 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                     return a - b;
                 });
 
+            } else {
+
+                row.sort(function(a, b) {
+                    var A = a.toUpperCase();
+                    var B = b.toUpperCase();
+
+                    if (A < B) {
+                        return -1;
+                    }
+                    if (A > B) {
+                        return 1;
+                    }
+
+                    // names must be equal
+                    return 0;
+                });
+
             }
 
             if (dataSourceDescription.fe_filters.fieldsSortableInReverseOrder && dataSourceDescription.fe_filters.fieldsSortableInReverseOrder.indexOf(columnName) != -1) { // Sort in reverse order
-                values.reverse();
+                row.reverse();
             }
 
             finalizedUniqueFieldValuesByFieldName.push({
                 name: columnName,
-                values: values
-            })
+                values: row
+            });
+
+        });
+
+        finalizedUniqueFieldValuesByFieldName.sort(function(a, b) {
+            var nameA = a.name;
+            var nameB = b.name;
+            if (dataSourceDescription.fe_displayTitleOverrides) {
+                if (dataSourceDescription.fe_displayTitleOverrides[nameA])
+                    nameA = dataSourceDescription.fe_displayTitleOverrides[nameA];
+                if (dataSourceDescription.fe_displayTitleOverrides[nameB])
+                    nameB = dataSourceDescription.fe_displayTitleOverrides[nameB];
+            }
+
+            nameA = nameA.toUpperCase();
+            nameB = nameB.toUpperCase();
+
+            if (nameA < nameB) {
+                return -1;
+            }
+            if (nameA > nameB) {
+                return 1;
+            }
+
+            // names must be equal
+            return 0;
         });
 
         //
