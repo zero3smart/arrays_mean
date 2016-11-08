@@ -148,7 +148,9 @@
                     {% for dur in available_forDuration %}
                         <option value="{{dur}}" {{ 'selected' if doc.fe_views.views[view.name][setting.name] == dur }}>{{dur}}</option>
                     {% endfor %}
-                {% endif %}
+                {%endif%}
+            
+
                 </select>
             </div>
         </div>

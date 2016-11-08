@@ -133,6 +133,8 @@ $(document).ready(function () {
         $.post("/admin/dataset/" + doc_id + "/format-field/" + field, params)
             .done(function (data) {
                 var field_name = field.replace(/\./g, "_");
+
+                $('.reminderMsg').append("<div class='alert alert-warning' role='alert'>You need to re-import your data in order for the changes to be reflected on dataset.</div>")
                 //
                 $('tr.field[data-field-name="' + field + '"] td:nth-child(2) input[type="checkbox"]').prop("checked", data.doc.fe_excludeFields.indexOf(field) != -1);
                 $('tr.field[data-field-name="' + field + '"] td:nth-child(4)').html(fieldDataType_coercion_toString(data.doc.raw_rowObjects_coercionScheme[field_name]));
