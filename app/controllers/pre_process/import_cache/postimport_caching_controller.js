@@ -62,16 +62,6 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
 };
 
 
-var _findFieldSeparateIndexInArray = function(fieldsToSeparate,targetField) {
-    for (var i = 0; i < fieldsToSeparate.length; i++) {
-        if (fieldsToSeparate[i].field == targetField) {
-            return i;
-
-        }
-    }
-    return -1;
-}
-
 
 var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription, callback) {
 
@@ -91,15 +81,32 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
             return;
         }
         var limitToNTopValues = 50;
-        var feVisible_filter_keys = imported_data_preparation.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
-        var feVisible_filter_keys_length = feVisible_filter_keys.length;
+        // var feVisible_filter_keys = imported_data_preparation.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
+
+        var filterKeys = Object.keys(sampleDoc.rowParams);
+
+
+        if (typeof dataSourceDescription.fe_excludeFields != 'undefined' && Array.isArray(dataSourceDescription.fe_excludeFields) && dataSourceDescription.fe_excludeFields.length > 0) {
+            for (var i = 0 ; i < dataSourceDescription.fe_excludeFields.length; i++) {
+                var index = filterKeys.indexOf(dataSourceDescription.fe_excludeFields[i]);
+                filterKeys.splice(index,1);
+            }
+        }
+
+     
+
+ 
+
+
+        // var feVisible_filter_keys_length = feVisible_filter_keys.length;
         var uniqueFieldValuesByFieldName = {};
-        for (var i = 0; i < feVisible_filter_keys_length; i++) {
-            var key = feVisible_filter_keys[i];
+
+        for (var i = 0; i < filterKeys.length ; i++) {
+            var key = filterKeys[i];
             uniqueFieldValuesByFieldName[key] = [];
         }
 
-        async.each(feVisible_filter_keys, function (key, cb) {
+        async.each(filterKeys, function (key, cb) {
             // Commented out the count section for the comma-separated as individual filters.
             var uniqueStage = {$group: {_id: {}, count: {$sum: 1}}};
             uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;
@@ -132,73 +139,40 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 var values = [].concat.apply([], valuesRaw).filter(function (elem, index, self) {
                     return elem != '';
                 }).splice(0, limitToNTopValues);
-                //
-                // remove illegal values
-                var illegalValues = []; // default val
-
-                if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey) {
-
-                    if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all) {
-
-                        illegalValues = illegalValues.concat(dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all);
-                    }
-                    var illegalValuesForThisKey = dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey[key];
-                    if (illegalValuesForThisKey) {
-                        illegalValues = illegalValues.concat(illegalValuesForThisKey);
-                    }
-                }
-                //
-                var illegalValues_length = illegalValues.length;
-                for (var i = 0; i < illegalValues_length; i++) {
-                    var illegalVal = illegalValues[i];
-                    var idxOfIllegalVal = values.indexOf(illegalVal);
-                    if (idxOfIllegalVal !== -1) {
-                        values.splice(idxOfIllegalVal, 1);
-                    }
-                }
-
-                values.sort();
-
+  
                 uniqueFieldValuesByFieldName[key] = values;
                 cb();
             });
         }, function (err) {
-            if (err) {
-                callback(err, null);
 
-                return;
-            }
-            // Override values
-            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
-            var fieldNamesToOverride = Object.keys(oneToOneOverrideWithValuesByTitleByFieldName);
-            async.each(fieldNamesToOverride, function (fieldName, cb) {
-                var oneToOneOverrideWithValuesByTitle = oneToOneOverrideWithValuesByTitleByFieldName[fieldName];
-                var titles = Object.keys(oneToOneOverrideWithValuesByTitle);
-                uniqueFieldValuesByFieldName[fieldName] = titles;
-                cb();
-            }, function (err) {
+            if (err) callback(err);
+
+           
+
+            var persistableDoc =
+            {
+                srcDocPKey: dataSourceRevision_pKey,
+                limitedUniqValsByColName: uniqueFieldValuesByFieldName
+            };
+            var cached_values = require('../../../models/cached_values');
+            cached_values.findOneAndUpdate({srcDocPKey: dataSourceRevision_pKey}, persistableDoc, {
+                upsert: true,
+                new: true
+            }, function (err, doc) {
                 if (err) {
-                    callback(err, null);
-
-                    return;
+                    return callback(err, null);
                 }
-                var persistableDoc =
-                {
-                    srcDocPKey: dataSourceRevision_pKey,
-                    limitedUniqValsByColName: uniqueFieldValuesByFieldName
-                };
-                var cached_values = require('../../../models/cached_values');
-                cached_values.findOneAndUpdate({srcDocPKey: dataSourceRevision_pKey}, persistableDoc, {
-                    upsert: true,
-                    new: true
-                }, function (err, doc) {
-                    if (err) {
-                        return callback(err, null);
-                    }
-                    winston.info("✅  Inserted cachedUniqValsByKey for \"" + dataSource_title + "\".");
-                    callback(null, null);
-                });
+                winston.info("✅  Inserted cachedUniqValsByKey for \"" + dataSource_title + "\".");
+                callback(null, null);
             });
+
+
+
+
+
+
+
+
         });
     });
 };

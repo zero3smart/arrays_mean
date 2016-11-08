@@ -164,18 +164,70 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = {};
+                   
                     _.forOwn(_uniqueFieldValuesByFieldName, function (columnValue, columnName) {
-                        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
-                        if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
-                            var row = [];
-                            columnValue.forEach(function (rowValue) {
-                                row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
-                            });
-                            row.sort();
-                            uniqueFieldValuesByFieldName[columnName] = row;
-                        } else {
-                            uniqueFieldValuesByFieldName[columnName] = columnValue;
+                        /* getting illegal values list */
+                        var illegalValues = [];
+
+                        if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey) {
+
+                            if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all) {
+
+                                illegalValues = illegalValues.concat(dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all);
+                            }
+                            var illegalValuesForThisKey = dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey[columnName];
+                            if (illegalValuesForThisKey) {
+                                illegalValues = illegalValues.concat(illegalValuesForThisKey);
+                            }
                         }
+
+
+                        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+                        var revertType = false;
+                        var overwriteValue = false;
+
+
+                        var row = columnValue;
+                        if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
+                            row = [];
+                            revertType = true;
+                        }
+
+                        if (typeof dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName !== 'undefined' &&
+                            dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName]) {
+                            overwriteValue = true;
+                        }
+
+
+                        columnValue.forEach(function(rowValue,index) {
+
+
+                            var existsInIllegalValueList = illegalValues.indexOf(rowValue);
+                          
+                            if (existsInIllegalValueList == -1) { 
+                                if (revertType) {
+                                    row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));   
+                                }
+
+                                if (overwriteValue) {
+
+                                    _.forOwn(dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName],function(value,key) {
+                                        if (value == rowValue) {
+                                            row[index] = key
+                                        }
+                                    })
+                                }
+                 
+
+
+                            } else { 
+                                if (!revertType) row.splice(index,1); 
+                            }
+                        })
+
+                
+
+                        uniqueFieldValuesByFieldName[columnName] = row;
 
                         if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
 
@@ -187,10 +239,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 return a - b;
                             });
 
-                        } else // Sort alphabetically by default
+                        } else {// Sort alphabetically by default
                             uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
                                 return a - b;
                             });
+                        }
+
+
                     });
                     done();
                 });
@@ -223,6 +278,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     } else {
                         nonpagedCount = results.length;
                     }
+
+
+
                     done();
                 };
                 processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
@@ -263,6 +321,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         projects['$project']['rowParams.' + rowParamsField] = 1;
                     }
                 });
+
 
 
                 aggregationOperators = aggregationOperators.concat(
@@ -308,10 +367,17 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 var doneFn = function (err, _groupedResults) {
                     if (err) return done(err);
-                    groupedResults = _groupedResults;
-                    if (groupedResults == undefined || groupedResults == null) groupedResults = [];
+              
+                   
 
-                    var finalizedButNotCoalesced_groupedResults = [];
+                  
+
+
+
+                    if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
+
+               
+
                     _groupedResults.forEach(function (el, i, arr) {
                         var results = [];
                         el.results.forEach(function (el2, i2) {
@@ -327,6 +393,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     done();
                 };
+
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 

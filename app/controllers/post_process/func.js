@@ -426,13 +426,31 @@ var _activeSearch_matchOp_orErrDescription = function (dataSourceDescription, se
 module.exports.activeSearch_matchOp_orErrDescription = _activeSearch_matchOp_orErrDescription;
 
 //
+
+var _neededFilterValues = function(dataSourceDescription) {
+
+    if (!dataSourceDescription.fe_filters.fieldsNotAvailable|| dataSourceDescription.fe_filters.fieldsNotAvailable.length == 0) {
+        return {};
+    }
+    var excluding = {};
+    for (var i = 0 ; i < dataSourceDescription.fe_filters.fieldsNotAvailable.length; i++) {
+        excluding["limitedUniqValsByColName." + dataSourceDescription.fe_filters.fieldsNotAvailable[i]] = 0
+    }
+    return excluding;
+
+
+}
+
 var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescription, callback) {
-    cached_values.findOne({srcDocPKey: source_pKey}, function (err, doc) {
+
+    var excludeValues = _neededFilterValues(dataSourceDescription);
+    cached_values.findOne({srcDocPKey: source_pKey},excludeValues,function (err, doc) {
         if (err) {
             callback(err, null);
 
             return;
         }
+        
         if (doc == null) {
             callback(new Error('Missing cached values document for srcDocPKey: ' + source_pKey), null);
 
@@ -498,6 +516,10 @@ module.exports.topUniqueFieldValuesForFiltering = _topUniqueFieldValuesForFilter
 
 //
 var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescription) {
+
+ 
+   
+
     var displayableVal = originalVal;
     // var prototypeName = Object.prototype.toString.call(originalVal);
     // if (prototypeName === '[object Date]') {
@@ -516,17 +538,23 @@ var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescr
                 if (originalVal == null || originalVal == "") {
                     return originalVal; // do not attempt to format
                 }
-                var dateFormat = null;
-                var fe_outputInFormat = coersionSchemeOfKey.outputFormat;
-                if (fe_outputInFormat && typeof fe_outputInFormat !== 'undefined') {
-                    var outputInFormat_ofKey = fe_outputInFormat["" + key];
-                    if (outputInFormat_ofKey && typeof outputInFormat_ofKey !== 'undefined') {
-                        dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
-                    }
-                }
+
+                var dateFormat = coersionSchemeOfKey.outputFormat;
+
+
+                // if (!fe_outputInFormat && typeof fe_outputInFormat == 'undefined') {
+                //     var outputInFormat_ofKey = fe_outputInFormat["" + key];
+                //     if (outputInFormat_ofKey && typeof outputInFormat_ofKey !== 'undefined') {
+                //         dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
+                //     }
+                // }
+
                 if (dateFormat == null || dateFormat == "ISO_8601") { // still null? use default
                     dateFormat = config.defaultDateFormat;
                 }
+
+             
+
                 displayableVal = moment(originalVal, moment.ISO_8601).utc().format(dateFormat);
             } else { // nothing to do? (no other types yet)
             }
@@ -535,6 +563,8 @@ var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescr
     } else { // nothing to do?
     }
     //
+
+
     return displayableVal;
 };
 module.exports.reverseDataToBeDisplayableVal = _reverseDataToBeDisplayableVal;

@@ -5,6 +5,7 @@
     <ul class="sidebar-filter-group">
 
         {% for fieldName, fieldValues in uniqueFieldValuesByFieldName %}
+
             {% if fieldValues | length == 1 %}
                 {% set isThisAnActiveFilterColumn = false %}
                 {% if isFilterActive %}

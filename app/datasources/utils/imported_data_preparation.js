@@ -82,27 +82,7 @@ function _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, 
 
 module.exports.RowParamKeysFromSampleRowObject_sansFEExcludedFields = _rowParamKeysFromSampleRowObject_sansFEExcludedFields;
 
-//
-function _rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleRowObject, dataSourceDescription) {
-    var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
-    var keys_length = keys.length;
-    var filterAvailable_keys = [];
-    for (var i = 0; i < keys_length; i++) {
-        var key = keys[i];
-        if (dataSourceDescription.fe_filters.fieldsNotAvailable) {
-            if (dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key) !== -1) {
-                continue;
-            }
-        }
-        filterAvailable_keys.push(key);
-    }
 
-    return filterAvailable_keys;
-};
-
-module.exports.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters = _rowParamKeysFromSampleRowObject_whichAreAvailableAsFilters;
-
-//
 function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, dataSourceDescription) { // e.g. Replace designated object title with "Object Title"
     var rowParams_keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
     var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
@@ -169,6 +149,9 @@ module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSo
 
 //
 function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleRowObject, dataSourceDescription, viewType, fieldName) {
+
+
+    
     var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
     // add in "Object Title" so we use the same machinery as the hand-specified ones
     fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
