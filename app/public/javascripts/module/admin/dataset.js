@@ -2,6 +2,13 @@ $(document).ready(function () {
 
     $('[data-toggle="tooltip"]').tooltip();
 
+    $('form.removeDataset').on('submit', function(e) {
+        var r = confirm('Are you sure to delete?');
+        if (r == true)
+            return true;
+        return false;
+    });
+
     $('#add_urls').on('click', function (e) {
         $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
     });
@@ -88,7 +95,7 @@ $(document).ready(function () {
         var doc_id = $('#doc_id').val();
         var doc_title = $('#doc_title').val();
 
-        $.get("/admin/dataset/" + doc_id + "/format-custom-field/" + field_name, null, function (data) {
+        $.get("/admin/dataset/" + doc_id + "/format-custom-field/" + field_name + '/edit', null, function (data) {
 
             $('#modal')
                 .on('show.bs.modal', function (e) {

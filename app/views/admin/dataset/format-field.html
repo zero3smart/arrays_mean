@@ -12,6 +12,8 @@
         </div>
     </div>
 
+    {% if not customMode %}
+
     <div class="form-group">
         <div class="col-xs-4">
             <label for="firstRecord" class="form-control">First Record</label>
@@ -20,8 +22,6 @@
             <input id="firstRecord" class="form-control" value="{{ firstRecord }}" disabled/>
         </div>
     </div>
-
-    {% if not customMode %}
 
     <div class="form-group">
         <div class="col-xs-4">
