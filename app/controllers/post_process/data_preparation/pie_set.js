@@ -58,9 +58,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
            
 
-            var chartBy_realColumnName =  chartBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+            var chartBy_realColumnName =  chartBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartBy,dataSourceDescription) : 
             (dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName,dataSourceDescription) :
              dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName
+
+
 
 
             //
