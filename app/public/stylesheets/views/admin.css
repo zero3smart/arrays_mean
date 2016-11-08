@@ -9,6 +9,10 @@
     padding: 15px 0;
 }
 
+.dataset_item {
+    padding-right: 30px;
+}
+
 .dataset .upload input[type="text"].url {
     width: 100%;
 }
@@ -83,6 +87,7 @@ form.format-field .form-group input[type='checkbox'] {
     margin-top: 10px;
 }
 
+.removeDataset,
 form .removeRow {
     display: inline-block;
     cursor: pointer;

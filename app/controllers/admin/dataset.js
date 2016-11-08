@@ -38,6 +38,68 @@ module.exports.index = function (req, next) {
 };
 
 
+module.exports.removeDataset = function(req, next) {
+    if (!req.body.id) next(new Error('No id given'));
+
+    var batch = new Batch();
+    batch.concurrency(1);
+
+    var description;
+    batch.push(function(done) {
+        datasource_description.findById(req.body.id, function(err, data) {
+            if (err) return done(err);
+
+            if (!data) return done(new Error('No datasource exists : ' + req.body.id));
+
+            description = data;
+            done();
+        });
+    });
+
+    // Remove source document
+    batch.push(function(done) {
+        var srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+        raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function(err, document) {
+            if (err) return done(err);
+
+            if (!document) return done();
+            document.remove(done);
+        });
+    });
+
+    // Remove processed row object
+    batch.push(function(done) {
+        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+        var mongooseContext_ofTheseProcessedRowObjects = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
+
+        if (!mongooseModel_ofTheseProcessedRowObjects) return done();
+        mongooseModel_ofTheseProcessedRowObjects.remove(done);
+    });
+
+    // Remove raw row object
+    batch.push(function(done) {
+        var srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+        var forThisDataSource_mongooseContext = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey);
+        var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model;
+
+        if (!forThisDataSource_RawRowObject_model) return done();
+        forThisDataSource_RawRowObject_model.remove(done);
+    });
+
+    // Remove datasource description
+    batch.push(function(done) {
+        description.remove(done);
+    });
+
+    batch.end(function(err) {
+        if (err) return next(err);
+
+        req.flash('message', 'Removed successfully');
+        next(err, {});
+    })
+}
+
 /***************  Settings  ***************/
 module.exports.getSettings = function (req, next) {
     var data = {};
@@ -90,7 +152,7 @@ function _castSerializeElementToObject(key,value,commaSeparated) {
         } else {
 
             objToReturn[key[i]] = value[i]
-  
+
 
         }
 
@@ -153,9 +215,9 @@ module.exports.getSource = function (req, next) {
                 if (err) return next(err);
 
                 if (docs && docs.length > 0)
-                    data.sub_datasets = docs;
+                    data.sub_datasources = docs;
                 else
-                    data.sub_datasets = [doc._doc];
+                    data.sub_datasources = [doc._doc];
 
                 next(null, data);
             });
@@ -200,7 +262,7 @@ module.exports.saveSource = function (req, next) {
                 return done(new Error('Invalid File Format'));
 
             }
-                
+
 
             var readStream = fs.createReadStream(file.path)
                 .pipe(es.split())
@@ -651,7 +713,7 @@ module.exports.getFormatView = function (req, next) {
 
                 }
             }
-            
+
             done();
         });
     });
@@ -707,7 +769,7 @@ module.exports.saveFormatView = function (req, next) {
         datasource_description.findById(dataset_id,function(err,datasetDesc) {
 
             doc = datasetDesc;
-    
+
             if (!doc.fe_views) doc.fe_views = {};
             if (!doc.fe_views.views) doc.fe_views.views = {};
             if (!doc.fe_views.views[field]) doc.fe_views.views[field] = {};
@@ -717,10 +779,10 @@ module.exports.saveFormatView = function (req, next) {
             } else {
                 changedObj.default_view = "gallery";
             }
-     
+
             doc.fe_views.views[field].visible = req.body.visible;
             changedObj.visible = req.body.visible
-    
+
 
             var rest = _.omit(req.body,'default_view','visible');
             for (var attr in rest) {
@@ -728,9 +790,9 @@ module.exports.saveFormatView = function (req, next) {
                     if (attr.indexOf('_key') >= 0) {
                         var index = attr.indexOf('_key');
                         var value = attr.substring(0,index);
-                        
 
-                        
+
+
 
 
                         if (rest[value+"_value"] !== null && typeof rest[value + "_value"] !== 'undefined') {
@@ -741,7 +803,7 @@ module.exports.saveFormatView = function (req, next) {
 
                             delete rest[value + "_value"];
 
-                        } 
+                        }
                         if (rest[value + "_value_separatedByComma"] !== null && typeof rest[value + "_value_separatedByComma"]
                             !== 'undefined') {
                             var obj =_castSerializeElementToObject(rest[attr], rest[value + "_value_separatedByComma"],true);

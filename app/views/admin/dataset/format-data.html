@@ -11,11 +11,10 @@
 		<h1 class="admin-title">{{doc.title}} - Format Data</h1>
 	</header>
 
-	<input type="hidden" id="doc_title" value="{{ doc.title }}" />
-	<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
-
 	{% if flash | length %}
 	<div class="alert alert-success" role="alert">{{ flash }}</div>
+	{% elif error | length %}
+	<div class="alert alert-danger" role="alert">{{ error }}</div>
 	{% endif %}
 
 	<div class="dataset">
@@ -24,6 +23,10 @@
 		<br />
 
 		<form class="format-data" method="post">
+
+			<input type="hidden" id="doc_title" value="{{ doc.title }}" />
+			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
+
 			<div class="form-group row">
 				<label class="col-xs-4" for="fn_new_rowPrimaryKeyFromRowObject">Primary Key: </label>
 				<div class="col-xs-8">
