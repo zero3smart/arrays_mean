@@ -114,7 +114,6 @@ $(document).ready(function () {
 
     $('#newCustomField').on('click', function (e) {
         var doc_id = $('#doc_id').val();
-        var doc_title = $('#doc_title').val();
 
         $.get("/admin/dataset/" + doc_id + "/format-custom-field/new", null, function (data) {
             $('#modal')
@@ -124,32 +123,106 @@ $(document).ready(function () {
 
                     $modalTitle.html('Format New Custom Field');
                     $modalBody.html(data);
+                    $(".chosen-select").chosen({width: "100%"});
                 })
                 .modal('show');
         }, "html");
     });
 
-    $('#modal').on('click', '#format-field-done', function (e) {
+    $('#modal').on('click', '#format-field-remove', function (e) {
+        var r = confirm('Are you sure to remove?');
+        if (r != true) return;
+
         var doc_id = $('#doc_id').val();
         var field = $('#name').val();
 
         var params = $('form.format-field').serialize();
 
+        $.post("/admin/dataset/" + doc_id + "/format-custom-field/" + field + "/remove", params)
+            .done(function (data) {
+
+                if (data.error && data.error != '') {
+
+                    $('.format-field .alert-danger').html(data.error).removeClass('hidden').addClass('show');
+
+                } else {
+
+                    $('.format-field .alert-danger').html(data.error).addClass('hidden');
+
+                    $('tr.field[data-field-name="' + field + '"]').remove();
+
+                    $('#changed').val(true);
+                    $('#modal').modal('hide');
+
+                }
+            }, 'json');
+    });
+
+    $('#modal').on('click', '#format-field-done', function (e) {
+        var doc_id = $('#doc_id').val();
+        var params = $('form.format-field').serialize();
+
+        var valid = true;
+
+        $('form.format-field').find('[required]').each(function(){
+            if (!$(this).val()) {
+                valid = false;
+            }
+        });
+
+        if (!valid) return alert('It seems you didn\'t input at least a column required!');
+
         // TODO: Consider to ask for user to login since of expiration
 
-        $.post("/admin/dataset/" + doc_id + "/format-field/" + field, params)
-            .done(function (data) {
-                var field_name = field.replace(/\./g, "_");
+        if ($('#custom_mode').val() == 'true') {
 
-                $('.reminderMsg').append("<div class='alert alert-warning' role='alert'>You need to re-import your data in order for the changes to be reflected on dataset.</div>")
-                //
-                $('tr.field[data-field-name="' + field + '"] td:nth-child(2) input[type="checkbox"]').prop("checked", data.doc.fe_excludeFields.indexOf(field) != -1);
-                $('tr.field[data-field-name="' + field + '"] td:nth-child(4)').html(fieldDataType_coercion_toString(data.doc.raw_rowObjects_coercionScheme[field_name]));
-                $('tr.field[data-field-name="' + field + '"] td:nth-child(6)').html(data.doc.fe_fieldDisplayOrder[field]);
+            var field = $('#field').val();
+            var url = "/admin/dataset/" + doc_id + "/format-custom-field/";
+            url += field == '' ? 'save' : (field + '/update');
 
-                $('#changed').val(true);
-                $('#modal').modal('hide');
-            }, 'json');
+            $.post("/admin/dataset/" + doc_id + "/format-custom-field/save", params)
+                .done(function (data) {
+                    if (data.error && data.error != '') {
+                        $('.format-field .alert-danger').html(data.error).removeClass('hidden').addClass('show');
+
+                    } else {
+                        $('.format-field .alert-danger').html(data.error).addClass('hidden');
+
+                        var doc = data.doc;
+                        var field = data.customField;
+                        $('table#fields tbody').append(
+                            '<tr class="field" data-field-name="' + field.fieldName + '">' +
+                            '<td scope="row">' + (data.columnIndex) + '</td>' +
+                            '<td>' + field.fieldName + '</td>' +
+                            '<td>' + field.fieldType + '</td>' +
+                            '<td>' + field.firstRecord + '</td>' +
+                            '</tr>'
+                        );
+
+                        $('#changed').val(true);
+                        $('#modal').modal('hide');
+                    }
+                }, 'json');
+
+        } else {
+            var field_name = $('#name').val();
+
+            $.post("/admin/dataset/" + doc_id + "/format-field/" + field_name, params)
+                .done(function (data) {
+
+                    $('.format-field .alert-danger').html(data.error).addClass('hidden');
+
+                    var field_name = field.replace(/\./g, "_");
+                    //
+                    $('tr.field[data-field-name="' + field + '"] td:nth-child(2) input[type="checkbox"]').prop("checked", data.doc.fe_excludeFields.indexOf(field) != -1);
+                    $('tr.field[data-field-name="' + field + '"] td:nth-child(4)').html(fieldDataType_coercion_toString(data.doc.raw_rowObjects_coercionScheme[field_name]));
+                    $('tr.field[data-field-name="' + field + '"] td:nth-child(6)').html(data.doc.fe_fieldDisplayOrder[field]);
+
+                    $('#changed').val(true);
+                    $('#modal').modal('hide');
+                }, 'json');
+
+        }
     });
 
     $('#modal').on('click', '#add_oneToOneOverrideWithValuesByTitle', function (e) {
@@ -222,10 +295,10 @@ $(document).ready(function () {
         e.preventDefault();
         $('#extra_keywords').append(
             '<div class="form-group row">' +
-            '<div class="col-xs-6">' +
+            '<div class="col-xs-8">' +
             '<input type="text" class="form-control" name="keywords[]" value="">' +
             '</div>' +
-            '<div class="col-xs-5">' +
+            '<div class="col-xs-3">' +
             '<input type="checkbox" name="default_filter_keywords[]" values="true"> Use default' +
             '</div>' +
             '<div class="col-xs-1">' +
@@ -253,6 +326,23 @@ $(document).ready(function () {
             return 'String'; // 'Unknown'
         }
     }
+
+    $('#fabricatedFilters').on('click', function(e) {
+        var doc_id = $('#doc_id').val();
+
+        $.get("/admin/dataset/" + doc_id + "/fabricated-filters", null, function (data) {
+            $('#modal')
+                .on('show.bs.modal', function (e) {
+                    var $modalTitle = $(this).find('.modal-title');
+                    var $modalBody = $(this).find('.modal-body');
+
+                    $modalTitle.html('Fabricated Filters');
+                    $modalBody.html(data);
+                    $(".chosen-select").chosen({width: "100%"});
+                })
+                .modal('show');
+        }, "html");
+    });
 
     $('.format-views tr.views').on('click', function (e) {
         e.preventDefault();
