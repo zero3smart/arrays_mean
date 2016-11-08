@@ -426,13 +426,36 @@ var _activeSearch_matchOp_orErrDescription = function (dataSourceDescription, se
 module.exports.activeSearch_matchOp_orErrDescription = _activeSearch_matchOp_orErrDescription;
 
 //
+
+var _neededFilterValues = function(dataSourceDescription) {
+
+    if (!dataSourceDescription.fe_filters.fieldsNotAvailable|| dataSourceDescription.fe_filters.fieldsNotAvailable.length == 0) {
+        return {};
+    }
+    var excluding = {};
+    for (var i = 0 ; i < dataSourceDescription.fe_filters.fieldsNotAvailable.length; i++) {
+        excluding["limitedUniqValsByColName." + dataSourceDescription.fe_filters.fieldsNotAvailable[i]] = 0
+    }
+    if (typeof dataSourceDescription.fe_excludeFields != 'undefined' && Array.isArray(dataSourceDescription.fe_excludeFields) && dataSourceDescription.fe_excludeFields.length > 0) {
+        for (var i = 0 ; i < dataSourceDescription.fe_excludeFields.length; i++) {
+            excluding["limitedUniqValsByColName." + dataSourceDescription.fe_excludeFields[i]] = 0
+        }
+    }
+    return excluding;
+
+
+}
+
 var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescription, callback) {
-    cached_values.findOne({srcDocPKey: source_pKey}, function (err, doc) {
+
+    var excludeValues = _neededFilterValues(dataSourceDescription);
+    cached_values.findOne({srcDocPKey: source_pKey},excludeValues,function (err, doc) {
         if (err) {
             callback(err, null);
 
             return;
         }
+        
         if (doc == null) {
             callback(new Error('Missing cached values document for srcDocPKey: ' + source_pKey), null);
 
@@ -530,6 +553,7 @@ var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescr
                 //         dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
                 //     }
                 // }
+
                 if (dateFormat == null || dateFormat == "ISO_8601") { // still null? use default
                     dateFormat = config.defaultDateFormat;
                 }
