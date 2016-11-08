@@ -32,6 +32,7 @@ var DatasourceDescription_scheme = Schema({
         fabricated: Array,
         default: Object,
         fieldsSortableByInteger: Array,
+        fieldsSortableInReverseOrder: Array,
         fieldsCommaSeparatedAsIndividual: Array,
         fieldsMultiSelectable: Array,
         fieldsNotAvailable: Array,

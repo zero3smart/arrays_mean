@@ -1,5 +1,6 @@
 var winston = require('winston');
 var moment = require('moment');
+var _ = require('lodash');
 
 var importedDataPreparation = require('../../datasources/utils/imported_data_preparation');
 var cached_values = require('../../models/cached_values');
@@ -505,11 +506,98 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
 
                     return;
                 }
-                uniqueFieldValuesByFieldName[keywordFilter.title] = values;
+                uniqueFieldValuesByFieldName[keywordFilter.title] = values.sort();
             }
         }
+
+        var _uniqueFieldValuesByFieldName = {};
+
+        _.forOwn(uniqueFieldValuesByFieldName, function (columnValue, columnName) {
+            /* getting illegal values list */
+            var illegalValues = [];
+
+            if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey) {
+
+                if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all) {
+                    illegalValues = illegalValues.concat(dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all);
+                }
+                var illegalValuesForThisKey = dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey[columnName];
+                if (illegalValuesForThisKey) {
+                    illegalValues = illegalValues.concat(illegalValuesForThisKey);
+                }
+
+            }
+
+            var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+            var revertType = false;
+            var overwriteValue = false;
+
+            var row = columnValue;
+            if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
+                row = [];
+                revertType = true;
+            }
+
+            if (typeof dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName !== 'undefined' &&
+                dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName]) {
+                overwriteValue = true;
+            }
+
+            columnValue.forEach(function(rowValue,index) {
+
+                var existsInIllegalValueList = illegalValues.indexOf(rowValue);
+
+                if (existsInIllegalValueList == -1) {
+                    if (revertType) {
+                        row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
+                    }
+
+                    if (overwriteValue) {
+                        _.forOwn(dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName],function(value,key) {
+                            if (value == rowValue) {
+                                row[index] = key
+                            }
+                        })
+                    }
+
+                } else {
+                    if (!revertType) row.splice(index,1);
+                }
+            })
+
+            _uniqueFieldValuesByFieldName[columnName] = row;
+
+        });
+
+        var finalizedUniqueFieldValuesByFieldName = [];
+
+        _.each(Object.keys(_uniqueFieldValuesByFieldName).sort(), function(columnName) {
+            var values = _uniqueFieldValuesByFieldName[columnName];
+
+            if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                values.sort(function (a, b) {
+                    a = a.replace(/\D/g, '');
+                    a = a == '' ? 0 : parseInt(a);
+                    b = b.replace(/\D/g, '');
+                    b = b == '' ? 0 : parseInt(b);
+                    return a - b;
+                });
+
+            }
+
+            if (dataSourceDescription.fe_filters.fieldsSortableInReverseOrder && dataSourceDescription.fe_filters.fieldsSortableInReverseOrder.indexOf(columnName) != -1) { // Sort in reverse order
+                values.reverse();
+            }
+
+            finalizedUniqueFieldValuesByFieldName.push({
+                name: columnName,
+                values: values
+            })
+        });
+
         //
-        callback(null, uniqueFieldValuesByFieldName);
+        callback(null, finalizedUniqueFieldValuesByFieldName);
     });
 };
 module.exports.topUniqueFieldValuesForFiltering = _topUniqueFieldValuesForFiltering;
