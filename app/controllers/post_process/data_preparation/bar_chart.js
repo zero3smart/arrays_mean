@@ -47,9 +47,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
             var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName] || dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName;
 
-            var groupBy_realColumnName = groupBy ? 
-            importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
-            dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName;
+
+
+            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+            (dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName,dataSourceDescription) :
+             dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName;
+           
+
+
 
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
@@ -64,9 +69,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var stackBy = urlQuery.stackBy; // the human readable col name - real col name derived below
             var defaultStackByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName] || dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName;
-            var stackBy_realColumnName = stackBy ? 
-            importedDataPreparation.RealColumnNameFromHumanReadableColumnName(stackBy,dataSourceDescription) : 
-            dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName; 
+            
+
+            var stackBy_realColumnName =  stackBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(stackBy,dataSourceDescription) : 
+            (dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName,dataSourceDescription) :
+             dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName;
+           
+
 
 
             var routePath_base = "/array/" + source_pKey + "/bar-chart";

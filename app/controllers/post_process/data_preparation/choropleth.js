@@ -54,7 +54,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
-            var mapBy = urlQuery.mapBy; // the human readable col name - real col name derived below
+            var mapBy = urlQuery.mapBy; // the human readable col name - real col name derived below?
             var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.choropleth.defaultMapByColumnName] ||
             dataSourceDescription.fe_views.views.choropleth.defaultMapByColumnName;
             //
@@ -196,9 +196,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain grouped results
             batch.push(function (done) {
-                var mapBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(mapBy ? mapBy : defaultMapByColumnName_humanReadable,
-                    dataSourceDescription);
-                //
+                var mapBy_realColumnName = mapBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(mapBy,dataSourceDescription) : 
+                (defaultMapByColumnName == "Object Title") ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultMapByColumnName,dataSourceDescription) : 
+                defaultMapByColumnName
+
+
                 var aggregationOperators = [];
                 if (isSearchActive) {
                     var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);

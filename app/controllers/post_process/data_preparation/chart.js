@@ -44,9 +44,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
             chartViewSettings.defaultGroupByColumnName;
 
 
-            var groupBy_realColumnName = groupBy? 
-            importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,
-                dataSourceDescription) : chartViewSettings.defaultGroupByColumnName;
+
+            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+            (chartViewSettings.defaultGroupByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartViewSettings.defaultGroupByColumnName,dataSourceDescription) :
+             chartViewSettings.defaultGroupByColumnName;
+
+
 
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             //

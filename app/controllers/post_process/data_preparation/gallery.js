@@ -115,8 +115,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
             var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[galleryViewSettings.defaultSortByColumnName] || galleryViewSettings.defaultSortByColumnName;
 
-            var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) :
-            dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName;
+            var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) : 
+            (dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName,dataSourceDescription) :
+             dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName;
+
+
 
 
         
@@ -346,6 +349,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (docs == undefined || docs == null) {
                         docs = [];
                     }
+
                     done();
                 };
 

@@ -177,8 +177,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain grouped results
             batch.push(function (done) {
-                var groupBy_realColumnName = groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
-                dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName;
+
+                var groupBy_realColumnName = groupBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+                (dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName == "Object Title") ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName,dataSourceDescription) : 
+                dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnNam;
+
+
+
             
                 //
                 var aggregationOperators = [];
