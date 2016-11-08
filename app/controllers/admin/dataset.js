@@ -507,11 +507,15 @@ module.exports.saveFormatField = function (req, next) {
     var dataset_id = req.params.id;
     var field = req.params.field;
 
+
+
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
 
     var data = {};
 
     field = field.replace(/\./g, "_");
+
+
 
     datasource_description.findById(dataset_id, function (err, doc) {
         if (err) return next(err);
@@ -520,12 +524,19 @@ module.exports.saveFormatField = function (req, next) {
         if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
 
         var coercion = {};
-        coercion.operation = req.body.dataType;
+
+      
+
+        if (req.body.dataType != null && typeof req.body.dataType == 'undefined') coercion.operation = req.body.dataType;
         if (req.body.dataFormat) coercion.format = req.body.dataFormat;
         if (req.body.dataOutputFormat) coercion.outputFormat = req.body.dataOutputFormat;
 
-        doc.raw_rowObjects_coercionScheme[field] = coercion;
-        doc.markModified("raw_rowObjects_coercionScheme");
+        if (Object.keys(coercion).length > 0) {
+            doc.raw_rowObjects_coercionScheme[field] = coercion;
+            doc.markModified("raw_rowObjects_coercionScheme");
+        }
+
+       
 
         // Exclude
         if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
@@ -539,7 +550,7 @@ module.exports.saveFormatField = function (req, next) {
 
         // Title Override
         if (!doc.fe_displayTitleOverrides) doc.fe_displayTitleOverrides = {};
-        if (req.body.titleOverride != '') {
+        if (req.body.titleOverride != '' && typeof req.body.titleOverride != 'undefined') {
             doc.fe_displayTitleOverrides[field] = req.body.titleOverride;
         } else {
             delete doc.fe_displayTitleOverrides[field];
@@ -554,11 +565,14 @@ module.exports.saveFormatField = function (req, next) {
 
         // Designated Field
         if (!doc.fe_designatedFields) doc.fe_designatedFields = {};
-        if (req.body.designatedField != '') {
+        if (req.body.designatedField != '' && typeof req.body.designatedField != 'undefined') {
             doc.fe_designatedFields[req.body.designatedField] = field;
         } else {
             delete doc.fe_designatedFields[req.body.designatedField];
         }
+
+
+
         doc.markModified('fe_designatedFields');
 
         // Filter notAvailable
@@ -571,7 +585,7 @@ module.exports.saveFormatField = function (req, next) {
             doc.fe_filters.fieldsNotAvailable.splice(index, 1);
         }
 
-        // Filter commaSeparatedAsIndividual
+      
         if (!doc.fe_filters.fieldsCommaSeparatedAsIndividual) doc.fe_filters.fieldsCommaSeparatedAsIndividual = [];
         index = doc.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf(field);
         if (req.body.filter_commaSeparatedAsIndividual == 'true' && index == -1) {
@@ -604,6 +618,7 @@ module.exports.saveFormatField = function (req, next) {
         // Default Filter
         // Filter keywords
         doc.markModified('fe_filters');
+      
 
         doc.save(function (err, updatedDoc) {
             if (err) return next(err);
@@ -611,6 +626,7 @@ module.exports.saveFormatField = function (req, next) {
             data.doc = updatedDoc._doc;
             next(null, data);
         });
+
     });
 
 }
@@ -621,6 +637,9 @@ module.exports.getFormatCustomField = function (req, next) {
     var dataset_id = req.params.id;
     var field_name = req.params.field;
     if (!dataset_id) return next(new Error('Invalid parameter!'));
+
+
+  
 
     var data = {
         id: dataset_id,

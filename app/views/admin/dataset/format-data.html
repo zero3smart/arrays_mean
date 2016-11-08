@@ -11,6 +11,10 @@
 		<h1 class="admin-title">{{doc.title}} - Format Data</h1>
 	</header>
 
+	<div class="reminderMsg"></div>
+
+
+
 	{% if flash | length %}
 	<div class="alert alert-success" role="alert">{{ flash }}</div>
 	{% elif error | length %}

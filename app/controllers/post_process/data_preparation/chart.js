@@ -44,9 +44,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
             chartViewSettings.defaultGroupByColumnName;
 
 
-            var groupBy_realColumnName = groupBy? 
-            importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,
-                dataSourceDescription) : chartViewSettings.defaultGroupByColumnName;
+
+            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+            (chartViewSettings.defaultGroupByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartViewSettings.defaultGroupByColumnName,dataSourceDescription) :
+             chartViewSettings.defaultGroupByColumnName;
+
+
 
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             //
@@ -68,6 +71,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var aggregateBy = urlQuery.aggregateBy;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[chartViewSettings.defaultAggregateByColumnName] ||
             chartViewSettings.defaultAggregateByColumnName ;
+
             var numberOfRecords_notAvailable = chartViewSettings.aggregateByColumnName_numberOfRecords_notAvailable
 
             if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
@@ -104,6 +108,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
 
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
+            (typeof chartViewSettings.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
             chartViewSettings.defaultAggregateByColumnName;
             
             //
@@ -273,10 +278,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         groupedResults.push(result);
                     });
-
-
-                    console.log(groupedResults);
-
                     done();
                 };
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
@@ -284,6 +285,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             batch.end(function (err) {
                 if (err) return callback(err);
+
+
 
                 //
                 var data =

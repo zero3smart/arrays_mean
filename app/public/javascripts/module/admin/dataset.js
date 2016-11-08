@@ -140,6 +140,7 @@ $(document).ready(function () {
 
         $.post("/admin/dataset/" + doc_id + "/format-custom-field/" + field + "/remove", params)
             .done(function (data) {
+
                 if (data.error && data.error != '') {
 
                     $('.format-field .alert-danger').html(data.error).removeClass('hidden').addClass('show');

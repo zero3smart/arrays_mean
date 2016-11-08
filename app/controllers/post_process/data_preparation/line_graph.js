@@ -45,8 +45,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName] ||
             dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName
 
-            var groupBy_realColumnName = groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
-                dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName;
+            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+            (dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName,dataSourceDescription) :
+             dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName
+
+
+
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
 
             var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
@@ -141,7 +145,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregateBy_humanReadable_available = undefined;
             }
 
-            var aggregateBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy ? aggregateBy : defaultAggregateByColumnName_humanReadable, dataSourceDescription);
+           
+            var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
+            (typeof dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
+            dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName;
 
             //
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, stackedResultsByGroup = {};

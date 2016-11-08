@@ -46,11 +46,18 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var limitToNResults = config.timelineGroups;
             //
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
-            var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName] ||
-            dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
 
-            var groupBy_realColumnName = groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
-            dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
+            /* group by would just be decade, years, month,day */
+            var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
+
+            // var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName] ||
+            // dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
+
+            var groupBy_realColumnName = groupBy? groupBy : dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
+
+            // importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
+            // dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
+
 
             var groupedResultsLimit = config.timelineGroupSize;
             var groupsLimit = config.timelineGroups;
@@ -64,6 +71,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) : 
             dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName
+    
+
 
 
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
