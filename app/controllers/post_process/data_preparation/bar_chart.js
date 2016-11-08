@@ -107,19 +107,25 @@ module.exports.BindData = function (req, urlQuery, callback) {
             for (var colName in raw_rowObjects_coercionSchema) {
                 var colValue = raw_rowObjects_coercionSchema[colName];
                 if (colValue.operation == "ToInteger") {
-                    var humanReadableColumnName = colName;
-                    if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
-                        humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
+                    
+                    var index = typeof dataSourceDescription.fe_excludeFields == 'undefined' || (dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields.length == 0) ? -1 : dataSourceDescription.fe_excludeFields.indexOf(colName);
+                    if (index == -1 ) {
+                        var humanReadableColumnName = colName;
+                        if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
+                            humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
 
-                    if (!colNames_orderedForAggregateByDropdown) {
-                        colNames_orderedForAggregateByDropdown = [];
-                        if (!numberOfRecords_notAvailable)
-                            colNames_orderedForAggregateByDropdown.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                        if (!colNames_orderedForAggregateByDropdown) {
+                            colNames_orderedForAggregateByDropdown = [];
+                            if (!numberOfRecords_notAvailable)
+                                colNames_orderedForAggregateByDropdown.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                        }
+
+                        colNames_orderedForAggregateByDropdown.push(humanReadableColumnName);
                     }
 
-                    colNames_orderedForAggregateByDropdown.push(humanReadableColumnName);
                 }
             }
+
             if (colNames_orderedForAggregateByDropdown) {
                 if (colNames_orderedForAggregateByDropdown.length > 0)
                     defaultAggregateByColumnName_humanReadable = colNames_orderedForAggregateByDropdown[0];

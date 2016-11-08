@@ -213,7 +213,6 @@ $(document).ready(function () {
 
                     $('.format-field .alert-danger').html(data.error).addClass('hidden');
 
-                
                     //
                     $('tr.field[data-field-name="' + field_name + '"] td:nth-child(2) input[type="checkbox"]').prop("checked", data.doc.fe_excludeFields.indexOf(field) != -1);
                     $('tr.field[data-field-name="' + field_name + '"] td:nth-child(4)').html(fieldDataType_coercion_toString(data.doc.raw_rowObjects_coercionScheme[field]));
