@@ -636,18 +636,22 @@ module.exports.getFormatView = function (req, next) {
     batch.concurrency(1);
 
     batch.push(function(done) {
-        datasource_description.findById(dataset_id, {fe_views:1,fe_designatedFields:1, fe_excludeFields:1,
+        datasource_description.findById(dataset_id, {uid:1,importRevision:1,title:1,fe_views:1,fe_designatedFields:1, fe_excludeFields:1,
             raw_rowObjects_coercionScheme:1, "customFieldsToProcess.fieldName":1,fe_displayTitleOverrides:1}, function (err, doc) {
             if (err) return done(new Error("Invalid dataset"));
 
-            data.doc = doc._doc;
+            data.doc = doc;
+
 
             data.colNames = [];
-            for (var i = 0; i < data.doc.customFieldsToProcess.length; i++) {
-                var custField = data.doc.customFieldsToProcess[i].fieldName;
-                data.colNames.push(custField);
+            if (data.doc.customFieldsToProcess) {
+                for (var i = 0; i < data.doc.customFieldsToProcess.length; i++) {
+                    var custField = data.doc.customFieldsToProcess[i].fieldName;
+                    data.colNames.push(custField);
 
+                }
             }
+            
             done();
         });
     });

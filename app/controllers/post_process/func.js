@@ -438,7 +438,7 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
 
             return;
         }
-        var uniqueFieldValuesByFieldName = doc.limitedUniqValsByHumanReadableColName;
+        var uniqueFieldValuesByFieldName = doc.limitedUniqValsByColName;
         if (uniqueFieldValuesByFieldName == null || typeof uniqueFieldValuesByFieldName === 'undefined') {
             callback(new Error('Unexpectedly missing uniqueFieldValuesByFieldName for srcDocPKey: ' + source_pKey), null);
 

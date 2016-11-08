@@ -81,12 +81,14 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
             for (var i = 0; i < columnNamesAndThenRowObject.length; i++) {
                 columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g, "_");
             }
+
             columnNames = columnNamesAndThenRowObject;
+       
         } else {
             // row objects
             //
 
-
+   
             if (columnNamesAndThenRowObject.length != columnNames.length) {
 
 
@@ -95,6 +97,8 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
                 return;
             }
             var rowObject = {};
+
+
             for (var columnIndex = 0; columnIndex < columnNames.length; columnIndex++) {
                 var columnName = "" + columnNames[columnIndex];
                 var rowValue = columnNamesAndThenRowObject[columnIndex];
@@ -142,6 +146,9 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
 
                 return;
             }
+
+    
+
             var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, lineNr - 2, rowObject);
             // winston.info("parsedObject " , parsedObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
@@ -164,6 +171,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
         .pipe(es.mapSync(function (line) {
                 // pause the readstream
                 readStream.pause();
+         
 
                 lineNr += 1;
 
@@ -176,7 +184,10 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
 
                     cachedLines = '';
 
+
                     parser(output[0]);
+
+
 
                     // process line here and call s.resume() when rdy
                     if (lineNr % 1000 == 0) {
@@ -200,6 +211,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
                     } else {
                         // resume the readstream, possibly from a callback
                         readStream.resume();
+                     
                     }
                 });
             })
@@ -208,6 +220,8 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
                 return fn(err);
             })
             .on('end', function () {
+
+
                 // If we have any lines remaining, need to store document to the db.
                 if (lineNr % 1000 == 0) {
 
@@ -217,6 +231,8 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
                     raw_source_documents.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
 
                 } else {
+
+
 
                     raw_row_objects.InsertManyPersistableObjectTemplates
                     (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function (err) {

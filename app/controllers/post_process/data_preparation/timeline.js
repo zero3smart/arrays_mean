@@ -377,16 +377,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     var conditions = cond.conditions;
                     var htmlElem = "";
                     var fieldValue = rowObject["rowParams"][fieldName];
-                    if (cond.operation != null && typeof cond.operation !== 'undefined') {
-
-                        if (cond.operation == "split") {
-                            var splitOnString = cond.option;
-                            if (splitOnString != null && typeof splitOnString == "string") {
-                                fieldValue = rowObject["rowParams"][fieldName].split(splitOnString)
-                            }
-
-                        }
-                    }
                     if (Array.isArray(fieldValue) == true) {
                         var opr = null
 
@@ -440,6 +430,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     groupBy_realColumnName: groupBy_realColumnName,
                     groupedResultsLimit: groupedResultsLimit,
                     groupByDateFormat: groupByDateFormat,
+                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     //
                     sortBy: sortBy,
                     sortDir: sortDir,

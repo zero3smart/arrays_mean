@@ -90,16 +90,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
                     var fieldValue = rowObject["rowParams"][fieldName];
-                    if (cond.operation != null && typeof cond.operation !== 'undefined') {
-
-                        if (cond.operation == "split") {
-                            var splitOnString = cond.option;
-                            if (splitOnString != null && typeof splitOnString == "string") {
-                                fieldValue = rowObject["rowParams"][fieldName].split(splitOnString)
-                            }
-
-                        }
-                    }
                     if (Array.isArray(fieldValue) == true) {
                         var opr = null
 
@@ -328,6 +318,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
                     sourceDoc: sourceDoc,
+                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,
 
 

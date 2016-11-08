@@ -144,6 +144,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     uniqueFieldValuesByFieldName = {};
                     for (var columnName in _uniqueFieldValuesByFieldName) {
+
                         if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
                             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
                             if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
@@ -370,6 +371,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
+                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     brandColor: dataSourceDescription.brandColor,
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,

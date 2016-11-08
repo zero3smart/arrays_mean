@@ -92,7 +92,7 @@
 
                         {% if isFilterActive %}
                             {{
-                            filter.default(
+                            filter.default(displayTitleOverrides,
                                 routePath_base | constructedRoutePath(null, {
                                     searchQ: searchQ,
                                     searchCol: searchCol,

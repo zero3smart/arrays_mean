@@ -505,6 +505,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     groupBy_isDate: groupBy_isDate,
                     // lineColors: dataSourceDescription.fe_lineGraph_stackedLineColors ? dataSourceDescription.fe_lineGraph_stackedLineColors : {},
                     groupBy_outputInFormat: groupBy_outputInFormat,
+                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     //
                     filterObj: filterObj,
                     isFilterActive: isFilterActive,
