@@ -226,6 +226,7 @@
 	.sort-bar-right.pull-right {
 		float: none !important;
 		position: relative;
+		pointer-events: none;
 	}
 
 	.sort-control {
@@ -235,6 +236,7 @@
 
 	.array-gallery .dropdown.sort-control {
 		display: inline-block;
+		max-width: 260px;
 	}
 
 	.sort-control.sort-direction {
@@ -243,6 +245,7 @@
 
 	.sort-bar-right .sort-control {
 		display: inline-block;
+		pointer-events: all;
 	}
 
 	.sort-control > a {
@@ -253,6 +256,7 @@
 		position: absolute;
 		right: 0;
 		top: 0;
+		pointer-events: all;
 	}
 }
 

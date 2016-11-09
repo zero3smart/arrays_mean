@@ -13,7 +13,7 @@
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.16.4';
+  var VERSION = '4.16.2';
 
   /** Error message constants. */
   var FUNC_ERROR_TEXT = 'Expected a function';
@@ -40,7 +40,6 @@
       genTag = '[object GeneratorFunction]',
       numberTag = '[object Number]',
       objectTag = '[object Object]',
-      proxyTag = '[object Proxy]',
       regexpTag = '[object RegExp]',
       stringTag = '[object String]';
 
@@ -370,7 +369,7 @@
       if (objectCreate) {
         return objectCreate(proto);
       }
-      object.prototype = proto;
+      object.prototype = prototype;
       var result = new object;
       object.prototype = undefined;
       return result;
@@ -622,15 +621,6 @@
   function baseGt(value, other) {
     return value > other;
   }
-
-  /**
-   * The base implementation of `_.isArguments`.
-   *
-   * @private
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is an `arguments` object,
-   */
-  var baseIsArguments = noop;
 
   /**
    * The base implementation of `_.isDate` without Node.js optimizations.
@@ -2443,10 +2433,11 @@
    * _.isArguments([1, 2, 3]);
    * // => false
    */
-  var isArguments = baseIsArguments(function() { return arguments; }()) ? baseIsArguments : function(value) {
-    return isObjectLike(value) && hasOwnProperty.call(value, 'callee') &&
-      !propertyIsEnumerable.call(value, 'callee');
-  };
+  function isArguments(value) {
+    // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
+    return isArrayLikeObject(value) && hasOwnProperty.call(value, 'callee') &&
+      (!propertyIsEnumerable.call(value, 'callee') || objectToString.call(value) == argsTag);
+  }
 
   /**
    * Checks if `value` is classified as an `Array` object.
@@ -2500,6 +2491,35 @@
    */
   function isArrayLike(value) {
     return value != null && isLength(value.length) && !isFunction(value);
+  }
+
+  /**
+   * This method is like `_.isArrayLike` except that it also checks if `value`
+   * is an object.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an array-like object,
+   *  else `false`.
+   * @example
+   *
+   * _.isArrayLikeObject([1, 2, 3]);
+   * // => true
+   *
+   * _.isArrayLikeObject(document.body.children);
+   * // => true
+   *
+   * _.isArrayLikeObject('abc');
+   * // => false
+   *
+   * _.isArrayLikeObject(_.noop);
+   * // => false
+   */
+  function isArrayLikeObject(value) {
+    return isObjectLike(value) && isArrayLike(value);
   }
 
   /**
@@ -2666,9 +2686,9 @@
    */
   function isFunction(value) {
     // The use of `Object#toString` avoids issues with the `typeof` operator
-    // in Safari 9 which returns 'object' for typed array and other constructors.
+    // in Safari 8-9 which returns 'object' for typed array and other constructors.
     var tag = isObject(value) ? objectToString.call(value) : '';
-    return tag == funcTag || tag == genTag || tag == proxyTag;
+    return tag == funcTag || tag == genTag;
   }
 
   /**
@@ -3000,8 +3020,8 @@
    * @memberOf _
    * @since 4.0.0
    * @category Lang
-   * @param {*} value The value to convert.
-   * @returns {string} Returns the converted string.
+   * @param {*} value The value to process.
+   * @returns {string} Returns the string.
    * @example
    *
    * _.toString(null);
