@@ -204,8 +204,7 @@
 
 @media (max-width: 767px) {
 	.sort-bar-left {
-		/*position: absolute;*/
-		width: calc(100% - 46px);
+		width: 100%;
 	}
 
 	.sort-bar-left .dropdown-toggle {
@@ -221,6 +220,35 @@
 		margin-right: -0.25em;
 		padding-right: 15px;
 		max-width: 50%;
+	}
+
+	.sort-bar-right.pull-right {
+		float: none !important;
+	}
+
+	.sort-control {
+		display: block;
+		margin: 0;
+	}
+
+	.array-gallery .dropdown.sort-control {
+		display: inline-block;
+	}
+
+	.sort-control.sort-direction {
+		display: inline-block;
+	}
+
+	.sort-bar-right .sort-control {
+		display: inline-block;
+	}
+
+	.sort-control > a {
+		display: block;
+	}
+
+	.form-search {
+		float: right;
 	}
 }
 
