@@ -488,7 +488,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
                     // graphData contains all the data rows; used by the template to create the barchart
                     graphData: graphData,
-                    padding: dataSourceDescription.fe_views.views.barChart.barChart_padding
+                    padding: dataSourceDescription.fe_views.views.barChart.padding
                 };
 
                 callback(err, data);

@@ -257,17 +257,27 @@ BarChart.prototype.getMaxValue = function() {
 };
 
 
+
+
 BarChart.prototype.getValueFormatter = function() {
 
     var self = this;
 
+    var _castToString = function(number) {
+        parts = number.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
+    }
+
     if (this._options.normalize) {
         return function(d) {
-            return d3.round(d * 100, self._precise) + '%';
+            return d3.round(d*100,self._precise) + "%"
         };
     } else {
         return function(d) {
-            return d3.round(d, self._precise);
+            var number = d3.round(d,self._precise);
+            return _castToString(number);
+
         }
     }
 };
@@ -288,6 +298,8 @@ BarChart.prototype._barMouseEnterEventHandler = function(barElement, barData, i,
         }).style('opacity', 0.2);
 
     var formatter = this.getValueFormatter();
+
+    
 
     this._tooltip.setContent(
         '<div>' +

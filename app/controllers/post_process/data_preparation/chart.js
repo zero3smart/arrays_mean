@@ -242,7 +242,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         var label = el.label;
                         var value = el.value;
 
-                        console.log(isNaN(value));
+                       
 
 
                         var label_toLowerCased = label.toString().toLowerCase();
@@ -280,9 +280,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         } else {
                             reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
                         }
+                       
                         var result = {
                             value: summedValue,
-                            label: reconstitutedDisplayableTitle
+                            label: reconstitutedDisplayableTitle,
+                            valueToString: import_datatypes.displayNumberWithComma(summedValue)
                         };
                         if (colors && colors[i]) result.color = colors[i];
 
@@ -291,7 +293,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
 
-console.log(JSON.stringify(groupedResults));
+
+
                     done();
                 };
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);

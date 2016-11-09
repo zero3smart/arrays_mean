@@ -5,6 +5,8 @@ var width = 1000,
 	height = 1000,
 	radius = Math.min(width, height) / 2;
 
+
+
 var colors = [
 	'#FEAA00',
 	'#FEBC12',
@@ -42,6 +44,7 @@ var arc = d3.svg.arc()
 var pie = d3.layout.pie()
 	.sort(null)
 	.value(function(d) {
+
 		return d.value;
 	});
 
@@ -143,7 +146,7 @@ var tooltipValue = tooltip
  */
 g.on('mouseover', function(d) {
 	tooltipKey.html(d.data.label);
-	tooltipValue.html(d.data.value);
+	tooltipValue.html(d.data.valueToString);
 	tooltip.style('display', 'block');
 });
 

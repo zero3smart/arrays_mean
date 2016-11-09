@@ -310,7 +310,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             }
                             var row = {
                                 value: summedValue,
-                                label: reconstitutedDisplayableTitle
+                                label: reconstitutedDisplayableTitle,
+                                valueToString: import_datatypes.displayNumberWithComma(summedValue)
                             };
                             if (colors && colors[i]) row.color = colors[i];
 
