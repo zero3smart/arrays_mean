@@ -31,8 +31,6 @@ module.exports.GeneratePostImportCaches = function (dataSourceDescriptions,fn) {
             }
 
             return fn();
-
-
            
         }
     });
@@ -58,9 +56,7 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
         cache_keywords_controller.cacheKeywords_fromDataSourceDescription(dataSourceDescription, callback);
     });
 
-
 };
-
 
 
 var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription, callback) {
@@ -83,7 +79,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
 
             return;
         }
-        var limitToNTopValues = 50;
+        var limitToNTopValues = 100;
         // var feVisible_filter_keys = imported_data_preparation.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
 
         var filterKeys = Object.keys(sampleDoc.rowParams);
@@ -96,7 +92,6 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 }
             }
         }
-
     
         // var feVisible_filter_keys_length = feVisible_filter_keys.length;
         var uniqueFieldValuesByFieldName = {};
@@ -105,8 +100,6 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
             var key = filterKeys[i];
             uniqueFieldValuesByFieldName[key] = [];
         }
-
-
 
         async.each(filterKeys, function (key, cb) {
             // Commented out the count section for the comma-separated as individual filters.
@@ -118,7 +111,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 {$unwind: "$" + "rowParams." + key}, // requires MongoDB 3.2, otherwise throws an error if non-array
                 uniqueStage,
                 {$sort: {count: -1}},
-                //{ $limit : limitToNTopValues }
+                {$limit : limitToNTopValues} // To escape that aggregation result exceeds maximum document size (16MB)
             ]).allowDiskUse(true).exec(function (err, results) {
 
                 if (err) {
@@ -137,7 +130,6 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 valuesRaw = results.map(function (el) {
                     return el._id;
                 });
-                
 
                 // flatten array of arrays (for nested tables)
                 var values = [].concat.apply([], valuesRaw).filter(function (elem, index, self) {
@@ -151,8 +143,6 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
         }, function (err) {
 
             if (err) callback(err);
-
-           
 
             var persistableDoc =
             {
@@ -170,13 +160,6 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 winston.info("✅  Inserted cachedUniqValsByKey for \"" + dataSource_title + "\".");
                 callback(null, null);
             });
-
-
-
-
-
-
-
 
         });
     });
