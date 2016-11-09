@@ -235,6 +235,7 @@
 
 	.array-gallery .dropdown.sort-control {
 		display: inline-block;
+		max-width: 260px;
 	}
 
 	.sort-control.sort-direction {
