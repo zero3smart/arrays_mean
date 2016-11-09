@@ -7,6 +7,7 @@ var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+var import_datatypes = require('../../../datasources/utils/import_datatypes');
 
 module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
     var self = this;
@@ -154,6 +155,10 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     var key = rowParams_keys[i];
                     var originalVal = rowParams[key];
                     var displayableVal = func.reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
+                    
+                    if (isNaN(displayableVal) == false) {
+                        displayableVal = import_datatypes.displayNumberWithComma(displayableVal)
+                    }
                     rowParams[key] = displayableVal;
                 }
                 //
