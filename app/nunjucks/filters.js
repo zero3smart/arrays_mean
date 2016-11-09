@@ -19,6 +19,8 @@ module.exports = function (nunjucks_env) {
     });
     nunjucks_env.addFilter('doesArrayContain', function (array, member) {
 
+
+
         if (Array.isArray(array))
             return array.indexOf(member) !== -1 || array.indexOf(parseInt(member)) !== -1;
         else if (typeof array === 'string') {
@@ -29,7 +31,7 @@ module.exports = function (nunjucks_env) {
                 if (Array.isArray(obj))
                     return obj.indexOf(member) !== -1 || obj.indexOf(parseInt(member)) !== -1;
             } catch (e) {
-                console.log(e);
+                return false;
             }
         }
         return false;
@@ -45,6 +47,17 @@ module.exports = function (nunjucks_env) {
             }
         }
         return "Gallery";
+    })
+
+    nunjucks_env.addFilter('displayValueForCol',function(displayTitleOverridesMap,col) {
+   
+
+        if (typeof displayTitleOverridesMap !== 'undefined' && displayTitleOverridesMap[col]) {
+            return displayTitleOverridesMap[col]
+        } else {
+            return col;
+        }
+
     })
 
 
@@ -117,6 +130,7 @@ module.exports = function (nunjucks_env) {
     })
 
     nunjucks_env.addFilter('finalizeColumnName', function(colName) {
+        if (!colName) return '';
         return colName.replace(/\./g, "_");
     });
     

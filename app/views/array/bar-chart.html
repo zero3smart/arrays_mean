@@ -99,7 +99,7 @@
                                 </nav>
 
                                 <div class="sort-bar-right pull-right">
-                                    <div class="sort-control sort-bar-6">
+                                    <div class="sort-control">
                                         <div id="orientation" class="toggle-button" title="Toggle to view in horizontal or vertical mode">
                                             <span class="horizontal glyphicon glyphicon-align-left"></span>
                                             <span class="vertical glyphicon glyphicon-stats"></span>
@@ -115,7 +115,7 @@
                                             <span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span>
                                         </div>
                                     </div>
-                                    
+
                                     {{
                                     search.panel(
                                         routePath_base,
@@ -140,7 +140,7 @@
 
                 {% if isFilterActive %}
                     {{
-                    filter.default(
+                    filter.default(displayTitleOverrides,
                         routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
                             searchQ: searchQ,

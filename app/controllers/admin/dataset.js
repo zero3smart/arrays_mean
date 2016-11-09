@@ -16,7 +16,7 @@ var import_raw_objects_controller = require('../pre_process/data_ingest/import_r
 var raw_row_objects = require('../../models/raw_row_objects');
 var processed_row_objects = require('../../models/processed_row_objects')
 var raw_source_documents = require('../../models/raw_source_documents');
-
+var mongoose_client = require('../.././../lib/mongoose_client/mongoose_client');
 
 /***************  Index  ***************/
 module.exports.index = function (req, next) {
@@ -36,6 +36,86 @@ module.exports.index = function (req, next) {
         next(null, data);
     });
 };
+
+
+module.exports.removeDataset = function(req, next) {
+    if (!req.body.id) next(new Error('No id given'));
+
+    var batch = new Batch();
+    batch.concurrency(1);
+
+    var description;
+    var srcDocPKey;
+    batch.push(function(done) {
+        datasource_description.findById(req.body.id, function(err, data) {
+            if (err) return done(err);
+
+            if (!data) return done(new Error('No datasource exists : ' + req.body.id));
+
+            description = data;
+            srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+            done();
+        });
+    });
+
+    // Remove source document
+    batch.push(function(done) {
+       
+        raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function(err, document) {
+            if (err) return done(err);
+
+            if (!document) return done();
+            document.remove(done);
+        });
+    });
+
+    // Remove processed row object
+    batch.push(function(done) {
+
+        mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey,done)
+
+    });
+
+    // Remove raw row object
+    batch.push(function(done) {
+       
+        mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey,done)
+
+    });
+
+    // Remove datasource description
+    batch.push(function(done) {
+        description.remove(done);
+    });
+
+    // Remove datasource description with schema_id
+    batch.push(function(done) {
+        datasource_description.find({schema_id: description._id}, function(err, results) {
+            if (err) return done(err);
+
+            var batch = new Batch();
+            batch.concurrency(1);
+
+            results.forEach(function(element) {
+                batch.push(function(done) {
+                    element.remove(done);
+                });
+            });
+
+            batch.end(function(err) {
+                done(err);
+            });
+
+        });
+    });
+
+    batch.end(function(err) {
+        if (err) return next(err);
+
+        req.flash('message', 'Removed successfully');
+        next(err, {});
+    })
+}
 
 /***************  Settings  ***************/
 module.exports.getSettings = function (req, next) {
@@ -61,7 +141,6 @@ module.exports.getSettings = function (req, next) {
     }
 };
 
-
 function _castSerializeElementToArray(field,reqBody) {
     var arrayField = field.replace('[]','');
     reqBody[arrayField] = [];
@@ -80,7 +159,6 @@ function _castSerializeElementToArray(field,reqBody) {
     delete reqBody[field];
 }
 
-
 function _castSerializeElementToObject(key,value,commaSeparated) {
     var objToReturn = {};
     for (var i = 0; i < key.length; i++) {
@@ -91,7 +169,7 @@ function _castSerializeElementToObject(key,value,commaSeparated) {
         } else {
 
             objToReturn[key[i]] = value[i]
-  
+
 
         }
 
@@ -100,12 +178,9 @@ function _castSerializeElementToObject(key,value,commaSeparated) {
     return objToReturn;
 }
 
-
-
 module.exports.saveSettings = function (req, next) {
 
     var data = {};
-
 
     for (var field in req.body) {
         if (field.indexOf('[]') >= 0) {
@@ -139,6 +214,7 @@ module.exports.saveSettings = function (req, next) {
     }
 };
 
+
 /***************  Upload/Source  ***************/
 module.exports.getSource = function (req, next) {
     var data = {};
@@ -156,9 +232,9 @@ module.exports.getSource = function (req, next) {
                 if (err) return next(err);
 
                 if (docs && docs.length > 0)
-                    data.sub_datasets = docs;
+                    data.sub_datasources = docs;
                 else
-                    data.sub_datasets = [doc._doc];
+                    data.sub_datasources = [doc._doc];
 
                 next(null, data);
             });
@@ -185,8 +261,6 @@ module.exports.saveSource = function (req, next) {
             })
     });
 
-
-
     _.forEach(req.files, function (file) {
         batch.push(function (done) {
 
@@ -205,7 +279,7 @@ module.exports.saveSource = function (req, next) {
                 return done(new Error('Invalid File Format'));
 
             }
-                
+
 
             var readStream = fs.createReadStream(file.path)
                 .pipe(es.split())
@@ -244,8 +318,6 @@ module.exports.saveSource = function (req, next) {
                         });
                 }));
         });
-
-
 
         batch.push(function (done) {
             if (!description.uid)
@@ -342,8 +414,6 @@ function _loadDatasourceColumnsAndSampleRecords(req, description, next) {
 
 module.exports.getFormatData = function (req, next) {
 
-
-
     if (req.params.id) {
         var data = {};
 
@@ -404,6 +474,7 @@ module.exports.saveFormatData = function (req, next) {
     }
 };
 
+
 /***************  Format Field  ***************/
 module.exports.getFormatField = function (req, next) {
     var dataset_id = req.params.id;
@@ -432,12 +503,20 @@ module.exports.saveFormatField = function (req, next) {
     var dataset_id = req.params.id;
     var field = req.params.field;
 
+
+
+
+
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
 
     var data = {};
 
-
     field = field.replace(/\./g, "_");
+
+
+
+
+
 
     datasource_description.findById(dataset_id, function (err, doc) {
         if (err) return next(err);
@@ -446,12 +525,19 @@ module.exports.saveFormatField = function (req, next) {
         if (!doc.raw_rowObjects_coercionScheme) doc.raw_rowObjects_coercionScheme = {};
 
         var coercion = {};
-        coercion.operation = req.body.dataType;
+
+      
+
+        if (req.body.dataType != null && typeof req.body.dataType != 'undefined') coercion.operation = req.body.dataType;
         if (req.body.dataFormat) coercion.format = req.body.dataFormat;
         if (req.body.dataOutputFormat) coercion.outputFormat = req.body.dataOutputFormat;
 
-        doc.raw_rowObjects_coercionScheme[field] = coercion;
-        doc.markModified("raw_rowObjects_coercionScheme");
+        if (Object.keys(coercion).length > 0) {
+            doc.raw_rowObjects_coercionScheme[field] = coercion;
+            doc.markModified("raw_rowObjects_coercionScheme");
+        }
+
+       
 
         // Exclude
         if (!doc.fe_excludeFields) doc.fe_excludeFields = [];
@@ -465,7 +551,7 @@ module.exports.saveFormatField = function (req, next) {
 
         // Title Override
         if (!doc.fe_displayTitleOverrides) doc.fe_displayTitleOverrides = {};
-        if (req.body.titleOverride != '') {
+        if (req.body.titleOverride != '' && typeof req.body.titleOverride != 'undefined') {
             doc.fe_displayTitleOverrides[field] = req.body.titleOverride;
         } else {
             delete doc.fe_displayTitleOverrides[field];
@@ -480,11 +566,14 @@ module.exports.saveFormatField = function (req, next) {
 
         // Designated Field
         if (!doc.fe_designatedFields) doc.fe_designatedFields = {};
-        if (req.body.designatedField != '') {
+        if (req.body.designatedField != '' && typeof req.body.designatedField != 'undefined') {
             doc.fe_designatedFields[req.body.designatedField] = field;
         } else {
             delete doc.fe_designatedFields[req.body.designatedField];
         }
+
+
+
         doc.markModified('fe_designatedFields');
 
         // Filter notAvailable
@@ -497,7 +586,7 @@ module.exports.saveFormatField = function (req, next) {
             doc.fe_filters.fieldsNotAvailable.splice(index, 1);
         }
 
-        // Filter commaSeparatedAsIndividual
+      
         if (!doc.fe_filters.fieldsCommaSeparatedAsIndividual) doc.fe_filters.fieldsCommaSeparatedAsIndividual = [];
         index = doc.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf(field);
         if (req.body.filter_commaSeparatedAsIndividual == 'true' && index == -1) {
@@ -530,6 +619,7 @@ module.exports.saveFormatField = function (req, next) {
         // Default Filter
         // Filter keywords
         doc.markModified('fe_filters');
+      
 
         doc.save(function (err, updatedDoc) {
             if (err) return next(err);
@@ -537,17 +627,61 @@ module.exports.saveFormatField = function (req, next) {
             data.doc = updatedDoc._doc;
             next(null, data);
         });
+
     });
 
 }
 
-/***************  Add Custom Field  ***************/
-module.exports.getAddCustomField = function (req, next) {
+
+/***************  Format Custom Field  ***************/
+module.exports.getFormatCustomField = function (req, next) {
+    var dataset_id = req.params.id;
+    var field_name = req.params.field;
+    if (!dataset_id) return next(new Error('Invalid parameter!'));
+
+
+  
+
+    var data = {
+        id: dataset_id,
+        field: field_name,
+        firstRecords: req.session.uploadData_firstRecord,
+        customMode: true
+    };
+
+    datasource_description.findById(dataset_id, function (err, doc) {
+        if (err) return next(err);
+
+        if (doc) {
+            var _doc = doc._doc;
+            data.doc = _doc;
+            data.colNames = req.session.uploadData_columnNames;
+
+            var finalizedFieldName = field_name.replace(/\./g, "_");
+
+            if (!_doc.customFieldsToProcess || _doc.customFieldsToProcess.length == 0) return next(new Error('No custom field for ' + field_name));
+
+            var customField =  _doc.customFieldsToProcess.find(function(element) {
+                return element.fieldName == finalizedFieldName;
+            });
+
+            if (customField == null) return next(new Error('Invalid custom field for ' + field_name));
+
+            data.customField = customField;
+
+            if (!customField.fieldsToMergeIntoArray) return next(new Error('No corresponding fields to merge into array - ' + field_name));
+        }
+        next(null, data);
+    });
+}
+
+module.exports.getFormatNewCustomField = function (req, next) {
     var dataset_id = req.params.id;
     if (!dataset_id) return next(new Error('Invalid parameter!'));
 
     var data = {
-        id: dataset_id
+        id: dataset_id,
+        customMode: true
     };
 
     datasource_description.findById(dataset_id, function (err, doc) {
@@ -555,10 +689,131 @@ module.exports.getAddCustomField = function (req, next) {
 
         if (doc) {
             data.doc = doc._doc;
+            data.colNames = req.session.uploadData_columnNames;
         }
         next(null, data);
     });
 }
+
+module.exports.saveFormatCustomField = function (req, isNew, next) {
+    var dataset_id = req.params.id;
+    var name = req.body.name;
+    var fieldsToMergeIntoArray = req.body.fieldsToMergeIntoArray;
+    if (!dataset_id || !name || !fieldsToMergeIntoArray) return next(new Error('Invalid parameter!'));
+
+    var data = {};
+    var name = name.replace(/\./g, '_');
+
+
+    datasource_description.findById(dataset_id, function (err, doc) {
+        if (err) return next(err);
+
+        if (!doc) return next(new Error('No description exists : ' + dataset_id));
+
+
+
+        var customFieldsToProcess = doc._doc.customFieldsToProcess;
+        if (!customFieldsToProcess) customFieldsToProcess = [];
+
+
+        // Verify that the name is unique
+        var duplicated = false;
+        var indexDuplicated = customFieldsToProcess.length;
+        for (var i = 0; i < customFieldsToProcess.length; i ++) {
+            if (customFieldsToProcess[i].fieldName.toLowerCase() == name.toLowerCase()) {
+                duplicated = true;
+                indexDuplicated = i;
+                break;
+            }
+        }
+
+        if (isNew && duplicated) return next(new Error('Duplicated Field Name'));
+        if (!isNew && !duplicated) return next(new Error('No field exists with ' + name));
+
+        // Verify that the fieldType is "array"
+        if (req.body.dataType == 'Array') {
+
+            console.log('deleted : ' + indexDuplicated);
+
+            var customField = {
+                fieldName: name,
+                fieldType: 'array',
+                fieldsToMergeIntoArray: fieldsToMergeIntoArray
+            };
+
+            customFieldsToProcess.splice(indexDuplicated, 1, customField);
+
+            doc.customFieldsToProcess = customFieldsToProcess;
+            doc.markModified('customFieldsToProcess');
+
+            doc.save(function(err, updatedDescription) {
+                if (err) return next(err);
+                req.flash('message', 'Save successfully');
+
+                data.doc = updatedDescription._doc;
+                data.columnIndex = req.session.uploadData_columnNames + updatedDescription._doc.customFieldsToProcess.length;
+                data.customField = customField;
+
+                next(null, data);
+            });
+
+        }
+    });
+}
+
+module.exports.removeFormatCustomField = function (req, next) {
+    var dataset_id = req.params.id;
+    var name = req.body.name;
+    if (!dataset_id || !name) return next(new Error('Invalid parameter!'));
+
+    var data = {};
+    var name = name.replace(/\./g, '_');
+
+    datasource_description.findById(dataset_id, function (err, doc) {
+        if (err) return next(err);
+
+        if (!doc) return next(new Error('No description exists : ' + dataset_id));
+
+        var customFieldsToProcess = doc._doc.customFieldsToProcess;
+        if (!customFieldsToProcess) return next(new Error('Custom Fields does not exist'));
+
+        // Verify that the name is unique
+        var duplicated = false;
+        var indexDuplicated = customFieldsToProcess.length;
+        for (var i = 0; i < customFieldsToProcess.length; i ++) {
+            if (customFieldsToProcess[i].fieldName.toLowerCase() == name.toLowerCase()) {
+                duplicated = true;
+                indexDuplicated = i;
+                break;
+            }
+        }
+
+        if (!duplicated) return next(new Error('No field exists with ' + name));
+
+        // Verify that the fieldType is "array"
+        if (req.body.dataType == 'Array') {
+
+            console.log('deleted : ' + indexDuplicated);
+
+            customFieldsToProcess.splice(indexDuplicated, 1);
+
+            doc.customFieldsToProcess = customFieldsToProcess;
+            doc.markModified('customFieldsToProcess');
+
+            doc.save(function(err, updatedDescription) {
+                if (err) return next(err);
+                req.flash('message', 'Save successfully');
+
+                data.doc = updatedDescription._doc;
+                data.columnIndex = req.session.uploadData_columnNames + updatedDescription._doc.customFieldsToProcess.length;
+
+                next(null, data);
+            });
+
+        }
+    });
+}
+
 
 /***************  Format Views  ***************/
 module.exports.getFormatViews = function (req, next) {
@@ -582,7 +837,6 @@ module.exports.getFormatViews = function (req, next) {
     });
 }
 
-
 module.exports.getFormatView = function (req, next) {
     var dataset_id = req.params.id;
     var view_name = req.params.view;
@@ -596,10 +850,22 @@ module.exports.getFormatView = function (req, next) {
     batch.concurrency(1);
 
     batch.push(function(done) {
-        datasource_description.findById(dataset_id, function (err, doc) {
+        datasource_description.findById(dataset_id, {uid:1,importRevision:1,title:1,fe_views:1,fe_designatedFields:1, fe_excludeFields:1,
+            raw_rowObjects_coercionScheme:1, "customFieldsToProcess.fieldName":1,fe_displayTitleOverrides:1}, function (err, doc) {
             if (err) return done(new Error("Invalid dataset"));
 
-            data.doc = doc._doc;
+            data.doc = doc;
+
+
+            data.colNames = [];
+            if (data.doc.customFieldsToProcess) {
+                for (var i = 0; i < data.doc.customFieldsToProcess.length; i++) {
+                    var custField = data.doc.customFieldsToProcess[i].fieldName;
+                    data.colNames.push(custField);
+
+                }
+            }
+
             done();
         });
     });
@@ -622,29 +888,23 @@ module.exports.getFormatView = function (req, next) {
         });
     });
 
-
     batch.end(function(err) {
-        data.colNames = req.session.uploadData_columnNames;
+        data.colNames = data.colNames.concat(req.session.uploadData_columnNames);
         next(err, data);
     });
 }
 
 module.exports.saveFormatView = function (req, next) {
 
-
     var dataset_id = req.params.id;
     var field = req.params.view;
     if (!dataset_id || !field) return next(new Error('Invalid parameter!'));
-
-
 
     var batch = new Batch();
     batch.concurrency(1);
 
     var doc;
     var changedObj = {};
-
-
 
     if (!req.session.uploadData_columnNames) {
         batch.push(function(done) {
@@ -658,14 +918,10 @@ module.exports.saveFormatView = function (req, next) {
 
     batch.push(function(done) {
 
-
-
-
         datasource_description.findById(dataset_id,function(err,datasetDesc) {
 
             doc = datasetDesc;
 
-    
             if (!doc.fe_views) doc.fe_views = {};
             if (!doc.fe_views.views) doc.fe_views.views = {};
             if (!doc.fe_views.views[field]) doc.fe_views.views[field] = {};
@@ -675,10 +931,10 @@ module.exports.saveFormatView = function (req, next) {
             } else {
                 changedObj.default_view = "gallery";
             }
-     
+
             doc.fe_views.views[field].visible = req.body.visible;
             changedObj.visible = req.body.visible
-    
+
 
             var rest = _.omit(req.body,'default_view','visible');
             for (var attr in rest) {
@@ -686,9 +942,6 @@ module.exports.saveFormatView = function (req, next) {
                     if (attr.indexOf('_key') >= 0) {
                         var index = attr.indexOf('_key');
                         var value = attr.substring(0,index);
-                        
-
-                        
 
 
                         if (rest[value+"_value"] !== null && typeof rest[value + "_value"] !== 'undefined') {
@@ -699,24 +952,30 @@ module.exports.saveFormatView = function (req, next) {
 
                             delete rest[value + "_value"];
 
-                        } 
+                        }
                         if (rest[value + "_value_separatedByComma"] !== null && typeof rest[value + "_value_separatedByComma"]
                             !== 'undefined') {
                             var obj =_castSerializeElementToObject(rest[attr], rest[value + "_value_separatedByComma"],true);
-
 
                             doc.fe_views.views[field][value] = obj;
                             delete rest[value + "_value_separatedByComma"];
                         }
                     } else {
-                        doc.fe_views.views[field][attr] = rest[attr];
+                        if (attr.indexOf("_separatedByComma") >= 0) {
+                             var arr = rest[attr].split(",");
+
+                            attr = attr.substring(0,attr.indexOf("_separatedByComma"));
+                            doc.fe_views.views[field][attr] = arr;
+
+                        } else {
+                             doc.fe_views.views[field][attr] = rest[attr];
+
+                        }
 
                     }
-                    
                 }
 
             }
-            console.log(doc.fe_views.views[field]);
             doc.markModified('fe_views');
             done();
         })
@@ -729,14 +988,6 @@ module.exports.saveFormatView = function (req, next) {
             return next(null,changedObj);
         })
     })
-
-
-
-
-
-
-
-    
 }
 
 

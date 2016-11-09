@@ -46,7 +46,7 @@ HorizontalBarChart.prototype._animateForSort = function() {
             o.push([v, self._data[i]]);
             return o;
         }, [])
-        .sort(this._options.sortDirection ? function(a, b) {
+        .sort(!this._options.sortDirection ? function(a, b) {
             return a[1].reduce(function (sum, obj) {
                     return sum + obj.value;
                 }, 0) - b[1].reduce(function (sum, obj) {

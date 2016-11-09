@@ -90,43 +90,20 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
 
-                    uniqueFieldValuesByFieldName = {};
-                    _.forOwn(_uniqueFieldValuesByFieldName, function (columnValue, columnName) {
-                        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
-                        if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
-                            var row = [];
-                            columnValue.forEach(function (rowValue) {
-                                row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
-                            });
-                            row.sort();
-                            uniqueFieldValuesByFieldName[columnName] = row;
-                        } else {
-                            uniqueFieldValuesByFieldName[columnName] = columnValue;
-                        }
-
-                        if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
-
-                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                a = a.replace(/\D/g, '');
-                                a = a == '' ? 0 : parseInt(a);
-                                b = b.replace(/\D/g, '');
-                                b = b == '' ? 0 : parseInt(b);
-                                return a - b;
-                            });
-
-                        } else // Sort alphabetically by default
-                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                return a - b;
-                            });
-                    });
+                    uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
                     done();
                 });
             });
 
             // Obtain grouped results
             batch.push(function (done) {
-                var groupBy_realColumnName = groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
+
+                var groupBy_realColumnName = groupBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+                (dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName == "Object Title") ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName,dataSourceDescription) : 
                 dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName;
+
+
+
             
                 //
                 var aggregationOperators = [];
@@ -211,6 +188,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     maxGroupedResultsValue: maxGroupedResultsValue,
                     groupBy: groupBy,
                     //
+                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     filterObj: filterObj,
                     isFilterActive: isFilterActive,
                     uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,

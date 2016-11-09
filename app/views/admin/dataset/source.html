@@ -25,18 +25,18 @@
 
 		<br />
 
-		<input type="hidden" id="dataset_count" value="{{ sub_datasets | length }}"/>
+		<input type="hidden" id="datasource_count" value="{{ sub_datasources | length }}"/>
 
 		<form class="upload" enctype="multipart/form-data" method="post">
-			{% for dataset in sub_datasets %}
+			{% for datasource in sub_datasources %}
 
 				<div class="form-group">
 					<div class="row">
 						<div class="col-xs-11">
-							<h4>Dataset {{ loop.index }}</h4>
+							<h4>Datasource {{ loop.index }}</h4>
 						</div>
 						<div class="col-xs-1">
-							<a class="removeDataset"><span class="glyphicon glyphicon-remove"></span></a>
+							<a class="removeDatasource"><span class="glyphicon glyphicon-remove"></span></a>
 						</div>
 					</div>
 
@@ -53,7 +53,7 @@
 
 			{% endfor %}
 
-			<div class="form-group row"><a id="add_dataset" class="add" ><span class="glyphicon glyphicon-plus"></span> Add more</a></div>
+			<div class="form-group row"><a id="add_datasource" class="add" ><span class="glyphicon glyphicon-plus"></span> Add more</a></div>
 
 
 			<div class="panel-footer">

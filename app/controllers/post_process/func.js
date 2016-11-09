@@ -1,5 +1,6 @@
 var winston = require('winston');
 var moment = require('moment');
+var _ = require('lodash');
 
 var importedDataPreparation = require('../../datasources/utils/imported_data_preparation');
 var cached_values = require('../../models/cached_values');
@@ -354,6 +355,13 @@ var _activeSearch_matchOp_orErrDescription = function (dataSourceDescription, se
     var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
     var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
         && raw_rowObjects_coercionSchema[realColumnName].operation === "ToDate";
+
+    var isInteger = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
+        && raw_rowObjects_coercionSchema[realColumnName].operation === "ToInteger" ;
+
+    var isFloat = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
+        && raw_rowObjects_coercionSchema[realColumnName].operation === "ToFloat" ;
+
     if (!isDate) {
         if (Array.isArray(searchQ)) {
             var match = [];
@@ -364,7 +372,13 @@ var _activeSearch_matchOp_orErrDescription = function (dataSourceDescription, se
             }
             matchOp["$match"]["$or"] = match;
         } else {
-            matchOp["$match"][realColumnName_path] = {$regex: searchQ, $options: "i"};
+            if (isInteger) {
+                matchOp["$match"][realColumnName_path] = parseInt(searchQ)
+            } else if (isFloat) {
+                 matchOp["$match"][realColumnName_path] = parseFloat(searchQ)
+            } else {
+                matchOp["$match"][realColumnName_path] = {$regex: searchQ, $options: "i"};
+            }
         }
     } else {
         var realSearchValueMin, realSearchValueMax, searchDate;
@@ -426,19 +440,37 @@ var _activeSearch_matchOp_orErrDescription = function (dataSourceDescription, se
 module.exports.activeSearch_matchOp_orErrDescription = _activeSearch_matchOp_orErrDescription;
 
 //
+
+var _neededFilterValues = function(dataSourceDescription) {
+
+    if (!dataSourceDescription.fe_filters.fieldsNotAvailable|| dataSourceDescription.fe_filters.fieldsNotAvailable.length == 0) {
+        return {};
+    }
+    var excluding = {};
+    for (var i = 0 ; i < dataSourceDescription.fe_filters.fieldsNotAvailable.length; i++) {
+        excluding["limitedUniqValsByColName." + dataSourceDescription.fe_filters.fieldsNotAvailable[i]] = 0
+    }
+    return excluding;
+
+
+}
+
 var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescription, callback) {
-    cached_values.findOne({srcDocPKey: source_pKey}, function (err, doc) {
+
+    var excludeValues = _neededFilterValues(dataSourceDescription);
+    cached_values.findOne({srcDocPKey: source_pKey},excludeValues,function (err, doc) {
         if (err) {
             callback(err, null);
 
             return;
         }
+        
         if (doc == null) {
             callback(new Error('Missing cached values document for srcDocPKey: ' + source_pKey), null);
 
             return;
         }
-        var uniqueFieldValuesByFieldName = doc.limitedUniqValsByHumanReadableColName;
+        var uniqueFieldValuesByFieldName = doc.limitedUniqValsByColName;
         if (uniqueFieldValuesByFieldName == null || typeof uniqueFieldValuesByFieldName === 'undefined') {
             callback(new Error('Unexpectedly missing uniqueFieldValuesByFieldName for srcDocPKey: ' + source_pKey), null);
 
@@ -487,17 +519,141 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
 
                     return;
                 }
-                uniqueFieldValuesByFieldName[keywordFilter.title] = values;
+                uniqueFieldValuesByFieldName[keywordFilter.title] = values.sort();
             }
         }
+
+        var finalizedUniqueFieldValuesByFieldName = [];
+
+        _.forOwn(uniqueFieldValuesByFieldName, function (columnValue, columnName) {
+            /* getting illegal values list */
+            var illegalValues = [];
+
+            if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey) {
+
+                if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all) {
+                    illegalValues = illegalValues.concat(dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all);
+                }
+                var illegalValuesForThisKey = dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey[columnName];
+                if (illegalValuesForThisKey) {
+                    illegalValues = illegalValues.concat(illegalValuesForThisKey);
+                }
+
+            }
+
+            var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+            var revertType = false;
+            var overwriteValue = false;
+
+            var row = columnValue;
+            if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
+                row = [];
+                revertType = true;
+            }
+
+            if (typeof dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName !== 'undefined' &&
+                dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName]) {
+                overwriteValue = true;
+            }
+
+            columnValue.forEach(function(rowValue,index) {
+
+                var existsInIllegalValueList = illegalValues.indexOf(rowValue);
+
+                if (existsInIllegalValueList == -1) {
+                    if (revertType) {
+                        row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
+                    }
+
+                    if (overwriteValue) {
+                        _.forOwn(dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName],function(value,key) {
+                            if (value == rowValue) {
+                                row[index] = key
+                            }
+                        })
+                    }
+
+                } else {
+                    if (!revertType) row.splice(index,1);
+                }
+            })
+
+            if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+                row.sort(function (a, b) {
+                    a = a.replace(/\D/g, '');
+                    a = a == '' ? 0 : parseInt(a);
+                    b = b.replace(/\D/g, '');
+                    b = b == '' ? 0 : parseInt(b);
+                    return a - b;
+                });
+
+            } else {
+
+                row.sort(function(a, b) {
+                    var A = a.toUpperCase();
+                    var B = b.toUpperCase();
+
+                    if (A < B) {
+                        return -1;
+                    }
+                    if (A > B) {
+                        return 1;
+                    }
+
+                    // names must be equal
+                    return 0;
+                });
+
+            }
+
+            if (dataSourceDescription.fe_filters.fieldsSortableInReverseOrder && dataSourceDescription.fe_filters.fieldsSortableInReverseOrder.indexOf(columnName) != -1) { // Sort in reverse order
+                row.reverse();
+            }
+
+            finalizedUniqueFieldValuesByFieldName.push({
+                name: columnName,
+                values: row
+            });
+
+        });
+
+        finalizedUniqueFieldValuesByFieldName.sort(function(a, b) {
+            var nameA = a.name;
+            var nameB = b.name;
+            if (dataSourceDescription.fe_displayTitleOverrides) {
+                if (dataSourceDescription.fe_displayTitleOverrides[nameA])
+                    nameA = dataSourceDescription.fe_displayTitleOverrides[nameA];
+                if (dataSourceDescription.fe_displayTitleOverrides[nameB])
+                    nameB = dataSourceDescription.fe_displayTitleOverrides[nameB];
+            }
+
+            nameA = nameA.toUpperCase();
+            nameB = nameB.toUpperCase();
+
+            if (nameA < nameB) {
+                return -1;
+            }
+            if (nameA > nameB) {
+                return 1;
+            }
+
+            // names must be equal
+            return 0;
+        });
+
         //
-        callback(null, uniqueFieldValuesByFieldName);
+        callback(null, finalizedUniqueFieldValuesByFieldName);
     });
 };
 module.exports.topUniqueFieldValuesForFiltering = _topUniqueFieldValuesForFiltering;
 
 //
 var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescription) {
+
+ 
+   
+
     var displayableVal = originalVal;
     // var prototypeName = Object.prototype.toString.call(originalVal);
     // if (prototypeName === '[object Date]') {
@@ -516,17 +672,23 @@ var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescr
                 if (originalVal == null || originalVal == "") {
                     return originalVal; // do not attempt to format
                 }
-                var dateFormat = null;
-                var fe_outputInFormat = coersionSchemeOfKey.outputFormat;
-                if (fe_outputInFormat && typeof fe_outputInFormat !== 'undefined') {
-                    var outputInFormat_ofKey = fe_outputInFormat["" + key];
-                    if (outputInFormat_ofKey && typeof outputInFormat_ofKey !== 'undefined') {
-                        dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
-                    }
-                }
+
+                var dateFormat = coersionSchemeOfKey.outputFormat;
+
+
+                // if (!fe_outputInFormat && typeof fe_outputInFormat == 'undefined') {
+                //     var outputInFormat_ofKey = fe_outputInFormat["" + key];
+                //     if (outputInFormat_ofKey && typeof outputInFormat_ofKey !== 'undefined') {
+                //         dateFormat = outputInFormat_ofKey.format || null; // || null to hit check below
+                //     }
+                // }
+
                 if (dateFormat == null || dateFormat == "ISO_8601") { // still null? use default
                     dateFormat = config.defaultDateFormat;
                 }
+
+             
+
                 displayableVal = moment(originalVal, moment.ISO_8601).utc().format(dateFormat);
             } else { // nothing to do? (no other types yet)
             }
@@ -535,6 +697,8 @@ var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescr
     } else { // nothing to do?
     }
     //
+
+
     return displayableVal;
 };
 module.exports.reverseDataToBeDisplayableVal = _reverseDataToBeDisplayableVal;

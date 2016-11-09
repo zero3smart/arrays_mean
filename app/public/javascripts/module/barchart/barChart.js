@@ -13,7 +13,7 @@ function BarChart(selector, dataSet, options) {
         top : 25,
         right : 15,
         bottom : 144 + $('.filter-bar').height(),  //Add more margin if filters present
-        left : options.horizontal ? 120 : 70
+        left : options.horizontal ? 120 : 80
     };
 
     if ('margin' in options) {
@@ -60,6 +60,14 @@ function BarChart(selector, dataSet, options) {
     // Vertically-responsive
     var container = $(this._container.node());
     container.height($(window).height() - container.offset().top - 30);
+
+    const defaultMinHeight = 460;
+    container.css('min-height', function() {
+        if (options.horizontal)
+            return Math.max(self._categoryData.length * 30, defaultMinHeight);
+
+        return defaultMinHeight;
+    });
 
     var dimension = this._container.node().getBoundingClientRect();
 
@@ -171,7 +179,7 @@ BarChart.prototype.sortData = function() {
             o.push([v, self._data[i]]);
             return o;
         }, [])
-        .sort(this._options.sortDirection ? function(a, b) {
+        .sort(!this._options.sortDirection ? function(a, b) {
             return a[1].reduce(function (sum, obj) {
                     return sum + obj.value;
                 }, 0) - b[1].reduce(function (sum, obj) {
@@ -189,7 +197,7 @@ BarChart.prototype.sortData = function() {
         });
 
     this._data = $.extend(true, [], this._data);
-    this._data.sort(this._options.sortDirection ? function(a, b) {
+    this._data.sort(!this._options.sortDirection ? function(a, b) {
         return a.reduce(function (sum, obj) {
                 return sum + obj.value;
             }, 0) - b.reduce(function (sum, obj) {
@@ -249,17 +257,27 @@ BarChart.prototype.getMaxValue = function() {
 };
 
 
+
+
 BarChart.prototype.getValueFormatter = function() {
 
     var self = this;
 
+    var _castToString = function(number) {
+        parts = number.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
+    }
+
     if (this._options.normalize) {
         return function(d) {
-            return d3.round(d * 100, self._precise) + '%';
+            return d3.round(d*100,self._precise) + "%"
         };
     } else {
         return function(d) {
-            return d3.round(d, self._precise);
+            var number = d3.round(d,self._precise);
+            return _castToString(number);
+
         }
     }
 };
@@ -280,6 +298,8 @@ BarChart.prototype._barMouseEnterEventHandler = function(barElement, barData, i,
         }).style('opacity', 0.2);
 
     var formatter = this.getValueFormatter();
+
+    
 
     this._tooltip.setContent(
         '<div>' +

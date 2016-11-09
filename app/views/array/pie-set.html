@@ -85,6 +85,7 @@
                                             routePath_base | constructedRoutePath(filterObj, {
                                                 searchCol: searchCol,
                                                 searchQ: searchQ,
+                                                chartBy: chartBy,
                                                 groupBy: groupBy,
                                                 aggregateBy: ''
                                             })
@@ -116,12 +117,15 @@
                     </div><!-- .row -->
                 </div><!-- .container-fluid -->
 
+
+
                 {% if isFilterActive %}
                     {{
-                    filter.default(
+                    filter.default(displayTitleOverrides,
                         routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
                             searchQ: searchQ,
+                            chartBy: chartBy,
                             groupBy: groupBy,
                             aggregateBy: aggregateBy
                         }),
@@ -141,6 +145,7 @@
                     var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
                             searchQ: searchQ,
+                            chartBy: chartBy,
                             groupBy: groupBy,
                             aggregateBy: aggregateBy
                     }) | safe }}";

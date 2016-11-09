@@ -13,6 +13,18 @@
     font-size: 42px;
 }
 
+@media (max-width: 767px) {
+    .object-title {
+        margin-top: 30px;
+        margin-bottom: 25px;
+        font-size: 30px;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
 .object dt {
     margin-top: 30px;
     color: var(--color-text-light);

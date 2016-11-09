@@ -43,16 +43,27 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName] ||
             dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName;
 
-            var groupBy_realColumnName = groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
-            dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName;
+        
+
+            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+            (dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName,dataSourceDescription) :
+             dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName
+
+
 
             //
             var chartBy = urlQuery.chartBy; // the human readable col name - real col name derived below
             var defaultChartByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName] ||
             dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName;
 
-            var chartBy_realColumnName = chartBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartBy.dataSourceDescription) :
-            dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName
+           
+
+            var chartBy_realColumnName =  chartBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartBy,dataSourceDescription) : 
+            (dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName,dataSourceDescription) :
+             dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName
+
+
+
 
             //
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
@@ -86,17 +97,20 @@ module.exports.BindData = function (req, urlQuery, callback) {
             for (var colName in raw_rowObjects_coercionSchema) {
                 var colValue = raw_rowObjects_coercionSchema[colName];
                 if (colValue.operation == "ToInteger") {
-                    var humanReadableColumnName = colName;
-                    if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
-                        humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
+                    var index = typeof dataSourceDescription.fe_excludeFields == 'undefined' || (dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields.length == 0) ? -1 : dataSourceDescription.fe_excludeFields.indexOf(colName);
+                    if (index == -1 ) {
+                        var humanReadableColumnName = colName;
+                        if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
+                            humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
 
-                    if (!aggregateBy_humanReadable_available) {
-                        aggregateBy_humanReadable_available = [];
-                        if (!numberOfRecords_notAvailable)
-                            aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                        if (!aggregateBy_humanReadable_available) {
+                            aggregateBy_humanReadable_available = [];
+                            if (!numberOfRecords_notAvailable)
+                                aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                        }
+
+                        aggregateBy_humanReadable_available.push(humanReadableColumnName);
                     }
-
-                    aggregateBy_humanReadable_available.push(humanReadableColumnName);
                 }
             }
             if (aggregateBy_humanReadable_available) {
@@ -106,8 +120,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregateBy_humanReadable_available = undefined;
             }
 
+           
+
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
-                dataSourceDescription.fe_views.views.pieSet.defaultAggregateByColumnName
+            (typeof dataSourceDescription.fe_views.views.pieSet.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
+            dataSourceDescription.fe_views.views.pieSet.defaultAggregateByColumnName;
 
 
             //
@@ -142,37 +159,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
 
-                    uniqueFieldValuesByFieldName = {};
-                    for (var columnName in _uniqueFieldValuesByFieldName) {
-                        if (_uniqueFieldValuesByFieldName.hasOwnProperty(columnName)) {
-                            var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
-                            if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
-                                var row = [];
-                                _uniqueFieldValuesByFieldName[columnName].forEach(function (rowValue) {
-                                    row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
-                                });
-                                row.sort();
-                                uniqueFieldValuesByFieldName[columnName] = row;
-                            } else {
-                                uniqueFieldValuesByFieldName[columnName] = _uniqueFieldValuesByFieldName[columnName];
-                            }
-
-                            if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
-
-                                uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                    a = a.replace(/\D/g, '');
-                                    a = a == '' ? 0 : parseInt(a);
-                                    b = b.replace(/\D/g, '');
-                                    b = b == '' ? 0 : parseInt(b);
-                                    return a - b;
-                                });
-
-                            } else // Sort alphabetically by default
-                                uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                    return a - b;
-                                });
-                        }
-                    }
+                    uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
                     done();
                 });
 
@@ -287,7 +274,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         _groupedResultsByChart.forEach(function (el, i, arr) {
                             var label = el.label;
                             var value = el.value;
-                            var label_toLowerCased = label.toLowerCase();
+                            var label_toLowerCased = label.toString().toLowerCase();
                             //
                             var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
                             var new_valueSum = existing_valueSum + value;
@@ -323,7 +310,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             }
                             var row = {
                                 value: summedValue,
-                                label: reconstitutedDisplayableTitle
+                                label: reconstitutedDisplayableTitle,
+                                valueToString: import_datatypes.displayNumberWithComma(summedValue)
                             };
                             if (colors && colors[i]) row.color = colors[i];
 
@@ -370,6 +358,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
+                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     brandColor: dataSourceDescription.brandColor,
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,

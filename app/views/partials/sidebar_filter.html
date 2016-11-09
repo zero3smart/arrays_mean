@@ -4,24 +4,25 @@
     </div>
     <ul class="sidebar-filter-group">
 
-        {% for fieldName, fieldValues in uniqueFieldValuesByFieldName %}
-            {% if fieldValues | length == 1 %}
+        {% for field in uniqueFieldValuesByFieldName %}
+            
+            {% if field.values | length == 1 %}
                 {% set isThisAnActiveFilterColumn = false %}
                 {% if isFilterActive %}
-                    {% if filterObj[fieldName] %}
+                    {% if filterObj[field.name] %}
                         {% set isThisAnActiveFilterColumn = true %}
                     {% endif %}
                 {% endif %}
 
-                {% for fieldValue in fieldValues %}
+                {% for fieldValue in field.values %}
                 {% set isThisAnActiveFilter = false %}
                 {% if isThisAnActiveFilterColumn %}
-                    {% if filterObj[fieldName] | doesArrayContain(fieldValue) %}
+                    {% if filterObj[field.name] | doesArrayContain(fieldValue) %}
                         {% set isThisAnActiveFilter = true %}
                     {% endif %}
                 {% endif %}
                 <li class="sidebar-filter-group-item sidebar-filter-toggle">
-                    {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(fieldName, fieldValue, isThisAnActiveFilter) %}
+                    {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(field.name, fieldValue, isThisAnActiveFilter) %}
                     {% set urlForFilterValue = routePath_base | constructedRoutePath(filterObjForThisFilterColVal, {
                         searchQ: searchQ,
                         searchCol: searchCol,
@@ -49,31 +50,32 @@
             {% endif %}
         {% endfor %}
 
-        {% for fieldName, fieldValues in uniqueFieldValuesByFieldName %}
-            {% if fieldValues | length > 1 %}
+        {% for field in uniqueFieldValuesByFieldName %}
+
+            {% if field.values | length > 1 %}
                 <li class="sidebar-filter-group-item">
                     {% set isThisAnActiveFilterColumn = false %}
                     {% if isFilterActive %}
-                        {% if filterObj[fieldName] %}
+                        {% if filterObj[field.name] %}
                             {% set isThisAnActiveFilterColumn = true %}
                         {% endif %}
                     {% endif %}
-                    {% set isMultiselectable = multiselectableFilterFields | doesArrayContain(fieldName) %}
+                    {% set isMultiselectable = multiselectableFilterFields | doesArrayContain(field.name) %}
 
                     <a class="collapse-trigger" role="button" href="#column-{{ loop.index }}" aria-expanded="false" aria-controls="column-{{ loop.index }}">
-                        <span class="sidebar-filter-fieldname">{{ fieldName }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">{{ filterObj[fieldName] | filterCount }}</span>{%endif %}
+                        <span class="sidebar-filter-fieldname">{{ displayTitleOverrides[field.name] or field.name }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">{{ filterObj[field.name] | filterCount }}</span>{%endif %}
                     </a>
                     <ul id="column-{{ loop.index }}" class="sidebar-filter-subgroup collapse" aria-expanded="false">
-                        {% for fieldValue in fieldValues %}
+                        {% for fieldValue in field.values %}
                             {% set isThisAnActiveFilter = false %}
                             {% if isThisAnActiveFilterColumn %}
-                                {% if filterObj[fieldName] | doesArrayContain(fieldValue) %}
+                                {% if filterObj[field.name] | doesArrayContain(fieldValue) %}
                                     {% set isThisAnActiveFilter = true %}
                                 {% endif %}
                             {% endif %}
 
                             <li class="sidebar-filter-subgroup-item background-color-brand-hover">
-                                {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(fieldName, fieldValue, isThisAnActiveFilter, isMultiselectable) %}
+                                {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(field.name, fieldValue, isThisAnActiveFilter, isMultiselectable) %}
                                 {% set urlForFilterValue = routePath_base | constructedRoutePath(filterObjForThisFilterColVal, {
                                     searchQ: searchQ,
                                     searchCol: searchCol,

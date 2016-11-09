@@ -44,9 +44,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
             chartViewSettings.defaultGroupByColumnName;
 
 
-            var groupBy_realColumnName = groupBy? 
-            importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,
-                dataSourceDescription) : chartViewSettings.defaultGroupByColumnName;
+
+            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+            (chartViewSettings.defaultGroupByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartViewSettings.defaultGroupByColumnName,dataSourceDescription) :
+             chartViewSettings.defaultGroupByColumnName;
+
+
 
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             //
@@ -68,6 +71,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var aggregateBy = urlQuery.aggregateBy;
             var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[chartViewSettings.defaultAggregateByColumnName] ||
             chartViewSettings.defaultAggregateByColumnName ;
+
             var numberOfRecords_notAvailable = chartViewSettings.aggregateByColumnName_numberOfRecords_notAvailable
 
             if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
@@ -76,23 +80,26 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // Aggregate By Available
             var aggregateBy_humanReadable_available = undefined;
 
+
             for (var colName in raw_rowObjects_coercionSchema) {
                 var colValue = raw_rowObjects_coercionSchema[colName];
                 if (colValue.operation == "ToInteger") {
-                    var humanReadableColumnName = colName;
-                    if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
-                        humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
 
-                    if (!aggregateBy_humanReadable_available) {
-                        aggregateBy_humanReadable_available = [];
+                    
+                   var index = typeof dataSourceDescription.fe_excludeFields == 'undefined' || (dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields.length == 0) ? -1 : dataSourceDescription.fe_excludeFields.indexOf(colName);
+                    if (index == -1 ) {
+                        var humanReadableColumnName = colName;
+                        if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
+                            humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
 
-                       
+                        if (!aggregateBy_humanReadable_available) {
+                            aggregateBy_humanReadable_available = [];
+                            if (!numberOfRecords_notAvailable)
+                                aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                        }
 
-                        if (!numberOfRecords_notAvailable)
-                            aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                        aggregateBy_humanReadable_available.push(humanReadableColumnName);
                     }
-
-                    aggregateBy_humanReadable_available.push(humanReadableColumnName);
                 }
             }
 
@@ -104,6 +111,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
 
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
+            (typeof chartViewSettings.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
             chartViewSettings.defaultAggregateByColumnName;
             
             //
@@ -137,35 +145,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
 
-                    uniqueFieldValuesByFieldName = {};
-                    _.forOwn(_uniqueFieldValuesByFieldName, function(columnValue, columnName) {
-                        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
-                        if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
-                            var row = [];
-                            columnValue.forEach(function (rowValue) {
-                                row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
-                            });
-                            row.sort();
-                            uniqueFieldValuesByFieldName[columnName] = row;
-                        } else {
-                            uniqueFieldValuesByFieldName[columnName] = columnValue;
-                        }
-
-                        if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
-
-                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                a = a.replace(/\D/g, '');
-                                a = a == '' ? 0 : parseInt(a);
-                                b = b.replace(/\D/g, '');
-                                b = b == '' ? 0 : parseInt(b);
-                                return a - b;
-                            });
-
-                        } else // Sort alphabetically by default
-                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                return a - b;
-                            });
-                    });
+                    uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
                     done();
                 });
             });
@@ -253,12 +233,19 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         });
                     });
 
+
+
+
                     var summedValuesByLowercasedLabels = {};
                     var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
                     finalizedButNotCoalesced_groupedResults.forEach(function (el, i, arr) {
                         var label = el.label;
                         var value = el.value;
-                        var label_toLowerCased = label.toLowerCase();
+
+                       
+
+
+                        var label_toLowerCased = label.toString().toLowerCase();
                         //
                         var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
                         var new_valueSum = existing_valueSum + value;
@@ -293,14 +280,20 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         } else {
                             reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
                         }
+                       
                         var result = {
                             value: summedValue,
-                            label: reconstitutedDisplayableTitle
+                            label: reconstitutedDisplayableTitle,
+                            valueToString: import_datatypes.displayNumberWithComma(summedValue)
                         };
                         if (colors && colors[i]) result.color = colors[i];
 
                         groupedResults.push(result);
                     });
+
+
+
+
 
                     done();
                 };
@@ -309,6 +302,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             batch.end(function (err) {
                 if (err) return callback(err);
+
+
 
                 //
                 var data =
@@ -321,6 +316,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
+                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},

@@ -961,6 +961,12 @@ module.exports.GenerateImageURLFieldsByScraping
                     for (var i = 0; i < urlsAndSizes_length; i++) {
                         var urlAndSizeString = urlsAndSizes[i];
                         var components = urlAndSizeString.split(' ');
+
+                        //Images with no supplied width will be set to 182px
+                        if (components.length == 1) {
+                            components.push('182w');
+                        }
+
                         if (components.length != 2) {
                             var err = new Error("Unexpected format of image url srcset contents");
                             eachCb(err);

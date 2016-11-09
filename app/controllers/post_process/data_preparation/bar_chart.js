@@ -47,9 +47,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
             var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName] || dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName;
 
-            var groupBy_realColumnName = groupBy ? 
-            importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
-            dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName;
+
+
+            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+            (dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName,dataSourceDescription) :
+             dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName;
+           
+
+
 
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
@@ -64,9 +69,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var stackBy = urlQuery.stackBy; // the human readable col name - real col name derived below
             var defaultStackByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName] || dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName;
-            var stackBy_realColumnName = stackBy ? 
-            importedDataPreparation.RealColumnNameFromHumanReadableColumnName(stackBy,dataSourceDescription) : 
-            dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName; 
+            
+
+            var stackBy_realColumnName =  stackBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(stackBy,dataSourceDescription) : 
+            (dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName,dataSourceDescription) :
+            dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName;
+           
+
 
 
             var routePath_base = "/array/" + source_pKey + "/bar-chart";
@@ -98,19 +107,25 @@ module.exports.BindData = function (req, urlQuery, callback) {
             for (var colName in raw_rowObjects_coercionSchema) {
                 var colValue = raw_rowObjects_coercionSchema[colName];
                 if (colValue.operation == "ToInteger") {
-                    var humanReadableColumnName = colName;
-                    if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
-                        humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
+                    
+                    var index = typeof dataSourceDescription.fe_excludeFields == 'undefined' || (dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields.length == 0) ? -1 : dataSourceDescription.fe_excludeFields.indexOf(colName);
+                    if (index == -1 ) {
+                        var humanReadableColumnName = colName;
+                        if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
+                            humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
 
-                    if (!colNames_orderedForAggregateByDropdown) {
-                        colNames_orderedForAggregateByDropdown = [];
-                        if (!numberOfRecords_notAvailable)
-                            colNames_orderedForAggregateByDropdown.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                        if (!colNames_orderedForAggregateByDropdown) {
+                            colNames_orderedForAggregateByDropdown = [];
+                            if (!numberOfRecords_notAvailable)
+                                colNames_orderedForAggregateByDropdown.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                        }
+
+                        colNames_orderedForAggregateByDropdown.push(humanReadableColumnName);
                     }
 
-                    colNames_orderedForAggregateByDropdown.push(humanReadableColumnName);
                 }
             }
+
             if (colNames_orderedForAggregateByDropdown) {
                 if (colNames_orderedForAggregateByDropdown.length > 0)
                     defaultAggregateByColumnName_humanReadable = colNames_orderedForAggregateByDropdown[0];
@@ -118,9 +133,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     colNames_orderedForAggregateByDropdown = undefined;
             }
 
-            var aggregateBy_realColumnName = aggregateBy ? 
-            importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
-            dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName_humanReadable;
+      
+
+
+            var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
+            (typeof dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
+            dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName;
 
 
             //
@@ -159,35 +177,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
 
-                    uniqueFieldValuesByFieldName = {};
-                    _.forOwn(_uniqueFieldValuesByFieldName, function (columnValue, columnName) {
-                        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
-                        if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
-                            var row = [];
-                            columnValue.forEach(function (rowValue) {
-                                row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
-                            });
-                            row.sort();
-                            uniqueFieldValuesByFieldName[columnName] = row;
-                        } else {
-                            uniqueFieldValuesByFieldName[columnName] = columnValue;
-                        }
-
-                        if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
-
-                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                a = a.replace(/\D/g, '');
-                                a = a == '' ? 0 : parseInt(a);
-                                b = b.replace(/\D/g, '');
-                                b = b == '' ? 0 : parseInt(b);
-                                return a - b;
-                            });
-
-                        } else // Sort alphabetically by default
-                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                return a - b;
-                            });
-                    });
+                    uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
                     done();
                 });
             });
@@ -383,7 +373,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         _.each(finalizedButNotCoalesced_groupedResults, function (el) {
                             var label = el.label;
                             var value = el.value;
-                            var label_toLowerCased = label.toLowerCase();
+                            var label_toLowerCased = label.toString().toLowerCase();
                             //
                             var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
                             var new_valueSum = existing_valueSum + value;
@@ -462,6 +452,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
+                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
@@ -497,7 +488,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
                     // graphData contains all the data rows; used by the template to create the barchart
                     graphData: graphData,
-                    padding: dataSourceDescription.fe_views.views.barChart.barChart_padding
+                    padding: dataSourceDescription.fe_views.views.barChart.padding
                 };
 
                 callback(err, data);

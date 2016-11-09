@@ -46,11 +46,18 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var limitToNResults = config.timelineGroups;
             //
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
-            var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName] ||
-            dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
 
-            var groupBy_realColumnName = groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
-            dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
+            /* group by would just be decade, years, month,day */
+            var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
+
+            // var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName] ||
+            // dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
+
+            var groupBy_realColumnName = groupBy? groupBy : dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
+
+            // importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
+            // dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
+
 
             var groupedResultsLimit = config.timelineGroupSize;
             var groupsLimit = config.timelineGroups;
@@ -64,6 +71,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) : 
             dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName
+    
+
 
 
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
@@ -163,35 +172,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
 
-                    uniqueFieldValuesByFieldName = {};
-                    _.forOwn(_uniqueFieldValuesByFieldName, function (columnValue, columnName) {
-                        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
-                        if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
-                            var row = [];
-                            columnValue.forEach(function (rowValue) {
-                                row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
-                            });
-                            row.sort();
-                            uniqueFieldValuesByFieldName[columnName] = row;
-                        } else {
-                            uniqueFieldValuesByFieldName[columnName] = columnValue;
-                        }
-
-                        if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
-
-                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                a = a.replace(/\D/g, '');
-                                a = a == '' ? 0 : parseInt(a);
-                                b = b.replace(/\D/g, '');
-                                b = b == '' ? 0 : parseInt(b);
-                                return a - b;
-                            });
-
-                        } else // Sort alphabetically by default
-                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                return a - b;
-                            });
-                    });
+                    uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
                     done();
                 });
             });
@@ -223,6 +204,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     } else {
                         nonpagedCount = results.length;
                     }
+
+
+
                     done();
                 };
                 processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
@@ -263,6 +247,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         projects['$project']['rowParams.' + rowParamsField] = 1;
                     }
                 });
+
 
 
                 aggregationOperators = aggregationOperators.concat(
@@ -308,10 +293,17 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 var doneFn = function (err, _groupedResults) {
                     if (err) return done(err);
-                    groupedResults = _groupedResults;
-                    if (groupedResults == undefined || groupedResults == null) groupedResults = [];
+              
+                   
 
-                    var finalizedButNotCoalesced_groupedResults = [];
+                  
+
+
+
+                    if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
+
+               
+
                     _groupedResults.forEach(function (el, i, arr) {
                         var results = [];
                         el.results.forEach(function (el2, i2) {
@@ -327,6 +319,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     done();
                 };
+
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 
@@ -377,16 +370,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     var conditions = cond.conditions;
                     var htmlElem = "";
                     var fieldValue = rowObject["rowParams"][fieldName];
-                    if (cond.operation != null && typeof cond.operation !== 'undefined') {
-
-                        if (cond.operation == "split") {
-                            var splitOnString = cond.option;
-                            if (splitOnString != null && typeof splitOnString == "string") {
-                                fieldValue = rowObject["rowParams"][fieldName].split(splitOnString)
-                            }
-
-                        }
-                    }
                     if (Array.isArray(fieldValue) == true) {
                         var opr = null
 
@@ -440,6 +423,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     groupBy_realColumnName: groupBy_realColumnName,
                     groupedResultsLimit: groupedResultsLimit,
                     groupByDateFormat: groupByDateFormat,
+                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     //
                     sortBy: sortBy,
                     sortDir: sortDir,

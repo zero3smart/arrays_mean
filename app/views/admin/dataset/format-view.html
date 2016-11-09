@@ -24,7 +24,7 @@
 
     <div class="form-group row">
         <div class="col-xs-4">
-            <label >Name</label>
+            <label for="name">Name</label>
         </div>
         <div class="col-xs-8"> 
             <input class="form-control" value="{{ view.displayAs}}" disabled/> 
@@ -43,20 +43,55 @@
 
 
     {% for setting in view.settings %} 
-        {% if setting.inputType == "textbox" %}
+        {% if setting.inputType == "multivalueTextbox" %}
+
+
+         <div class="form-group row">
+                <div class="col-xs-12">
+                    <label for="{{setting.name}}"> {{setting.displayAs}} </label>
+                </div>
+                <div class="col-xs-12">
+                    <small> ** use comma to separate values, value entered will be cast as string </small>
+                </div>
+        </div>
+        <div class="form-group row">
+
+
+    
+            <div class="col-xs-12">
+
+                <input type="text" value="{{doc.fe_views.views[view.name][setting.name] | castArrayToStringSeparatedByComma() }}" class="form-control" name="{{setting.name+  '_separatedByComma'}}"/>
+            </div>
+              
+        </div>
+          
+
+        
+
+
+
+               
+               
+
+               
+        {% elif setting.inputType == "textbox" %}
          <div class="form-group row">
             <div class="col-xs-4">
-                <label for="setting.name"> {{setting.displayAs}}</label>
+                <label for="{{setting.name}}"> {{setting.displayAs}}</label>
+            </div>
+            <div class="col-xs-8">
+                <input class="form-control" type="text" name="{{setting.name}}" value="{{doc.fe_views.views[view.name][setting.name]}}">
             </div>
 
 
 
         </div>
 
-        {% elif setting.inputType == "select" or setting.inputType == "multiselect" or setting.inputType == "select_nested" %}
+        {% elif setting.inputType == "select" or setting.inputType == "multiselect" %}
+
         <div class="form-group row">
             <div class="col-xs-4">
-                <label for="setting.name"> {{setting.displayAs}}</label>
+                <label for="{{setting.name}}"> {{setting.displayAs}}</label>
 
                 {% if setting.restrictColumnDataType %}
                     <small class="row"> ** only accept {{setting.restrictColumnDataType}} type </small>
@@ -76,27 +111,29 @@
                         and doc.fe_views.views[view.name][setting.name] | doesArrayContain("Object Title") %} selected  {%endif%}> ** Object Title ** </option>
                     {% endif %}
 
+
                     {% for col in colNames %}  
 
-                        {% if not doc.fe_excludeFields | doesArrayContain(col) %}
+                        {% set finalizedField = col | finalizeColumnName %}
+
+                         {% set displayCol = doc.fe_displayTitleOverrides | displayValueForCol(finalizedField) %}
+
+                        {% if not doc.fe_excludeFields | doesArrayContain(finalizedField) %}
 
 
                             {% if setting.restrictColumnDataType and setting.restrictColumnDataType != "string" %}
 
 
-                                {% if setting.restrictColumnDataType | colHasDataType(col,doc.raw_rowObjects_coercionScheme) %}
+                                {% if setting.restrictColumnDataType | colHasDataType(finalizedField,doc.raw_rowObjects_coercionScheme) %}
 
-<option value="{{col}}" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == col %}  selected {%elif setting.inputType == "multiselect" and doc.fe_views.views[view.name][setting.name] | doesArrayContain(col) %} selected {% elif 
-                                setting.inputType=="select_nested" and doc.fe_views.views[view.name] | doesNestedObjectContain(setting.name,col) %} selected {%endif%} > {{col}}</option>
+<option value="{{finalizedField}}" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == finalizedField  %}  selected {%elif setting.inputType == "multiselect" and doc.fe_views.views[view.name][setting.name] | doesArrayContain(finalizedField) %} selected {%endif%} > {{displayCol}}</option>
 
                                 {% endif %}
                             {% else %}
 
 
-
-
-<option value="{{col}}" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == col %}  selected {%elif setting.inputType == "multiselect" and doc.fe_views.views[view.name][setting.name] | doesArrayContain(col) %} selected {% elif 
-                                setting.inputType=="select_nested" and (doc.fe_views.views[view.name] | doesNestedObjectContain(setting.name,col)) %} selected {%endif%} > {{col}}</option>
+<option value="{{finalizedField}}" {% if setting.inputType == "select" and not setting.selectNestedField and doc.fe_views.views[view.name][setting.name] == finalizedField %}  selected {%elif setting.inputType == "multiselect" and doc.fe_views.views[view.name][setting.name] | doesArrayContain(finalizedField) %} selected {% elif 
+                                setting.selectNestedField and doc.fe_views.views[view.name][setting.name][setting.selectNestedField] == finalizedField %} selected {%endif%} > {{displayCol}}</option>
                             {% endif %}
 
                         {%endif%}
@@ -111,7 +148,9 @@
                     {% for dur in available_forDuration %}
                         <option value="{{dur}}" {{ 'selected' if doc.fe_views.views[view.name][setting.name] == dur }}>{{dur}}</option>
                     {% endfor %}
-                {% endif %}
+                {%endif%}
+            
+
                 </select>
             </div>
         </div>
@@ -146,8 +185,10 @@
                             <option value=""> </option>
                             <option value="_all"> ** All Fields ** </option>
                         {% for col in colNames %}
-                             {% if not doc.fe_excludeFields | doesArrayContain(col) %}
-                                <option value="{{col}}">{{col}}</option>
+                            {% set finalizedField = col | finalizeColumnName %}
+                            {% set displayCol = doc.fe_displayTitleOverrides | displayValueForCol(finalizedField) %}
+                             {% if not doc.fe_excludeFields | doesArrayContain(finalizedField) %}
+                                <option value="{{finalizedField}}">{{displayCol}}</option>
                              {% endif %}
                         {% endfor %}
                         </select>
@@ -173,8 +214,10 @@
                             <option value=""> </option>
                             <option value="_all"> ** All Fields ** </option>
                             {% for col in colNames %}
-                                {% if not doc.fe_excludeFields | doesArrayContain(col) %}
-                                    <option value="{{col}}">{{col}}</option>
+                                {% set finalizedField = col | finalizeColumnName %}
+                                 {% set displayCol = doc.fe_displayTitleOverrides | displayValueForCol(finalizedField) %}
+                                {% if not doc.fe_excludeFields | doesArrayContain(finalizedField) %}
+                                    <option value="{{finalizedField}}">{{displayCol}}</option>
                                  {% endif %}
                             {% endfor %}
                             </select>
@@ -184,8 +227,6 @@
                     {% elif setting.valueInputType == "colorpicker" %}
     
                         <input type="text" class="startEmpty form-control" name="{{setting.name}}_value[]" value='{{color}}' /> 
-               
-                
 
                     {% endif %}
                     </div>
@@ -209,8 +250,10 @@
                         <option value=""> </option>
                         <option value="_all" {%if doc.fe_views.views[view.name][setting.name]._all %} selected {%endif%}> ** All Fields ** </option>
                     {% for col in colNames %}
-                        {% if not doc.fe_excludeFields | doesArrayContain(col) %}
-                                <option value="{{col}}" {{'selected' if  key == col }}>{{col}}</option>
+                        {% set finalizedField = col | finalizeColumnName %}
+                        {% set displayCol = doc.fe_displayTitleOverrides | displayValueForCol(finalizedField) %}
+                        {% if not doc.fe_excludeFields | doesArrayContain(finalizedField) %}
+                                <option value="{{finalizedField}}" {{'selected' if  key == finalizedField }}>{{displayCol}}</option>
                         {% endif %}
                         
                     {% endfor %}
@@ -237,8 +280,10 @@
                             <option value=""> </option>
                             <option value="_all"> ** All Fields ** </option>
                             {% for col in colNames %}
+                                {% set finalizedField = col | finalizeColumnName %}
+                                {% set displayCol = doc.fe_displayTitleOverrides | displayValueForCol(finalizedField) %}
                                 {% if not doc.fe_excludeFields | doesArrayContain(col) %}
-                                    <option value="{{col}}" {{'selected' if col == value }} >{{col}}</option>
+                                    <option value="{{finalizedField}}" {{'selected' if finalizedField == value }} >{{displayCol}}</option>
                                  {% endif %}
                             {% endfor %}
                         </select>
@@ -272,7 +317,7 @@
             </div>
             <div class="col-xs-4">
                 <label class="switch">
-                <input name="{{setting.name}}" type="checkbox" value="true" {{'checked' if doc.fe_views.views[view.name][setting.name] == true}} />
+                <input name="{{setting.name}}" type="checkbox" value="true" {{'checked' if doc.fe_views.views[view.name][setting.name] == true }} />
                 <div class="slider round"></div>
             </label>
             </div>

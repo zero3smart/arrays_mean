@@ -36,8 +36,8 @@
 </style>
 {% endif %}
 
-{% set galleryURL = "/array/" + array_source_key + "/gallery?" + default_filterJSON if default_filterJSON else "" %}
-{% set mainViewURL = "/array/" + array_source_key + "/" + main_view + "?" + ("embed=true&" if embedded else "") + default_filterJSON if default_filterJSON else "" %}
+{% set galleryURL = "/array/" + array_source_key + "/gallery" + ("?" + default_filterJSON if default_filterJSON else "") %}
+{% set mainViewURL = "/array/" + array_source_key + "/" + main_view + ("?" + ("embed=true&" if embedded else "") + default_filterJSON if default_filterJSON else "") %}
 
 <!-- Fixed navbar -->
 <header id="masthead" class="site-header hidden-print" role="banner">

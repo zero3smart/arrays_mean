@@ -28,10 +28,6 @@
     }
 }
 
-#bar-chart {
-    min-height: 300px;
-}
-
 .toggle-button {
     /*border: 1px solid #9C9C9C;*/
     margin: 4px 7px 0 0px;
@@ -50,8 +46,8 @@
     padding: 13px 16px 9px;
 }
 
-#orientation .vertical,
-#normalization .absolute,
+#orientation .horizontal,
+#normalization .relative,
 #sort-direction .icon-sort-descending {
     display: none;
 }

@@ -37,6 +37,7 @@
     "lodash": "^4.16.4",
     "moment": "^2.12.0",
     "mongoose": "^4.4.9",
+    "mongoose-deep-populate": "^3.0.0",
     "mongoose-integer": "^0.1.1",
     "multer": "^1.2.0",
     "nunjucks-comma-filter": "^1.0.0",

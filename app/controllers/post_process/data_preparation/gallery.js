@@ -90,16 +90,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
                     var fieldValue = rowObject["rowParams"][fieldName];
-                    if (cond.operation != null && typeof cond.operation !== 'undefined') {
-
-                        if (cond.operation == "split") {
-                            var splitOnString = cond.option;
-                            if (splitOnString != null && typeof splitOnString == "string") {
-                                fieldValue = rowObject["rowParams"][fieldName].split(splitOnString)
-                            }
-
-                        }
-                    }
                     if (Array.isArray(fieldValue) == true) {
                         var opr = null
 
@@ -125,14 +115,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
             var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[galleryViewSettings.defaultSortByColumnName] || galleryViewSettings.defaultSortByColumnName;
 
-            var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) :
-            dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName;
-
-
-        
+            var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) : 
+            (dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName,dataSourceDescription) :
+             dataSourceDescription.fe_views.views.gallery.defaultSortByColumnName;
 
             var sortDir = urlQuery.sortDir;
-            var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
+            var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : dataSourceDescription.fe_views.views.gallery.defaultSortOrderDescending ? -1 : 1;
+      
+
             //
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
             var routePath_base = "/array/" + source_pKey + "/gallery";
@@ -141,6 +131,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
             var filterObj = func.filterObjFromQueryParams(urlQuery);
+
+          
+
             var isFilterActive = Object.keys(filterObj).length != 0;
             //
             var searchCol = urlQuery.searchCol;
@@ -165,6 +158,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     return;
                 }
+
+            
                 wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
             }
 
@@ -199,36 +194,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
 
-                    uniqueFieldValuesByFieldName = {};
-                    _.forOwn(_uniqueFieldValuesByFieldName, function (columnValue, columnName) {
-                        var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
-                        if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
-                            var row = [];
-                            columnValue.forEach(function (rowValue) {
-                                row.push(import_datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
-                            });
-                            row.sort();
-                            uniqueFieldValuesByFieldName[columnName] = row;
-                        } else {
-                            uniqueFieldValuesByFieldName[columnName] = columnValue;
-                        }
-
-                        if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
-
-                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                a = a.replace(/\D/g, '');
-                                a = a == '' ? 0 : parseInt(a);
-                                b = b.replace(/\D/g, '');
-                                b = b == '' ? 0 : parseInt(b);
-                                return a - b;
-                            });
-
-                        } else // Sort alphabetically by default
-                            uniqueFieldValuesByFieldName[columnName].sort(function (a, b) {
-                                return a - b;
-                            });
-                    });
-
+                    uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
                     done();
                 });
             });
@@ -302,6 +268,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (docs == undefined || docs == null) {
                         docs = [];
                     }
+
                     done();
                 };
 
@@ -328,6 +295,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
                     sourceDoc: sourceDoc,
+                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,
 
 
@@ -351,6 +319,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sortBy: sortBy,
                     sortDir: sortDir,
                     defaultSortByColumnName_humanReadable: defaultSortByColumnName_humanReadable,
+                    defaultSortOrderDescending: dataSourceDescription.fe_views.views.gallery.defaultSortOrderDescending,
+                    colNames_orderedForGallerySortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'gallery', 'SortBy'),
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     filterObj: filterObj,

@@ -1,4 +1,4 @@
-//
+
 //
 // 
 var async = require("async");
@@ -31,8 +31,6 @@ module.exports.GeneratePostImportCaches = function (dataSourceDescriptions,fn) {
             }
 
             return fn();
-
-
            
         }
     });
@@ -58,8 +56,8 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
         cache_keywords_controller.cacheKeywords_fromDataSourceDescription(dataSourceDescription, callback);
     });
 
-
 };
+
 
 var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription, callback) {
 
@@ -73,21 +71,37 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
     processedRowObjects_mongooseModel.findOne({}, function (err, sampleDoc) {
+
+        // console.log(JSON.stringify(sampleDoc));
+
         if (err) {
             callback(err, null);
 
             return;
         }
-        var limitToNTopValues = 50;
-        var feVisible_filter_keys = imported_data_preparation.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
-        var feVisible_filter_keys_length = feVisible_filter_keys.length;
+        var limitToNTopValues = 100;
+        // var feVisible_filter_keys = imported_data_preparation.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
+
+        var filterKeys = Object.keys(sampleDoc.rowParams);
+
+        if (typeof dataSourceDescription.fe_excludeFields != 'undefined' && Array.isArray(dataSourceDescription.fe_excludeFields) && dataSourceDescription.fe_excludeFields.length > 0) {
+            for (var i = 0 ; i < dataSourceDescription.fe_excludeFields.length; i++) {
+                var index = filterKeys.indexOf(dataSourceDescription.fe_excludeFields[i]);
+                if (filterKeys[index] == dataSourceDescription.fe_excludeFields[i]) {
+                    filterKeys.splice(index,1);
+                }
+            }
+        }
+    
+        // var feVisible_filter_keys_length = feVisible_filter_keys.length;
         var uniqueFieldValuesByFieldName = {};
-        for (var i = 0; i < feVisible_filter_keys_length; i++) {
-            var key = feVisible_filter_keys[i];
+
+        for (var i = 0; i < filterKeys.length ; i++) {
+            var key = filterKeys[i];
             uniqueFieldValuesByFieldName[key] = [];
         }
 
-        async.each(feVisible_filter_keys, function (key, cb) {
+        async.each(filterKeys, function (key, cb) {
             // Commented out the count section for the comma-separated as individual filters.
             var uniqueStage = {$group: {_id: {}, count: {$sum: 1}}};
             uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;
@@ -97,134 +111,56 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 {$unwind: "$" + "rowParams." + key}, // requires MongoDB 3.2, otherwise throws an error if non-array
                 uniqueStage,
                 {$sort: {count: -1}},
-                //{ $limit : limitToNTopValues }
+                {$limit : limitToNTopValues} // To escape that aggregation result exceeds maximum document size (16MB)
             ]).allowDiskUse(true).exec(function (err, results) {
+
                 if (err) {
                     cb(err);
 
                     return;
                 }
                 if (results == undefined || results == null || results.length == 0) {
+
+                    console.log(key)
                     callback(new Error('Unexpectedly empty unique field value aggregation'));
 
                     return;
                 }
-                var valuesRaw;
-                if (dataSourceDescription.fe_filters.fieldsCommaSeparatedAsIndividual && dataSourceDescription.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf(key) !== -1) {
-                    var raw = {}
-                    results.forEach(function (el) {
-                        if (Array.isArray(el._id) || typeof el._id === 'string') {
-                            var _newId;
-                            if (Array.isArray(el._id)) {
-                                _newId = []
-                                el._id.forEach(function (_id) {
-                                    if (typeof _id === 'string') _newId.concat(_id.split(/[\s]*[,]+[\s]*/));
-                                });
-                            } else {
-                                _newId = el._id.split(/[\s]*[,]+[\s]*/);
-                            }
-
-                            _newId.filter(function (elem, index, self) {
-                                return elem != '' && index === _newId.indexOf(elem);
-                            }).forEach(function (_newIdEl) {
-                                raw[_newIdEl] = raw[_newIdEl] !== undefined ? raw[_newIdEl] + el.count : el.count;
-                            });
-                        } else {
-                            raw[el._id] = el.count;
-                        }
-                    });
-
-                    // Sort raw by values
-                    valuesRaw = [];
-                    for (var id in raw) {
-                        valuesRaw.push({id: id, count: raw[id]});
-                    }
-                    valuesRaw.sort(function (a, b) {
-                        return a.count < b.count;
-                    });
-                    valuesRaw = valuesRaw.map(function (el) {
-                        return el.id;
-                    });
-                } else {
-                    valuesRaw = results.map(function (el) {
-                        return el._id;
-                    });
-                }
+                
+                valuesRaw = results.map(function (el) {
+                    return el._id;
+                });
 
                 // flatten array of arrays (for nested tables)
                 var values = [].concat.apply([], valuesRaw).filter(function (elem, index, self) {
                     return elem != '';
                 }).splice(0, limitToNTopValues);
-                //
-                // remove illegal values
-                var illegalValues = []; // default val
-
-                if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey) {
-
-                    if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all) {
-
-                        illegalValues = illegalValues.concat(dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all);
-                    }
-                    var illegalValuesForThisKey = dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey[key];
-                    if (illegalValuesForThisKey) {
-                        illegalValues = illegalValues.concat(illegalValuesForThisKey);
-                    }
-                }
-                //
-                var illegalValues_length = illegalValues.length;
-                for (var i = 0; i < illegalValues_length; i++) {
-                    var illegalVal = illegalValues[i];
-                    var idxOfIllegalVal = values.indexOf(illegalVal);
-                    if (idxOfIllegalVal !== -1) {
-                        values.splice(idxOfIllegalVal, 1);
-                    }
-                }
-                //
                 values.sort();
-                //
-                // Note here we use the human-readable key. We decode it back to the original key at query-time
-                delete uniqueFieldValuesByFieldName[key]; // so no stale values persist in hash
-                var finalizedStorageKey = dataSourceDescription.fe_displayTitleOverrides[key] || key;
-                uniqueFieldValuesByFieldName[finalizedStorageKey] = values;
+  
+                uniqueFieldValuesByFieldName[key] = values;
                 cb();
             });
         }, function (err) {
-            if (err) {
-                callback(err, null);
 
-                return;
-            }
-            // Override values
-            var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
-            var fieldNamesToOverride = Object.keys(oneToOneOverrideWithValuesByTitleByFieldName);
-            async.each(fieldNamesToOverride, function (fieldName, cb) {
-                var oneToOneOverrideWithValuesByTitle = oneToOneOverrideWithValuesByTitleByFieldName[fieldName];
-                var titles = Object.keys(oneToOneOverrideWithValuesByTitle);
-                uniqueFieldValuesByFieldName[fieldName] = titles;
-                cb();
-            }, function (err) {
+            if (err) callback(err);
+
+            var persistableDoc =
+            {
+                srcDocPKey: dataSourceRevision_pKey,
+                limitedUniqValsByColName: uniqueFieldValuesByFieldName
+            };
+            var cached_values = require('../../../models/cached_values');
+            cached_values.findOneAndUpdate({srcDocPKey: dataSourceRevision_pKey}, persistableDoc, {
+                upsert: true,
+                new: true
+            }, function (err, doc) {
                 if (err) {
-                    callback(err, null);
-
-                    return;
+                    return callback(err, null);
                 }
-                var persistableDoc =
-                {
-                    srcDocPKey: dataSourceRevision_pKey,
-                    limitedUniqValsByHumanReadableColName: uniqueFieldValuesByFieldName
-                };
-                var cached_values = require('../../../models/cached_values');
-                cached_values.findOneAndUpdate({srcDocPKey: dataSourceRevision_pKey}, persistableDoc, {
-                    upsert: true,
-                    new: true
-                }, function (err, doc) {
-                    if (err) {
-                        return callback(err, null);
-                    }
-                    winston.info("✅  Inserted cachedUniqValsByKey for \"" + dataSource_title + "\".");
-                    callback(null, null);
-                });
+                winston.info("✅  Inserted cachedUniqValsByKey for \"" + dataSource_title + "\".");
+                callback(null, null);
             });
+
         });
     });
 };

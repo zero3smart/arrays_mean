@@ -68,7 +68,7 @@ var tooltipValue = tooltip
  */
 sectors.on('mouseover', function(d) {
     tooltipKey.html(d.data.label);
-    tooltipValue.html(d.data.value);
+    tooltipValue.html(d.data.valueToString);
     tooltip.style('display', 'block');
 });
 
