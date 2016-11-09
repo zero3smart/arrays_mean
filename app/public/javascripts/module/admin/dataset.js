@@ -177,11 +177,16 @@ $(document).ready(function () {
 
         if ($('#custom_mode').val() == 'true') {
 
+
+
             var field = $('#field').val();
+
             var url = "/admin/dataset/" + doc_id + "/format-custom-field/";
+
             url += field == '' ? 'save' : (field + '/update');
 
-            $.post("/admin/dataset/" + doc_id + "/format-custom-field/save", params)
+
+            $.post(url, params)
                 .done(function (data) {
                     if (data.error && data.error != '') {
                         $('.format-field .alert-danger').html(data.error).removeClass('hidden').addClass('show');
