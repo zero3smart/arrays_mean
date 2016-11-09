@@ -233,11 +233,18 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         });
                     });
 
+
+
+
                     var summedValuesByLowercasedLabels = {};
                     var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
                     finalizedButNotCoalesced_groupedResults.forEach(function (el, i, arr) {
                         var label = el.label;
                         var value = el.value;
+
+                        console.log(isNaN(value));
+
+
                         var label_toLowerCased = label.toString().toLowerCase();
                         //
                         var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
@@ -281,6 +288,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         groupedResults.push(result);
                     });
+
+
+
+console.log(JSON.stringify(groupedResults));
                     done();
                 };
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
