@@ -20,9 +20,12 @@ module.exports.DataSource_formats =
 
 
 module.exports.displayNumberWithComma = function(number) {
-    var parts = number.toString().split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return parts.join(".");
+    if (typeof number !== 'object') {
+         var parts = number.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
+    }
+   return number;
 }
 
 

@@ -128,6 +128,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     groupedResults = keywords.map(function (keyword) {
                         var obj = {_id: keyword, value: 0};
                         if (result && result[keyword]) obj.value = result[keyword];
+                        obj.valueToString = import_datatypes.displayNumberWithComma(obj.value);
                         return obj;
                     });
 
