@@ -946,7 +946,8 @@ module.exports.GenerateImageURLFieldsByScraping
 
                         return;
                     }
-                    // console.log("obtained scrapedString", scrapedString);
+                    
+                    console.log("obtained scrapedString", scrapedString);
                     // Now we need to parse this string
                     // First by splitting on ', '
                     var urlsAndSizes = scrapedString.split(', ');
@@ -1011,7 +1012,7 @@ module.exports.GenerateImageURLFieldsByScraping
                             }
                         }
                         var finalized_imageSourceURLForSize = prependToImageURLs + rawURLForSize;
-                        // winston.info("🔁  Download/host and store hosted url for original " + finalized_imageSourceURLForSize)
+                        winston.info("🔁  Download/host and store hosted url for original " + finalized_imageSourceURLForSize)
                         var hostingOpts =
                         {
                             overwrite: false // if already exists, do not re-upload
