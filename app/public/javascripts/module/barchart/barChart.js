@@ -9,18 +9,6 @@ function BarChart(selector, dataSet, options) {
     this._options = options;
     this._padding = options.padding || 0.2;
     this._precise = options.precise || 2;
-    this._margin = {
-        top : 25,
-        right : 15,
-        bottom : 144 + $('.filter-bar').height(),  //Add more margin if filters present
-        left : options.horizontal ? 120 : 80
-    };
-
-    if ('margin' in options) {
-        for (var side in options.margin) {
-            this._margin[side] = options.margin[side];
-        }
-    }
 
     var self = this;
 
@@ -43,6 +31,23 @@ function BarChart(selector, dataSet, options) {
     this.sortData();
 
     this._chartData = this.getChartData();
+
+
+    var digitCount = this.getMaxValue().toString().length;
+
+    this._margin = {
+        top : 25,
+        right : 15,
+        bottom : 144 + $('.filter-bar').height(),  //Add more margin if filters present
+        left : options.horizontal ? 120 : Math.max(10 * digitCount, 50)
+    };
+
+    if ('margin' in options) {
+        for (var side in options.margin) {
+            this._margin[side] = options.margin[side];
+        }
+    }
+
 
     /**
      * Chart tooltip.
