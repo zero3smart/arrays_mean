@@ -272,6 +272,7 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
                 description.imageSrcSetInSelector,
                 description.prependToImageURLs || "",
                 description.useAndHostSrcSetSizeByField,
+                description.nestedSelector,
                 cb);
         },
         function (err) {
