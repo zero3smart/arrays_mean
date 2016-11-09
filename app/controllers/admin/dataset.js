@@ -511,7 +511,10 @@ module.exports.saveFormatField = function (req, next) {
 
     var data = {};
 
-    // field = field.replace(/\./g, "_");
+    field = field.replace(/\./g, "_");
+
+
+
 
 
 
@@ -700,6 +703,8 @@ module.exports.saveFormatCustomField = function (req, isNew, next) {
 
     var data = {};
     var name = name.replace(/\./g, '_');
+
+        console.log(req.body);
 
     datasource_description.findById(dataset_id, function (err, doc) {
         if (err) return next(err);
