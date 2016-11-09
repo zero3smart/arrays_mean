@@ -160,7 +160,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             highestValue = countAtCountry;
                         }
                         var countAtCountry_str = "" + countAtCountry;
-                        var geometryForCountry = cache_countryGeometryByLowerCasedCountryName[countryName.toLowerCase()];
+                        var geometryForCountry = cache_countryGeometryByLowerCasedCountryName[countryName.toString().toLowerCase()];
                         if (typeof geometryForCountry === 'undefined') {
                             winston.warn("⚠️  No known geometry for country named \"" + countryName + "\"");
 
@@ -218,7 +218,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     isSearchActive: isSearchActive,
                     //
                     defaultMapByColumnName_humanReadable: defaultMapByColumnName_humanReadable,
-                    colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'choropleth', 'SortBy'),
+                    colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'choropleth', 'MapBy'),
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     routePath_base: routePath_base,
