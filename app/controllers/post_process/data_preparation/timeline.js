@@ -429,7 +429,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sortDir: sortDir,
                     defaultSortByColumnName_humanReadable: defaultSortByColumnName_humanReadable,
                     sortBy_realColumnName: sortBy_realColumnName,
-                    colNames_orderedForTimelineSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'timeline', 'SortBy'),
+                    colNames_orderedForTimelineSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'timeline', 'SortBy','ToDate'),
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     filterObj: filterObj,

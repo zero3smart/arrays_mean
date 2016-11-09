@@ -148,7 +148,7 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByD
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown;
 
 //
-function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleRowObject, dataSourceDescription, viewType, fieldName) {
+function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleRowObject, dataSourceDescription, viewType, fieldName,restrictFieldType) {
 
 
     var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
@@ -165,6 +165,13 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdow
                 return;
             }
         }
+        if (restrictFieldType != null) {
+            if (!dataSourceDescription.raw_rowObjects_coercionScheme[key] || 
+                dataSourceDescription.raw_rowObjects_coercionScheme[key].operation != restrictFieldType) {
+                return;
+            }
+
+        } 
         var displayTitleForKey = fe_displayTitleOverrides[key];
         var humanReadable_key = displayTitleForKey || key;
         available_keys.push(humanReadable_key);
