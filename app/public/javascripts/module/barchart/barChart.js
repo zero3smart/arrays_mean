@@ -13,7 +13,7 @@ function BarChart(selector, dataSet, options) {
         top : 25,
         right : 15,
         bottom : 144 + $('.filter-bar').height(),  //Add more margin if filters present
-        left : options.horizontal ? 120 : 70
+        left : options.horizontal ? 120 : 80
     };
 
     if ('margin' in options) {
@@ -60,6 +60,14 @@ function BarChart(selector, dataSet, options) {
     // Vertically-responsive
     var container = $(this._container.node());
     container.height($(window).height() - container.offset().top - 30);
+
+    const defaultMinHeight = 460;
+    container.css('min-height', function() {
+        if (options.horizontal)
+            return Math.max(self._categoryData.length * 30, defaultMinHeight);
+
+        return defaultMinHeight;
+    });
 
     var dimension = this._container.node().getBoundingClientRect();
 
