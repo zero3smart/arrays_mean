@@ -177,30 +177,40 @@ $(document).ready(function () {
 
         if ($('#custom_mode').val() == 'true') {
 
+
+
             var field = $('#field').val();
+
             var url = "/admin/dataset/" + doc_id + "/format-custom-field/";
+
             url += field == '' ? 'save' : (field + '/update');
 
-            $.post("/admin/dataset/" + doc_id + "/format-custom-field/save", params)
+
+            $.post(url, params)
                 .done(function (data) {
                     if (data.error && data.error != '') {
                         $('.format-field .alert-danger').html(data.error).removeClass('hidden').addClass('show');
 
                     } else {
-                        $('.format-field .alert-danger').html(data.error).addClass('hidden');
 
-                        var doc = data.doc;
-                        var field = data.customField;
-                        $('table#fields tbody').append(
-                            '<tr class="field" data-field-name="' + field.fieldName + '">' +
-                            '<td scope="row">' + (data.columnIndex) + '</td>' +
-                            '<td>' + field.fieldName + '</td>' +
-                            '<td>' + field.fieldType + '</td>' +
-                            '<td>' + field.firstRecord + '</td>' +
-                            '</tr>'
-                        );
 
-                        $('#changed').val(true);
+
+                        if (field == '' ) {
+                            var doc = data.doc;
+                            var field = data.customField;
+                              $('.format-field .alert-danger').html(data.error).addClass('hidden');
+                              $('table#fields tbody').append(
+                                '<tr class="field" data-field-name="' + field.fieldName + '">' +
+                                '<td scope="row">' + (data.columnIndex) + '</td>' +
+                                '<td>' + field.fieldName + '</td>' +
+                                '<td>' + field.fieldType + '</td>' +
+                                '<td>' + field.firstRecord + '</td>' +
+                                '</tr>'
+                            );
+
+                            $('#changed').val(true);
+                        }
+                      
                         $('#modal').modal('hide');
                     }
                 }, 'json');

@@ -64,7 +64,6 @@ DatasourceDescription_scheme.plugin(integerValidator);
 DatasourceDescription_scheme.plugin(deepPopulate,{whitelist:['_otherSources','_otherSources._team','schema_id','_team']})
 
 
-
 var modelName = 'DatasourceDescription';
 
 var datasource_description = mongoose.model(modelName, DatasourceDescription_scheme);

@@ -16,7 +16,7 @@ var import_raw_objects_controller = require('../pre_process/data_ingest/import_r
 var raw_row_objects = require('../../models/raw_row_objects');
 var processed_row_objects = require('../../models/processed_row_objects')
 var raw_source_documents = require('../../models/raw_source_documents');
-
+var mongoose_client = require('../.././../lib/mongoose_client/mongoose_client');
 
 /***************  Index  ***************/
 module.exports.index = function (req, next) {
@@ -45,6 +45,7 @@ module.exports.removeDataset = function(req, next) {
     batch.concurrency(1);
 
     var description;
+    var srcDocPKey;
     batch.push(function(done) {
         datasource_description.findById(req.body.id, function(err, data) {
             if (err) return done(err);
@@ -52,13 +53,14 @@ module.exports.removeDataset = function(req, next) {
             if (!data) return done(new Error('No datasource exists : ' + req.body.id));
 
             description = data;
+            srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
             done();
         });
     });
 
     // Remove source document
     batch.push(function(done) {
-        var srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+       
         raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function(err, document) {
             if (err) return done(err);
 
@@ -69,22 +71,16 @@ module.exports.removeDataset = function(req, next) {
 
     // Remove processed row object
     batch.push(function(done) {
-        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
-        var mongooseContext_ofTheseProcessedRowObjects = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
-        var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
 
-        if (!mongooseModel_ofTheseProcessedRowObjects) return done();
-        mongooseModel_ofTheseProcessedRowObjects.remove(done);
+        mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey,done)
+
     });
 
     // Remove raw row object
     batch.push(function(done) {
-        var srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
-        var forThisDataSource_mongooseContext = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey);
-        var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model;
+       
+        mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey,done)
 
-        if (!forThisDataSource_RawRowObject_model) return done();
-        forThisDataSource_RawRowObject_model.remove(done);
     });
 
     // Remove datasource description
@@ -515,7 +511,10 @@ module.exports.saveFormatField = function (req, next) {
 
     var data = {};
 
-    // field = field.replace(/\./g, "_");
+    field = field.replace(/\./g, "_");
+
+
+
 
 
 
@@ -705,13 +704,17 @@ module.exports.saveFormatCustomField = function (req, isNew, next) {
     var data = {};
     var name = name.replace(/\./g, '_');
 
+
     datasource_description.findById(dataset_id, function (err, doc) {
         if (err) return next(err);
 
         if (!doc) return next(new Error('No description exists : ' + dataset_id));
 
+
+
         var customFieldsToProcess = doc._doc.customFieldsToProcess;
         if (!customFieldsToProcess) customFieldsToProcess = [];
+
 
         // Verify that the name is unique
         var duplicated = false;

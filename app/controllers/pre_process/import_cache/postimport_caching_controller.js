@@ -1,4 +1,4 @@
-//
+
 //
 // 
 var async = require("async");
@@ -127,6 +127,8 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                     return;
                 }
                 if (results == undefined || results == null || results.length == 0) {
+
+                    console.log(key)
                     callback(new Error('Unexpectedly empty unique field value aggregation'));
 
                     return;
