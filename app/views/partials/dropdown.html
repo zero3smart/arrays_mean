@@ -16,7 +16,7 @@
 {% endmacro %}
 
 {% macro sortbar(label, selectedValue, columnNames, basePath, toggleButton=true, hasCaret=true) %}
-<div class="dropdown sort-control sort-bar-6">
+<div class="dropdown sort-control">
     <a class="btn dropdown-toggle {{ 'dropdown-toggle-button' if toggleButton }} {{ 'dropdown-toggle-button-has-caret' if hasCaret }} ui-label group-by" type="button" id="{{ label|replace(' ','-') }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         <div class="dropdown-toggle-label">
             <span id="label">{{ label }}</span> <span class="sort-criteria color-brand-hover">{{ selectedValue }}</span>
@@ -33,7 +33,7 @@
 {% endmacro %}
 
 {% macro axis(axis, label, selectedValue, columnNames, toggleButton=true, hasCaret=true) %}
-<div class="dropdown sort-control sort-bar-6">
+<div class="dropdown sort-control">
     <a class="btn dropdown-toggle {{ 'dropdown-toggle-button' if toggleButton }} {{ 'dropdown-toggle-button-has-caret' if hasCaret }} ui-label group-by" type="button" id="{{ label|replace(' ','-') }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         <div class="dropdown-toggle-label">
             <span id="label">{{ label }}</span> <span class="sort-criteria color-brand-hover {{ axis }}-axis-field">{{ selectedValue | replace(r/_/g, ' ') }}</span>

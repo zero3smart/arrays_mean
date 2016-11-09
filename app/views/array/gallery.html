@@ -35,7 +35,7 @@
 
                         <div class="sort-bar clearfix">
 
-                            <nav class="pull-left" role="navigation">
+                            <nav class="sort-bar-left pull-left" role="navigation">
 
                                 <div class="sort-control sort-direction">
                                     {% if sortDir == "Descending" or (not sortDir and defaultSortOrderDescending) %}
@@ -74,7 +74,7 @@
 
                             </nav>
 
-                            <div class="pull-right">
+                            <div class="sort-bar-right pull-right">
                                 {{
                                     search.default(
                                     routePath_base | constructedRoutePath(filterObj),
