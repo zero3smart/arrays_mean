@@ -863,7 +863,7 @@ module.exports.GenerateImageURLFieldsByScraping
         //
         var datasetQuery = dataset_uid ? {pKey: {$regex: "^" + dataset_uid + "-"}} : {};
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously
-            var concurrencyLimit = 15; // at a time
+            var concurrencyLimit = 10; // at a time
             
             async.eachLimit(docs, concurrencyLimit, function (doc, eachCb) {
 
@@ -946,7 +946,7 @@ module.exports.GenerateImageURLFieldsByScraping
 
                         return;
                     }
-                    
+
                     console.log("obtained scrapedString", scrapedString);
                     // Now we need to parse this string
                     // First by splitting on ', '
