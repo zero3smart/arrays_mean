@@ -108,7 +108,6 @@ mongoose_client.WhenMongoDBConnected(function () {
                 winston.error("❌ cannot find descriptions in db and set them up");
             } else {
                 winston.info("✅  all datasources descriptions in db has been set up");
-
             }
 
             winston.info("💬  Proceeding to boot app.");
