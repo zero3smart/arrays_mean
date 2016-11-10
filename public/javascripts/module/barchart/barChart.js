@@ -35,8 +35,6 @@ function BarChart(selector, dataSet, options) {
 
     var digitCount = this.getMaxValue().toString().length;
 
-    console.log(this.getMaxValue());
-
     this._margin = {
         top : 25,
         right : 15,
@@ -289,10 +287,8 @@ BarChart.prototype.getValueFormatter = function() {
 
     /* Comma separate numbers */
     var _castToString = function(number) {
-        // console.log(number);
         parts = number.toString().split(".");
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        console.log(parts[0]);
         return parts.join(".");
     }
 
