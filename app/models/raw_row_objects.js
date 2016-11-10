@@ -1,6 +1,6 @@
 var async = require('async');
 var winston = require('winston');
-var mongoose_client = require('../lib/mongoose_client/mongoose_client');
+var mongoose_client = require('./mongoose_client');
 var raw_source_documents = require('./raw_source_documents');
 
 var mongoose = mongoose_client.mongoose;

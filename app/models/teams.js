@@ -1,4 +1,4 @@
-var mongoose_client = require('../lib/mongoose_client/mongoose_client');
+var mongoose_client = require('./mongoose_client');
 var integerValidator = require('mongoose-integer');
 var _ = require("lodash")
 

@@ -83,7 +83,7 @@ app.use(expressWinston.logger({
 }));
 //
 //
-var mongoose_client = require('./app/lib/mongoose_client/mongoose_client');
+var mongoose_client = require('./app/models/mongoose_client');
 var raw_source_documents = require('./app/models/raw_source_documents');
 var datasource_descriptions = require('./app/models/descriptions');
 
