@@ -81,7 +81,7 @@ module.exports = function(grunt) {
         tasks: ['sass', 'postcss']
       },
       js : {
-        files : ['public/javascripts/**/*.js', '!public/javascripts/main.min.js', '!public/javascripts/lib/**/*.js'],
+        files : ['public/javascripts/**/*.js', '!public/javascripts/main.min.js', '!public/javascripts/venders/**/*.js'],
         // tasks : ['jshint'],
         options : {
           livereload : true
@@ -106,7 +106,7 @@ module.exports = function(grunt) {
         expand: true,
         cwd: 'bower_components/d3',
         src: 'd3.js',
-        dest: 'public/javascripts/lib/d3'
+        dest: 'public/javascripts/venders/d3'
       },
       worldGeoJson: {
         expand: true,
@@ -118,31 +118,31 @@ module.exports = function(grunt) {
         expand: true,
         cwd: 'bower_components/sharrre',
         src: 'jquery.sharrre.js',
-        dest: 'public/javascripts/lib/sharrre'
+        dest: 'public/javascripts/venders/sharrre'
       },
       scrollmagic: {
         expand: true,
         cwd: 'bower_components/scrollmagic/scrollmagic/uncompressed',
         src: 'ScrollMagic.js',
-        dest: 'public/javascripts/lib/scrollmagic'
+        dest: 'public/javascripts/venders/scrollmagic'
       },
       lodash: {
         expand: true,
         cwd: 'bower_components/lodash/dist/',
         src: '*',
-        dest: 'public/javascripts/lib/lodash'
+        dest: 'public/javascripts/venders/lodash'
       },
       moment: {
         expand: true,
         cwd: 'bower_components/moment',
         src: 'moment.js',
-        dest: 'public/javascripts/lib/moment'
+        dest: 'public/javascripts/venders/moment'
       },
       colorpickerJs: {
         expand: true,
         cwd: 'bower_components/bootstrap-colorpicker/dist/js',
         src: '**',
-        dest: 'public/javascripts/lib/colorpicker/'
+        dest: 'public/javascripts/venders/colorpicker/'
       },
       colorpickerImg: {
         expand: true,

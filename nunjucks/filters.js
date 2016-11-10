@@ -1,6 +1,6 @@
 var moment = require('moment');
 var url = require('url');
-var datatypes = require('../lib/datasources/datatypes.js');
+var datatypes = require('../app/lib/datasources/datatypes.js');
 
 module.exports = function (nunjucks_env) {
     nunjucks_env.addFilter('comma', require('nunjucks-comma-filter'));

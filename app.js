@@ -32,7 +32,7 @@ var nunjucks = require('express-nunjucks');
 nunjucks.setup({
     watch: isDev,
     noCache: isDev,
-}, app).then(require('./app/nunjucks/filters'))
+}, app).then(require('./nunjucks/filters'))
 
 
 // Redirect https
