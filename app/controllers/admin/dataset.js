@@ -16,7 +16,7 @@ var import_raw_objects_controller = require('../../lib/import/data_ingest/raw_ob
 var raw_row_objects = require('../../models/raw_row_objects');
 var processed_row_objects = require('../../models/processed_row_objects')
 var raw_source_documents = require('../../models/raw_source_documents');
-var mongoose_client = require('../../lib/mongoose_client/mongoose_client');
+var mongoose_client = require('../../models/mongoose_client');
 
 /***************  Index  ***************/
 module.exports.index = function (req, next) {

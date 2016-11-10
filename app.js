@@ -32,7 +32,7 @@ var nunjucks = require('express-nunjucks');
 nunjucks.setup({
     watch: isDev,
     noCache: isDev,
-}, app).then(require('./app/nunjucks/filters'))
+}, app).then(require('./nunjucks/filters'))
 
 
 // Redirect https
@@ -83,7 +83,7 @@ app.use(expressWinston.logger({
 }));
 //
 //
-var mongoose_client = require('./app/lib/mongoose_client/mongoose_client');
+var mongoose_client = require('./app/models/mongoose_client');
 var raw_source_documents = require('./app/models/raw_source_documents');
 var datasource_descriptions = require('./app/models/descriptions');
 

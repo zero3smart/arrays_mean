@@ -1,5 +1,5 @@
 var winston = require('winston');
-var mongoose_client = require('../../mongoose_client/mongoose_client');
+var mongoose_client = require('../../../models/mongoose_client');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var raw_source_documents = require('../../../models/raw_source_documents');
 //

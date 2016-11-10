@@ -2,7 +2,7 @@ var async = require('async');
 var winston = require('winston');
 var raw_source_documents = require('./raw_source_documents');
 var raw_row_objects = require('./raw_row_objects');
-var mongoose_client = require('../lib/mongoose_client/mongoose_client');
+var mongoose_client = require('./mongoose_client');
 var processing = require('../lib/datasources/processing');
 
 var mongoose = mongoose_client.mongoose;

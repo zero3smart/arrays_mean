@@ -105,7 +105,7 @@ $ heroku git:remote -a arrays
 
 ##### Caching the keywords directly
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
-2. Execute [`bin/_dev_DB_cache_keywords jewish_transcript_data`](bin/_dev_DB_cache_keywords)
+2. Execute [`bin/_dev_DB_cache_keywords transcript_data`](bin/_dev_DB_cache_keywords)
 
 #### v. Running the front-end web server locally
 

@@ -6,7 +6,7 @@ var Promise = require('q').Promise;
 var _ = require("lodash");
 var async = require('async');
 
-var mongoose_client = require('../lib/mongoose_client/mongoose_client');
+var mongoose_client = require('./mongoose_client');
 var imported_data_preparation = require('../lib/datasources/imported_data_preparation');
 var import_controller = require('../lib/import/data_ingest/controller');
 

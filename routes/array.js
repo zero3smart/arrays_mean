@@ -16,7 +16,6 @@ var index_controller = require('../app/controllers/client/data_preparation');
 router.get('/', function (req, res) {
     index_controller.BindData(req, function (err, bindData) {
 
-
         if (err) {
             winston.error("❌  Error getting bind data for Array index: ", err);
             res.status(500).send(err.response || 'Internal Server Error');
