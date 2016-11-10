@@ -78,7 +78,13 @@ function BarChart(selector, dataSet, options) {
 
     var dimension = this._container.node().getBoundingClientRect();
 
-    this._outerWidth = dimension.width;
+    /*Set a minimum width for the barchart*/
+    if (dimension.width < 550) {
+        this._outerWidth = 550;
+    }
+    else {
+        this._outerWidth = dimension.width;
+    }  
     this._outerHeight = dimension.height;
     this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
