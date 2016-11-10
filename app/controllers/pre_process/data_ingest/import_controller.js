@@ -269,10 +269,7 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
                 dataSourceDescription.title,
                 dataSourceDescription.dataset_uid,
                 description.htmlSourceAtURLInField,
-                description.imageSrcSetInSelector,
-                description.prependToImageURLs || "",
-                description.useAndHostSrcSetSizeByField,
-                description.nestedSelector,
+                description.setFields,
                 cb);
         },
         function (err) {
