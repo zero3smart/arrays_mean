@@ -65,7 +65,7 @@
 }
 
 /* 940px is the screen width when the minimum barchart width takes effect */
-@media (min-width: 940px) {
+@media (min-width: 920px) {
     #bar-chart {
         overflow: hidden;
     }
