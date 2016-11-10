@@ -35,6 +35,8 @@ function BarChart(selector, dataSet, options) {
 
     var digitCount = this.getMaxValue().toString().length;
 
+    console.log(this.getMaxValue());
+
     this._margin = {
         top : 25,
         right : 15,
@@ -262,15 +264,29 @@ BarChart.prototype.getMaxValue = function() {
 };
 
 
-
-
 BarChart.prototype.getValueFormatter = function() {
 
     var self = this;
 
+    /* Truncate numbers */
+    var _abbreviateNumber = function(num, fixed) {
+        if (num === null) { return null; } // terminate early
+        if (num === 0) { return '0'; } // terminate early
+        fixed = (!fixed || fixed < 0) ? 0 : fixed; // number of decimal places to show
+        var b = (num).toPrecision(2).split("e"), // get power
+            k = b.length === 1 ? 0 : Math.floor(Math.min(b[1].slice(1), 14) / 3), // floor at decimals, ceiling at trillions
+            c = k < 1 ? num.toFixed(0 + fixed) : (num / Math.pow(10, k * 3) ).toFixed(1 + fixed), // divide by power
+            d = c < 0 ? c : Math.abs(c), // enforce -0 is 0
+            e = d + ['', 'K', 'M', 'B', 'T'][k]; // append power
+        return e;
+    }
+
+    /* Comma separate numbers */
     var _castToString = function(number) {
+        // console.log(number);
         parts = number.toString().split(".");
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        console.log(parts[0]);
         return parts.join(".");
     }
 
@@ -280,9 +296,10 @@ BarChart.prototype.getValueFormatter = function() {
         };
     } else {
         return function(d) {
+            // var number = d3.round(d,self._precise);
+            // return _castToString(number);
             var number = d3.round(d,self._precise);
-            return _castToString(number);
-
+            return _abbreviateNumber(number, 0);
         }
     }
 };
