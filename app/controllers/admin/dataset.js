@@ -8,15 +8,15 @@ var _ = require('lodash');
 var async = require("async");
 
 var datasource_description = require('../../models/descriptions');
-var datasource_upload_service = require('../../../lib/datasource_process/aws-datasource-files-hosting');
-var import_datatypes = require('../../datasources/utils/import_datatypes');
-var imported_data_preparation = require('../../datasources/utils/imported_data_preparation')
+var datasource_upload_service = require('../../lib/utils/aws-datasource-files-hosting');
+var datatypes = require('../../lib/datasources/datatypes');
+var imported_data_preparation = require('../../lib/datasources/imported_data_preparation')
 var views = require('../../models/views');
-var import_raw_objects_controller = require('../pre_process/data_ingest/import_raw_objects_controller');
+var import_raw_objects_controller = require('../../lib/import/data_ingest/raw_objects_controller');
 var raw_row_objects = require('../../models/raw_row_objects');
 var processed_row_objects = require('../../models/processed_row_objects')
 var raw_source_documents = require('../../models/raw_source_documents');
-var mongoose_client = require('../.././../lib/mongoose_client/mongoose_client');
+var mongoose_client = require('../../lib/mongoose_client/mongoose_client');
 
 /***************  Index  ***************/
 module.exports.index = function (req, next) {
@@ -487,7 +487,7 @@ module.exports.getFormatField = function (req, next) {
         id: dataset_id,
         field: field_name,
         firstRecord: req.session.uploadData_firstRecord[columnIndex],
-        available_forFieldDataType_coercions: import_datatypes.available_forFieldDataType_coercions()
+        available_forFieldDataType_coercions: datatypes.available_forFieldDataType_coercions()
     };
 
     datasource_description.findById(dataset_id, function (err, doc) {
@@ -844,7 +844,7 @@ module.exports.getFormatView = function (req, next) {
     if (!dataset_id || !view_name) return next(new Error('Invalid parameter!'));
 
     var data = {id: dataset_id};
-    data.available_forDuration = import_datatypes.available_forDuration();
+    data.available_forDuration = datatypes.available_forDuration();
 
     var batch = new Batch();
     batch.concurrency(1);

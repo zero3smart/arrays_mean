@@ -1,1 +1,1 @@
-NODE_ENV=production node app/controllers/pre_process/import_cache/postimport_MVP_caching.js $@
+NODE_ENV=production node app/lib/import/cmd/caching.js $@
