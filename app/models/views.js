@@ -1,4 +1,4 @@
-var mongoose_client = require('../../lib/mongoose_client/mongoose_client');
+var mongoose_client = require('../lib/mongoose_client/mongoose_client');
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 var View_scheme = Schema({
@@ -7,5 +7,5 @@ var View_scheme = Schema({
     displayAs: String,
     icon: String
 });
-var modelName = 'View';
-module.exports = mongoose.model(modelName, View_scheme);
+
+module.exports = mongoose.model('View', View_scheme);

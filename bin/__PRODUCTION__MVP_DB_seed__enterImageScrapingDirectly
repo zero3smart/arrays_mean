@@ -1,1 +1,0 @@
-NODE_ENV=production node app/controllers/pre_process/data_ingest/_import_MVP_DB_seed__enterImageScrapingDirectly.js $@

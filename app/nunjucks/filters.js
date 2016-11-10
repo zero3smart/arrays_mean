@@ -1,6 +1,6 @@
 var moment = require('moment');
 var url = require('url');
-var import_datatypes = require('../datasources/utils/import_datatypes.js');
+var datatypes = require('../lib/datasources/datatypes.js');
 
 module.exports = function (nunjucks_env) {
     nunjucks_env.addFilter('comma', require('nunjucks-comma-filter'));
@@ -17,9 +17,8 @@ module.exports = function (nunjucks_env) {
     nunjucks_env.addFilter('isArray', function (val) {
         return Array.isArray(val);
     });
+
     nunjucks_env.addFilter('doesArrayContain', function (array, member) {
-
-
 
         if (Array.isArray(array))
             return array.indexOf(member) !== -1 || array.indexOf(parseInt(member)) !== -1;
@@ -36,7 +35,6 @@ module.exports = function (nunjucks_env) {
         }
         return false;
     });
-
 
     nunjucks_env.addFilter('findViewDisplayName',function(array,default_view) {
         if (Array.isArray(array)) {
@@ -59,9 +57,6 @@ module.exports = function (nunjucks_env) {
         }
 
     })
-
-
-
 
     nunjucks_env.addFilter('isObjectEmpty', function (obj) {
         if (typeof obj == 'undefined' || obj == null) {
@@ -106,14 +101,9 @@ module.exports = function (nunjucks_env) {
 
         if (typeof coercionScheme[col] !== 'undefined' && coercionScheme[col].operation ) {
             var lowercase = coercionScheme[col].operation.toLowerCase();
-
-
             return lowercase.indexOf(expectedDataType.toLowerCase()) >= 0;
-
         }
         return false;
-
-
     })
     nunjucks_env.addFilter('castArrayToStringSeparatedByComma',function(array) {
         if (Array.isArray(array)) {
@@ -121,11 +111,9 @@ module.exports = function (nunjucks_env) {
      
             if (indexOfNullType >= 0) {
                 array.splice(indexOfNullType,1);
-
             }
         
             return array.toString()
-
         }
     })
 
@@ -298,13 +286,10 @@ module.exports = function (nunjucks_env) {
                 return el;
             }
         }).join(' ');
-
-
-
     });
 
     // Object Row Coercion Data Type
     nunjucks_env.addFilter('fieldDataType_coercion_toString', function(field) {
-        return import_datatypes.fieldDataType_coercion_toString(field);
+        return datatypes.fieldDataType_coercion_toString(field);
     });
 };
