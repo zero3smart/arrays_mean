@@ -78,8 +78,8 @@ function BarChart(selector, dataSet, options) {
 
     var dimension = this._container.node().getBoundingClientRect();
 
-    /*Set a minimum width for the barchart*/
-    if (dimension.width < 580) {
+    /*Set a minimum width for the barchart in cases where # of labels exceeds 18*/
+    if (dimension.width < 580 & self._categoryData.length > 16) {
         this._outerWidth = 580;
     }
     else {
