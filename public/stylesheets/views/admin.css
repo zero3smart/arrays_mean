@@ -1,7 +1,7 @@
 /* @override 
 	http://localhost:9080/stylesheets/views/admin.css */
 
-.admin-sidebar {
+.site-admin .admin-sidebar {
     width: 200px;
     margin: 100px 0;
     float: left;
@@ -14,7 +14,7 @@
 }
 
 @media (min-width: 768px) {
-    .site-content {
+    .site-admin .site-content {
         margin-left: 200px;
     }
 }
