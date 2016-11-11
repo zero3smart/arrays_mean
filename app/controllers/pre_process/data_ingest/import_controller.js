@@ -261,6 +261,8 @@ var _postProcess = function (indexInList, dataSourceDescription, callback) {
 
 var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, dataSourceDescription, callback) {
 
+
+
     async.eachSeries(
         dataSourceDescription.imageScraping,
         function (description, cb) {

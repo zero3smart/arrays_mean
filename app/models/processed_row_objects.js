@@ -912,16 +912,33 @@ function scrapeImages(mongooseModel,doc,htmlSourceAtURLInField, setFields,select
 
     var htmlSourceAtURL = doc["rowParams"][htmlSourceAtURLInField];
 
+
+
     winston.info("📡  Scraping image URL from \"" + htmlSourceAtURL + "\"…");
-    if (htmlSourceAtURL == null || typeof htmlSourceAtURL === 'undefined' || htmlSourceAtURL == "") {
-        // nothing to scrape
-        async.setImmediate(function () { // ^ so as not to blow stack
-            outterCallback();
-        });
+
+    var returnObj = {};
+
+
+    var stillNeedScrape = false;
+
+    for (var field in selectors) {
+        if (typeof selectors[field] == 'undefined') {
+            returnObj[field] = {};
+            returnObj[field]["OneSize"] = htmlSourceAtURL;
+            continue;
+        } 
+        stillNeedScrape = true
+    }
+
+
+
+    if (stillNeedScrape == false) {
+        outterCallback(null,mongooseModel,doc,returnObj,setFields);
         return;
     }
+
+
     xray_instance(htmlSourceAtURL,selectors)(function (err, scrapedObject) {
-        var returnObj = {};
         if (err !== null || scrapedObject == null) {
             if (err.code == "ENOTFOUND" || err.code == 'ETIMEDOUT') {
                for (var attr in selectors) {
@@ -990,6 +1007,8 @@ function updateDocWithImageUrl(mongooseModel,doc,scrapedObject,setFields,outterC
 
 
 
+
+
     var docQuery = {
         pKey: doc.pKey,
         srcDocPKey: doc.srcDocPKey
@@ -997,12 +1016,13 @@ function updateDocWithImageUrl(mongooseModel,doc,scrapedObject,setFields,outterC
     var docUpdate = {};
     var counter = 0;
     var keyLength = Object.keys(scrapedObject).length;
+    var index;
 
 
     async.eachOf(scrapedObject,function(value,key,eachCb) {
         counter++;
 
-        var index = _findFieldFromSetFieldsArray(setFields,key);
+        index = _findFieldFromSetFieldsArray(setFields,key);
         var sizeForFieldKey = setFields[index].size;
         var rawURLForSize;
 
@@ -1020,6 +1040,7 @@ function updateDocWithImageUrl(mongooseModel,doc,scrapedObject,setFields,outterC
 
 
         } else if (typeof sizeForFieldKey == 'undefined') {
+            //get the first size
             for (var size in value) {
                 rawURLForSize = value[size];
                 break;
@@ -1030,10 +1051,12 @@ function updateDocWithImageUrl(mongooseModel,doc,scrapedObject,setFields,outterC
                 rawURLForSize = rawURLForSize.split(setFields[index].splitAt)[0] + setFields[index].fabricatedSuffix;
             }
 
+
+
             var finalized_imageSourceURLForSize = setFields[index].prependToImageURLs + rawURLForSize;
 
             var hostingOpts = {
-                overwrite : false
+                overwrite : true
             }
             var destinationFilenameSansExt = doc.srcDocPKey + "/" + doc.pKey + "__" + key;
             var resize = setFields[index].resize;
@@ -1082,7 +1105,7 @@ function updateDocWithImageUrl(mongooseModel,doc,scrapedObject,setFields,outterC
                 var finalized_imageSourceURLForSize = setFields[index].prependToImageURLs + rawURLForSize;
 
                 var hostingOpts = {
-                    overwrite : false
+                    overwrite : true
                 }
                 var destinationFilenameSansExt = doc.srcDocPKey + "/" + doc.pKey + "__" + key;
                 winston.info("🔁  Download/host and store hosted url for original " + finalized_imageSourceURLForSize)
@@ -1127,6 +1150,7 @@ module.exports.GenerateImageURLFieldsByScraping
                 callback) {
     // var useAndHostSrcSetSizeByField_keys = Object.keys(useAndHostSrcSetSizeByField);
     //
+
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Generating fields by scraping images for \"" + dataSource_title + "\".");
         //
@@ -1134,17 +1158,26 @@ module.exports.GenerateImageURLFieldsByScraping
         //
         var mongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel = mongooseContext.Model;
-        //
-        var datasetQuery = dataset_uid ? {pKey: {$regex: "^" + dataset_uid + "-"}} : {};
+        
+
+
+        var datasetQuery = {};
+        if (dataset_uid) {
+            datasetQuery["pKey"] = {$regex: "^" + dataset_uid + "-"}
+        }
+        datasetQuery["rowParams." + htmlSourceAtURLInField] = {$exists: true};
+        datasetQuery["rowParams." + htmlSourceAtURLInField] = {$ne: ""};
+
+      
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously
             var concurrencyLimit = 15; // at a time
 
-             var selectors = _constructorSelector(setFields);
-
-
-
+            var selectors = _constructorSelector(setFields);
 
             async.eachLimit(docs, concurrencyLimit, function (doc, eachCb) {
+
+
+       
 
                 // The following allows us to skip scraping for this doc if we already have done so
 

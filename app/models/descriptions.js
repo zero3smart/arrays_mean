@@ -53,7 +53,7 @@ var DatasourceDescription_scheme = Schema({
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
 
-    imageScrapping: Array,
+    imageScraping: Array,
 
     fe_nestedObject: Object
 });
