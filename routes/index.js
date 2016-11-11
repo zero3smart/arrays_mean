@@ -1,6 +1,7 @@
 var winston = require('winston');
 var expressWinston = require('express-winston');
 var url = require('url');
+var path = require('path');
 
 var isDev = !process.env.NODE_ENV || process.env.NODE_ENV == 'development';
 var __DEBUG_enableEnsureWWWForDev = false; // for debug
@@ -68,10 +69,7 @@ var _mountRoutes_endPoints = function (app) {
     app.use('/' + apiVersion, require('./jsonAPI_share'));
 
     app.use('/auth', require('./auth'));
-    app.use('/admin', require('./admin/account'));
-    app.use('/admin/dataset', require('./admin/dataset'));
-    app.use('/admin/users', require('./admin/users'));
-    app.use('/admin/website', require('./admin/website'));
+    app.use('/api', require('./api'));
 };
 
 module.exports.MountRoutes = function (app) {
