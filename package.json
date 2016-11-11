@@ -11,8 +11,8 @@
     "node": ">=0.12.7"
   },
   "scripts": {
-    "start": "node app/app.js",
-    "monitor": "nodemon app/app.js"
+    "start": "node app.js",
+    "monitor": "nodemon app.js"
   },
   "dependencies": {
     "async": "^1.5.2",

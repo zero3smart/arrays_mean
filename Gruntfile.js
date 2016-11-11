@@ -32,7 +32,7 @@ module.exports = function(grunt) {
     // },
 
     jshint: {
-      files: ['Gruntfile.js', 'app/public/javascripts/**/*.js'],
+      files: ['Gruntfile.js', 'public/javascripts/**/*.js'],
       options: {
         // curly: true,
         // eqeqeq: true,
@@ -67,28 +67,28 @@ module.exports = function(grunt) {
         tasks: ['jshint:gruntfile', 'postcss']
       },
       css : {
-        files : ['app/public/stylesheets/**/*.css', '!app/public/stylesheets/style.min.css'],
+        files : ['public/stylesheets/**/*.css', '!public/stylesheets/style.min.css'],
         options : {
           livereload : true
         },
         tasks: ['postcss']
       },
       sass: {
-        files: ['app/public/stylesheets/scss/**/*.scss'],
+        files: ['public/stylesheets/scss/**/*.scss'],
         options: {
           livereload: true
         },
         tasks: ['sass', 'postcss']
       },
       js : {
-        files : ['app/public/javascripts/**/*.js', '!app/public/javascripts/main.min.js', '!app/public/javascripts/lib/**/*.js'],
+        files : ['public/javascripts/**/*.js', '!public/javascripts/main.min.js', '!public/javascripts/vendors/**/*.js'],
         // tasks : ['jshint'],
         options : {
           livereload : true
         }
       },
       html : {
-        files : ['app/views/**/*.html'],
+        files : ['views/**/*.html'],
         options : {
           livereload : true
         }
@@ -106,55 +106,55 @@ module.exports = function(grunt) {
         expand: true,
         cwd: 'bower_components/d3',
         src: 'd3.js',
-        dest: 'app/public/javascripts/lib/d3'
+        dest: 'public/javascripts/vendors/d3'
       },
       worldGeoJson: {
         expand: true,
         cwd: 'bower_components/world.geo.json',
         src: 'countries.geo.json',
-        dest: 'app/public/data/world.geo.json'
+        dest: 'public/data/world.geo.json'
       },
       sharrre: {
         expand: true,
         cwd: 'bower_components/sharrre',
         src: 'jquery.sharrre.js',
-        dest: 'app/public/javascripts/lib/sharrre'
+        dest: 'public/javascripts/vendors/sharrre'
       },
       scrollmagic: {
         expand: true,
         cwd: 'bower_components/scrollmagic/scrollmagic/uncompressed',
         src: 'ScrollMagic.js',
-        dest: 'app/public/javascripts/lib/scrollmagic'
+        dest: 'public/javascripts/vendors/scrollmagic'
       },
       lodash: {
         expand: true,
         cwd: 'bower_components/lodash/dist/',
         src: '*',
-        dest: 'app/public/javascripts/lib/lodash'
+        dest: 'public/javascripts/vendors/lodash'
       },
       moment: {
         expand: true,
         cwd: 'bower_components/moment',
         src: 'moment.js',
-        dest: 'app/public/javascripts/lib/moment'
+        dest: 'public/javascripts/vendors/moment'
       },
       colorpickerJs: {
         expand: true,
         cwd: 'bower_components/bootstrap-colorpicker/dist/js',
         src: '**',
-        dest: 'app/public/javascripts/lib/colorpicker/'
+        dest: 'public/javascripts/vendors/colorpicker/'
       },
       colorpickerImg: {
         expand: true,
         cwd: 'bower_components/bootstrap-colorpicker/dist/img',
         src: '**',
-        dest: 'app/public/images/lib/'
+        dest: 'public/images/lib/'
       },
       /* colorpickerCss: {
         expand: true,
         cwd: 'bower_components/bootstrap-colorpicker/dist/css',
         src: '**',
-        dest: 'app/public/stylesheets/lib/bootstrap-colorpicker'
+        dest: 'public/stylesheets/lib/bootstrap-colorpicker'
       }, */
     },
 
@@ -164,7 +164,7 @@ module.exports = function(grunt) {
           // sourceMap: true
         },
         files: {
-          'app/public/stylesheets/base/bootstrap.css': 'app/public/stylesheets/scss/bootstrap.scss'
+          'public/stylesheets/base/bootstrap.css': 'public/stylesheets/scss/bootstrap.scss'
         }
       }
     },
@@ -192,8 +192,8 @@ module.exports = function(grunt) {
         ]
       },
       dist: {
-        src: 'app/public/stylesheets/style.css',
-        dest: 'app/public/stylesheets/style.min.css'
+        src: 'public/stylesheets/style.css',
+        dest: 'public/stylesheets/style.min.css'
       }
     },
   });

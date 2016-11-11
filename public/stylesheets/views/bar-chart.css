@@ -1,0 +1,72 @@
+.array-bar-chart .site-content .container-fluid {
+    transition: padding 400ms ease-in-out;
+}
+
+@media (min-width: 768px) {
+    .array-bar-chart.legend-open .site-content .container-fluid {
+        padding-right: 20px;
+        padding-left: 20px;
+    }
+}
+
+.array-bar-chart .sort-bar {
+    border-bottom-style: none;
+    padding-bottom: 0;
+}
+
+.array-bar-chart .sort-direction {
+    display: inline-block;
+}
+
+.array-bar-chart .array-content {
+    position: relative;
+}
+
+@media (min-width: 768px) {
+    .array-bar-chart .sort-direction {
+        margin: 12px 0;
+    }
+}
+
+.toggle-button {
+    /*border: 1px solid #9C9C9C;*/
+    margin: 4px 7px 0 0px;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 13px 12px 9px;
+    color: var(--color-text-dark);
+    display: inline-block;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.2);
+    font-weight: bold;
+}
+
+#normalization {
+    font-weight: bold;
+    padding: 13px 16px 9px;
+}
+
+#orientation .horizontal,
+#normalization .relative,
+#sort-direction .icon-sort-descending {
+    display: none;
+}
+
+#sort-direction .sort-direction-icon:before {
+    margin-right: 0;
+}
+#sort-direction.toggle-button {
+    padding: 10px 10px 7px;
+}
+
+#bar-chart {
+    overflow-x: scroll;
+    overflow-y: hidden;
+}
+
+/* 940px is the screen width when the minimum barchart width takes effect */
+@media (min-width: 920px) {
+    #bar-chart {
+        overflow: hidden;
+    }
+}
