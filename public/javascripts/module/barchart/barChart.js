@@ -76,7 +76,13 @@ function BarChart(selector, dataSet, options) {
 
     var dimension = this._container.node().getBoundingClientRect();
 
-    this._outerWidth = dimension.width;
+    /*Set a minimum width for the barchart in cases where # of labels exceeds 18*/
+    if (dimension.width < 580 & self._categoryData.length > 16) {
+        this._outerWidth = 580;
+    }
+    else {
+        this._outerWidth = dimension.width;
+    }  
     this._outerHeight = dimension.height;
     this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
@@ -262,12 +268,24 @@ BarChart.prototype.getMaxValue = function() {
 };
 
 
-
-
 BarChart.prototype.getValueFormatter = function() {
 
     var self = this;
 
+    /* Truncate numbers */
+    var _abbreviateNumber = function(num, fixed) {
+        if (num === null) { return null; } // terminate early
+        if (num === 0) { return '0'; } // terminate early
+        fixed = (!fixed || fixed < 0) ? 0 : fixed; // number of decimal places to show
+        var b = (num).toPrecision(2).split("e"), // get power
+            k = b.length === 1 ? 0 : Math.floor(Math.min(b[1].slice(1), 14) / 3), // floor at decimals, ceiling at trillions
+            c = k < 1 ? num.toFixed(0 + fixed) : (num / Math.pow(10, k * 3) ).toFixed(1 + fixed), // divide by power
+            d = c < 0 ? c : Math.abs(c), // enforce -0 is 0
+            e = d + ['', 'K', 'M', 'B', 'T'][k]; // append power
+        return e;
+    }
+
+    /* Comma separate numbers */
     var _castToString = function(number) {
         parts = number.toString().split(".");
         parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -280,9 +298,10 @@ BarChart.prototype.getValueFormatter = function() {
         };
     } else {
         return function(d) {
+            // var number = d3.round(d,self._precise);
+            // return _castToString(number);
             var number = d3.round(d,self._precise);
-            return _castToString(number);
-
+            return _abbreviateNumber(number, 0);
         }
     }
 };

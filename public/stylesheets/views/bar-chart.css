@@ -58,3 +58,15 @@
 #sort-direction.toggle-button {
     padding: 10px 10px 7px;
 }
+
+#bar-chart {
+    overflow-x: scroll;
+    overflow-y: hidden;
+}
+
+/* 940px is the screen width when the minimum barchart width takes effect */
+@media (min-width: 920px) {
+    #bar-chart {
+        overflow: hidden;
+    }
+}

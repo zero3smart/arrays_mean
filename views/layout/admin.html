@@ -1,52 +1,50 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
-<head>
-    {% include "../partials/base_header.html" %}
+    <head>
+        {% include "../partials/base_header.html" %}
 
-    {% block headSuffix %}{% endblock %}
-</head>
+        {% block headSuffix %}{% endblock %}
+    </head>
 
-<body class="site-admin">
-<div id="page" class="site">
-    {% include "../partials/admin/header-bar.html" %}
+    <body class="site-admin">
+        <div id="page" class="site">
+            {% include "../partials/admin/header-bar.html" %}
 
-    <div id="content" class="site-content">
-        <div id="primary" class="content-area">
-            <main id="main" class="site-main" role="main">
+            <div id="content" class="site-content">
+                <div id="primary" class="content-area">
+                    <main id="main" class="site-main" role="main">
 
-                <div class="container">
-                    <div class="col-sm-3">
+                        <div class="container">
+                            <div class="col-sm-3">
 
-                        {% include "../partials/admin/nav.html" %}
+                                {% include "../partials/admin/nav.html" %}
 
-                    </div>
+                            </div>
 
-                    <div class="col-sm-9">
+                            <div class="col-sm-9">
 
-                        {% block content %}{% endblock %}
+                                {% block content %}{% endblock %}
 
-                    </div>
+                            </div>
+                        </div>
+
+                    </main>
                 </div>
+            </div><!-- #content -->
 
-            </main>
-        </div>
-    </div><!-- #content -->
+            {% include "../partials/footer.html" %}
+        </div><!-- #page -->
 
-    {% include "../partials/footer.html" %}
-</div><!-- #page -->
+        {% block inlineScript %}
+            <script type="text/javascript" src="/javascripts/vendors/bootstrap/bootstrap.js"></script>
+            <script type="text/javascript" src="/javascripts/main.js"></script>
+        {% endblock %}
 
-{% include "../partials/survicate.html" %}
+        {% include "../partials/survicate.html" %}
+    </body>
 
-{% block inlineScript %}
-<!-- bootstrap -->
-<script type="text/javascript" src="/javascripts/vendors/bootstrap/bootstrap.js"></script>
-<script type="text/javascript" src="/javsscripts/module/main.js"></script>
-{% endblock %}
-
-</body>
-
-{% if env.FE_LIVERELOAD == "true" %}
-<script src="//localhost:35729/livereload.js"></script>
-{% endif %}
+    {% if env.FE_LIVERELOAD == "true" %}
+    <script src="//localhost:35729/livereload.js"></script>
+    {% endif %}
 
 </html>
