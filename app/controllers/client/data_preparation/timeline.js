@@ -58,7 +58,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
             // dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
 
-
             var groupedResultsLimit = config.timelineGroupSize;
             var groupsLimit = config.timelineGroups;
             var groupByDateFormat;
@@ -68,12 +67,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
             var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName] || dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName;
 
-
-            var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) : 
+            var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) :
             dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName
-    
-
-
 
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
             var routePath_base = "/array/" + source_pKey + "/timeline";
@@ -205,10 +200,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         nonpagedCount = results.length;
                     }
 
-
-
                     done();
                 };
+
                 processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 

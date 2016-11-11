@@ -112,10 +112,13 @@ module.exports = function (grunt) {
                     'lodash/dist/**',
                     'moment/moment.js',
                     'bootstrap-colorpicker/dist/**',
-                    'angular/angular.min.js',
+                    'angular/angular.js',
                     'angular-file-upload/dist/angular-file-upload.min.js',
                     'angular-animate/angular-animate.min.js',
                     'angular-cookies/angular-cookies.min.js',
+                    'angular-ui-router/release/angular-ui-router.min.js',
+                    'angular-bootstrap/ui-bootstrap-tpls.js',
+                    'ngstorage/ngStorage.min.js',
                     'oclazyload/dist/**'
                 ],
                 dest: 'public/javascripts/vendors'

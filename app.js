@@ -11,7 +11,7 @@ var passport = require('passport');
 var dotenv = require('dotenv');
 var fs = require('fs');
 var cors = require('cors');
-var routes = require('./routes');
+var routes = require('./app/routes');
 
 var isDev = process.env.NODE_ENV == 'production' ? false : true;
 var dotenv_path = __dirname + "/config/env/.env." + (process.env.NODE_ENV ? process.env.NODE_ENV : "development");

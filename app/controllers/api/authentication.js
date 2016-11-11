@@ -1,7 +1,7 @@
-module.exports.register = function(req, next) {
+module.exports.register = function(req, res) {
 
 };
 
-module.exports.login = function(req, next) {
+module.exports.login = function(req, res) {
 
 }
