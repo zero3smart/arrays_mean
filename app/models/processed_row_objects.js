@@ -951,6 +951,7 @@ function scrapeImages(mongooseModel,doc,htmlSourceAtURLInField, setFields,select
             }
 
         }
+
         async.eachOf(scrapedObject,function(scrapedString,newField,innerCallback) {
 
             if (scrapedString == null || typeof scrapedString == "undefined" || scrapedString == '') {
@@ -1165,6 +1166,7 @@ module.exports.GenerateImageURLFieldsByScraping
         if (dataset_uid) {
             datasetQuery["pKey"] = {$regex: "^" + dataset_uid + "-"}
         }
+     
         datasetQuery["rowParams." + htmlSourceAtURLInField] = {$exists: true};
         datasetQuery["rowParams." + htmlSourceAtURLInField] = {$ne: ""};
 
