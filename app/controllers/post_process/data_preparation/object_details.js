@@ -156,7 +156,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     var originalVal = rowParams[key];
                     var displayableVal = func.reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
                     
-                    if (isNaN(displayableVal) == false) {
+                    if ( isNaN(displayableVal) == false && dataSourceDescription.raw_rowObjects_coercionScheme[key] && 
+                        dataSourceDescription.raw_rowObjects_coercionScheme[key].operation== "ToInteger") {
                         displayableVal = import_datatypes.displayNumberWithComma(displayableVal)
                     }
                     rowParams[key] = displayableVal;

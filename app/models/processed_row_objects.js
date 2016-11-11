@@ -809,7 +809,6 @@ var xray = require('x-ray');
 var xray_instance = xray();
 
 
-
 var image_hosting = require('../../lib/image_process/aws-image-hosting');
 
 function _nextLargestImageSrcSetSizeAvailableInParsedRawURLsBySize(rawURLsBySize, afterSize) // -> (String?)
@@ -873,6 +872,7 @@ function extractRawUrl (scrapedString) {
         winston.error("❌  urlsAndSizes_length was 0.");
         return null;// nothing to do
     }
+
     for (var i = 0; i < urlsAndSizes_length; i++) {
         var urlAndSizeString = urlsAndSizes[i];
         var components = urlAndSizeString.split(' ');
@@ -881,7 +881,14 @@ function extractRawUrl (scrapedString) {
         var rawURL, size;
         //image instead of srcset
         if (components.length == 1) {
-            size = components[0].split(",")[2] + "w";
+            var sp =  components[0].split(",");
+            if (typeof sp[2] == 'undefined') {
+                size = "OneSize";
+            } else {
+                size = components[0].split(",")[2] + "w";
+            }
+
+            
         } else {
             size = components[1];
         }
@@ -901,15 +908,12 @@ function extractRawUrl (scrapedString) {
 
 }
 
-function scrapeImages(doc,htmlSourceAtURLInField, setFields,selectors,outterCallback) {
-
-    console.log("scraped images");
-
+function scrapeImages(mongooseModel,doc,htmlSourceAtURLInField, setFields,selectors,outterCallback) {
 
     var htmlSourceAtURL = doc["rowParams"][htmlSourceAtURLInField];
-    if (htmlSourceAtURL == null || typeof htmlSourceAtURL === 'undefined' || htmlSourceAtURL == "") {
 
-        console.log("nth to scrape");
+    winston.info("📡  Scraping image URL from \"" + htmlSourceAtURL + "\"…");
+    if (htmlSourceAtURL == null || typeof htmlSourceAtURL === 'undefined' || htmlSourceAtURL == "") {
         // nothing to scrape
         async.setImmediate(function () { // ^ so as not to blow stack
             outterCallback();
@@ -917,14 +921,8 @@ function scrapeImages(doc,htmlSourceAtURLInField, setFields,selectors,outterCall
         return;
     }
     xray_instance(htmlSourceAtURL,selectors)(function (err, scrapedObject) {
-
-
         var returnObj = {};
-
-
         if (err !== null || scrapedObject == null) {
-            console.log("error");
-
             if (err.code == "ENOTFOUND" || err.code == 'ETIMEDOUT') {
                for (var attr in selectors) {
                     returnObj[attr] = null;
@@ -936,114 +934,48 @@ function scrapeImages(doc,htmlSourceAtURLInField, setFields,selectors,outterCall
             }
 
         }
+        async.eachOf(scrapedObject,function(scrapedString,newField,innerCallback) {
 
-        console.log("entered async")
-        async.eachOfSeries(scrapedObject,function(scrapedString,newField,innerCallback) {
             if (scrapedString == null || typeof scrapedString == "undefined" || scrapedString == '') {
                 winston.info("💬  No images available for " + doc.srcDocPKey + " row with pKey " + doc.pKey + ". Saving nulls in image field:" + newField +".");
                  returnObj[newField] = null;
-                 console.log("callback from null");
+
+
                  innerCallback(null);
             } else {
-                var index = _findFieldFromSetFieldsArray(setFields,newField);
-                if (index == -1) eachCh(new Error("❌ Field does not exist."));
-                if (typeof setFields[index].nestedSelector !== 'undefined' && setFields[index].nestedSelector != '' ) {
-                    var select = {};
-                    select[newField] = setFields[index].nestedSelector;
-
-                    console.log("going to nested")
-                    innerCallback(null)
-
-                    xray_instance(scrapedString,select)(function() {
-                        console.log("retr")
-                    })
-
-                    // xray_instance(scrapedString,select)
-                    // (function(err,nestedScrapedString) {
-
-
-
-                    //     if (typeof nestedScrapedString != 'undefined') {
-
-                    //           var rawUrlBySize = extractRawUrl(nestedScrapedString[newField]);
-
-                    //         if (rawUrlBySize == null) innerCallback(new Error("❌ cannot extract url by size"));
-                    //          returnObj[newField] = rawUrlBySize;
-                    //          console.log("callback set url nested")
-                    //         innerCallback(null)
-
-
-
-                    //     }
-
-                        
-
-
-
-                    //     // if (err || typeof nestedScrapedString[newField] == 'undefined' || nestedScrapedString == '') {
-                    //     //      returnObj[newField] = null;
-                    //     //      console.log("callback null nested");
-                    //     //    innerCallback(null);
-                    //     // } else {
-                    //     //     var rawUrlBySize = extractRawUrl(nestedScrapedString[newField]);
-
-                    //     //     if (rawUrlBySize == null) innerCallback(new Error("❌ cannot extract url by size"));
-                    //     //      returnObj[newField] = rawUrlBySize;
-                    //     //      console.log("callback set url nested")
-                    //     //     innerCallback(null)
-
-                    //     // }
-
-                      
-
-                    // })
+                var rawUrlBySize = extractRawUrl(scrapedString);
+                if (rawUrlBySize == null) {
+                    innerCallback(new Error("❌ cannot extract url by size"));
                 } else {
-                    var rawUrlBySize = extractRawUrl(scrapedString);
-                    if (rawUrlBySize == null) {
-                        innerCallback(new Error("❌ cannot extract url by size"));
-                    } else {
-                        returnObj[newField] = rawUrlBySize
-                        console.log("callback not nested")
-                        innerCallback(null);
 
-                    }
-                   
+                    returnObj[newField] = rawUrlBySize;
+                    innerCallback(null);
 
                 }
+                   
+
             }
 
         },function(err) {
-            console.log("callback");
-            console.log(returnObj);
-
-            outterCallback(err,doc,returnObj,setFields)
-
-       
-
-
-            // callback(err,doc,returnObj,setFields);
-
+            outterCallback(err,mongooseModel,doc,returnObj,setFields);
         })
     })
 }
 
- function proceedToPersistHostedImageURLOrNull_forKey(err, hostedURLOrNull, fieldKey, lastFieldKey, persistedCb) {
+
+function proceedToPersistHostedImageURLOrNull_forKey(err, mongooseModel,docQuery,hostedURLOrNull, fieldKey, lastFieldKey, persistedCb) {
     if (err) {
         persistedCb(err);
         return;
     }
                       
-    var docQuery =
-    {
-        pKey: doc.pKey,
-        srcDocPKey: doc.srcDocPKey
-    };
     var docUpdate = {};
     if (lastFieldKey == true) {
         docUpdate["rowParams.imageScraped"] = true
     }
     docUpdate["rowParams." + fieldKey] = hostedURLOrNull; // note it's a path rather than an object, so we don't overwrite the whole top-level key of 'rowParams'      
     mongooseModel.update(docQuery, {$set: docUpdate}, function (err, result) {
+        winston.info("📝  Saved " + hostedURLOrNull + " at " + fieldKey);
         persistedCb(err);
     });
 }
@@ -1054,86 +986,130 @@ function scrapeImages(doc,htmlSourceAtURLInField, setFields,selectors,outterCall
 
 
 
-function updateDocWithImageUrl(doc,scrapedObject,setFields,callback) {
+function updateDocWithImageUrl(mongooseModel,doc,scrapedObject,setFields,outterCallback) {
 
 
 
-    // var docQuery = {
-    //     pKey: doc.pKey,
-    //     srcDocPKey: doc.srcDocPKey
-    // }
-    // var docUpdate = {};
-    // var counter = 0;
-    // var keyLength = Object.keys(scrapedObject)
-
-    // async.eachOf(scrapedObject, function(value,key,eachCb) {
-
-    //     counter++;
-    //     var index = _findFieldFromSetFieldsArray(setFields,key);
+    var docQuery = {
+        pKey: doc.pKey,
+        srcDocPKey: doc.srcDocPKey
+    }
+    var docUpdate = {};
+    var counter = 0;
+    var keyLength = Object.keys(scrapedObject).length;
 
 
+    async.eachOf(scrapedObject,function(value,key,eachCb) {
+        counter++;
 
-    //     var sizeForFieldKey = setFields[index].size;
-    //     if (typeof sizeForFieldKey == 'undefined') {
-    //          for (var size in value) {
-    //             rawURLForSize = value[size];
-    //             sizeForFieldKey = size;
-    //             break;
-    //         }
-    //     } else {
-    //         var rawUrlForSize = value[sizeForFieldKey];
-    //         if (rawUrlForSize == null || typeof rawURLsBySize == 'undefined') {
-           
-    //             var nextLargestSize = _nextLargestImageSrcSetSizeAvailableInParsedRawURLsBySize(value,sizeForFieldKey);
+        var index = _findFieldFromSetFieldsArray(setFields,key);
+        var sizeForFieldKey = setFields[index].size;
+        var rawURLForSize;
 
-    //             if (nextLargestSize == null) { // still no available images (although this will actually throw)
-    //                 var err = new Error("No available URL for size " + sizeForFieldKey + " nor any next largest size available in scraped image src set " + JSON.stringify(rawURLsBySize) + " for", JSON.stringify(doc));
-    //                 eachCb(err);
+         if (value == null) {
+            var last = false;
+            if (counter == keyLength) {
+                last = true;
+            }
 
-    //                 return;
-    //             }
-    //             winston.warn("⚠️  No available URL for size " + sizeForFieldKey + " in scraped image src set " + JSON.stringify(rawURLsBySize) + ". Located next largest size " + nextLargestSize + "…");
-    //             rawURLForSize = rawURLsBySize[nextLargestSize]; // re-pick next largest
-    //             if (rawURLForSize == null || typeof rawURLForSize === 'undefined') { // still
-    //                 var err = new Error("Picked next largest size but unexpectedly no URL available for it in src set " + JSON.stringify(rawURLsBySize) + " for", JSON.stringify(doc));
-    //                 eachCb(err);
+            winston.warn("⚠️  scraped object is undefined for this doc:" + JSON.stringify(docQuery) + "]");
+            proceedToPersistHostedImageURLOrNull_forKey(null,mongooseModel,docQuery,null,key,last,function(err) {
+                eachCb(err);
+            })
 
-    //                 return;
-    //             }         
-    //         }
-    //     }
+
+
+        } else if (typeof sizeForFieldKey == 'undefined') {
+            for (var size in value) {
+                rawURLForSize = value[size];
+                break;
+            }
+            // only suitable for image has no size specified, not srcset
+            if (setFields[index].splitAt) {
         
-    //     var finalized_imageSourceURLForSize = value["prependToImageURLs"] + rawUrlForSize;
-    //     var hostingOpts = {
-    //         overwrite : false
-    //     }
-    //     var destinationFilenameSansExt = doc.srcDocPKey + "/" + doc.pKey + "__" + key;
+                rawURLForSize = rawURLForSize.split(setFields[index].splitAt)[0] + setFields[index].fabricatedSuffix;
+            }
 
-    //     var hostImageCb = function (err, hostedURL) {
-    //         if (err) {
-    //             eachCb(err);
+            var finalized_imageSourceURLForSize = setFields[index].prependToImageURLs + rawURLForSize;
 
-    //             return;
-    //         } else {
-    //             var last = false;
-    //             if (counter == keyLength) {
-    //                 last = true;
+            var hostingOpts = {
+                overwrite : false
+            }
+            var destinationFilenameSansExt = doc.srcDocPKey + "/" + doc.pKey + "__" + key;
+            var resize = setFields[index].resize;
 
-    //             }
+            // winston.info("🔁  Download/host and store hosted url for original " + finalized_imageSourceURLForSize)
 
-    //             proceedToPersistHostedImageURLOrNull_forKey(err, hostedURL, key, last, function (err) {
-    //                eachCb(err);
-    //             });
-    //         }
-    //     };
+            image_hosting.hostImageLocatedAtRemoteURL(resize,finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, function(err,hostedUrl) {
+                if (err) {
+                    eachCb(err);
+                } else {
+                    var last = false;
+                    if (counter == keyLength) {
+                        last = true;
+                    }
+                    proceedToPersistHostedImageURLOrNull_forKey(null,mongooseModel,docQuery,hostedUrl,key,last,function(err) {
+                        eachCb(err);
+                    })
+                }
+            });
 
-    //     image_hosting.hostImageLocatedAtRemoteURL(finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, hostImageCb);
+
+
+        } else {
 
 
 
-    // },function(err) {
-    //     return callback(err);
-    // })
+                rawURLForSize = value[sizeForFieldKey];
+
+                if (rawURLForSize == null || typeof rawURLForSize == 'undefined') {
+                    var nextLargestSize = _nextLargestImageSrcSetSizeAvailableInParsedRawURLsBySize(value,sizeForFieldKey);
+
+                    if (nextLargestSize == null) {
+                                 // still no available images (although this will actually throw)
+                        var err = new Error("No available URL for size " + sizeForFieldKey + " nor any next largest size available in scraped image src set " + JSON.stringify(value) + " for", JSON.stringify(doc));
+                        eachCb(err);
+                    }
+                    winston.warn("⚠️  No available URL for size " + sizeForFieldKey + " in scraped image src set " + JSON.stringify(value) + ". Located next largest size " + nextLargestSize + "…");
+                    rawURLForSize = value[nextLargestSize]; // re-pick next largest
+                    if (rawURLForSize == null || typeof rawURLForSize === 'undefined') { // still
+                        var err = new Error("Picked next largest size but unexpectedly no URL available for it in src set " + JSON.stringify(value) + " for", JSON.stringify(doc));
+                        eachCb(err);
+
+                    }         
+                }
+
+                var finalized_imageSourceURLForSize = setFields[index].prependToImageURLs + rawURLForSize;
+
+                var hostingOpts = {
+                    overwrite : false
+                }
+                var destinationFilenameSansExt = doc.srcDocPKey + "/" + doc.pKey + "__" + key;
+                winston.info("🔁  Download/host and store hosted url for original " + finalized_imageSourceURLForSize)
+
+
+                var resize = setFields[index].resize;
+
+                image_hosting.hostImageLocatedAtRemoteURL(resize,finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, function(err,hostedUrl) {
+                    if (err) {
+                        eachCb(err);
+                    } else {
+                        var last = false;
+                        if (counter == keyLength) {
+                            last = true;
+                        }
+                        proceedToPersistHostedImageURLOrNull_forKey(err,mongooseModel,docQuery,hostedUrl,key,last,function(err) {
+                            eachCb(err);
+                        })
+                    }
+                });
+
+            
+        }
+    },function(err) {
+        outterCallback(err);
+    })
+
 }
 
 
@@ -1159,9 +1135,9 @@ module.exports.GenerateImageURLFieldsByScraping
         var mongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel = mongooseContext.Model;
         //
-        var datasetQuery = dataset_uid ? {pKey: {$regex: "^" + dataset_uid + "-"}} : {_id:"5822700e713d9b0edafb2d7e"};
+        var datasetQuery = dataset_uid ? {pKey: {$regex: "^" + dataset_uid + "-"}} : {};
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously
-            var concurrencyLimit = 10; // at a time
+            var concurrencyLimit = 15; // at a time
 
              var selectors = _constructorSelector(setFields);
 
@@ -1171,23 +1147,30 @@ module.exports.GenerateImageURLFieldsByScraping
             async.eachLimit(docs, concurrencyLimit, function (doc, eachCb) {
 
                 // The following allows us to skip scraping for this doc if we already have done so
-                if (typeof doc["rowParams.imageScraped"] !== 'undefined' && doc["rowParams.imageScraped"] == true) {
+
+                if (typeof doc["rowParams"]["imageScraped"] !== 'undefined' && doc["rowParams"]["imageScraped"] == true) {
+
+                    winston.info("📡  already scraped this ,skipping");
+
                     async.setImmediate(function () { // ^ so as not to blow stack
                         eachCb(); // already done
                     });
 
                     return;
-                }
+                } else {
+                   
 
-                // winston.info("📡  Scraping image URL from \"" + htmlSourceAtURL + "\"…");
-
-                async.waterfall(
-                    [ async.apply(scrapeImages,doc,htmlSourceAtURLInField,setFields,selectors),
-                        updateDocWithImageUrl
-                    ],function(err) {
-                        eachCb(err);
+                     async.waterfall(
+                        [ async.apply(scrapeImages,mongooseModel,doc,htmlSourceAtURLInField,setFields,selectors),
+                         updateDocWithImageUrl
+                        ],function(err) {
+                            eachCb(err);
 
                     })
+
+                }
+
+              
 
 
             }, function (err) {
