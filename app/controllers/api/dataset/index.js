@@ -35,7 +35,7 @@ module.exports.getAll = function (req, res) {
             }))
         }
 
-        res.send(JSON.stringify({docs: dataset}));
+        res.send(JSON.stringify({docs: datasets}));
     });
 };
 

@@ -8,14 +8,14 @@
 
         var getAll = function() {
             var deferred = $q.defer();
-            $http.get('/api/dataset/getAll').then(function(data) {
-                if (!data.error) {
-                    return deferred.resolve(data.docs, data.message);
+            $http.get('/api/dataset/getAll').then(function(response) {
+                if (response.data && !response.data.error) {
+                    return deferred.resolve(response.data.docs);
                 } else {
-                    return deferred.reject(data.error);
+                    return deferred.reject(response.data.error);
                 }
             }, function(err) {
-                return deferred.reject(data.error);
+                return deferred.reject(response.data.error);
             });
             return deferred.promise;
         }
