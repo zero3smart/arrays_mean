@@ -6,7 +6,15 @@
   ],
   "dependencies": {
     "jquery": ">=1.10",
-    "bootstrap": ">=2"
+    "bootstrap": ">=2",
+    "angular": "^1.5.8",
+    "angular-animate": "^1.5.8",
+    "angular-file-upload": "^2.3.4",
+    "angular-cookies": "^1.5.8",
+    "oclazyload": "^1.0.9",
+    "angular-ui-router": "^0.3.2",
+    "angular-bootstrap": "^2.2.0",
+    "ngstorage": "^0.3.11"
   },
   "ignore": [
     "\\.*",

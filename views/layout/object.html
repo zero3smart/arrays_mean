@@ -7,6 +7,8 @@
     </head>
 
     <body class="object-show source-{{ array_source_key }} {{ "view-embedded" if embedded == "true" }}">
+        {% include "../partials/auth0.html" %}
+
         <div id="page" class="site">
             {% include "../partials/header_bar_objectDetails.html" %}
             {% include "../partials/sidebar_filter.html" %}
@@ -20,6 +22,8 @@
             {% block footer %}{% endblock %}
         </div><!-- #page -->
 
+        {% include "../partials/survicate.html" %}
+
         {% include "../partials/modal.html" %}
 
         {% block inlineScript %}
@@ -27,8 +31,6 @@
             <script type="text/javascript" src="/javascripts/vendors/sharrre/jquery.sharrre.js"></script>
             <script type="text/javascript" src="/javascripts/main.js"></script>
         {% endblock %}
-
-        {% include "../partials/survicate.html" %}
     </body>
 
     {% if env.FE_LIVERELOAD == "true" %}

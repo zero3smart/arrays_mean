@@ -1,8 +1,22 @@
 /* @override 
 	http://localhost:9080/stylesheets/views/admin.css */
 
-.site-admin .site-main {
-    padding-top: 40px;
+.site-admin .admin-sidebar {
+    width: 200px;
+    margin: 100px 0;
+    float: left;
+}
+.admin-sidebar:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+}
+
+@media (min-width: 768px) {
+    .site-admin .site-content {
+        margin-left: 200px;
+    }
 }
 
 .dataset {
