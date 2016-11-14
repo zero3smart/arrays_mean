@@ -155,10 +155,14 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     var key = rowParams_keys[i];
                     var originalVal = rowParams[key];
                     var displayableVal = func.reverseDataToBeDisplayableVal(originalVal, key, dataSourceDescription);
-                    
-                    if (isNaN(displayableVal) == false) {
-                        displayableVal = datatypes.displayNumberWithComma(displayableVal)
+
+                    if (typeof dataSourceDescription.raw_rowObjects_coercionScheme[key] == 'undefined' || 
+                        dataSourceDescription.raw_rowObjects_coercionScheme[key].operation !== 'ToDate') {
+                        if (isNaN(displayableVal) == false) displayableVal = datatypes.displayNumberWithComma(displayableVal)
+
+                        
                     }
+                    
                     rowParams[key] = displayableVal;
                 }
                 //

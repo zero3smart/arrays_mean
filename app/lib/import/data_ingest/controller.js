@@ -259,6 +259,8 @@ var _postProcess = function (indexInList, dataSourceDescription, callback) {
 
 var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, dataSourceDescription, callback) {
 
+
+
     async.eachSeries(
         dataSourceDescription.imageScraping,
         function (description, cb) {
@@ -267,9 +269,7 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
                 dataSourceDescription.title,
                 dataSourceDescription.dataset_uid,
                 description.htmlSourceAtURLInField,
-                description.imageSrcSetInSelector,
-                description.prependToImageURLs || "",
-                description.useAndHostSrcSetSizeByField,
+                description.setFields,
                 cb);
         },
         function (err) {
