@@ -23,7 +23,7 @@ router.get('/callback', passport.authenticate('auth0', {failureRedirect: '/'}), 
     res.redirect(req.session.returnTo || '/admin');
 });
 
-router.get('/*', /* ensureLoggedIn, */function (req, res) {
+router.get('/*', ensureLoggedIn, function (req, res) {
     res.render('admin/index', {
         env: process.env,
         user: req.user
