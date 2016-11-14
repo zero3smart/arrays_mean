@@ -1,11 +1,16 @@
 angular.module('arraysApp')
-    .controller('datasetCtrl', ['$scope', '$mdDialog',
-        function($scope, $mdDialog) {
+    .controller('datasetCtrl', ['$scope', '$mdDialog', 'dataset',
+        function($scope, $mdDialog, dataset) {
             $scope.doc = {};
 
             $scope.init = function() {
                 $scope.doc = {};
                 $scope.title = "Dataset Settings";
+                dataset.getAll().then(function(docs) {
+                    $scope.docs = docs;
+                }, function(err) {
+                    $scope.error = err;
+                });
             }
 
             $scope.removeDataset = function() {

@@ -18,22 +18,24 @@ var processed_row_objects = require('../../../models/processed_row_objects')
 var raw_source_documents = require('../../../models/raw_source_documents');
 var mongoose_client = require('../../../models/mongoose_client');
 
-/***************  Index  ***************/
-module.exports.index = function (req, next) {
+/***************  Get All Datasets  ***************/
+module.exports.getAll = function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+
     datasource_description.find({schema_id: {$exists: false}}, {
         _id: 1,
         title: 1,
         importRevision: 1
     }, function (err, datasets) {
         if (err) {
-            return next(err);
+            winston.error("❌  Error getting all datasets: " + err.message);
+
+            return res.send(JSON.stringify({
+                error: err.message
+            }))
         }
 
-        var data = {
-            docs: datasets
-        };
-
-        next(null, data);
+        res.send(JSON.stringify({docs: dataset}));
     });
 };
 

@@ -6,7 +6,7 @@ module.exports.updateAccount = function (req, res) {
 
     // Limit to editing own user account
     if (req.user.id !== req.body.id) {
-        winston.error("❌  Detect to update another one's account");
+        winston.error("❌  Detected to update another one's account");
 
         return res.send(JSON.stringify({
             error: "You are limited to edit your own account"

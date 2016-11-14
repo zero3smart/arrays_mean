@@ -30,7 +30,10 @@ angular.module('arraysApp')
                     .state('admin.dataset', {
                         url: '/dataset',
                         templateUrl: 'templates/dataset.html',
-                        resolve: load(['javascripts/module/admin/controllers/dataset.js'])
+                        resolve: load([
+                            'javascripts/module/admin/services/dataset.js',
+                            'javascripts/module/admin/controllers/dataset.js'
+                        ])
                     })
                     .state('admin.dataset.settings', {
                         url: '/settings',

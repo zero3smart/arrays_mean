@@ -21,6 +21,7 @@ router.post('/login', ctrlAuth.login);
 router.post('/account/update', ensureLoggedIn, ctrlAccount.updateAccount);
 
 // dataset settings
+router.get('/dataset/getAll', ensureLoggedIn, ctrlDataset.getAll);
 
 // website settings
 

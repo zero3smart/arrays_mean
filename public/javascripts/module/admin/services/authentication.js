@@ -18,7 +18,7 @@
         var updateProfile = function(user) {
             var deferred = $q.defer();
             if (isLoggedIn()) {
-                $http.post('/api/account/update', user).success(function(data) {
+                $http.post('/api/account/update', user).then(function(data) {
                     if (!data.error) {
                         // Update User
                         if (!$window.user._json.user_metadata) $window.user._json.user_metadata = {};
@@ -31,6 +31,8 @@
                     } else {
                         return deferred.reject(data.error);
                     }
+                }, function(err) {
+                    return deferred.reject(data.error);
                 });
             } else {
                 return deferred.reject('You need to login first!');
