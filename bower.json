@@ -14,7 +14,10 @@
     "oclazyload": "^1.0.9",
     "angular-ui-router": "^0.3.2",
     "angular-bootstrap": "^2.2.0",
-    "ngstorage": "^0.3.11"
+    "ngstorage": "^0.3.11",
+    "angular-material": "^1.1.1",
+    "angular-aria": "^1.5.8",
+    "angular-messages": "^1.5.8"
   },
   "ignore": [
     "\\.*",

@@ -2,13 +2,6 @@ $(document).ready(function () {
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    $('form.removeDataset').on('submit', function(e) {
-        var r = confirm('Are you sure to delete?');
-        if (r == true)
-            return true;
-        return false;
-    });
-
     $('#add_urls').on('click', function (e) {
         $('form#settings #extra_urls').append("<div class='form-group row'><input class='col-xs-8 col-xs-offset-4 urls' name='urls[]' type='text' value=''></div>");
     });

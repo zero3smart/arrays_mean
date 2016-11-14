@@ -88,9 +88,7 @@ angular.module('arraysApp')
                                     });
                                 });
                                 deferred.resolve();
-                                return callback ? promise.then(function () {
-                                    return callback();
-                                }) : promise;
+                                return callback ? promise.then(callback) : promise;
                             }]
                     }
                 }

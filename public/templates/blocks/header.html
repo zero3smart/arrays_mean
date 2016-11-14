@@ -17,6 +17,13 @@
                             {{ user.displayName }}
                         </a>
                         <ul class="dropdown-menu">
+
+                            <li role="background-color-brand-hover" ui-sref-active="active"><a ui-sref="admin.account">Account Settings</a></li>
+                            <li role="background-color-brand-hover" ui-sref-active="active"><a ui-sref="admin.website">Website Settings</a></li>
+                            <li role="background-color-brand-hover" ui-sref-active="active"><a ui-sref="admin.dataset">Dataset Settings</a></li>
+                            <li role="background-color-brand-hover" ui-sref-active="active"><a ui-sref="admin.users">Manage Users</a></li>
+
+                            <li role="separator" class="divider"></li>
                             <li class="background-color-brand-hover"><a href="/auth/logout" target="_self">Log Out</a></li>
                             <li role="separator" class="divider"></li>
                             <li class="background-color-brand-hover"><a href="mailto:Arrays Support<info@arrays.co>">Contact Support</a></li>
@@ -25,5 +32,7 @@
                 </ul>
             </div><!--/.nav-collapse -->
         </div>
+
+        <div ui-butterbar></div>
     </nav>
 </header>
