@@ -37,42 +37,71 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 });
             });
 
+            var galleryViewSettings = dataSourceDescription.fe_views.views.gallery;
             var galleryItem_htmlWhenMissingImage;
 
+            if (galleryViewSettings.galleryItemConditionsForIconWhenMissingImage) {
+                var cond = galleryViewSettings.galleryItemConditionsForIconWhenMissingImage;
 
-            if (dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage) {
-                var cond = dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage;
-                var galleryItem_htmlWhenMissingImage = function (rowObject) {
-                    var fieldName = cond.field;
-                    var conditions = cond.conditions;
+                var checkConditionAndApplyClasses = function (conditions, value, opr) {
+
                     for (var i = 0; i < conditions.length; i++) {
                         if (conditions[i].operator == "in" && Array.isArray(conditions[i].value)) {
 
-
-                            if (conditions[i].value.indexOf(rowObject["rowParams"][fieldName]) > 0) {
+                            if (conditions[i].value.indexOf(value) > 0) {
 
                                 var string = conditions[i].applyClasses.toString();
 
                                 var classes = string.replace(",", " ");
 
-
-                                return '<span class="' + classes + '"</span>';
+                                return '<span class="' + classes + '"></span>';
                             }
-                        } else if (conditions[i].operator == "equal") {
-                            if (conditions[i].value == rowObject["rowParams"][fieldName]) {
+                        }
+
+                        if (conditions[i].operator == "equal") {
+
+
+                            if (opr !== null) {
+
+                                if (opr == "trim") {
+                                    value = value.trim();
+                                }
+                            }
+
+                            if (conditions[i].value == value) {
 
                                 var string = conditions[i].applyClasses.toString();
 
-
                                 var classes = string.replace(",", " ");
 
-                                return '<span class="' + classes + '"</span>';
+                                return '<span class="' + classes + '"></span>';
                             }
                         }
                     }
+                };
+
+                galleryItem_htmlWhenMissingImage = function (rowObject) {
+                    var fieldName = cond.field;
+                    var conditions = cond.conditions;
+                    var htmlElem = "";
 
 
-                }
+                    var fieldValue = rowObject["rowParams"][fieldName];
+                    if (Array.isArray(fieldValue) === true) {
+                        var opr = null;
+
+                        if (cond.operationForEachValue) opr = cond.operationForEachValue;
+
+                        for (var i = 0; i < fieldValue.length; i++) {
+                            htmlElem += checkConditionAndApplyClasses(conditions, fieldValue[i], opr);
+                        }
+
+                    } else if (typeof fieldValue == "string") {
+                        htmlElem = checkConditionAndApplyClasses(conditions, fieldValue);
+
+                    }
+                    return htmlElem;
+                };
             }
 
 
@@ -260,7 +289,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     //
                     fe_objectShow_customHTMLOverrideFnsByColumnName: fe_objectShow_customHTMLOverrideFnsByColumnName,
 
-                    fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: dataSourceDescription.fe_galleryItem_htmlForIconFromRowObjWhenMissingImage
+                    fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage
                 };
                 callback(null, data);
             });

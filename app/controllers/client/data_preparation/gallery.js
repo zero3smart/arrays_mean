@@ -55,7 +55,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                                 var classes = string.replace(",", " ");
 
-
                                 return '<span class="' + classes + '"></span>';
                             }
                         }
@@ -74,37 +73,36 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                                 var string = conditions[i].applyClasses.toString();
 
-
                                 var classes = string.replace(",", " ");
 
                                 return '<span class="' + classes + '"></span>';
                             }
                         }
                     }
-                }
+                };
 
-                var galleryItem_htmlWhenMissingImage = function (rowObject) {
+                galleryItem_htmlWhenMissingImage = function (rowObject) {
                     var fieldName = cond.field;
                     var conditions = cond.conditions;
                     var htmlElem = "";
 
 
                     var fieldValue = rowObject["rowParams"][fieldName];
-                    if (Array.isArray(fieldValue) == true) {
-                        var opr = null
+                    if (Array.isArray(fieldValue) === true) {
+                        var opr = null;
 
-                        if (cond.operationForEachValue) opr = cond.operationForEachValue
+                        if (cond.operationForEachValue) opr = cond.operationForEachValue;
 
                         for (var i = 0; i < fieldValue.length; i++) {
                             htmlElem += checkConditionAndApplyClasses(conditions, fieldValue[i], opr);
                         }
 
                     } else if (typeof fieldValue == "string") {
-                        htmlElem = checkConditionAndApplyClasses(conditions, fieldValue)
+                        htmlElem = checkConditionAndApplyClasses(conditions, fieldValue);
 
                     }
                     return htmlElem;
-                }
+                };
             }
 
             var page = urlQuery.page;
