@@ -7,6 +7,8 @@
     </head>
 
     <body class="array array-{{ currentView }}">
+        {% include "../partials/auth0.html" %}
+
         <div id="page" class="site">
             {% include "../partials/header_bar_blank.html" %}
 
@@ -17,10 +19,10 @@
             {% include "../partials/footer.html" %}
         </div><!-- #page -->
 
+        {% include "../partials/survicate.html" %}
+
         <script type="text/javascript" src="/javascripts/vendors/bootstrap/bootstrap.js"></script>
         <script type="text/javascript" src="/javascripts/main.js"></script>
-
-        {% include "../partials/survicate.html" %}
     </body>
 
     {% if env.FE_LIVERELOAD == "true" %}

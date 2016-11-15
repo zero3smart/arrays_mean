@@ -14,7 +14,8 @@
 @import url('layout/embedded.css');
 /* @end Layout */
 /* @group Lib */
-@import url('lib/bootstrap-colorpicker/bootstrap-colorpicker.min.css');
+@import url('../javascripts/vendors/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css');
+@import url('../javascripts/vendors/angular-material/angular-material.min.css');
 /* @end Lib */
 /* @group Module */
 @import url('module/header-bar.css');

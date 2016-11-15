@@ -7,6 +7,8 @@
     </head>
 
     <body class="home splash">
+        {% include "../partials/auth0.html" %}
+
         <div id="page" class="site">
 
             <div id="content" class="site-content">
@@ -18,9 +20,6 @@
             </footer><!-- #colophon -->
         </div><!-- #page -->
 
-        {% block auth %}
-            {% include "../partials/auth.html" %}
-        {% endblock %}
 
         <script type="text/javascript" src="/javascripts/main.js"></script>
         <script type="text/javascript" src="/javascripts/module/splash.js"></script>

@@ -1,0 +1,38 @@
+<header id="masthead" class="site-header hidden-print" role="banner">
+    <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand">
+        <div class="container-fluid container-full-width">
+            <div class="navbar-brand-container">
+                <a class="navbar-brand navbar-brand-arrays" href="/array" target="_self">Arrays</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#" class="sidebar-filter-slide-toggle"><span class="icon-filter"
+                                                                              aria-hidden="true"></span></a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            {{ user.displayName }}
+                        </a>
+                        <ul class="dropdown-menu">
+
+                            <li role="background-color-brand-hover" ui-sref-active="active"><a ui-sref="admin.account">Account Settings</a></li>
+                            <li role="background-color-brand-hover" ui-sref-active="active"><a ui-sref="admin.website">Website Settings</a></li>
+                            <li role="background-color-brand-hover" ui-sref-active="active"><a ui-sref="admin.dataset">Dataset Settings</a></li>
+                            <li role="background-color-brand-hover" ui-sref-active="active"><a ui-sref="admin.users">Manage Users</a></li>
+
+                            <li role="separator" class="divider"></li>
+                            <li class="background-color-brand-hover"><a href="/auth/logout" target="_self">Log Out</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li class="background-color-brand-hover"><a href="mailto:Arrays Support<info@arrays.co>">Contact Support</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+
+        <div ui-butterbar></div>
+    </nav>
+</header>
