@@ -1,0 +1,73 @@
+<!-- <div class="alert alert-danger">
+  <strong>Danger!</strong> Indicates a dangerous or potentially negative action.
+</div> -->
+
+
+
+
+
+   <div class="row">
+      <form class="omb_loginForm" action="" autocomplete="off" method="POST">
+         <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+            <input type="text" class="form-control" name="username" placeholder="email address">
+         </div>
+         <span class="help-block"></span>
+         <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+            <input type="password" class="form-control" name="password" placeholder="Password">
+         </div>
+         <span class="help-block"></span>
+         <div class="pull-right">
+            <input type="checkbox">
+            <label> <span class="glyphicon glyphicon-eye-open"></span></label>
+         </div>
+
+         <div ng-if="currentTab=='Login'">
+            <a href="">  Forget Password?  </a>
+         </div>
+   
+
+
+         <div class="input-group col-xs-12">
+            <button id="submitSignupForm" class="form-control btn btn-primary " type="submit">{{currentTab}}</button>
+         </div>
+
+
+      </form>
+   </div>
+
+
+
+
+
+
+
+<div class="row omb_loginOr">
+   <div class="col-xs-12">
+      <hr class="omb_hrOr">
+      <span class="omb_spanOr">or</span>
+   </div>
+</div>
+
+<div class="row omb_socialButtons">
+   <div class="col-xs-4">
+      <a href="#" class="btn btn-block omb_btn-facebook">
+      <i class="fa fa-facebook"></i>
+     <!--  <span class="hidden-xs">Facebook</span> -->
+      </a>
+   </div>
+   <div class="col-xs-4">
+      <a href="#" class="btn btn-block omb_btn-twitter">
+      <i class="fa fa-twitter"></i>
+     <!--  <span class="hidden-xs">Twitter</span> -->
+      </a>
+   </div>
+   <div class="col-xs-4">
+      <a href="#" class="btn btn-block omb_btn-google">
+      <i class="fa fa-google-plus"></i>
+      <!-- <span class="hidden-xs">Google+</span> -->
+      </a>
+   </div>
+</div>
+

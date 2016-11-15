@@ -1,0 +1,106 @@
+#user-modal .modal-body {
+    padding-top:10px;
+
+}
+
+#user-modal .splash-logo {
+    margin-top:0px;
+    margin-bottom: 20px;
+}
+
+#user-modal .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus{
+    background-color: var(--color-background);
+}
+
+#user-modal .nav-tabs a {
+    cursor: pointer;
+}
+
+#user-modal .modal-body .row {
+    padding:5px;
+}
+.omb_login .omb_authTitle {
+    text-align: center;
+    line-height: 300%;
+    padding: 0px;
+}
+.omb_login .omb_socialButtons {
+    text-align: center;
+    padding:5px;
+}
+.omb_login .omb_socialButtons a {
+    color: white;
+    opacity:0.9;
+}
+.omb_login .omb_socialButtons a:hover {
+    color: white;
+    opacity:1;      
+}
+.omb_login .omb_socialButtons .omb_btn-facebook {background: #3b5998;}
+.omb_login .omb_socialButtons .omb_btn-twitter {background: #00aced;}
+.omb_login .omb_socialButtons .omb_btn-google {background: #c32f10;}
+
+#user-modal .input-group {
+    margin-top:10px;
+    margin-bottom: 10px;
+
+}
+
+#user-modal .modal-dialog {
+    margin:0px auto;
+    margin-top:20%;
+}
+
+
+
+@media (min-width: 1400px) {
+    .modal-sm {
+        width: 20%;
+    }
+}
+
+@media (max-width: 1500px) {
+    .modal-sm {
+        width: 30%;
+    }
+}
+
+#user-modal .input-group button {
+    border-radius: 5px;
+    height:5%;
+    margin-bottom: 10px;
+}
+.omb_login .omb_loginOr {
+    position: relative;
+    font-size: 1.5em;
+    color: #aaa;
+/*    margin-top: 1em;*/
+    margin-bottom: 1em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+.omb_login .omb_loginOr .omb_hrOr {
+    background-color: #cdcdcd;
+    height: 1px;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+}
+.omb_login .omb_loginOr .omb_spanOr {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: -0.6em;
+    margin-left: -1.5em;
+    background-color:var(--color-background);
+    width: 3em;
+    text-align: center;
+}           
+
+.omb_login .omb_loginForm .input-group.i {
+    width: 2em;
+}
+.omb_login .omb_loginForm  .help-block {
+    color: red;
+}
+
+    

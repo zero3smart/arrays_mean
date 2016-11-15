@@ -1,14 +1,14 @@
 {% macro default(label, selectedValue, columnNames, basePath, toggleButton=true, hasCaret=true) %}
 <div class="dropdown sort-control">
-    <a class="btn dropdown-toggle {{ 'dropdown-toggle-button' if toggleButton }} {{ 'dropdown-toggle-button-has-caret' if hasCaret }} ui-label group-by" type="button" id="{{ label|replace(' ','-') }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    <a class="btn dropdown-toggle <$ 'dropdown-toggle-button' if toggleButton $> <$ 'dropdown-toggle-button-has-caret' if hasCaret $> ui-label group-by" type="button" id="<$ label|replace(' ','-') $>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         <div class="dropdown-toggle-label">
-            <span id="label">{{ label }}</span> <span class="sort-criteria color-brand-hover">{{ selectedValue }}</span>
+            <span id="label"><$ label $></span> <span class="sort-criteria color-brand-hover"><$ selectedValue $></span>
         </div>
     </a>
     {% if columnNames | length %}
-    <ul class="dropdown-menu" aria-labelledby="{{ label|replace(' ','') }}">
+    <ul class="dropdown-menu" aria-labelledby="<$ label|replace(' ','') $>">
         {% for colName in columnNames %}
-        <li class="background-color-brand-hover"><a href="{{ basePath }}{{ colName }}">{{ colName }}</a></li>
+        <li class="background-color-brand-hover"><a href="<$ basePath $><$ colName $>"><$ colName $></a></li>
         {% endfor %}
     </ul>
     {% endif %}
@@ -17,15 +17,15 @@
 
 {% macro sortbar(label, selectedValue, columnNames, basePath, toggleButton=true, hasCaret=true) %}
 <div class="dropdown sort-control">
-    <a class="btn dropdown-toggle {{ 'dropdown-toggle-button' if toggleButton }} {{ 'dropdown-toggle-button-has-caret' if hasCaret }} ui-label group-by" type="button" id="{{ label|replace(' ','-') }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    <a class="btn dropdown-toggle <$ 'dropdown-toggle-button' if toggleButton $> <$ 'dropdown-toggle-button-has-caret' if hasCaret $> ui-label group-by" type="button" id="<$ label|replace(' ','-') $>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         <div class="dropdown-toggle-label">
-            <span id="label">{{ label }}</span> <span class="sort-criteria color-brand-hover">{{ selectedValue }}</span>
+            <span id="label"><$ label $></span> <span class="sort-criteria color-brand-hover"><$ selectedValue $></span>
         </div>
     </a>
     {% if columnNames | length %}
-    <ul class="dropdown-menu" aria-labelledby="{{ label|replace(' ','') }}">
+    <ul class="dropdown-menu" aria-labelledby="<$ label|replace(' ','') $>">
         {% for colName in columnNames %}
-        <li class="background-color-brand-hover"><a href="{{ basePath }}{{ colName }}">{{ colName }}</a></li>
+        <li class="background-color-brand-hover"><a href="<$ basePath $><$ colName $>"><$ colName $></a></li>
         {% endfor %}
     </ul>
     {% endif %}
@@ -34,15 +34,15 @@
 
 {% macro axis(axis, label, selectedValue, columnNames, toggleButton=true, hasCaret=true) %}
 <div class="dropdown sort-control">
-    <a class="btn dropdown-toggle {{ 'dropdown-toggle-button' if toggleButton }} {{ 'dropdown-toggle-button-has-caret' if hasCaret }} ui-label group-by" type="button" id="{{ label|replace(' ','-') }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+    <a class="btn dropdown-toggle <$ 'dropdown-toggle-button' if toggleButton $> <$ 'dropdown-toggle-button-has-caret' if hasCaret $> ui-label group-by" type="button" id="<$ label|replace(' ','-') $>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         <div class="dropdown-toggle-label">
-            <span id="label">{{ label }}</span> <span class="sort-criteria color-brand-hover {{ axis }}-axis-field">{{ selectedValue | replace(r/_/g, ' ') }}</span>
+            <span id="label"><$ label $></span> <span class="sort-criteria color-brand-hover <$ axis $>-axis-field"><$ selectedValue | replace(r/_/g, ' ') $></span>
         </div>
     </a>
     {% if columnNames | length %}
-    <ul class="dropdown-menu axis-control {{ axis }}-axis-control" aria-labelledby="{{ label|replace(' ','') }}">
+    <ul class="dropdown-menu axis-control <$ axis $>-axis-control" aria-labelledby="<$ label|replace(' ','') $>">
         {% for colName in columnNames %}
-        <li class="background-color-brand-hover"><a href="#" data-axis="{{ axis }}" data-colname="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
+        <li class="background-color-brand-hover"><a href="#" data-axis="<$ axis $>" data-colname="<$ colName $>"><$ colName | replace(r/_/g, ' ') $></a></li>
         {% endfor %}
     </ul>
     {% endif %}

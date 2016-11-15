@@ -39,7 +39,7 @@
     <!-- TODO: To get user information in angular js -->
     <!-- Remove once we use our own authentication instead of auth0 -->
     <script type="text/javascript">
-        window.user = {{ user | dump | safe }};
+        window.user = <$ user | dump | safe $>;
     </script>
 </body>
 

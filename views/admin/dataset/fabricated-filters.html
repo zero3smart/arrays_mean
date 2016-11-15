@@ -21,7 +21,7 @@
         <div class="form-group row">
             <div class="col-xs-7">
                 <label>Title: </label>
-                <input type="text" class="form-control" name="filter_fabricated_title[]" value="{{ filter.title }}">
+                <input type="text" class="form-control" name="filter_fabricated_title[]" value="<$ filter.title $>">
             </div>
             <div class="col-xs-4">
                 <a id="add_filterFabricatedChoice" class="add"><span class="glyphicon glyphicon-plus"></span> Add more choice</a>
@@ -45,4 +45,4 @@
         {% endfor %}
         {% endfor %}
     </div>
-{% endblock %}}
+{% endblock %$>

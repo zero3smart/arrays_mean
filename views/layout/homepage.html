@@ -7,7 +7,8 @@
     </head>
 
     <body class="home splash">
-        {% include "../partials/auth0.html" %}
+        {% include "../partials/auth0.html" %} 
+        {% include "../partials/signup/main.html" %}       
 
         <div id="page" class="site">
 
@@ -21,11 +22,35 @@
         </div><!-- #page -->
 
 
+        <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+        <script type="text/javascript" src="/javascripts/vendors/bootstrap/bootstrap.js"></script>
+
+
+           <!-- angular -->
+        <script type="text/javascript" src="/javascripts/vendors/angular/angular.js"></script>
+        <script type="text/javascript" src="/javascripts/vendors/angular-animate/angular-animate.min.js"></script>
+        <script type="text/javascript" src="/javascripts/vendors/angular-cookies/angular-cookies.min.js"></script>
+        <script type="text/javascript" src="/javascripts/vendors/angular-ui-router/release/angular-ui-router.min.js"></script>
+
+
+
         <script type="text/javascript" src="/javascripts/main.js"></script>
         <script type="text/javascript" src="/javascripts/module/splash.js"></script>
+
+     
+
+        <script type="text/javascript" src="/javascripts/vendors/ngstorage/ngStorage.min.js"></script>
+        <script type="text/javascript" src="/javascripts/vendors/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+
+
+
+        
+
     </body>
+
 
     {% if env.FE_LIVERELOAD == "true" %}
     <script src="//localhost:35729/livereload.js"></script>
     {% endif %}
+
 </html>

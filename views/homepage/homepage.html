@@ -5,6 +5,8 @@
 {% endblock %}
 
 {% block content %}
+
+
     <div id="primary" class="content-area">
     <main id="main" class="site-main" role="main">
 
@@ -12,10 +14,9 @@
 
             <div class="row">
                 <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
-                    <!--<div class="splash-logo">
+               <!--      <div class="splash-logo">
                         <img src="/images/arrays-logo-color-shapes.svg" class="img-responsive" alt="Arrays logo" />
-                    </div>-->
-
+                    </div> -->
                     <div class="splash-logo-letters">
                         <img id="letter_1" class="letter" src="/images/letters/letters_a1.png"><img id="letter_2" class="letter" src="/images/letters/letters_r1.png"><img id="letter_3" class="letter" src="/images/letters/letters_r1.png"><img id="letter_4" class="letter" src="/images/letters/letters_a1.png"><img id="letter_5" class="letter" src="/images/letters/letters_y1.png"><img id="letter_6" class="letter" src="/images/letters/letters_s1.png">
                     </div>
@@ -24,8 +25,7 @@
 
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
-                    <h1 class="splash-intro text-center">Your data, made beautiful.
-</h1>
+                    <h1 class="splash-intro text-center">Your data, made beautiful. 
                 </div>
             </div><!-- .row -->
 
@@ -37,7 +37,7 @@
                     {% if env.NODE_ENV == 'production' %}
                     <a href="http://eepurl.com/bX4NAT" class="btn btn-block btn-splash" target="_blank">Sign up for updates</a>
                     {% else %}
-                    <button id="signup" class="btn btn-block btn-splash">Sign Up / Log In</button>
+                    <button id="signup-btn" class="btn btn-block btn-splash">Sign Up / Log In</button>
                     {% endif %}
                 </div>
             </div><!-- .row -->
@@ -165,9 +165,13 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="site-info">
-                &copy; 2016 Arrays Software, LLC &bull; Alpha Release &bull; <a href="mailto:{{ 'Arrays<info@arrays.com>' | urlencode }}">info@arrays.com</a> <a href="https://www.facebook.com/arraysapp/" target="_blank"><span class="icon-facebook" aria-hidden="true"></span></a> <a href="https://twitter.com/arraysapp" target="_blank"><span class="icon-twitter" aria-hidden="true"></span></a> <a href="https://www.instagram.com/arraysapp/" target="_blank"><span class="icon-instagram" aria-hidden="true"></span></a>
+                &copy; 2016 Arrays Software, LLC &bull; Alpha Release &bull; <a href="mailto:<$ 'Arrays<info@arrays.com>' | urlencode $>">info@arrays.com</a> <a href="https://www.facebook.com/arraysapp/" target="_blank"><span class="icon-facebook" aria-hidden="true"></span></a> <a href="https://twitter.com/arraysapp" target="_blank"><span class="icon-twitter" aria-hidden="true"></span></a> <a href="https://www.instagram.com/arraysapp/" target="_blank"><span class="icon-instagram" aria-hidden="true"></span></a>
             </div>
         </div>
     </div><!-- .row -->
 </div><!-- .container-fluid -->
+
+
+
+
 {% endblock %}

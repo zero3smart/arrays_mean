@@ -1,7 +1,7 @@
 {% extends "../layout/object.html" %}
 
 {% block headSuffix %}
-    <title>Arrays - {{ rowObject.rowParams[fieldKey_objectTitle] }}</title>
+    <title>Arrays - <$ rowObject.rowParams[fieldKey_objectTitle] $></title>
 {% endblock %}
 
 {% block content %}
@@ -12,20 +12,20 @@
                             <article id="object-id" class="object">
                                 <header class="object-header">
                                     {% if hasOriginalImage %}
-                                    <img src="{{ rowObject.rowParams[fieldKey_originalImageURL] }}" class="object-featured img-responsive" />
+                                    <img src="<$ rowObject.rowParams[fieldKey_originalImageURL] $>" class="object-featured img-responsive" />
                                     {% endif %}
 
                                     {% if fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}
                                         <div class="object-header-icons">
-                                            {{ fe_galleryItem_htmlForIconFromRowObjWhenMissingImage(rowObject) | safe }}
+                                            <$ fe_galleryItem_htmlForIconFromRowObjWhenMissingImage(rowObject) | safe $>
                                         </div>
                                     {% endif %}
 
                                     {% set objectTitle = rowObject.rowParams[fieldKey_objectTitle] %}
-                                    <h1 class="object-title">{{ objectTitle if objectTitle else "(Title not specified)" }}</h1>
+                                    <h1 class="object-title"><$ objectTitle if objectTitle else "(Title not specified)" $></h1>
                                     {% if embedded %}
                                     {% set mainViewURL = "/array/" + array_source_key + "/" + main_view + "?embed=true" + ("&" + default_filterJSON if default_filterJSON else "") %}
-                                    <a href="{{ mainViewURL }}">{{ arrayTitle }}</a>
+                                    <a href="<$ mainViewURL $>"><$ arrayTitle $></a>
                                     {% endif %}
                                 </header><!-- .object-header -->
 
@@ -41,7 +41,7 @@
                                         {% if columnValue %}
                                             {% if columnValue | isArray %}
                                                 {% if columnValue.length > 0 %}
-                                                    <dt>{{ columnName }}</dt>
+                                                    <dt><$ columnName $></dt>
                                                     <dd>
                                                     {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
                                                     {% if columnValue | length %}
@@ -51,9 +51,9 @@
                                                             {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, arrayMember, false) %}
                                                             {% set arrayMemberText = htmlOverrideFn(rowObject, arrayMember, strParams) | safe if htmlOverrideFn else arrayMember %}
                                                             {% if shouldLink %}
-                                                                <li class="object-list-item"><a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">{{ arrayMemberText }}</a></li>
+                                                                <li class="object-list-item"><a href="<$ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) $>" class="color-brand"><$ arrayMemberText $></a></li>
                                                             {% else %}
-                                                                <li class="object-list-item">{{ arrayMemberText | substitutePlainURLs | safe }}</li>
+                                                                <li class="object-list-item"><$ arrayMemberText | substitutePlainURLs | safe $></li>
                                                             {% endif %}
                                                         {% endfor %}
                                                         </ul>
@@ -61,16 +61,16 @@
                                                     </dd>
                                                 {% endif %}
                                             {% else %}
-                                                <dt>{{ columnName }}</dt>
+                                                <dt><$ columnName $></dt>
 
                                                 <dd>
                                                 {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
                                                 {% if shouldLink %}
                                                     {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, columnValue, false) %}
 
-                                                    <a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">
+                                                    <a href="<$ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) $>" class="color-brand">
                                                 {% endif %}
-                                                        {{ (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe }}
+                                                        <$ (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe $>
                                                 {% if shouldLink %}
                                                     </a>
                                                 {% endif %}

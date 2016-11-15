@@ -32,6 +32,14 @@ var nunjucks = require('express-nunjucks');
 nunjucks.setup({
     watch: isDev,
     noCache: isDev,
+    tags: {
+        blockStart: '{%',
+        blockEnd: '%}',
+        variableStart: '<$',
+        variableEnd: '$>',
+        commentStart: '<#',
+        commentEnd: '#>'
+    }
 }, app).then(require('./nunjucks/filters'))
 
 

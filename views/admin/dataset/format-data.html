@@ -8,7 +8,7 @@
 
 {% block content %}
 	<header class="admin-header">
-		<h1 class="admin-title">{{doc.title}} - Format Data</h1>
+		<h1 class="admin-title"><$doc.title$> - Format Data</h1>
 	</header>
 
 	<div class="reminderMsg"></div>
@@ -16,9 +16,9 @@
 
 
 	{% if flash | length %}
-	<div class="alert alert-success" role="alert">{{ flash }}</div>
+	<div class="alert alert-success" role="alert"><$ flash $></div>
 	{% elif error | length %}
-	<div class="alert alert-danger" role="alert">{{ error }}</div>
+	<div class="alert alert-danger" role="alert"><$ error $></div>
 	{% endif %}
 
 	<div class="dataset">
@@ -28,15 +28,15 @@
 
 		<form class="format-data" method="post">
 
-			<input type="hidden" id="doc_title" value="{{ doc.title }}" />
-			<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
+			<input type="hidden" id="doc_title" value="<$ doc.title $>" />
+			<input type="hidden" id="doc_id" value="<$ doc._id $>"/>
 
 			<div class="form-group row">
 				<label class="col-xs-4" for="fn_new_rowPrimaryKeyFromRowObject">Primary Key: </label>
 				<div class="col-xs-8">
 					<select id="fn_new_rowPrimaryKeyFromRowObject" name="fn_new_rowPrimaryKeyFromRowObject" class="form-control">
 						{% for colName in colNames %}
-						<option value="{{ colName }}" {{ 'selected' if colName == doc.fn_new_rowPrimaryKeyFromRowObject }}>{{ colName }}</option>
+						<option value="<$ colName $>" <$ 'selected' if colName == doc.fn_new_rowPrimaryKeyFromRowObject $>><$ colName $></option>
 						{% endfor %}
 					</select>
 				</div>
@@ -64,15 +64,15 @@
 				<tbody>
 				{% for colName in colNames %}
 				{% set finalizedColName = colName | finalizeColumnName %}
-				<tr class="field" data-field-name="{{ colName }}">
-					<th scope="row">{{ loop.index }}</th>
-					<td><input type="checkbox" {{ 'checked=checked' if
-						doc.fe_excludeFields | doesArrayContain(finalizedColName) }} disabled></td>
-					<td>{{ colName }}</td>
+				<tr class="field" data-field-name="<$ colName $>">
+					<th scope="row"><$ loop.index $></th>
+					<td><input type="checkbox" <$ 'checked=checked' if
+						doc.fe_excludeFields | doesArrayContain(finalizedColName) $> disabled></td>
+					<td><$ colName $></td>
 					<td>
-						{{ doc.raw_rowObjects_coercionScheme[finalizedColName] | fieldDataType_coercion_toString }}
+						<$ doc.raw_rowObjects_coercionScheme[finalizedColName] | fieldDataType_coercion_toString $>
 					</td>
-					<td class="word-break">{{ firstRecord[loop.index0] }}</td>
+					<td class="word-break"><$ firstRecord[loop.index0] $></td>
 				</tr>
 				{% endfor %}
 
@@ -82,12 +82,12 @@
 				{% if doc.customFieldsToProcess | length != 0 %}
 					{% for customField in doc.customFieldsToProcess %}
 					{% set finalizedColName = customField.fieldName | finalizeColumnName %}
-					<tr class="custom-field" data-field-name="{{ customField.fieldName }}">
-						<th scape="row">{{ colNames | length + loop.index }}</th>
-						<td><input type="checkbox" {{ 'checked=checked' if
-							doc.fe_excludeFields | doesArrayContain(finalizedColName) }} disabled></td>
-						<td>{{ finalizedColName }}</td>
-						<td>{{ customField.fieldType | capitalize }}</td>
+					<tr class="custom-field" data-field-name="<$ customField.fieldName $>">
+						<th scape="row"><$ colNames | length + loop.index $></th>
+						<td><input type="checkbox" <$ 'checked=checked' if
+							doc.fe_excludeFields | doesArrayContain(finalizedColName) $> disabled></td>
+						<td><$ finalizedColName $></td>
+						<td><$ customField.fieldType | capitalize $></td>
 						<td></td>
 					</tr>
 					{% endfor %}
@@ -113,7 +113,7 @@
 {% endblock %}
 
 {% block inlineScript %}
-	{{ super() }}
+	<$ super() $>
 
 	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
 	<script type="text/javascript" src="/javascripts/vendors/chosen/chosen.jquery.js"></script>

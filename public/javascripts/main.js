@@ -1,3 +1,28 @@
+
+angular.module('arraysApp',[])
+    .controller('signupCtrl',function($scope) {
+
+        console.log("here");
+
+
+        $scope.currentTab = "Login";
+
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 $(window).load(function () {
 
     trackEvent("page load");
@@ -14,9 +39,6 @@ $(window).load(function () {
 });
 
 $(document).ready(function () {
-
-    console.log('app loaded');
-
     /**
      * Select source dataset on click
      */
@@ -230,8 +252,11 @@ $(document).ready(function () {
         $('.array-description-expand').css("display", "inline-block");
     });
 
-    $('#signup').on('click', function (e) {
-        if (lock) lock.show();
+    $('#signup-btn').on('click', function (e) {
+        $('#user-modal').modal('show');
+
+        // if (lock) lock.show();
+
     });
 
     /**
@@ -251,6 +276,9 @@ $(document).ready(function () {
     });
 
 });
+
+
+
 
 /**
  * Construct filter object

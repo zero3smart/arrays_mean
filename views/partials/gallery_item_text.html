@@ -1,12 +1,12 @@
 <li class="gallery-item gallery-item-text">
-	<a href="/array/{{ doc.srcDocPKey }}/{{ doc._id }}{{ '?embed=true' if embedded }}" class="gallery-item-text-link">
+	<a href="/array/<$ doc.srcDocPKey $>/<$ doc._id $><$ '?embed=true' if embedded $>" class="gallery-item-text-link">
 		<div class="gallery-item-text-inner">
             {% if fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}
-                {{ fe_galleryItem_htmlForIconFromRowObjWhenMissingImage(doc) | safe }}
+                <$ fe_galleryItem_htmlForIconFromRowObjWhenMissingImage(doc) | safe $>
             {% endif %}
 		</div>
 		<div class="gallery-tooltip">
-			<h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</h2>
+			<h2 class="gallery-title"><$ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" $></h2>
 		</div>
 	</a>
 </li>

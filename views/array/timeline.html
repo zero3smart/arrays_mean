@@ -8,7 +8,7 @@
 {% import "../partials/pagination.html" as pagination %}
 
 {% block headSuffix %}
-    <title>Arrays - {{ arrayTitle }}</title>
+    <title>Arrays - <$ arrayTitle $></title>
 {% endblock %}
 
 {% block content %}
@@ -16,18 +16,18 @@
 
         <header class="array-header header-shadow array-header-small clearfix">
             <div class="container-fluid">
-                <h1 class="array-title">{{ arrayTitle }}</h1>
+                <h1 class="array-title"><$ arrayTitle $></h1>
                 <div class="array-meta">
-                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                    {% if sourceDocURL %}<a href="<$ sourceDocURL $>" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count"><$ sourceDoc.numberOfRows | comma $> Record<$ "s" if sourceDoc.numberOfRows != 1 else "" $></span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated <$ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear $></span>
                 </div>
             </div>
         </header><!-- .array-header -->
 
         {% if view_description %}
             <div class="array-description-wrapper">
-                <p class="array-description">{{ view_description | truncate(80) }}</p>
+                <p class="array-description"><$ view_description | truncate(80) $></p>
                 <a href="#expanded"><p class="array-description-expand">Read more</p></a>
-                <p class="array-description-full">{{ view_description }}
+                <p class="array-description-full"><$ view_description $>
                 <a href="#"><p class="array-description-collapse">less</p></a>
             </div>
         {% endif %}
@@ -41,7 +41,7 @@
 
                             <nav class="sort-bar-left pull-left" role="navigation">
 
-                                {{
+                                <$
                                 dropdown.sortbar(
                                     'Group By',
                                     groupBy if groupBy else defaultGroupByColumnName_humanReadable,
@@ -55,9 +55,9 @@
                                         groupBy: ''
                                     })
                                 )
-                                }}
+                                $>
 
-                                {{
+                                <$
                                 dropdown.sortbar(
                                     'Sort By',
                                     sortBy if sortBy else defaultSortByColumnName_humanReadable,
@@ -71,11 +71,11 @@
                                         sortBy: ''
                                     })
                                 )
-                                }}
+                                $>
                             </nav>
 
                             <div class="sort-bar-right pull-right">
-                                {{
+                                <$
                                 search.panel(
                                     routePath_base,
                                     searchCol if searchCol else "Object Title",
@@ -85,7 +85,7 @@
                                     sortDir,
                                     filterObj
                                 )
-                                }}
+                                $>
                             </div>
 
                         </div>
@@ -100,7 +100,7 @@
             <div class="timeline-container">
 
                 {% if isFilterActive %}
-                    {{
+                    <$
                     filter.default(displayTitleOverrides,
                         routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
@@ -115,7 +115,7 @@
                         false,
                         'filter-bar-fixed-bottom'
                     )
-                    }}
+                    $>
                 {% endif %}
 
                 <div class="container-fluid">
@@ -126,10 +126,10 @@
 
                         <div class="timeline">
 
-                        {# <pre>{{ groupedResults | dump | safe }}</pre> #}
+                        {# <pre><$ groupedResults | dump | safe $></pre> #}
 
-                        {# {{ sortBy_realColumnName }} #}
-                        {# {{ groupBy_realColumnName }} #}
+                        {# <$ sortBy_realColumnName $> #}
+                        {# <$ groupBy_realColumnName $> #}
 
                             {% if groupedResults | length %}
                                 <ul class="timeline-list">
@@ -137,7 +137,7 @@
                                         {% if group.results | length %}
                                             <li class="timeline-group">
                                 
-                                                <span class="timeline-group-label">{{ group.startDate | dateFormat(groupByDateFormat) }}{% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}&ndash;{{ group.endDate | dateFormat(groupByDateFormat) }}{% endif %}</span>
+                                                <span class="timeline-group-label"><$ group.startDate | dateFormat(groupByDateFormat) $>{% if group.startDate | dateFormat(groupByDateFormat) != group.endDate | dateFormat(groupByDateFormat) %}&ndash;<$ group.endDate | dateFormat(groupByDateFormat) $>{% endif %}</span>
                                                 <ul class="timeline-group-list">
 
                                                     {% for doc in group.results %}
@@ -158,9 +158,9 @@
                                                                 {% endif %}
                                                                 {% set sortByDateRange = sortBy if sortBy else defaultSortByColumnName_humanReadable %}
                                                                 {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(sortByDateRange, filterDateRange | dump, false) %}
-                                                                <a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="timeline-view-all-link color-brand-hover">
+                                                                <a href="<$ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) $>" class="timeline-view-all-link color-brand-hover">
                                                                     <span class="timeline-view-all-label">View all</span>
-                                                                    <span class="timeline-view-all-count">{{ group.total }}</span>
+                                                                    <span class="timeline-view-all-count"><$ group.total $></span>
                                                                 </a>
                                                             </div>
                                                         </li>
@@ -179,7 +179,7 @@
                         {% if lastPage > 1 %}
 
                             <nav class="gallery-pagination">
-                                {{
+                                <$
                                 pagination.default(
                                     routePath_base | constructedRoutePath(filterObj, {
                                         searchCol: searchCol,
@@ -191,7 +191,7 @@
                                     lastPage,
                                     currentPage
                                 )
-                                }}
+                                $>
                             </nav>
                         {% endif %}
 
@@ -208,7 +208,7 @@
 
 
 {% block inlineScript %}
-    {{ super() }}
+    <$ super() $>
 
     <script type="text/javascript" src="/javascripts/vendors/scrollmagic/scrollmagic/uncompressed/ScrollMagic.js"></script>
     <script type="text/javascript" src="/javascripts/module/gallery.js"></script>

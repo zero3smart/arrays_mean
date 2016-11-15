@@ -6,7 +6,7 @@
         {% block headSuffix %}{% endblock %}
     </head>
 
-    <body class="object-show source-{{ array_source_key }} {{ "view-embedded" if embedded == "true" }}">
+    <body class="object-show source-<$ array_source_key $> <$ "view-embedded" if embedded == "true" $>">
         {% include "../partials/auth0.html" %}
 
         <div id="page" class="site">

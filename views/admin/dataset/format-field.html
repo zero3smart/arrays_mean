@@ -3,20 +3,20 @@
 {% block content %}
 {% set finalizedFieldName = field | finalizeColumnName %}
 <form class="format-field">
-    <div class="alert alert-danger hidden" role="alert">{{ error }}</div>
+    <div class="alert alert-danger hidden" role="alert"><$ error $></div>
 
-    <input type="hidden" id="field" value="{{ finalizedFieldName }}">
+    <input type="hidden" id="field" value="<$ finalizedFieldName $>">
 
     <div class="form-group">
         <div class="col-xs-4">
             <label for="name" class="form-control">Name</label>
         </div>
         <div class="col-xs-8">
-            <input id="name" class="form-control" name="name" value="{{ field }}" {{ 'readonly' if not customMode or finalizedFieldName != '' }} required/>
+            <input id="name" class="form-control" name="name" value="<$ field $>" <$ 'readonly' if not customMode or finalizedFieldName != '' $> required/>
         </div>
     </div>
 
-    <input type="hidden" id="custom_mode" value="{{ customMode }}"/>
+    <input type="hidden" id="custom_mode" value="<$ customMode $>"/>
 
     {% if not customMode %}
 
@@ -25,7 +25,7 @@
             <label for="firstRecord" class="form-control">First Record</label>
         </div>
         <div class="col-xs-8">
-            <input id="firstRecord" class="form-control" value="{{ firstRecord }}" readonly/>
+            <input id="firstRecord" class="form-control" value="<$ firstRecord $>" readonly/>
         </div>
     </div>
 
@@ -36,8 +36,8 @@
         <div class="col-xs-8">
             <select id="dataType" class="form-control" name="dataType">
                 {% for coercion in available_forFieldDataType_coercions %}
-                <option value="{{ coercion.operation }}" {{ 'selected' if coercion | fieldDataType_coercion_toString == doc.raw_rowObjects_coercionScheme[finalizedFieldName] | fieldDataType_coercion_toString }}>
-                {{ coercion | fieldDataType_coercion_toString }}
+                <option value="<$ coercion.operation $>" <$ 'selected' if coercion | fieldDataType_coercion_toString == doc.raw_rowObjects_coercionScheme[finalizedFieldName] | fieldDataType_coercion_toString $>>
+                <$ coercion | fieldDataType_coercion_toString $>
                 </option>
                 {% endfor %}
             </select>
@@ -50,7 +50,7 @@
         </div>
         <div class="col-xs-8">
             <input type="text" id="dataFormat" name="dataFormat" class="form-control"
-                   value="{{ doc.raw_rowObjects_coercionScheme[finalizedFieldName].format | safe }}"
+                   value="<$ doc.raw_rowObjects_coercionScheme[finalizedFieldName].format | safe $>"
                    title="Specify in which format the field is listed on the source file."/>
         </div>
     </div>
@@ -61,7 +61,7 @@
         </div>
         <div class="col-xs-8">
             <input type="text" id="dataOutputFormat" name="dataOutputFormat" class="form-control"
-                   value="{{ doc.raw_rowObjects_coercionScheme[finalizedFieldName].outputFormat | safe }}"
+                   value="<$ doc.raw_rowObjects_coercionScheme[finalizedFieldName].outputFormat | safe $>"
                    title="Specify in which output format the field will be used to display, if you want to customize the field format"/>
         </div>
     </div>
@@ -84,7 +84,7 @@
             <select multiple name="fieldsToMergeIntoArray" id="fieldsToMergeIntoArray" class="chosen-select" required>
                 <option value=""></option>
                 {% for colName in colNames %}
-                <option value="{{ colName | finalizeColumnName }}" {{ 'selected' if customField.fieldsToMergeIntoArray | doesArrayContain(colName | finalizeColumnName) }}>{{ colName }}</option>
+                <option value="<$ colName | finalizeColumnName $>" <$ 'selected' if customField.fieldsToMergeIntoArray | doesArrayContain(colName | finalizeColumnName) $>><$ colName $></option>
                 {% endfor %}
             </select>
         </div>
@@ -96,8 +96,8 @@
             <label for="exclude" class="form-control">Exclude</label>
         </div>
         <div class="col-xs-8">
-            <input type="checkbox" id="exclude" name="exclude" value="true" {{ 'checked=checked' if
-            doc.fe_excludeFields | doesArrayContain(finalizedFieldName) }} />
+            <input type="checkbox" id="exclude" name="exclude" value="true" <$ 'checked=checked' if
+            doc.fe_excludeFields | doesArrayContain(finalizedFieldName) $> />
         </div>
     </div>
 
@@ -108,7 +108,7 @@
             <label for="titleOverride" class="form-control">Title Override</label>
         </div>
         <div class="col-xs-8">
-            <input type="text" id="titleOverride" name="titleOverride" class="form-control" value="{{ doc.fe_displayTitleOverrides[finalizedFieldName] | safe }}"/>
+            <input type="text" id="titleOverride" name="titleOverride" class="form-control" value="<$ doc.fe_displayTitleOverrides[finalizedFieldName] | safe $>"/>
         </div>
     </div>
 
@@ -119,7 +119,7 @@
             <label for="displayOrder" class="form-control">Display Order</label>
         </div>
         <div class="col-xs-8">
-            <input type="number" id="displayOrder" name="displayOrder" class="form-control" value="{{ doc.fe_fieldDisplayOrder[finalizedFieldName] | safe }}"/>
+            <input type="number" id="displayOrder" name="displayOrder" class="form-control" value="<$ doc.fe_fieldDisplayOrder[finalizedFieldName] | safe $>"/>
         </div>
     </div>
 
@@ -132,9 +132,9 @@
         <div class="col-xs-8">
             <select id="designatedField" name="designatedField" class="form-control">
                 <option value="">Not used</option>
-                <option value="objectTitle" {{ 'selected' if doc.fe_designatedFields.objectTitle == finalizedFieldName }}>Object Title</option>
-                <option value="originalImageURL" {{ 'selected' if doc.fe_designatedFields.originalImageURL == finalizedFieldName }}>Original Image URL</option>
-                <option value="medThumbImageURL" {{ 'selected' if doc.fe_designatedFields.medThumbImageURL == finalizedFieldName }}>Medium Thumb Image URL</option>
+                <option value="objectTitle" <$ 'selected' if doc.fe_designatedFields.objectTitle == finalizedFieldName $>>Object Title</option>
+                <option value="originalImageURL" <$ 'selected' if doc.fe_designatedFields.originalImageURL == finalizedFieldName $>>Original Image URL</option>
+                <option value="medThumbImageURL" <$ 'selected' if doc.fe_designatedFields.medThumbImageURL == finalizedFieldName $>>Medium Thumb Image URL</option>
             </select>
         </div>
     </div>
@@ -150,7 +150,7 @@
             </div>
             <div class="col-xs-4">
                 <input type="checkbox" id="filter_notAvailable" name="filter_notAvailable" value="true"
-                       {{ 'checked=checked' if doc.fe_filters.fieldsNotAvailable | doesArrayContain(finalizedFieldName) }}/>
+                       <$ 'checked=checked' if doc.fe_filters.fieldsNotAvailable | doesArrayContain(finalizedFieldName) $>/>
             </div>
         </div>
 
@@ -162,7 +162,7 @@
             </div>
             <div class="col-xs-4">
                 <input type="checkbox" id="filter_commaSeparatedAsIndividual" name="filter_commaSeparatedAsIndividual"
-                       value="true" {{ 'checked=checked' if doc.fe_filters.fieldsCommaSeparatedAsIndividual | doesArrayContain(finalizedFieldName) }}/>
+                       value="true" <$ 'checked=checked' if doc.fe_filters.fieldsCommaSeparatedAsIndividual | doesArrayContain(finalizedFieldName) $>/>
             </div>
         </div>
 
@@ -172,7 +172,7 @@
             </div>
             <div class="col-xs-4">
                 <input type="checkbox" id="filter_multiSelectable" name="filter_multiSelectable" value="true"
-                       {{ 'checked=checked' if doc.fe_filters.fieldsMultiSelectable | doesArrayContain(finalizedFieldName) }}/>
+                       <$ 'checked=checked' if doc.fe_filters.fieldsMultiSelectable | doesArrayContain(finalizedFieldName) $>/>
             </div>
         </div>
 
@@ -184,7 +184,7 @@
             </div>
             <div class="col-xs-4">
                 <input type="checkbox" id="filter_sortableByInteger" name="filter_sortableByInteger" value="true"
-                       {{ 'checked=checked' if doc.fe_filters.fieldsSortableByInteger | doesArrayContain(finalizedFieldName) }}/>
+                       <$ 'checked=checked' if doc.fe_filters.fieldsSortableByInteger | doesArrayContain(finalizedFieldName) $>/>
             </div>
         </div>
 
@@ -194,7 +194,7 @@
             </div>
             <div class="col-xs-4">
                 <input type="checkbox" id="filter_sortableInReverseOrder" name="filter_sortableInReverseOrder" value="true"
-                       {{ 'checked=checked' if doc.fe_filters.fieldsSortableInReverseOrder | doesArrayContain(finalizedFieldName) }}/>
+                       <$ 'checked=checked' if doc.fe_filters.fieldsSortableInReverseOrder | doesArrayContain(finalizedFieldName) $>/>
             </div>
         </div>
 
@@ -215,10 +215,10 @@
             {% for value, title in doc.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[titleOverride] %}
             <div class="form-group row">
                 <div class="col-xs-5">
-                    <label>Title</label><input type="text" value="{{ title }}" name="oneToOneOverrideWithTitle[]" class="form-control">
+                    <label>Title</label><input type="text" value="<$ title $>" name="oneToOneOverrideWithTitle[]" class="form-control">
                 </div>
                 <div class="col-xs-6">
-                    <label>Override</label><input type="text" value="{{ value }}" name="oneToOneOverrideWithValue[]" class="form-control">
+                    <label>Override</label><input type="text" value="<$ value $>" name="oneToOneOverrideWithValue[]" class="form-control">
                 </div>
                 <div class="col-xs-1">
                     <a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>
@@ -243,10 +243,10 @@
             {% for value in values %}
             <div class="form-group row">
                 <div class="col-xs-6">
-                    <input type="text" class="form-control" name="valuesToExcludeByOriginalKey[]" value="{{ value if value or value != '' else 'null' }}">
+                    <input type="text" class="form-control" name="valuesToExcludeByOriginalKey[]" value="<$ value if value or value != '' else 'null' $>">
                 </div>
                 <div class="col-xs-5">
-                    <input type="checkbox" name="valuesToExcludeByOriginalKey_applyTo[]" {{ 'checked=checked' if key == '_all' }} value="true"/> Apply to All
+                    <input type="checkbox" name="valuesToExcludeByOriginalKey_applyTo[]" <$ 'checked=checked' if key == '_all' $> value="true"/> Apply to All
                 </div>
                 <div class="col-xs-1">
                     <a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>
@@ -276,10 +276,10 @@
             {% endif %}
             <div class="form-group row">
                 <div class="col-xs-8">
-                    <input type="text" class="form-control" name="filter_keywords[]" value="{{ choice }}">
+                    <input type="text" class="form-control" name="filter_keywords[]" value="<$ choice $>">
                 </div>
                 <div class="col-xs-3">
-                    <input type="checkbox" name="default_filter_keywords[]" values="true" {{ 'checked=checked' if is_default_filter }}> Use default
+                    <input type="checkbox" name="default_filter_keywords[]" values="true" <$ 'checked=checked' if is_default_filter $>> Use default
                 </div>
                 <div class="col-xs-1">
                     <a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>
@@ -301,7 +301,7 @@
                 <label for="chk_nested" class="form-control">Is Nested?</label>
             </div>
             <div class="col-xs-8">
-                <input type="checkbox" id="chk_nested" class="chk_nested" name="nested_field" {{ 'checked="checked"' if doc.fe_nestedObject and doc.fe_nestedObject.fields | doesArrayContain(finalizedFieldName) and not (doc.fe_nestedObject.criteria and doc.fe_nestedObject.criteria.fieldName == finalizedFieldName) }} value="true">
+                <input type="checkbox" id="chk_nested" class="chk_nested" name="nested_field" <$ 'checked="checked"' if doc.fe_nestedObject and doc.fe_nestedObject.fields | doesArrayContain(finalizedFieldName) and not (doc.fe_nestedObject.criteria and doc.fe_nestedObject.criteria.fieldName == finalizedFieldName) $> value="true">
             </div>
         </div>
 
@@ -310,7 +310,7 @@
                 <label for="nested_criteria" class="form-control">Is Criteria?</label>
             </div>
             <div class="col-xs-8">
-                <input type="checkbox" id="nested_criteria" name="nested_criteria" {{ 'checked="checked"' if doc.fe_nestedObject and doc.fe_nestedObject.criteria and doc.fe_nestedObject.criteria.fieldName == finalizedFieldName }} value="true"/>
+                <input type="checkbox" id="nested_criteria" name="nested_criteria" <$ 'checked="checked"' if doc.fe_nestedObject and doc.fe_nestedObject.criteria and doc.fe_nestedObject.criteria.fieldName == finalizedFieldName $> value="true"/>
             </div>
         </div>
 
@@ -319,7 +319,7 @@
                 <label for="nested_prefix" class="form-control">Prefix</label>
             </div>
             <div class="col-xs-8">
-                <input type="text" id="nested_prefix" class="form-control" name="nested_prefix" value="{{ doc.fe_nestedObject.prefix if doc.fe_nestedObject }}"/>
+                <input type="text" id="nested_prefix" class="form-control" name="nested_prefix" value="<$ doc.fe_nestedObject.prefix if doc.fe_nestedObject $>"/>
             </div>
         </div>
 
@@ -328,7 +328,7 @@
                 <label for="nested_fieldOverride" class="form-control">Field Name Override</label>
             </div>
             <div class="col-xs-8">
-                <input type="text" id="nested_fieldOverride" class="form-control" name="nested_fieldOverride" value="{{ doc.fe_nestedObject.fieldOverrides[finalizedFieldName] if doc.fe_nestedObject and doc.fe_nestedObject.fieldOverrides and doc.fe_nestedObject.fieldOverrides[finalizedFieldName] }}"/>
+                <input type="text" id="nested_fieldOverride" class="form-control" name="nested_fieldOverride" value="<$ doc.fe_nestedObject.fieldOverrides[finalizedFieldName] if doc.fe_nestedObject and doc.fe_nestedObject.fieldOverrides and doc.fe_nestedObject.fieldOverrides[finalizedFieldName] $>"/>
             </div>
         </div>
 
@@ -347,11 +347,11 @@
                 {% for key,value in doc.fe_nestedObject.valueOverrides[finalizedFieldName] %}
                     <div class="form-group row">
                         <div class="col-xs-offset-1 col-xs-4">
-                            <input type="text" class="form-control" name="nested_valueOverride_keys[]" value="{{ key }}"/>
+                            <input type="text" class="form-control" name="nested_valueOverride_keys[]" value="<$ key $>"/>
                         </div>
                         <div class="col-xs-1">=></div>
                         <div class="col-xs-4">
-                            <input type="text" class="form-control" name="nested_valueOverride_values[]" value="{{ value }}"/>
+                            <input type="text" class="form-control" name="nested_valueOverride_values[]" value="<$ value $>"/>
                         </div>
                         <div class="col-xs-2">
                             <a class="removeRow"><span class="glyphicon glyphicon-remove"></span></a>

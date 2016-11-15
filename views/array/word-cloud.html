@@ -7,7 +7,7 @@
 {% import "../partials/filter.html" as filter %}
 
 {% block headSuffix %}
-    <title>Arrays - {{ arrayTitle }}</title>
+    <title>Arrays - <$ arrayTitle $></title>
 {% endblock %}
 
 {% block content %}
@@ -15,18 +15,18 @@
 
         <header class="array-header header-shadow array-header-small clearfix">
             <div class="container-fluid">
-                <h1 class="array-title">{{ arrayTitle }}</h1>
+                <h1 class="array-title"><$ arrayTitle $></h1>
                 <div class="array-meta">
-                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                    {% if sourceDocURL %}<a href="<$ sourceDocURL $>" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count"><$ sourceDoc.numberOfRows | comma $> Record<$ "s" if sourceDoc.numberOfRows != 1 else "" $></span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated <$ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear $></span>
                 </div>
             </div>
         </header><!-- .array-header -->
 
         {% if view_description %}
             <div class="array-description-wrapper">
-                <p class="array-description">{{ view_description | truncate(80) }}</p>
+                <p class="array-description"><$ view_description | truncate(80) $></p>
                 <a href="#expanded"><p class="array-description-expand">Read more</p></a>
-                <p class="array-description-full">{{ view_description }}
+                <p class="array-description-full"><$ view_description $>
                 <a href="#"><p class="array-description-collapse">less</p></a>
             </div>
         {% endif %}
@@ -40,7 +40,7 @@
                         <div class="sort-bar clearfix">
 
                             <nav class="sort-bar-left pull-left" role="navigation">
-                                {{
+                                <$
                                 dropdown.default(
                                     'Group By',
                                     groupBy if groupBy else defaultGroupByColumnName_humanReadable,
@@ -52,11 +52,11 @@
                                     true,
                                     false
                                 )
-                                }}
+                                $>
                             </nav>
 
                             <div class="sort-bar-right pull-right">
-                                {{
+                                <$
                                 search.panel(
                                     routePath_base,
                                     searchCol if searchCol else "Object Title",
@@ -66,7 +66,7 @@
                                     null,
                                     filterObj
                                 )
-                                }}
+                                $>
 
                                 <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
                                     <span class="icon-legend" aria-hidden="true"></span>
@@ -79,7 +79,7 @@
             </div><!-- .container-fluid -->
 
             {% if isFilterActive %}
-                {{
+                <$
                 filter.default(displayTitleOverrides,
                     routePath_base | constructedRoutePath(null, {
                         searchQ: searchQ,
@@ -91,16 +91,16 @@
                     false,
                     'filter-bar-fixed-bottom'
                 )
-                }}
+                $>
             {% endif %}
 
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-12">
 
-                        {# {{ groupedResults | dump }} #}
+                        {# <$ groupedResults | dump $> #}
 
-                        {# max: {{ maxGroupedResultsValue }} #}
+                        {# max: <$ maxGroupedResultsValue $> #}
 
                         {% if groupedResults | length %}
                             <ul class="word-cloud-list">
@@ -114,8 +114,8 @@
                                 }) %}
                                 {% if result.value > 0 %}
                                 <li class="word-cloud-item">
-                                    <a href="{{ urlForFilterValue }}" class="word-cloud-link border-color-brand-hover has-tooltip" data-tooltip-key="{{ result._id }}" data-tooltip-value="{{ result.valueToString }}">
-                                        <span class="word-cloud-label color-brand" style="font-size: {{ (result.value - minGroupedResultsValue) / (maxGroupedResultsValue - minGroupedResultsValue) * 350 + 100 | round() }}%">{{ result._id }}</span>
+                                    <a href="<$ urlForFilterValue $>" class="word-cloud-link border-color-brand-hover has-tooltip" data-tooltip-key="<$ result._id $>" data-tooltip-value="<$ result.valueToString $>">
+                                        <span class="word-cloud-label color-brand" style="font-size: <$ (result.value - minGroupedResultsValue) / (maxGroupedResultsValue - minGroupedResultsValue) * 350 + 100 | round() $>%"><$ result._id $></span>
                                     </a>
                                 </li>
                                 {% endif %}
@@ -133,7 +133,7 @@
 {% endblock %}
 
 {% block inlineScript %}
-    {{ super() }}
+    <$ super() $>
 
     <script type="text/javascript" src="/javascripts/module/word-cloud.js"></script>
 {% endblock %}

@@ -8,22 +8,22 @@
 {% import "../partials/pagination.html" as pagination %}
 
 {% block headSuffix %}
-    <title>Arrays - {{ arrayTitle }}</title>
+    <title>Arrays - <$ arrayTitle $></title>
 {% endblock %}
 
 {% block content %}
     <section class="array">
 
         <header class="array-header header-shadow">
-            <h1 class="array-title">{{ arrayTitle }}</h1>
-            <div class="array-meta">{% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider hidden-xs"></span> {% endif %}<span class="array-meta-count hidden-xs">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider"></span> <span class="array-meta-updated">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span></div>
+            <h1 class="array-title"><$ arrayTitle $></h1>
+            <div class="array-meta">{% if sourceDocURL %}<a href="<$ sourceDocURL $>" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider hidden-xs"></span> {% endif %}<span class="array-meta-count hidden-xs"><$ sourceDoc.numberOfRows | comma $> Record<$ "s" if sourceDoc.numberOfRows != 1 else "" $></span> <span class="array-meta-divider"></span> <span class="array-meta-updated">Last Updated <$ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear $></span></div>
         </header><!-- .array-header -->
 
         {% if view_description %}
             <div class="array-description-wrapper">
-                <p class="array-description">{{ view_description| truncate(80) }}</p>
+                <p class="array-description"><$ view_description| truncate(80) $></p>
                 <a href="#expanded"><p class="array-description-expand">Read more</p></a>
-                <p class="array-description-full">{{ view_description}}
+                <p class="array-description-full"><$ view_description$>
                 <a href="#"><p class="array-description-collapse">less</p></a>
             </div>
         {% endif %}
@@ -39,23 +39,23 @@
 
                                 <div class="sort-control sort-direction">
                                     {% if sortDir == "Descending" or (not sortDir and defaultSortOrderDescending) %}
-                                        <a href="{{ routePath_base | constructedRoutePath(filterObj, {
+                                        <a href="<$ routePath_base | constructedRoutePath(filterObj, {
                                             searchCol: searchCol,
                                             searchQ: searchQ,
                                             sortBy: sortBy,
                                             sortDir: 'Ascending',
-                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span></a>
+                                            page: onPageNum if onPageNum != 1 else null }) $>"><span class="icon-sort-descending sort-direction-icon" aria-hidden="true"></span></a>
                                     {% else %}
-                                        <a href="{{ routePath_base | constructedRoutePath(filterObj, {
+                                        <a href="<$ routePath_base | constructedRoutePath(filterObj, {
                                             searchCol: searchCol,
                                             searchQ: searchQ,
                                             sortBy: sortBy,
                                             sortDir: 'Descending',
-                                            page: onPageNum if onPageNum != 1 else null }) }}"><span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span></a>
+                                            page: onPageNum if onPageNum != 1 else null }) $>"><span class="icon-sort-ascending sort-direction-icon" aria-hidden="true"></span></a>
                                     {% endif %}
                                 </div>
 
-                                {{
+                                <$
                                 dropdown.default(
                                     'Sort By',
                                     sortBy if sortBy else defaultSortByColumnName_humanReadable,
@@ -70,12 +70,12 @@
                                     false,
                                     false
                                 )
-                                }}
+                                $>
 
                             </nav>
 
                             <div class="sort-bar-right pull-right">
-                                {{
+                                <$
                                     search.default(
                                     routePath_base | constructedRoutePath(filterObj),
                                     searchCol if searchCol else "Object Title",
@@ -85,13 +85,13 @@
                                     sortDir,
                                     filterObj
                                 )
-                                }}
+                                $>
                             </div>
 
                         </div>
 
                         {% if isFilterActive %}
-                            {{
+                            <$
                             filter.default(displayTitleOverrides,
                                 routePath_base | constructedRoutePath(null, {
                                     searchQ: searchQ,
@@ -102,7 +102,7 @@
                                 truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
                                 true
                             )
-                            }}
+                            $>
                         {% endif %}
 
                     </div>
@@ -117,7 +117,7 @@
                     <div class="col-sm-12">
 
                         <div class="filter-count">
-                            <span>{% if resultsOffset > 0 %}{{ resultsOffset + 1 }} &ndash; {% endif %}{{ (resultsOffset + (docs | length)) | comma }} of {{ nonpagedCount | comma }} Result{{ "s" if docs | length != 1 else "" }} in this set</span>
+                            <span>{% if resultsOffset > 0 %}<$ resultsOffset + 1 $> &ndash; {% endif %}<$ (resultsOffset + (docs | length)) | comma $> of <$ nonpagedCount | comma $> Result<$ "s" if docs | length != 1 else "" $> in this set</span>
                         </div>
 
                         <div class="gallery">
@@ -137,7 +137,7 @@
 
                         {% if lastPage > 1 %}
                         <nav class="gallery-pagination">
-                            {{
+                            <$
                             pagination.default(
                                 routePath_base | constructedRoutePath(filterObj, {
                                     searchQ: searchQ,
@@ -147,7 +147,7 @@
                                 lastPage,
                                 currentPage
                             )
-                            }}
+                            $>
                         </nav>
                         {% endif %}
 
@@ -162,10 +162,10 @@
 
 {% block footer %}
     {% include "../partials/footer.html" %}
-{% endblock %}}
+{% endblock %$>
 
 {% block inlineScript %}
-    {{ super() }}
+    <$ super() $>
 
     <script type="text/javascript" src="/javascripts/vendors/scrollmagic/scrollmagic/uncompressed/ScrollMagic.js"></script>
     <script type="text/javascript" src="/javascripts/module/gallery.js"></script>

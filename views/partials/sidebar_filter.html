@@ -42,8 +42,8 @@
                             mapBy: mayBy,
                             aggregateBy: aggregateBy }) %}
                     {% endif %}
-                    <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-toggle-active color-brand" if isThisAnActiveFilter else "" }}">
-                         <span class="sidebar-filter-toggle-title">{{ fieldValue }}</span> <span class="sidebar-filter-toggle-check {{ "icon-check-on" if isThisAnActiveFilter else "icon-check-off" }}" aria-hidden="true"></span>
+                    <a href="<$ urlForFilterValue $>" class="<$ "sidebar-filter-toggle-active color-brand" if isThisAnActiveFilter else "" $>">
+                         <span class="sidebar-filter-toggle-title"><$ fieldValue $></span> <span class="sidebar-filter-toggle-check <$ "icon-check-on" if isThisAnActiveFilter else "icon-check-off" $>" aria-hidden="true"></span>
                     </a>
                 </li>
                 {% endfor %}
@@ -62,10 +62,10 @@
                     {% endif %}
                     {% set isMultiselectable = multiselectableFilterFields | doesArrayContain(field.name) %}
 
-                    <a class="collapse-trigger" role="button" href="#column-{{ loop.index }}" aria-expanded="false" aria-controls="column-{{ loop.index }}">
-                        <span class="sidebar-filter-fieldname">{{ displayTitleOverrides[field.name] or field.name }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">{{ filterObj[field.name] | filterCount }}</span>{%endif %}
+                    <a class="collapse-trigger" role="button" href="#column-<$ loop.index $>" aria-expanded="false" aria-controls="column-<$ loop.index $>">
+                        <span class="sidebar-filter-fieldname"><$ displayTitleOverrides[field.name] or field.name $></span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand"><$ filterObj[field.name] | filterCount $></span>{%endif %}
                     </a>
-                    <ul id="column-{{ loop.index }}" class="sidebar-filter-subgroup collapse" aria-expanded="false">
+                    <ul id="column-<$ loop.index $>" class="sidebar-filter-subgroup collapse" aria-expanded="false">
                         {% for fieldValue in field.values %}
                             {% set isThisAnActiveFilter = false %}
                             {% if isThisAnActiveFilterColumn %}
@@ -87,12 +87,12 @@
                                 }) %}
 
                                 {% if isMultiselectable %}
-                                    <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-toggle-active background-color-brand" if isThisAnActiveFilter else "" }}">
-                                        <span class="sidebar-filter-toggle-title">{{ fieldValue }}</span> <span class="sidebar-filter-toggle-check {{ "icon-check-on" if isThisAnActiveFilter else "icon-check-off" }}" aria-hidden="true"></span>
+                                    <a href="<$ urlForFilterValue $>" class="<$ "sidebar-filter-toggle-active background-color-brand" if isThisAnActiveFilter else "" $>">
+                                        <span class="sidebar-filter-toggle-title"><$ fieldValue $></span> <span class="sidebar-filter-toggle-check <$ "icon-check-on" if isThisAnActiveFilter else "icon-check-off" $>" aria-hidden="true"></span>
                                     </a>
                                 {% else %}
-                                    <a href="{{ urlForFilterValue }}" class="{{ "sidebar-filter-active background-color-brand" if isThisAnActiveFilter else "" }}">
-                                        {{ fieldValue }}
+                                    <a href="<$ urlForFilterValue $>" class="<$ "sidebar-filter-active background-color-brand" if isThisAnActiveFilter else "" $>">
+                                        <$ fieldValue $>
                                     </a>
                                 {% endif %}
                             </li>
