@@ -1,0 +1,25 @@
+<header class="array-header">
+    <h1 class="array-title">{{ title }}</h1>
+</header>
+
+<div class="array-content">
+    <div class="container-fluid">
+
+        <div class="dataset">
+
+            <!-- breadcrumb -->
+            <ng-include src="'templates/blocks/dataset.breadcrumb.html'"
+                        ng-if="$state.is('admin.dataset') == false"/>
+            <!-- /breadcrumb -->
+
+            <!-- message -->
+            <div ng-show="message" class="alert alert-success" role="alert">{{ message }}</div>
+            <div ng-show="error" class="alert alert-danger" role="alert">{{ error }}</div>
+            <!-- /message -->
+
+            <div ui-view></div>
+
+        </div>
+
+    </div>
+</div>

@@ -3,8 +3,11 @@
 angular
     .module('arraysApp', [
         'ui.router',
+        'ui.bootstrap',
         'ngMaterial',
         'ngMessages',
         'ngStorage',
-        'ngAria'
+        'ngAria',
+        'ngCookies',
+        'oc.lazyLoad'
     ]);

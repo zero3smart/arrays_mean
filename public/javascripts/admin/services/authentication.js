@@ -10,6 +10,18 @@
             return $window.user ? true : false;
         };
 
+        // This method will be used by UI-Router resolves
+        var ensureLogin = function() {
+            var deferred = _$q.defer();
+            if (isLoggedIn()) {
+                $q.resolve(true);
+            } else {
+                $q.resolve(false);
+                // $state.go('admin.login');
+            }
+            return deferred.promise();
+        }
+
         var currentUser = function() {
             if (!isLoggedIn()) return null;
             return $window.user;
@@ -43,6 +55,7 @@
         return {
             currentUser : currentUser,
             isLoggedIn : isLoggedIn,
+            ensureLogin : ensureLogin,
             updateProfile: updateProfile
         };
     }
