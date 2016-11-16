@@ -3,7 +3,7 @@ var winston = require('winston');
 var raw_source_documents = require('./raw_source_documents');
 var raw_row_objects = require('./raw_row_objects');
 var mongoose_client = require('./mongoose_client');
-var processing = require('../lib/datasources/processing');
+var processing = require('../libs/datasources/processing');
 
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
@@ -807,7 +807,7 @@ module.exports.EnumerateProcessedDataset = function (dataSource_uid,
 var xray = require('x-ray');
 var xray_instance = xray();
 
-var image_hosting = require('../lib/utils/aws-image-hosting');
+var image_hosting = require('../libs/utils/aws-image-hosting');
 
 
 function _nextLargestImageSrcSetSizeAvailableInParsedRawURLsBySize(rawURLsBySize, afterSize) // -> (String?)

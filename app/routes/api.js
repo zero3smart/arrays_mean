@@ -16,6 +16,7 @@ var ctrlUsers = require('../controllers/api/users');
 // authentication
 router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
+router.post('/isLoggedIn', ctrlAuth.isLoggedIn);
 
 // account settings
 router.post('/account/update', ensureLoggedIn, ctrlAccount.updateAccount);

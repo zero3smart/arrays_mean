@@ -4,7 +4,7 @@ var _ = require("lodash");
 
 var dataSourceDescriptions = require('../../../../models/descriptions');
 var teamDescriptions = require('../../../../models/teams')
-var importedDataPreparation = require('../../../../lib/datasources/imported_data_preparation');
+var importedDataPreparation = require('../../../../libs/datasources/imported_data_preparation');
 var raw_source_documents = require('../../../../models/raw_source_documents');
 
 module.exports.BindData = function (req, urlQuery, callback) {

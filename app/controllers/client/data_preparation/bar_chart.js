@@ -3,8 +3,8 @@ var Batch = require('batch');
 var express = require('express');
 var _ = require('lodash');
 //
-var importedDataPreparation = require('../../../lib/datasources/imported_data_preparation');
-var datatypes = require('../../../lib/datasources/datatypes');
+var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
+var datatypes = require('../../../libs/datasources/datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
