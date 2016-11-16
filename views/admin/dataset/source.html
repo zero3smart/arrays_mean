@@ -8,13 +8,13 @@
 
 {% block content %}
 	<header class="admin-header">
-		<h1 class="admin-title"><$doc.title$> - Upload </h1>
+		<h1 class="admin-title">{{doc.title}} - Upload </h1>
 	</header>
 
 	{% if flash | length %}
-	<div class="alert alert-success" role="alert"><$ flash $></div>
+	<div class="alert alert-success" role="alert">{{ flash }}</div>
 	{% elif error | length %}
-	<div class="alert alert-danger" role="alert"><$ error $></div>
+	<div class="alert alert-danger" role="alert">{{ error }}</div>
 
 	{% endif %}
 
@@ -25,7 +25,7 @@
 
 		<br />
 
-		<input type="hidden" id="datasource_count" value="<$ sub_datasources | length $>"/>
+		<input type="hidden" id="datasource_count" value="{{ sub_datasources | length }}"/>
 
 		<form class="upload" enctype="multipart/form-data" method="post">
 			{% for datasource in sub_datasources %}
@@ -33,7 +33,7 @@
 				<div class="form-group">
 					<div class="row">
 						<div class="col-xs-11">
-							<h4>Datasource <$ loop.index $></h4>
+							<h4>Datasource {{ loop.index }}</h4>
 						</div>
 						<div class="col-xs-1">
 							<a class="removeDatasource"><span class="glyphicon glyphicon-remove"></span></a>
@@ -42,10 +42,10 @@
 
 					<div class="row">
 						<div class="col-xs-5">
-							<label for="file_<$loop.index0$>">Select a CSV/TSV file To Upload</label>
+							<label for="file_{{loop.index0}}">Select a CSV/TSV file To Upload</label>
 						</div>
 						<div class="col-xs-6">
-							<input type="file" id="file_<$loop.index0$>" name="files[]" accept=".csv,.tsv|text/csv,text/csv-schema,text/tsv"/>
+							<input type="file" id="file_{{loop.index0}}" name="files[]" accept=".csv,.tsv|text/csv,text/csv-schema,text/tsv"/>
 						</div>
 					</div>
 
@@ -68,7 +68,7 @@
 {% endblock %}
 
 {% block inlineScript %}
-	<$ super() $>
+	{{ super() }}
 
 	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
 {% endblock %}

@@ -1,8 +1,8 @@
-<li class="timeline-group-item has-tooltip" data-tooltip-key="<$ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" $>" data-tooltip-value="<$ doc.rowParams[sortBy_realColumnName] if doc.rowParams[sortBy_realColumnName] else "(Date not specified)" $>">
+<li class="timeline-group-item has-tooltip" data-tooltip-key="{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}" data-tooltip-value="{{ doc.rowParams[sortBy_realColumnName] if doc.rowParams[sortBy_realColumnName] else "(Date not specified)" }}">
 	<div class="timeline-item timeline-item-image">
-		<a href="/array/<$ doc.srcDocPKey $>/<$ doc._id $><$ '?embed=true' if embedded $>" class="timeline-link">
+		<a href="/array/{{ doc.srcDocPKey }}/{{ doc._id }}{{ '?embed=true' if embedded }}" class="timeline-link">
 			{% if fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}
-             <$ fe_galleryItem_htmlForIconFromRowObjWhenMissingImage(doc) | safe $>
+             {{ fe_galleryItem_htmlForIconFromRowObjWhenMissingImage(doc) | safe }}
          {% endif %}
 		</a>
 	</div>

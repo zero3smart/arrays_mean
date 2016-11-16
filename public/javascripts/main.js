@@ -1,28 +1,3 @@
-
-angular.module('arraysApp',[])
-    .controller('signupCtrl',function($scope) {
-
-        console.log("here");
-
-
-        $scope.currentTab = "Login";
-
-    })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 $(window).load(function () {
 
     trackEvent("page load");

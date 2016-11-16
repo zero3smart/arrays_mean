@@ -8,16 +8,16 @@
 
 {% block content %}
 	<header class="admin-header">
-		<h1 class="admin-title"><$doc.title$> - Format Views</h1>
+		<h1 class="admin-title">{{doc.title}} - Format Views</h1>
 	</header>
 
-	<input type="hidden" id="doc_id" value="<$ doc._id $>"/>
-	<input type="hidden" id="doc_title" value="<$ doc.title $>"/>
+	<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
+	<input type="hidden" id="doc_title" value="{{ doc.title }}"/>
 
 	{% if flash | length %}
-	<div class="alert alert-success" role="alert"><$ flash $></div>
+	<div class="alert alert-success" role="alert">{{ flash }}</div>
 	{% elif error | length %}
-	<div class="alert alert-danger" role="alert"><$ error $></div>
+	<div class="alert alert-danger" role="alert">{{ error }}</div>
 
 	{% endif %}
 
@@ -32,7 +32,7 @@
 				
 				<label class="col-xs-4" for="default_view">Default View : </label>
 				<div class="col-xs-7  text-center"> 
-					<label id="showDefault_view"> <$ available_forViewTypes | findViewDisplayName(doc.fe_views.default_view) $></label>
+					<label id="showDefault_view"> {{ available_forViewTypes | findViewDisplayName(doc.fe_views.default_view) }}</label>
 
 				</div>
 			</div>
@@ -47,10 +47,10 @@
 				</thead>
 				<tbody>
 				{% for view in available_forViewTypes %}
-				<tr class="views" view-type-name="<$ view.name $>">
-					<td class="visibility"><input value="<$view.name$>" type="checkbox" <$ 'checked' if
-						doc.fe_views.views[view.name].visible == true  $> disabled></td>
-					<td><span class="<$ view.icon $>" id="<$view.name$>" view-display-name="<$view.displayAs$>"></span><$ view.displayAs $></td>
+				<tr class="views" view-type-name="{{ view.name }}">
+					<td class="visibility"><input value="{{view.name}}" type="checkbox" {{ 'checked' if
+						doc.fe_views.views[view.name].visible == true  }} disabled></td>
+					<td><span class="{{ view.icon }}" id="{{view.name}}" view-display-name="{{view.displayAs}}"></span>{{ view.displayAs }}</td>
 				</tr>
 				{% endfor %}
 				</tbody>
@@ -77,7 +77,7 @@
 {% endblock %}
 
 {% block inlineScript %}
-	<$ super() $>
+	{{ super() }}
 
 	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
 

@@ -1,44 +1,33 @@
 (function() {
 	var signupModule = angular.module('signupModule');
-	signupModule.directive('userInputUniqueness',['$http','$q',function($http,$q) 
+	signupModule.directive('uniqueEmail',['$http','$q',function($http,$q) 
 	{
 		return {
 			restrict: 'AE',
 			require: 'ngModel',
 			link: function(scope,elem,attr,model) {
-				model.$asyncValidators.userFieldAvailable = function(modelValue,viewValue) {
+				model.$asyncValidators.emailAvailable = function(modelValue,viewValue) {
 
 					var value = modelValue|| viewValue;
-					var field = model.$name;
 					var params = {};
-					params[field] = value;
-					var defer = $q.defer();
-					$http.post('/api/user/search',params)
-						.then(function(result){
+					params["email"] = value;
 
-							console.log("get")
-							var foundUser = result.data;
-							if (foundUser.length == 0) {
-					
-								model.$setValidity('userFieldAvailable',true);
+					var deferred = $q.defer();
 
-
-
+					$http.post('api/user/search',params).then(
+						function(result) {
+							if (result.data.length == 0) {
+								deferred.resolve(true);
 							} else {
-								model.$setValidity('userFieldAvailable',false);
-
+								deferred.reject();
 							}
+							
+						},function(){
+							deferred.reject(false);
 
-							defer.resolve;
-
-
-						},function(err) {
-							defer.reject;
 						})
-						return defer.promise;
 
-
-
+					return deferred.promise;
 				}
 
 			}

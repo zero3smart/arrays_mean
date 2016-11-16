@@ -5,13 +5,13 @@
     a.color-brand:focus,
     a.color-brand:active,
     .sidebar-filter-toggle .color-brand {
-        color: <$ brandColor $>;
+        color: {{ brandColor }};
     }
 
     .color-brand-hover:hover,
     .dropdown-toggle:hover .color-brand-hover,
     .open .color-brand-hover {
-        color: <$ brandColor $>;
+        color: {{ brandColor }};
     }
 
     .background-color-brand,
@@ -22,16 +22,16 @@
     #page .background-color-brand-hover > a:focus,
     #page .background-color-brand-hover > a:active,
     #page .background-color-brand-hover.active > a {
-        background-color: <$ brandColor $>;
+        background-color: {{ brandColor }};
     }
 
     .border-color-brand,
     .border-color-brand-hover:hover {
-        border-color: <$ brandColor $>;
+        border-color: {{ brandColor }};
     }
 
     .border-top-color-brand {
-        border-top-color: <$ brandColor $>;
+        border-top-color: {{ brandColor }};
     }
 </style>
 {% endif %}
@@ -44,14 +44,14 @@
     <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-bg">
         <div class="container-fluid container-full-width">
             <div class="navbar-brand-container">
-                <a class="navbar-brand" href="<$ galleryURL $>"><$ arrayTitle $></a>
+                <a class="navbar-brand" href="{{ galleryURL }}">{{ arrayTitle }}</a>
             </div>
             <ul class="nav navbar-nav">
                 <li>
                     {# {% if not referer %}
                     {% set onclickClassOrEmpty = " browser-back-on-click" if not embedded %}
                     {% endif %} #}
-                    <a href="<$ referer if referer else mainViewURL $>" class="navbar-back"><span class="icon-back"
+                    <a href="{{ referer if referer else mainViewURL }}" class="navbar-back"><span class="icon-back"
                                                                                                   aria-hidden="true"></span>
                         <span class="navbar-back-label hidden-xs">Back</span></a>
                 </li>
@@ -71,14 +71,14 @@
                             {% endif %}
                             <li role="separator" class="divider"></li>
                             {% endif %}
-                            <li class="background-color-brand-hover"><a href="<$ galleryURL $>"><$ arrayTitle $></a>
+                            <li class="background-color-brand-hover"><a href="{{ galleryURL }}">{{ arrayTitle }}</a>
                             </li>
                             <li class="background-color-brand-hover"><a href="#" class="share-link">Share</a></li>
                             <li role="separator" class="divider"></li>
                             <li class="background-color-brand-hover"><a href="/array">Explore Arrays</a></li>
                             <li role="separator" class="divider"></li>
                             <li class="background-color-brand-hover"><a
-                                    href="mailto:<$ 'Arrays Support<info@arrays.co>' | urlencode$>">Contact Support</a>
+                                    href="mailto:{{ 'Arrays Support<info@arrays.co>' | urlencode}}">Contact Support</a>
                             </li>
                         </ul>
                     </li>

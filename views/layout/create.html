@@ -6,7 +6,7 @@
         {% block headSuffix %}{% endblock %}
     </head>
 
-    <body class="array array-<$ currentView $>">
+    <body class="array array-{{ currentView }}">
         {% include "../partials/auth0.html" %}
 
         <div id="page" class="site">

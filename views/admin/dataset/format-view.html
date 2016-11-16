@@ -13,21 +13,21 @@
 
     <div class="form-group row">
         <div class="col-xs-4">
-              <input name="visible" type="checkbox" value="true" <$ 'checked' if doc.fe_views.views[view.name].visible == true$>/> Visible
+              <input name="visible" type="checkbox" value="true" {{ 'checked' if doc.fe_views.views[view.name].visible == true}}/> Visible
         </div>
         <div class="col-xs-4">
-             <input name="default_view" type="checkbox" value="true" <$ 'checked' if doc.fe_views.default_view == view.name$>/> Default view
+             <input name="default_view" type="checkbox" value="true" {{ 'checked' if doc.fe_views.default_view == view.name}}/> Default view
         </div>
     </div>
 
-    <input type="hidden" id="name" value="<$view.name$>">
+    <input type="hidden" id="name" value="{{view.name}}">
 
     <div class="form-group row">
         <div class="col-xs-4">
             <label for="name">Name</label>
         </div>
         <div class="col-xs-8"> 
-            <input class="form-control" value="<$ view.displayAs$>" disabled/> 
+            <input class="form-control" value="{{ view.displayAs}}" disabled/> 
         </div>
     </div>
 
@@ -36,7 +36,7 @@
             <label for="description"> Description </label>
         </div>
         <div class="col-xs-8">
-        <textarea name="description" value="<$doc.fe_views.views[view.name].description$>" class="form-control"><$doc.fe_views.views[view.name].description$></textarea>
+        <textarea name="description" value="{{doc.fe_views.views[view.name].description}}" class="form-control">{{doc.fe_views.views[view.name].description}}</textarea>
         </div>
     </div>
 
@@ -48,7 +48,7 @@
 
          <div class="form-group row">
                 <div class="col-xs-12">
-                    <label for="<$setting.name$>"> <$setting.displayAs$> </label>
+                    <label for="{{setting.name}}"> {{setting.displayAs}} </label>
                 </div>
                 <div class="col-xs-12">
                     <small> ** use comma to separate values, value entered will be cast as string </small>
@@ -60,7 +60,7 @@
     
             <div class="col-xs-12">
 
-                <input type="text" value="<$doc.fe_views.views[view.name][setting.name] | castArrayToStringSeparatedByComma() $>" class="form-control" name="<$setting.name+  '_separatedByComma'$>"/>
+                <input type="text" value="{{doc.fe_views.views[view.name][setting.name] | castArrayToStringSeparatedByComma() }}" class="form-control" name="{{setting.name+  '_separatedByComma'}}"/>
             </div>
               
         </div>
@@ -77,10 +77,10 @@
         {% elif setting.inputType == "textbox" %}
          <div class="form-group row">
             <div class="col-xs-4">
-                <label for="<$setting.name$>"> <$setting.displayAs$></label>
+                <label for="{{setting.name}}"> {{setting.displayAs}}</label>
             </div>
             <div class="col-xs-8">
-                <input class="form-control" type="text" name="<$setting.name$>" value="<$doc.fe_views.views[view.name][setting.name]$>">
+                <input class="form-control" type="text" name="{{setting.name}}" value="{{doc.fe_views.views[view.name][setting.name]}}">
             </div>
 
 
@@ -91,10 +91,10 @@
 
         <div class="form-group row">
             <div class="col-xs-4">
-                <label for="<$setting.name$>"> <$setting.displayAs$></label>
+                <label for="{{setting.name}}"> {{setting.displayAs}}</label>
 
                 {% if setting.restrictColumnDataType %}
-                    <small class="row"> ** only accept <$setting.restrictColumnDataType$> type </small>
+                    <small class="row"> ** only accept {{setting.restrictColumnDataType}} type </small>
                 {% endif %}
 
 
@@ -102,7 +102,7 @@
 
             <div class="col-xs-8">
 
-                <select tabindex="4" name="<$setting.name$>" {%if setting.inputType=="multiselect"%}  multiple class="chosen-select" {%else%} class="form-control" {% endif %}>
+                <select tabindex="4" name="{{setting.name}}" {%if setting.inputType=="multiselect"%}  multiple class="chosen-select" {%else%} class="form-control" {% endif %}>
                     <option value=""></option>
                 {% if setting.selectFrom == "column" %}
 
@@ -126,14 +126,14 @@
 
                                 {% if setting.restrictColumnDataType | colHasDataType(finalizedField,doc.raw_rowObjects_coercionScheme) %}
 
-<option value="<$finalizedField$>" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == finalizedField  %}  selected {%elif setting.inputType == "multiselect" and doc.fe_views.views[view.name][setting.name] | doesArrayContain(finalizedField) %} selected {%endif%} > <$displayCol$></option>
+<option value="{{finalizedField}}" {% if setting.inputType == "select" and doc.fe_views.views[view.name][setting.name] == finalizedField  %}  selected {%elif setting.inputType == "multiselect" and doc.fe_views.views[view.name][setting.name] | doesArrayContain(finalizedField) %} selected {%endif%} > {{displayCol}}</option>
 
                                 {% endif %}
                             {% else %}
 
 
-<option value="<$finalizedField$>" {% if setting.inputType == "select" and not setting.selectNestedField and doc.fe_views.views[view.name][setting.name] == finalizedField %}  selected {%elif setting.inputType == "multiselect" and doc.fe_views.views[view.name][setting.name] | doesArrayContain(finalizedField) %} selected {% elif 
-                                setting.selectNestedField and doc.fe_views.views[view.name][setting.name][setting.selectNestedField] == finalizedField %} selected {%endif%} > <$displayCol$></option>
+<option value="{{finalizedField}}" {% if setting.inputType == "select" and not setting.selectNestedField and doc.fe_views.views[view.name][setting.name] == finalizedField %}  selected {%elif setting.inputType == "multiselect" and doc.fe_views.views[view.name][setting.name] | doesArrayContain(finalizedField) %} selected {% elif 
+                                setting.selectNestedField and doc.fe_views.views[view.name][setting.name][setting.selectNestedField] == finalizedField %} selected {%endif%} > {{displayCol}}</option>
                             {% endif %}
 
                         {%endif%}
@@ -146,7 +146,7 @@
 
                 {% elif setting.selectFrom == "duration" %}
                     {% for dur in available_forDuration %}
-                        <option value="<$dur$>" <$ 'selected' if doc.fe_views.views[view.name][setting.name] == dur $>><$dur$></option>
+                        <option value="{{dur}}" {{ 'selected' if doc.fe_views.views[view.name][setting.name] == dur }}>{{dur}}</option>
                     {% endfor %}
                 {%endif%}
             
@@ -155,11 +155,11 @@
             </div>
         </div>
         {% elif setting.inputType=="keyValue"%}
-            <input type="hidden" id="counter_<$setting.name$>" value="0">
+            <input type="hidden" id="counter_{{setting.name}}" value="0">
 
              <div class="form-group row">
                 <div class="col-xs-12">
-                    <label for="<$setting.name$>"> <$setting.displayAs$> </label>
+                    <label for="{{setting.name}}"> {{setting.displayAs}} </label>
                 </div>
 
                 {% if setting.valueInputType == "multivalueTextbox" %}
@@ -170,30 +170,30 @@
                 {% endif %}
             </div>
 
-            <div class="templateDiv {% if not doc.fe_views.views[view.name][setting.name] | isObjectEmpty %} hidden {%endif%}"  id="template_<$setting.name$>">
+            <div class="templateDiv {% if not doc.fe_views.views[view.name][setting.name] | isObjectEmpty %} hidden {%endif%}"  id="template_{{setting.name}}">
        
                 <div class="form-group row">
                     
                     <div class="pull-right col-xs-1">
-                        <a field-name="<$setting.name$>" class="hideTemplate"><span class="glyphicon glyphicon-remove"></span></a>
+                        <a field-name="{{setting.name}}" class="hideTemplate"><span class="glyphicon glyphicon-remove"></span></a>
                     </div>
                     
                     <div class="col-xs-4">
                     {% if setting.keyInputType == "select" and setting.keySelectFrom == "column" %}
                     
-                        <select name="<$setting.name$>_key[]" class="reset form-control">
+                        <select name="{{setting.name}}_key[]" class="reset form-control">
                             <option value=""> </option>
                             <option value="_all"> ** All Fields ** </option>
                         {% for col in colNames %}
                             {% set finalizedField = col | finalizeColumnName %}
                             {% set displayCol = doc.fe_displayTitleOverrides | displayValueForCol(finalizedField) %}
                              {% if not doc.fe_excludeFields | doesArrayContain(finalizedField) %}
-                                <option value="<$finalizedField$>"><$displayCol$></option>
+                                <option value="{{finalizedField}}">{{displayCol}}</option>
                              {% endif %}
                         {% endfor %}
                         </select>
                     {% elif setting.keyInputType == "textbox" %}
-                        <input class="form-control" type="text" name="<$setting.name$>_key[]"/>
+                        <input class="form-control" type="text" name="{{setting.name}}_key[]"/>
                     {% endif %}
 
                     </div>
@@ -201,23 +201,23 @@
                     <div class="col-xs-7">
                     {% if setting.valueInputType == "multivalueTextbox" %}
                         <div class="from-group">
-                            <input name="<$setting.name$>_value_separatedByComma[]" class="form-control value" type="text">
+                            <input name="{{setting.name}}_value_separatedByComma[]" class="form-control value" type="text">
                         </div>
                     {% elif setting.valueInputType == "textbox" %}
                         <div class="from-group">
-                            <input name="<$setting.name$>_key[]" class="form-control" type="text">
+                            <input name="{{setting.name}}_key[]" class="form-control" type="text">
                         </div>
                     {% elif setting.valueInputType == "select" %}
                         {% if setting.valueSelectFrom == "column" %}
 
-                            <select name="<$setting.name$>_value[]" class="reset form-control">
+                            <select name="{{setting.name}}_value[]" class="reset form-control">
                             <option value=""> </option>
                             <option value="_all"> ** All Fields ** </option>
                             {% for col in colNames %}
                                 {% set finalizedField = col | finalizeColumnName %}
                                  {% set displayCol = doc.fe_displayTitleOverrides | displayValueForCol(finalizedField) %}
                                 {% if not doc.fe_excludeFields | doesArrayContain(finalizedField) %}
-                                    <option value="<$finalizedField$>"><$displayCol$></option>
+                                    <option value="{{finalizedField}}">{{displayCol}}</option>
                                  {% endif %}
                             {% endfor %}
                             </select>
@@ -226,7 +226,7 @@
                         {% endif %}
                     {% elif setting.valueInputType == "colorpicker" %}
     
-                        <input type="text" class="startEmpty form-control" name="<$setting.name$>_value[]" value='<$color$>' /> 
+                        <input type="text" class="startEmpty form-control" name="{{setting.name}}_value[]" value='{{color}}' /> 
 
                     {% endif %}
                     </div>
@@ -240,26 +240,26 @@
             <div class="templateDiv form-group row">
                 
                 <div class="pull-right col-xs-1">
-                    <a delete-this="true" field-name="<$setting.name$>" class="hideTemplate"><span class="glyphicon glyphicon-remove"></span></a>
+                    <a delete-this="true" field-name="{{setting.name}}" class="hideTemplate"><span class="glyphicon glyphicon-remove"></span></a>
                 </div>
                 
                 <div class="col-xs-4">
                 {% if setting.keyInputType == "select" and setting.keySelectFrom == "column" %}
                 
-                    <select name="<$setting.name$>_key[]" class="reset form-control">
+                    <select name="{{setting.name}}_key[]" class="reset form-control">
                         <option value=""> </option>
                         <option value="_all" {%if doc.fe_views.views[view.name][setting.name]._all %} selected {%endif%}> ** All Fields ** </option>
                     {% for col in colNames %}
                         {% set finalizedField = col | finalizeColumnName %}
                         {% set displayCol = doc.fe_displayTitleOverrides | displayValueForCol(finalizedField) %}
                         {% if not doc.fe_excludeFields | doesArrayContain(finalizedField) %}
-                                <option value="<$finalizedField$>" <$'selected' if  key == finalizedField $>><$displayCol$></option>
+                                <option value="{{finalizedField}}" {{'selected' if  key == finalizedField }}>{{displayCol}}</option>
                         {% endif %}
                         
                     {% endfor %}
                     </select>
                 {% elif setting.keyInputType == "textbox" %}
-                        <input class="form-control" type="text" value="<$key$>" name="<$setting.name$>_key[]"/>
+                        <input class="form-control" type="text" value="{{key}}" name="{{setting.name}}_key[]"/>
                 {% endif %}
 
                 </div>
@@ -267,29 +267,29 @@
                 <div class="col-xs-7">
                 {% if setting.valueInputType == "multivalueTextbox" %}
                     <div class="from-group">
-                        <input value="<$ doc.fe_views.views[view.name][setting.name][key] | castArrayToStringSeparatedByComma() $>" name="<$setting.name$>_value_separatedByComma[]" class="form-control value" type="text">
+                        <input value="{{ doc.fe_views.views[view.name][setting.name][key] | castArrayToStringSeparatedByComma() }}" name="{{setting.name}}_value_separatedByComma[]" class="form-control value" type="text">
                     </div>
                 {% elif setting.valueInputType == "textbox" %}
                     <div class="from-group">
-                        <input {%if setting.valueNestedField %}value="<$value[setting.valueNestedField]$>" name="<$setting.name+'_value'$>[].<$setting.valueNestedField$>" {%else%} value="<$value$>" name="<$setting.name$>_value[]"  {%endif%} class="form-control" type="text">
+                        <input {%if setting.valueNestedField %}value="{{value[setting.valueNestedField]}}" name="{{setting.name+'_value'}}[].{{setting.valueNestedField}}" {%else%} value="{{value}}" name="{{setting.name}}_value[]"  {%endif%} class="form-control" type="text">
                     </div>
                 {% elif setting.valueInputType == "select" %}
 
                     {% if setting.valueSelectFrom == "column" %}
-                        <select name="<$setting.name$>_value[]" class="reset form-control">
+                        <select name="{{setting.name}}_value[]" class="reset form-control">
                             <option value=""> </option>
                             <option value="_all"> ** All Fields ** </option>
                             {% for col in colNames %}
                                 {% set finalizedField = col | finalizeColumnName %}
                                 {% set displayCol = doc.fe_displayTitleOverrides | displayValueForCol(finalizedField) %}
                                 {% if not doc.fe_excludeFields | doesArrayContain(col) %}
-                                    <option value="<$finalizedField$>" <$'selected' if finalizedField == value $> ><$displayCol$></option>
+                                    <option value="{{finalizedField}}" {{'selected' if finalizedField == value }} >{{displayCol}}</option>
                                  {% endif %}
                             {% endfor %}
                         </select>
                     {% endif %}
                 {% elif setting.valueInputType == "colorpicker" %}
-                     <input type="text" class="startEmpty form-control" name="<$setting.name$>_value[]" value='<$value$>' /> 
+                     <input type="text" class="startEmpty form-control" name="{{setting.name}}_value[]" value='{{value}}' /> 
 
                  
 
@@ -305,19 +305,19 @@
      
 
 
-        <div id="addMoreTemplates_<$setting.name$>">
+        <div id="addMoreTemplates_{{setting.name}}">
         </div>  
 
-        <div class="form-group row"><a field-name="<$setting.name$>" class="addTemplateInView add col-xs-offset-1"><span class="glyphicon glyphicon-plus"></span> Add key value pairs</a></div>
+        <div class="form-group row"><a field-name="{{setting.name}}" class="addTemplateInView add col-xs-offset-1"><span class="glyphicon glyphicon-plus"></span> Add key value pairs</a></div>
         {% elif setting.inputType == "toggle" %}
 
         <div class="form-group row">
             <div class="col-xs-8">
-                <label for="<$setting.name$>}"> <$setting.displayAs$> </label>
+                <label for="{{setting.name}}}"> {{setting.displayAs}} </label>
             </div>
             <div class="col-xs-4">
                 <label class="switch">
-                <input name="<$setting.name$>" type="checkbox" value="true" <$'checked' if doc.fe_views.views[view.name][setting.name] == true $> />
+                <input name="{{setting.name}}" type="checkbox" value="true" {{'checked' if doc.fe_views.views[view.name][setting.name] == true }} />
                 <div class="slider round"></div>
             </label>
             </div>
@@ -325,7 +325,7 @@
         {% elif setting.inputType == "multiColorpicker"%}
         <div class="form-group row">
             <div class="col-xs-6">
-                <label for="<$setting.name$>"> <$setting.displayAs$> </label>
+                <label for="{{setting.name}}"> {{setting.displayAs}} </label>
             </div>
         </div>
         <div id="addColorsTo" class="form-group row">
@@ -334,7 +334,7 @@
                 {% for color in doc.fe_views.views[view.name][setting.name]%}
                     <div class="col-xs-2">
 
-                        <input type="text" class="startEmpty form-control" name="<$setting.name$>[]" value='<$color$>' /> 
+                        <input type="text" class="startEmpty form-control" name="{{setting.name}}[]" value='{{color}}' /> 
                     </div>
 
                 {%endfor%}
@@ -342,7 +342,7 @@
             {% else %}
                 <div class="col-xs-2">
 
-                    <input type="text" class="startEmpty form-control" name="<$setting.name$>[]" value='' /> 
+                    <input type="text" class="startEmpty form-control" name="{{setting.name}}[]" value='' /> 
                 </div>
 
             {%endif%}
@@ -350,7 +350,7 @@
 
         </div>
         <div class="form-group row">
-            <a field-name="<$setting.name$>" class="add addColors col-xs-offset-1"><span class="glyphicon glyphicon-plus"></span> Add colors</a>
+            <a field-name="{{setting.name}}" class="add addColors col-xs-offset-1"><span class="glyphicon glyphicon-plus"></span> Add colors</a>
         </div>
 
 

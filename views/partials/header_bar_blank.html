@@ -5,7 +5,7 @@
     a.color-brand:focus,
     a.color-brand:active,
     .sidebar-filter-toggle .color-brand {
-        color: <$ brandColor $>;
+        color: {{ brandColor }};
     }
 
     .color-brand-hover:hover,
@@ -13,7 +13,7 @@
     .open .color-brand-hover,
     .search-toggle:hover .color-brand-hover,
     .search-toggle.search-active .color-brand-hover {
-        color: <$ brandColor $>;
+        color: {{ brandColor }};
     }
 
     .background-color-brand,
@@ -24,16 +24,16 @@
     #page .background-color-brand-hover > a:focus,
     #page .background-color-brand-hover > a:active,
     #page .background-color-brand-hover.active > a {
-        background-color: <$ brandColor $>;
+        background-color: {{ brandColor }};
     }
 
     .border-color-brand,
     .border-color-brand-hover:hover {
-        border-color: <$ brandColor $>;
+        border-color: {{ brandColor }};
     }
 
     .border-top-color-brand {
-        border-top-color: <$ brandColor $>;
+        border-top-color: {{ brandColor }};
     }
 </style>
 {% endif %}
@@ -66,7 +66,7 @@
                             <li role="separator" class="divider"></li>
                             {% endif %}
                             <li class="background-color-brand-hover"><a
-                                    href="mailto:<$ 'Arrays Support<info@arrays.co>' | urlencode $>">Contact Support</a>
+                                    href="mailto:{{ 'Arrays Support<info@arrays.co>' | urlencode }}">Contact Support</a>
                             </li>
                         </ul>
                     </li>

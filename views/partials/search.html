@@ -1,5 +1,5 @@
 {% macro default(basePath, searchColToOutput, columnNames, searchQ, sortBy, sortDir, filterObj) %}
-<form action="<$ basePath $>" method="get" class="form-search">
+<form action="{{ basePath }}" method="get" class="form-search">
     <div class="sort-control visible-xs">
         <div class="dropdown-toggle search-toggle">
             <span class="icon-search search-icon color-brand-hover"></span>
@@ -9,13 +9,13 @@
     <div class="mobile-search-popover dropdown-panel">
         <div class="dropdown sort-control search-control">
             <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                Search <span class="search-criteria color-brand-hover"><$ searchColToOutput $></span>
+                Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
             </a>
-            <input type="hidden" name="searchCol" value="<$ searchColToOutput $>" class="search-colname">
+            <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
             {% if columnNames | length %}
             <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
                 {% for colName in columnNames %}
-                <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="<$ colName $>"><$ colName $></a></li>
+                <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
@@ -23,26 +23,26 @@
 
         <div class="sort-control sort-control-right">
             <div class="dropdown-toggle">
-                <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="<$ searchQ $>">
+                <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ }}">
                 <span class="icon-search search-icon hidden-xs"></span>
             </div>
         </div>
     </div>
 
     {% if sortBy %}
-    <input type="hidden" name="sortBy" value="<$ sortBy $>">
+    <input type="hidden" name="sortBy" value="{{ sortBy }}">
     {% endif %}
     {% if sortDir %}
-    <input type="hidden" name="sortDir" value="<$ sortDir $>">
+    <input type="hidden" name="sortDir" value="{{ sortDir }}">
     {% endif %}
     {% if filterObj %}
         {% for filterCol, filterVals in filterObj %}
             {% if filterVals | isArray %}
                 {% for filterVal in filterVals %}
-                    <input type="hidden" name="<$ filterCol $>" value="<$ filterVal $>">
+                    <input type="hidden" name="{{ filterCol }}" value="{{ filterVal }}">
                 {% endfor %}
             {% else %}
-                <input type="hidden" name="<$ filterCol $>" value="<$ filterVals $>">
+                <input type="hidden" name="{{ filterCol }}" value="{{ filterVals }}">
             {% endif %}
         {% endfor %}
     {% endif %}
@@ -50,7 +50,7 @@
 {% endmacro %}
 
 {% macro panel(basePath, searchColToOutput, columnNames, searchQ, sortBy, sortDir, filterObj) %}
-<form action="<$ basePath $>" method="get" class="form-search">
+<form action="{{ basePath }}" method="get" class="form-search">
     <div class="sort-control visible-xs">
         <div class="btn dropdown-toggle-button search-toggle">
             <span class="icon-search search-icon color-brand-hover"></span>
@@ -61,13 +61,13 @@
         <div class="dropdown-toggle-button-group" role="group">
             <div class="dropdown sort-control sort-control-left search-control">
                 <a href="#" class="btn dropdown-toggle ui-label" data-toggle="dropdown" id="search-by" role="button" aria-haspopup="true" aria-expanded="false">
-                    Search <span class="search-criteria color-brand-hover"><$ searchColToOutput $></span>
+                    Search <span class="search-criteria color-brand-hover">{{ searchColToOutput }}</span>
                 </a>
-                <input type="hidden" name="searchCol" value="<$ searchColToOutput $>" class="search-colname">
+                <input type="hidden" name="searchCol" value="{{ searchColToOutput }}" class="search-colname">
                 {% if columnNames | length %}
                 <ul class="dropdown-menu search-dropdown-menu" aria-labelledby="search-by">
                     {% for colName in columnNames %}
-                    <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="<$ colName $>"><$ colName $></a></li>
+                    <li class="search-dropdown-item background-color-brand-hover"><a href="#" data-colname="{{ colName }}">{{ colName }}</a></li>
                     {% endfor %}
                 </ul>
                 {% endif %}
@@ -75,7 +75,7 @@
 
             <div class="sort-control sort-control-right">
                 <div class="dropdown-toggle">
-                    <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="<$ searchQ $>">
+                    <input type="text" name="searchQ" class="form-control search-input" placeholder="Type here to search" autocomplete="off" value="{{ searchQ }}">
                     <span class="icon-search search-icon hidden-xs"></span>
                 </div>
             </div>
@@ -83,19 +83,19 @@
     </div>
 
     {% if sortBy %}
-    <input type="hidden" name="sortBy" value="<$ sortBy $>">
+    <input type="hidden" name="sortBy" value="{{ sortBy }}">
     {% endif %}
     {% if sortDir %}
-    <input type="hidden" name="sortDir" value="<$ sortDir $>">
+    <input type="hidden" name="sortDir" value="{{ sortDir }}">
     {% endif %}
     {% if filterObj %}
         {% for filterCol, filterVals in filterObj %}
             {% if filterVals | isArray %}
                 {% for filterVal in filterVals %}
-                    <input type="hidden" name="<$ filterCol $>" value="<$ filterVal $>">
+                    <input type="hidden" name="{{ filterCol }}" value="{{ filterVal }}">
                 {% endfor %}
             {% else %}
-                <input type="hidden" name="<$ filterCol $>" value="<$ filterVals $>">
+                <input type="hidden" name="{{ filterCol }}" value="{{ filterVals }}">
             {% endif %}
         {% endfor %}
     {% endif %}

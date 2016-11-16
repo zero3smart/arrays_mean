@@ -12,9 +12,9 @@
 	</header>
 
 	{% if flash | length %}
-	<div class="alert alert-success" role="alert"><$ flash $></div>
+	<div class="alert alert-success" role="alert">{{ flash }}</div>
 	{% elif error | length %}
-	<div class="alert alert-danger" role="alert"><$ error $></div>
+	<div class="alert alert-danger" role="alert">{{ error }}</div>
 	{% endif %}
 
 	<dive class="dataset">
@@ -25,23 +25,23 @@
 		<form id="settings" method="post">
 			<div class="form-group row">
 				<label class="col-xs-4" for="title">Title: </label>
-				<input class="col-xs-8" type="text" id="title" name="title" value="<$ doc.title $>" required/>
+				<input class="col-xs-8" type="text" id="title" name="title" value="{{ doc.title }}" required/>
 			</div>
 
 			<div class="form-group row">
 				<label class="col-xs-4" for="description">Description: </label>
-				<textarea class="col-xs-8" id="description" name="description" required> <$ doc.description $></textarea>
+				<textarea class="col-xs-8" id="description" name="description" required> {{ doc.description }}</textarea>
 			</div>
 
 			<div class="form-group row">
 				<label class="col-xs-4" for="revision">Import Revision: </label>
-				<input class="col-xs-8" type="number" id="revision" name="importRevision" value="<$ doc.importRevision $>" required/>
+				<input class="col-xs-8" type="number" id="revision" name="importRevision" value="{{ doc.importRevision }}" required/>
 			</div>
 
 			<div class="form-group row">
 				<label class="col-xs-4" for="brandColor">Brand Color: </label>
 				<div id="brandColor" class="input-group colorpicker-component col-xs-8">
-					<input type="text" name="brandColor" value="<$ doc.brandColor $>" class="form-control" />
+					<input type="text" name="brandColor" value="{{ doc.brandColor }}" class="form-control" />
 					<span class="input-group-addon"><i></i></span>
 				</div>
 				<script>
@@ -57,17 +57,17 @@
 			{% if doc.urls and doc.urls.length > 0 %}
 				{% for url in doc.urls %}
 				{% if loop.index == 1 %} 
-					<input class="col-xs-8 urls" type="text" name="urls[]" value="<$url$>" />
+					<input class="col-xs-8 urls" type="text" name="urls[]" value="{{url}}" />
 				</div>
 				{% else %}
 				<div class="form-group row"> 
-					<input class="col-xs-8 col-xs-offset-4 urls" name="urls[]" type="text" value="<$url$>"/>
+					<input class="col-xs-8 col-xs-offset-4 urls" name="urls[]" type="text" value="{{url}}"/>
 				</div>
 				{% endif %}
 				{% endfor %}
 
 			{% else %}
-				<input class="col-xs-8 urls" type="text" name="urls[]" value="<$url$>" />
+				<input class="col-xs-8 urls" type="text" name="urls[]" value="{{url}}" />
 			</div>
 			{% endif %}
 		
@@ -77,7 +77,7 @@
 
 			<div class="form-group row">
 				<label class="col-xs-4" for="fe_listed">Listed: </label>
-				<input type="checkbox" id="fe_listed" name="fe_listed" <$ 'checked=checked' if doc.fe_listed else '' $> value="true"/>
+				<input type="checkbox" id="fe_listed" name="fe_listed" {{ 'checked=checked' if doc.fe_listed else '' }} value="true"/>
 			</div>
 
 			<div class="panel-footer">
@@ -96,7 +96,7 @@
 {% endblock %}
 
 {% block inlineScript %}
-	<$ super() $>
+	{{ super() }}
 
 	<script type="text/javascript" src="/javascripts/vendors/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js"></script>
 	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>

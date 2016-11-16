@@ -8,11 +8,11 @@
 
 {% block content %}
 	<header class="admin-header">
-		<h1 class="admin-title"><$doc.title$> - Done!</h1>
+		<h1 class="admin-title">{{doc.title}} - Done!</h1>
 	</header>
 
-	<input type="hidden" id="doc_id" value="<$ doc._id $>"/>
-	<input type="hidden" id="doc_title" value="<$ doc.title $>"/>
+	<input type="hidden" id="doc_id" value="{{ doc._id }}"/>
+	<input type="hidden" id="doc_title" value="{{ doc.title }}"/>
 
 	<div class="dataset format">
 		{% include "../../partials/admin/dataset-breadcrumb.html" %}
@@ -20,7 +20,7 @@
 		<br />
 		<h2>Congratulations!  You're all done!</h2>
 		{% set url = ["../../../array/", doc.uid, "-r", doc.importRevision, "/", doc.fe_views.default_view] %}
-		<h2>View your <strong><a href=<$ url | join $>>array</a></strong></h2>
+		<h2>View your <strong><a href={{ url | join }}>array</a></strong></h2>
 
 	</div>
 
@@ -36,7 +36,7 @@
 {% endblock %}
 
 {% block inlineScript %}
-	<$ super() $>
+	{{ super() }}
 
 	<script type="text/javascript" src="/javascripts/module/admin/dataset.js"></script>
 

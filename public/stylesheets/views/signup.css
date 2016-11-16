@@ -1,6 +1,7 @@
 
 form.signup {
 	margin:0px auto;
+	margin-top:200px;
 
 }
 
@@ -28,7 +29,7 @@ a.pointer {
 }
 
 #signupheader img {
-	width:40px;
+	width:100%;
 }
 
 #signupheader h1 {

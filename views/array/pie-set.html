@@ -8,7 +8,7 @@
 {% import "../partials/filter.html" as filter %}
 
 {% block headSuffix %}
-    <title>Arrays - <$ arrayTitle $></title>
+    <title>Arrays - {{ arrayTitle }}</title>
 {% endblock %}
 
 {% block content %}
@@ -16,18 +16,18 @@
 
         <header class="array-header header-shadow array-header-small clearfix">
             <div class="container-fluid">
-                <h1 class="array-title"><$ arrayTitle $></h1>
+                <h1 class="array-title">{{ arrayTitle }}</h1>
                 <div class="array-meta">
-                    {% if sourceDocURL %}<a href="<$ sourceDocURL $>" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count"><$ sourceDoc.numberOfRows | comma $> Record<$ "s" if sourceDoc.numberOfRows != 1 else "" $></span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated <$ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear $></span>
+                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
                 </div>
             </div>
         </header><!-- .array-header -->
 
         {% if view_description %}
             <div class="array-description-wrapper">
-                <p class="array-description"><$ view_description | truncate(80) $></p>
+                <p class="array-description">{{ view_description | truncate(80) }}</p>
                 <a href="#expanded"><p class="array-description-expand">Read more</p></a>
-                <p class="array-description-full"><$ view_description $>
+                <p class="array-description-full">{{ view_description }}
                 <a href="#"><p class="array-description-collapse">less</p></a>
             </div>
         {% endif %}
@@ -43,7 +43,7 @@
                             <div class="sort-bar clearfix">
 
                                 <nav class="sort-bar-left pull-left" role="navigation">
-                                    <$
+                                    {{
                                     dropdown.sortbar
                                         (
                                             "Chart By",
@@ -58,9 +58,9 @@
                                                 chartBy: ''
                                             })
                                         )
-                                    $>
+                                    }}
 
-                                    <$
+                                    {{
                                     dropdown.sortbar
                                     (
                                         "Group By",
@@ -74,10 +74,10 @@
                                             groupBy: ''
                                         })
                                     )
-                                    $>
+                                    }}
 
                                     {% if aggregateBy_humanReadable_available %}
-                                        <$
+                                        {{
                                         dropdown.sortbar(
                                             'Aggregate By',
                                             aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
@@ -90,12 +90,12 @@
                                                 aggregateBy: ''
                                             })
                                         )
-                                        $>
+                                        }}
                                     {% endif %}
                                 </nav>
 
                                 <div class="sort-bar-right pull-right">
-                                    <$
+                                    {{
                                     search.panel(
                                         routePath_base,
                                         searchCol if searchCol else "Object Title",
@@ -105,7 +105,7 @@
                                         null,
                                         filterObj
                                     )
-                                    $>
+                                    }}
 
                                     <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
                                         <span class="icon-legend" aria-hidden="true"></span>
@@ -120,7 +120,7 @@
 
 
                 {% if isFilterActive %}
-                    <$
+                    {{
                     filter.default(displayTitleOverrides,
                         routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
@@ -134,22 +134,22 @@
                         false,
                         'filter-bar-fixed-bottom'
                     )
-                    $>
+                    }}
                 {% endif %}
 
                 <script type="text/javascript">
-                    var pieData = <$ groupedResults | dump | safe $>;
+                    var pieData = {{ groupedResults | dump | safe }};
 
-                    var legendData = <$ flatResults | dump | safe $>;
-                    var filterObj = <$ filterObj | dump | safe $>;
-                    var routePath_withoutFilter = "<$ routePath_base | constructedRoutePath(null, {
+                    var legendData = {{ flatResults | dump | safe }};
+                    var filterObj = {{ filterObj | dump | safe }};
+                    var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                             searchCol: searchCol,
                             searchQ: searchQ,
                             chartBy: chartBy,
                             groupBy: groupBy,
                             aggregateBy: aggregateBy
-                    }) | safe $>";
-                    var groupBy = '<$ groupBy if groupBy else defaultGroupByColumnName_humanReadable $>';
+                    }) | safe }}";
+                    var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
                 </script>
                 <div class="container-fluid">
                     <div class="row">
@@ -178,7 +178,7 @@
 {% endblock %}
 
 {% block inlineScript %}
-    <$ super() $>
+    {{ super() }}
 
     <script type="text/javascript" src="/javascripts/vendors/d3/d3.js"></script>
     <script type="text/javascript" src="/javascripts/module/pieChart.js"></script>
