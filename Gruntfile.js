@@ -60,7 +60,7 @@ module.exports = function (grunt) {
                     'jQuery/dist/jquery.min.js',
                     'd3/d3.js',
                     'sharrre/jquery.sharrre.js',
-                    'scrollmagic/scrollmagic/uncompressed/ScrollMagic.js',
+                    'scrollmagic/scrollmagic/minified/ScrollMagic.min.js',
                     'urijs/src/URI.min.js',
                     'lodash/dist/**',
                     'moment/moment.js',
@@ -75,7 +75,9 @@ module.exports = function (grunt) {
                     'oclazyload/dist/ocLazyLoad.min.js',
                     'angular-material/**',
                     'angular-aria/angular-aria.min.js',
-                    'angular-messages/angular-messages.min.js'
+                    'angular-messages/angular-messages.min.js',
+                    'form2js/src/*',
+                    'spectrum/spectrum.js'
                 ],
                 dest: 'public/vendors'
             }

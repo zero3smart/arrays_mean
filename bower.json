@@ -27,7 +27,9 @@
     "bootstrap-sass": "^3.3.7",
     "urijs": "^1.18.2",
     "jasmine-core": "jasmine#^2.5.2",
-    "jQuery": "2.2.2"
+    "jQuery": "2.2.2",
+    "form2js": "*",
+    "scrollmagic": "^2.0.5"
   },
   "ignore": [
     "\\.*",
