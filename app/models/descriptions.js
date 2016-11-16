@@ -7,8 +7,8 @@ var _ = require("lodash");
 var async = require('async');
 
 var mongoose_client = require('./mongoose_client');
-var imported_data_preparation = require('../lib/datasources/imported_data_preparation');
-var import_controller = require('../lib/import/data_ingest/controller');
+var imported_data_preparation = require('../libs/datasources/imported_data_preparation');
+var import_controller = require('../libs/import/data_ingest/controller');
 
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;

@@ -10,56 +10,13 @@ module.exports = function (grunt) {
         '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
         '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
         ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
-        // Task configuration.
-        // concat: {
-        //   options: {
-        //     banner: '<%= banner %>',
-        //     stripBanners: true
-        //   },
-        //   dist: {
-        //     src: ['lib/<%= pkg.name %>.js'],
-        //     dest: 'dist/<%= pkg.name %>.js'
-        //   }
-        // },
-        // uglify: {
-        //   options: {
-        //     banner: '<%= banner %>'
-        //   },
-        //   dist: {
-        //     src: '<%= concat.dist.dest %>',
-        //     dest: 'dist/<%= pkg.name %>.min.js'
-        //   }
-        // },
 
         jshint: {
             files: ['Gruntfile.js', 'public/javascripts/**/*.js'],
-            options: {
-                // curly: true,
-                // eqeqeq: true,
-                // immed: true,
-                // latedef: true,
-                // newcap: true,
-                // noarg: true,
-                // sub: true,
-                // undef: true,
-                // unused: true,
-                // boss: true,
-                // eqnull: true,
-                // globals: {
-                //   jQuery: true
-                // }
-            },
             gruntfile: {
                 src: 'Gruntfile.js'
-            },
-            // lib_test: {
-            //   src: ['lib/**/*.js', 'test/**/*.js']
-            // }
+            }
         },
-
-        // nodeunit: {
-        //   files: ['test/**/*_test.js']
-        // },
 
         watch: {
             gruntfile: {
@@ -81,34 +38,30 @@ module.exports = function (grunt) {
                 tasks: ['sass', 'postcss']
             },
             js: {
-                files: ['public/javascripts/**/*.js', '!public/javascripts/main.min.js', '!public/javascripts/vendors/**/*.js'],
-                // tasks : ['jshint'],
+                files: ['public/javascripts/**/*.js', '!public/javascripts/main.min.js', '!public/vendors/**/*.js'],
                 options: {
                     livereload: true
                 }
             },
             html: {
-                files: ['views/**/*.html'],
+                files: ['views/**/*.html', 'public/templates/*.html', 'public/templates/**/*.html'],
                 options: {
                     livereload: true
                 }
             }
-
-            // lib_test: {
-            //   files: '<%= jshint.lib_test.src %>',
-            //   tasks: ['jshint:lib_test', 'nodeunit']
-            // }
         },
 
         // Copy assets from bower_components to public folder
         copy: {
-            libs: {
+            vendors: {
                 expand: true,
                 cwd: 'bower_components',
                 src: [
+                    'jQuery/dist/jquery.min.js',
                     'd3/d3.js',
                     'sharrre/jquery.sharrre.js',
                     'scrollmagic/scrollmagic/uncompressed/ScrollMagic.js',
+                    'urijs/src/URI.min.js',
                     'lodash/dist/**',
                     'moment/moment.js',
                     'bootstrap-colorpicker/dist/**',
@@ -119,28 +72,17 @@ module.exports = function (grunt) {
                     'angular-ui-router/release/angular-ui-router.min.js',
                     'angular-bootstrap/ui-bootstrap-tpls.js',
                     'ngstorage/ngStorage.min.js',
-                    'oclazyload/dist/**',
+                    'oclazyload/dist/ocLazyLoad.min.js',
                     'angular-material/**',
                     'angular-aria/angular-aria.min.js',
                     'angular-messages/angular-messages.min.js'
                 ],
-                dest: 'public/javascripts/vendors'
-            },
-            data: {
-                expand: true,
-                cwd: 'bower_components',
-                src: [
-                    'world.geo.json/countries.geo.json'
-                ],
-                dest: 'public/data'
+                dest: 'public/vendors'
             }
         },
 
         sass: {
             bootstrap: {
-                options: {
-                    // sourceMap: true
-                },
                 files: {
                     'public/stylesheets/base/bootstrap.css': 'public/stylesheets/scss/bootstrap.scss'
                 }
@@ -173,7 +115,7 @@ module.exports = function (grunt) {
                 src: 'public/stylesheets/style.css',
                 dest: 'public/stylesheets/style.min.css'
             }
-        },
+        }
     });
 
     // These plugins provide necessary tasks.

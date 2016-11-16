@@ -201,14 +201,14 @@
 {% block inlineScript %}
     {{ super() }}
 
-    <script type="text/javascript" src="/javascripts/vendors/d3/d3.js"></script>
+    <script type="text/javascript" src="/vendors/d3/d3.js"></script>
     <script type="text/javascript" src="/javascripts/tooltip.js"></script>
-    <script type="text/javascript" src="/javascripts/module/barchart/barChart.js"></script>
-    <script type="text/javascript" src="/javascripts/module/barchart/verticalBarChart.js"></script>
-    <script type="text/javascript" src="/javascripts/module/barchart/horizontalBarChart.js"></script>
+    <script type="text/javascript" src="/javascripts/barchart/barChart.js"></script>
+    <script type="text/javascript" src="/javascripts/barchart/verticalBarChart.js"></script>
+    <script type="text/javascript" src="/javascripts/barchart/horizontalBarChart.js"></script>
     <script>
         var graphData = {{graphData | dump | safe}};
     </script>
-    <script type="text/javascript" src="/javascripts/module/barchart/main.js"></script>
+    <script type="text/javascript" src="/javascripts/barchart/main.js"></script>
 
 {% endblock %}

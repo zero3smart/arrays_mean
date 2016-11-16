@@ -2,12 +2,12 @@ var winston = require('winston');
 var Batch = require('batch');
 var queryString = require('querystring');
 //
-var importedDataPreparation = require('../../../lib/datasources/imported_data_preparation');
+var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
-var datatypes = require('../../../lib/datasources/datatypes');
+var datatypes = require('../../../libs/datasources/datatypes');
 
 module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
     var self = this;

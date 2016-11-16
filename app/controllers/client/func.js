@@ -2,9 +2,9 @@ var winston = require('winston');
 var moment = require('moment');
 var _ = require('lodash');
 
-var importedDataPreparation = require('../../lib/datasources/imported_data_preparation');
+var importedDataPreparation = require('../../libs/datasources/imported_data_preparation');
 var cached_values = require('../../models/cached_values');
-var datatypes = require('../../lib/datasources/datatypes');
+var datatypes = require('../../libs/datasources/datatypes');
 var config = require('./config.js');
 //
 var _routePathByAppendingQueryStringToVariationOfBase = function (routePath_variation, queryString, routePath_base) {

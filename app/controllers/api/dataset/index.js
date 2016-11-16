@@ -8,11 +8,11 @@ var _ = require('lodash');
 var async = require("async");
 
 var datasource_description = require('../../../models/descriptions');
-var datasource_upload_service = require('../../../lib/utils/aws-datasource-files-hosting');
-var datatypes = require('../../../lib/datasources/datatypes');
-var imported_data_preparation = require('../../../lib/datasources/imported_data_preparation')
+var datasource_upload_service = require('../../../libs/utils/aws-datasource-files-hosting');
+var datatypes = require('../../../libs/datasources/datatypes');
+var imported_data_preparation = require('../../../libs/datasources/imported_data_preparation')
 var views = require('../../../models/views');
-var import_raw_objects_controller = require('../../../lib/import/data_ingest/raw_objects_controller');
+var import_raw_objects_controller = require('../../../libs/import/data_ingest/raw_objects_controller');
 var raw_row_objects = require('../../../models/raw_row_objects');
 var processed_row_objects = require('../../../models/processed_row_objects')
 var raw_source_documents = require('../../../models/raw_source_documents');

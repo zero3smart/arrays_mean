@@ -157,17 +157,17 @@
 {% block inlineScript %}
     {{ super() }}
 
-    <script type="text/javascript" src="/javascripts/vendors/lodash/dist/lodash.js"></script>
-    <script type="text/javascript" src="/javascripts/vendors/d3/d3.js"></script>
-    <script type="text/javascript" src="/javascripts/vendors/moment/moment.js"></script>
+    <script type="text/javascript" src="/vendors/lodash/dist/lodash.js"></script>
+    <script type="text/javascript" src="/vendors/d3/d3.js"></script>
+    <script type="text/javascript" src="/vendors/moment/moment.js"></script>
 
     <script type="text/javascript" src="/javascripts/tooltip.js"></script>
-    <script type="text/javascript" src="/javascripts/module/scatterplot/main.js"></script>
-    <script type="text/javascript" src="/javascripts/module/linechart/main.js"></script>
-    <script type="text/javascript" src="/javascripts/module/linechart/base.js"></script>
-    <script type="text/javascript" src="/javascripts/module/linechart/viewport.js"></script>
-    <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
-    <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
+    <script type="text/javascript" src="/javascripts/scatterplot/main.js"></script>
+    <script type="text/javascript" src="/javascripts/linechart/main.js"></script>
+    <script type="text/javascript" src="/javascripts/linechart/base.js"></script>
+    <script type="text/javascript" src="/javascripts/linechart/viewport.js"></script>
+    <script type="text/javascript" src="/javascripts/linechart/navigation.js"></script>
+    <script type="text/javascript" src="/javascripts/linechart/chart.js"></script>
     <script>
         var graphData = {{graphData | dump | safe}};
         var lineChart = new linechart.chart(graphData , options).render("#linechart");
