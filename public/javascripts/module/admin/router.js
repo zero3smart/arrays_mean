@@ -13,15 +13,15 @@ angular.module('arraysApp')
         ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'MODULE_CONFIG',
             function ($stateProvider, $urlRouterProvider, $locationProvider, MODULE_CONFIG) {
 
-                $urlRouterProvider
-                    .otherwise('/admin/account');
+                // $urlRouterProvider
+                //     .otherwise('/admin/account');
 
                 $stateProvider
-                    .state('admin', {
-                        abstract: true,
-                        url: '/admin',
-                        templateUrl: "templates/admin.html"
-                    })
+                    // .state('admin', {
+                    //     abstract: true,
+                    //     url: '/admin',
+                    //     templateUrl: "templates/admin.html"
+                    // })
                     .state('admin.account', {
                         url: '/account',
                         templateUrl: 'templates/account.html',

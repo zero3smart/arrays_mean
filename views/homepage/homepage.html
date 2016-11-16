@@ -6,10 +6,14 @@
 
 {% block content %}
     <div id="primary" class="content-area">
-    <main id="main" class="site-main" role="main" ng-app="loginModule">
+    <main id="main" class="site-main" role="main">
+
+    
+
+
+     {% include "../auth/login.modal.html" %}
 
         <div class="container-fluid">
-
             <div class="row">
                 <div class="col-sm-6 col-sm-offset-3 col-md-6 col-md-offset-3">
                     <!--<div class="splash-logo">
@@ -24,8 +28,7 @@
 
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2 col-lg-8 col-lg-offset-2">
-                    <h1 class="splash-intro text-center">Your data, made beautiful.
-</h1>
+                    <h1 class="splash-intro text-center">Your data, made beautiful.</h1>
                 </div>
             </div><!-- .row -->
 
@@ -37,7 +40,7 @@
                     {% if env.NODE_ENV == 'production' %}
                     <a href="http://eepurl.com/bX4NAT" class="btn btn-block btn-splash" target="_blank">Sign up for updates</a>
                     {% else %}
-                    <button id="signup" ui-serif="/login" class="btn btn-block btn-splash">Sign Up / Log In</button>
+                    <button id="login" class="btn btn-block btn-splash">Sign Up / Log In</button>
                     {% endif %}
                 </div>
             </div><!-- .row -->
@@ -49,16 +52,15 @@
                     </div>
                 </div>
             </div><!-- .row -->
-        </div>
 
-        <div class="container-fluid">
+            <div class="container-fluid">
 
-            <div class="row">
+                <div class="row">
 
-                <div class='embed-container'><iframe src='https://player.vimeo.com/video/182013765?color=ffffff&title=0&byline=0&portrait=0' frameborder='0' allowfullscreen></iframe></div>
+                    <div class='embed-container'><iframe src='https://player.vimeo.com/video/182013765?color=ffffff&title=0&byline=0&portrait=0' frameborder='0' allowfullscreen></iframe></div>
 
+                </div>
             </div>
-
         </div>
 
         <div class="container-fluid">
@@ -119,55 +121,60 @@
                     </ul>
                 </div>
             </div><!-- .row -->
-
         </div><!-- .container-fluid -->
 
+
+   
     </main><!-- #main -->
 </div><!-- #primary -->
 {% endblock %}
 
-{% block footer %}
+
+
+    {% block footer %}
+
     <div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-10 col-sm-offset-1">
-            <h2 class="splash-footer-intro text-center">Arrays is currently in beta development. We offer pilot programs where we will work closely with you and your team to create your first Arrays website. <a href="mailto:info@arrays.co">Contact us</a> to learn more, or sign up below to stay in touch.</h2>
-        </div>
-    </div><!-- .row -->
-
-    <div class="row">
-        <div class="col-sm-8 col-sm-offset-2">
-            <div class="site-newsletter">
-                <form class="form-horizontal" action="//schemadesign.us6.list-manage.com/subscribe/post?u=2fd33cc7443569e2872629af8&amp;id=91145c5717" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-                    <div class="form-group">
-                        <div class="col-sm-7 col-xs-8">
-                            <input type="email" class="form-control input-lg input-subscribe required email" id="input-subscribe" placeholder="Your email address" value="" name="EMAIL" id="mce-EMAIL">
-                            <div id="mce-responses" class="clear">
-                                <div class="response" id="mce-error-response" style="display:none"></div>
-                                <div class="response" id="mce-success-response" style="display:none"></div>
-                            </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-                            <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_2fd33cc7443569e2872629af8_91145c5717" tabindex="-1" value=""></div>
-                        </div>
-                        <div class="col-sm-5 col-xs-4">
-                            <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="btn btn-lg btn-submit btn-inverse color-brand btn-block">
-                        </div>
-                    </div>
-                </form>
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1">
+                <h2 class="splash-footer-intro text-center">Arrays is currently in beta development. We offer pilot programs where we will work closely with you and your team to create your first Arrays website. <a href="mailto:info@arrays.co">Contact us</a> to learn more, or sign up below to stay in touch.</h2>
             </div>
-        </div>
-    </div><!-- .row -->
+        </div><!-- .row -->
 
-    <div class="row">
-        <div class="col-sm-4 col-sm-offset-4 col-xs-6 col-xs-offset-3">
-            <h1 class="site-title splash-footer-logo"><span class="sr-only">Arrays</span><img src="/images/arrays-logo.svg" class="img-responsive site-logo" alt="Arrays logo" /></h1>
-        </div>
-    </div><!-- .row -->
-
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="site-info">
-                &copy; 2016 Arrays Software, LLC &bull; Alpha Release &bull; <a href="mailto:{{ 'Arrays<info@arrays.com>' | urlencode }}">info@arrays.com</a> <a href="https://www.facebook.com/arraysapp/" target="_blank"><span class="icon-facebook" aria-hidden="true"></span></a> <a href="https://twitter.com/arraysapp" target="_blank"><span class="icon-twitter" aria-hidden="true"></span></a> <a href="https://www.instagram.com/arraysapp/" target="_blank"><span class="icon-instagram" aria-hidden="true"></span></a>
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2">
+                <div class="site-newsletter">
+                    <form class="form-horizontal" action="//schemadesign.us6.list-manage.com/subscribe/post?u=2fd33cc7443569e2872629af8&amp;id=91145c5717" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+                        <div class="form-group">
+                            <div class="col-sm-7 col-xs-8">
+                                <input type="email" class="form-control input-lg input-subscribe required email" id="input-subscribe" placeholder="Your email address" value="" name="EMAIL" id="mce-EMAIL">
+                                <div id="mce-responses" class="clear">
+                                    <div class="response" id="mce-error-response" style="display:none"></div>
+                                    <div class="response" id="mce-success-response" style="display:none"></div>
+                                </div>    <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+                                <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_2fd33cc7443569e2872629af8_91145c5717" tabindex="-1" value=""></div>
+                            </div>
+                            <div class="col-sm-5 col-xs-4">
+                                <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="btn btn-lg btn-submit btn-inverse color-brand btn-block">
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
-    </div><!-- .row -->
-</div><!-- .container-fluid -->
-{% endblock %}
+        </div><!-- .row -->
+
+        <div class="row">
+            <div class="col-sm-4 col-sm-offset-4 col-xs-6 col-xs-offset-3">
+                <h1 class="site-title splash-footer-logo"><span class="sr-only">Arrays</span><img src="/images/arrays-logo.svg" class="img-responsive site-logo" alt="Arrays logo" /></h1>
+            </div>
+        </div><!-- .row -->
+
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="site-info">
+                    &copy; 2016 Arrays Software, LLC &bull; Alpha Release &bull; <a href="mailto:{{ 'Arrays<info@arrays.com>' | urlencode }}">info@arrays.com</a> <a href="https://www.facebook.com/arraysapp/" target="_blank"><span class="icon-facebook" aria-hidden="true"></span></a> <a href="https://twitter.com/arraysapp" target="_blank"><span class="icon-twitter" aria-hidden="true"></span></a> <a href="https://www.instagram.com/arraysapp/" target="_blank"><span class="icon-instagram" aria-hidden="true"></span></a>
+                </div>
+            </div>
+        </div><!-- .row -->
+    </div><!-- .container-fluid -->
+    {% endblock %}
+ 
