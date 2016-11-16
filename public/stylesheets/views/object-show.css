@@ -1,0 +1,46 @@
+/* @override 
+	http://localhost:9080/stylesheets/module/object-show.css */
+
+.object {
+    margin-top: 60px;
+    margin-bottom: 60px;
+}
+
+.object-title {
+    margin-top: 60px;
+    margin-bottom: 50px;
+    color: #000000;
+    font-size: 42px;
+}
+
+@media (max-width: 767px) {
+    .object-title {
+        margin-top: 30px;
+        margin-bottom: 25px;
+        font-size: 30px;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.object dt {
+    margin-top: 30px;
+    color: var(--color-text-light);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: normal;
+    font-size: 20px;
+}
+
+.object dd {
+    color: #000000;
+    font-size: 24px;
+    font-family: var(--font-family-georgia);
+}
+
+.object-list {
+    padding-left: 0;
+    list-style-type: none;
+}

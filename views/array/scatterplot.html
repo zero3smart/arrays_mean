@@ -1,0 +1,212 @@
+{% set currentView = "scatterplot" %}
+
+{% extends "../layout/array.html" %}
+
+{% import "../partials/dropdown.html" as dropdown %}
+{% import "../partials/search.html" as search %}
+{% import "../partials/filter.html" as filter %}
+
+{% block headSuffix %}
+    <title>Arrays - {{ metaData.title }}</title>
+{% endblock %}
+
+{% block content %}
+    <section class="array">
+
+        <header class="array-header header-shadow array-header-small clearfix">
+            <div class="container-fluid">
+                <h1 class="array-title">{{ metaData.title }}</h1>
+                <div class="array-meta">
+                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                </div>
+            </div>
+        </header><!-- .array-header -->
+
+        {% if view_description %}
+            <div class="array-description-wrapper">
+                <p class="array-description">{{ view_description | truncate(80) }}</p>
+                <a href="#expanded"><p class="array-description-expand">Read more</p></a>
+                <p class="array-description-full">{{ view_description }}
+                <a href="#"><p class="array-description-collapse">less</p></a>
+            </div>
+        {% endif %}
+
+        <div class="array-content">
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+
+                        <div class="sort-bar clearfix">
+
+                              <nav class="sort-bar-left pull-left" role="navigation">
+                                {{
+                                dropdown.axis(
+                                    'y',
+                                    'Y-Axis',
+                                    metaData.fe_views.views.scatterplot.defaults.yAxisField,
+                                    renderableFields
+                                )
+                                }}
+
+                                {{
+                                dropdown.axis(
+                                    'x',
+                                    'X-Axis',
+                                    metaData.fe_views.views.scatterplot.defaults.xAxisField,
+                                    renderableFields
+                                )
+                                }}
+                            </nav>
+
+                             <div class="sort-bar-right pull-right">
+                                {{
+                                search.panel(
+                                    routePath_base,
+                                    searchCol if searchCol else "Object Title",
+                                    colNames_orderedForSortByDropdown,
+                                    searchQ if searchQ else "",
+                                    sortBy,
+                                    sortDir,
+                                    filterObj
+                                )
+                                }}
+
+                                <a class="btn dropdown-toggle-button legend-toggle hidden-xs">
+                                    <span class="icon-legend" aria-hidden="true"></span>
+                                </a>
+                            </div>
+
+
+
+
+                      
+
+
+
+
+                     
+
+                        </div>
+                    </div>
+                </div><!-- .row -->
+            </div><!-- .container-fluid -->
+
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+
+                        <div id="scatterplot" class="scatterplot"></div>
+
+                    </div>
+                </div><!-- .row -->
+            </div><!-- .container-fluid -->
+
+            {% if isFilterActive %}
+                {{
+                filter.default(displayTitleOverrides,
+                    routePath_base | constructedRoutePath(null, {
+                        searchCol: searchCol,
+                        searchQ: searchQ
+                    }),
+                    filterObj,
+                    truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
+                    false
+                )
+                }}
+            {% endif %}
+
+        </div><!-- .array-content --> 
+
+    </section>
+{% endblock %}
+
+{% block inlineScript %}
+    {{ super() }}
+
+    <script type="text/javascript" src="/javascripts/vendors/uri/uri.js"></script>
+    <script type="text/javascript" src="/javascripts/vendors/d3/d3.js"></script>
+
+    <script type="text/javascript" src="/javascripts/tooltip.js"></script>
+    <script type="text/javascript" src="/javascripts/module/scatterplot/main.js"></script>
+    <script type="text/javascript" src="/javascripts/module/scatterplot/view.js"></script>
+    <script type="text/javascript" src="/javascripts/module/scatterplot/standardView.js"></script>
+    <script type="text/javascript" src="/javascripts/module/scatterplot/groupingAlgorithm.js"></script>
+    <script type="text/javascript" src="/javascripts/module/scatterplot/groupedView.js"></script>
+    <script type="text/javascript" src="/javascripts/module/scatterplot/factory.js"></script>
+    <script type="text/javascript" src="/javascripts/module/scatterplot/chart.js"></script>
+    <script>
+        var metaData = {{ metaData | dump | safe }};
+        // Define input data set.
+        var scatterData = {{ documents | dump | safe }};
+        // Render scatterplot.
+        var scatterPlot = new scatterplot.chart(scatterData.map(function(d) {
+            d.rowParams.id = d._id;
+            return d.rowParams;
+        }), metaData).setXAccessor(function(d) {
+                    return d['{{ metaData.fe_views.views.scatterplot.defaults.xAxisField }}']
+                }, '{{ metaData.fe_views.views.scatterplot.defaults.xAxisField }}')
+                .setYAccessor(function(d) {
+                    return d['{{ metaData.fe_views.views.scatterplot.defaults.yAxisField }}'];
+                }, '{{ metaData.fe_views.views.scatterplot.defaults.yAxisField }}')
+                .searchBy({{ searchCol | dump | safe }}, {{ searchQ | dump | safe }})
+        .setColor('{{ metaData.brandColor }}')
+                .render('#scatterplot');
+
+        // Set up axis fields dropdown click handler.
+        jQuery('ul.axis-control a').click(function(e) {
+            // Get item text.
+            var text = this.innerText;
+            // Get item field.
+            var field = this.getAttribute('data-colname');
+            // Get field's axis.
+            var axis = this.getAttribute('data-axis');
+            // Update dropdown current text.
+            jQuery('span.' + axis + '-axis-field').prop('innerText', text);
+            // Update scatterplot.
+            scatterPlot['set' + axis.toUpperCase() + 'Accessor'](function(d) {
+                return d[field];
+            }, field)
+                    .update();
+            // Hide item in the other axis dropdown.
+            hideAxisItem(axis === 'x' ? 'y' : 'x', text)
+        });
+
+        // Hide axis control item.
+        function hideAxisItem(axis, item) {
+            jQuery('ul.' + axis + '-axis-control li').each(function() {
+                if (this.innerText === item) {
+                    this.style.display = 'none';
+                } else {
+                    this.style.display = 'block';
+                }
+            });
+        }
+
+       
+        hideAxisItem('x', '{{ metaData.fe_views.views.scatterplot.defaults.yAxisField | replace(r/_/g, ' ') }}');
+        hideAxisItem('y', '{{ metaData.fe_views.views.scatterplot.defaults.xAxisField | replace(r/_/g, ' ') }}');
+
+        // Set up search dropdown click handler.
+        jQuery('ul.search-dropdown-menu a').click(function(e) {
+            // Get item text.
+            var text = this.innerText;
+            // Get item field.
+            var field = this.getAttribute('data-colname');
+            // Update search form.
+            jQuery('#search-by span')
+                    .prop('innerText', text)
+                    .attr('data-colname', field);
+            // Run search procedure.
+            scatterPlot.searchBy(field, jQuery('input.search-input').val())
+                    .update();
+        });
+
+        // Set search input handler.
+        jQuery('input.search-input').on('input', function(event) {
+            scatterPlot.searchBy(jQuery('#search-by span').attr('data-colname'), this.value)
+                    .update();
+        })
+    </script>
+{% endblock %}
