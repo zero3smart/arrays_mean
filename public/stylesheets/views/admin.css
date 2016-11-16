@@ -1,24 +1,6 @@
 /* @override 
 	http://localhost:9080/stylesheets/views/admin.css */
 
-.site-admin .admin-sidebar {
-    width: 200px;
-    margin: 100px 0;
-    float: left;
-}
-.admin-sidebar:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-}
-
-@media (min-width: 768px) {
-    .site-admin .site-content {
-        margin-left: 200px;
-    }
-}
-
 .dataset {
     padding: 15px 0;
 }
@@ -44,12 +26,12 @@
     min-width: 120px;
     text-align: center;
 }
+
 .dataset ul.steps > li span.glyphicon {
     display: block;
     text-align: center;
     font-size: 22px;
 }
-
 
 /* Upload */
 form .removeDatasource {
@@ -71,7 +53,7 @@ a.add,
 }
 
 th#view_visibility {
-    width:30%;
+    width: 30%;
 }
 
 .format-data .custom-field-seperator td {
@@ -80,7 +62,6 @@ th#view_visibility {
     font-size: 23px;
 }
 
-
 /* Format field */
 form.format-field .form-group label {
     padding-left: 0;
@@ -88,9 +69,11 @@ form.format-field .form-group label {
     border: none;
     -webkit-box-shadow: none;
 }
+
 form.format-field .form-group {
     margin: 10px 0;
 }
+
 form.format-field .form-group:after {
     content: '';
     clear: both;
@@ -110,8 +93,7 @@ form .removeRow {
 form.format-field a#add_oneToOneOverrideWithValuesByTitle,
 form.format-field a#add_valueToExcludeByOriginalKey,
 form.format-field a#add_filterKeyword,
-form.format-field a#add_nested_valueOverride
-{
+form.format-field a#add_nested_valueOverride {
     margin-top: 5px;
     display: inline-block;
 }
@@ -137,70 +119,197 @@ form.format-field .more-settings {
 
 form.format-field #extra_valuesToExcludeByOriginalKey,
 form.format-field #extra_keywords,
-form.format-field #extra_filterFabricated
-{
+form.format-field #extra_filterFabricated {
     padding-left: 10px;
 }
 
 label#showDefault_view {
-  font-size: 20px;
+    font-size: 20px;
 }
-
 
 /* -----------   for toggle slider  ----------------  */
 .switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
 }
 
-.switch input {display:none;}
+.switch input {
+    display: none;
+}
 
 .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
 }
 
 .slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+    background-color: #2196F3;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+    box-shadow: 0 0 1px #2196F3;
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
 }
 
 /* Rounded sliders */
 .slider.round {
-  border-radius: 34px;
+    border-radius: 34px;
 }
 
 .slider.round:before {
-  border-radius: 50%;
+    border-radius: 50%;
 }
+
 /*--------------------------------------------------------*/
+
+/* Butter Bar */
+
+.butterbar {
+    position: relative;
+    height: 3px;
+    margin-bottom: -3px;
+    z-index: 999;
+}
+
+.butterbar .bar {
+    position: absolute;
+    width: 100%;
+    height: 0;
+    text-indent: -9999px;
+    background-color: #23b7e5;
+}
+
+.butterbar .bar:before {
+    position: absolute;
+    right: 50%;
+    left: 50%;
+    height: 3px;
+    background-color: inherit;
+    content: "";
+}
+
+.butterbar.active {
+    -webkit-animation: changebar 2.25s infinite 0.75s;
+    -moz-animation: changebar 2.25s infinite 0.75s;
+    animation: changebar 2.25s infinite 0.75s;
+}
+
+.butterbar.active .bar {
+    -webkit-animation: changebar 2.25s infinite;
+    -moz-animation: changebar 2.25s infinite;
+    animation: changebar 2.25s infinite;
+}
+
+.butterbar.active .bar:before {
+    -webkit-animation: movingbar 0.75s infinite;
+    -moz-animation: movingbar 0.75s infinite;
+    animation: movingbar 0.75s infinite;
+}
+
+@-webkit-keyframes changebar {
+    0%, 33.3% {
+        background-color: #23b7e5
+    }
+    33.33%, 66.6% {
+        background-color: #fad733
+    }
+    66.66%, 99.9% {
+        background-color: #7266ba
+    }
+}
+
+@-moz-keyframes changebar {
+    0%, 33.3% {
+        background-color: #23b7e5
+    }
+    33.33%, 66.6% {
+        background-color: #fad733
+    }
+    66.66%, 99.9% {
+        background-color: #7266ba
+    }
+}
+
+@keyframes changebar {
+    0%, 33.3% {
+        background-color: #23b7e5
+    }
+    33.33%, 66.6% {
+        background-color: #fad733
+    }
+    66.66%, 99.9% {
+        background-color: #7266ba
+    }
+}
+
+@-webkit-keyframes movingbar {
+    0% {
+        right: 50%;
+        left: 50%
+    }
+    99.9% {
+        right: 0;
+        left: 0
+    }
+    100% {
+        right: 50%;
+        left: 50%
+    }
+}
+
+@-moz-keyframes movingbar {
+    0% {
+        right: 50%;
+        left: 50%
+    }
+    99.9% {
+        right: 0;
+        left: 0
+    }
+    100% {
+        right: 50%;
+        left: 50%
+    }
+}
+
+@keyframes movingbar {
+    0% {
+        right: 50%;
+        left: 50%
+    }
+    99.9% {
+        right: 0;
+        left: 0
+    }
+    100% {
+        right: 50%;
+        left: 50%
+    }
+}
+/* -/ Butter Bar */

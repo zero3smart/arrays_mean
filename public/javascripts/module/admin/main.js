@@ -4,7 +4,10 @@ angular
     .module('arraysApp', [
     'ui.router',
     'oc.lazyLoad',
-    'ngStorage'
+    'ngStorage',
+    'ngMaterial',
+    'ngMessages',
+    'ngAria',
 ])
     .controller('adminCtrl', ['$scope', '$localStorage', '$window', 'authentication',
     function($scope, $localStorage, $window, authentication) {

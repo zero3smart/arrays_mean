@@ -119,7 +119,10 @@ module.exports = function (grunt) {
                     'angular-ui-router/release/angular-ui-router.min.js',
                     'angular-bootstrap/ui-bootstrap-tpls.js',
                     'ngstorage/ngStorage.min.js',
-                    'oclazyload/dist/**'
+                    'oclazyload/dist/**',
+                    'angular-material/**',
+                    'angular-aria/angular-aria.min.js',
+                    'angular-messages/angular-messages.min.js'
                 ],
                 dest: 'public/javascripts/vendors'
             },

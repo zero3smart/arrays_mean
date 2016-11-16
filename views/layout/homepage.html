@@ -4,11 +4,11 @@
         {% include "../partials/base_header.html" %}
 
         {% block headSuffix %}{% endblock %}
+        <base href='/'>
     </head>
 
     <body class="home splash">
-        {% include "../partials/auth0.html" %} 
-        {% include "../partials/signup/main.html" %}       
+
 
         <div id="page" class="site">
 
@@ -21,17 +21,8 @@
             </footer><!-- #colophon -->
         </div><!-- #page -->
 
-
-        <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+        <!-- bootstrap -->
         <script type="text/javascript" src="/javascripts/vendors/bootstrap/bootstrap.js"></script>
-
-
-           <!-- angular -->
-        <script type="text/javascript" src="/javascripts/vendors/angular/angular.js"></script>
-        <script type="text/javascript" src="/javascripts/vendors/angular-animate/angular-animate.min.js"></script>
-        <script type="text/javascript" src="/javascripts/vendors/angular-cookies/angular-cookies.min.js"></script>
-        <script type="text/javascript" src="/javascripts/vendors/angular-ui-router/release/angular-ui-router.min.js"></script>
-
 
 
         <script type="text/javascript" src="/javascripts/main.js"></script>

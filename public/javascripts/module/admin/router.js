@@ -13,15 +13,15 @@ angular.module('arraysApp')
         ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'MODULE_CONFIG',
             function ($stateProvider, $urlRouterProvider, $locationProvider, MODULE_CONFIG) {
 
-                $urlRouterProvider
-                    .otherwise('/admin/account');
+                // $urlRouterProvider
+                //     .otherwise('/admin/account');
 
                 $stateProvider
-                    .state('admin', {
-                        abstract: true,
-                        url: '/admin',
-                        templateUrl: "templates/admin.html"
-                    })
+                    // .state('admin', {
+                    //     abstract: true,
+                    //     url: '/admin',
+                    //     templateUrl: "templates/admin.html"
+                    // })
                     .state('admin.account', {
                         url: '/account',
                         templateUrl: 'templates/account.html',
@@ -30,7 +30,10 @@ angular.module('arraysApp')
                     .state('admin.dataset', {
                         url: '/dataset',
                         templateUrl: 'templates/dataset.html',
-                        resolve: load(['javascripts/module/admin/controllers/dataset.js'])
+                        resolve: load([
+                            'javascripts/module/admin/services/dataset.js',
+                            'javascripts/module/admin/controllers/dataset.js'
+                        ])
                     })
                     .state('admin.dataset.settings', {
                         url: '/settings',
@@ -88,9 +91,7 @@ angular.module('arraysApp')
                                     });
                                 });
                                 deferred.resolve();
-                                return callback ? promise.then(function () {
-                                    return callback();
-                                }) : promise;
+                                return callback ? promise.then(callback) : promise;
                             }]
                     }
                 }

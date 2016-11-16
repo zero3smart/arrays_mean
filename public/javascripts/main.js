@@ -252,11 +252,11 @@ $(document).ready(function () {
         $('.array-description-expand').css("display", "inline-block");
     });
 
-    $('#signup-btn').on('click', function (e) {
-        $('#user-modal').modal('show');
 
-        // if (lock) lock.show();
-
+    $('#login').on('click', function (e) {
+        e.preventDefault();
+        $('#login-modal').modal('show');
+        
     });
 
     /**

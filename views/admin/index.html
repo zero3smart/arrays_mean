@@ -23,6 +23,9 @@
     <script type="text/javascript" src="/javascripts/vendors/angular-animate/angular-animate.min.js"></script>
     <script type="text/javascript" src="/javascripts/vendors/angular-cookies/angular-cookies.min.js"></script>
     <script type="text/javascript" src="/javascripts/vendors/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="/javascripts/vendors/angular-aria/angular-aria.min.js"></script>
+    <script type="text/javascript" src="/javascripts/vendors/angular-messages/angular-messages.min.js"></script>
+    <script type="text/javascript" src="/javascripts/vendors/angular-material/angular-material.min.js"></script>
 
     <script type="text/javascript" src="/javascripts/vendors/ngstorage/ngStorage.min.js"></script>
     <script type="text/javascript" src="/javascripts/vendors/angular-bootstrap/ui-bootstrap-tpls.js"></script>
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="/javascripts/vendors/oclazyload/dist/ocLazyLoad.min.js"></script>
 
     <script type="text/javascript" src="/javascripts/module/admin/main.js"></script>
-    <script type="text/javascript" src="/javascripts/module/admin/directives/navigation.js"></script>
+    <script type="text/javascript" src="/javascripts/module/admin/directives/ui-butterbar.js"></script>
     <script type="text/javascript" src="/javascripts/module/admin/services/authentication.js"></script>
     <script type="text/javascript" src="/javascripts/module/admin/router.js"></script>
     <script type="text/javascript" src="/javascripts/module/admin/config.lazyload.js"></script>
@@ -39,7 +42,8 @@
     <!-- TODO: To get user information in angular js -->
     <!-- Remove once we use our own authentication instead of auth0 -->
     <script type="text/javascript">
-        window.user = <$ user | dump | safe $>;
+
+        window.user = {{ user | dump | safe if user else '{}'}};
     </script>
 </body>
 

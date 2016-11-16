@@ -1,0 +1,37 @@
+<ul class="steps">
+    <li>
+        <a ui-sref="admin.dataset.settings" class="text-muted" ui-sref-active="active">
+            <span class="glyphicon" ng-class="doc.title ? 'glyphicon-check' : 'glyphicon-unchecked'"></span>
+            1. General Settings
+        </a>
+    </li>
+
+    <li>
+        <a ng-if="doc.title" ui-sref="admin.dataset.upload" ui-sref-active="active">
+            <span class="glyphicon" ng-class="doc.uid ? 'glyphicon-check' : 'glyphicon-unchecked'"></span>
+            2. Upload Data
+        </a>
+
+    </li>
+
+    <li>
+        <a ui-sref="doc.uid ? 'admin.dataset.data' : ''" ui-sref-active="active">
+            <span class="glyphicon" ng-class="doc.raw_rowObjects_coercionScheme ? 'glyphicon-check' : 'glyphicon-unchecked'"></span>
+            3. Format Data
+        </a>
+    </li>
+
+    <li>
+        <a ui-sref="doc.raw_rowObjects_coercionScheme ? 'admin.dataset.views' : ''" ui-sref-active="active">
+            <span class="glyphicon" ng-class="doc.raw_rowObjects_coercionScheme ? 'glyphicon-check' : 'glyphicon-unchecked'"></span>
+            4. Format Views
+        </a>
+    </li>
+
+    <li>
+        <a ui-sref="doc.fe_views.views ? 'admin.dataset.done' : ''" ui-sref-active="active">
+            <span class="glyphicon" ng-class="doc.fe_views.views ? 'glyphicon-check' : 'glyphicon-unchecked'"></span>
+            5. Done!
+        </a>
+    </li>
+</ul>
