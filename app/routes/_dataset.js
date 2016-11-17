@@ -28,7 +28,7 @@ router.get('/', /*ensureLoggedIn, */function (req, res) {
 
 //
 router.post('/remove', /*ensureLoggedIn, */function(req, res) {
-    controller.removeDataset(req, function(err, data) {
+    controller.remove(req, function(err, data) {
         if (err) {
             winston.error("❌  Error removing dataset : ", err);
             req.flash('error', err.message);
@@ -49,7 +49,7 @@ router.get('/new/settings', /*ensureLoggedIn, */function (req, res) {
 });
 
 router.get('/:id/settings', /*ensureLoggedIn, */function (req, res) {
-    controller.getSettings(req, function (err, data) {
+    controller.get(req, function (err, data) {
         if (err) {
             winston.error("❌  Error getting bind data for dataset settings: ", err);
             req.flash('error', err.message);

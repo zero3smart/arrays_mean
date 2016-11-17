@@ -25,7 +25,6 @@
     "bootstrap-chosen": "^1.0.1",
     "spectrum": "^1.8.0",
     "sharrre": "^2.0.1",
-    "bootstrap-sass": "^3.3.7",
     "urijs": "^1.18.2",
     "jasmine-core": "jasmine#^2.5.2",
     "jQuery": "2.2.2",

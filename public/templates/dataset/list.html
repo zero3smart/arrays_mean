@@ -1,14 +1,25 @@
 <!-- dataset list -->
-<div class="dataset">
-    <h4><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Select a dataset to edit</h4>
+<md-list ng-cloak>
+    <md-toolbar layout="row" class="md-hue-3">
+        <div class="md-toolbar-tools">
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;&nbsp;Select a dataset to edit
+        </div>
+    </md-toolbar>
 
-    <div ng-repeat="dataset in datasets">
-        {{ $index+1 }}. <a class="dataset_item" ng-click="selectDataset(dataset._id)">{{ dataset.title }} ({{ dataset.importRevision }})</a>
-        <button type="button" ng-click="removeDataset(dataset._id)"><span class="glyphicon glyphicon-remove"></span></button>
-    </div>
+    <md-list-item ng-repeat="dataset in datasets" ng-click="select(dataset._id)" class="noright">
+        <p>{{ $index+1 }}.  {{ dataset.title }} ({{ dataset.importRevision }})</p>
+        <i class="md-secondary glyphicon glyphicon-trash" ng-click="remove(dataset._id)" aria-label="Delete"></i>
+    </md-list-item>
 
-    <p> OR </p>
+    <md-divider></md-divider>
 
-    <h4><a ui-sref="admin.dataset.settings"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Upload new dataset</a></h4>
-</div>
+    <md-subheader class="md-no-sticky text-center">OR</md-subheader>
+
+    <md-divider></md-divider>
+
+    <md-list-item ng-click="select()" class="noright">
+        <p><span class="glyphicon glyphicon-upload" aria-hidden="true"></span>  Upload New Dataset</p>
+    </md-list-item>
+
+</md-list>
 <!-- /dataset list -->

@@ -21,6 +21,7 @@ var mongoose_client = require('../../../models/mongoose_client');
 /***************  Get All Datasets  ***************/
 module.exports.getAll = function (req, res) {
     res.setHeader('Content-Type', 'application/json');
+
     datasource_description.find({schema_id: {$exists: false}}, {
         _id: 1,
         title: 1,
@@ -37,9 +38,11 @@ module.exports.getAll = function (req, res) {
     });
 };
 
+module.exports.remove = function(req, res) {
+    res.setHeader('Content-Type', 'application/json');
 
-module.exports.removeDataset = function(req, next) {
-    if (!req.body.id) next(new Error('No id given'));
+    if (!req.body.id)
+        return res.send(JSON.stringify({error: 'No ID given'}));
 
     var batch = new Batch();
     batch.concurrency(1);
@@ -60,7 +63,7 @@ module.exports.removeDataset = function(req, next) {
 
     // Remove source document
     batch.push(function(done) {
-       
+
         raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function(err, document) {
             if (err) return done(err);
 
@@ -78,7 +81,7 @@ module.exports.removeDataset = function(req, next) {
 
     // Remove raw row object
     batch.push(function(done) {
-       
+
         mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey,done)
 
     });
@@ -110,35 +113,28 @@ module.exports.removeDataset = function(req, next) {
     });
 
     batch.end(function(err) {
-        if (err) return next(err);
-
-        req.flash('message', 'Removed successfully');
-        next(err, {});
-    })
+        if (err)
+            return res.send(JSON.stringify({error: err.message}));
+        res.send(JSON.stringify({success: 'okay'}));
+    });
 }
 
 /***************  Settings  ***************/
-module.exports.getSettings = function (req, next) {
-    var data = {};
+module.exports.get = function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
 
-    if (req.params.id) {
+    if (!req.params.id)
+        return res.send(JSON.stringify({error: 'No ID given'}));
 
-        req.session.uploadData_columnNames = null;
-        req.session.uploadData_firstRecord = null;
+    req.session.uploadData_columnNames = null;
+    req.session.uploadData_firstRecord = null;
 
-        datasource_description.findById(req.params.id, function (err, doc) {
+    datasource_description.findById(req.params.id, function (err, doc) {
+        if (err) return res.send(JSON.stringify({error: err.message}));
+        if (!doc) return res.send(JSON.stringify({error: 'Invalid ID'}));
 
-            if (err) return next(err);
-
-            if (doc) {
-                data.doc = doc._doc;
-            }
-
-            next(null, data);
-        });
-    } else {
-        next(null, data);
-    }
+        return res.send(JSON.stringify({dataset: doc._doc}));
+    });
 };
 
 function _castSerializeElementToArray(field,reqBody) {
@@ -989,8 +985,3 @@ module.exports.saveFormatView = function (req, next) {
         })
     })
 }
-
-
- 
-
-

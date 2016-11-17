@@ -1,7 +1,8 @@
 angular.module('arraysApp')
-    .controller('DatasetDataCtrl', ['$scope', 'AuthService',
-        function($scope, AuthService) {
-            $scope.init = function() {
-            }
+    .controller('DatasetDataCtrl', ['$scope', 'dataset',
+        function($scope, dataset) {
+
+            $scope.$parent.$parent.dataset = dataset;
+
         }
     ]);

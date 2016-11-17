@@ -6,22 +6,61 @@
     DatasetService.$inject = ['$http', '$q'];
     function DatasetService($http, $q) {
 
-        var GetAll = function() {
+        var getAll = function() {
             var deferred = $q.defer();
-            $http.get('/api/dataset/getAll').then(function(response) {
-                if (response.data && !response.data.error) {
-                    return deferred.resolve(response.data.datasets);
-                } else {
-                    return deferred.reject(response.data.error);
-                }
-            }, function(err) {
-                return deferred.reject(response.data.error);
-            });
+            $http.get('/api/dataset/getAll')
+                .success(function(data) {
+                    if (!data.error) {
+                        return deferred.resolve(data.datasets);
+                    } else {
+                        return deferred.reject(data.error);
+                    }
+                })
+                .error(function(data) {
+                    return deferred.reject(data);
+                });
             return deferred.promise;
-        }
+        };
+
+        var remove = function(id) {
+            var deferred = $q.defer();
+            $http.post('api/dataset/remove', {id: id})
+                .success(function(data) {
+                    if (!data.error) {
+                        return deferred.resolve(true);
+                    } else {
+                        return deferred.reject(data.error);
+                    }
+                })
+                .error(function(data) {
+                    return deferred.reject(data)
+                });
+            return deferred.promise;
+        };
+
+        var get = function(id) {
+            // New Dataset
+            if (!id) return true;
+
+            var deferred = $q.defer();
+            $http.get('api/dataset/get/' + id)
+                .success(function(data) {
+                    if (!data.error) {
+                        return deferred.resolve(data.dataset);
+                    } else {
+                        return deferred.reject(data.error);
+                    }
+                })
+                .error(function(data) {
+                    return deferred.reject(data);
+                });
+            return deferred.promise;
+        };
 
         return {
-            GetAll: GetAll
+            getAll: getAll,
+            remove: remove,
+            get: get,
         }
     }
 })();

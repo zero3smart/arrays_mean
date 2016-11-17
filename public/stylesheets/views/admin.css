@@ -1,39 +1,24 @@
 /* @override 
 	http://localhost:9080/stylesheets/views/admin.css */
 
-.dataset {
-    padding: 15px 0;
+.dataset .md-toolbar-tools {
+    background-color: var(--color-primary);
 }
 
 .dataset_item {
     padding-right: 30px;
 }
 
+/* Dataset List */
+.dataset .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+/* Upload */
 .dataset .upload input[type="text"].url {
     width: 100%;
 }
 
-/* Breadcrumb */
-.dataset ul.steps {
-    list-style: none;
-    padding: 0;
-    margin-top: 25px;
-    text-align: center;
-}
-
-.dataset ul.steps > li {
-    display: inline-block;
-    min-width: 120px;
-    text-align: center;
-}
-
-.dataset ul.steps > li span.glyphicon {
-    display: block;
-    text-align: center;
-    font-size: 22px;
-}
-
-/* Upload */
 form .removeDatasource {
     margin-top: 10px;
     cursor: pointer;

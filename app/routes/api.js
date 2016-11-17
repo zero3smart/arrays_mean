@@ -26,6 +26,8 @@ router.post('/account/update', /* ensureLoggedIn,*/ctrlAccount.updateAccount);
 
 // dataset settings
 router.get('/dataset/getAll', /*ensureLoggedIn,*/ctrlDatasetList.getAll);
+router.post('/dataset/remove', /*ensureLoggedIn,*/ctrlDatasetList.remove);
+router.get('/dataset/get/:id', /*ensureLoggedIn,*/ctrlDatasetList.get);
 
 // website settings
 

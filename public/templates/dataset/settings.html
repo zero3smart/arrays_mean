@@ -1,2 +1,64 @@
-<div>
+<div class="settings">
+    <div class="form-group row">
+        <label class="col-xs-4" for="title">Title: </label>
+        <input class="col-xs-8" type="text" id="title" name="title" ng-model="dataset.title" required/>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-xs-4" for="description">Description: </label>
+        <textarea class="col-xs-8" id="description" name="description" required> {{ dataset.description }}</textarea>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-xs-4" for="revision">Import Revision: </label>
+        <input class="col-xs-8" type="number" id="revision" name="importRevision" ng-model="dataset.importRevision" required/>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-xs-4" for="brandColor">Brand Color: </label>
+        <div id="brandColor" class="input-group colorpicker-component col-xs-8">
+            <input type="text" name="brandColor" ng-model="dataset.brandColor" class="form-control" />
+            <span class="input-group-addon"><i></i></span>
+        </div>
+        <!--<script>-->
+            <!--$(function() {-->
+                <!--$('#brandColor').colorpicker();-->
+            <!--});-->
+        <!--</script>-->
+    </div>
+
+    <div class="form-group row">
+        <label class="col-xs-4" for="urls">Urls: </label>
+
+        {% if dataset.urls and dataset.urls.length > 0 %}
+        {% for url in dataset.urls %}
+        {% if loop.index == 1 %}
+        <input class="col-xs-8 urls" type="text" name="urls[]" value="{{url}}" />
+    </div>
+    {% else %}
+    <div class="form-group row">
+        <input class="col-xs-8 col-xs-offset-4 urls" name="urls[]" type="text" value="{{url}}"/>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% else %}
+    <input class="col-xs-8 urls" type="text" name="urls[]" value="{{url}}" />
+    </div>
+    {% endif %}
+
+    <div id="extra_urls"></div>
+    <div class="form-group row"><a id="add_urls" class="col-xs-offset-4 add" ><span class="glyphicon glyphicon-plus"></span> Add more Urls</a></div>
+
+
+    <div class="form-group row">
+        <md-checkbox ng-checked="dataset.fe_listed" ng-click="toggleListed()">Listed</md-checkbox>
+    </div>
+
+    <div class="panel-footer">
+        <a class="btn btn-default pull-left" ui-sref="admin.dataset.list"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
+        <button type="button" class="btn btn-default pull-right" ng-click="save"><span class="glyphicon glyphicon-hand-right"></span> Save</button>
+        <div class="clearfix"></div>
+    </div>
+
 </div>

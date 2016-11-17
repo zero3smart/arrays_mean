@@ -14,7 +14,7 @@ angular.module('arraysApp')
             function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
                 $urlRouterProvider
-                    .otherwise('/admin/dataset');
+                    .otherwise('/admin/dataset/list');
 
                 $stateProvider
                     .state('admin', {
@@ -44,28 +44,34 @@ angular.module('arraysApp')
                         controller: 'DatasetListCtrl',
                         resolve: {
                             datasets: ['DatasetService', function(DatasetService) {
-                                return DatasetService.GetAll();
+                                return DatasetService.getAll();
                             }]
                         }
                     })
                     .state('admin.dataset.settings', {
-                        url: '/settings/:datasetId',
-                        templateUrl: 'templates/dataset/settings.html'
+                        url: '/settings/:id',
+                        controller: 'DatasetSettingsCtrl',
+                        templateUrl: 'templates/dataset/settings.html',
+                        resolve: {
+                            dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
+                                return DatasetService.get($stateParams.id);
+                            }]
+                        }
                     })
                     .state('admin.dataset.upload', {
-                        url: '/upload/:datatsetId',
+                        url: '/upload/:id',
                         templateUrl: 'templates/dataset/upload.html',
                     })
                     .state('admin.dataset.data', {
-                        url: '/data',
+                        url: '/data/:id',
                         templateUrl: 'templates/dataset/data.html',
                     })
                     .state('admin.dataset.views', {
-                        url: '/views',
+                        url: '/views/:id',
                         templateUrl: 'templates/dataset/views.html',
                     })
                     .state('admin.dataset.done', {
-                        url: '/done',
+                        url: '/done/:id',
                         templateUrl: 'templates/dataset/done.html'
                     })
                     .state('admin.website', {
