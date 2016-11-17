@@ -2,12 +2,13 @@
 <html lang="en" class="no-js">
     <head>
         {% include "../partials/base_header.html" %}
+          <!-- bootstrap -->
+        <script type="text/javascript" src="/vendors/bootstrap/bootstrap.js"></script>
 
         {% block headSuffix %}{% endblock %}
     </head>
 
     <body class="home splash">
-        {% include "../partials/auth0.html" %}
 
         <div id="page" class="site">
 
@@ -20,12 +21,13 @@
             </footer><!-- #colophon -->
         </div><!-- #page -->
 
-
         <script type="text/javascript" src="/javascripts/main.js"></script>
         <script type="text/javascript" src="/javascripts/splash.js"></script>
     </body>
 
+
     {% if env.FE_LIVERELOAD == "true" %}
     <script src="//localhost:35729/livereload.js"></script>
     {% endif %}
+
 </html>

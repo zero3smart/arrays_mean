@@ -1,0 +1,27 @@
+<form name="emailForm" class="signup col-xs-12 col-sm-8 col-md-7" ng-submit='submitForm(emailForm.$valid,"personal_info")' novalidate>
+	
+			<div class="form-group">
+				<p class="text-center signuptext">What is your email address?</p>
+
+		  		<div class="input-group" ng-class="{ 'has-error': emailForm.email.$touched && emailForm.email.$invalid}">
+				  <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+				  <input name="email" type="email" class="form-control" ng-model="user.email" 
+				  ng-model-options="{updateOn:'blur'}" unique-email required>
+
+			
+
+				</div>
+				 <div class="help-block red" ng-messages="emailForm.email.$error" ng-if="emailForm.email.$touched">
+				    <p ng-message="required">Your email is required.</p>
+				    <p ng-message="email">Your email is not valid.</p>
+				    <p ng-message="emailAvailable">We found this email in our system.<a class="pointer"> Did you forget your password?</a></p>
+				</div>
+
+
+			</div>
+
+		<div>
+			<button type="submit" class="btn btn-success pull-right" ng-disabled="emailForm.$invalid" >Continue > </button>
+		</div>
+
+</form>

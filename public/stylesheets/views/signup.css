@@ -1,0 +1,66 @@
+
+form.signup[name='emailForm'] {
+	margin:0px auto;
+	margin-top:200px;
+
+}
+
+form.signup label {
+	font-size:20px;
+}
+
+form.signup div {
+	padding-bottom:5px;
+
+}
+
+.red {
+	color:red;
+}
+
+
+nav#signupheader div {
+	margin-top: 0px;
+	margin-bottom: 0px;
+
+}
+a.pointer {
+	cursor: pointer;
+}
+
+#signupheader img {
+	width:100%;
+}
+
+#signupheader h1 {
+	margin-left:20px;
+}
+div.sign-up-container {
+	margin-top:50px;
+}
+.signupOr {
+	margin:50px;
+}
+
+.row .socialButtons .socialButtonsText {
+	padding-left:10px;
+	cursor: pointer;
+}
+p.signuptext {
+	font-size:30px;
+}
+
+
+.background_white {
+	background-color : #fff !important;
+}
+
+div.signup_btn_group {
+	overflow: hidden;
+}
+
+button.signupstep {
+	min-width:100px;
+}
+
+

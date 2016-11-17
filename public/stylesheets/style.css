@@ -6,6 +6,7 @@
 @import url('base/bootstrap-chosen.css');
 @import url('base/spectrum.css');
 
+
 /* @end Base */
 /* @group Lib */
 /* @end Lib */
@@ -41,6 +42,10 @@
 @import url('views/pie-set.css');
 @import url('views/admin.css');
 @import url('views/bar-chart.css');
+
+@import url('views/login.css');
+@import url('views/signup.css');
+
 /* @end Views */
 /* @group Clients */
 @import url('clients/isb.css');

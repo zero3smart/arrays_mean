@@ -28,5 +28,7 @@ router.get('/dataset/getAll', ensureLoggedIn, ctrlDataset.getAll);
 
 // manage users
 
+router.post('/user/search',ctrlUsers.search);
+
 
 module.exports = router;

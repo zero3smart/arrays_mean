@@ -1,6 +1,7 @@
 var mongoose = require( 'mongoose' );
 var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
+var findOrCreate = require('mongoose-findorcreate');
 
 var userSchema = new mongoose.Schema({
     email: {
@@ -8,13 +9,15 @@ var userSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    name: {
-        type: String,
-        required: true
-    },
+    firstName: String,
+    lastName: String,
+    provider: String, 
     hash: String,
     salt: String
 });
+
+
+userSchema.plugin(findOrCreate);
 
 userSchema.methods.setPassword = function(password){
     this.salt = crypto.randomBytes(16).toString('hex');
@@ -38,4 +41,4 @@ userSchema.methods.generateJwt = function() {
     }, "MY_SECRET"); // DO NOT KEEP YOUR SECRET IN THE CODE!
 };
 
-mongoose.model('User', userSchema);
+module.exports = mongoose.model('User', userSchema);

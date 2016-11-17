@@ -14,9 +14,6 @@ $(window).load(function () {
 });
 
 $(document).ready(function () {
-
-    console.log('app loaded');
-
     /**
      * Select source dataset on click
      */
@@ -230,8 +227,9 @@ $(document).ready(function () {
         $('.array-description-expand').css("display", "inline-block");
     });
 
-    $('#signup').on('click', function (e) {
-        if (lock) lock.show();
+    $('#login').on('click', function (e) {
+        e.preventDefault();
+        $('#login-modal').modal('show');
     });
 
     /**
@@ -251,6 +249,9 @@ $(document).ready(function () {
     });
 
 });
+
+
+
 
 /**
  * Construct filter object

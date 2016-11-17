@@ -38,6 +38,8 @@
 </style>
 {% endif %}
 
+
+
 <header id="masthead" class="site-header hidden-print" role="banner">
     <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand">
         <div class="container-fluid container-full-width">
@@ -53,16 +55,18 @@
                         </a>
                         <ul class="dropdown-menu">
                             {% if env.NODE_ENV != 'production' %}
+
                             {% if user %}
                             <li class="background-color-brand-hover"><a href="/admin">Account Settings</a></li>
                             <li class="background-color-brand-hover"><a href="/auth/logout">Log Out</a></li>
                             {% else %}
+                           
                             <li class="background-color-brand-hover"><a href="#" onclick="lock.show()">Log In</a></li>
                             {% endif %}
                             <li role="separator" class="divider"></li>
                             {% endif %}
                             <li class="background-color-brand-hover"><a
-                                    href="mailto:{{ 'Arrays Support<info@arrays.co>' | urlencode}}">Contact Support</a>
+                                    href="mailto:{{ 'Arrays Support<info@arrays.co>' | urlencode }}">Contact Support</a>
                             </li>
                         </ul>
                     </li>

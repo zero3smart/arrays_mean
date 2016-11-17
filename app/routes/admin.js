@@ -4,6 +4,7 @@ var passport = require('passport');
 var router = express.Router();
 
 router.get('/login', function(req, res) {
+
     if (req.user) {
         res.redirect('/admin');
     } else {
@@ -12,7 +13,11 @@ router.get('/login', function(req, res) {
             user: req.user
         });
     }
+
+
 });
+
+
 
 router.get('/logout', function (req, res) {
     req.logout();
@@ -23,7 +28,8 @@ router.get('/callback', passport.authenticate('auth0', {failureRedirect: '/'}), 
     res.redirect(req.session.returnTo || '/admin');
 });
 
-router.get('/*', ensureLoggedIn, function (req, res) {
+router.get('/*',  function (req, res) {
+
     res.render('admin/index', {
         env: process.env,
         user: req.user

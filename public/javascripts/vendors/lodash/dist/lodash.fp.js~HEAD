@@ -81,9 +81,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var mapping = __webpack_require__(2),
 	    fallbackHolder = __webpack_require__(3);
 
-	/** Built-in value reference. */
-	var push = Array.prototype.push;
-
 	/**
 	 * Creates a function, with an arity of `n`, that invokes `func` with the
 	 * arguments it receives.
@@ -141,36 +138,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	function createCloner(func) {
 	  return function(object) {
 	    return func({}, object);
-	  };
-	}
-
-	/**
-	 * This function is like `_.spread` except that it includes arguments after those spread.
-	 *
-	 * @private
-	 * @param {Function} func The function to spread arguments over.
-	 * @param {number} start The start position of the spread.
-	 * @returns {Function} Returns the new function.
-	 */
-	function spread(func, start) {
-	  return function() {
-	    var length = arguments.length,
-	        args = Array(length);
-
-	    while (length--) {
-	      args[length] = arguments[length];
-	    }
-	    var array = args[start],
-	        lastIndex = args.length - 1,
-	        otherArgs = args.slice(0, start);
-
-	    if (array) {
-	      push.apply(otherArgs, array);
-	    }
-	    if (start != lastIndex) {
-	      push.apply(otherArgs, args.slice(start + 1));
-	    }
-	    return func.apply(this, otherArgs);
 	  };
 	}
 
@@ -254,6 +221,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    'iteratee': util.iteratee,
 	    'keys': util.keys,
 	    'rearg': util.rearg,
+	    'spread': util.spread,
 	    'toInteger': util.toInteger,
 	    'toPath': util.toPath
 	  };
@@ -267,6 +235,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      isFunction = helpers.isFunction,
 	      keys = helpers.keys,
 	      rearg = helpers.rearg,
+	      spread = helpers.spread,
 	      toInteger = helpers.toInteger,
 	      toPath = helpers.toPath;
 
@@ -825,9 +794,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/** Used to map method names to rearg configs. */
 	exports.methodRearg = {
-	  'assignInAllWith': [1, 0],
+	  'assignInAllWith': [1, 2, 0],
 	  'assignInWith': [1, 2, 0],
-	  'assignAllWith': [1, 0],
+	  'assignAllWith': [1, 2, 0],
 	  'assignWith': [1, 2, 0],
 	  'differenceBy': [1, 2, 0],
 	  'differenceWith': [1, 2, 0],
@@ -836,7 +805,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  'intersectionWith': [1, 2, 0],
 	  'isEqualWith': [1, 2, 0],
 	  'isMatchWith': [2, 1, 0],
-	  'mergeAllWith': [1, 0],
+	  'mergeAllWith': [1, 2, 0],
 	  'mergeWith': [1, 2, 0],
 	  'padChars': [2, 1, 0],
 	  'padCharsEnd': [2, 1, 0],
@@ -859,15 +828,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	/** Used to map method names to spread configs. */
 	exports.methodSpread = {
 	  'assignAll': { 'start': 0 },
-	  'assignAllWith': { 'start': 0 },
+	  'assignAllWith': { 'afterRearg': true, 'start': 1 },
 	  'assignInAll': { 'start': 0 },
-	  'assignInAllWith': { 'start': 0 },
+	  'assignInAllWith': { 'afterRearg': true, 'start': 1 },
 	  'defaultsAll': { 'start': 0 },
 	  'defaultsDeepAll': { 'start': 0 },
 	  'invokeArgs': { 'start': 2 },
 	  'invokeArgsMap': { 'start': 2 },
 	  'mergeAll': { 'start': 0 },
-	  'mergeAllWith': { 'start': 0 },
+	  'mergeAllWith': { 'afterRearg': true, 'start': 1 },
 	  'partial': { 'start': 1 },
 	  'partialRight': { 'start': 1 },
 	  'without': { 'start': 1 },

@@ -14,6 +14,7 @@
     "angular-material": "^1.1.1",
     "angular-aria": "^1.5.8",
     "angular-messages": "^1.5.8",
+    "bootstrap-sass": "^3.3.7",
     "ngstorage": "^0.3.11",
     "bootstrap": ">=2",
     "oclazyload": "^1.0.9",
