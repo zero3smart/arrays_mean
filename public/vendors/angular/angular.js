@@ -27494,9 +27494,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', '$element', '$
     var prevValid = ctrl.$valid;
     var prevModelValue = ctrl.$modelValue;
 
-
-
-
     var allowInvalid = ctrl.$options && ctrl.$options.allowInvalid;
 
     ctrl.$$runValidators(modelValue, viewValue, function(allValid) {

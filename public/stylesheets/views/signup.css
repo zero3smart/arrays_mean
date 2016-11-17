@@ -1,5 +1,5 @@
 
-form.signup {
+form.signup[name='emailForm'] {
 	margin:0px auto;
 	margin-top:200px;
 

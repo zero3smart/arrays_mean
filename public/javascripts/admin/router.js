@@ -23,7 +23,9 @@ angular.module('arraysApp')
                         url: '/admin',
                         templateUrl: "templates/admin.html",
                         resolve: {
-                            auth: authentication.ensureLogin()
+                            auth: function(authentication) {
+                                return authentication.ensureLogin();
+                            }
                         }
                     })
 
@@ -41,7 +43,9 @@ angular.module('arraysApp')
                         url: '/list',
                         templateUrl: 'templates/dataset/list.html',
                         resolve: {
-                            auth: authentication.ensureLogin(),
+                            auth: function(authentication) {
+                                return authentication.ensureLogin();
+                            },
                             load: load(['javascripts/admin/services/dataset.js', 'javascripts/admin/controllers/dataset/list.js'])
                         }
                     })

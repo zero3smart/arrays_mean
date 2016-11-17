@@ -9,17 +9,17 @@
 				model.$asyncValidators.emailAvailable = function(modelValue,viewValue) {
 
 					var value = modelValue|| viewValue;
-					var params = {};
-					params["email"] = value;
-
+					var params = {email: value }
 					var deferred = $q.defer();
 
 					$http.post('api/user/search',params).then(
 						function(result) {
 							if (result.data.length == 0) {
+
+
 								deferred.resolve(true);
 							} else {
-								deferred.reject();
+								deferred.reject(result.data[0].provider);
 							}
 							
 						},function(){

@@ -13,11 +13,7 @@
   var undefined;
 
   /** Used as the semantic version number. */
-<<<<<<< HEAD:public/javascripts/vendors/lodash/dist/lodash.core.js
-  var VERSION = '4.16.5';
-=======
-  var VERSION = '4.17.1';
->>>>>>> thomas-dev:public/vendors/lodash/dist/lodash.core.js
+  var VERSION = '4.17.2';
 
   /** Error message constants. */
   var FUNC_ERROR_TEXT = 'Expected a function';
