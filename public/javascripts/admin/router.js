@@ -10,8 +10,8 @@ angular.module('arraysApp')
         ]
     )
     .config(
-        ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'authentication', 'MODULE_CONFIG',
-            function ($stateProvider, $urlRouterProvider, $locationProvider, authentication, MODULE_CONFIG) {
+        ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'MODULE_CONFIG',
+            function ($stateProvider, $urlRouterProvider, $locationProvider,  MODULE_CONFIG) {
 
                 $urlRouterProvider
                     .otherwise('/admin/account');
@@ -22,7 +22,9 @@ angular.module('arraysApp')
                         url: '/admin',
                         templateUrl: "templates/admin.html",
                         resolve: {
-                            auth: authentication.ensureLogin()
+                            auth: ['authentication', function(authentication) {
+                                return authentication.ensureLogin();
+                            }]
                         }
                     })
                     .state('admin.account', {
@@ -39,7 +41,6 @@ angular.module('arraysApp')
                         url: '/list',
                         templateUrl: 'templates/dataset/list.html',
                         resolve: {
-                            auth: authentication.ensureLogin(),
                             load: load(['javascripts/admin/services/dataset.js', 'javascripts/admin/controllers/dataset/list.js'])
                         }
                     })
@@ -70,11 +71,14 @@ angular.module('arraysApp')
                     .state('admin.users', {
                         url: '/users',
                         templateUrl: 'templates/users.html'
+                    })
+                    .state('login', {
+                        url: '/login',
+                        templateUrl: 'templates/login.html'
                     });
 
                 function load(srcs, callback) {
-                    return {
-                        deps: ['$ocLazyLoad', '$q',
+                    return ['$ocLazyLoad', '$q',
                             function ($ocLazyLoad, $q) {
                                 var deferred = $q.defer();
                                 var promise = false;
@@ -97,7 +101,6 @@ angular.module('arraysApp')
                                 deferred.resolve();
                                 return callback ? promise.then(callback) : promise;
                             }]
-                    }
                 }
 
                 // use the HTML5 History API

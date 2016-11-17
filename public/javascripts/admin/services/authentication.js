@@ -12,15 +12,15 @@
 
         // This method will be used by UI-Router resolves
         var ensureLogin = function() {
-            var deferred = _$q.defer();
-            if (isLoggedIn()) {
-                $q.resolve(true);
+            var deferred = $q.defer();
+            /* if (isLoggedIn()) {
+                deferred.resolve(true);
             } else {
-                $q.resolve(false);
-                // $state.go('admin.login');
-            }
+                deferred.resolve(false);
+                $state.go('login');
+            } */
             return deferred.promise();
-        }
+        };
 
         var currentUser = function() {
             if (!isLoggedIn()) return null;
