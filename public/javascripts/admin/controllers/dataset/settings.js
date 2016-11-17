@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('datasetSettingsCtrl', ['$scope', 'authentication',
-        function($scope, authentication) {
+    .controller('DatasetSettingsCtrl', ['$scope', 'AuthService',
+        function($scope, AuthService) {
             $scope.init = function() {
             }
         }

@@ -6,7 +6,7 @@
         {% block headSuffix %}{% endblock %}
     </head>
     <body class="array array-{{ currentView }} source-{{ array_source_key }} legend-open {{ "view-embedded" if embedded == "true" }}">
-        {% include "../partials/auth0.html" %}
+        {% include "../partials/login.modal.html" %}
 
         <div id="page" class="site">
             {% include "../partials/header_bar_array.html" %}

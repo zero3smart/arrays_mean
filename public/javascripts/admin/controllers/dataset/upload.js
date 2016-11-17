@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('datasetUploadCtrl', ['$scope', 'authentication',
-        function($scope, authentication) {
+    .controller('DatasetUploadCtrl', ['$scope', 'AuthService',
+        function($scope, AuthService) {
             $scope.init = function() {
             }
         }

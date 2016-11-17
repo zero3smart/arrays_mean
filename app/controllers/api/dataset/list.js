@@ -21,7 +21,6 @@ var mongoose_client = require('../../../models/mongoose_client');
 /***************  Get All Datasets  ***************/
 module.exports.getAll = function (req, res) {
     res.setHeader('Content-Type', 'application/json');
-
     datasource_description.find({schema_id: {$exists: false}}, {
         _id: 1,
         title: 1,
@@ -34,8 +33,7 @@ module.exports.getAll = function (req, res) {
                 error: err.message
             }))
         }
-
-        res.send(JSON.stringify({docs: datasets}));
+        return res.send(JSON.stringify({datasets: datasets}));
     });
 };
 

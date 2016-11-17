@@ -1,16 +1,16 @@
 (function () {
     angular
         .module('arraysApp')
-        .service('dataset', dataset);
+        .service('DatasetService', DatasetService);
 
-    dataset.$inject = ['$http', '$q'];
-    function dataset($http, $q) {
+    DatasetService.$inject = ['$http', '$q'];
+    function DatasetService($http, $q) {
 
-        var getAll = function() {
+        var GetAll = function() {
             var deferred = $q.defer();
             $http.get('/api/dataset/getAll').then(function(response) {
                 if (response.data && !response.data.error) {
-                    return deferred.resolve(response.data.docs);
+                    return deferred.resolve(response.data.datasets);
                 } else {
                     return deferred.reject(response.data.error);
                 }
@@ -21,7 +21,7 @@
         }
 
         return {
-            getAll: getAll
+            GetAll: GetAll
         }
     }
 })();

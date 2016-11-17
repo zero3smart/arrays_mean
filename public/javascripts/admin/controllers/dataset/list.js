@@ -1,34 +1,28 @@
 angular.module('arraysApp')
-    .controller('datasetListCtrl', ['$scope', '$mdDialog', 'dataset', '$state',
-        function($scope, $mdDialog, dataset, $state) {
-            $scope.doc = {};
+    .controller('DatasetListCtrl', ['$scope', '$mdDialog', '$state', 'datasets',
+        function ($scope, $mdDialog, $state, datasets) {
 
-            $scope.init = function() {
-                $scope.doc = {};
-                $scope.$parent.$parent.title = "Dataset Settings";
+            $scope.$parent.$parent.doc = {};
+            $scope.$parent.$parent.title = "Dataset Settings";
+            $scope.datasets = datasets;
 
-                dataset.getAll().then(function(docs) {
-                    $scope.docs = docs;
-                }, function(err) {
-                    $scope.error = err;
-                });
-            }
-
-            $scope.removeDataset = function() {
+            $scope.removeDataset = function () {
                 var confirm = $mdDialog.confirm()
                     .title('Are you sure to delete the dataset?')
                     .textContent('Dataset will be deleted permanently.')
                     .targetEvent(event)
                     .ok('Yes')
                     .cancel('No');
-                $mdDialog.show(confirm).then(function() {
+                $mdDialog.show(confirm).then(function () {
+                    // DatasetService.removeDataset().then();
                     console.log('Dataset deleted successfully!');
-                }, function() {
+                }, function () {
                     console.log('You decided to keep your dataset.');
                 });
             }
 
-            $scope.selectDataset = function(id) {
+            $scope.selectDataset = function (id) {
+                $scope.$parent.$parent.doc_id = id;
                 $state.go('admin.dataset.settings');
             }
         }]

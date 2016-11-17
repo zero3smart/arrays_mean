@@ -1,24 +1,24 @@
 (function () {
     angular
         .module('arraysApp')
-        .service('authentication', authentication);
+        .service('AuthService', AuthService);
 
-    authentication.$inject = ['$http', '$window', '$q'];
-    function authentication ($http, $window, $q) {
+    AuthService.$inject = ['$http', '$window', '$q'];
+    function AuthService ($http, $window, $q) {
 
         var isLoggedIn = function() {
-            return $window.user ? true : false;
+            return $window.user && $window.user.displayName ? true : false;
         };
 
         // This method will be used by UI-Router resolves
         var ensureLogin = function() {
             var deferred = $q.defer();
-            /* if (isLoggedIn()) {
+            if (isLoggedIn()) {
                 deferred.resolve(true);
             } else {
                 deferred.resolve(false);
-                $state.go('login');
-            } */
+                window.location = '/auth/login';
+            }
             return deferred.promise();
         };
 

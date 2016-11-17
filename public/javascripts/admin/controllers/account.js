@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('accountCtrl', ['$scope', 'authentication',
-        function($scope, authentication) {
+    .controller('AccountCtrl', ['$scope', 'AuthService',
+        function($scope, AuthService) {
             $scope.init = function() {
                 if ($scope.user.provider=='auth0') {
                     $scope.userFormData = { id: $scope.user.id };
@@ -14,7 +14,7 @@ angular.module('arraysApp')
 
             $scope.updateProfile = function() {
                 $('.butterbar').removeClass('hide').addClass('active');
-                authentication.updateProfile($scope.userFormData)
+                AuthService.updateProfile($scope.userFormData)
                     .then(function(msg) {
                         $('.butterbar').removeClass('active').addClass('hide');
                         $scope.message = msg;

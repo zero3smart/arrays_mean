@@ -1,9 +1,9 @@
 angular
     .module('arraysApp')
-    .controller('adminCtrl', ['$scope', 'authentication',
-    function($scope, authentication) {
+    .controller('AdminCtrl', ['$scope', 'AuthService',
+        function ($scope, AuthService) {
 
-        $scope.init = function() {
-            $scope.user = authentication.currentUser();
-        };
-    }]);
+            $scope.init = function () {
+                $scope.user = AuthService.currentUser();
+            };
+        }]);

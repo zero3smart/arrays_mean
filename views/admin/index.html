@@ -8,7 +8,7 @@
     <base href="/">
 </head>
 
-<body ng-controller="adminCtrl" class="site-admin" ng-init="init()">
+<body class="site-admin" ng-init="init()">
     <div id="page" class="site" ui-view></div>
 
     {% include "../partials/survicate.html" %}
@@ -28,16 +28,17 @@
 
     <script type="text/javascript" src="/javascripts/admin/app.js"></script>
     <script type="text/javascript" src="/javascripts/admin/directives/ui-butterbar.js"></script>
-    <script type="text/javascript" src="/javascripts/admin/services/authentication.js"></script>
-    <script type="text/javascript" src="/javascripts/admin/controllers/app.js"></script>
-    <script type="text/javascript" src="/javascripts/admin/router.js"></script>
+    <script type="text/javascript" src="/javascripts/admin/services/auth.service.js"></script>
+    <script type="text/javascript" src="/javascripts/admin/services/dataset.service.js"></script>
     <script type="text/javascript" src="/javascripts/admin/lazyload.js"></script>
-
-    <!-- TODO: To get user information in angular js -->
-    <!-- Remove once we use our own authentication instead of auth0 -->
-    <script type="text/javascript">
-        window.user = {{ user | dump | safe if user else '{}'}};
-    </script>
+    <script type="text/javascript" src="/javascripts/admin/controllers/app.js"></script>
+    <script type="text/javascript" src="/javascripts/admin/controllers/account.js"></script>
+    <script type="text/javascript" src="/javascripts/admin/controllers/dataset/list.js"></script>
+    <script type="text/javascript" src="/javascripts/admin/controllers/dataset/settings.js"></script>
+    <script type="text/javascript" src="/javascripts/admin/controllers/dataset/upload.js"></script>
+    <script type="text/javascript" src="/javascripts/admin/controllers/dataset/data.js"></script>
+    <script type="text/javascript" src="/javascripts/admin/controllers/dataset/views.js"></script>
+    <script type="text/javascript" src="/javascripts/admin/router.js"></script>
 </body>
 
 </html>

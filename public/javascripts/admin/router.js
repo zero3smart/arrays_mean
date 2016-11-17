@@ -10,11 +10,11 @@ angular.module('arraysApp')
         ]
     )
     .config(
-        ['$stateProvider', '$urlRouterProvider', '$locationProvider', 'MODULE_CONFIG',
-            function ($stateProvider, $urlRouterProvider, $locationProvider,  MODULE_CONFIG) {
+        ['$stateProvider', '$urlRouterProvider', '$locationProvider',
+            function ($stateProvider, $urlRouterProvider, $locationProvider) {
 
                 $urlRouterProvider
-                    .otherwise('/admin/account');
+                    .otherwise('/admin/dataset');
 
                 $stateProvider
                     .state('admin', {
@@ -22,15 +22,16 @@ angular.module('arraysApp')
                         url: '/admin',
                         templateUrl: "templates/admin.html",
                         resolve: {
-                            auth: function(authentication) {
-                                return authentication.ensureLogin();
+                            auth: function(AuthService) {
+                                /* return AuthService.ensureLogin(); */
+                                return true;
                             }
                         }
                     })
                     .state('admin.account', {
                         url: '/account',
+                        controller: 'AccountCtrl',
                         templateUrl: 'templates/account.html',
-                        resolve: load(['javascripts/admin/controllers/account.js'])
                     })
                     .state('admin.dataset', {
                         abstract: true,
@@ -40,19 +41,19 @@ angular.module('arraysApp')
                     .state('admin.dataset.list', {
                         url: '/list',
                         templateUrl: 'templates/dataset/list.html',
+                        controller: 'DatasetListCtrl',
                         resolve: {
-                            auth: function(authentication) {
-                                return authentication.ensureLogin();
-                            },
-                            load: load(['javascripts/admin/services/dataset.js', 'javascripts/admin/controllers/dataset/list.js'])
+                            datasets: ['DatasetService', function(DatasetService) {
+                                return DatasetService.GetAll();
+                            }]
                         }
                     })
                     .state('admin.dataset.settings', {
-                        url: '/settings',
+                        url: '/settings/:datasetId',
                         templateUrl: 'templates/dataset/settings.html'
                     })
                     .state('admin.dataset.upload', {
-                        url: '/upload',
+                        url: '/upload/:datatsetId',
                         templateUrl: 'templates/dataset/upload.html',
                     })
                     .state('admin.dataset.data', {
@@ -79,32 +80,6 @@ angular.module('arraysApp')
                         url: '/login',
                         templateUrl: 'templates/login.html'
                     });
-
-                function load(srcs, callback) {
-                    return ['$ocLazyLoad', '$q',
-                            function ($ocLazyLoad, $q) {
-                                var deferred = $q.defer();
-                                var promise = false;
-                                srcs = angular.isArray(srcs) ? srcs : srcs.split(/\s+/);
-                                if (!promise) {
-                                    promise = deferred.promise;
-                                }
-                                angular.forEach(srcs, function (src) {
-                                    promise = promise.then(function () {
-                                        angular.forEach(MODULE_CONFIG, function (module) {
-                                            if (module.name == src) {
-                                                name = module.name;
-                                            } else {
-                                                name = src;
-                                            }
-                                        });
-                                        return $ocLazyLoad.load(name);
-                                    });
-                                });
-                                deferred.resolve();
-                                return callback ? promise.then(callback) : promise;
-                            }]
-                }
 
                 // use the HTML5 History API
                 $locationProvider.html5Mode(true);

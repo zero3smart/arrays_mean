@@ -13,8 +13,6 @@ router.get('/login', function(req, res) {
             user: req.user
         });
     }
-
-
 });
 
 
