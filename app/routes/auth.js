@@ -10,21 +10,17 @@ router.get('/google', passport.authenticate('google', {
 
 
 router.get('/google/callback',function(req,res,next) {
-    passport.authenticate('google',{
-        scope: ['https://www.googleapis.com/auth/userinfo.profile',
-        'https://www.googleapis.com/auth/userinfo.email']},
+    passport.authenticate('google',
         function(err,user,info) {
-
-    
 
         if (err) {return next(err);}
         if (!user) {return res.redirect('auth/login');}
         else {
 
             if (!user._team) {
-
+                return res.redirect('/signup/teaminfo/' + user._id);
+                
             } else {
-                console.log("ready to login")
                 req.logIn(user,function(err) {
                     if (err) {return next(err);}
                     return res.redirect(req.session.returnTo || '/admin');

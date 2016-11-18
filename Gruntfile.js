@@ -66,6 +66,7 @@ module.exports = function (grunt) {
                     'moment/moment.js',
                     'bootstrap-colorpicker/dist/**',
                     'angular/angular.js',
+                    'angular-resource/angular-resource.min.js',
                     'angular-file-upload/dist/angular-file-upload.min.js',
                     'angular-animate/angular-animate.min.js',
                     'angular-cookies/angular-cookies.min.js',

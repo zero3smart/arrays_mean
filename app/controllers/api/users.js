@@ -17,7 +17,6 @@ module.exports.index = function (req, next) {
 
 
 module.exports.search = function(req,res) {
-
 	User.find(req.body,function(err,foundUsers) {
 		if (err) {
 			res.send(err);
@@ -39,6 +38,16 @@ module.exports.get = function(req,res) {
 		}
 	})
 } 
+
+module.exports.create = function(req,res) {
+	User.create(req.body,function(err,user) {
+		if (err) {
+			res.send(err);
+		} else {
+			res.json(user);
+		}
+	})
+}
 
 
 

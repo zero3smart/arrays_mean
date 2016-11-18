@@ -29,7 +29,8 @@
     "jasmine-core": "jasmine#^2.5.2",
     "jQuery": "2.2.2",
     "form2js": "*",
-    "scrollmagic": "^2.0.5"
+    "scrollmagic": "^2.0.5",
+    "angular-resource": "^1.5.8"
   },
   "ignore": [
     "\\.*",

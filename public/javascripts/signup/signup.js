@@ -1,5 +1,5 @@
 (function() {
-	angular.module('signupModule',['ui.router','ngMessages'])
+	angular.module('signupModule',['ui.router','ngMessages','ngResource'])
 		.config(function($stateProvider,$urlRouterProvider,$locationProvider) {
 
 			$urlRouterProvider.otherwise('/signup/email');
@@ -20,12 +20,12 @@
 
 				})
 				.state('signup.personalinfo', {
-					url: '/personalinfo',
+					url: '/personalinfo/:id',
 					templateUrl: 'templates/blocks/signup.personalinfo.html',
 					controller: 'signupCtrl'
 				})
 				.state('signup.teaminfo',{
-					url: '/teaminfo',
+					url: '/teaminfo/:id',
 					templateUrl: 'templates/blocks/signup.teaminfo.html',
 					controller: 'signupCtrl'
 				})

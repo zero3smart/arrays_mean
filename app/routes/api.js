@@ -34,6 +34,7 @@ router.get('/dataset/get/:id', /*ensureLoggedIn,*/ctrlDatasetList.get);
 // manage users
 
 router.post('/user/search',ctrlUsers.search);
+router.post('/user',ctrlUsers.create);
 router.get('/user/:id',ctrlUsers.get);
 
 
