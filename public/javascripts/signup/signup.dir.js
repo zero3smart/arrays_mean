@@ -1,6 +1,6 @@
 (function() {
 	var signupModule = angular.module('signupModule');
-	signupModule.directive('uniqueEmail',['$http','$q',function($http,$q) 
+	signupModule.directive('uniqueEmail',['$q','User',function($q,User) 
 	{
 		return {
 			restrict: 'AE',
@@ -11,27 +11,32 @@
 					var params = {email: value }
 					var deferred = $q.defer();
 
-					$http.post('api/user/search',params).then(
-						function(result) {
-							if (result.data.length == 0) {
 
-								deferred.resolve(true);
-							} else {
-								if (!result.data[0]._team) {
-									scope.user = result.data[0];
-									deferred.resolve(true);
+					User.query(params)
+						.$promise.then(function() {
+							
+						})
 
-								} else {
-									deferred.reject(false);
-								}
+					// $http.post('api/user/search',params).then(
+					// 	function(result) {
+					// 		if (result.data.length == 0) {
+					// 			deferred.resolve(true);
+					// 		} else {
+					// 			if (!result.data[0]._team) {
+					// 				scope.user = result.data[0];
+					// 				deferred.resolve(true);
+
+					// 			} else {
+					// 				deferred.reject(false);
+					// 			}
 
 								
-							}
+					// 		}
 							
-						},function(){
-							deferred.reject(false);
+					// 	},function(){
+					// 		deferred.reject(false);
 
-						})
+					// 	})
 
 					return deferred.promise;
 				}

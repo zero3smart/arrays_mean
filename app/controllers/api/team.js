@@ -1,4 +1,4 @@
-var User = require('../../models/users');
+var Team = require('../../models/teams');
 
 module.exports.index = function (req, next) {
     var self = this;
@@ -18,11 +18,10 @@ module.exports.index = function (req, next) {
 
 module.exports.search = function(req,res) {
 
-	console.log("here")
+	consoel.log(req.query);
 
 
-
-	// User.find(req.query,function(err,foundUsers) {
+	// User.find(req.body,function(err,foundUsers) {
 	// 	if (err) {
 	// 		res.send(err);
 	// 	} else {
@@ -45,7 +44,7 @@ module.exports.get = function(req,res) {
 } 
 
 module.exports.create = function(req,res) {
-	User.create(req.body,function(err,user) {
+	Team.create(req.body,function(err,user) {
 		if (err) {
 			res.send(err);
 		} else {
