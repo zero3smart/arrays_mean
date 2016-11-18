@@ -63,7 +63,7 @@
             var deferred = $q.defer();
             $http.post('api/dataset/update', dataset)
                 .success(function(data) {
-                    if (!data.error && !data.id) {
+                    if (!data.error && data.id) {
                         return deferred.resolve(data.id);
                     } else {
                         return deferred.reject(data.error);

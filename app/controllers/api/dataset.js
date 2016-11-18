@@ -4,6 +4,12 @@ var raw_source_documents = require('../../models/raw_source_documents');
 var mongoose_client = require('../../models/mongoose_client');
 var _ = require('lodash');
 var Batch = require('batch');
+var aws = require('aws-sdk');
+var fs = require('fs');
+var es = require('event-stream');
+var parse = require('csv-parse');
+var datasource_file_service = require('../../libs/utils/aws-datasource-files-hosting');
+var imported_data_preparation = require('../../libs/datasources/imported_data_preparation')
 
 module.exports.getAll = function (req, res) {
     res.setHeader('Content-Type', 'application/json');
@@ -62,7 +68,7 @@ module.exports.remove = function (req, res) {
     // Remove processed row object
     batch.push(function (done) {
 
-        mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey, function(err) {
+        mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey, function (err) {
             // Consider that the collection might not exist since it's in the importing process.
             if (err && err.code != 26) return done(err);
 
@@ -75,7 +81,7 @@ module.exports.remove = function (req, res) {
     // Remove raw row object
     batch.push(function (done) {
 
-        mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey, function(err) {
+        mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey, function (err) {
             // Consider that the collection might not exist since it's in the importing process.
             if (err && err.code != 26) return done(err);
 
@@ -92,7 +98,7 @@ module.exports.remove = function (req, res) {
 
     // Remove datasource description with schema_id
     batch.push(function (done) {
-        winston.info("✅  Removed datasource description : " + description._id);
+        winston.info("✅  Removed datasource description : " + description.title);
 
         datasource_description.find({schema_id: description._id}, function (err, results) {
             if (err) return done(err);
@@ -116,10 +122,10 @@ module.exports.remove = function (req, res) {
 
     batch.end(function (err) {
         if (err) {
-            winston.info("❌  Error encountered during raw objects remove : ", err);
+            winston.error("❌  Error encountered during raw objects remove : ", err);
             return res.send(JSON.stringify({error: err.message}));
         }
-        winston.info("✅  Removed dataset : " + description._id);
+        winston.info("✅  Removed dataset : " + description.title);
         res.send(JSON.stringify({success: 'ok'}));
     });
 }
@@ -161,10 +167,11 @@ module.exports.update = function (req, res) {
 
             _.forOwn(req.body, function (value, key) {
                 if (key != '_id' && !_.isEqual(value, doc._doc[key])) {
+                    winston.info('✅ Updated ' + doc.title + ' with - ' + key + ' with ' + value);
+
                     doc[key] = value;
                     if (typeof value === 'object')
                         doc.markModified(key);
-                    winston.info('✅ Updated with - ' + key + ' with ' + value);
 
                     // TODO: detect whether you need to re-import dataset to the system or not, and inform that the client
                 }
@@ -180,3 +187,141 @@ module.exports.update = function (req, res) {
 
     }
 };
+
+function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, next) {
+    var delimiter;
+    if (description.format == 'CSV') {
+        delimiter = ',';
+    } else if (description.format == 'TSV') {
+        delimiter = '\t';
+    } else {
+        return next(new Error('Invalid File Format : ' + description.format));
+    }
+
+    var countOfLines = 0;
+    var cachedLines = '';
+    var datasource = {};
+
+    var readStream = fileReadStream
+        .pipe(es.split())
+        .pipe(es.mapSync(function (line) {
+                readStream.pause();
+
+                parse(cachedLines + line, {delimiter: delimiter, relax: true, skip_empty_lines: true},
+                    function (err, output) {
+                        if (err) {
+                            readStream.destroy();
+                            return next(err);
+                        }
+
+                        if (!output || output.length == 0) {
+                            cachedLines = cachedLines + line;
+                            return readStream.resume();
+                        }
+
+                        if (!Array.isArray(output[0]) || output[0].length == 1) {
+                            readStream.destroy();
+                            return next(new Error('Invalid File'));
+                        }
+
+                        cachedLines = '';
+                        countOfLines++;
+
+                        if (countOfLines == 1) {
+                            datasource.colNames = output[0];
+                            readStream.resume();
+                        } else if (countOfLines == 2) {
+                            datasource.firstRecord = output[0];
+                            readStream.resume();
+                        } else {
+                            readStream.destroy();
+                            if (countOfLines == 3) next(null, datasource);
+                        }
+                    });
+            })
+        );
+}
+
+module.exports.upload = function (req, res) {
+    res.setHeader('Content-Type', 'application/json');
+
+    if (!req.body.id)
+        return res.send(JSON.stringify({error: 'No ID given'}));
+
+    var batch = new Batch;
+    batch.concurrency(1);
+    var description;
+
+    // every 15 seconds or so as sort of a keep-alive that keeps the browser happy and keeps it from timing out.
+    var browserHappyTimeout, browserHappy = function() {
+        browserHappyTimeout = setTimeout(browserHappy, 15000);
+        res.write(" ");
+    };
+
+    batch.push(function (done) {
+        datasource_description.findById(req.body.id)
+            .exec(function (err, doc) {
+                if (err) return done(err);
+
+                description = doc;
+                done();
+            })
+    });
+
+    _.forEach(req.files, function (file) {
+        batch.push(function (done) {
+
+            if (file.mimetype == 'text/csv') {
+                description.format = 'CSV';
+            } else if (file.mimetype == 'text/tab-separated-values') {
+                description.format = 'TSV';
+            } else {
+                return done(new Error('Invalid File Format : ' + file.mimetype));
+            }
+
+            // Verify that the file is readable & in the valid format.
+            _readDatasourceColumnsAndSampleRecords(description, fs.createReadStream(file.path), function(err, datasource) {
+                if (err) {
+                    winston.error("❌  Error validating datasource : " + description.title + " : error " + err.message);
+                    return done(err);
+                }
+                winston.info("✅  File validation okay : " + description.title);
+
+                // Store columnNames and firstRecords for latter call on admin pages
+                if (!req.session.datasource) req.session.datasource = {};
+                req.session.datasource[description.id] = datasource;
+
+                // Upload datasource to AWS S3
+                if (!description.uid) description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
+                var newFileName = datasource_file_service.fileNameToUpload(description);
+                datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, function(err) {
+                    if (err) {
+                        winston.error("❌  Error during uploading the dataset into AWS : " + description.title + " (" + err.message + ")");
+                    }
+                    done(err);
+                });
+            });
+        });
+
+        batch.push(function (done) {
+            winston.info("✅  Uploaded datasource : " + description.title + ", "+ description.uid);
+
+            description.save(function (err, updatedDescription) {
+                if (err) {
+                    winston.error("❌  Error saving the dataset into the database : " + description.title + " (" + err.message + ")");
+                    return done(err);
+                }
+                done();
+            });
+        });
+    });
+
+    batch.end(function (err) {
+        if (err) {
+            clearTimeout(browserHappyTimeout);
+            return res.send(JSON.stringify({error: err.message}));
+        }
+
+        return res.send(JSON.stringify({id: description.id}));
+    });
+}

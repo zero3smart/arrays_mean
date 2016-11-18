@@ -6,6 +6,11 @@ var auth = jwt({
     userProperty: 'payload'
 });
 
+var path = require('path');
+var multer  = require('multer');
+var upload = multer({ dest: path.join(__dirname, '../../tmp') });
+
+
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn('/auth/login');
 var ctrlAuth = require('../controllers/api/authentication');
 var ctrlAccount = require('../controllers/api/account');
@@ -25,6 +30,8 @@ router.get('/dataset/getAll', /*ensureLoggedIn,*/ctrlDataset.getAll);
 router.post('/dataset/remove', /*ensureLoggedIn,*/ctrlDataset.remove);
 router.get('/dataset/get/:id', /*ensureLoggedIn,*/ctrlDataset.get);
 router.post('/dataset/update', /*ensureLoggedIn,*/ctrlDataset.update);
+// dataset upload
+router.post('/dataset/upload', /*ensureLoggedIn,*/upload.array('file', 12), ctrlDataset.upload);
 
 // website settings
 

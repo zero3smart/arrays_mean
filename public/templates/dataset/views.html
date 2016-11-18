@@ -1,3 +1,6 @@
-<div>
+<div layout-padding>
+    <md-content ng-if="dataset.raw_rowObjects_coercionScheme">
+
+    </md-content>
+    <ng-include src="'/templates/blocks/dataset.empty.html'" ng-if="!dataset.raw_rowObjects_coercionScheme"></ng-include>
 </div>
-<ng-include src="'/templates/blocks/dataset.empty.html'"></ng-include>

@@ -8,18 +8,15 @@ angular.module('arraysApp')
             $scope.submitForm = function(isValid) {
                 if (isValid) {
                     $scope.submitting = true;
-                    DatasetService.save(dataset).then(function(result) {
-                        if (result === true) {
-                            $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent(dataset._id ? 'Dataset updated successfully!' : 'New Dataset was created successfully!')
-                                    .position('top right')
-                                    .hideDelay(5000)
-                            );
+                    DatasetService.save(dataset).then(function(id) {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent(dataset._id ? 'Dataset updated successfully!' : 'New Dataset was created successfully!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
 
-                            // result should be id even if it's a new settings
-                            $state.go('admin.dataset.upload', {id: result});
-                        }
+                        $state.go('admin.dataset.upload', {id: id});
                         $scope.submitting = false;
                     }, function(error) {
                         $mdToast.show(

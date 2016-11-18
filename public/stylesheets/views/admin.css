@@ -12,6 +12,7 @@
 }
 
 .site-admin md-toast {
+    position: fixed;
     top: 64px;
     z-index: 1000;
 }
@@ -33,6 +34,10 @@
     font-size: 20px;
 }
 
+.site-admin section.md-container {
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);
+    border-radius: 4px;
+}
 /* Dataset Breadcrumb */
 
 .site-admin .dataset .md-button {
@@ -50,7 +55,6 @@
 }
 
 /* Dataset Settings */
-
 .dataset .md-chips {
     padding: 0;
 }
@@ -60,14 +64,10 @@
 }
 
 /* Dataset Upload */
-.dataset .upload input[type="text"].url {
-    width: 100%;
+.dataset td.no-padding-vertical {
+    padding-top: 0;
+    padding-bottom: 0;
 }
-
-.dataset_item {
-    padding-right: 30px;
-}
-
 
 form .removeDatasource {
     margin-top: 10px;
