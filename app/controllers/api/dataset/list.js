@@ -44,79 +44,81 @@ module.exports.remove = function(req, res) {
     if (!req.body.id)
         return res.send(JSON.stringify({error: 'No ID given'}));
 
-    var batch = new Batch();
-    batch.concurrency(1);
+    // var batch = new Batch();
+    // batch.concurrency(1);
+    //
+    // var description;
+    // var srcDocPKey;
+    // batch.push(function(done) {
+    //     datasource_description.findById(req.body.id, function(err, data) {
+    //         if (err) return done(err);
+    //
+    //         if (!data) return done(new Error('No datasource exists : ' + req.body.id));
+    //
+    //         description = data;
+    //         srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+    //         done();
+    //     });
+    // });
+    //
+    // // Remove source document
+    // batch.push(function(done) {
+    //
+    //     raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function(err, document) {
+    //         if (err) return done(err);
+    //
+    //         if (!document) return done();
+    //         document.remove(done);
+    //     });
+    // });
+    //
+    // // Remove processed row object
+    // batch.push(function(done) {
+    //
+    //     mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey,done)
+    //
+    // });
+    //
+    // // Remove raw row object
+    // batch.push(function(done) {
+    //
+    //     mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey,done)
+    //
+    // });
+    //
+    // // Remove datasource description
+    // batch.push(function(done) {
+    //     description.remove(done);
+    // });
+    //
+    // // Remove datasource description with schema_id
+    // batch.push(function(done) {
+    //     datasource_description.find({schema_id: description._id}, function(err, results) {
+    //         if (err) return done(err);
+    //
+    //         var batch = new Batch();
+    //         batch.concurrency(1);
+    //
+    //         results.forEach(function(element) {
+    //             batch.push(function(done) {
+    //                 element.remove(done);
+    //             });
+    //         });
+    //
+    //         batch.end(function(err) {
+    //             done(err);
+    //         });
+    //
+    //     });
+    // });
+    //
+    // batch.end(function(err) {
+    //     if (err)
+    //         return res.send(JSON.stringify({error: err.message}));
+    //     res.send(JSON.stringify({success: 'okay'}));
+    // });
 
-    var description;
-    var srcDocPKey;
-    batch.push(function(done) {
-        datasource_description.findById(req.body.id, function(err, data) {
-            if (err) return done(err);
-
-            if (!data) return done(new Error('No datasource exists : ' + req.body.id));
-
-            description = data;
-            srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
-            done();
-        });
-    });
-
-    // Remove source document
-    batch.push(function(done) {
-
-        raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function(err, document) {
-            if (err) return done(err);
-
-            if (!document) return done();
-            document.remove(done);
-        });
-    });
-
-    // Remove processed row object
-    batch.push(function(done) {
-
-        mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey,done)
-
-    });
-
-    // Remove raw row object
-    batch.push(function(done) {
-
-        mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey,done)
-
-    });
-
-    // Remove datasource description
-    batch.push(function(done) {
-        description.remove(done);
-    });
-
-    // Remove datasource description with schema_id
-    batch.push(function(done) {
-        datasource_description.find({schema_id: description._id}, function(err, results) {
-            if (err) return done(err);
-
-            var batch = new Batch();
-            batch.concurrency(1);
-
-            results.forEach(function(element) {
-                batch.push(function(done) {
-                    element.remove(done);
-                });
-            });
-
-            batch.end(function(err) {
-                done(err);
-            });
-
-        });
-    });
-
-    batch.end(function(err) {
-        if (err)
-            return res.send(JSON.stringify({error: err.message}));
-        res.send(JSON.stringify({success: 'okay'}));
-    });
+    res.send(JSON.stringify({success: 'okay'}));
 }
 
 /***************  Settings  ***************/

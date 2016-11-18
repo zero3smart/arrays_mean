@@ -1,63 +1,61 @@
-<div class="settings">
-    <div class="form-group row">
-        <label class="col-xs-4" for="title">Title: </label>
-        <input class="col-xs-8" type="text" id="title" name="title" ng-model="dataset.title" required/>
-    </div>
+<div layout="column" ng-cloak>
+    <md-content layout-padding>
+        <form name="settingsForm">
+            <md-input-container class="md-block">
+                <label>Title</label>
+                <input md-maxlength="30" required md-no-asterisk name="title" ng-model="dataset.title">
+                <div ng-messages="settingsForm.title.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="md-maxlength">The title must be less than 30 characters long.</div>
+                </div>
+            </md-input-container>
 
-    <div class="form-group row">
-        <label class="col-xs-4" for="description">Description: </label>
-        <textarea class="col-xs-8" id="description" name="description" required> {{ dataset.description }}</textarea>
-    </div>
+            <md-input-container class="md-block">
+                <label>Description</label>
+                <textarea required md-no-asterisk name="description" ng-model="dataset.description"></textarea>
+                <div ng-messages="settingsForm.description.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
 
-    <div class="form-group row">
-        <label class="col-xs-4" for="revision">Import Revision: </label>
-        <input class="col-xs-8" type="number" id="revision" name="importRevision" ng-model="dataset.importRevision" required/>
-    </div>
+            <md-input-container class="md-block">
+                <label>Import Revision</label>
+                <input type="number" min="1" required md-no-asterisk name="importRevision" ng-model="dataset.importRevision"/>
+                <div ng-messages="settingsForm.importRevision.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="min">You should input at least 1.</div>
+                </div>
+            </md-input-container>
 
-    <div class="form-group row">
-        <label class="col-xs-4" for="brandColor">Brand Color: </label>
-        <div id="brandColor" class="input-group colorpicker-component col-xs-8">
-            <input type="text" name="brandColor" ng-model="dataset.brandColor" class="form-control" />
-            <span class="input-group-addon"><i></i></span>
-        </div>
-        <!--<script>-->
-            <!--$(function() {-->
-                <!--$('#brandColor').colorpicker();-->
-            <!--});-->
-        <!--</script>-->
-    </div>
+            <md-input-container class="md-block md-color-picker">
+                <label>Brand Color</label>
+                <div md-color-picker ng-model="dataset.brandColor"></div>
+            </md-input-container>
 
-    <div class="form-group row">
-        <label class="col-xs-4" for="urls">Urls: </label>
+            <md-input-container class="md-block">
+                <label>URLs</label>
+                <md-chips ng-model="dataset.urls" name="url" md-max-chips="5">
+                    <md-chip-template>
+                        <strong>{{$chip}}</strong>
+                    </md-chip-template>
+                </md-chips>
+            </md-input-container>
 
-        {% if dataset.urls and dataset.urls.length > 0 %}
-        {% for url in dataset.urls %}
-        {% if loop.index == 1 %}
-        <input class="col-xs-8 urls" type="text" name="urls[]" value="{{url}}" />
-    </div>
-    {% else %}
-    <div class="form-group row">
-        <input class="col-xs-8 col-xs-offset-4 urls" name="urls[]" type="text" value="{{url}}"/>
-    </div>
-    {% endif %}
-    {% endfor %}
+            <md-input-container class="md-block">
+                <md-checkbox ng-checked="dataset.fe_listed" ng-click="toggleListed()">Listed</md-checkbox>
+            </md-input-container>
 
-    {% else %}
-    <input class="col-xs-8 urls" type="text" name="urls[]" value="{{url}}" />
-    </div>
-    {% endif %}
+        </form>
+    </md-content>
+</div>
 
-    <div id="extra_urls"></div>
-    <div class="form-group row"><a id="add_urls" class="col-xs-offset-4 add" ><span class="glyphicon glyphicon-plus"></span> Add more Urls</a></div>
-
-
-    <div class="form-group row">
-        <md-checkbox ng-checked="dataset.fe_listed" ng-click="toggleListed()">Listed</md-checkbox>
-    </div>
-
+<div>
     <div class="panel-footer">
-        <a class="btn btn-default pull-left" ui-sref="admin.dataset.list"><span class="glyphicon glyphicon-hand-left"></span> Back</a>
-        <button type="button" class="btn btn-default pull-right" ng-click="save"><span class="glyphicon glyphicon-hand-right"></span> Save</button>
+        <a class="btn btn-default pull-left" ui-sref="admin.dataset.list"><span
+                class="glyphicon glyphicon-hand-left"></span> Back</a>
+        <button type="button" class="btn btn-default pull-right" ng-click="save"><span
+                class="glyphicon glyphicon-hand-right"></span> Save
+        </button>
         <div class="clearfix"></div>
     </div>
 

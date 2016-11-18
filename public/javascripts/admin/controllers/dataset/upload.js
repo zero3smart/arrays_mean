@@ -3,5 +3,6 @@ angular.module('arraysApp')
         function($scope, dataset) {
 
             $scope.$parent.$parent.dataset = dataset;
+            $scope.$parent.$parent.currentNavItem = 'Upload';
         }
     ]);

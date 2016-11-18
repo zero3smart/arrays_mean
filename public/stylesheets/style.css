@@ -15,8 +15,8 @@
 @import url('layout/embedded.css');
 /* @end Layout */
 /* @group Lib */
-@import url('../vendors/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css');
 @import url('../vendors/angular-material/angular-material.min.css');
+@import url('../vendors/md-color-picker/dist/mdColorPicker.min.css');
 /* @end Lib */
 /* @group Module */
 @import url('module/header-bar.css');

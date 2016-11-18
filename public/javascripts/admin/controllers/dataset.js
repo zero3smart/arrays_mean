@@ -1,5 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetCtrl', ['$scope',
-        function($scope) {
+    .controller('DatasetCtrl', ['$scope', '$location',
+        function($scope, $location) {
+
         }]
     );

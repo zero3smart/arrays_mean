@@ -64,7 +64,6 @@ module.exports = function (grunt) {
                     'urijs/src/URI.min.js',
                     'lodash/dist/**',
                     'moment/moment.js',
-                    'bootstrap-colorpicker/dist/**',
                     'angular/angular.js',
                     'angular-file-upload/dist/angular-file-upload.min.js',
                     'angular-animate/angular-animate.min.js',
@@ -77,7 +76,9 @@ module.exports = function (grunt) {
                     'angular-aria/angular-aria.min.js',
                     'angular-messages/angular-messages.min.js',
                     'form2js/src/*',
-                    'spectrum/spectrum.js'
+                    'spectrum/spectrum.js',
+                    'tinycolor/dist/tinycolor-min.js',
+                    'md-color-picker/dist/*'
                 ],
                 dest: 'public/vendors'
             }

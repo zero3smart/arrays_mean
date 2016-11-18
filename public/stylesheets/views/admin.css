@@ -4,9 +4,16 @@
 .dataset .md-toolbar-tools {
     background-color: var(--color-primary);
 }
+.dataset .md-content {
+    overflow: hidden;
+}
+.dataset a._md-nav-button {
+    font-size: 18px;
+}
 
-.dataset_item {
-    padding-right: 30px;
+.site-admin md-toast {
+    top: 64px;
+    z-index: 1000;
 }
 
 /* Dataset List */
@@ -14,10 +21,26 @@
     margin-left: 0;
     margin-right: 0;
 }
-/* Upload */
+
+/* Dataset Settings */
+
+.dataset .md-chips {
+    padding: 0;
+}
+
+.dataset md-input-container.md-color-picker {
+    margin-top: 0;
+}
+
+/* Dataset Upload */
 .dataset .upload input[type="text"].url {
     width: 100%;
 }
+
+.dataset_item {
+    padding-right: 30px;
+}
+
 
 form .removeDatasource {
     margin-top: 10px;
