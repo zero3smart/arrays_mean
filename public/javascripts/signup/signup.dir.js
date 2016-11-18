@@ -7,7 +7,6 @@
 			require: 'ngModel',
 			link: function(scope,elem,attr,model) {
 				model.$asyncValidators.emailAvailable = function(modelValue,viewValue) {
-
 					var value = modelValue|| viewValue;
 					var params = {email: value }
 					var deferred = $q.defer();
@@ -16,10 +15,17 @@
 						function(result) {
 							if (result.data.length == 0) {
 
-
 								deferred.resolve(true);
 							} else {
-								deferred.reject(result.data[0].provider);
+								if (!result.data[0]._team) {
+									scope.user = result.data[0];
+									deferred.resolve(true);
+
+								} else {
+									deferred.reject(false);
+								}
+
+								
 							}
 							
 						},function(){

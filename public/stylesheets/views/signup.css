@@ -1,7 +1,7 @@
 
 form.signup[name='emailForm'] {
 	margin:0px auto;
-	margin-top:200px;
+	margin-top:100px;
 
 }
 
@@ -9,10 +9,6 @@ form.signup label {
 	font-size:20px;
 }
 
-form.signup div {
-	padding-bottom:5px;
-
-}
 
 .red {
 	color:red;
@@ -26,7 +22,9 @@ nav#signupheader div {
 a.pointer {
 	cursor: pointer;
 }
-
+div.float-parent {
+	overflow: hidden;
+}
 #signupheader img {
 	width:100%;
 }
@@ -34,9 +32,11 @@ a.pointer {
 #signupheader h1 {
 	margin-left:20px;
 }
-div.sign-up-container {
-	margin-top:50px;
+
+div.reminder-message {
+	margin-top:80px;
 }
+
 .signupOr {
 	margin:50px;
 }

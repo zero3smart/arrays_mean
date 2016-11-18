@@ -65,6 +65,7 @@ module.exports = function (grunt) {
                     'lodash/dist/**',
                     'moment/moment.js',
                     'angular/angular.js',
+                    'angular-resource/angular-resource.min.js',
                     'angular-file-upload/dist/angular-file-upload.min.js',
                     'angular-animate/angular-animate.min.js',
                     'angular-cookies/angular-cookies.min.js',
