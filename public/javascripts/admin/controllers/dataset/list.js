@@ -13,8 +13,8 @@ angular.module('arraysApp')
                     .ok('Yes')
                     .cancel('No');
                 $mdDialog.show(confirm).then(function () {
-                    DatasetService.remove(id).then(function(message) {
-                        if (message === true) {
+                    DatasetService.remove(id).then(function(result) {
+                        if (result === true) {
                             $scope.datasets = $scope.datasets.filter(function(a) {
                                 return a._id !== id;
                             });
@@ -24,18 +24,11 @@ angular.module('arraysApp')
                                     .position('top right')
                                     .hideDelay(5000)
                             );
-                        } else if (typeof message === 'string') {
-                            $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent('<span class="error">' + message + '</span>')
-                                    .position('top right')
-                                    .hideDelay(5000)
-                            );
                         }
                     }, function(error) {
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent('<span class="error">' + error + '</span>')
+                                .textContent(error)
                                 .position('top right')
                                 .hideDelay(5000)
                         );

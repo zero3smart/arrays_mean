@@ -26,7 +26,7 @@
             var deferred = $q.defer();
             $http.post('api/dataset/remove', {id: id})
                 .success(function(data) {
-                    if (!data.error) {
+                    if (!data.error && data.success == 'ok') {
                         return deferred.resolve(true);
                     } else {
                         return deferred.reject(data.error);
@@ -60,7 +60,19 @@
         };
 
         var save = function(dataset) {
-
+            var deferred = $q.defer();
+            $http.post('api/dataset/update', dataset)
+                .success(function(data) {
+                    if (!data.error && data.success == 'ok') {
+                        return deferred.resolve(true);
+                    } else {
+                        return deferred.reject(data.error);
+                    }
+                })
+                .error(function(data) {
+                    return deferred.reject(data);
+                });
+            return deferred.promise;
         };
 
         return {

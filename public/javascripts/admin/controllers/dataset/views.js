@@ -3,6 +3,7 @@ angular.module('arraysApp')
         function($scope, dataset) {
 
             $scope.$parent.$parent.dataset = dataset;
-            $scope.$parent.$parent.currentNavItem = 'Views';
+            $scope.$parent.$parent.currentNavItem = 'Done';
+
         }
     ]);

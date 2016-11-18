@@ -9,5 +9,6 @@ angular
         'ngStorage',
         'ngAria',
         'ngCookies',
-        'mdColorPicker'
+        'mdColorPicker',
+        'angularFileUpload'
     ]);

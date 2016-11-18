@@ -42,14 +42,14 @@
             </md-input-container>
 
             <md-input-container class="md-block">
-                <md-checkbox ng-checked="dataset.fe_listed" ng-click="toggleListed()">Listed</md-checkbox>
+                <md-checkbox ng-model="dataset.fe_listed" ng-click="toggleListed()">Listed</md-checkbox>
             </md-input-container>
 
             <div class="panel-footer">
                 <md-button ui-sref="admin.dataset.list" class="md-raised pull-left" target="_self"><span
                         class="glyphicon glyphicon-hand-left"></span><span class="btn-label">Back</span></md-button>
 
-                <md-button class="md-raised pull-right" type="submit" ng-disabled="submitting"><span
+                <md-button class="md-raised pull-right" type="submit" ng-disabled="settingsForm.$invalid || !settingsForm.$dirty || submitting"><span
                         class="glyphicon glyphicon-hand-right"></span><span class="btn-label">Save</span></md-button>
             </div>
         </form>
