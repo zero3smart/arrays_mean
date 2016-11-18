@@ -50,7 +50,7 @@ angular.module('arraysApp')
             }
 
             $scope.add = function() {
-                $state.got('admin.dataset.settings');
+                $state.go('admin.dataset.settings');
             }
         }]
     );

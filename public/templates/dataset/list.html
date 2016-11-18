@@ -9,6 +9,7 @@
     <md-list-item ng-repeat="dataset in datasets" ng-click="select(dataset._id)" class="noright">
         <p>{{ $index+1 }}.  {{ dataset.title }} ({{ dataset.importRevision }})</p>
         <i class="md-secondary glyphicon glyphicon-trash" ng-click="remove(dataset._id)" aria-label="Delete"></i>
+        <md-divider ng-if="!$last"></md-divider>
     </md-list-item>
 </md-list>
 <!-- /dataset list -->

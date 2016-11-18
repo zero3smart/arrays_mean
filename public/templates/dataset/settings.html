@@ -1,6 +1,6 @@
 <div layout="column" ng-cloak>
     <md-content layout-padding>
-        <form name="settingsForm">
+        <form name="settingsForm" ng-submit="submitForm(settingsForm.$valid && settingsForm.$dirty)" novalidate>
             <md-input-container class="md-block">
                 <label>Title</label>
                 <input md-maxlength="30" required md-no-asterisk name="title" ng-model="dataset.title">
@@ -45,18 +45,13 @@
                 <md-checkbox ng-checked="dataset.fe_listed" ng-click="toggleListed()">Listed</md-checkbox>
             </md-input-container>
 
+            <div class="panel-footer">
+                <md-button ui-sref="admin.dataset.list" class="md-raised pull-left" target="_self"><span
+                        class="glyphicon glyphicon-hand-left"></span><span class="btn-label">Back</span></md-button>
+
+                <md-button class="md-raised pull-right" type="submit" ng-disabled="submitting"><span
+                        class="glyphicon glyphicon-hand-right"></span><span class="btn-label">Save</span></md-button>
+            </div>
         </form>
     </md-content>
-</div>
-
-<div>
-    <div class="panel-footer">
-        <a class="btn btn-default pull-left" ui-sref="admin.dataset.list"><span
-                class="glyphicon glyphicon-hand-left"></span> Back</a>
-        <button type="button" class="btn btn-default pull-right" ng-click="save"><span
-                class="glyphicon glyphicon-hand-right"></span> Save
-        </button>
-        <div class="clearfix"></div>
-    </div>
-
 </div>

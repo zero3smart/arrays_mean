@@ -16,6 +16,33 @@
     z-index: 1000;
 }
 
+.site-admin .glyphicon {
+    color: grey;
+}
+.site-admin .glyphicon.ready {
+    color: black;
+}
+
+.panel-footer:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.panel-footer .md-button {
+    font-size: 20px;
+}
+
+/* Dataset Breadcrumb */
+
+.site-admin .dataset .md-button {
+    min-width: 40px;
+}
+
+.btn-label {
+    margin-left: 10px;
+}
+
 /* Dataset List */
 .dataset .row {
     margin-left: 0;

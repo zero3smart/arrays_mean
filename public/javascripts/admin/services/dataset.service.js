@@ -40,7 +40,9 @@
 
         var get = function(id) {
             // New Dataset
-            if (!id) return true;
+            if (!id) return {
+                urls: []
+            };
 
             var deferred = $q.defer();
             $http.get('api/dataset/get/' + id)
@@ -57,10 +59,15 @@
             return deferred.promise;
         };
 
+        var save = function(dataset) {
+
+        };
+
         return {
             getAll: getAll,
             remove: remove,
             get: get,
+            save: save,
         }
     }
 })();
