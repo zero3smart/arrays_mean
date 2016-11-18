@@ -2,22 +2,37 @@ var express = require('express');
 var passport = require('passport');
 var router = express.Router();
 
-router.get('/signup', function (req, res) {
-    res.render('auth/signup', {
-        env: process.env
-    });
-})
-
-router.get('/signup/*', function (req, res) {
-    res.redirect('/auth/signup');
-})
 
 router.get('/google', passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile',
         'https://www.googleapis.com/auth/userinfo.email']
-}), function (req, res) {
+}));
 
-});
+
+router.get('/google/callback',function(req,res,next) {
+    passport.authenticate('google',{
+        scope: ['https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/userinfo.email']},
+        function(err,user,info) {
+
+    
+
+        if (err) {return next(err);}
+        if (!user) {return res.redirect('auth/login');}
+        else {
+
+            if (!user._team) {
+
+            } else {
+                console.log("ready to login")
+                req.logIn(user,function(err) {
+                    if (err) {return next(err);}
+                    return res.redirect(req.session.returnTo || '/admin');
+                })
+            }
+        }
+    })(req,res,next);
+})
 
 router.get('/login', function (req, res) {
     if (req.user) {
@@ -32,10 +47,6 @@ router.get('/login', function (req, res) {
 router.get('/logout', function (req, res) {
     req.logout();
     res.redirect('/');
-});
-
-router.get('/google/callback', passport.authenticate('google', {failureRedirect: '/auth/login'}), function(req, res) {
-    res.redirect(req.session.returnTo || '/admin');
 });
 
 router.get('/callback', passport.authenticate('auth0', {failureRedirect: '/'}), function (req, res) {

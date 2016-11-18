@@ -27,3 +27,18 @@ module.exports.search = function(req,res) {
 
 	})
 }
+
+
+module.exports.get = function(req,res) {
+	var id = req.params.id;
+	User.findById(id,function(err,user) {
+		if (err) {
+			res.send(err);
+		} else {
+			res.json(user);
+		}
+	})
+} 
+
+
+

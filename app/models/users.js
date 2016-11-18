@@ -1,4 +1,5 @@
 var mongoose = require( 'mongoose' );
+var Schema = mongoose.Schema;
 var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
 var findOrCreate = require('mongoose-findorcreate');
@@ -11,10 +12,16 @@ var userSchema = new mongoose.Schema({
     },
     firstName: String,
     lastName: String,
+    profileImageUrl: String,
     provider: String, 
     hash: String,
-    salt: String
+    salt: String,
+    _team: {type: Schema.Types.ObjectId, ref: 'Team'}
 });
+
+
+
+
 
 
 userSchema.plugin(findOrCreate);

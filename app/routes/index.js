@@ -72,6 +72,7 @@ var _mountRoutes_endPoints = function (app) {
     app.use('/login', function(req, res) {
         res.redirect('/auth/login');
     });
+    app.use('/signup',require('./signup'));
 
     app.use('/admin', require('./admin'));
     app.use('/api', require('./api'));
