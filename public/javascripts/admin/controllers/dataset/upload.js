@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'angularFileUpload',
-        function($scope, dataset, angularFileUpload) {
+    .controller('DatasetUploadCtrl', ['$scope', 'dataset',
+        function($scope, dataset) {
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Upload';
