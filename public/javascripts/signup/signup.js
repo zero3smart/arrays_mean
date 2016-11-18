@@ -1,41 +1,32 @@
 (function() {
 	angular.module('signupModule',['ui.router','ngMessages'])
-		.run(['$rootScope','$location','$window',function($rootScope, $location,$window) {
-			$rootScope.$on('$locationChangeSuccess',function() {
-				$rootScope.actualLocation = $location.path();
-			})
-			$rootScope.$watch(function() {return $location.path()},function(newLocation,oldLocation) {
-
-				if ($rootScope.actualLocation == newLocation && oldLocation=='/login') {
-					$window.location.href=newLocation;
-				}
-			})
-
-		}])
 		.config(function($stateProvider,$urlRouterProvider,$locationProvider) {
-			// $urlRouterProvider.otherwise('/');
+
+			$urlRouterProvider.otherwise('/signup/email');
+
 
 			$stateProvider
 				.state('signup', {
-					url: '/auth/signup',
+					abstract: true,
+					url: '/signup',
+					templateUrl: 'templates/signup.html'
+				})
+
+			$stateProvider
+				.state('signup.email', {
+					url: '/email',
 					templateUrl: 'templates/blocks/signup.email.html',
-					controller: 'signupCtrl'
+					controller: 'mainCtrl'
 
 				})
-				.state('personal_info', {
-					url: 'auth/signup/personalinfo',
-					params: {
-						user: null
-					},
+				.state('signup.personalinfo', {
+					url: '/personalinfo',
 					templateUrl: 'templates/blocks/signup.personalinfo.html',
 					controller: 'signupCtrl'
 				})
-				.state('team_info',{
-					url: 'auth/signup/teaminfo',
-					params : {
-						user: null
-					},
-					templateUrl: 'templates/blocks/signup.team.html',
+				.state('signup.teaminfo',{
+					url: '/teaminfo',
+					templateUrl: 'templates/blocks/signup.teaminfo.html',
 					controller: 'signupCtrl'
 				})
 

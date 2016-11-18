@@ -23,11 +23,15 @@ var googleStrategy = new GoogleStrategy({
 
 },function(accessToken,refreshToken,profile,done) {
     var findQuery = {email:profile.emails[0].value};
+
+
+
     var insertQuery = {
         email: profile.emails[0].value,
         provider: "google",
         firstName: profile.name.givenName,
-        lastName: profile.name.familyName
+        lastName: profile.name.familyName,
+        profileImageUrl: profile.photos[0].value
     }
     User.findOrCreate(findQuery,insertQuery,function(err,user,created) {
         return done(err,user);
@@ -37,7 +41,6 @@ var googleStrategy = new GoogleStrategy({
 passport.use(strategy);
 
 passport.use(googleStrategy)
-
 
 
 // This is not a best practice, but we want to keep things simple for now

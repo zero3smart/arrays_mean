@@ -58,11 +58,16 @@ var DatasourceDescription_scheme = Schema({
 
     _team: {type: Schema.Types.ObjectId, ref: 'Team'},
 
+    isPublic : {type: Boolean, default: false},
+
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
 
     imageScraping: Array,
 
-    fe_nestedObject: Object
+    fe_nestedObject: Object,
+    author: {type: Schema.Types.ObjectId,ref: 'User'},
+    updatedBy: {type: Schema.Types.ObjectId,ref:'User'},
+    viewers: [{type: Schema.Types.ObjectId, ref: 'User'}]
 });
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);

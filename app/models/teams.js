@@ -11,6 +11,10 @@ var team_scheme = Schema({
     description: String,
     logo: String,
     logoHeader: String,
+
+
+    admin: {type: Schema.Types.ObjectId, ref: 'User'},
+    editors: [{type: Schema.Types.ObjectId, ref:'User'}],
     datasourceDescriptions: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}]
 });
 

@@ -35,6 +35,7 @@ router.post('/dataset/update', /*ensureLoggedIn,*/ctrlDatasetList.update);
 // manage users
 
 router.post('/user/search',ctrlUsers.search);
+router.get('/user/:id',ctrlUsers.get);
 
 
 module.exports = router;
