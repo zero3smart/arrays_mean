@@ -38,7 +38,7 @@
 			if ($scope.user.provider !== 'local') {
 				$state.go('signup.teaminfo',{id:$scope.user._id});
 			} 
-
+			$scope.team = {};
 		});
 
 

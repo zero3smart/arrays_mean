@@ -1,57 +1,36 @@
 var Team = require('../../models/teams');
+var User = require('../../models/users');
 
-module.exports.index = function (req, next) {
-    var self = this;
+//expect: {userId: "String" ,teamTitle: "String" , tid: "String"}
+module.exports.create = function(req,res) {
+	var userId = req.body.userId;
+	User.findById(userId,function(err,foundUser) {
+		if (err) {
+			res.send(err);
+		} else if (!foundUser) {
+			res.status(404).send("User not found");
 
-    var data = {
-        env: process.env,
-
-        flash: req.flash('message'),
-
-        user: req.user
-    };
-
-    next(null, data);
-};
+		} else {
+			
+		}
+	})	
+}
 
 
 
 module.exports.search = function(req,res) {
-
-	consoel.log(req.query);
-
-
-	// User.find(req.body,function(err,foundUsers) {
-	// 	if (err) {
-	// 		res.send(err);
-	// 	} else {
-	// 		res.json(foundUsers);
-	// 	}
-
-	// })
-}
-
-
-module.exports.get = function(req,res) {
-	var id = req.params.id;
-	User.findById(id,function(err,user) {
+	Team.find(req.query,function(err,foundTeams) {
 		if (err) {
 			res.send(err);
 		} else {
-			res.json(user);
+			res.json(foundTeams);
 		}
-	})
-} 
 
-module.exports.create = function(req,res) {
-	Team.create(req.body,function(err,user) {
-		if (err) {
-			res.send(err);
-		} else {
-			res.json(user);
-		}
 	})
 }
+
+
+
 
 
 

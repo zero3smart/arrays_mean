@@ -17,19 +17,14 @@ module.exports.index = function (req, next) {
 
 
 module.exports.search = function(req,res) {
+	User.find(req.query,function(err,foundUsers) {
+		if (err) {
+			res.send(err);
+		} else {
+			res.json(foundUsers);
+		}
 
-	console.log("here")
-
-
-
-	// User.find(req.query,function(err,foundUsers) {
-	// 	if (err) {
-	// 		res.send(err);
-	// 	} else {
-	// 		res.json(foundUsers);
-	// 	}
-
-	// })
+	})
 }
 
 

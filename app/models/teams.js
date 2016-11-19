@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 //
 var team_scheme = Schema({
     title: String,
-    tid: String,
+    subdomain: String,
     description: String,
     logo: String,
     logoHeader: String,
@@ -32,18 +32,18 @@ team.GetTeams = function (fn) {
     })
 };
 
-team.GetTeamByTid = function (team_key, fn) {
-    team.findOne({tid: team_key})
+team.GetTeamBySubdomain = function (team_key, fn) {
+    team.findOne({subdomain: team_key})
         .exec(function (err, teamDesc) {
             fn(err, teamDesc);
         })
 };
 
-team.findOneByTidAndPopulateDatasourceDescription = function (team_key, fn) {
+team.findOneBySubdoaminAndPopulateDatasourceDescription = function (team_key, fn) {
 
     var obj = null;
 
-    team.findOne({tid: team_key})
+    team.findOne({subdomain: team_key})
         .populate('datasourceDescriptions', null, {fe_visible: true})
         .exec(function (err, teamDesc) {
             if (teamDesc) {

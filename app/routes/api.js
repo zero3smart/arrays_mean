@@ -15,6 +15,7 @@ var ctrlDatasetUpload = require('../controllers/api/dataset/upload');
 var ctrlDatasetData = require('../controllers/api/dataset/data');
 var ctrlWebsite = require('../controllers/api/website');
 var ctrlUsers = require('../controllers/api/users');
+var ctrlTeam = require('../controllers/api/team');
 
 // authentication
 router.post('/register', ctrlAuth.register);
@@ -37,6 +38,11 @@ router.get('/dataset/get/:id', /*ensureLoggedIn,*/ctrlDatasetList.get);
 router.get('/user/search',ctrlUsers.search);
 router.post('/user',ctrlUsers.create);
 router.get('/user/:id',ctrlUsers.get);
+
+
+//teams
+router.post('/team',ctrlTeam.create);
+router.get('/team/search',ctrlTeam.search);
 
 
 
