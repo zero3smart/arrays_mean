@@ -16,6 +16,7 @@ var ctrlAuth = require('../controllers/api/authentication');
 var ctrlAccount = require('../controllers/api/account');
 var ctrlDataset = require('../controllers/api/dataset');
 var ctrlUsers = require('../controllers/api/users');
+var ctrlTeam = require('../controllers/api/team');
 
 // authentication
 router.post('/register', ctrlAuth.register);
@@ -37,9 +38,16 @@ router.post('/dataset/upload', /*ensureLoggedIn,*/upload.array('file', 12), ctrl
 
 // manage users
 
-router.post('/user/search',ctrlUsers.search);
+
+router.get('/user/search',ctrlUsers.search);
 router.post('/user',ctrlUsers.create);
 router.get('/user/:id',ctrlUsers.get);
+
+
+//teams
+router.post('/team',ctrlTeam.create);
+router.get('/team/search',ctrlTeam.search);
+
 
 
 module.exports = router;

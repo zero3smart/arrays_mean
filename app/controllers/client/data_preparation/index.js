@@ -37,7 +37,7 @@ module.exports.BindData = function (req, callback) {
                 return cb(err, {});
 
             if (type === "team")
-                source_pKey = dataSourceDescription.tid;
+                source_pKey = dataSourceDescription.subdomain;
 
             var default_filterJSON = undefined;
             if (type == "array" && typeof dataSourceDescription.fe_filters !== 'undefined' &&

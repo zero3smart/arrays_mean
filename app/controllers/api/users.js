@@ -17,7 +17,7 @@ module.exports.index = function (req, next) {
 
 
 module.exports.search = function(req,res) {
-	User.find(req.body,function(err,foundUsers) {
+	User.find(req.query,function(err,foundUsers) {
 		if (err) {
 			res.send(err);
 		} else {

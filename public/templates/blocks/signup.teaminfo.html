@@ -1,32 +1,41 @@
 <h3>Your Team Infomation</h3>
 
-<form class="signup col-xs-12 col-sm-8 col-md-7">
+<form name="teamForm" class="signup col-xs-12 col-sm-8 col-md-7" ng-submit="createTeam()" novalidate>
 	
 		<div class="form-group">
 			<label>Team Title</label><small class="pull-right">You can change this later</small>
-	  	
-
 	  		<div class="input-group">
 			  <span class="input-group-addon"><i class="fa fa-group"></i></span>
-			  <input type="text" class="form-control">
+			  <input ng-model='team.title' ng-model-options="{updateOn:'blur'}" type="text" class="form-control">
 			</div>
 
-
 		</div>
+	<subdomain-suggestion team-title='team.title' subdomain='team.subdomain'></subdomain-suggestion>
 
+	
 
 		<div class="form-group">
 	 		<label>Your subdomain</label>
 
-	  		<div class="input-group">
+	  		<div class="input-group" ng-class="{ 'has-error': teamForm.subdomain.$touched && teamForm.subdomain.$invalid}">
 	  			
 				  <span class="input-group-addon"><i class="fa fa-mouse-pointer"></i></span>
-				  <input type="text" class="form-control">
+				  <input name="subdomain" ng-model-options="{updateOn:'blur'}"  ng-model="team.subdomain" unique-subdomain
+				  type="text" class="form-control" required>
 				  <span class="input-group-addon">.arrays.co</span>
 			</div>
+
+			 <div class="help-block red" ng-messages="teamForm.subdomain.$error" ng-if="teamForm.subdomain.$touched">
+			    <p ng-message="required">A subdomain is required.</p>
+			    <p ng-message="subdomainAvailable">This subdomain is already taken.</p>
+			</div>
+
+
+
 		</div>
 
 		<div>
-			<button type="button" class="btn btn-success pull-right" P>Register</button>
+			<button type="submit" class="btn btn-success pull-right"
+			ng-disabled="teamForm.$invalid">Register</button>
 		</div>
 </form>
