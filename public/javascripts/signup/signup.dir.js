@@ -15,12 +15,16 @@
 							if (data.length == 0) {
 								deferred.resolve(true);
 							} else {
-								if (!data[0]._team) {
+
+								if (data[0].activated) {
+									deferred.reject(false);
+
+								} else {
 									scope.user = data[0];
 									deferred.resolve(true);
-								} else {
-									deferred.reject(false);
 								}
+
+
 							}
 							
 						},function() {

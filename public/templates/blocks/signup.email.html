@@ -23,13 +23,13 @@
 
 	<div ng-if="user._team" class="alert alert-warning reminder-message">
 
-		<strong><i class="fa fa-exclamation"></i></strong> 
-
 		<div ng-if="!user.activated && user._team">
-			 It looks like that you have already registered but have not activated your account. You could always <a href="#" class="alert-link pointer"> resend the activation email</a>.
+			<strong><i class="fa fa-exclamation"></i></strong> 
+			 You have registered but have not yet activated the account. You could always <a ng-click="sendActivationEmail()" class="alert-link pointer"> resend the activation email</a>.
 		</div>
 
 		<div ng-if="user.activated && user._team">
+			<strong><i class="fa fa-exclamation"></i></strong> 
 			 You already have an account with us. Please <a href="#" class="alert-link pointer"> sign in here</a>.
 		</div>
 

@@ -1,9 +1,11 @@
 var User = require('../../models/users');
 var Team = require('../../models/teams');
 var nodemailer = require('nodemailer');
+var jwt = require('jsonwebtoken');
+var jwtSecret = process.env.JWT_SECRET
 
 
-var transporter = nodemailer.createTransport();
+
 
 module.exports.index = function (req, next) {
     var self = this;
@@ -55,17 +57,35 @@ module.exports.create = function(req,res) {
 }
 
 
-function _sendActivationEmail(user,cb) {
+function _sendActivationEmail(user,callback) {
+	var token = jwt.sign({
+		_id: user._id,
+		email: user.email,
+		exp: 1440
+	},jwtSecret);
+	var host = process.env.HOST || 'localhost';
+	var port = process.env.PORT || 9080;
+	var url = "http://" + host + ":" + port + '/verify?token='+token;
 	var mailOptions = {
-		from : '<>',
+		from : 'nsh1026@uw.edu',
 		to: user.email,
 		subject: 'Welcome To Arrays!',
-		text: 'Thank you for signing up! Your account has been created, please create the link below to activate your account';
-		
+		text: 'Thank you for signing up! Your account has been created, please create the link below to activate your account:'+url
 	}
+	console.log("here");
 
-
+	transporter.sendMail(mailOptions,function(err,info) {
+		if (err) {
+			console.log(err);
+			callback(err);
+		} else {
+			console.log(info);
+			callback(null);
+		}
+	})
 }
+
+
 
 
 function _sendInvitationEmail(admin,invited,cb) {
@@ -94,6 +114,7 @@ module.exports.update = function(req,res) {
 						user.save(function(err,savedUser) {
 							if (err) {res.send(err);}
 							else {
+								console.log("ready to send email");
 								_sendActivationEmail(savedUser,function(err) {
 									if (err) {
 										res.status(500).send('Cannot send activation email');

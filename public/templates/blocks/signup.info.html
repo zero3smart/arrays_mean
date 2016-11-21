@@ -99,13 +99,14 @@
 	  			
 				  <span class="input-group-addon"><i class="fa fa-mouse-pointer"></i></span>
 				  <input name="subdomain" ng-model-options="{updateOn:'blur'}"  ng-model="user._team.subdomain" unique-subdomain
-				  type="text" class="form-control" required>
+				  type="text" class="form-control" ng-pattern="/^[a-z0-9]*$/" required>
 				  <span class="input-group-addon">.arrays.co</span>
 			</div>
 
 			 <div class="help-block" ng-messages="infoForm.subdomain.$error" ng-if="infoForm.subdomain.$touched">
 			    <p ng-message="required">A subdomain is required.</p>
 			    <p ng-message="subdomainAvailable">This subdomain is already taken.</p>
+			    <p ng-message="pattern">Must be lowercase and contains no whitespace or special character.</p>
 			</div>
 		</div>
 
