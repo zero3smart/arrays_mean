@@ -60,7 +60,7 @@ function _sendActivationEmail(user,cb) {
 		from : '<>',
 		to: user.email,
 		subject: 'Welcome To Arrays!',
-		text: 'Thank you for signing up! Your account has been created, please create the link below to activate your account';
+		text: 'Thank you for signing up! Your account has been created, please create the link below to activate your account'
 		
 	}
 
