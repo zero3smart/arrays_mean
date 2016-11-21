@@ -38,6 +38,15 @@
     box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);
     border-radius: 4px;
 }
+
+.dataset .ext-content {
+    padding: 8px 0;
+}
+
+.dataset .layout-padding, .dataset .layout-padding > * {
+    padding: 8px 0;
+}
+
 /* Dataset Breadcrumb */
 
 .site-admin .dataset .md-button {
@@ -63,103 +72,23 @@
     margin-top: 0;
 }
 
+.dataset [md-color-picker] .md-color-picker-input-container .md-color-picker-clear {
+    right: -8px;
+}
+
 /* Dataset Upload */
-.dataset td.no-padding-vertical {
+.dataset table.upload td {
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.dataset table.upload td.no-padding-vertical {
     padding-top: 0;
     padding-bottom: 0;
 }
 
-form .removeDatasource {
-    margin-top: 10px;
-    cursor: pointer;
-    display: inline-block;
-}
-
-/* Format data */
-.format-data tr.field,
-a.add,
-.format-data tr.custom-field,
-.format-views tr.views {
-    cursor: pointer;
-}
-
-.word-break {
-    word-break: break-word;
-}
-
-th#view_visibility {
-    width: 30%;
-}
-
-.format-data .custom-field-seperator td {
-    text-align: center;
-    font-weight: bold;
-    font-size: 23px;
-}
-
-/* Format field */
-form.format-field .form-group label {
-    padding-left: 0;
-    padding-right: 0;
-    border: none;
-    -webkit-box-shadow: none;
-}
-
-form.format-field .form-group {
-    margin: 10px 0;
-}
-
-form.format-field .form-group:after {
-    content: '';
-    clear: both;
-    display: block;
-}
-
-form.format-field .form-group input[type='checkbox'] {
-    margin-top: 10px;
-}
-
-form .removeRow {
-    display: inline-block;
-    cursor: pointer;
-    margin-top: 5px;
-}
-
-form.format-field a#add_oneToOneOverrideWithValuesByTitle,
-form.format-field a#add_valueToExcludeByOriginalKey,
-form.format-field a#add_filterKeyword,
-form.format-field a#add_nested_valueOverride {
-    margin-top: 5px;
-    display: inline-block;
-}
-
-form.format-field #extra_oneToOneOverrideWithValuesByTitle .form-group {
-    text-align: right;
-}
-
-form.format-field #extra_oneToOneOverrideWithValuesByTitle label {
-    font-weight: normal;
-    margin-top: 4px;
-    margin-right: 10px;
-}
-
-form.format-field #extra_oneToOneOverrideWithValuesByTitle .form-control {
-    display: inline-block;
-    width: 135px;
-}
-
-form.format-field .more-settings {
-    display: none;
-}
-
-form.format-field #extra_valuesToExcludeByOriginalKey,
-form.format-field #extra_keywords,
-form.format-field #extra_filterFabricated {
-    padding-left: 10px;
-}
-
-label#showDefault_view {
-    font-size: 20px;
+.dataset table.upload td.progress-container {
+    padding-top: 23px;
 }
 
 /* -----------   for toggle slider  ----------------  */

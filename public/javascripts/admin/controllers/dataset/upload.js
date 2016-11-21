@@ -1,14 +1,16 @@
 angular.module('arraysApp')
-    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'FileUploader', '$mdToast', '$state',
-        function($scope, dataset, FileUploader, $mdToast, $state) {
+    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'sources', 'FileUploader', '$mdToast', '$state',
+        function($scope, dataset, sources, FileUploader, $mdToast, $state) {
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Upload';
             $scope.progressMode = "determinate";
+            $scope.sources = sources;
 
             $scope.uploader = new FileUploader({
                 url: '/api/dataset/upload',
-                formData: [{id: dataset._id}]
+                formData: [{id: dataset._id}],
+                queueLimit: 1 // Limited for each dataset
             });
 
             // CALLBACKS
@@ -49,7 +51,12 @@ angular.module('arraysApp')
             };
             $scope.uploader.onCompleteItem = function(fileItem, response, status, headers) {
                 console.info('onCompleteItem', fileItem, response, status, headers);
-                if (!response.error) {
+
+                $scope.progressMode = "determinate";
+
+                if (status != 200 || response == '') return;
+
+                if (!response.error && response.id) {
                     $mdToast.show(
                         $mdToast.simple()
                             .textContent('Dataset uploaded successfully!')
@@ -57,7 +64,7 @@ angular.module('arraysApp')
                             .hideDelay(3000)
                     );
 
-                    $state.go('admin.dataset.data', {id: dataset._id});
+                    $state.go('admin.dataset.data', {id: response.id});
                 } else {
                     // Error
                     $mdToast.show(
@@ -66,6 +73,8 @@ angular.module('arraysApp')
                             .position('top right')
                             .hideDelay(3000)
                     );
+
+                    $scope.uploader.cancelAll();
                 }
             };
             $scope.uploader.onCompleteAll = function() {

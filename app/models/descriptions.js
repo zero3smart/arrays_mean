@@ -108,7 +108,9 @@ var _consolidate_descriptions_hasSchema = function(description) {
         }
     }
     return desc;
-}
+};
+
+datasource_description.Consolidate_descriptions_hasSchema = _consolidate_descriptions_hasSchema;
 
 var _checkCollection = function(datasource_description,schemaKey,eachCb) {
     if (schemaKey != null) {

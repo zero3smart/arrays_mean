@@ -9,7 +9,7 @@
         <span class="glyphicon glyphicon-edit" ng-class="{'ready':dataset.raw_rowObjects_coercionScheme}"></span><span class="hidden-xs btn-label">3. Format Data</span>
     </md-nav-item>
     <md-nav-item md-nav-href="/admin/dataset/views/{{dataset._id}}" name="Views" aria-disabled="true">
-        <span class="glyphicon glyphicon-equalizer" ng-class="{'ready':dataset.raw_rowObjects_coercionScheme }"></span><span class="hidden-xs btn-label">4. Format Views</span>
+        <span class="glyphicon glyphicon-equalizer" ng-class="{'ready':dataset.fe_views.views }"></span><span class="hidden-xs btn-label">4. Format Views</span>
     </md-nav-item>
     <md-nav-item md-nav-href="/admin/dataset/done/{{dataset._id}}" name="Done" aria-disabled="true">
         <span class="glyphicon" ng-class="dataset.fe_views.views ? 'glyphicon-check ready' : 'glyphicon-unchecked'"></span><span class="hidden-xs btn-label">5. Done!</span>

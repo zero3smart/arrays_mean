@@ -1,6 +1,15 @@
 <div layout-padding>
-    <md-content ng-if="dataset.raw_rowObjects_coercionScheme">
-
-    </md-content>
-    <ng-include src="'/templates/blocks/dataset.empty.html'" ng-if="!dataset.raw_rowObjects_coercionScheme"></ng-include>
+    <form name="dataForm">
+        <md-content ng-if="dataset.uid">
+            <div class="panel-footer">
+                <md-button class="md-raised pull-right" ng-click="save()" ng-disabled="!dataForm.$invalid">
+                    <i class="glyphicon glyphicon-ok"></i> Save
+                </md-button>
+                <md-button class="md-raised pull-right" ng-click="reset()" ng-disabled="!dataForm.$invalid">
+                    <i class="glyphicon glyphicon-refresh"></i> Reset
+                </md-button>
+            </div>
+        </md-content>
+    </form>
+    <ng-include src="'/templates/blocks/dataset.empty.html'" ng-if="!dataset.uid"></ng-include>
 </div>

@@ -12,8 +12,6 @@ var datasource_file_service = require('../../libs/utils/aws-datasource-files-hos
 var imported_data_preparation = require('../../libs/datasources/imported_data_preparation')
 
 module.exports.getAll = function (req, res) {
-    res.setHeader('Content-Type', 'application/json');
-
     datasource_description.find({schema_id: {$exists: false}}, {
         _id: 1,
         title: 1,
@@ -22,19 +20,17 @@ module.exports.getAll = function (req, res) {
         if (err) {
             winston.error("❌  Error getting all datasets: " + err.message);
 
-            return res.send(JSON.stringify({
+            return res.json({
                 error: err.message
-            }))
+            })
         }
-        return res.send(JSON.stringify({datasets: datasets}));
+        return res.json({datasets: datasets});
     });
 };
 
 module.exports.remove = function (req, res) {
-    res.setHeader('Content-Type', 'application/json');
-
     if (!req.body.id)
-        return res.send(JSON.stringify({error: 'No ID given'}));
+        return res.json({error: 'No ID given'});
 
     var batch = new Batch();
     batch.concurrency(1);
@@ -123,47 +119,66 @@ module.exports.remove = function (req, res) {
     batch.end(function (err) {
         if (err) {
             winston.error("❌  Error encountered during raw objects remove : ", err);
-            return res.send(JSON.stringify({error: err.message}));
+            return res.json({error: err.message});
         }
         winston.info("✅  Removed dataset : " + description.title);
-        res.send(JSON.stringify({success: 'ok'}));
+        res.json({success: 'ok'});
     });
 }
 
 module.exports.get = function (req, res) {
-    res.setHeader('Content-Type', 'application/json');
-
     if (!req.params.id)
-        return res.send(JSON.stringify({error: 'No ID given'}));
+        return res.json({error: 'No ID given'});
 
-    req.session.uploadData_columnNames = null;
-    req.session.uploadData_firstRecord = null;
+    if (req.session.datasource) {
+        delete req.session.datasource[req.params.id];
+    }
 
-    datasource_description.findById(req.params.id, function (err, doc) {
-        if (err) return res.send(JSON.stringify({error: err.message}));
-        if (!doc) return res.send(JSON.stringify({error: 'Invalid ID'}));
+    datasource_description.findById(req.params.id)
+        .lean()
+        .deepPopulate('_otherSources schema_id _team _otherSources._team')
+        .exec(function (err, description) {
 
-        return res.send(JSON.stringify({dataset: doc._doc}));
-    });
+            if (err) return res.json({error: err.message});
+            if (!description) return res.json({error: 'Invalid ID'});
+
+            return res.json({dataset: description});
+        });
 };
 
-module.exports.update = function (req, res) {
-    res.setHeader('Content-Type', 'application/json');
+module.exports.getSourcesWithSchemaID = function(req, res) {
+    if (!req.params.id)
+        return res.json({error: 'No SchemaID given'});
 
+    datasource_description.find({schema_id: req.params.id})
+        .lean()
+        .deepPopulate('_otherSources schema_id _team _otherSources._team')
+        .exec(function (err, sources) {
+            if (err) return res.json({error: "Error getting the sources with schema id : " + req.params.id});
+
+            return res.json({
+                sources: sources.map(function (source) {
+                    return datasource_description.Consolidate_descriptions_hasSchema(source);
+                })
+            });
+        });
+}
+
+module.exports.update = function (req, res) {
     if (!req.body._id) {
 
         // Creating of New Dataset
         datasource_description.create(req.body, function (err, doc) {
-            if (err) return res.send(JSON.stringify({error: err.message}));
-            return res.send(JSON.stringify({id: doc.id}));
+            if (err) return res.json({error: err.message});
+            return res.json({id: doc.id});
         });
 
     } else {
 
         // Update of Existing Dataset
         datasource_description.findById(req.body._id, function (err, doc) {
-            if (err) return res.send(JSON.stringify({error: err.message}));
-            if (!doc) return res.send(JSON.stringify({error: 'Invalid Operation'}));
+            if (err) return res.json({error: err.message});
+            if (!doc) return res.json({error: 'Invalid Operation'});
 
             _.forOwn(req.body, function (value, key) {
                 if (key != '_id' && !_.isEqual(value, doc._doc[key])) {
@@ -178,10 +193,10 @@ module.exports.update = function (req, res) {
             });
 
             doc.save(function (err, updatedDoc) {
-                if (err) return res.send(JSON.stringify({error: err.message}));
-                if (!updatedDoc) return res.send(JSON.stringify({error: 'Invalid Operation'}));
+                if (err) return res.json({error: err.message});
+                if (!updatedDoc) return res.json({error: 'Invalid Operation'});
 
-                return res.send(JSON.stringify({id: updatedDoc.id}));
+                return res.json({id: updatedDoc.id});
             });
         });
 
@@ -243,20 +258,12 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 }
 
 module.exports.upload = function (req, res) {
-    res.setHeader('Content-Type', 'application/json');
-
     if (!req.body.id)
-        return res.send(JSON.stringify({error: 'No ID given'}));
+        return res.json({error: 'No ID given'});
 
     var batch = new Batch;
     batch.concurrency(1);
     var description;
-
-    // every 15 seconds or so as sort of a keep-alive that keeps the browser happy and keeps it from timing out.
-    var browserHappyTimeout, browserHappy = function() {
-        browserHappyTimeout = setTimeout(browserHappy, 15000);
-        res.write(" ");
-    };
 
     batch.push(function (done) {
         datasource_description.findById(req.body.id)
@@ -280,7 +287,7 @@ module.exports.upload = function (req, res) {
             }
 
             // Verify that the file is readable & in the valid format.
-            _readDatasourceColumnsAndSampleRecords(description, fs.createReadStream(file.path), function(err, datasource) {
+            _readDatasourceColumnsAndSampleRecords(description, fs.createReadStream(file.path), function (err, datasource) {
                 if (err) {
                     winston.error("❌  Error validating datasource : " + description.title + " : error " + err.message);
                     return done(err);
@@ -294,7 +301,7 @@ module.exports.upload = function (req, res) {
                 // Upload datasource to AWS S3
                 if (!description.uid) description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
                 var newFileName = datasource_file_service.fileNameToUpload(description);
-                datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, function(err) {
+                datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, function (err) {
                     if (err) {
                         winston.error("❌  Error during uploading the dataset into AWS : " + description.title + " (" + err.message + ")");
                     }
@@ -304,7 +311,7 @@ module.exports.upload = function (req, res) {
         });
 
         batch.push(function (done) {
-            winston.info("✅  Uploaded datasource : " + description.title + ", "+ description.uid);
+            winston.info("✅  Uploaded datasource : " + description.title + ", " + description.uid);
 
             description.save(function (err, updatedDescription) {
                 if (err) {
@@ -318,10 +325,16 @@ module.exports.upload = function (req, res) {
 
     batch.end(function (err) {
         if (err) {
-            clearTimeout(browserHappyTimeout);
-            return res.send(JSON.stringify({error: err.message}));
+            return res.json({error: err.message});
         }
 
-        return res.send(JSON.stringify({id: description.id}));
+        return res.json({id: description.id});
     });
+}
+
+module.exports.download = function (req, res) {
+    if (!req.params.id)
+        return res.json({error: 'No ID given'});
+
+
 }
