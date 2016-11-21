@@ -8,14 +8,7 @@
         <md-content class="dataset">
             <ng-include src="'templates/blocks/dataset.breadcrumb.html'" ng-if="$state.is('admin.dataset.list') == false"></ng-include>
 
-            <div class="ext-content">
-                <!-- message -->
-                <div ng-show="message" class="alert alert-success" role="alert">{{ message }}</div>
-                <div ng-show="error" class="alert alert-danger" role="alert">{{ error }}</div>
-                <!-- /message -->
-
-                <div ui-view></div>
-            </div>
+            <div ui-view class="ext-content"></div>
         </md-content>
 
     </div>

@@ -3,8 +3,21 @@ var Team = require('../../models/teams');
 var nodemailer = require('nodemailer');
 var jwt = require('jsonwebtoken');
 var jwtSecret = process.env.JWT_SECRET
+var xoauth2 = require('xoauth2');
 
 
+var transporter = nodemailer.createTransport({
+	service: "Gmail",
+	auth: {
+		xoauth2: xoauth2.createXOAuth2Generator({
+			user: 'susanna@schemadesign.com',
+			clientId: process.env.GOOGLE_CLIENT_ID
+			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+			refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+			accessToken: process.env.GOOGLE_ACCESS_TOKEN
+		})
+	}
+});
 
 
 module.exports.index = function (req, next) {
@@ -67,10 +80,10 @@ function _sendActivationEmail(user,callback) {
 	var port = process.env.PORT || 9080;
 	var url = "http://" + host + ":" + port + '/verify?token='+token;
 	var mailOptions = {
-		from : 'nsh1026@uw.edu',
+		from : 'info@arrays.co',
 		to: user.email,
 		subject: 'Welcome To Arrays!',
-		text: 'Thank you for signing up! Your account has been created, please create the link below to activate your account:'+url
+		text: 'Thank you for signing up! Your account has been created, please create the link below to activate your account:'+url	
 	}
 	console.log("here");
 

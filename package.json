@@ -55,7 +55,8 @@
     "serve-favicon": "^2.3.0",
     "sharp": "^0.16.2",
     "winston": "^2.2.0",
-    "x-ray": "^2.2.0"
+    "x-ray": "^2.2.0",
+    "xoauth2": "^1.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.6",

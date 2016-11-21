@@ -1,14 +1,11 @@
 angular.module('arraysApp')
-    .controller('DatasetListCtrl', ['$scope', '$mdDialog', '$state', 'DatasetService', 'datasets',
-        function ($scope, $mdDialog, $state, DatasetService, datasets) {
+    .controller('DatasetListCtrl', ['$scope', '$mdDialog', '$state', '$mdToast', 'DatasetService', 'datasets',
+        function ($scope, $mdDialog, $state, $mdToast, DatasetService, datasets) {
 
             $scope.$parent.$parent.dataset = {};
             $scope.datasets = datasets;
 
             $scope.remove = function (id) {
-                $scope.$parent.$parent.error = null;
-                $scope.$parent.$parent.message = null;
-
                 var confirm = $mdDialog.confirm()
                     .title('Are you sure to delete the dataset?')
                     .textContent('Dataset will be deleted permanently.')
@@ -16,17 +13,25 @@ angular.module('arraysApp')
                     .ok('Yes')
                     .cancel('No');
                 $mdDialog.show(confirm).then(function () {
-                    DatasetService.remove(id).then(function(message) {
-                        if (message === true) {
+                    DatasetService.remove(id).then(function(result) {
+                        if (result === true) {
                             $scope.datasets = $scope.datasets.filter(function(a) {
                                 return a._id !== id;
                             });
-                            $scope.$parent.$parent.error = 'Dataset deleted successfully!';
-                        } else if (typeof message === 'string') {
-                            $scope.$parent.$parent.error = message;
+                            $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent('Dataset deleted successfully!')
+                                    .position('top right')
+                                    .hideDelay(5000)
+                            );
                         }
                     }, function(error) {
-                        $scope.$parent.$parent.error = message;
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent(error)
+                                .position('top right')
+                                .hideDelay(5000)
+                        );
                     });
                 }, function () {
                     console.log('You decided to keep your dataset.');
@@ -35,6 +40,10 @@ angular.module('arraysApp')
 
             $scope.select = function (id) {
                 $state.go('admin.dataset.settings', {id: id});
+            }
+
+            $scope.add = function() {
+                $state.go('admin.dataset.settings');
             }
         }]
     );

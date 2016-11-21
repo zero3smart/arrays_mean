@@ -57,14 +57,13 @@ module.exports = function (grunt) {
                 expand: true,
                 cwd: 'bower_components',
                 src: [
-                    'jQuery/dist/jquery.min.js',
+                    'jquery/dist/jquery.min.js',
                     'd3/d3.js',
                     'sharrre/jquery.sharrre.js',
                     'scrollmagic/scrollmagic/minified/ScrollMagic.min.js',
                     'urijs/src/URI.min.js',
                     'lodash/dist/**',
                     'moment/moment.js',
-                    'bootstrap-colorpicker/dist/**',
                     'angular/angular.js',
                     'angular-resource/angular-resource.min.js',
                     'angular-file-upload/dist/angular-file-upload.min.js',
@@ -78,7 +77,9 @@ module.exports = function (grunt) {
                     'angular-aria/angular-aria.min.js',
                     'angular-messages/angular-messages.min.js',
                     'form2js/src/*',
-                    'spectrum/spectrum.js'
+                    'spectrum/spectrum.js',
+                    'tinycolor/dist/tinycolor-min.js',
+                    'md-color-picker/dist/*'
                 ],
                 dest: 'public/vendors'
             }

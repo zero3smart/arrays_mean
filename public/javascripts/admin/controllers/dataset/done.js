@@ -1,5 +1,5 @@
 angular.module('arraysApp')
-    .controller('DatasetViewsCtrl', ['$scope', 'dataset',
+    .controller('DatasetDoneCtrl', ['$scope', 'dataset',
         function($scope, dataset) {
 
             $scope.$parent.$parent.dataset = dataset;

@@ -61,18 +61,45 @@ angular.module('arraysApp')
                     .state('admin.dataset.upload', {
                         url: '/upload/:id',
                         templateUrl: 'templates/dataset/upload.html',
+                        controller: 'DatasetUploadCtrl',
+                        resolve: {
+                            dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
+                                return DatasetService.get($stateParams.id);
+                            }],
+                            sources: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
+                                return DatasetService.getSources($stateParams.id);
+                            }]
+                        }
                     })
                     .state('admin.dataset.data', {
                         url: '/data/:id',
                         templateUrl: 'templates/dataset/data.html',
+                        controller: 'DatasetDataCtrl',
+                        resolve: {
+                            dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
+                                return DatasetService.get($stateParams.id);
+                            }]
+                        }
                     })
                     .state('admin.dataset.views', {
                         url: '/views/:id',
                         templateUrl: 'templates/dataset/views.html',
+                        controller: 'DatasetViewsCtrl',
+                        resolve: {
+                            dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
+                                return DatasetService.get($stateParams.id);
+                            }]
+                        }
                     })
                     .state('admin.dataset.done', {
                         url: '/done/:id',
-                        templateUrl: 'templates/dataset/done.html'
+                        templateUrl: 'templates/dataset/done.html',
+                        controller: 'DatasetDoneCtrl',
+                        resolve: {
+                            dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
+                                return DatasetService.get($stateParams.id);
+                            }]
+                        }
                     })
                     .state('admin.website', {
                         url: '/website',
