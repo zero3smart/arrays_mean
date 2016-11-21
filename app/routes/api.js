@@ -44,10 +44,10 @@ router.get('/dataset/download/:id', /*ensureLoggedIn,*/ctrlDataset.download);
 router.get('/user/search',ctrlUsers.search);
 router.post('/user',ctrlUsers.create);
 router.get('/user/:id',ctrlUsers.get);
+router.put('/user/:id',ctrlUsers.update);
 
 
 //teams
-router.post('/team',ctrlTeam.create);
 router.get('/team/search',ctrlTeam.search);
 
 

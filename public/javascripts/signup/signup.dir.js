@@ -34,6 +34,32 @@
 
 	}])
 
+	signupModule.directive('passwordChecker',function() {
+		return {
+			restrict: 'A',
+			require: 'ngModel',
+			scope: {
+				matchTarget: '='
+
+			},
+			link : function(scope,elem,attr,model) {
+				var validator = function(value) {
+					model.$setValidity('match', value === scope.matchTarget);
+					return value;
+				}
+				model.$parsers.unshift(validator);
+				model.$formatters.push(validator);
+
+				scope.$watch('matchTarget',function() {
+					validator(model.$viewValue);
+				})
+			}
+		}
+
+	})
+
+
+
 	signupModule.directive('uniqueSubdomain',['$q','Team',function($q,Team) 
 	{
 		return {
@@ -96,10 +122,24 @@
 								}
 							}
 						}
-						scope.subdomainSuggestion = suggestedSubdomain
+
+
+						var params = {subdomain: suggestedSubdomain};
+						Team.search(params)
+							.$promise.then(function(data) {
+								if (data.length == 0) {
+									scope.subdomainSuggestion = suggestedSubdomain
+								}
+							})
+
 					}
 				
 				})
+			},
+			controller: function($scope) {
+				$scope.setSubdomain = function() {
+					$scope.subdomain = $scope.subdomainSuggestion;
+				}
 			}
 		}
 
