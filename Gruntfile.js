@@ -57,7 +57,7 @@ module.exports = function (grunt) {
                 expand: true,
                 cwd: 'bower_components',
                 src: [
-                    'jQuery/dist/jquery.min.js',
+                    'jquery/dist/jquery.min.js',
                     'd3/d3.js',
                     'sharrre/jquery.sharrre.js',
                     'scrollmagic/scrollmagic/minified/ScrollMagic.min.js',

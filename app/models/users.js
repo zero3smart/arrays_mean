@@ -21,7 +21,7 @@ var userSchema = new mongoose.Schema({
         default: false
     },
     _team: {type: Schema.Types.ObjectId, ref: 'Team'}
-});
+},{timestamps:true});
 
 userSchema.plugin(findOrCreate);
 

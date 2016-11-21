@@ -1,9 +1,21 @@
 var User = require('../../models/users');
 var Team = require('../../models/teams');
 var nodemailer = require('nodemailer');
+var xoauth2 = require('xoauth2');
 
 
-var transporter = nodemailer.createTransport();
+var transporter = nodemailer.createTransport({
+	service: "Gmail",
+	auth: {
+		xoauth2: xoauth2.createXOAuth2Generator({
+			user: 'susanna@schemadesign.com',
+			clientId: process.env.GOOGLE_CLIENT_ID
+			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+			refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+			accessToken: process.env.GOOGLE_ACCESS_TOKEN
+		})
+	}
+});
 
 module.exports.index = function (req, next) {
     var self = this;
