@@ -2,7 +2,8 @@
 	var signupModule = angular.module('signupModule');
 	signupModule.factory('User',function($resource) {
 
-		return $resource('/api/user/:id',{id:'@_id'},{search:{'url':'/api/user/search', method:'GET',isArray:true}});
+		return $resource('/api/user/:id',{id:'@_id'},{search:{'url':'/api/user/search', method:'GET',isArray:true},
+			update:{method:'PUT'}});
 	})
 
 

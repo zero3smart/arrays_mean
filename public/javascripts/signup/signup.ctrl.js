@@ -5,27 +5,23 @@
 
 	signupModule.controller('mainCtrl',['$scope','User','$state', function($scope,User,$state){
 		$scope.user = {};
-		$scope.success = false;
-		$scope.resend = false;
+
 
 		$scope.createUser = function() {
 			if (!$scope.user.provider) {
 				$scope.user.provider = 'local';
 			}
-			if ($scope.user._id) { //
-				if ($scope.user.provider == 'local') { 
-					$scope.resend = true;
-				} else {
-					$state.go('signup.teaminfo',{id: $scope.user._id});
-				}
+
+			if ($scope.user._id && !$scope.user._team) {
+				$state.go('signup.info',{id: $scope.user._id});
+				
 			} else {
 				var user = new User($scope.user);
 				user.$save(function(user) {
-					$scope.success = true;
+					$state.go('signup.info',{id:user._id});
 				});
-			}
-			
 
+			}
 		}
 
 	}])
@@ -33,17 +29,23 @@
 	signupModule.controller('signupCtrl',['$scope','$stateParams','User','$state',function($scope,$stateParams,User,$state) {
 
 		var userId = $stateParams.id;
-		
+		$scope.showPasswordToolTip = false;
 		$scope.user = User.get({id:userId},function() {
-			if ($scope.user.provider !== 'local') {
-				$state.go('signup.teaminfo',{id:$scope.user._id});
-			} 
-			$scope.team = {};
+			if (!$scope.user._team){
+				$scope.user._team = {};
+			}
 		});
 
 
-		$scope.createTeam = function() {
-			
+		$scope.registerUser = function() {
+			User.update({id:$scope.user._id},$scope.user)
+			.$promise
+			.then(function() {
+
+			})
+
+
+
 		}
 
 		

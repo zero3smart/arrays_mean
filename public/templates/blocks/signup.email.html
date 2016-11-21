@@ -1,16 +1,16 @@
 <form name="emailForm" class="signup col-xs-12 col-sm-8 col-md-7" ng-submit='createUser()' novalidate>
 	
-		<div class="form-group">
+		<div class="form-group" ng-class="{ 'has-error': emailForm.email.$touched && emailForm.email.$invalid}">
 			<p class="text-center signuptext">What is your email address?</p>
 
-	  		<div class="input-group" ng-class="{ 'has-error': emailForm.email.$touched && emailForm.email.$invalid}">
+	  		<div class="input-group">
 			  <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
 			  <input name="email" type="email" class="form-control" ng-model="user.email" 
 			  ng-model-options="{updateOn:'blur'}" unique-email required>
 
 
 			</div>
-			 <div class="help-block red" ng-messages="emailForm.email.$error" ng-if="emailForm.email.$touched">
+			 <div class="help-block" ng-messages="emailForm.email.$error" ng-if="emailForm.email.$touched">
 			    <p ng-message="required">Your email is required.</p>
 			    <p ng-message="email">Your email is not valid.</p>
 			    <p ng-message="emailAvailable">We found this email in our system.<a href='/auth/login'>Login?</a></p>
@@ -21,15 +21,16 @@
 			<button type="submit" class="btn btn-success pull-right" ng-disabled="emailForm.$invalid" >Continue > </button>
 		</div>
 
-	<div ng-if="success || resend" class="alert alert-warning reminder-message">
-		<div ng-if="success">
-			  <strong><i class="fa fa-check"></i>  Well done!</strong> You will receive a confirmation email to proceed the next step of the sign up. If you haven't
-	  			recevied that in 10 minutes, you could <a href="#" class="alert-link">resend the email</a>.
+	<div ng-if="user._team" class="alert alert-warning reminder-message">
+
+		<strong><i class="fa fa-exclamation"></i></strong> 
+
+		<div ng-if="!user.activated && user._team">
+			 It looks like that you have already registered but have not activated your account. You could always <a href="#" class="alert-link pointer"> resend the activation email</a>.
 		</div>
 
-		<div ng-if="resend">
-			  <strong><i class="fa fa-exclamation"></i></strong> It looks like we have sent you a confirmation email to continue your sign up process, if you could not find that email, you
-			  could always <a href="#" class="alert-link"> resend the email</a>.
+		<div ng-if="user.activated && user._team">
+			 You already have an account with us. Please <a href="#" class="alert-link pointer"> sign in here</a>.
 		</div>
 
 	</div>

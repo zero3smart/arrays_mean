@@ -16,23 +16,24 @@ var userSchema = new mongoose.Schema({
     provider: String, 
     hash: String,
     salt: String,
+    activated: {
+        type: Boolean,
+        default: false
+    },
     _team: {type: Schema.Types.ObjectId, ref: 'Team'}
 });
 
-
-
-
-
-
 userSchema.plugin(findOrCreate);
+
+
 
 userSchema.methods.setPassword = function(password){
     this.salt = crypto.randomBytes(16).toString('hex');
-    this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex');
+    this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64,'sha512').toString('hex');
 };
 
 userSchema.methods.validPassword = function(password) {
-    var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex');
+    var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64,'sha512').toString('hex');
     return this.hash === hash;
 };
 
@@ -47,5 +48,11 @@ userSchema.methods.generateJwt = function() {
         exp: parseInt(expiry.getTime() / 1000),
     }, "MY_SECRET"); // DO NOT KEEP YOUR SECRET IN THE CODE!
 };
+
+
+
+
+
+
 
 module.exports = mongoose.model('User', userSchema);
