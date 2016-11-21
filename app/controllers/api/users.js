@@ -1,23 +1,6 @@
 var User = require('../../models/users');
 var Team = require('../../models/teams');
-var nodemailer = require('nodemailer');
-var jwt = require('jsonwebtoken');
-var jwtSecret = process.env.JWT_SECRET
-var xoauth2 = require('xoauth2');
-
-
-var transporter = nodemailer.createTransport({
-	service: "Gmail",
-	auth: {
-		xoauth2: xoauth2.createXOAuth2Generator({
-			user: 'susanna@schemadesign.com',
-			clientId: process.env.GOOGLE_CLIENT_ID
-			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-			refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-			accessToken: process.env.GOOGLE_ACCESS_TOKEN
-		})
-	}
-});
+var mailer = require('../../libs/utils/nodemailer');
 
 
 module.exports.index = function (req, next) {
@@ -70,40 +53,8 @@ module.exports.create = function(req,res) {
 }
 
 
-function _sendActivationEmail(user,callback) {
-	var token = jwt.sign({
-		_id: user._id,
-		email: user.email,
-		exp: 1440
-	},jwtSecret);
-	var host = process.env.HOST || 'localhost';
-	var port = process.env.PORT || 9080;
-	var url = "http://" + host + ":" + port + '/verify?token='+token;
-	var mailOptions = {
-		from : 'info@arrays.co',
-		to: user.email,
-		subject: 'Welcome To Arrays!',
-		text: 'Thank you for signing up! Your account has been created, please create the link below to activate your account:'+url	
-	}
-	console.log("here");
-
-	transporter.sendMail(mailOptions,function(err,info) {
-		if (err) {
-			console.log(err);
-			callback(err);
-		} else {
-			console.log(info);
-			callback(null);
-		}
-	})
-}
 
 
-
-
-function _sendInvitationEmail(admin,invited,cb) {
-
-}
 
 module.exports.update = function(req,res) {
 	var team = req.body._team;
@@ -127,11 +78,9 @@ module.exports.update = function(req,res) {
 						user.save(function(err,savedUser) {
 							if (err) {res.send(err);}
 							else {
-								console.log("ready to send email");
-								_sendActivationEmail(savedUser,function(err) {
+								mailer.sendActivationEmail(savedUser,function(err) {
 									if (err) {
 										res.status(500).send('Cannot send activation email');
-
 									} else {
 										res.json(savedUser);
 									}
@@ -142,7 +91,7 @@ module.exports.update = function(req,res) {
 				})
 			}
 		})
-	} else { //invited people
+	} else { //invited people, no need to send email
 		User.findById(req.body._id,function(err,user) {
 			if (err) {
 				res.send(err);
@@ -155,13 +104,7 @@ module.exports.update = function(req,res) {
 				user.save(function(err,savedUser) {
 					if (err) {res.send(err);}
 					else {
-						_sendActivationEmail(savedUser,function(err) {
-							if (err) {
-								res.status(500).send('Cannot send activation email');
-							} else {
-								res.json(savedUser);
-							}
-						})
+						res.json(savedUser);
 					}
 				})
 			}
