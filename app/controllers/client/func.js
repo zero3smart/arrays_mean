@@ -141,12 +141,15 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
             var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
             var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
             if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
-                var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[filterVal];
-                if (typeof overrideValue === 'undefined') {
+                var valueByOverride = oneToOneOverrideWithValuesByTitle_forThisColumn.find(function(valueByOverride) {
+                    return valueByOverride.override = filterVal;
+                });
+
+                if (typeof valueByOverride === 'undefined') {
                     var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
                     winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
                 } else {
-                    realFilterValue = overrideValue;
+                    realFilterValue = valueByOverride.value;
                 }
             }
             if (typeof realFilterValue === 'string') {
@@ -187,22 +190,28 @@ var _activeFilterRange_matchCondition_orErrDescription = function (dataSourceDes
         var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
         var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
         if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
-            var overrideValueMin = oneToOneOverrideWithValuesByTitle_forThisColumn[filterValMin];
-            if (typeof overrideValueMin === 'undefined') {
+            var valueByOverrideMin = oneToOneOverrideWithValuesByTitle_forThisColumn.find(function(valueByOverride) {
+                return valueByOverride.override = filterValMin;
+            });
+
+            if (typeof valueByOverrideMin === 'undefined') {
                 var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterValMin " + filterValMin;
                 winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
                 throw new Error("Undefined match condition");
             } else {
-                realFilterValueMin = overrideValueMin;
+                realFilterValueMin = valueByOverrideMin.value;
             }
 
-            var overrideValueMax = oneToOneOverrideWithValuesByTitle_forThisColumn[filterValMax];
-            if (typeof overrideValueMax === 'undefined') {
+            var valueByOverrideMax = oneToOneOverrideWithValuesByTitle_forThisColumn.find(function(valueByOverride) {
+                return valueByOverride.override = filterValMax;
+            });
+
+            if (typeof valueByOverrideMax === 'undefined') {
                 var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterValMax " + filterValMax;
                 winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
                 throw new Error("Undefined match condition");
             } else {
-                realFilterValueMax = overrideValueMax;
+                realFilterValueMax = valueByOverrideMax.value;
             }
         }
     } else {
@@ -310,12 +319,15 @@ var _activeFilterOR_matchCondition_orErrDescription = function (dataSourceDescri
                 var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
                 var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
                 if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
-                    var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[realFilterValue];
-                    if (typeof overrideValue === 'undefined') {
+                    var valueByOverride = oneToOneOverrideWithValuesByTitle_forThisColumn.find(function(valueByOverride) {
+                        return valueByOverride.override = realFilterValue;
+                    });
+
+                    if (typeof valueByOverride === 'undefined') {
                         var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
                         winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
                     } else {
-                        realFilterValue = overrideValue;
+                        realFilterValue = valueByOverride.value;
                     }
                 }
                 if (typeof realFilterValue === 'string') {
@@ -553,6 +565,7 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
 
             if (typeof dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName !== 'undefined' &&
                 dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName]) {
+                var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName];
                 overwriteValue = true;
             }
 
@@ -566,11 +579,10 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                     }
 
                     if (overwriteValue) {
-                        _.forOwn(dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName],function(value,key) {
-                            if (value == rowValue) {
-                                row[index] = key
-                            }
-                        })
+                        var valueByOverride = oneToOneOverrideWithValuesByTitleByFieldName.find(function(valueByOverride) {
+                            return valueByOverride.override = rowValue;
+                        });
+                        if (valueByOverride) row[index] = valueByOverride.value;
                     }
 
                 } else {

@@ -11,6 +11,15 @@
     font-size: 18px;
 }
 
+md-toolbar:not(.md-menu-toolbar) {
+    background-color: var(--color-primary);
+}
+
+md-tabs .md-tab.md-active {
+    color: var(--color-text-dark);
+}
+
+
 .site-admin md-toast {
     position: fixed;
     top: 64px;
@@ -86,6 +95,10 @@
 }
 
 /* Dataset Format Data */
+.table-container {
+    overflow-x: auto;
+}
+
 .dataset table.data > tbody > tr > td > md-checkbox {
     margin-bottom: 6px;
 }
@@ -115,10 +128,24 @@
     z-index: 1100;
 }
 
+md-dialog .md-button {
+    min-width: 25px;
+}
+
 /* Dataset Format Field */
 md-dialog.field-dialog .md-dialog-content {
     padding-bottom: 10px;
 }
+md-dialog {
+    min-width: 80%;
+}
+
+md-dialog legend {
+    font-size: 15px;
+    color: rgba(0,0,0,0.54);
+}
+
+
 
 
 /* -----------   for toggle slider  ----------------  */

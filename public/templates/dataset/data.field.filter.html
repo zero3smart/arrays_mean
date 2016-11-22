@@ -1,0 +1,131 @@
+<md-content layout-padding>
+    <md-input-container class="md-block" flex-gt-sm>
+        <md-checkbox name="filterNotAvailable" ng-model="data.filterNotAvailable"
+                     aria-label="Filter Not Available {{fieldName}}">
+            Not Available
+        </md-checkbox>
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm>
+        <md-checkbox name="commaSeparatedAsIndividual" ng-model="data.commaSeparatedAsIndividual"
+                     aria-label="Filter Comma Separated {{fieldName}}">
+            Comma Separated As Individual
+        </md-checkbox>
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm>
+        <md-checkbox name="multipleSelection" ng-model="data.multipleSelection"
+                     aria-label="Filter Multiple Selection {{fieldName}}">
+            Allow Multiple Selection
+        </md-checkbox>
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm>
+        <md-checkbox name="sortableByInt" ng-model="data.sortableByInt"
+                     aria-label="Filter Sortable By Integer {{fieldName}}">
+            Sortable By Integer
+        </md-checkbox>
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm>
+        <md-checkbox name="sortableInReverse" ng-model="data.sortableInReverse"
+                     aria-label="Filter Sortable In Reverse Order {{fieldName}}">
+            Sortable In Reverse Order
+        </md-checkbox>
+    </md-input-container>
+
+    <fieldset class="standard" flex>
+        <legend>One To One Override Values By Title</legend>
+        <div layout="row"
+             ng-repeat="valueByOverride in dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[finalizedFieldName]">
+            <md-input-container flex="45">
+                <label>Value</label>
+                <input type="text" name="oneToOneOverrideValue" ng-model="valueByOverride.value">
+            </md-input-container>
+
+            <md-input-container flex="45">
+                <label>Override</label>
+                <input type="text" name="oneToOneOverrideOverride" ng-model="valueByOverride.override">
+            </md-input-container>
+
+            <div flex="10">
+                <md-button ng-click="removeOneToOneOverride(valueByOverride)" aria-label="Remove OneToOneOverride"><span
+                        class="glyphicon glyphicon-remove"></span></md-button>
+            </div>
+        </div>
+        <md-button class="md-block" flex-gt-sm ng-click="addOneToOneOverride()"><span
+                class="glyphicon glyphicon-plus"></span>Add more
+        </md-button>
+    </fieldset>
+
+    <fieldset class="standard">
+        <legend>Values to Exclude by Original Key</legend>
+        <div layout="row" flex-gt-sm>
+            <md-input-container class="md-block" flex-gt-sm="50">
+                <label>All</label>
+                <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey._all" name="valuesToExcludeAll">
+                    <md-chip-template>
+                        <strong>{{$chip}}</strong>
+                    </md-chip-template>
+                </md-chips>
+            </md-input-container>
+
+            <md-input-container class="md-block" flex-gt-sm="50">
+                <label>{{fieldName}}</label>
+                <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey[finalizedFieldName]"
+                          name="valuesToExcludeSelf">
+                    <md-chip-template>
+                        <strong>{{$chip}}</strong>
+                    </md-chip-template>
+                </md-chips>
+            </md-input-container>
+        </div>
+    </fieldset>
+
+    <md-input-container class="md-block" flex-gt-sm>
+        <label>Keywords</label>
+        <md-chips ng-model="data.keywords.choices"
+                  name="keywords">
+            <md-chip-template>
+                <strong>{{$chip}}</strong>
+            </md-chip-template>
+        </md-chips>
+    </md-input-container>
+
+    <fieldset class="standard" flex>
+        <legend>Fabricated</legend>
+        <div ng-repeat="fabricated in dataset.fe_filters.fabricated | filter:fabricatedChoicesFilter">
+            <div layout="row">
+                <md-input-container flex="45">
+                    <label>Title</label>
+                    <input type="text" name="fabricatedTitle" ng-model="fabricated.title">
+                </md-input-container>
+
+                <md-input-container flex="45">
+                    <label>Value</label>
+                    <input type="text" name="fabricatedValue" ng-model="fabricated.choices[0].title">
+                </md-input-container>
+
+                <div flex="10">
+                    <md-button ng-click="removeFabricated(fabricated)" aria-label="Remove Fabricated"><span
+                            class="glyphicon glyphicon-remove"></span></md-button>
+                </div>
+            </div>
+
+            <md-input-container class="md-block md-padding">
+                <label>Exclude Values</label>
+                <md-chips ng-model="fabricated.choices[0].match.nin"
+                          name="fabricatedExcludeValues">
+                    <md-chip-template>
+                        <strong>{{$chip}}</strong>
+                    </md-chip-template>
+                </md-chips>
+            </md-input-container>
+        </div>
+
+        <md-button class="md-block" flex-gt-sm ng-click="addFabricated()"><span
+                class="glyphicon glyphicon-plus"></span>Add more
+        </md-button>
+    </fieldset>
+
+</md-content>
