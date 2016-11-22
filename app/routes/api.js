@@ -45,10 +45,13 @@ router.get('/user/search',ctrlUsers.search);
 router.post('/user',ctrlUsers.create);
 router.get('/user/:id',ctrlUsers.get);
 router.put('/user/:id',ctrlUsers.update);
+router.get('/user/:id/resend',ctrlUsers.resend);
 
 
 //teams
 router.get('/team/search',ctrlTeam.search);
+
+
 
 
 

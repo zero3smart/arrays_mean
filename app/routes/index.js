@@ -76,6 +76,7 @@ var _mountRoutes_endPoints = function (app) {
 
     app.use('/admin', require('./admin'));
     app.use('/api', require('./api'));
+    app.use('/account',require('./account'));
 };
 
 module.exports.MountRoutes = function (app) {

@@ -33,7 +33,9 @@ module.exports.search = function(req,res) {
 
 module.exports.get = function(req,res) {
 	var id = req.params.id;
-	User.findById(id,function(err,user) {
+	User.findById(id)
+	.populate('_team')
+	.exec(function(err,user) {
 		if (err) {
 			res.send(err);
 		} else {
@@ -52,11 +54,39 @@ module.exports.create = function(req,res) {
 	})
 }
 
+//expect : { emailType: 'activation'/'invitation', inviteUserId: 'xxxxx'} 
+
+module.exports.resend = function(req,res) {
+	var userId = req.params.id;
+	if (req.body.emailType == 'activation') {
+		User.findById(userId,function(err,user){
+			if (err) {res.send(err);}
+			else if (!user) {
+				res.status(404).send('Cannot find User');
+			} else {
+				mailer.sendActivationEmail(user,function(err) {
+					if (err) {
+						res.status(500).send('Cannot send activation email');
+					} else {
+						res.json(user);
+					}
+				})
+			}
+		})
+
+	} else { //send invitation user
+
+	}
+
+
+}
+
 
 
 
 
 module.exports.update = function(req,res) {
+
 	var team = req.body._team;
 	var teamId = req.body._team._id;
 	if (!teamId) { // admin/owner of the team signing up
@@ -71,6 +101,8 @@ module.exports.update = function(req,res) {
 					} else if (!user) {
 						res.status(404).send('User not found');
 					} else {
+						user.firstName = req.body.firstName;
+						user.lastName = req.body.lastName;
 						if (user.provider == 'local' && req.body.password) {
 							user.setPassword(req.body.password);
 						} 
@@ -98,6 +130,9 @@ module.exports.update = function(req,res) {
 			} else if (!user) {
 				res.status(404).send('User not found');
 			} else {
+				user.firstName = req.body.firstName;
+				user.lastName = req.body.lastName;
+				user.activated = true;
 				if (user.provider == 'local' && req.body.password) {
 					user.setPassword(req.body.password);
 				} 
@@ -109,13 +144,7 @@ module.exports.update = function(req,res) {
 				})
 			}
 		})
-
-
-
 	}
-
-	
-
 }
 
 
