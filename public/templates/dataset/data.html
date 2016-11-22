@@ -45,7 +45,7 @@
                             </md-option>
                         </md-select>
                     </td>
-                    <td>{{ dataset.firstRecord[$index] }}</td>
+                    <td>{{ dataset.firstRecord[$index] | limitTo: 200 }}{{dataset.firstRecord[$index].length > 200 ? '...' : ''}}</td>
                 </tr>
                 </tbody>
             </table>

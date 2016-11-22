@@ -6,7 +6,7 @@
 
     <md-input-container class="md-block" flex-gt-sm>
         <label>First Record</label>
-        <input type="text" ng-model="firstRecord" readonly="readonly">
+        <input type="text" value="{{ firstRecord | limitTo: 200 }}{{firstRecord.length > 200 ? '...' : ''}}" readonly="readonly">
     </md-input-container>
 
     <md-input-container class="md-block" flex-gt-sm>
