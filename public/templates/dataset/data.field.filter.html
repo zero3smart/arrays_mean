@@ -60,8 +60,8 @@
 
     <fieldset class="standard">
         <legend>Values to Exclude by Original Key</legend>
-        <div layout="row">
-            <md-input-container class="md-block">
+        <div layout="row" flex-gt-sm>
+            <md-input-container class="md-block" flex-gt-sm="50">
                 <label>All</label>
                 <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey._all" name="valuesToExcludeAll">
                     <md-chip-template>
@@ -70,7 +70,7 @@
                 </md-chips>
             </md-input-container>
 
-            <md-input-container class="md-block">
+            <md-input-container class="md-block" flex-gt-sm="50">
                 <label>{{fieldName}}</label>
                 <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey[finalizedFieldName]"
                           name="valuesToExcludeSelf">
