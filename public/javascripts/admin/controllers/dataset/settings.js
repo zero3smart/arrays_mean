@@ -16,7 +16,7 @@ angular.module('arraysApp')
                                 .hideDelay(3000)
                         );
 
-                        $state.go('admin.dataset.upload', {id: id});
+                        $state.transitionTo('admin.dataset.upload', {id: id}, { reload: true, inherit: false, notify: true });
                         $scope.submitting = false;
                     }, function(error) {
                         $mdToast.show(

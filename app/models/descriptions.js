@@ -67,7 +67,10 @@ var DatasourceDescription_scheme = Schema({
     fe_nestedObject: Object,
     author: {type: Schema.Types.ObjectId,ref: 'User'},
     updatedBy: {type: Schema.Types.ObjectId,ref:'User'},
-    viewers: [{type: Schema.Types.ObjectId, ref: 'User'}]
+    viewers: [{type: Schema.Types.ObjectId, ref: 'User'}],
+
+    imported: {type: Boolean, default: false},
+    dirty: {type: Boolean, default: false}
 });
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);

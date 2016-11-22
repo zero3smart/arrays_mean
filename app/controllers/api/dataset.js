@@ -130,10 +130,6 @@ module.exports.get = function (req, res) {
     if (!req.params.id)
         return res.json({error: 'No ID given'});
 
-    if (req.session.datasource) {
-        delete req.session.datasource[req.params.id];
-    }
-
     datasource_description.findById(req.params.id)
         .lean()
         .deepPopulate('_otherSources schema_id _team _otherSources._team')
@@ -142,7 +138,24 @@ module.exports.get = function (req, res) {
             if (err) return res.json({error: err.message});
             if (!description) return res.json({error: 'Invalid ID'});
 
-            return res.json({dataset: description});
+            if (description.schema_id) {
+                description = datasource_description.Consolidate_descriptions_hasSchema(description);
+            }
+
+            if (!req.session.datasource) req.session.datasource = {};
+
+            if (description.uid && description.imported && !req.session.datasource[req.params.id]) {
+                _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function(err, datasource) {
+                    if (err) return res.json({error: err.message});
+
+                    req.session.datasource[req.params.id] = datasource;
+                    description.columnNamesAndFirstRecords = datasource;
+                    return res.json({dataset: description});
+                })
+            } else {
+                description.columnNamesAndFirstRecords = req.session.datasource[req.params.id];
+                return res.json({dataset: description});
+            }
         });
 };
 
@@ -189,6 +202,10 @@ module.exports.update = function (req, res) {
                         doc.markModified(key);
 
                     // TODO: detect whether you need to re-import dataset to the system or not, and inform that the client
+                    var keysForNeedToImport = [
+                        'importRevision'
+                    ];
+                    doc.dirty = keysForNeedToImport.indexOf(key) != -1;
                 }
             });
 
@@ -313,6 +330,8 @@ module.exports.upload = function (req, res) {
         batch.push(function (done) {
             winston.info("✅  Uploaded datasource : " + description.title + ", " + description.uid);
 
+            description.dirty = true;
+
             description.save(function (err, updatedDescription) {
                 if (err) {
                     winston.error("❌  Error saving the dataset into the database : " + description.title + " (" + err.message + ")");
@@ -336,5 +355,31 @@ module.exports.download = function (req, res) {
     if (!req.params.id)
         return res.json({error: 'No ID given'});
 
+    datasource_description.findById(req.params.id)
+        .lean()
+        .deepPopulate('_otherSources schema_id _team _otherSources._team')
+        .exec(function (err, description) {
 
+            if (err) return res.json({error: err.message});
+            if (!description) return res.json({error: 'Invalid ID'});
+
+            if (description.schema_id) {
+                description = datasource_description.Consolidate_descriptions_hasSchema(description);
+            }
+
+            var fileName = datasource_file_service.fileNameToUpload(description);
+            fileName += '.' + description.format.toLowerCase();
+            res.attachment(fileName);
+
+            datasource_file_service.getDatasource(description).createReadStream().pipe(res);
+
+        });
+}
+
+module.exports.importData = function(req, res) {
+    if (!req.body.id) {
+        return res.json({error: 'No ID given'});
+    }
+
+    return res.json({error: 'Not completed'});
 }

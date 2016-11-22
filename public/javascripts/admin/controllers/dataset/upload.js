@@ -17,9 +17,13 @@ angular.module('arraysApp')
 
             $scope.uploader.onWhenAddingFileFailed = function(item, filter, options) {
                 // console.info('onWhenAddingFileFailed', item, filter, options);
+                if (filter.name == 'queueLimit') {
+                    $scope.uploader.clearQueue();
+                    $scope.uploader.addToQueue(item);
+                }
             };
             $scope.uploader.onAfterAddingFile = function(fileItem) {
-                // console.info('onAfterAddingFile', fileItem);
+                console.info('onAfterAddingFile', fileItem);
             };
             $scope.uploader.onAfterAddingAll = function(addedFileItems) {
                 // console.info('onAfterAddingAll', addedFileItems);
@@ -64,7 +68,7 @@ angular.module('arraysApp')
                             .hideDelay(3000)
                     );
 
-                    $state.go('admin.dataset.data', {id: response.id});
+                    $state.transitionTo('admin.dataset.data', {id: response.id}, { reload: true, inherit: false, notify: true });
                 } else {
                     // Error
                     $mdToast.show(

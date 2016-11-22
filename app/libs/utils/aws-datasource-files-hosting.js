@@ -24,22 +24,20 @@ function _fileNameToUpload(datasourceDescription) {
     var fileName = datasourceDescription.uid;
     if (datasourceDescription.dataset_uid)
         fileName += '__' + datasourceDescription.dataset_uid;
-    ;
-    fileName += '_v' + datasourceDescription.importRevision
+
+    fileName += '_v' + datasourceDescription.importRevision;
 
     return fileName;
 }
 module.exports.fileNameToUpload = _fileNameToUpload;
 
-function _getDatasource(description, cb) {
+function _getDatasource(description) {
     var fileName = _fileNameToUpload(description);
-
 
     var param = {
         Bucket: bucket,
         Key: "datasources/" + fileName
     }
-
 
     return s3.getObject(param)
 

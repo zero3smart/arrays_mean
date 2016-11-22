@@ -32,9 +32,13 @@ router.post('/dataset/remove', /*ensureLoggedIn,*/ctrlDataset.remove);
 router.get('/dataset/get/:id', /*ensureLoggedIn,*/ctrlDataset.get);
 router.get('/dataset/getSources/:id', /*ensureLoggedIn,*/ctrlDataset.getSourcesWithSchemaID)
 router.post('/dataset/update', /*ensureLoggedIn,*/ctrlDataset.update);
+
 // dataset upload
 router.post('/dataset/upload', /*ensureLoggedIn,*/upload.array('file', 12), ctrlDataset.upload);
 router.get('/dataset/download/:id', /*ensureLoggedIn,*/ctrlDataset.download);
+
+// dataset import
+router.post('/dataset/importData', /*ensureLoggedIn,*/ctrlDataset.importData);
 
 // website settings
 

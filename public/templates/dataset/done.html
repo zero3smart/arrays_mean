@@ -1,6 +1,14 @@
-<div layout-padding>
-    <md-content ng-if="dataset.fe_views.views">
+<md-content layout-padding ng-if="dataset.fe_views.views">
+    <div ng-if="dataset.dirty">
+        <h2>You're almost done! <br/>You need to import the whole dataset to reflect some of your changes </h2>
+        <div class="panel-footer">
+        <md-button class="md-raised pull-right" ng-click="importData()"><span class="glyphicon glyphicon-import"></span>Import</md-button>
+        </div>
+    </div>
+    <div ng-if="dataset.imported">
+        <h2>Congratulations!  You're all done!</h2>
+        <h2>View your <strong><a href={{ "/array/" + dataset.uid + "-r" + dataset.importRevision + "/" + dataset.fe_views.default_view }}>array</a></strong></h2>
+    </div>
+</md-content>
 
-    </md-content>
-    <ng-include src="'/templates/blocks/dataset.empty.html'" ng-if="!dataset.fe_views.views"></ng-include>
-</div>
+<ng-include src="'/templates/blocks/dataset.empty.html'" ng-if="!dataset.fe_views.views"></ng-include>

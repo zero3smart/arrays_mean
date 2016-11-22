@@ -73,7 +73,7 @@
                     return deferred.reject(data);
                 });
             return deferred.promise;
-        }
+        };
 
         var save = function(dataset) {
             var deferred = $q.defer();
@@ -91,12 +91,29 @@
             return deferred.promise;
         };
 
+        var importData = function(uid) {
+            var deferred = $q.defer();
+            $http.post('api/dataset/importData', uid)
+                .success(function(data) {
+                    if (!data.error && data.id) {
+                        return deferred.resolve(data.id);
+                    } else {
+                        return deferred.reject(data.error);
+                    }
+                })
+                .error(function(data) {
+                    return deferred.reject(data);
+                });
+            return deferred.promise;
+        }
+
         return {
             getAll: getAll,
             remove: remove,
             get: get,
             getSources: getSources,
             save: save,
+            importData: importData
         }
     }
 })();
