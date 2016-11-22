@@ -4,7 +4,6 @@ var passport = require('passport');
 var router = express.Router();
 
 router.get('/login', function(req, res) {
-
     if (req.user) {
         res.redirect('/admin');
     } else {

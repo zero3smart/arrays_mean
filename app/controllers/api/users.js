@@ -54,11 +54,10 @@ module.exports.create = function(req,res) {
 	})
 }
 
-//expect : { emailType: 'activation'/'invitation', inviteUserId: 'xxxxx'} 
 
 module.exports.resend = function(req,res) {
 	var userId = req.params.id;
-	if (req.body.emailType == 'activation') {
+	if (req.query.emailType == 'activation') {
 		User.findById(userId,function(err,user){
 			if (err) {res.send(err);}
 			else if (!user) {
@@ -68,13 +67,13 @@ module.exports.resend = function(req,res) {
 					if (err) {
 						res.status(500).send('Cannot send activation email');
 					} else {
-						res.json(user);
+						return res.redirect('/signup/success/'+userId);
 					}
 				})
 			}
 		})
 
-	} else { //send invitation user
+	} else { //resend invitation user
 
 	}
 

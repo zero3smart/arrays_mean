@@ -30,12 +30,32 @@ router.get('/google/callback',function(req,res,next) {
     })(req,res,next);
 })
 
+
+
+router.post('/login',function(req,res,next) {
+    passport.authenticate('local',function(err,user,info) {
+        if (err) {return next(err);}
+        if (!user) {
+            req.flash("error",info);
+            return res.redirect('/auth/login');
+        } else {
+            return res.redirect('/admin');
+        }
+    })(req,res,next);
+})
+
+
+
 router.get('/login', function (req, res) {
     if (req.user) {
         res.redirect('/admin');
     } else {
+
+        var info = req.flash();
+
         res.render('auth/login', {
-            env: process.env
+            env: process.env,
+            flash: info
         });
     }
 });

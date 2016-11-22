@@ -26,10 +26,9 @@
 				})
 
 				.state('signup.success',{
-					url: '/success',
+					url: '/success/:id',
 					params: {
-						isInvite: null,
-						id: null
+						isInvite: null
 					},
 					templateUrl: 'templates/blocks/signup.success.html',
 					controller: 'successCtrl'
