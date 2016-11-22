@@ -1,9 +1,7 @@
 var User = require('../../models/users');
 var Team = require('../../models/teams');
-var nodemailer = require('nodemailer');
+var mailer = require('../../libs/utils/nodemailer');
 
-
-var transporter = nodemailer.createTransport();
 
 module.exports.index = function (req, next) {
     var self = this;
@@ -55,22 +53,8 @@ module.exports.create = function(req,res) {
 }
 
 
-function _sendActivationEmail(user,cb) {
-	var mailOptions = {
-		from : '<>',
-		to: user.email,
-		subject: 'Welcome To Arrays!',
-		text: 'Thank you for signing up! Your account has been created, please create the link below to activate your account'
-		
-	}
 
 
-}
-
-
-function _sendInvitationEmail(admin,invited,cb) {
-
-}
 
 module.exports.update = function(req,res) {
 	var team = req.body._team;
@@ -94,10 +78,9 @@ module.exports.update = function(req,res) {
 						user.save(function(err,savedUser) {
 							if (err) {res.send(err);}
 							else {
-								_sendActivationEmail(savedUser,function(err) {
+								mailer.sendActivationEmail(savedUser,function(err) {
 									if (err) {
 										res.status(500).send('Cannot send activation email');
-
 									} else {
 										res.json(savedUser);
 									}
@@ -108,7 +91,7 @@ module.exports.update = function(req,res) {
 				})
 			}
 		})
-	} else { //invited people
+	} else { //invited people, no need to send email
 		User.findById(req.body._id,function(err,user) {
 			if (err) {
 				res.send(err);
@@ -121,13 +104,7 @@ module.exports.update = function(req,res) {
 				user.save(function(err,savedUser) {
 					if (err) {res.send(err);}
 					else {
-						_sendActivationEmail(savedUser,function(err) {
-							if (err) {
-								res.status(500).send('Cannot send activation email');
-							} else {
-								res.json(savedUser);
-							}
-						})
+						res.json(savedUser);
 					}
 				})
 			}
