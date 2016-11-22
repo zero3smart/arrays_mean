@@ -3,6 +3,18 @@ module.exports = function (grunt) {
 
     // Project configuration.
     grunt.initConfig({
+
+        subgrunt: {
+            custom: {
+                options: {
+                    npmInstall: true
+                },
+                projects: {
+                    'user/*/': ['build']
+                }
+            }
+
+        },
         // Metadata.
         pkg: grunt.file.readJSON('package.json'),
         banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
@@ -131,8 +143,11 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-postcss');
 
+    // custom task
+    grunt.loadTasks('grunt-subgrunt');
+    
     // Default task.
     grunt.registerTask('default', ['jshint']);
-    grunt.registerTask('build', ['copy', 'sass', 'postcss']);
+    grunt.registerTask('build', ['copy', 'sass', 'postcss','subgrunt']);
 
 };

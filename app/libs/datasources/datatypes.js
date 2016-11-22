@@ -30,6 +30,12 @@ module.exports.displayNumberWithComma = function(number) {
 
 
 var fieldValueDataTypeCoercion_coercionFunctions = function (inString, field) {
+
+     if (inString.toLowerCase() == 'null') {
+        return null;
+    }
+
+
     var opName = field.operation;
     if (opName == 'ProxyExisting') {
         return inString;

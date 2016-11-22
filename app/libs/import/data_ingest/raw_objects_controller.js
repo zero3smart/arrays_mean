@@ -56,8 +56,20 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
     var title = description.title;
     var delimiter = ',';
     if (fileType == 'TSV') delimiter = '\t';
+    var fileEncoding = description.fileEncoding || 'utf8';
 
     winston.info("🔁  " + dataSourceIsIndexInList + ": Importing " + fileType + " \"" + title + "\"");
+
+    var filepath;
+
+    var readFromlocal = false;
+ 
+    if (process.env.READ_FILE_FROM && process.env.READ_FILE_FROM == 'local') {
+         var path_prefix = __dirname + "/../../user/"  + description._team.subdomain + '/data';
+         filepath = CSV_resources_path_prefix + "/" + importUID;
+         readFromlocal = true;
+    }
+
 
     //
     var raw_rowObjects_coercionScheme = description.raw_rowObjects_coercionScheme; // look up data type scheme here
@@ -79,7 +91,9 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
         // column names
         if (lineNr == 1) {
             for (var i = 0; i < columnNamesAndThenRowObject.length; i++) {
-                columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g, "_");
+                 if (typeof csvDescription.customFieldNameOperation == 'undefined' || csvDescription.customFieldNameOperation == null) {
+                    columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g, "_");
+                } 
             }
 
             columnNames = columnNamesAndThenRowObject;
@@ -101,6 +115,14 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
 
             for (var columnIndex = 0; columnIndex < columnNames.length; columnIndex++) {
                 var columnName = "" + columnNames[columnIndex];
+
+
+                if (typeof csvDescription.customFieldNameOperation != 'undefined') { /* custom convert field name to store */
+                    var custom_import = require( __dirname + "/../../user/" + csvDescription._team.tid + "/import-utils");
+                    columnName = custom_import[csvDescription.customFieldNameOperation](columnName);
+                }
+
+
                 var rowValue = columnNamesAndThenRowObject[columnIndex];
                 //
                 var typeFinalized_rowValue = rowValue;
@@ -130,7 +152,12 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
                 if (raw_rowObjects_coercionScheme != null && typeof raw_rowObjects_coercionScheme !== 'undefined') {
                     var coercionSchemeForKey = raw_rowObjects_coercionScheme[columnName];
                     if (coercionSchemeForKey != null && typeof coercionSchemeForKey !== 'undefined') {
-                        typeFinalized_rowValue = datatypes.NewDataTypeCoercedValue(coercionSchemeForKey, rowValue);
+
+                        if (coercionSchemeForKey.operation) {
+                            typeFinalized_rowValue = datatypes.NewDataTypeCoercedValue(coercionSchemeForKey, rowValue);
+
+                        }
+
                     }
                 }
                 rowObject[columnName] = typeFinalized_rowValue; // Now store the finalized value
@@ -166,8 +193,15 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
 
     // Now read
 
-    var readStream = datasource_file_service.getDatasource(description).createReadStream()
-        .pipe(es.split())
+
+    var readStream;
+    if (readFromlocal == true) {
+        readStream = fs.createReadStream(filepath,{encoding:fileEncoding})
+    } else {
+        readStream = datasource_file_service.getDatasource(description).createReadStream();
+    }
+
+    readStream = readStream.pipe(es.split())
         .pipe(es.mapSync(function (line) {
                 // pause the readstream
                 readStream.pause();

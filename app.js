@@ -12,6 +12,7 @@ var dotenv = require('dotenv');
 var fs = require('fs');
 var cors = require('cors');
 var routes = require('./app/routes');
+var async = require('async');
 
 var isDev = process.env.NODE_ENV == 'production' ? false : true;
 var dotenv_path = __dirname + "/config/env/.env." + (process.env.NODE_ENV ? process.env.NODE_ENV : "development");
@@ -20,19 +21,65 @@ dotenv.config({
     silent: true
 });
 
-var strategy = require('./config/setup-passport');
+require('./config/setup-passport');
 
 var app = express();
 
-// Configure app
-app.set('view engine', 'html');
-app.set('views', __dirname + '/views');
+var userFolderPath = __dirname + "/user";
+ 
+var viewsToSet = [];
+
+viewsToSet.push(__dirname + '/views');
 
 var nunjucks = require('express-nunjucks');
-nunjucks.setup({
-    watch: isDev,
-    noCache: isDev,
-}, app).then(require('./nunjucks/filters'))
+app.set('view engine', 'html');
+
+fs.readdir(userFolderPath,function(err,files) {
+    if (!files) {
+        app.set('views',viewsToSet)
+        nunjucks.setup({
+            watch: isDev,
+            noCache: isDev,
+        }, app).then(require('./nunjucks/filters'));
+        return;
+    }
+
+    files = files.filter(function(item) {
+        return !(/(^|\/)\.[^\/\.]/g).test(item);
+    })
+
+    async.each(files,function(file,eachCb) {
+        var full_path = path.join(userFolderPath,file);
+        var team_name = file;
+        fs.stat(full_path,function(err,stat) {
+            if (err) {
+                eachCb(err)
+            } else {
+                if (stat.isDirectory() && files) {
+                    var view_path = path.join(userFolderPath,file + "/views");
+                    viewsToSet.push(view_path);
+                     app.use('/'+ team_name + '/static',express.static(path.join(userFolderPath,team_name+ "/static")));
+                     app.use('/' + team_name ,require(userFolderPath+'/'+team_name+ '/routes'));
+                }
+                eachCb();
+            }
+        })
+    },function(err) {
+        if (err)  return winston.error("❌ cannot sync the user folder files :", err);
+        app.set('views',viewsToSet)
+        nunjucks.setup({
+            watch: isDev,
+            noCache: isDev,
+        }, app).then(require('./nunjucks/filters'));
+
+    })
+})
+
+
+app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
+app.use(express.static(path.join(__dirname, '/public')));
+
+
 
 
 // Redirect https
@@ -40,13 +87,14 @@ app.use(function (req, res, next) {
     if (process.env.USE_SSL === 'true' && 'https' !== req.header('x-forwarded-proto')) {
         return res.redirect('https://' + req.header('host') + req.url);
     }
-
     next();
 });
 
-//
-app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
-app.use(express.static(path.join(__dirname, '/public')));
+
+
+
+
+
 app.use(bodyParser.urlencoded({extended: false})); // application/x-www-form-urlencoded
 app.use(bodyParser.json()); // application/JSON
 app.use(require('compression')());

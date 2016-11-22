@@ -20,21 +20,48 @@ $(document).ready(function () {
     $('.js-panel-array').on('click', function (e) {
         e.preventDefault();
         var $parent = $(this).parent();
-        var sourceKey = $parent.find("[name='source_key']").val();
-        var default_filterJSON = $parent.find("[name='default_filterJSON']").val();
+       
         var default_view = $parent.find("[name='default_view']").val();
         if (default_view === undefined || default_view == 'undefined' || default_view == '') {
             default_view = 'gallery';
         }
+
+        var default_filterJSON = $parent.find("[name='default_filterJSON']").val();
+
+        var sourceKey = $parent.find("[name='source_key']").val();
+
+
+        //toDo: get view from api
+        
+        var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
+
         var words = default_view.split(/(?=[A-Z])/);
         var default_view_url = words.map(function (word) {
             return word.toLowerCase();
         }).join('-');
-        var href = '/array/' + sourceKey + '/' + default_view_url;
-        if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
-            href += "?" + default_filterJSON;
-        }
-        window.location.href = href;
+
+         var href; 
+
+        if (viewTypes.indexOf(default_view_url) < 0) { //custom view
+            var team = $parent.find("[name='team']").val();
+
+            href = '/' + team + '/' + sourceKey + '/' + default_view_url;
+
+            window.location.href = href;
+
+
+        } else {
+            href = '/array/' + sourceKey + '/' + default_view_url;
+            if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
+                href += "?" + default_filterJSON;
+            }
+            window.location.href = href;
+         }
+
+
+
+
+    
     });
 
     /**
