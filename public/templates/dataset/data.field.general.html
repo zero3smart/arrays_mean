@@ -1,0 +1,70 @@
+<md-content layout-padding>
+    <md-input-container class="md-block" flex-gt-sm>
+        <label>Name</label>
+        <input type="text" ng-model="fieldName" readonly="readonly">
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm>
+        <label>First Record</label>
+        <input type="text" ng-model="firstRecord" readonly="readonly">
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm>
+        <label>Data Type</label>
+        <md-select name="dataType"
+                   ng-model="dataset.raw_rowObjects_coercionScheme[finalizedFieldName]"
+                   ng-model-options="{trackBy: '$value | typeCoercionToString'}"
+                   aria-label="Field Type - {{fieldName}}"
+                   placeholder="String">
+            <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="coercion">
+                {{coercion | typeCoercionToString}}
+            </md-option>
+        </md-select>
+        <div class="md-errors-spacer"></div>
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm
+                        ng-show="(dataset.raw_rowObjects_coercionScheme[finalizedFieldName] | typeCoercionToString) == 'Date'">
+        <label>Format</label>
+        <input type="text" name="dataType_format"
+               ng-model="dataset.raw_rowObjects_coercionScheme[finalizedFieldName].format">
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm
+                        ng-show="(dataset.raw_rowObjects_coercionScheme[finalizedFieldName] | typeCoercionToString) == 'Date'">
+        <label>Output Format</label>
+        <input type="text" name="dataType_outputFormat"
+               ng-model="dataset.raw_rowObjects_coercionScheme[finalizedFieldName].outputFormat">
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm>
+        <md-checkbox name="exclude" ng-model="dataset.fe_excludeFields[finalizedFieldName]"
+                     aria-label="Field Exclude {{fieldName}}">
+            Exclude
+        </md-checkbox>
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm>
+        <label>Title Override</label>
+        <input type="text" name="titleOverride"
+               ng-model="dataset.fe_displayTitleOverrides[finalizedFieldName]">
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm>
+        <label>Display Order</label>
+        <input type="number" min="0" name="displayOrder"
+               ng-model="data.displayOrder">
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm>
+        <label>Designated Field</label>
+        <md-select name="designatedField"
+                   ng-model="data.designatedField"
+                   aria-label="Designated Field - {{fieldName}}">
+            <md-option ng-repeat="field in availableDesignatedFields" ng-value="field">
+                {{field}}
+            </md-option>
+        </md-select>
+        <div class="md-errors-spacer"></div>
+    </md-input-container>
+</md-content>
