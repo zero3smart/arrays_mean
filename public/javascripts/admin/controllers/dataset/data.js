@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetDataCtrl', ['$scope', 'DatasetService', '$mdToast', '$mdDialog', 'dataset', 'availableTypeCoercions',
-        function($scope, DatasetService, $mdToast, $mdDialog, dataset, availableTypeCoercions) {
+    .controller('DatasetDataCtrl', ['$scope', 'DatasetService', '$mdToast', '$mdDialog', '$filter', 'dataset', 'availableTypeCoercions', 'availableDesignatedFields',
+        function($scope, DatasetService, $mdToast, $mdDialog, $filter, dataset, availableTypeCoercions, availableDesignatedFields) {
 
             // Assert some of the fields should be available
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
@@ -8,46 +8,58 @@ angular.module('arraysApp')
 
             $scope.$parent.$parent.dataset = angular.copy(dataset);
             $scope.$parent.$parent.currentNavItem = 'Data';
+
             $scope.availableTypeCoercions = availableTypeCoercions;
 
-            $scope.openFieldDialog = function(ev, fieldName, firstRecord) {
+            $scope.openFieldDialog = function(evt, fieldName, firstRecord) {
                 $mdDialog.show({
                     controller: DialogController,
                     templateUrl: 'templates/dataset/data.field.html',
                     parent: angular.element(document.body),
-                    targetEvent: ev,
+                    targetEvent: evt,
                     clickOutsideToClose:true,
-                    fullscreen: true, // Only for -xs, -sm breakpoints.
+                    // fullscreen: true, // Only for -xs, -sm breakpoints.
                     locals: {
                         fieldName: fieldName,
                         firstRecord: firstRecord,
-                        dataset: dataset,
-                        availableTypeCoercions: availableTypeCoercions
+                        dataset: $scope.$parent.$parent.dataset,
+                        availableTypeCoercions: availableTypeCoercions,
+                        availableDesignatedFields: availableDesignatedFields
                     }
                 })
                     .then(function(savedDataset) {
-                        // Merge savedDataset into dataset
-
+                        $scope.$parent.$parent.dataset = savedDataset;
                     }, function() {
                         console.log('You cancelled the dialog.');
                     });
             };
 
-            function DialogController($scope, $mdDialog, fieldName, firstRecord, dataset, availableTypeCoercions) {
+            function DialogController($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields) {
                 $scope.fieldName = fieldName;
+                $scope.finalizedFieldName = $filter('dotless')(fieldName);
                 $scope.firstRecord = firstRecord;
-                $scope.dataset = angular.copy(dataset);
+
                 $scope.availableTypeCoercions = availableTypeCoercions;
+                $scope.availableDesignatedFields = availableDesignatedFields;
 
                 $scope.reset = function() {
                     $scope.dataset = angular.copy(dataset);
+
+                    for (var key in dataset.fe_designatedFields) {
+                        if (dataset.fe_designatedFields[key] == $scope.finalizedFieldName)
+                            $scope.designatedField = key;
+                    }
                 };
+
+                $scope.reset();
 
                 $scope.cancel = function() {
                     $mdDialog.cancel();
                 };
 
                 $scope.save = function() {
+                    $scope.dataset.fe_designatedFields[$scope.designatedField] = $scope.finalizedFieldName;
+
                     $mdDialog.hide($scope.dataset);
                 };
             }
@@ -58,7 +70,9 @@ angular.module('arraysApp')
 
             $scope.submitForm = function(isValid) {
                 if (isValid) {
-                    DatasetService.save($scope.$parent.$parent.dataset)
+                    console.log($scope.$parent.$parent.dataset);
+
+                    /* DatasetService.save($scope.$parent.$parent.dataset)
                         .then(function() {
                             $mdToast.show(
                                 $mdToast.simple()
@@ -75,7 +89,7 @@ angular.module('arraysApp')
                                     .position('top right')
                                     .hideDelay(5000)
                             );
-                        });
+                        }); */
                 }
             }
 

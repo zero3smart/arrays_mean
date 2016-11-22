@@ -106,7 +106,20 @@
                 })
                 .error(deferred.reject);
             return deferred.promise;
-        }
+        };
+
+        var getAvailableDesignatedFields = function() {
+            var deferred = $q.defer();
+            $http.get('api/dataset/getAvailableDesignatedFields')
+                .success(function(data) {
+                    if (!data.error && data.availableDesignatedFields)
+                        return deferred.resolve(data.availableDesignatedFields);
+                    else
+                        return deferred.reject(data.error);
+                })
+                .error(deferred.reject);
+            return deferred.promise;
+        };
 
         return {
             getAll: getAll,
@@ -115,7 +128,8 @@
             getSources: getSources,
             save: save,
             importData: importData,
-            getAvailableTypeCoercions: getAvailableTypeCoercions
+            getAvailableTypeCoercions: getAvailableTypeCoercions,
+            getAvailableDesignatedFields: getAvailableDesignatedFields
         }
     }
 })();

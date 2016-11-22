@@ -40,6 +40,7 @@ router.get('/dataset/download/:id', /*ensureLoggedIn,*/ctrlDataset.download);
 
 // dataset format data
 router.get('/dataset/getAvailableTypeCoercions', /*ensureLoggedIn,*/ctrlDataset.getAvailableTypeCoercions);
+router.get('/dataset/getAvailableDesignatedFields', /*ensureLoggedIn,*/ctrlDataset.getAvailableDesignatedFields);
 
 // dataset import
 router.post('/dataset/importData', /*ensureLoggedIn,*/ctrlDataset.importData);

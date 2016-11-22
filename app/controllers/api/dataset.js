@@ -365,6 +365,12 @@ module.exports.getAvailableTypeCoercions = function(req, res) {
     return res.json({availableTypeCoercions: datatypes.available_forFieldDataType_coercions()});
 }
 
+module.exports.getAvailableDesignatedFields = function(req, res) {
+    return res.json({availableDesignatedFields: [
+        "objectTitle", "originalImageURL", "medThumbImageURL"
+    ]});
+}
+
 module.exports.download = function (req, res) {
     if (!req.params.id)
         return res.json({error: 'No ID given'});

@@ -1,4 +1,4 @@
-<md-dialog aria-label="Format Field : ({{ dataset.title }})">
+<md-dialog aria-label="Format Field : ({{ dataset.title }})" class="field-dialog">
     <md-toolbar>
         <div class="md-toolbar-tools">
             <h2>Format Field : ({{ dataset.title }})</h2>
@@ -9,46 +9,98 @@
         </div>
     </md-toolbar>
 
-    <md-dialog-content>
-        {{ finalizedFieldName = (fieldName|dotless);'' }}
+    <md-dialog-content style="max-width:800px;max-height:810px; ">
         <form ng-cloak name="fieldForm">
-            <div class="md-dialog-content">
+            <md-tabs md-dynamic-height md-border-bottom>
+                <md-tab label="General">
+                    <md-content class="md-padding">
                 <md-input-container class="md-block" flex-gt-sm>
                     <label>Name</label>
-                    <input type="text" value="{{ fieldName }}" disabled>
+                    <input type="text" ng-model="fieldName" readonly="readonly">
                 </md-input-container>
 
                 <md-input-container class="md-block" flex-gt-sm>
                     <label>First Record</label>
-                    <input type="text" value="{{ firstRecord }}" disabled>
+                    <input type="text" ng-model="firstRecord" readonly="readonly">
                 </md-input-container>
 
                 <md-input-container class="md-block" flex-gt-sm>
                     <label>Data Type</label>
-                    <md-select name="dataType" ng-model="dataset.raw_rowObjects_coercionScheme[finalizedFieldName]">
-                        <md-option ng-repeat="coercion in available_coercions" value="{{coercion}}">
+                    <md-select  name="dataType"
+                                ng-model="dataset.raw_rowObjects_coercionScheme[finalizedFieldName]"
+                                ng-model-options="{trackBy: '$value | typeCoercionToString'}"
+                                aria-label="Field Type - {{fieldName}}">
+                        <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="coercion">
                             {{coercion | typeCoercionToString}}
                         </md-option>
                     </md-select>
+                    <div class="md-errors-spacer"></div>
                 </md-input-container>
 
-                <md-input-container class="md-block" flex-gt-sm ng-if="(dataset.raw_rowObjects_coercionScheme[finalizedFieldName] | availableTypeCoercions) == 'Date'">
+                <md-input-container class="md-block" flex-gt-sm ng-show="(dataset.raw_rowObjects_coercionScheme[finalizedFieldName] | typeCoercionToString) == 'Date'">
                     <label>Format</label>
-                    <input type="text" value="{{ format }}" disabled>
+                    <input type="text" name="dataType_format" ng-model="dataset.raw_rowObjects_coercionScheme[finalizedFieldName].format">
                 </md-input-container>
 
-                <md-input-container class="md-block" flex-gt-sm ng-if="(dataset.raw_rowObjects_coercionScheme[finalizedFieldName] | typeCoercionToString) == 'Date'">
+                <md-input-container class="md-block" flex-gt-sm ng-show="(dataset.raw_rowObjects_coercionScheme[finalizedFieldName] | typeCoercionToString) == 'Date'">
                     <label>Output Format</label>
-                    <input type="text" value="{{ outputFormat }}" disabled>
+                    <input type="text" name="dataType_outputFormat" ng-model="dataset.raw_rowObjects_coercionScheme[finalizedFieldName].outputFormat">
                 </md-input-container>
 
-            </div>
+                <md-input-container class="md-block" flex-gt-sm>
+                    <md-checkbox name="exclude" ng-model="dataset.fe_excludeFields[finalizedFieldName]" aria-label="Field Exclude {{fieldName}}">
+                        Exclude
+                    </md-checkbox>
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Title Override</label>
+                    <input type="text" name="titleOverride" ng-model="dataset.fe_displayTitleOverrides[finalizedFieldName]">
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Display Order</label>
+                    <input type="number" min="1" name="displayOrder" ng-model="dataset.fe_fieldDisplayOrder[finalizedFieldName]">
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Designated Field</label>
+                    <md-select  name="designatedField"
+                                ng-model="designatedField"
+                                aria-label="Designated Field - {{fieldName}}">
+                        <md-option ng-repeat="field in availableDesignatedFields" ng-value="field">
+                            {{field}}
+                        </md-option>
+                    </md-select>
+                    <div class="md-errors-spacer"></div>
+                </md-input-container>
+            </md-content>
+                </md-tab>
+
+                <md-tab label="Filter">
+                    <md-content class="md-padding">
+
+                    </md-content>
+                </md-tab>
+
+                <md-tab label="Nested">
+                    <md-content class="md-padding">
+
+                    </md-content>
+                </md-tab>
+
+                <md-tab label="Join">
+                    <md-content class="md-padding">
+                        Comming Soon!
+                    </md-content>
+                </md-tab>
+            </md-tabs>
 
             <md-dialog-actions layout="row" layout-align="end center">
-                <md-button ng-click="reset()" ng-disabled="!fieldForm.dirty">
+                <md-button ng-click="reset()" ng-disabled="!fieldForm.$dirty">
                     Reset
                 </md-button>
-                <md-button ng-click="save()" ng-disabled="!fieldForm.dirty || fieldForm.$invalid">
+                <md-button ng-click="save()" ng-disabled="!fieldForm.$dirty || fieldForm.$invalid">
                     Save
                 </md-button>
             </md-dialog-actions>

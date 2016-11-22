@@ -25,9 +25,19 @@
             <tbody>
             <tr ng-repeat="colName in dataset.colNames" ng-click="openFieldDialog($event, colName, dataset.firstRecord[$index])">
                 <td>{{ finalizedColName=(colName|dotless);$index+1 }}</td>
-                <td><md-checkbox ng-model="dataset.fe_excludeFields[finalizedColName]" aria-label="Exclude {{colName}}"></td>
+                <td>
+                    <md-checkbox ng-model="dataset.fe_excludeFields[finalizedColName]" aria-label="Exclude {{colName}}" ng-click="$event.stopPropagation()"></md-checkbox>
+                </td>
                 <td>{{ finalizedColName }}</td>
-                <td>{{ dataset.raw_rowObjects_coercionScheme[finalizedColName] | typeCoercionToString }}</td>
+                <td class="md-select-container">
+                    <md-select ng-model="dataset.raw_rowObjects_coercionScheme[finalizedColName]"
+                               ng-model-options="{trackBy: '$value | typeCoercionToString'}"
+                               ng-click="$event.stopPropagation()" aria-label="Type - {{colName}}">
+                        <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="coercion">
+                            {{coercion | typeCoercionToString}}
+                        </md-option>
+                    </md-select>
+                </td>
                 <td>{{ dataset.firstRecord[$index] }}</td>
             </tr>
             </tbody>

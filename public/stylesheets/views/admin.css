@@ -89,6 +89,13 @@
 .dataset table.data > tbody > tr > td > md-checkbox {
     margin-bottom: 6px;
 }
+.dataset table.data td.md-select-container {
+    padding-top: 5px;
+}
+.dataset table.data > tbody > tr > td > md-select {
+    margin-top: 0;
+    margin-bottom: 0;
+}
 
 .dataset table.data > tbody > tr {
     cursor: pointer;
@@ -103,6 +110,16 @@
 .dataset table.data > tbody > tr:active {
     background-color: var(--color-item-active);
 }
+
+.md-select-menu-container {
+    z-index: 1100;
+}
+
+/* Dataset Format Field */
+md-dialog.field-dialog .md-dialog-content {
+    padding-bottom: 10px;
+}
+
 
 /* -----------   for toggle slider  ----------------  */
 .switch {

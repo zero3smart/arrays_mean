@@ -84,6 +84,9 @@ angular.module('arraysApp')
                             }],
                             availableTypeCoercions: ['DatasetService', function(DatasetService) {
                                 return DatasetService.getAvailableTypeCoercions();
+                            }],
+                            availableDesignatedFields: ['DatasetService', function(DatasetService) {
+                                return DatasetService.getAvailableDesignatedFields();
                             }]
                         }
                     })
