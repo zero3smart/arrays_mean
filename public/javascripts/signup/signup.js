@@ -30,11 +30,16 @@
 					params: {
 						isInvite: null,
 						id: null
-
 					},
 					templateUrl: 'templates/blocks/signup.success.html',
 					controller: 'successCtrl'
 				})
+				.state('signup.error',{
+					url: '/error?name&msg',
+					templateUrl:'templates/blocks/signup.error.html',
+					controller: 'errorCtrl'
+				})
+
 
 	    $locationProvider.html5Mode(true);
 	});

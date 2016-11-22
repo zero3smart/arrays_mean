@@ -24,6 +24,7 @@
 			}
 		}
 
+
 	}])
 
 	signupModule.controller('signupCtrl',['$scope','$stateParams','User','$state',function($scope,$stateParams,User,$state) {
@@ -57,13 +58,18 @@
 
 	signupModule.controller('successCtrl',['$scope','$stateParams',function($scope,$stateParams) {
 		$scope.isInvite = $stateParams.isInvite;
-		console.log($stateParams)
 		if ($scope.isInvite) {
 			var userId = $stateParams.id;
 			$scope.resendActivationLink = '/user/:' + userId + '/resend';
 
 		}
 		
+	}])
+
+	signupModule.controller('errorCtrl',['$scope','$stateParams',function($scope,$stateParams) {
+		$scope.error = $stateParams.name;
+		$scope.message = $stateParams.msg;
+
 	}])
 
 	
