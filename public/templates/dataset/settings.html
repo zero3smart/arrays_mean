@@ -2,7 +2,7 @@
         <form name="settingsForm" ng-submit="submitForm(settingsForm.$valid && settingsForm.$dirty)" novalidate>
             <md-input-container class="md-block">
                 <label>Title</label>
-                <input md-maxlength="30" required md-no-asterisk name="title" ng-model="dataset.title">
+                <input md-maxlength="30" required name="title" ng-model="dataset.title">
                 <div ng-messages="settingsForm.title.$error">
                     <div ng-message="required">This is required.</div>
                     <div ng-message="md-maxlength">The title must be less than 30 characters long.</div>
@@ -19,7 +19,7 @@
 
             <md-input-container class="md-block">
                 <label>Import Revision</label>
-                <input type="number" min="1" required md-no-asterisk name="importRevision" ng-model="dataset.importRevision"/>
+                <input type="number" min="1" required name="importRevision" ng-model="dataset.importRevision"/>
                 <div ng-messages="settingsForm.importRevision.$error">
                     <div ng-message="required">This is required.</div>
                     <div ng-message="min">You should input at least 1.</div>
@@ -44,11 +44,11 @@
                 <md-checkbox ng-model="dataset.fe_listed" ng-click="toggleListed()">Listed</md-checkbox>
             </md-input-container>
 
-            <div class="panel-footer">
-                <md-button ui-sref="admin.dataset.list" class="md-raised pull-left" target="_self"><span
+            <div layout="row" layout-align="end center" class="panel-footer">
+                <md-button ui-sref="admin.dataset.list" class="md-raised" target="_self"><span
                         class="glyphicon glyphicon-hand-left"></span><span class="btn-label">Back</span></md-button>
 
-                <md-button class="md-raised pull-right" type="submit" ng-disabled="settingsForm.$invalid || !settingsForm.$dirty || submitting"><span
+                <md-button class="md-raised" type="submit" ng-disabled="settingsForm.$invalid || !settingsForm.$dirty || submitting"><span
                         class="glyphicon glyphicon-ok"></span><span class="btn-label">Save</span></md-button>
             </div>
         </form>

@@ -67,7 +67,10 @@ angular.module('arraysApp')
                                 return DatasetService.get($stateParams.id);
                             }],
                             sources: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
-                                return DatasetService.getSources($stateParams.id);
+                                if ($stateParams.id)
+                                    return DatasetService.getSources($stateParams.id);
+                                else
+                                    return [];
                             }]
                         }
                     })
@@ -78,6 +81,9 @@ angular.module('arraysApp')
                         resolve: {
                             dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
+                            }],
+                            availableTypeCoercions: ['DatasetService', function(DatasetService) {
+                                return DatasetService.getAvailableTypeCoercions();
                             }]
                         }
                     })

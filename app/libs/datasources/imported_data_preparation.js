@@ -69,10 +69,8 @@ function _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, 
     var feVisible_rowParams_keys = [];
     for (var i = 0; i < rowParams_keys_length; i++) {
         var key = rowParams_keys[i];
-        if (dataSourceDescription.fe_excludeFields) {
-            if (dataSourceDescription.fe_excludeFields.indexOf(key) !== -1) {
-                continue;
-            }
+        if (dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[key]) {
+            continue;
         }
         feVisible_rowParams_keys.push(key);
     }

@@ -18,6 +18,7 @@ var ctrlDataset = require('../controllers/api/dataset');
 var ctrlUsers = require('../controllers/api/users');
 var ctrlTeam = require('../controllers/api/team');
 
+
 // authentication
 router.post('/register', ctrlAuth.register);
 router.post('/login', ctrlAuth.login);
@@ -36,6 +37,9 @@ router.post('/dataset/update', /*ensureLoggedIn,*/ctrlDataset.update);
 // dataset upload
 router.post('/dataset/upload', /*ensureLoggedIn,*/upload.array('file', 12), ctrlDataset.upload);
 router.get('/dataset/download/:id', /*ensureLoggedIn,*/ctrlDataset.download);
+
+// dataset format data
+router.get('/dataset/getAvailableTypeCoercions', /*ensureLoggedIn,*/ctrlDataset.getAvailableTypeCoercions);
 
 // dataset import
 router.post('/dataset/importData', /*ensureLoggedIn,*/ctrlDataset.importData);

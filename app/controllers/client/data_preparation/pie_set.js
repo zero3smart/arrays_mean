@@ -97,8 +97,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             for (var colName in raw_rowObjects_coercionSchema) {
                 var colValue = raw_rowObjects_coercionSchema[colName];
                 if (colValue.operation == "ToInteger") {
-                    var index = typeof dataSourceDescription.fe_excludeFields == 'undefined' || (dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields.length == 0) ? -1 : dataSourceDescription.fe_excludeFields.indexOf(colName);
-                    if (index == -1 ) {
+                    var isExcluded = dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[colName];
+                    if (!isExcluded) {
                         var humanReadableColumnName = colName;
                         if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
                             humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];

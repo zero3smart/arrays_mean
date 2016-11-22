@@ -3,6 +3,7 @@ var fs = require('fs');
 var parse = require('csv-parse');
 var winston = require('winston');
 
+
 var imported_data_preparation = require('../../datasources/imported_data_preparation')
 var processed_row_objects = require('../../../models/processed_row_objects');
 var raw_source_documents = require('../../../models/raw_source_documents');
@@ -81,15 +82,15 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
 
         var filterKeys = Object.keys(sampleDoc.rowParams);
 
-        if (typeof dataSourceDescription.fe_excludeFields != 'undefined' && Array.isArray(dataSourceDescription.fe_excludeFields) && dataSourceDescription.fe_excludeFields.length > 0) {
-            for (var i = 0 ; i < dataSourceDescription.fe_excludeFields.length; i++) {
-                var index = filterKeys.indexOf(dataSourceDescription.fe_excludeFields[i]);
-                if (filterKeys[index] == dataSourceDescription.fe_excludeFields[i]) {
-                    filterKeys.splice(index,1);
+        for (var key in dataSourceDescription.fe_excludeFields) {
+            if (dataSourceDescription.fe_excludeFields[key]) {
+                var index = filterKeys.indexOf(key);
+                if (index != -1) {
+                    filterKeys.splice(index, 1);
                 }
             }
         }
-    
+
         // var feVisible_filter_keys_length = feVisible_filter_keys.length;
         var uniqueFieldValuesByFieldName = {};
 

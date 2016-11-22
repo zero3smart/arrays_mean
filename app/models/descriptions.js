@@ -29,7 +29,7 @@ var DatasourceDescription_scheme = Schema({
 
     fn_new_rowPrimaryKeyFromRowObject: String,
     raw_rowObjects_coercionScheme: Object,
-    fe_excludeFields: Array,
+    fe_excludeFields: Object,
     fe_displayTitleOverrides: Object,
     fe_designatedFields: Object,
     fe_fieldDisplayOrder: Object,

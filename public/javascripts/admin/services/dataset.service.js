@@ -16,9 +16,7 @@
                         return deferred.reject(data.error);
                     }
                 })
-                .error(function(data) {
-                    return deferred.reject(data);
-                });
+                .error(deferred.reject);
             return deferred.promise;
         };
 
@@ -32,9 +30,7 @@
                         return deferred.reject(data.error);
                     }
                 })
-                .error(function(data) {
-                    return deferred.reject(data)
-                });
+                .error(deferred.reject);
             return deferred.promise;
         };
 
@@ -53,9 +49,7 @@
                         return deferred.reject(data.error);
                     }
                 })
-                .error(function(data) {
-                    return deferred.reject(data);
-                });
+                .error(deferred.reject);
             return deferred.promise;
         };
 
@@ -69,9 +63,7 @@
                         return deferred.reject(data.error);
                     }
                 })
-                .error(function(data) {
-                    return deferred.reject(data);
-                });
+                .error(deferred.reject);
             return deferred.promise;
         };
 
@@ -85,9 +77,7 @@
                         return deferred.reject(data.error);
                     }
                 })
-                .error(function(data) {
-                    return deferred.reject(data);
-                });
+                .error(deferred.reject);
             return deferred.promise;
         };
 
@@ -101,9 +91,20 @@
                         return deferred.reject(data.error);
                     }
                 })
-                .error(function(data) {
-                    return deferred.reject(data);
-                });
+                .error(deferred.reject);
+            return deferred.promise;
+        }
+
+        var getAvailableTypeCoercions = function() {
+            var deferred = $q.defer();
+            $http.get('api/dataset/getAvailableTypeCoercions')
+                .success(function(data) {
+                    if (!data.error && data.availableTypeCoercions)
+                        return deferred.resolve(data.availableTypeCoercions);
+                    else
+                        return deferred.reject(data.error);
+                })
+                .error(deferred.reject);
             return deferred.promise;
         }
 
@@ -113,7 +114,8 @@
             get: get,
             getSources: getSources,
             save: save,
-            importData: importData
+            importData: importData,
+            getAvailableTypeCoercions: getAvailableTypeCoercions
         }
     }
 })();

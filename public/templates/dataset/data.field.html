@@ -1,0 +1,57 @@
+<md-dialog aria-label="Format Field : ({{ dataset.title }})">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Format Field : ({{ dataset.title }})</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <span class="icon-close-big" aria-label="Close dialog"></span>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        {{ finalizedFieldName = (fieldName|dotless);'' }}
+        <form ng-cloak name="fieldForm">
+            <div class="md-dialog-content">
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Name</label>
+                    <input type="text" value="{{ fieldName }}" disabled>
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>First Record</label>
+                    <input type="text" value="{{ firstRecord }}" disabled>
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Data Type</label>
+                    <md-select name="dataType" ng-model="dataset.raw_rowObjects_coercionScheme[finalizedFieldName]">
+                        <md-option ng-repeat="coercion in available_coercions" value="{{coercion}}">
+                            {{coercion | typeCoercionToString}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm ng-if="(dataset.raw_rowObjects_coercionScheme[finalizedFieldName] | availableTypeCoercions) == 'Date'">
+                    <label>Format</label>
+                    <input type="text" value="{{ format }}" disabled>
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm ng-if="(dataset.raw_rowObjects_coercionScheme[finalizedFieldName] | typeCoercionToString) == 'Date'">
+                    <label>Output Format</label>
+                    <input type="text" value="{{ outputFormat }}" disabled>
+                </md-input-container>
+
+            </div>
+
+            <md-dialog-actions layout="row" layout-align="end center">
+                <md-button ng-click="reset()" ng-disabled="!fieldForm.dirty">
+                    Reset
+                </md-button>
+                <md-button ng-click="save()" ng-disabled="!fieldForm.dirty || fieldForm.$invalid">
+                    Save
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog-content>
+</md-dialog>

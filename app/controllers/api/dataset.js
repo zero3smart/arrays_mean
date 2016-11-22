@@ -10,6 +10,7 @@ var es = require('event-stream');
 var parse = require('csv-parse');
 var datasource_file_service = require('../../libs/utils/aws-datasource-files-hosting');
 var imported_data_preparation = require('../../libs/datasources/imported_data_preparation')
+var datatypes = require('../../libs/datasources/datatypes');
 
 module.exports.getAll = function (req, res) {
     datasource_description.find({schema_id: {$exists: false}}, {
@@ -144,16 +145,18 @@ module.exports.get = function (req, res) {
 
             if (!req.session.datasource) req.session.datasource = {};
 
-            if (description.uid && description.imported && !req.session.datasource[req.params.id]) {
+            if (description.uid && !req.session.datasource[req.params.id]) {
                 _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function(err, datasource) {
                     if (err) return res.json({error: err.message});
 
                     req.session.datasource[req.params.id] = datasource;
-                    description.columnNamesAndFirstRecords = datasource;
+                    description.colNames = datasource.colNames;
+                    description.firstRecord = datasource.firstRecord;
                     return res.json({dataset: description});
                 })
             } else {
-                description.columnNamesAndFirstRecords = req.session.datasource[req.params.id];
+                description.colNames = req.session.datasource[req.params.id].colNames;
+                description.firstRecord = req.session.datasource[req.params.id].firstRecord;
                 return res.json({dataset: description});
             }
         });
@@ -203,7 +206,14 @@ module.exports.update = function (req, res) {
 
                     // TODO: detect whether you need to re-import dataset to the system or not, and inform that the client
                     var keysForNeedToImport = [
-                        'importRevision'
+                        'importRevision',
+                        'fn_new_rowPrimaryKeyFromRowObject',
+                        'raw_rowObjects_coercionScheme',
+                        'relationshipFields',
+                        'customFieldsToProcess',
+                        'fe_nestedObject',
+                        'imageScraping',
+                        'fe_filters' // Only need to post-import cache
                     ];
                     doc.dirty = keysForNeedToImport.indexOf(key) != -1;
                 }
@@ -349,6 +359,10 @@ module.exports.upload = function (req, res) {
 
         return res.json({id: description.id});
     });
+}
+
+module.exports.getAvailableTypeCoercions = function(req, res) {
+    return res.json({availableTypeCoercions: datatypes.available_forFieldDataType_coercions()});
 }
 
 module.exports.download = function (req, res) {
