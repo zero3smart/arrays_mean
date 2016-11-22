@@ -24,11 +24,22 @@
 					templateUrl: 'templates/blocks/signup.info.html',
 					controller: 'signupCtrl'
 				})
-				// .state('signup.success',{
-				// 	url: '/teaminfo/:id',
-				// 	templateUrl: 'templates/blocks/signup.teaminfo.html',
-				// 	controller: 'signupCtrl'
-				// })
+
+				.state('signup.success',{
+					url: '/success',
+					params: {
+						isInvite: null,
+						id: null
+					},
+					templateUrl: 'templates/blocks/signup.success.html',
+					controller: 'successCtrl'
+				})
+				.state('signup.error',{
+					url: '/error?name&msg',
+					templateUrl:'templates/blocks/signup.error.html',
+					controller: 'errorCtrl'
+				})
+
 
 	    $locationProvider.html5Mode(true);
 	});

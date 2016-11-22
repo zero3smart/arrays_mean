@@ -24,31 +24,51 @@
 			}
 		}
 
+
 	}])
 
 	signupModule.controller('signupCtrl',['$scope','$stateParams','User','$state',function($scope,$stateParams,User,$state) {
-
 		var userId = $stateParams.id;
+		$scope.invitedUser = false;
 		$scope.showPasswordToolTip = false;
 		$scope.user = User.get({id:userId},function() {
 			if (!$scope.user._team){
 				$scope.user._team = {};
+			} else {
+				$scope.invitedUser = true;
 			}
 		});
-
 
 		$scope.registerUser = function() {
 			User.update({id:$scope.user._id},$scope.user)
 			.$promise
-			.then(function() {
+			.then(function(data) {
+				if ($scope.invitedUser) {
+					$state.go('signup.success',{isInvite: true,id:null});
+				} else { 
+					$state.go('signup.success',{isInvite: false,id:data._id});
+				}
+			},function(err) {
 
 			})
 
-
-
 		}
 
+	}])
+
+	signupModule.controller('successCtrl',['$scope','$stateParams',function($scope,$stateParams) {
+		$scope.isInvite = $stateParams.isInvite;
+		if ($scope.isInvite) {
+			var userId = $stateParams.id;
+			$scope.resendActivationLink = '/user/:' + userId + '/resend';
+
+		}
 		
+	}])
+
+	signupModule.controller('errorCtrl',['$scope','$stateParams',function($scope,$stateParams) {
+		$scope.error = $stateParams.name;
+		$scope.message = $stateParams.msg;
 
 	}])
 

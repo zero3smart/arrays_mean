@@ -44,6 +44,7 @@
     "mongoose-integer": "^0.1.1",
     "multer": "^1.2.0",
     "nodemailer": "^2.6.4",
+    "nodemailer-ses-transport": "^1.5.0",
     "nunjucks-comma-filter": "^1.0.0",
     "passport": "^0.3.2",
     "passport-auth0": "^0.5.2",
