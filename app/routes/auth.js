@@ -18,7 +18,7 @@ router.get('/google/callback',function(req,res,next) {
         else {
 
             if (!user._team) {
-                return res.redirect('/signup/teaminfo/' + user._id);
+                return res.redirect('/signup/info/' + user._id);
                 
             } else {
                 req.logIn(user,function(err) {
