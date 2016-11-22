@@ -11,6 +11,15 @@
     font-size: 18px;
 }
 
+md-toolbar:not(.md-menu-toolbar) {
+    background-color: var(--color-primary);
+}
+
+md-tabs .md-tab.md-active {
+    color: var(--color-text-dark);
+}
+
+
 .site-admin md-toast {
     position: fixed;
     top: 64px;
