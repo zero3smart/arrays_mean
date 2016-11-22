@@ -9,22 +9,46 @@
           
          </div>
 
+       
          <div class="tab-content modal-body">
-            <form class="loginForm" autocomplete="off" method="POST" action="auth/login">
+
+
+
+
+
+          {% if flash.error %}
+            {% set error = flash.error | first %}
+           <div class="alert alert-danger">
+            <strong><i class="fa fa-times"></i> </strong> {% if error.message== "activation pending"%} You have not activated your account yet. You could resend the email <a class="alert-link pointer" href="{{error.link}}">here</a>  {% else %} {{error.message}} {%endif%}
+          </div>
+          {% endif %}
+
+
+           {% if flash.success %}
+
+            {% set success = flash.success | first %}
+           <div class="alert alert-success">
+            <strong><i class="fa fa-check"></i> </strong> {{success.message}} 
+          </div>
+          {% endif %}
+
+
+
+            <form class="loginForm" autocomplete="off" method="POST" action="login">
                   <div class="input-group">
                     <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                    <input type="text" class="form-control" name="username" placeholder="email address">
+                    <input type="text" class="form-control" name="email" placeholder="email address">
                  </div>
                  <span class="help-block"></span>
                  <div class="input-group">
                     <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                    <input type="password" class="form-control" name="password" placeholder="Password">
+                    <input id="passwordInput" type="password" class="form-control" name="password" placeholder="Password">
                  </div>
                   <span class="help-block"></span>
 
                   <div class="parent-pull-right">
                     <div class="pull-right">
-                       <input type="checkbox">
+                       <input type="checkbox" id="revealPassword">
                       <label> <span class="glyphicon glyphicon-eye-open"></span></label>
                     </div>
                    
@@ -39,7 +63,7 @@
 
                  <div class="parent-pull-right signup-link">
                     <div class="pull-right">
-                      <a href="signup/email">  New? Sign up here. </a>
+                      <a href="/signup/email">  New? Sign up here. </a>
                     </div>
                  </div>
             </form>
@@ -64,7 +88,7 @@
                   </a>
                </div> -->
                <div class="col-xs-6 col-xs-offset-3">
-                  <a href="auth/google" class="btn btn-block btn-google">
+                  <a href="/auth/google" class="btn btn-block btn-google">
                   <i class="fa fa-google-plus"></i> Google
                   </a>
                </div>

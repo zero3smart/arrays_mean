@@ -1,19 +1,25 @@
 var passport = require('passport');
-var Auth0Strategy = require('passport-auth0');
+var LocalStrategy= require('passport-local');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var User = require('../app/models/users');
 
-var strategy = new Auth0Strategy({
-    domain: process.env.AUTH0_DOMAIN,
-    clientID: process.env.AUTH0_CLIENT_ID,
-    clientSecret: process.env.AUTH0_CLIENT_SECRET,
-    callbackURL: process.env.AUTH0_CALLBACK_URL || 'http://localhost:9080/auth/callback'
-}, function (accessToken, refreshToken, extraParams, profile, done) {
-    // accessToken is the token to call Auth0 API (not needed in the most cases)
-    // extraParams.id_token has the JSON Web Token
-    // profile has all the information from the user
-    return done(null, profile);
-});
+var localStrategy = new LocalStrategy({
+    usernameField: "email",
+    passwordField: "password"
+},function(email,password,done) {
+    User.findOne({email:email},function(err,user) {
+        if (err) {return done(err);}
+        if (!user) {return done(null,false,{message: "user not found"});}
+        if (!user.activated) {
+            var link = '/api/user/'+ user._id + '/resend?emailType=activation';
+            return done(null,false,{message:"activation pending",link: link})
+
+        ;}
+        if (!user.validPassword(password)) {return done(null,false,{message:"wrong password"});}
+        return done(null,user);
+    })
+})
+
 
 
 var googleStrategy = new GoogleStrategy({
@@ -23,9 +29,6 @@ var googleStrategy = new GoogleStrategy({
 
 },function(accessToken,refreshToken,profile,done) {
     var findQuery = {email:profile.emails[0].value};
-
-
-
     var insertQuery = {
         email: profile.emails[0].value,
         provider: "google",
@@ -38,7 +41,7 @@ var googleStrategy = new GoogleStrategy({
     })
 });
 
-passport.use(strategy);
+passport.use(localStrategy);
 
 passport.use(googleStrategy)
 
@@ -51,5 +54,3 @@ passport.serializeUser(function (user, done) {
 passport.deserializeUser(function (user, done) {
     done(null, user);
 });
-
-module.exports = strategy;

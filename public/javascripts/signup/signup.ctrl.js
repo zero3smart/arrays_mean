@@ -56,19 +56,29 @@
 
 	}])
 
-	signupModule.controller('successCtrl',['$scope','$stateParams',function($scope,$stateParams) {
+	signupModule.controller('successCtrl',['$scope','$stateParams','$window',function($scope,$stateParams,$window) {
 		$scope.isInvite = $stateParams.isInvite;
-		if ($scope.isInvite) {
+		if (!$scope.isInvite) {
 			var userId = $stateParams.id;
-			$scope.resendActivationLink = '/user/:' + userId + '/resend';
+			$scope.resendActivationLink = '/api/user/' + userId + '/resend?emailType=activation';
+		}
+		$scope.login = function() {
+			$window.location.href = 'auth/login';
+			
 
 		}
 		
 	}])
 
-	signupModule.controller('errorCtrl',['$scope','$stateParams',function($scope,$stateParams) {
+	signupModule.controller('errorCtrl',['$scope','$stateParams','$window',function($scope,$stateParams,$window) {
+
 		$scope.error = $stateParams.name;
 		$scope.message = $stateParams.msg;
+		$scope.login = function() {
+			$window.location.href = 'auth/login';
+			
+
+		}
 
 	}])
 

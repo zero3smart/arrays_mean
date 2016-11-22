@@ -15,7 +15,9 @@ var transporter = nodemailer.createTransport({
 });
 
 function sendEmail (mailOptions,callback) {
-	transporter.sendMail(mailOptions,function(err) {
+	transporter.sendMail(mailOptions,function(err,info) {
+		if (err) console.log(err);
+		console.log(info)
 		callback(err);
 	})
 }

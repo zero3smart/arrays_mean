@@ -229,8 +229,17 @@ $(document).ready(function () {
 
     $('#login').on('click', function (e) {
         e.preventDefault();
-        $('#login-modal').modal('show');
+        window.location.href = '/auth/login';
     });
+
+    $('#revealPassword').change(function(e) {
+        if($(this).is(":checked")) {
+            $('#passwordInput').attr('type','text');
+        } else {
+            $('#passwordInput').attr('type','password');
+
+        }
+    })
 
     /**
      * Toggle legend
