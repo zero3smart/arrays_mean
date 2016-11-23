@@ -9,8 +9,8 @@
         </div>
     </md-toolbar>
 
-    <md-dialog-content>
-        <form name="fieldForm">
+    <md-dialog-content style="max-width: 1000px; max-height: 800px;">
+        <form name="dialog.fieldForm">
             <md-tabs md-dynamic-height md-border-bottom>
                 <md-tab label="General">
                     <ng-include src="'templates/dataset/data.field.general.html'"></ng-include>
@@ -20,20 +20,14 @@
                     <ng-include src="'templates/dataset/data.field.filter.html'"></ng-include>
                 </md-tab>
 
-                <md-tab label="Nested">
-                    <ng-include src="'templates/dataset/data.field.nested.html'"></ng-include>
-                </md-tab>
-
-                <!--<md-tab label="Join">-->
-                    <!--<ng-include src="'templates/dataset/data.field.join.html'"></ng-include>-->
-                <!--</md-tab>-->
+                <md-tab></md-tab>
             </md-tabs>
 
             <md-dialog-actions layout="row" layout-align="end center">
-                <md-button ng-click="reset()" ng-disabled="!fieldForm.$dirty">
+                <md-button class="md-raised" ng-click="reset()" ng-disabled="!dialog.fieldForm.$dirty">
                     Reset
                 </md-button>
-                <md-button ng-click="save()" ng-disabled="!fieldForm.$dirty || fieldForm.$invalid">
+                <md-button class="md-raised" ng-click="save()" ng-disabled="!dialog.fieldForm.$dirty || dialog.fieldForm.$invalid">
                     Save
                 </md-button>
             </md-dialog-actions>

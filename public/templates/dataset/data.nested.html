@@ -1,0 +1,151 @@
+<md-dialog aria-label="Nested : ({{ dataset.title }})" class="nested-dialog">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Nested : ({{ dataset.title }})</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <span class="icon-close-big" aria-label="Close dialog"></span>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content layout-padding>
+        <form name="dialog.form">
+            <md-content layout-padding>
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Criteria (**All the empty rows would be nested)</label>
+                    <md-select required name="criteria"
+                               ng-model="data.criteria">
+                        <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
+                            {{columnName}}
+                        </md-option>
+                    </md-select>
+                    <div ng-messages="dialog.form.criteria.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Nested Fields</label>
+                    <md-select required name="fields" ng-model="data.fields" multiple>
+                        <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
+                            {{columnName}}
+                        </md-option>
+                    </md-select>
+                    <div ng-messages="dialog.form.fields.$error">
+                        <div ng-message="required">This is required.</div>
+                    </div>
+                </md-input-container>
+
+                <fieldset class="standard">
+                    <legend>Field Overrides</legend>
+                    <div layout="row"
+                         ng-repeat="fieldOverride in data.fieldOverrides">
+
+                        <div flex="45">
+                            <md-input-container class="md-block">
+                                <label>Field</label>
+                                <md-select required name="fieldOverrideField_{{$index}}" ng-model="fieldOverride.field">
+                                    <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
+                                        {{columnName}}
+                                    </md-option>
+                                </md-select>
+                                <div ng-messages="dialog.form.fieldOverrideField.$error">
+                                    <div ng-message="required">This is required.</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+
+                        <div flex="45">
+                            <md-input-container class="md-block">
+                                <label>Override</label>
+                                <input required type="text" name="fieldOverride_{{$index}}"
+                                       ng-model="fieldOverride.override">
+                                <div ng-messages="dialog.form.fieldOverride.$error">
+                                    <div ng-message="required">This is required.</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+
+                        <div flex="10">
+                            <md-button class="md-raised" ng-click="removeFieldOverride(fieldOverride)"
+                                       aria-label="Remove FieldOverride"><span
+                                    class="glyphicon glyphicon-remove"></span></md-button>
+                        </div>
+                    </div>
+                    <md-button class="md-raised" ng-click="addFieldOverride()"><span
+                            class="glyphicon glyphicon-plus"></span>Add more
+                    </md-button>
+                </fieldset>
+
+
+                <fieldset class="standard">
+                    <legend>Value Overrides</legend>
+                    <div layout="row"
+                         ng-repeat="valueOverrideByField in data.valueOverrides">
+
+                        <md-input-container class="md-block" flex="30">
+                            <label>Field</label>
+                            <md-select required name="valueOverrideField_{{$index}}" ng-model="valueOverrideByField.field">
+                                <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
+                                    {{columnName}}
+                                </md-option>
+                            </md-select>
+                            <div ng-messages="dialog.form.valueOverrideField.$error">
+                                <div ng-message="required">This is required.</div>
+                            </div>
+                        </md-input-container>
+
+                        <div flex="60" layout="row">
+                            <md-input-container class="md-block" flex="50"
+                                                ng-repeat-start="valueOverride in valueOverrideByField.valueOverrides">
+                                <label>Value</label>
+                                <input required type="text" name="valueOverrideValue_{{$index}}"
+                                       ng-model="valueOverride.value">
+                                <div ng-messages="dialog.form.valueOverrideValue.$error">
+                                    <div ng-message="required">This is required.</div>
+                                </div>
+                            </md-input-container>
+
+                            <md-input-container class="md-block" flex="50" ng-repeat-end>
+                                <label>Override</label>
+                                <input required type="text" name="valueOverride_{{$index}}"
+                                       ng-model="valueOverride.override">
+                                <div ng-messages="dialog.form.valueOverride.$error">
+                                    <div ng-message="required">This is required.</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+
+                        <div flex="10">
+                            <md-button class="md-raised" ng-click="removeValueOverride(valueOverrideByField)"
+                                       aria-label="Remove ValueOverride"><span
+                                    class="glyphicon glyphicon-remove"></span></md-button>
+                        </div>
+                    </div>
+                    <md-button class="md-raised" ng-click="addValueOverride()"><span
+                            class="glyphicon glyphicon-plus"></span>Add more
+                    </md-button>
+                </fieldset>
+
+
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Prefix (Will be linked to the column name)</label>
+                    <input type="text" name="prefix"
+                           ng-model="dataset.fe_nestedObject.prefix">
+                </md-input-container>
+
+            </md-content>
+
+            <md-dialog-actions layout="row" layout-align="end center">
+                <md-button ng-click="reset()" ng-disabled="!dialog.form.$dirty">
+                    Reset
+                </md-button>
+                <md-button ng-click="save()" ng-disabled="!dialog.form.$dirty || dialog.form.$invalid">
+                    Save
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog-content>
+</md-dialog>
+
