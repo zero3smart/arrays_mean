@@ -104,22 +104,12 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, 
     // Then sort by custom order if defined
     var fe_fieldDisplayOrder = dataSourceDescription.fe_fieldDisplayOrder;
     if (fe_fieldDisplayOrder) {
-        var sortedFieldsByDisplayOrder = [];
-        for (var field in fe_fieldDisplayOrder)
-            sortedFieldsByDisplayOrder.push([field, fe_fieldDisplayOrder[field]])
-
-        sortedFieldsByDisplayOrder.sort(
-            function(a, b) {
-                return a[1] - b[1]
-            }
-        );
-
         var rowParams_keys_customSorted = [];
-        for (i = 0; i < sortedFieldsByDisplayOrder.length; i++) {
-            var index = rowParams_keys.indexOf(sortedFieldsByDisplayOrder[i][0]);
+        for (i = 0; i < fe_fieldDisplayOrder.length; i++) {
+            var index = rowParams_keys.indexOf(fe_fieldDisplayOrder[i]);
             if (index > -1) {
                 rowParams_keys.splice(index, 1);
-                rowParams_keys_customSorted.push(sortedFieldsByDisplayOrder[i][0]);
+                rowParams_keys_customSorted.push(fe_fieldDisplayOrder[i]);
             }
         }
 
