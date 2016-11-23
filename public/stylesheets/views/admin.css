@@ -140,10 +140,16 @@ md-dialog {
     min-width: 80%;
 }
 
-md-dialog legend {
+md-dialog fieldset legend,
+.dataset fieldset legend {
     font-size: 15px;
     color: rgba(0,0,0,0.54);
-    margin-bottom: 2px;
+    margin-bottom: 4px;
+    padding-top: 20px;
+}
+
+.no-padding {
+    padding: 0 !important;
 }
 
 

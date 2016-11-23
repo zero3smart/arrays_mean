@@ -13,7 +13,9 @@
             </div>
         </md-input-container>
 
-        <div class="table-container">
+        <fieldset class="standard">
+            <legend>Original Fields</legend>
+            <div class="table-container">
             <table class="table data">
                 <thead>
                 <tr>
@@ -48,18 +50,45 @@
                     <td>{{ dataset.firstRecord[$index] | limitTo: 200 }}{{dataset.firstRecord[$index].length > 200 ? '...' : ''}}</td>
                 </tr>
                 </tbody>
-            </table>
-        </div>
+                </table>
+            </div>
+        </fieldset>
 
-        <div layout="column" class="md-padding">
+        <fieldset class="standard">
+            <legend>Custom Fields</legend>
+
+            <div class="table-container">
+                <table class="table data">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th style="min-width: 120px;">Column Name</th>
+                        <th>Type</th>
+                        <th>Fields</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="customField in dataset.customFieldsToProcess"
+                        ng-click="openFieldDialog($event, customField.fieldName, null, $index)">
+                        <td>{{$index+1}}</td>
+                        <td>{{customField.fieldName}}</td>
+                        <td>{{ customField.fieldType | capitalize }}</td>
+                        <td><span ng-repeat="field in customField.fieldsToMergeIntoArray"><b>{{field}}</b>, </span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div layout="column" class="md-padding">
+                <md-button class="md-raised" ng-click="openFieldDialog($event, '', null, dataset.customFieldsToProcess.length)">
+                    Add a New Custom Field
+                </md-button>
+            </div>
+        </fieldset>
+
+        <div layout="column" class="no-padding">
             <md-button class="md-raised" ng-click="openNestedDialog()">
                 Click Here to Edit if Nested
-            </md-button>
-        </div>
-
-        <div layout="column" class="md-padding">
-            <md-button class="md-raised" ng-click="openCustomFieldDialog()">
-                Click Here to Make any custom Field
             </md-button>
         </div>
 

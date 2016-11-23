@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetDataCtrl', ['$scope', 'DatasetService', '$mdToast', '$mdDialog', '$filter', 'dataset', 'availableTypeCoercions', 'availableDesignatedFields',
-        function ($scope, DatasetService, $mdToast, $mdDialog, $filter, dataset, availableTypeCoercions, availableDesignatedFields) {
+    .controller('DatasetDataCtrl', ['$scope', '$state', 'DatasetService', '$mdToast', '$mdDialog', '$filter', 'dataset', 'availableTypeCoercions', 'availableDesignatedFields',
+        function ($scope, $state, DatasetService, $mdToast, $mdDialog, $filter, dataset, availableTypeCoercions, availableDesignatedFields) {
 
             // Assert some of the fields should be available
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
@@ -8,14 +8,14 @@ angular.module('arraysApp')
 
             $scope.$parent.$parent.dataset = angular.copy(dataset);
             $scope.data = {};
-            $scope.data.primaryKey = dataset.colNames.find(function(colName) {
+            $scope.data.primaryKey = dataset.colNames.find(function (colName) {
                 return $filter('dotless')(colName) == dataset.fn_new_rowPrimaryKeyFromRowObject;
             });
 
             $scope.$parent.$parent.currentNavItem = 'Data';
             $scope.availableTypeCoercions = availableTypeCoercions;
 
-            $scope.openFieldDialog = function (evt, fieldName, firstRecord) {
+            $scope.openFieldDialog = function (evt, fieldName, firstRecord, customFieldIndex) {
                 $mdDialog.show({
                     controller: FieldDialogController,
                     controllerAs: 'dialog',
@@ -29,26 +29,46 @@ angular.module('arraysApp')
                         firstRecord: firstRecord,
                         dataset: $scope.$parent.$parent.dataset,
                         availableTypeCoercions: availableTypeCoercions,
-                        availableDesignatedFields: availableDesignatedFields
+                        availableDesignatedFields: availableDesignatedFields,
+                        customFieldIndex: customFieldIndex
                     }
                 })
                     .then(function (savedDataset) {
                         $scope.$parent.$parent.dataset = savedDataset;
+                        $scope.vm.dataForm.$setDirty();
                     }, function () {
                         console.log('You cancelled the field dialog.');
                     });
             };
 
-            function FieldDialogController($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields) {
+            function FieldDialogController($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields, customFieldIndex) {
 
-                $scope.fieldName = fieldName;
-                $scope.finalizedFieldName = $filter('dotless')(fieldName);
                 $scope.firstRecord = firstRecord;
                 $scope.availableTypeCoercions = availableTypeCoercions;
                 $scope.availableDesignatedFields = availableDesignatedFields;
+                $scope.isCustom = customFieldIndex != undefined;
+
+                function getColumnNameFromDotless(dotlessColumnName) {
+                    return $scope.dataset.colNames.find(function (colName) {
+                        return dotlessColumnName == $filter('dotless')(colName);
+                    });
+                }
 
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
+                    $scope.fieldName = fieldName;
+                    $scope.finalizedFieldName = $filter('dotless')(fieldName);
+
+                    $scope.customField = dataset.customFieldsToProcess[customFieldIndex];
+                    if (!$scope.customField) {
+                        $scope.customField = {
+                            fieldName: '',
+                            fieldType: 'array',
+                            fieldsToMergeIntoArray: [],
+                            delimiterOnFields: []
+                        };
+                    }
+                    if (!$scope.customField.delimiterOnFields) $scope.customField.delimiterOnFields = [];
 
                     $scope.data = {};
 
@@ -86,12 +106,19 @@ angular.module('arraysApp')
                     if (!$scope.dataset.fe_filters.valuesToExcludeByOriginalKey) $scope.dataset.fe_filters.valuesToExcludeByOriginalKey = {};
                     if (!$scope.dataset.fe_filters.valuesToExcludeByOriginalKey[$scope.finalizedFieldName])
                         $scope.dataset.fe_filters.valuesToExcludeByOriginalKey[$scope.finalizedFieldName] = [];
+                    if (!$scope.dataset.fe_filters.valuesToExcludeByOriginalKey._all)
+                        $scope.dataset.fe_filters.valuesToExcludeByOriginalKey._all = [];
 
                     if (!$scope.dataset.fe_filters.keywords) $scope.dataset.fe_filters.keywords = [];
                     $scope.data.keywords = $scope.dataset.fe_filters.keywords.find(function (elem) {
                         return elem.title == $scope.finalizedFieldName;
                     });
                     if (!$scope.data.keywords) $scope.data.keywords = {title: $scope.finalizedFieldName, choices: []};
+
+                    // Custom Fields
+                    if ($scope.isCustom) {
+                        $scope.data.fields = $scope.customField.fieldsToMergeIntoArray.map(getColumnNameFromDotless);
+                    }
 
                     if ($scope.dialog.fieldForm) $scope.dialog.fieldForm.$setPristine();
                 };
@@ -188,6 +215,16 @@ angular.module('arraysApp')
                     $mdDialog.cancel();
                 };
 
+                $scope.delete = function() {
+                    $scope.reset();
+                    if (customFieldIndex < $scope.dataset.customFieldsToProcess.length) {
+                        $scope.dataset.customFieldsToProcess.splice(customFieldIndex, 1);
+                    }
+
+                    $mdDialog.hide($scope.dataset);
+                };
+
+
                 $scope.save = function () {
                     // General
                     if ($scope.data.designatedField != undefined)
@@ -253,6 +290,11 @@ angular.module('arraysApp')
                     });
                     if ($scope.data.keywords.choices.length > 0) $scope.dataset.fe_filters.keywords = $scope.dataset.fe_filters.keywords.concat($scope.data.keywords);
 
+                    if ($scope.isCustom) {
+                        $scope.customField.fieldsToMergeIntoArray = $scope.data.fields.map($filter('dotless'));
+                        $scope.dataset.customFieldsToProcess.splice(customFieldIndex, 1, $scope.customField);
+                    }
+
                     $mdDialog.hide($scope.dataset);
                 };
             }
@@ -272,6 +314,7 @@ angular.module('arraysApp')
                 })
                     .then(function (savedDataset) {
                         $scope.$parent.$parent.dataset = savedDataset;
+                        $scope.vm.dataForm.$setDirty();
                     }, function () {
                         console.log('You cancelled the nested dialog.');
                     });
@@ -280,7 +323,7 @@ angular.module('arraysApp')
             function NestedDialogController($scope, $mdDialog, $filter, dataset) {
 
                 function getColumnNameFromDotless(dotlessColumnName) {
-                    return $scope.dataset.colNames.find(function(colName) {
+                    return $scope.dataset.colNames.find(function (colName) {
                         return dotlessColumnName == $filter('dotless')(colName);
                     });
                 }
@@ -307,19 +350,24 @@ angular.module('arraysApp')
                     if (!$scope.dataset.fe_nestedObject.fieldOverrides) $scope.dataset.fe_nestedObject.fieldOverrides = {};
                     $scope.data.fieldOverrides = [];
                     // Convert Object into Array
-                    Object.keys($scope.dataset.fe_nestedObject.fieldOverrides).map(function(dotlessColName) {
+                    Object.keys($scope.dataset.fe_nestedObject.fieldOverrides).map(function (dotlessColName) {
                         var realColumnName = getColumnNameFromDotless(dotlessColName);
-                        $scope.data.fieldOverrides.push({field: realColumnName, override: $scope.dataset.fe_nestedObject.fieldOverrides[dotlessColName]});
+                        $scope.data.fieldOverrides.push({
+                            field: realColumnName,
+                            override: $scope.dataset.fe_nestedObject.fieldOverrides[dotlessColName]
+                        });
                     });
 
                     if (!$scope.dataset.fe_nestedObject.valueOverrides) $scope.dataset.fe_nestedObject.valueOverrides = {};
                     $scope.data.valueOverrides = [];
                     // Convert Object into Array
-                    Object.keys($scope.dataset.fe_nestedObject.valueOverrides).map(function(dotlessColName) {
+                    Object.keys($scope.dataset.fe_nestedObject.valueOverrides).map(function (dotlessColName) {
                         var realColumnName = getColumnNameFromDotless(dotlessColName);
                         var orgValueOverrides = $scope.dataset.fe_nestedObject.valueOverrides[dotlessColName];
                         var valueOverrides = [];
-                        Object.keys(orgValueOverrides).map(function(value) { valueOverrides.push({value: value, override: orgValueOverrides[value]}) });
+                        Object.keys(orgValueOverrides).map(function (value) {
+                            valueOverrides.push({value: value, override: orgValueOverrides[value]})
+                        });
                         $scope.data.valueOverrides.push({field: realColumnName, valueOverrides: valueOverrides});
                     });
 
@@ -332,23 +380,23 @@ angular.module('arraysApp')
                     $mdDialog.cancel();
                 };
 
-                $scope.addValueOverride = function() {
+                $scope.addValueOverride = function () {
                     $scope.data.valueOverrides.push({field: '', valueOverrides: [{value: '', override: ''}]});
                     $scope.dialog.form.$setDirty();
                 };
 
-                $scope.removeValueOverride = function(override) {
+                $scope.removeValueOverride = function (override) {
                     var index = $scope.data.valueOverrides.indexOf(override);
                     if (index != -1) $scope.data.valueOverrides.splice(index, 1);
                     $scope.dialog.form.$setDirty();
                 };
 
-                $scope.addFieldOverride = function() {
+                $scope.addFieldOverride = function () {
                     $scope.data.fieldOverrides.push({field: '', override: ''});
                     $scope.dialog.form.$setDirty();
                 };
 
-                $scope.removeFieldOverride = function(override) {
+                $scope.removeFieldOverride = function (override) {
                     var index = $scope.data.fieldOverrides.indexOf(override);
                     if (index != -1) $scope.data.fieldOverrides.splice(index, 1);
                     $scope.dialog.form.$setDirty();
@@ -360,59 +408,20 @@ angular.module('arraysApp')
                     $scope.dataset.fe_nestedObject.fields = $scope.data.fields.map($filter('dotless'));
 
                     $scope.dataset.fe_nestedObject.fieldOverrides = {};
-                    $scope.data.fieldOverrides.map(function(elem) {
+                    $scope.data.fieldOverrides.map(function (elem) {
                         $scope.dataset.fe_nestedObject.fieldOverrides[$filter('dotless')(elem.field)] = elem.override;
                     });
 
                     $scope.dataset.fe_nestedObject.valueOverrides = {};
-                    $scope.data.valueOverrides.map(function(elem) {
+                    $scope.data.valueOverrides.map(function (elem) {
                         var valueOverrides = {};
-                        elem.valueOverrides.map(function(el) {
+                        elem.valueOverrides.map(function (el) {
                             valueOverrides[el.value] = el.override;
                         });
                         $scope.dataset.fe_nestedObject.valueOverrides[$filter('dotless')(elem.field)] = valueOverrides;
                     });
 
                     $mdDialog.hide($scope.dataset);
-                }
-            }
-
-            $scope.openCustomFieldDialog = function(evt) {
-                $mdDialog.show({
-                    controller: CustomFieldDialogController,
-                    controllerAs: 'dialog',
-                    templateUrl: 'templates/dataset/data.customfield.html',
-                    parent: angular.element(document.body),
-                    targetEvent: evt,
-                    clickOutsideToClose: true,
-                    fullscreen: true, // Only for -xs, -sm breakpoints.
-                    locals: {
-                        dataset: $scope.$parent.$parent.dataset
-                    }
-                })
-                    .then(function (savedDataset) {
-                        $scope.$parent.$parent.dataset = savedDataset;
-                    }, function () {
-                        console.log('You cancelled the customfield dialog.');
-                    });
-            };
-
-            function CustomFieldDialogController($scope, $mdDialog, $filter, dataset) {
-
-                $scope.reset = function() {
-                    $scope.dataset = angular.copy(dataset);
-
-                    $scope.dialog.form.$setPristine();
-                };
-
-                $scope.reset();
-
-                $scope.cancel = function () {
-                    $mdDialog.cancel();
-                };
-
-                $scope.save = function() {
-
                 }
             }
 
@@ -423,28 +432,35 @@ angular.module('arraysApp')
 
             $scope.submitForm = function (isValid) {
                 if (isValid) {
-                    $scope.$parent.$parent.dataset.fn_new_rowPrimaryKeyFromRowObject = $filter('dotless')($scope.data.primaryKey);
+                    var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
+                    finalizedDataset.fn_new_rowPrimaryKeyFromRowObject = $filter('dotless')($scope.data.primaryKey);
+                    delete finalizedDataset.firstRecord;
+                    delete finalizedDataset.colNames;
 
-                    console.log($scope.$parent.$parent.dataset);
+                    console.log(finalizedDataset);
 
-                    /* DatasetService.save($scope.$parent.$parent.dataset)
-                     .then(function() {
-                     $mdToast.show(
-                     $mdToast.simple()
-                     .textContent('Dataset updated successfully!')
-                     .position('top right')
-                     .hideDelay(3000)
-                     );
+                    DatasetService.save(finalizedDataset)
+                        .then(function (id) {
+                            $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent('Dataset updated successfully!')
+                                    .position('top right')
+                                    .hideDelay(3000)
+                            );
 
-                     $state.transitionTo('admin.dataset.views', {id: id}, { reload: true, inherit: false, notify: true });
-                     }, function(error) {
-                     $mdToast.show(
-                     $mdToast.simple()
-                     .textContent(error)
-                     .position('top right')
-                     .hideDelay(5000)
-                     );
-                     }); */
+                            $state.transitionTo('admin.dataset.views', {id: id}, {
+                                reload: true,
+                                inherit: false,
+                                notify: true
+                            });
+                        }, function (error) {
+                            $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent(error)
+                                    .position('top right')
+                                    .hideDelay(5000)
+                            );
+                        });
                 }
             }
 
