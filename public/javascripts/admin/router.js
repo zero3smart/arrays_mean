@@ -96,7 +96,13 @@ angular.module('arraysApp')
                         controller: 'DatasetViewsCtrl',
                         resolve: {
                             dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
+
                                 return DatasetService.get($stateParams.id);
+                            }],
+                            viewResource: 'View',
+                            views: ['View',function(View) {
+
+                                return View.query();
                             }]
                         }
                     })

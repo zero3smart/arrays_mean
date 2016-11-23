@@ -7,6 +7,7 @@ angular
         'ngMaterial',
         'ngMessages',
         'ngStorage',
+        'ngResource',
         'ngAria',
         'ngCookies',
         'mdColorPicker',

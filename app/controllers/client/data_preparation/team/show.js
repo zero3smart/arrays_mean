@@ -14,6 +14,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var team;
     var team_dataSourceDescriptions;
 
+    //To Do: check user identify , if team member, show unpublished page (with check viewer role) , if not, only published page
 
     teamDescriptions.findOneBySubdomainAndPopulateDatasourceDescription(urlQuery.team_key, function (err, objReturned) {
 

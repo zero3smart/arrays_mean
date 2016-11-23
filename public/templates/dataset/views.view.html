@@ -1,0 +1,142 @@
+<md-dialog aria-label="Format View : ({{ dataset.title }})" class="field-dialog">
+
+     <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Format View : ({{ dataset.title }})</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <span class="icon-close-big" aria-label="Close dialog"></span>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+
+
+    <md-dialog-content>
+
+        <md-content layout-padding>
+
+          <form name="fieldForm">
+               <div layout="row" layout-xs="column" layout-sm="column" layout-align="space-between center">
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <md-checkbox ng-model="dataset.fe_views.views[viewName].visible">
+                            Visible
+                        </md-checkbox>
+                    </md-input-container>
+
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <md-checkbox ng-model="isDefault">
+                            Default
+                        </md-checkbox>
+                    </md-input-container>
+
+               </div>
+
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Name</label>
+                    <input type="text" ng-model="viewDisplayName" readonly="readonly">
+                </md-input-container>
+
+
+                <md-input-container class="md-block" flex-gt-sm>
+                    <label>Description</label>
+                    <textarea class="md-block" md-maxlength="100" rows="3"
+                           ng-model="dataset.fe_views.views[viewName].description"></textarea>
+                </md-input-container>
+
+
+        
+
+
+            <div ng-repeat="setting in viewSetting">
+
+                <div ng-if="setting.inputType == 'textbox'">
+                     <md-input-container class="md-block" flex-gt-sm>
+                        <label>{{setting.displayAs}}</label>
+                        <input type="text" ng-model="dataset.fe_views.views[viewName][setting.name]">
+                    </md-input-container>
+                </div>
+
+                 <div ng-if="setting.inputType == 'select'">
+                     <md-input-container class="md-block" ng-if="setting.inputType == 'select'" flex-gt-sm>
+                        <label>{{setting.displayAs}}</label>
+                        <md-select ng-model="dataset.fe_views.views[viewName][setting.name]">
+                            <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in dataset.colNames" ng-value="col">
+                                {{col}}
+                            </md-option>
+                        </md-select>
+                        <div class="md-errors-spacer"></div>
+                    </md-input-container>
+
+                </div>
+
+
+                 <div ng-if="setting.inputType == 'multiselect'">
+                   <!--   <md-input-container class="md-block" ng-if="setting.inputType == 'select'" flex-gt-sm>
+                        <label>{{setting.displayAs}}</label>
+                        <md-select ng-model="dataset.fe_views.views[viewName][setting.name]">
+                            <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in dataset.colNames" ng-value="col">
+                                {{col}}
+                            </md-option>
+                        </md-select>
+                        <div class="md-errors-spacer"></div>
+                    </md-input-container> -->
+
+
+
+                     <md-chips ng-model="dataset.fe_views.views[viewName][setting.name]" md-autocomplete-snap
+                              md-transform-chip="ctrl.transformChip($chip)"
+                              md-require-match="true">
+                      <md-autocomplete
+                          md-selected-item="ctrl.selectedItem"
+                          md-search-text="ctrl.searchText"
+                          md-items="item in ctrl.querySearch(ctrl.searchText)"
+                          md-item-text="item.name"
+                          placeholder="Search for a colNames">
+                        <span md-highlight-text="ctrl.searchText">{{item.name}} :: {{item.type}}</span>
+                      </md-autocomplete>
+                      <md-chip-template>
+                        <span>
+                          <strong>{{$chip.name}}</strong>
+                          <em>({{$chip.type}})</em>
+                        </span>
+                      </md-chip-template>
+                    </md-chips>
+
+
+
+
+                </div>
+
+
+
+                  
+
+
+            </div>
+
+        
+
+     
+
+
+           
+
+        </form>
+
+        </md-content>
+
+    
+
+
+    </md-dialog-content> 
+    <md-dialog-actions layout="row" layout-align="end center">
+        <md-button ng-click="reset()" ng-disabled="!fieldForm.$dirty">
+            Reset
+        </md-button>
+        <md-button ng-click="save()" ng-disabled="!fieldForm.$dirty || fieldForm.$invalid">
+            Save
+        </md-button>
+    </md-dialog-actions>
+
+</md-dialog>

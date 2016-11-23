@@ -17,7 +17,7 @@ var ctrlAccount = require('../controllers/api/account');
 var ctrlDataset = require('../controllers/api/dataset');
 var ctrlUsers = require('../controllers/api/users');
 var ctrlTeam = require('../controllers/api/team');
-
+var ctrlView = require('../controllers/api/views');
 
 // authentication
 router.post('/register', ctrlAuth.register);
@@ -55,6 +55,11 @@ router.post('/user',ctrlUsers.create);
 router.get('/user/:id',ctrlUsers.get);
 router.put('/user/:id',ctrlUsers.update);
 router.get('/user/:id/resend',ctrlUsers.resend);
+
+//views
+router.get('/view', ctrlView.index);
+router.get('/view/:id',ctrlView.get);
+
 
 
 //teams
