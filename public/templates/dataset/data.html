@@ -1,19 +1,21 @@
 <md-content layout-padding ng-if="dataset.uid">
-    <form name="dataForm" ng-submit="submitForm(!dataForm.$invalid && dataForm.$dirty)">
+    <form name="vm.dataForm" ng-submit="submitForm(!vm.dataForm.$invalid && vm.dataForm.$dirty)">
         <md-input-container class="md-block" flex-gt-sm>
             <label>Primary Key</label>
-            <md-select required name="fn_new_rowPrimaryKeyFromRowObject"
-                       ng-model="dataset.fn_new_rowPrimaryKeyFromRowObject">
+            <md-select required name="primaryKey"
+                       ng-model="data.primaryKey">
                 <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
                     {{columnName}}
                 </md-option>
             </md-select>
-            <div ng-messages="dataForm.fn_new_rowPrimaryKeyFromRowObject.$error">
+            <div ng-messages="vm.dataForm.fn_new_rowPrimaryKeyFromRowObject.$error">
                 <div ng-message="required">This is required.</div>
             </div>
         </md-input-container>
 
-        <div class="table-container">
+        <fieldset class="standard">
+            <legend>Original Fields</legend>
+            <div class="table-container">
             <table class="table data">
                 <thead>
                 <tr>
@@ -48,14 +50,53 @@
                     <td>{{ dataset.firstRecord[$index] | limitTo: 200 }}{{dataset.firstRecord[$index].length > 200 ? '...' : ''}}</td>
                 </tr>
                 </tbody>
-            </table>
+                </table>
+            </div>
+        </fieldset>
+
+        <fieldset class="standard">
+            <legend>Custom Fields</legend>
+
+            <div class="table-container">
+                <table class="table data">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th style="min-width: 120px;">Column Name</th>
+                        <th>Type</th>
+                        <th>Fields</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="customField in dataset.customFieldsToProcess"
+                        ng-click="openFieldDialog($event, customField.fieldName, null, $index)">
+                        <td>{{$index+1}}</td>
+                        <td>{{customField.fieldName}}</td>
+                        <td>{{ customField.fieldType | capitalize }}</td>
+                        <td><span ng-repeat="field in customField.fieldsToMergeIntoArray"><b>{{field}}</b>, </span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div layout="column" class="md-padding">
+                <md-button class="md-raised" ng-click="openFieldDialog($event, '', null, dataset.customFieldsToProcess.length)">
+                    Add a New Custom Field
+                </md-button>
+            </div>
+        </fieldset>
+
+        <div layout="column" class="no-padding">
+            <md-button class="md-raised" ng-click="openNestedDialog()">
+                Click Here to Edit if Nested
+            </md-button>
         </div>
 
         <div layout="row" layout-align="end center" class="panel-footer">
-            <md-button class="md-raised" ng-click="reset()" ng-disabled="!dataForm.$dirty">
+            <md-button class="md-raised" ng-click="reset()" ng-disabled="!vm.dataForm.$dirty">
                 <i class="glyphicon glyphicon-refresh"></i> Reset
             </md-button>
-            <md-button class="md-raised" type="submit" ng-disabled="dataForm.$invalid || !dataForm.$dirty">
+            <md-button class="md-raised" type="submit" ng-disabled="vm.dataForm.$invalid || !vm.dataForm.$dirty">
                 <i class="glyphicon glyphicon-ok"></i> Save
             </md-button>
         </div>

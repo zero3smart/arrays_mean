@@ -77,7 +77,7 @@ angular.module('arraysApp')
                     .state('admin.dataset.data', {
                         url: '/data/:id',
                         templateUrl: 'templates/dataset/data.html',
-                        controller: 'DatasetDataCtrl',
+                        controller: 'DatasetDataCtrl as vm',
                         resolve: {
                             dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);

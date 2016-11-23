@@ -449,7 +449,7 @@ module.exports.saveFormatCustomField = function (req, isNew, next) {
             var customField = {
                 fieldName: name,
                 fieldType: 'array',
-                fieldsToMergeIntoArray: fieldsToMergeIntoArray
+                fieldsToMergeIntoArray: fieldsToMergeIntoArray,
             };
 
             customFieldsToProcess.splice(indexDuplicated, 1, customField);

@@ -33,11 +33,8 @@
 
             <md-input-container class="md-block">
                 <label>URLs</label>
-                <md-chips ng-model="dataset.urls" name="url" md-max-chips="5">
-                    <md-chip-template>
-                        <strong>{{$chip}}</strong>
-                    </md-chip-template>
-                </md-chips>
+                <md-chips ng-model="dataset.urls" name="url" md-enable-chip-edit="true"
+                          placeholder="Enter a URL" secondary-placeholder="+URL"></md-chips>
             </md-input-container>
 
             <md-input-container class="md-block">

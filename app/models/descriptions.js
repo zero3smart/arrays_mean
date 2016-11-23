@@ -44,7 +44,7 @@ var DatasourceDescription_scheme = Schema({
         fieldsCommaSeparatedAsIndividual: Array,
         fieldsMultiSelectable: Array,
         fieldsNotAvailable: Array,
-        keywords: Array,
+        keywords: Array
     },
 
     _otherSources: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
@@ -64,7 +64,18 @@ var DatasourceDescription_scheme = Schema({
 
     imageScraping: Array,
 
-    fe_nestedObject: Object,
+    fe_nestedObject: {
+        prefix: String,
+        fields: Array,
+        fieldOverrides: Object,
+        valueOverrides: Object,
+        criteria: {
+            fieldName: String,
+            operatorName:String, // "equal"
+            value: String // ""
+        }
+    },
+
     author: {type: Schema.Types.ObjectId,ref: 'User'},
     updatedBy: {type: Schema.Types.ObjectId,ref:'User'},
     viewers: [{type: Schema.Types.ObjectId, ref: 'User'}],
