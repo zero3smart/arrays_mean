@@ -58,7 +58,7 @@ var DatasourceDescription_scheme = Schema({
 
     _team: {type: Schema.Types.ObjectId, ref: 'Team'},
 
-    isPublic : {type: Boolean, default: false},
+    isPublished : {type: Boolean, default: false},
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
 

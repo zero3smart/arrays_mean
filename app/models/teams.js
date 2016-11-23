@@ -32,6 +32,22 @@ team.GetTeams = function (fn) {
     })
 };
 
+
+// arrays' public page data
+team.GetTeamsAndPublishedDatasources = function(fn) {
+    team.find({})
+    .populate({
+        path: 'datasourceDescriptions',
+        match: {isPublished:true},
+        select: '_id'
+    })
+    .exec(function(err,teams) {
+        if (err) fn(err);
+        fn(null,teams);
+    })
+
+}
+
 team.GetTeamBySubdomain = function (team_key, fn) {
     team.findOne({subdomain: team_key})
         .exec(function (err, teamDesc) {
@@ -39,7 +55,9 @@ team.GetTeamBySubdomain = function (team_key, fn) {
         })
 };
 
-team.findOneBySubdoaminAndPopulateDatasourceDescription = function (team_key, fn) {
+
+
+team.findOneBySubdomainAndPopulateDatasourceDescription = function (team_key, fn) {
 
     var obj = null;
 
