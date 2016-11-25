@@ -13,8 +13,16 @@ var datasourceDescriptions = require('../../../models/descriptions')
 //
 var postimport_caching_controller = require('../cache/controller');
 
-datasourceDescriptions.GetDescriptionsToSetup(datasources, function (descriptions_array) {
+datasourceDescriptions.GetDescriptionsToSetup(datasources, function (descriptions) {
 
-    postimport_caching_controller.GeneratePostImportCaches(descriptions_array);
+    var fn = function(err) {
+        if (err) {
+            process.exit(1); // error code
+        } else {
+            process.exit(0); // All Good
+        }
+    };
+
+    postimport_caching_controller.GeneratePostImportCaches(descriptions, fn);
 });
 

@@ -26,7 +26,7 @@ require('./config/setup-passport');
 var app = express();
 
 var userFolderPath = __dirname + "/user";
- 
+
 var viewsToSet = [];
 
 viewsToSet.push(__dirname + '/views');
@@ -34,9 +34,9 @@ viewsToSet.push(__dirname + '/views');
 var nunjucks = require('express-nunjucks');
 app.set('view engine', 'html');
 
-fs.readdir(userFolderPath,function(err,files) {
+fs.readdir(userFolderPath, function (err, files) {
     if (!files) {
-        app.set('views',viewsToSet)
+        app.set('views', viewsToSet)
         nunjucks.setup({
             watch: isDev,
             noCache: isDev,
@@ -44,29 +44,29 @@ fs.readdir(userFolderPath,function(err,files) {
         return;
     }
 
-    files = files.filter(function(item) {
+    files = files.filter(function (item) {
         return !(/(^|\/)\.[^\/\.]/g).test(item);
     })
 
-    async.each(files,function(file,eachCb) {
-        var full_path = path.join(userFolderPath,file);
+    async.each(files, function (file, eachCb) {
+        var full_path = path.join(userFolderPath, file);
         var team_name = file;
-        fs.stat(full_path,function(err,stat) {
+        fs.stat(full_path, function (err, stat) {
             if (err) {
                 eachCb(err)
             } else {
                 if (stat.isDirectory() && files) {
-                    var view_path = path.join(userFolderPath,file + "/views");
+                    var view_path = path.join(userFolderPath, file + "/views");
                     viewsToSet.push(view_path);
-                     app.use('/'+ team_name + '/static',express.static(path.join(userFolderPath,team_name+ "/static")));
-                     app.use('/' + team_name ,require(userFolderPath+'/'+team_name+ '/routes'));
+                    app.use('/' + team_name + '/static', express.static(path.join(userFolderPath, team_name + "/static")));
+                    app.use('/' + team_name, require(userFolderPath + '/' + team_name + '/routes'));
                 }
                 eachCb();
             }
         })
-    },function(err) {
+    }, function (err) {
         if (err)  return winston.error("❌ cannot sync the user folder files :", err);
-        app.set('views',viewsToSet)
+        app.set('views', viewsToSet)
         nunjucks.setup({
             watch: isDev,
             noCache: isDev,
@@ -80,8 +80,6 @@ app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
 app.use(express.static(path.join(__dirname, '/public')));
 
 
-
-
 // Redirect https
 app.use(function (req, res, next) {
     if (process.env.USE_SSL === 'true' && 'https' !== req.header('x-forwarded-proto')) {
@@ -89,10 +87,6 @@ app.use(function (req, res, next) {
     }
     next();
 });
-
-
-
-
 
 
 app.use(bodyParser.urlencoded({extended: false})); // application/x-www-form-urlencoded
@@ -149,28 +143,18 @@ mongoose_client.FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed(modelNam
 mongoose_client.WhenMongoDBConnected(function () {
     mongoose_client.WhenIndexesHaveBeenBuilt(function () {
 
-        winston.info("💬  ready to find all source descriptions and seed the DB");
-
-        datasource_descriptions.findAllDescriptionAndSetup(function (err) {
-            if (err) {
-                winston.error("❌ cannot find descriptions in db and set them up");
-            } else {
-                winston.info("✅  all datasources descriptions in db has been set up");
-            }
-
-            winston.info("💬  Proceeding to boot app.");
-            //
-            routes.MountRoutes(app);
-            //
-            // Run actual server
-            if (module === require.main) {
-                var server = app.listen(process.env.PORT || 9080, function () {
-                    var host = isDev ? 'localhost' : server.address().address;
-                    var port = server.address().port;
-                    winston.info('📡  App listening at %s:%s', host, port);
-                });
-            }
-        })
+        winston.info("💬  Proceeding to boot app.");
+        //
+        routes.MountRoutes(app);
+        //
+        // Run actual server
+        if (module === require.main) {
+            var server = app.listen(process.env.PORT || 9080, function () {
+                var host = isDev ? 'localhost' : server.address().address;
+                var port = server.address().port;
+                winston.info('📡  App listening at %s:%s', host, port);
+            });
+        }
     });
 });
 

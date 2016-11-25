@@ -43,7 +43,9 @@ router.get('/dataset/getAvailableTypeCoercions', /*ensureLoggedIn,*/ctrlDataset.
 router.get('/dataset/getAvailableDesignatedFields', /*ensureLoggedIn,*/ctrlDataset.getAvailableDesignatedFields);
 
 // dataset import
-router.post('/dataset/importData', /*ensureLoggedIn,*/ctrlDataset.importData);
+router.post('/dataset/initializeToImport', /*ensureLoggedIn,*/ctrlDataset.initializeToImport);
+router.post('/dataset/preImport', /*ensureLoggedIn,*/ctrlDataset.preImport);
+router.post('/dataset/postImport', /*ensureLoggedIn,*/ctrlDataset.postImport);
 
 // website settings
 

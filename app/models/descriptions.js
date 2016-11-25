@@ -82,7 +82,7 @@ var DatasourceDescription_scheme = Schema({
     viewers: [{type: Schema.Types.ObjectId, ref: 'User'}],
 
     imported: {type: Boolean, default: false},
-    dirty: {type: Boolean, default: false}
+    dirty: {type:Number, integer: true, default: 0} // 1: Need to Import fully, 2: only post cache
 });
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
@@ -149,7 +149,10 @@ var _checkCollection = function(datasource_description,schemaKey,eachCb) {
 
                             var descriptions = [];
 
-                            import_controller.PostProcessRawObjects([datasource_description], function () {
+                            import_controller.PostProcessRawObjects([datasource_description], function (err) {
+                                if (err) {
+                                    // TODO: Error Handler
+                                }
                                 eachCb(null);
                             })
                         }
@@ -190,7 +193,10 @@ var _checkCollection = function(datasource_description,schemaKey,eachCb) {
 
                             var descriptions = [];
 
-                            import_controller.PostProcessRawObjects([datasource_description], function () {
+                            import_controller.PostProcessRawObjects([datasource_description], function (err) {
+                                if (err) {
+                                    // TODO: Error Handler
+                                }
                                 eachCb(null);
                             })
                         }

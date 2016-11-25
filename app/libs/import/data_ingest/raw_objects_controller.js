@@ -91,9 +91,9 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
         // column names
         if (lineNr == 1) {
             for (var i = 0; i < columnNamesAndThenRowObject.length; i++) {
-                 if (typeof csvDescription.customFieldNameOperation == 'undefined' || csvDescription.customFieldNameOperation == null) {
+                 // if (typeof csvDescription.customFieldNameOperation == 'undefined' || csvDescription.customFieldNameOperation == null) {
                     columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g, "_");
-                } 
+                // }
             }
 
             columnNames = columnNamesAndThenRowObject;
@@ -116,12 +116,12 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
             for (var columnIndex = 0; columnIndex < columnNames.length; columnIndex++) {
                 var columnName = "" + columnNames[columnIndex];
 
-
-                if (typeof csvDescription.customFieldNameOperation != 'undefined') { /* custom convert field name to store */
+                /* if (typeof csvDescription.customFieldNameOperation != 'undefined') { // custom convert field name to store
                     var custom_import = require( __dirname + "/../../user/" + csvDescription._team.tid + "/import-utils");
                     columnName = custom_import[csvDescription.customFieldNameOperation](columnName);
-                }
+                } */
 
+                columnName = columnName.replace(/\./g, "_");
 
                 var rowValue = columnNamesAndThenRowObject[columnIndex];
                 //

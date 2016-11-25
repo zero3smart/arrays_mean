@@ -11,6 +11,8 @@ var parse = require('csv-parse');
 var datasource_file_service = require('../../libs/utils/aws-datasource-files-hosting');
 var imported_data_preparation = require('../../libs/datasources/imported_data_preparation')
 var datatypes = require('../../libs/datasources/datatypes');
+var import_controller = require('../../libs/import/data_ingest/controller');
+var postimport_caching_controller = require('../../libs/import/cache/controller');
 
 module.exports.getAll = function (req, res) {
     datasource_description.find({schema_id: {$exists: false}}, {
@@ -50,18 +52,6 @@ module.exports.remove = function (req, res) {
         });
     });
 
-    // Remove source document
-    batch.push(function (done) {
-
-        raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function (err, document) {
-            if (err) return done(err);
-            if (!document) return done();
-
-            winston.info("✅  Removed raw source document : " + srcDocPKey + ", error: " + err);
-            document.remove(done);
-        });
-    });
-
     // Remove processed row object
     batch.push(function (done) {
 
@@ -86,6 +76,18 @@ module.exports.remove = function (req, res) {
             done();
         })
 
+    });
+
+    // Remove source document
+    batch.push(function (done) {
+
+        raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function (err, document) {
+            if (err) return done(err);
+            if (!document) return done();
+
+            winston.info("✅  Removed raw source document : " + srcDocPKey + ", error: " + err);
+            document.remove(done);
+        });
     });
 
     // Remove datasource description
@@ -146,7 +148,7 @@ module.exports.get = function (req, res) {
             if (!req.session.datasource) req.session.datasource = {};
 
             if (description.uid && !req.session.datasource[req.params.id]) {
-                _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function(err, datasource) {
+                _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, datasource) {
                     if (err) return res.json({error: err.message});
 
                     req.session.datasource[req.params.id] = datasource;
@@ -162,7 +164,7 @@ module.exports.get = function (req, res) {
         });
 };
 
-module.exports.getSourcesWithSchemaID = function(req, res) {
+module.exports.getSourcesWithSchemaID = function (req, res) {
     if (!req.params.id)
         return res.json({error: 'No SchemaID given'});
 
@@ -196,7 +198,7 @@ module.exports.update = function (req, res) {
             if (err) return res.json({error: err.message});
             if (!doc) return res.json({error: 'Invalid Operation'});
 
-            winston.info("📡  Updating the dataset " + doc.title + " with %j...", req.body);
+            winston.info("🔁  Updating the dataset " + doc.title);
 
             _.forOwn(req.body, function (value, key) {
                 if (key != '_id' && !_.isEqual(value, doc._doc[key])) {
@@ -215,9 +217,16 @@ module.exports.update = function (req, res) {
                         'customFieldsToProcess',
                         'fe_nestedObject',
                         'imageScraping',
-                        'fe_filters' // Only need to post-import cache
                     ];
-                    doc.dirty = keysForNeedToImport.indexOf(key) != -1;
+                    if (keysForNeedToImport.indexOf(key) != -1)
+                        doc.dirty = 1;
+
+                    // Only need to post-import cache
+                    keysForNeedToImportCache = [
+                        'fe_filters'
+                    ];
+                    if (keysForNeedToImport.indexOf(key) != -1)
+                        doc.dirty = 2;
                 }
             });
 
@@ -294,6 +303,9 @@ module.exports.upload = function (req, res) {
     batch.concurrency(1);
     var description;
 
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.connection.setTimeout(0); // this could take a while
+
     batch.push(function (done) {
         datasource_description.findById(req.body.id)
             .exec(function (err, doc) {
@@ -342,7 +354,7 @@ module.exports.upload = function (req, res) {
         batch.push(function (done) {
             winston.info("✅  Uploaded datasource : " + description.title + ", " + description.uid);
 
-            description.dirty = true;
+            description.dirty = 1;
 
             description.save(function (err, updatedDescription) {
                 if (err) {
@@ -356,21 +368,23 @@ module.exports.upload = function (req, res) {
 
     batch.end(function (err) {
         if (err) {
-            return res.json({error: err.message});
+            return res.end(JSON.stringify({error: err.message}));
         }
 
-        return res.json({id: description.id});
+        return res.end(JSON.stringify({id: description.id}));
     });
 }
 
-module.exports.getAvailableTypeCoercions = function(req, res) {
+module.exports.getAvailableTypeCoercions = function (req, res) {
     return res.json({availableTypeCoercions: datatypes.available_forFieldDataType_coercions()});
 }
 
-module.exports.getAvailableDesignatedFields = function(req, res) {
-    return res.json({availableDesignatedFields: [
-        "objectTitle", "originalImageURL", "medThumbImageURL"
-    ]});
+module.exports.getAvailableDesignatedFields = function (req, res) {
+    return res.json({
+        availableDesignatedFields: [
+            "objectTitle", "originalImageURL", "medThumbImageURL"
+        ]
+    });
 }
 
 module.exports.download = function (req, res) {
@@ -398,10 +412,132 @@ module.exports.download = function (req, res) {
         });
 }
 
-module.exports.importData = function(req, res) {
-    if (!req.body.id) {
-        return res.json({error: 'No ID given'});
+module.exports.initializeToImport = function (req, res) {
+    if (!req.body.uid) {
+        return res.json({error: 'No UID given'});
     }
 
-    return res.json({error: 'Not completed'});
+    var uid = req.body.uid;
+
+    // Remove the previous results
+    var batch = new Batch();
+    batch.concurrency(1);
+
+    var description;
+    var srcDocPKey;
+    batch.push(function (done) {
+        datasource_description.findOne({$or: [{uid: uid}, {dataset_uid: uid}]},
+            function (err, data) {
+                if (err) return done(err);
+                if (!data) return done(new Error('No datasource exists : ' + uid));
+
+                description = data;
+                srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+                done();
+            });
+    });
+
+    // Remove source document
+    batch.push(function (done) {
+
+        raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function (err, document) {
+            if (err) return done(err);
+            if (!document) return done();
+
+            winston.info("✅  Removed raw source document : " + srcDocPKey + ", error: " + err);
+            document.remove(done);
+        });
+    });
+
+    // Remove processed row object
+    batch.push(function (done) {
+
+        mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey, function (err) {
+            // Consider that the collection might not exist since it's in the importing process.
+            if (err && err.code != 26) return done(err);
+
+            winston.info("✅  Removed processed row object : " + srcDocPKey + ", error: " + err);
+            done();
+        });
+
+    });
+
+    // Remove raw row object
+    batch.push(function (done) {
+
+        mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey, function (err) {
+            // Consider that the collection might not exist since it's in the importing process.
+            if (err && err.code != 26) return done(err);
+
+            winston.info("✅  Removed raw row object : " + srcDocPKey + ", error: " + err);
+            done();
+        })
+
+    });
+
+    batch.end(function (err) {
+        if (err) return res.json({error: err.message});
+
+        res.json({uid: uid});
+    });
 }
+
+module.exports.preImport = function (req, res) {
+    if (!req.body.uid) {
+        return res.json({error: 'No UID given'});
+    }
+
+    var uid = req.body.uid;
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.connection.setTimeout(0); // this could take a while
+
+    datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
+
+        var fn = function (err) {
+            if (err) {
+                res.end(JSON.stringify({error: err.message})); // error code
+            } else {
+                res.end(JSON.stringify({uid: uid}));
+            }
+        };
+
+        import_controller.Import_dataSourceDescriptions(descriptions, fn);
+
+    });
+};
+
+module.exports.postImport = function (req, res) {
+    if (!req.body.uid) {
+        return res.json({error: 'No UID given'});
+    }
+
+    var uid = req.body.uid;
+
+    datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
+
+        var fn = function(err) {
+            if (err) {
+                res.json({error: err.message}); // error code
+            } else {
+                datasource_description.findOne({$or: [{uid: uid}, {dataset_uid: uid}]},
+                    function (err, dataset) {
+                        if (err) return done(err);
+                        if (!dataset) return done(new Error('No datasource exists : ' + uid));
+
+                        dataset.dirty = 0;
+                        dataset.imported = true;
+
+                        dataset.save(function (err, updatedDataset) {
+                            if (err) return res.json({error: err.message});
+                            if (!updatedDataset) return res.json({error: 'Invalid Operation'});
+
+                            return res.json({dataset: updatedDataset});
+                        });
+                    });
+            }
+        };
+
+        postimport_caching_controller.GeneratePostImportCaches(descriptions, fn);
+    });
+};

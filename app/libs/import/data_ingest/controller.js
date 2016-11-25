@@ -5,16 +5,14 @@ var async = require("async");
 var winston = require('winston');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
-
 var postimport_caching_controller = require('../cache/controller');
-
 var processing = require('../../datasources/processing');
 var import_raw_objects_controller = require('./raw_objects_controller');
 
 //
 // ---------- Multiple DataSource Operation ----------
 //
-module.exports.Import_dataSourceDescriptions = function (dataSourceDescriptions,fn) {
+module.exports.Import_dataSourceDescriptions = function (dataSourceDescriptions, fn) {
     var i = 1;
 
     async.eachSeries(
@@ -26,7 +24,7 @@ module.exports.Import_dataSourceDescriptions = function (dataSourceDescriptions,
         function (err) {
             if (err) {
                 winston.info("❌  Error encountered during raw objects import:", err);
-                process.exit(1); // error code
+                fn(err);
             } else {
                 winston.info("✅  Raw objects import done. Proceeding to post-processing.");
                 _PostProcessRawObjects(dataSourceDescriptions, fn);
@@ -35,7 +33,7 @@ module.exports.Import_dataSourceDescriptions = function (dataSourceDescriptions,
     );
 };
 
-var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (dataSourceDescriptions) {
+var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (dataSourceDescriptions, fn) {
     var self = this;
     var i = 1;
     async.eachSeries(
@@ -48,25 +46,18 @@ var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (da
         function (err) {
             if (err) {
                 winston.info("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
-
-                if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
-                    winston.info("💬  Waiting 3 seconds to restart...");
-                    setTimeout(function () {
-                        _Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
-                    }, 3000);
-                } else {
-                    process.exit(1); // error code
-                }
+                fn(err);
             } else {
                 winston.info("✅  Import image-scrapping done.");
-                process.exit(0); // all good
+                fn();
             }
         }
     );
 };
+
 module.exports.Import_dataSourceDescriptions__enteringImageScrapingDirectly = _Import_dataSourceDescriptions__enteringImageScrapingDirectly;
 
-var _PostProcessRawObjects = function (dataSourceDescriptions,fn) {
+var _PostProcessRawObjects = function (dataSourceDescriptions, fn) {
     var i = 1;
     async.eachSeries(
         dataSourceDescriptions,
@@ -77,29 +68,16 @@ var _PostProcessRawObjects = function (dataSourceDescriptions,fn) {
         function (err) {
             if (err) {
                 winston.info("❌  Error encountered during import post-processing:", err);
-                process.exit(1); // error code
+                fn(err);
             } else {
                 winston.info("✅  Import post-processing done.");
                 var omitImageScrapping = true; // set true to omit image scraping,
 
                 if (!omitImageScrapping) {
-                    if (!fn) {
-                        _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions)
-                    } else {
-                        _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions,function(){
-                            return fn();
-                        });
-                    }
+                    _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
                     
                 } else {
-
-                    if (!fn) {
-                        _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions)
-                    } else {
-                        _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions,function() {
-                            return fn();
-                        });
-                    }                   
+                    _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
                 }
             }
         }
@@ -127,29 +105,19 @@ var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDe
                         _Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
                     }, 3000);
                 } else {
-                    process.exit(1); // error code
+                    fn(err);
                 }
             } else {
                 winston.info("✅  Image-scrapping done.");
-
                 winston.info("✅  All done for importing data");
-
-                if (!fn) {
-                    process.exit(0); // all good
-                }
-
                 winston.info("📡 now ready to do post import caching");
-                postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions,function() {
-                    return fn();
-                });
-            
-                
+                postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions, fn);
             }
         }
     );
 }
 //
-var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDescriptions,fn) {
+var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDescriptions, fn) {
     //
     // Execute user-defined generalized post-processing pipeline since the image scrapping is omitted
     //
@@ -163,26 +131,17 @@ var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDesc
         function (err) {
             if (err) {
                 winston.info("❌  Error encountered during performming each-row operations:(" + err.code + ')', err);
-                process.exit(1); // error code
+                fn(err);
             } else {
                 winston.info("✅  All done for importing data");
-
-                if (! fn) {
-                    process.exit(0); // all good
-
-                }
                 winston.info(" 📡 now ready to do post import caching");
-                postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions,function() {
-                    return fn();
-                });
-
-              
+                postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions, fn);
             }
         }
     );
 }
 
-module.exports._AfterGeneratingProcessing_dataSourceDescriptions = _AfterGeneratingProcessing_dataSourceDescriptions;
+module.exports.AfterGeneratingProcessing_dataSourceDescriptions = _AfterGeneratingProcessing_dataSourceDescriptions;
 
 // ---------- Single DataSource Operation ----------
 //
