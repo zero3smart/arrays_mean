@@ -427,6 +427,7 @@ angular.module('mdColorPicker', [])
 			controller: ['$scope', '$element', '$attrs', '$mdDialog', '$mdColorPicker', function( $scope, $element, $attrs, $mdDialog, $mdColorPicker ) {
 				var didJustClose = false;
 
+
 				// Merge Options Object with scope.  Scope will take precedence much like css vs style attribute.
 				if ( $scope.options !== undefined ) {
 					for ( var opt in $scope.options ) {
@@ -487,9 +488,10 @@ angular.module('mdColorPicker', [])
 				// The only other ngModel changes
 
 				$scope.clearValue = function clearValue() {
-					$scope.value = '';
+					ngModel.$setViewValue('');
 				};
 				$scope.showColorPicker = function showColorPicker($event) {
+
 					if ( didJustClose ) {
 						return;
 					}
