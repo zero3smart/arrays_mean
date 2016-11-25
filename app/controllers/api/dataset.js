@@ -196,6 +196,8 @@ module.exports.update = function (req, res) {
             if (err) return res.json({error: err.message});
             if (!doc) return res.json({error: 'Invalid Operation'});
 
+            winston.info("📡  Updating the dataset " + doc.title + " with %j...", req.body);
+
             _.forOwn(req.body, function (value, key) {
                 if (key != '_id' && !_.isEqual(value, doc._doc[key])) {
                     winston.info('✅ Updated ' + doc.title + ' with - ' + key + ' with ' + value);

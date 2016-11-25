@@ -36,19 +36,20 @@ var DatasourceDescription_scheme = Schema({
 
     fe_filters: {
         excludeFields: Array,
-        valuesToExclude: Object,
-        fabricated: Array,
-        default: Object,
         fieldsSortableByInteger: Array,
         fieldsSortableInReverseOrder: Array,
         fieldsCommaSeparatedAsIndividual: Array,
         fieldsMultiSelectable: Array,
         fieldsNotAvailable: Array,
-        keywords: Array
+        keywords: Array,
+        oneToOneOverrideWithValuesByTitleByFieldName: Object,
+        valuesToExcludeByOriginalKey: Object,
+        fabricated: Array,
+        default: Object
     },
 
     _otherSources: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
-    customFieldsToProcess: Array,
+    customFieldsToProcess: [],
     relationshipFields: Object,
 
     fe_views: {
@@ -62,7 +63,7 @@ var DatasourceDescription_scheme = Schema({
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
 
-    imageScraping: Array,
+    imageScraping: [],
 
     fe_nestedObject: {
         prefix: String,

@@ -59,16 +59,20 @@ angular.module('arraysApp')
                     $scope.fieldName = fieldName;
                     $scope.finalizedFieldName = $filter('dotless')(fieldName);
 
-                    $scope.customField = dataset.customFieldsToProcess[customFieldIndex];
-                    if (!$scope.customField) {
-                        $scope.customField = {
-                            fieldName: '',
-                            fieldType: 'array',
-                            fieldsToMergeIntoArray: [],
-                            delimiterOnFields: []
-                        };
+                    if ($scope.isCustom) {
+                        if (!dataset.customFieldsToProcess)
+                            $scope.dataset.customFieldsToProcess = [];
+                        $scope.customField = $scope.dataset.customFieldsToProcess[customFieldIndex];
+                        if (!$scope.customField) {
+                            $scope.customField = {
+                                fieldName: '',
+                                fieldType: 'array',
+                                fieldsToMergeIntoArray: [],
+                                delimiterOnFields: []
+                            };
+                        }
+                        if (!$scope.customField.delimiterOnFields) $scope.customField.delimiterOnFields = [];
                     }
-                    if (!$scope.customField.delimiterOnFields) $scope.customField.delimiterOnFields = [];
 
                     $scope.data = {};
 
@@ -159,56 +163,6 @@ angular.module('arraysApp')
 
                     $scope.dialog.fieldForm['overrideValue_' + index].$setValidity('duplicated', valueOverrideUnique);
                     $scope.dialog.fieldForm['overrideValueTitle_' + index].$setValidity('duplicated', valueOverrideTitleUnique);
-                };
-
-                $scope.verifyUniqueFabricated = function (fabricated, index) {
-                    var fabricatedTitleUnique = true, fabricatedValueUnique = true;
-
-                    $scope.dataset.fe_filters.fabricated.forEach(function (elem) {
-                        if (fabricated == elem) return;
-
-                        if (fabricated.title == elem.title)
-                            fabricatedTitleUnique = false;
-                        if (fabricated.choices[0].title == elem.choices[0].title)
-                            fabricatedValueUnique = false;
-
-                    });
-                    $scope.dialog.fieldForm['fabricatedTitle_' + index].$setValidity('duplicated', fabricatedTitleUnique);
-                    $scope.dialog.fieldForm['fabricatedValue_' + index].$setValidity('duplicated', fabricatedValueUnique);
-                };
-
-                $scope.fabricatedChoicesFilter = function (item, index, array) {
-                    return item.choices[0].match.field == 'rowParams.' + $scope.finalizedFieldName;
-                };
-
-                $scope.addFabricated = function () {
-                    var emptyFabricated = $scope.dataset.fe_filters.fabricated.find(function (elem) {
-                        return elem.title == '' && elem.choices[0].match.field == 'rowParams.' + $scope.finalizedFieldName;
-                    });
-                    if (emptyFabricated) return;
-
-                    $scope.dataset.fe_filters.fabricated.push({
-                        title: "",
-                        choices: [
-                            {
-                                title: "",
-                                match: {
-                                    field: "rowParams." + $scope.finalizedFieldName,
-                                    exist: true,
-                                    nin: []
-                                }
-                            }
-                        ]
-                    });
-                    $scope.dialog.fieldForm.$setDirty();
-                };
-
-                $scope.removeFabricated = function (fabricated) {
-                    var index = $scope.dataset.fe_filters.fabricated.indexOf(fabricated);
-                    if (index != -1) {
-                        $scope.dataset.fe_filters.fabricated.splice(index, 1);
-                        $scope.dialog.fieldForm.$setDirty();
-                    }
                 };
 
                 $scope.cancel = function () {
@@ -419,6 +373,140 @@ angular.module('arraysApp')
                             valueOverrides[el.value] = el.override;
                         });
                         $scope.dataset.fe_nestedObject.valueOverrides[$filter('dotless')(elem.field)] = valueOverrides;
+                    });
+
+                    $mdDialog.hide($scope.dataset);
+                }
+            }
+
+            $scope.openFabricatedFilterDialog = function(evt) {
+                $mdDialog.show({
+                    controller: FabricatedFilterDialogController,
+                    controllerAs: 'dialog',
+                    templateUrl: 'templates/dataset/data.fabricated.html',
+                    parent: angular.element(document.body),
+                    targetEvent: evt,
+                    clickOutsideToClose: true,
+                    fullscreen: true, // Only for -xs, -sm breakpoints.
+                    locals: {
+                        dataset: $scope.$parent.$parent.dataset
+                    }
+                })
+                    .then(function (savedDataset) {
+                        $scope.$parent.$parent.dataset = savedDataset;
+                        $scope.vm.dataForm.$setDirty();
+                    }, function () {
+                        console.log('You cancelled the fabricated filter dialog.');
+                    });
+            };
+
+            function FabricatedFilterDialogController($scope, $mdDialog, $filter, dataset) {
+                function getColumnNameFromDotless(dotlessColumnName) {
+                    return $scope.dataset.colNames.find(function (colName) {
+                        return dotlessColumnName == $filter('dotless')(colName);
+                    });
+                }
+
+                $scope.reset = function () {
+                    $scope.dataset = angular.copy(dataset);
+                    $scope.data = {};
+
+                    $scope.dataset.fe_filters.fabricated.map(function(fabricated) {
+                        fabricated.choices[0].match.field = getColumnNameFromDotless(fabricated.choices[0].match.field.replace('rowParams.', ''));
+                    });
+
+                    $scope.data.defaultFilters = [];
+                    for (var name in $scope.dataset.fe_filters.default) {
+                        var realName = getColumnNameFromDotless(name);
+                        if (!realName) realName = name;
+                        $scope.data.defaultFilters.push({name: realName, value: $scope.dataset.fe_filters.default[name]});
+                    }
+
+                    if ($scope.dialog.form) $scope.dialog.form.$setPristine();
+                }
+
+                $scope.reset();
+
+                $scope.verifyUniqueFabricated = function (fabricated, index) {
+                    var fabricatedTitleUnique = true, fabricatedValueUnique = true;
+
+                    $scope.dataset.fe_filters.fabricated.forEach(function (elem) {
+                        if (fabricated == elem) return;
+
+                        if (fabricated.title == elem.title)
+                            fabricatedTitleUnique = false;
+                        if (fabricated.choices[0].title == elem.choices[0].title)
+                            fabricatedValueUnique = false;
+
+                    });
+                    $scope.dialog.form['fabricatedTitle_' + index].$setValidity('duplicated', fabricatedTitleUnique);
+                    $scope.dialog.form['fabricatedValue_' + index].$setValidity('duplicated', fabricatedValueUnique);
+                };
+
+                $scope.addFabricated = function () {
+                    var emptyFabricated = $scope.dataset.fe_filters.fabricated.find(function (elem) {
+                        return elem.title == '' && elem.choices[0].match.field == 'rowParams.' + $scope.finalizedFieldName;
+                    });
+                    if (emptyFabricated) return;
+
+                    $scope.dataset.fe_filters.fabricated.push({
+                        title: "",
+                        choices: [
+                            {
+                                title: "",
+                                match: {
+                                    field: "",
+                                    exist: true,
+                                    nin: []
+                                }
+                            }
+                        ]
+                    });
+                    $scope.dialog.form.$setDirty();
+                };
+
+                $scope.removeFabricated = function (fabricated) {
+                    var index = $scope.dataset.fe_filters.fabricated.indexOf(fabricated);
+                    if (index != -1) {
+                        $scope.dataset.fe_filters.fabricated.splice(index, 1);
+                        $scope.dialog.form.$setDirty();
+                    }
+                };
+
+                $scope.cancel = function () {
+                    $mdDialog.cancel();
+                };
+
+                $scope.verifyUniqueDefaultFilter = function(defaultFilter, index) {
+                    var defaultFilterUnique = true;
+
+                    $scope.data.defaultFilters.forEach(function (elem) {
+                        if (defaultFilter == elem) return;
+
+                        if (defaultFilter.name == elem.name && elem.value == defaultFilter.value)
+                            defaultFilterUnique = false;
+
+                    });
+                    $scope.dialog.form['defaultValue_' + index].$setValidity('duplicated', defaultFilterUnique);
+                };
+
+                $scope.removeDefaultFilter = function(index) {
+                    $scope.data.defaultFilters.splice(index, 1);
+                    $scope.dialog.form.$setDirty();
+                };
+
+                $scope.addDefaultFilter = function() {
+                    $scope.data.defaultFilters.push({name: '', value: ''});
+                };
+
+                $scope.save = function () {
+                    $scope.dataset.fe_filters.fabricated.map(function(fabricated) {
+                        fabricated.choices[0].match.field = 'rowParams.' + $filter('dotless')(fabricated.choices[0].match.field);
+                    });
+
+                    $scope.data.defaultFilters.forEach(function(filter) {
+                        if (!$scope.dataset.fe_filters.default) $scope.dataset.fe_filters.default = {};
+                        $scope.dataset.fe_filters.default[$filter('dotless')(filter.name)] = filter.value;
                     });
 
                     $mdDialog.hide($scope.dataset);
