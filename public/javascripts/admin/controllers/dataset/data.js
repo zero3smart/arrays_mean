@@ -161,8 +161,8 @@ angular.module('arraysApp')
                         if (valueOverride.override == elem.override) valueOverrideTitleUnique = false;
                     });
 
-                    $scope.dialog.fieldForm['overrideValue_' + index].$setValidity('duplicated', valueOverrideUnique);
-                    $scope.dialog.fieldForm['overrideValueTitle_' + index].$setValidity('duplicated', valueOverrideTitleUnique);
+                    $scope.dialog.fieldForm['overrideValue_' + index].$setValidity('unique', valueOverrideUnique);
+                    $scope.dialog.fieldForm['overrideValueTitle_' + index].$setValidity('unique', valueOverrideTitleUnique);
                 };
 
                 $scope.cancel = function () {
@@ -439,8 +439,8 @@ angular.module('arraysApp')
                             fabricatedValueUnique = false;
 
                     });
-                    $scope.dialog.form['fabricatedTitle_' + index].$setValidity('duplicated', fabricatedTitleUnique);
-                    $scope.dialog.form['fabricatedValue_' + index].$setValidity('duplicated', fabricatedValueUnique);
+                    $scope.dialog.form['fabricatedTitle_' + index].$setValidity('unique', fabricatedTitleUnique);
+                    $scope.dialog.form['fabricatedValue_' + index].$setValidity('unique', fabricatedValueUnique);
                 };
 
                 $scope.addFabricated = function () {
@@ -487,7 +487,7 @@ angular.module('arraysApp')
                             defaultFilterUnique = false;
 
                     });
-                    $scope.dialog.form['defaultValue_' + index].$setValidity('duplicated', defaultFilterUnique);
+                    $scope.dialog.form['defaultValue_' + index].$setValidity('unique', defaultFilterUnique);
                 };
 
                 $scope.removeDefaultFilter = function(index) {
@@ -511,6 +511,120 @@ angular.module('arraysApp')
 
                     $mdDialog.hide($scope.dataset);
                 }
+            }
+
+            $scope.openImageScrapingDialog = function (evt) {
+                $mdDialog.show({
+                    controller: ImageScrapingDialogController,
+                    controllerAs: 'dialog',
+                    templateUrl: 'templates/dataset/data.imagescraping.html',
+                    parent: angular.element(document.body),
+                    targetEvent: evt,
+                    clickOutsideToClose: true,
+                    fullscreen: true, // Only for -xs, -sm breakpoints.
+                    locals: {
+                        dataset: $scope.$parent.$parent.dataset
+                    }
+                })
+                    .then(function (savedDataset) {
+                        $scope.$parent.$parent.dataset = savedDataset;
+                        $scope.vm.dataForm.$setDirty();
+                    }, function () {
+                        console.log('You cancelled the image scraping dialog.');
+                    });
+            };
+
+            function ImageScrapingDialogController($scope, $mdDialog, $filter, dataset) {
+
+                function getColumnNameFromDotless(dotlessColumnName) {
+                    return $scope.dataset.colNames.find(function (colName) {
+                        return dotlessColumnName == $filter('dotless')(colName);
+                    });
+                }
+
+                $scope.reset = function () {
+                    $scope.dataset = angular.copy(dataset);
+
+                    if (!$scope.dataset.imageScraping) $scope.dataset.imageScraping = [];
+                    $scope.dataset.imageScraping.forEach(function(imageScraping) {
+                        imageScraping.htmlSourceAtURLInField = getColumnNameFromDotless(imageScraping.htmlSourceAtURLInField);
+                    });
+
+                    if ($scope.dialog.form) $scope.dialog.form.$setPristine();
+                };
+
+                $scope.reset();
+
+                $scope.addImageToScrap = function() {
+                    $scope.dataset.imageScraping.push({
+                        htmlSourceAtURLInField: '',
+                        setFields: [
+                            {
+                                newFieldName: '',
+                                prependToImageURLs: '',
+                                resize: 600
+                            }
+                        ]
+                    });
+                };
+
+                $scope.removeImageToScrap = function(index) {
+                    $scope.dataset.imageScraping.splice(index, 1);
+                    $scope.dialog.form.$setDirty();
+                };
+
+                $scope.addField = function(setFields) {
+                    setFields.push({
+                        newFieldName: '',
+                        prependToImageURLs: '',
+                        resize: 600
+                    });
+                }
+
+                $scope.removeField = function(setFields, index) {
+                    setFields.splice(index, 1);
+                    $scope.dialog.form.$setDirty();
+                };
+
+                $scope.verifyUniqueHtmlSource = function(imageScraping, index) {
+                    var unique = true;
+                    $scope.dataset.imageScraping.forEach(function(_imageScraping) {
+                        if (_imageScraping == imageScraping) return;
+
+                        if (imageScraping.htmlSourceAtURLInField == _imageScraping.htmlSourceAtURLInField)
+                            unique = false;
+                    });
+
+                    $scope.dialog.form['imageScrapingField_' + index].$setValidity('unique', unique);
+                };
+
+                $scope.verifyValidNewFieldName = function(fieldName, index) {
+                    var unique = true, valid = true;
+                    $scope.dataset.imageScraping.forEach(function(_imageScraping) {
+                        var i = 0;
+                        _imageScraping.setFields.forEach(function(field) {
+                            if (field.newFieldName == fieldName && i != index) unique = false;
+                            i ++;
+                        });
+                    });
+
+                    if ($filter('dotless')(fieldName) != fieldName) valid = false;
+
+                    $scope.dialog.form['newField_' + index].$setValidity('unique', unique);
+                    $scope.dialog.form['newField_' + index].$setValidity('valid', valid);
+                };
+
+                $scope.cancel = function () {
+                    $mdDialog.cancel();
+                };
+
+                $scope.save = function () {
+                    $scope.dataset.imageScraping.forEach(function(imageScraping) {
+                        imageScraping.htmlSourceAtURLInField = $filter('dotless')(imageScraping.htmlSourceAtURLInField);
+                    });
+
+                    $mdDialog.hide($scope.dataset);
+                };
             }
 
             $scope.reset = function () {

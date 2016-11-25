@@ -59,10 +59,13 @@ module.exports.Import_dataSourceDescriptions__enteringImageScrapingDirectly = _I
 
 var _PostProcessRawObjects = function (dataSourceDescriptions, fn) {
     var i = 1;
+    var omitImageScraping = true;
+
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
             _postProcess(i, dataSourceDescription, eachCb);
+            if (dataSourceDescription.dirty >= 3) omitImageScraping = false;
             i++;
         },
         function (err) {
@@ -71,9 +74,8 @@ var _PostProcessRawObjects = function (dataSourceDescriptions, fn) {
                 fn(err);
             } else {
                 winston.info("✅  Import post-processing done.");
-                var omitImageScrapping = true; // set true to omit image scraping,
 
-                if (!omitImageScrapping) {
+                if (!omitImageScraping) {
                     _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
                     
                 } else {
@@ -218,8 +220,6 @@ var _postProcess = function (indexInList, dataSourceDescription, callback) {
 
 var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, dataSourceDescription, callback) {
 
-
-
     async.eachSeries(
         dataSourceDescription.imageScraping,
         function (description, cb) {
@@ -267,7 +267,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     var eachCtx;
     var eachCtx = dataSourceDescription.customFieldsToProcess;
-    if (typeof dataSourceDescription.fe_nestedObject != 'undefined' && Object.keys(dataSourceDescription.fe_nestedObject).length) {
+    if (typeof dataSourceDescription.fe_nestedObject != 'undefined' && dataSourceDescription.fe_nestedObject.prefix) {
         eachCtx = dataSourceDescription.fe_nestedObject;
         eachCtx.nested = true;
         eachCtx.numberOfInsertedRows = 0;

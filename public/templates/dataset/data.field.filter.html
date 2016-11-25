@@ -45,7 +45,7 @@
                        ng-change="verifyUniqueValueOverride(valueByOverride, $index)" required>
                 <div ng-messages="dialog.fieldForm.overrideValue.$error">
                     <div ng-message="required">This is required.</div>
-                    <div ng-message="duplicated">Must be unique.</div>
+                    <div ng-message="unique">Must be unique.</div>
                 </div>
             </md-input-container>
 
@@ -55,7 +55,7 @@
                        ng-change="verifyUniqueValueOverride(valueByOverride, $index)" required>
                 <div ng-messages="dialog.fieldForm.overrideValueTitle.$error">
                     <div ng-message="required">This is required.</div>
-                    <div ng-message="duplicated">Must be unique.</div>
+                    <div ng-message="unique">Must be unique.</div>
                 </div>
             </md-input-container>
 

@@ -54,7 +54,7 @@
             </div>
         </fieldset>
 
-        <fieldset class="standard">
+        <fieldset class="standard" ng-if="dataset.customFieldsToProcess && dataset.customFieldsToProcess.length">
             <legend>Custom Fields</legend>
 
             <div class="table-container">
@@ -79,22 +79,29 @@
                 </table>
             </div>
 
-            <div layout="column" class="md-padding">
-                <md-button class="md-raised" ng-click="openFieldDialog($event, '', null, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
-                    Add a New Custom Field
-                </md-button>
-            </div>
         </fieldset>
 
-        <div layout="column" class="md-padding">
+        <div layout="column">
+            <md-button class="md-raised" ng-click="openFieldDialog($event, '', null, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
+                Add a New Custom Field
+            </md-button>
+        </div>
+
+        <div layout="column">
             <md-button class="md-raised" ng-click="openNestedDialog()">
                 Click Here to Edit if Nested
             </md-button>
         </div>
 
-        <div layout="column" class="md-padding">
+        <div layout="column">
             <md-button class="md-raised" ng-click="openFabricatedFilterDialog()">
-                Click Here to Edit Fabricated And Filter
+                Click Here to Edit Fabricated And Default Filter
+            </md-button>
+        </div>
+
+        <div layout="column">
+            <md-button class="md-raised" ng-click="openImageScrapingDialog()">
+                Click Here if you need to generate a Image URL Field by Scraping
             </md-button>
         </div>
 

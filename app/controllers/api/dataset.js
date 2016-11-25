@@ -204,29 +204,39 @@ module.exports.update = function (req, res) {
                 if (key != '_id' && !_.isEqual(value, doc._doc[key])) {
                     winston.info('✅ Updated ' + doc.title + ' with - ' + key + ' with ' + value);
 
+                    if (key == 'dirty') return;
+
                     doc[key] = value;
                     if (typeof value === 'object')
                         doc.markModified(key);
 
-                    // TODO: detect whether you need to re-import dataset to the system or not, and inform that the client
+                    // detect whether you need to re-import dataset to the system or not, and inform that the client
+
+                    // Only post-import cache
                     var keysForNeedToImport = [
+                        'fe_filters'
+                    ];
+                    if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 1)
+                        doc.dirty = 1;
+
+                    // Import without image scrapping
+                    keysForNeedToImport = [
                         'importRevision',
                         'fn_new_rowPrimaryKeyFromRowObject',
                         'raw_rowObjects_coercionScheme',
                         'relationshipFields',
                         'customFieldsToProcess',
                         'fe_nestedObject',
+                    ];
+                    if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 2)
+                        doc.dirty = 2;
+
+                    // Full Import
+                    keysForNeedToImport = [
                         'imageScraping',
                     ];
-                    if (keysForNeedToImport.indexOf(key) != -1)
-                        doc.dirty = 1;
-
-                    // Only need to post-import cache
-                    keysForNeedToImportCache = [
-                        'fe_filters'
-                    ];
-                    if (keysForNeedToImport.indexOf(key) != -1)
-                        doc.dirty = 2;
+                    if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 3)
+                        doc.dirty = 3;
                 }
             });
 
@@ -354,7 +364,7 @@ module.exports.upload = function (req, res) {
         batch.push(function (done) {
             winston.info("✅  Uploaded datasource : " + description.title + ", " + description.uid);
 
-            description.dirty = 1;
+            description.dirty = 3; // Full Import with image scraping
 
             description.save(function (err, updatedDescription) {
                 if (err) {
