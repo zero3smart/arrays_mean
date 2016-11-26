@@ -2,10 +2,9 @@
         <form name="settingsForm" ng-submit="submitForm(settingsForm.$valid && settingsForm.$dirty)" novalidate>
             <md-input-container class="md-block">
                 <label>Title</label>
-                <input md-maxlength="30" required name="title" ng-model="dataset.title">
+                <input required name="title" ng-model="dataset.title">
                 <div ng-messages="settingsForm.title.$error">
                     <div ng-message="required">This is required.</div>
-                    <div ng-message="md-maxlength">The title must be less than 30 characters long.</div>
                 </div>
             </md-input-container>
 
@@ -18,8 +17,9 @@
             </md-input-container>
 
             <md-input-container class="md-block">
-                <label>Import Revision</label>
-                <input type="number" min="1" required name="importRevision" ng-model="dataset.importRevision"/>
+                <label>Import Revision (Only Available at the first import)</label>
+                <input type="number" min="1" required name="importRevision"
+                       ng-model="dataset.importRevision" ng-readonly="dataset.imported"/>
                 <div ng-messages="settingsForm.importRevision.$error">
                     <div ng-message="required">This is required.</div>
                     <div ng-message="min">You should input at least 1.</div>

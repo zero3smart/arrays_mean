@@ -9,13 +9,20 @@ require('dotenv').config({
 //
 var datasources = require('./cmd_parser').GetDatasources();
 
-var dataSourceDescriptions = require('../../../models/descriptions')
+var dataSourceDescriptions = require('../../../models/descriptions');
 
 var import_controller = require('../data_ingest/controller');
 
-dataSourceDescriptions.GetDescriptionsToSetup(datasources,function(descriptions_array) {
+dataSourceDescriptions.GetDescriptionsToSetup(datasources,function(descriptions) {
 
-	//import_controller._AfterGeneratingProcessing_dataSourceDescriptions(descriptions_array) /*directly enter post process */
-	import_controller.Import_dataSourceDescriptions(descriptions_array);
+    var fn = function(err) {
+        if (err) {
+            process.exit(1); //error code
+        } else {
+            process.exit(0); // all good
+        }
+    };
+
+	import_controller.Import_dataSourceDescriptions(descriptions, fn);
 
 });

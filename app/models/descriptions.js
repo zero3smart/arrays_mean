@@ -36,19 +36,20 @@ var DatasourceDescription_scheme = Schema({
 
     fe_filters: {
         excludeFields: Array,
-        valuesToExclude: Object,
-        fabricated: Array,
-        default: Object,
         fieldsSortableByInteger: Array,
         fieldsSortableInReverseOrder: Array,
         fieldsCommaSeparatedAsIndividual: Array,
         fieldsMultiSelectable: Array,
         fieldsNotAvailable: Array,
-        keywords: Array
+        keywords: Array,
+        oneToOneOverrideWithValuesByTitleByFieldName: Object,
+        valuesToExcludeByOriginalKey: Object,
+        fabricated: Array,
+        default: Object
     },
 
     _otherSources: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
-    customFieldsToProcess: Array,
+    customFieldsToProcess: [],
     relationshipFields: Object,
 
     fe_views: {
@@ -62,7 +63,7 @@ var DatasourceDescription_scheme = Schema({
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
 
-    imageScraping: Array,
+    imageScraping: [],
 
     fe_nestedObject: {
         prefix: String,
@@ -81,7 +82,10 @@ var DatasourceDescription_scheme = Schema({
     viewers: [{type: Schema.Types.ObjectId, ref: 'User'}],
 
     imported: {type: Boolean, default: false},
-    dirty: {type: Boolean, default: false}
+    dirty: {type:Number, integer: true, default: 0}
+    // 1: Only post cache,
+    // 2: Need to Import data without sraping & post cache as well,
+    // 4: Full import as well as image scraping
 });
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
@@ -148,7 +152,10 @@ var _checkCollection = function(datasource_description,schemaKey,eachCb) {
 
                             var descriptions = [];
 
-                            import_controller.PostProcessRawObjects([datasource_description], function () {
+                            import_controller.PostProcessRawObjects([datasource_description], function (err) {
+                                if (err) {
+                                    // TODO: Error Handler
+                                }
                                 eachCb(null);
                             })
                         }
@@ -189,7 +196,10 @@ var _checkCollection = function(datasource_description,schemaKey,eachCb) {
 
                             var descriptions = [];
 
-                            import_controller.PostProcessRawObjects([datasource_description], function () {
+                            import_controller.PostProcessRawObjects([datasource_description], function (err) {
+                                if (err) {
+                                    // TODO: Error Handler
+                                }
                                 eachCb(null);
                             })
                         }

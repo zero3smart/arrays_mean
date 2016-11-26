@@ -81,19 +81,47 @@
             return deferred.promise;
         };
 
-        var importData = function(uid) {
+        var initializeToImport = function(uid) {
             var deferred = $q.defer();
-            $http.post('api/dataset/importData', uid)
+            $http.post('api/dataset/initializeToImport', {uid: uid})
                 .success(function(data) {
-                    if (!data.error && data.id) {
-                        return deferred.resolve(data.id);
+                    if (!data.error && data.uid) {
+                        return deferred.resolve(data.uid);
                     } else {
                         return deferred.reject(data.error);
                     }
                 })
                 .error(deferred.reject);
             return deferred.promise;
-        }
+        };
+
+        var preImport = function(uid) {
+            var deferred = $q.defer();
+            $http.post('api/dataset/preImport', {uid: uid})
+                .success(function(data) {
+                    if (!data.error && data.uid) {
+                        return deferred.resolve(data.uid);
+                    } else {
+                        return deferred.reject(data.error);
+                    }
+                })
+                .error(deferred.reject);
+            return deferred.promise;
+        };
+
+        var postImport = function(uid) {
+            var deferred = $q.defer();
+            $http.post('api/dataset/postImport', {uid: uid})
+                .success(function(data) {
+                    if (!data.error && data.dataset) {
+                        return deferred.resolve(data.dataset);
+                    } else {
+                        return deferred.reject(data.error);
+                    }
+                })
+                .error(deferred.reject);
+            return deferred.promise;
+        };
 
         var getAvailableTypeCoercions = function() {
             var deferred = $q.defer();
@@ -127,9 +155,11 @@
             get: get,
             getSources: getSources,
             save: save,
-            importData: importData,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
-            getAvailableDesignatedFields: getAvailableDesignatedFields
+            getAvailableDesignatedFields: getAvailableDesignatedFields,
+            initializeToImport: initializeToImport,
+            preImport: preImport,
+            postImport: postImport
         }
     }
 })();

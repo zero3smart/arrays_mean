@@ -97,8 +97,7 @@ var _cacheKeywords_fromDataSourceDescription = function (dataSourceDescription, 
 };
 module.exports.cacheKeywords_fromDataSourceDescription = _cacheKeywords_fromDataSourceDescription;
 
-module.exports.CacheKeywords_dataSourceDescriptions = function (dataSourceDescriptions) {
-    var self = this;
+module.exports.CacheKeywords_dataSourceDescriptions = function (dataSourceDescriptions, fn) {
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
@@ -107,11 +106,10 @@ module.exports.CacheKeywords_dataSourceDescriptions = function (dataSourceDescri
         function (err) {
             if (err) {
                 winston.info("❌  Error encountered during cache keywords:", err);
-                process.exit(1); // error code
             } else {
                 winston.info("✅  Caching keywords done.");
-                process.exit(0); // all good
             }
+            fn(err);
         }
     );
 };

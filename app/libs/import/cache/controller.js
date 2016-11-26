@@ -11,9 +11,8 @@ var cache_keywords_controller = require('../cache/keywords_controller');
 
 //
 //
-module.exports.GeneratePostImportCaches = function (dataSourceDescriptions,fn) {
+module.exports.GeneratePostImportCaches = function (dataSourceDescriptions, fn) {
     var i = 1;
-
 
     async.eachSeries(dataSourceDescriptions, function (dataSourceDescription, callback) {
         _dataSourcePostImportCachingFunction(i, dataSourceDescription, callback);
@@ -21,16 +20,10 @@ module.exports.GeneratePostImportCaches = function (dataSourceDescriptions,fn) {
     }, function (err) {
         if (err) {
             winston.info("❌  Error encountered during post-import caching:", err);
-            process.exit(1); // error code
         } else {
             winston.info("✅  Post-import caching done.");
-            if (!fn) {
-                process.exit(0); // all good
-            }
-
-            return fn();
-           
         }
+        fn(err);
     });
 };
 //
@@ -44,22 +37,19 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
     }
     winston.info("🔁  " + indexInList + ": Generated post-import caches for \"" + dataSource_title + "\"");
 
-
     _generateUniqueFilterValueCacheCollection(dataSourceDescription, function (err) {
         if (err) {
             winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
             return callback(err);
         }
+
         // Cachcing Keyword for the word cloud
         cache_keywords_controller.cacheKeywords_fromDataSourceDescription(dataSourceDescription, callback);
     });
-
 };
 
 
 var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription, callback) {
-
-
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_title = dataSourceDescription.title;
     var dataSource_importRevision = dataSourceDescription.importRevision;

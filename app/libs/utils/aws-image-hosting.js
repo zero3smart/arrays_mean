@@ -34,18 +34,12 @@ function _uploadToS3(destFilename,response,callback) {
 function _proceedToStreamToHost(resize,remoteImageSourceURL, destFilename, callback)
 {
     
-
-
-
-
         var options = {
             url :remoteImageSourceURL,
             encoding:null
         }
 
         request.get(options, function(err,response,body) {
-
-          
 
             if ( (err && (err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT')) || response == null) {
                 winston.info("❌  returning url as null, since Could not read the remote image " + remoteImageSourceURL + ": " , err);
@@ -54,13 +48,9 @@ function _proceedToStreamToHost(resize,remoteImageSourceURL, destFilename, callb
                 return callback(err);
             }
 
-
-
             var imageFormat = response.headers['content-type'].split('/')[1];
 
             imageFormat = imageFormat.split(';')[0];
-
-
 
             if (typeof sharp.format[imageFormat] !== 'undefined') {
                 if (typeof resize != 'undefined' && resize != null && !isNaN(resize)) {

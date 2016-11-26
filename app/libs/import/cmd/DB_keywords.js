@@ -13,8 +13,16 @@ var dataSourceDescriptions = require('../../../models/descriptions')
 //
 var cache_keywords_controller = require('../cache/keywords_controller');
 
-dataSourceDescriptions.GetDescriptionsToSetup(datasources, function (descriptions_array) {
-    cache_keywords_controller.CacheKeywords_dataSourceDescriptions(descriptions_array);
+dataSourceDescriptions.GetDescriptionsToSetup(datasources, function (descriptions) {
+    var fn = function(err) {
+        if (err) {
+            process.exit(1); // error code
+        } else {
+            process.exit(0); // all good
+        }
+    };
+
+    cache_keywords_controller.CacheKeywords_dataSourceDescriptions(descriptions, fn);
 
 });
 

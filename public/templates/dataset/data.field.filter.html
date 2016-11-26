@@ -45,7 +45,7 @@
                        ng-change="verifyUniqueValueOverride(valueByOverride, $index)" required>
                 <div ng-messages="dialog.fieldForm.overrideValue.$error">
                     <div ng-message="required">This is required.</div>
-                    <div ng-message="duplicated">Must be unique.</div>
+                    <div ng-message="unique">Must be unique.</div>
                 </div>
             </md-input-container>
 
@@ -55,7 +55,7 @@
                        ng-change="verifyUniqueValueOverride(valueByOverride, $index)" required>
                 <div ng-messages="dialog.fieldForm.overrideValueTitle.$error">
                     <div ng-message="required">This is required.</div>
-                    <div ng-message="duplicated">Must be unique.</div>
+                    <div ng-message="unique">Must be unique.</div>
                 </div>
             </md-input-container>
 
@@ -71,33 +71,31 @@
 
     <fieldset class="standard" ng-if="!isCustom">
         <legend>Values to Exclude by Original Key</legend>
-        <div layout="row" flex-gt-sm>
-            <md-input-container class="md-block" flex-gt-sm="50">
-                <label>All</label>
-                <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey._all"
-                          name="valuesToExcludeAll"
-                          md-enable-chip-edit="true"
-                          placeholder="Enter a Value" secondary-placeholder="+Value">
-                    <md-chip-template>
-                        {{$chip}}
-                        <em>(All)</em>
-                    </md-chip-template>
-                </md-chips>
-            </md-input-container>
+        <md-input-container class="md-block md-padding">
+            <label>All</label>
+            <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey._all"
+                      name="valuesToExcludeAll"
+                      md-enable-chip-edit="true"
+                      placeholder="Enter a Value" secondary-placeholder="+Value">
+                <md-chip-template>
+                    {{$chip}}
+                    <em>(All)</em>
+                </md-chip-template>
+            </md-chips>
+        </md-input-container>
 
-            <md-input-container class="md-block" flex-gt-sm="50">
-                <label>{{fieldName}}</label>
-                <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey[finalizedFieldName]"
-                          name="valuesToExcludeSelf"
-                          md-enable-chip-edit="true"
-                          placeholder="Enter a Value" secondary-placeholder="+Value">
-                    <md-chip-template>
-                        {{$chip}}
-                        <em>({{fieldName}})</em>
-                    </md-chip-template>
-                </md-chips>
-            </md-input-container>
-        </div>
+        <md-input-container class="md-block md-padding">
+            <label>{{fieldName}}</label>
+            <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey[finalizedFieldName]"
+                      name="valuesToExcludeSelf"
+                      md-enable-chip-edit="true"
+                      placeholder="Enter a Value" secondary-placeholder="+Value">
+                <md-chip-template>
+                    {{$chip}}
+                    <em>({{fieldName}})</em>
+                </md-chip-template>
+            </md-chips>
+        </md-input-container>
     </fieldset>
 
     <md-input-container class="md-block" flex-gt-sm ng-if="!isCustom">
@@ -107,50 +105,4 @@
                   placeholder="Enter a Keyword" secondary-placeholder="+Keyword">
         </md-chips>
     </md-input-container>
-
-    <fieldset class="standard">
-        <legend>Fabricated</legend>
-        <div ng-repeat="fabricated in dataset.fe_filters.fabricated | filter:fabricatedChoicesFilter">
-            <div layout="row">
-                <md-input-container flex="45">
-                    <label>Title</label>
-                    <input type="text" name="fabricatedTitle_{{$index}}" ng-model="fabricated.title"
-                           ng-change="verifyUniqueFabricated(fabricated, $index)" required>
-                    <div ng-messages="dialog.fieldForm.fabricatedTitle.$error">
-                        <div ng-message="required">This is required.</div>
-                        <div ng-message="duplicated">Must be unique.</div>
-                    </div>
-                </md-input-container>
-
-                <md-input-container flex="45">
-                    <label>Value</label>
-                    <input type="text" name="fabricatedValue_{{$index}}" ng-model="fabricated.choices[0].title"
-                           ng-change="verifyUniqueFabricated(fabricated, $index)" required>
-                    <div ng-messages="dialog.fieldForm.fabricatedValue.$error">
-                        <div ng-message="required">This is required.</div>
-                        <div ng-message="duplicated">Must be unique.</div>
-                    </div>
-                </md-input-container>
-
-                <div flex="10">
-                    <md-button class="md-raised" ng-click="removeFabricated(fabricated);" aria-label="Remove Fabricated"><span
-                            class="glyphicon glyphicon-remove"></span></md-button>
-                </div>
-            </div>
-
-            <md-input-container class="md-block md-padding">
-                <label>Exclude Values</label>
-                <md-chips ng-model="fabricated.choices[0].match.nin"
-                          name="fabricatedExcludeValues"
-                          md-enable-chip-edit="true"
-                          placeholder="Enter a Value" secondary-placeholder="+Value">
-                </md-chips>
-            </md-input-container>
-        </div>
-
-        <md-button class="md-raised" ng-click="addFabricated()"><span
-                class="glyphicon glyphicon-plus"></span>Add more
-        </md-button>
-    </fieldset>
-
 </md-content>
