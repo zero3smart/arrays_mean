@@ -2,10 +2,9 @@
         <form name="settingsForm" ng-submit="submitForm(settingsForm.$valid && settingsForm.$dirty)" novalidate>
             <md-input-container class="md-block">
                 <label>Title</label>
-                <input md-maxlength="30" required name="title" ng-model="dataset.title">
+                <input required name="title" ng-model="dataset.title">
                 <div ng-messages="settingsForm.title.$error">
                     <div ng-message="required">This is required.</div>
-                    <div ng-message="md-maxlength">The title must be less than 30 characters long.</div>
                 </div>
             </md-input-container>
 
