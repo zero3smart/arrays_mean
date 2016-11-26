@@ -7,6 +7,41 @@ var cached_values = require('../../models/cached_values');
 var datatypes = require('../../libs/datasources/datatypes');
 var config = require('./config.js');
 //
+
+
+var _findItemInArrayOfObject = function(ArrayOfObj,targetKey) {
+
+    if (typeof ArrayOfObj != 'undefined' && Array.isArray(ArrayOfObj)) {
+        for (var i = 0; i < ArrayOfObj.length; i++) {
+            var currentKey = ArrayOfObj[i].key;
+            if (currentKey == targetKey) {
+                return ArrayOfObj[i];
+            }
+        }
+
+    }
+  
+    return null;
+}
+
+module.exports.findItemInArrayOfObject = _findItemInArrayOfObject;
+
+
+var _convertArrayObjectToObject = function(ArrayOfObj) {
+    var obj = {};
+    if (typeof ArrayOfObj != 'undefined' && Array.isArray(ArrayOfObj)) {
+        for (var i = 0 ; i< ArrayOfObj.length; i++) {
+            var key = ArrayOfObj[i].key;
+            obj[key] = ArrayOfObj[i].value;
+        }
+    }
+    return obj;
+}
+
+module.exports.convertArrayObjectToObject = _convertArrayObjectToObject;
+
+
+
 var _routePathByAppendingQueryStringToVariationOfBase = function (routePath_variation, queryString, routePath_base) {
     if (routePath_variation === routePath_base) {
         routePath_variation += "?";
@@ -787,9 +822,11 @@ function _filterObjFromQueryParams(queryParams) {
 module.exports.filterObjFromQueryParams = _filterObjFromQueryParams;
 
 function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupBy_realColumnName, viewType) {
+
+    var obj = _convertArrayObjectToObject(dataSourceDescription.fe_views.views[viewType]["valuesToExcludeByOriginalKey"]);
     //
-    var fe_valuesToExcludeByOriginalKey = dataSourceDescription.fe_views.views[viewType]["valuesToExcludeByOriginalKey"];
-    if (fe_valuesToExcludeByOriginalKey != null && typeof fe_valuesToExcludeByOriginalKey !== 'undefined') {
+    var fe_valuesToExcludeByOriginalKey = obj;
+    if (fe_valuesToExcludeByOriginalKey != null) {
         if (fe_valuesToExcludeByOriginalKey._all) {
             if (fe_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
                 return null; // do not push to list

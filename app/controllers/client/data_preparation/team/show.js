@@ -18,7 +18,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
     teamDescriptions.findOneBySubdomainAndPopulateDatasourceDescription(urlQuery.team_key, function (err, objReturned) {
 
-
         team = objReturned.team;
         team_dataSourceDescriptions = objReturned.team_dataSourceDescriptions;
 

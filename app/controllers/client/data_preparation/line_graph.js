@@ -56,8 +56,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
             raw_rowObjects_coercionSchema[groupBy_realColumnName].operation == "ToDate");
             var groupBy_outputInFormat = '';
-            if (dataSourceDescription.fe_views.views.lineGraph.outputInFormat && dataSourceDescription.fe_views.views.lineGraph.outputInFormat[groupBy_realColumnName] && dataSourceDescription.fe_views.views.lineGraph.outputInFormat[groupBy_realColumnName].format) {
-                groupBy_outputInFormat = dataSourceDescription.fe_views.views.lineGraph.outputInFormat[groupBy_realColumnName].format;
+
+            var findOutputFormatObj = func.findItemInArrayOfObject(dataSourceDescription.fe_views.views.lineGraph.outputInFormat,groupBy_realColumnName);
+
+
+            if (findOutputFormatObj != null) {
+                groupBy_outputInFormat = findOutputFormatObj.value;
             } else if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
                 raw_rowObjects_coercionSchema[groupBy_realColumnName].outputFormat) {
                 groupBy_outputInFormat = raw_rowObjects_coercionSchema[groupBy_realColumnName].outputFormat;
@@ -417,7 +421,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     });
 
-                    var lineColors = dataSourceDescription.fe_views.views.lineGraph.stackedLineColors ? dataSourceDescription.fe_views.views.lineGraph.stackedLineColors : {};
+                    var lineColors = func.convertArrayObjectToObject(dataSourceDescription.fe_views.views.lineGraph.stackedLineColors);
+
 
                     if (Array.isArray(stackedResultsByGroup)) {
 
