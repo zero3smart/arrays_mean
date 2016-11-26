@@ -72,17 +72,17 @@
                             </md-input-container>
                         </div>
 
-                        <!-- md-input-container class="md-block" flex-gt-sm>
+                        <md-input-container class="md-block">
                             <label>Designated Field</label>
                             <md-select name="designatedField_{{$index}}"
-                                       ng-model="data.designatedField"
+                                       ng-model="data.designatedFields[field.newFieldName]"
                                        aria-label="Designated Field - {{fieldName}}">
                                 <md-option ng-repeat="designatedField in availableDesignatedFields" ng-value="designatedField">
                                     {{designatedField}}
                                 </md-option>
                             </md-select>
                             <div class="md-errors-spacer"></div>
-                        </md-input-container -->
+                        </md-input-container>
                     </fieldset>
 
                     <div layout="row" layout-align="end center" >

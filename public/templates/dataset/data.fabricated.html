@@ -89,6 +89,9 @@
                                 <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
                                     {{columnName}}
                                 </md-option>
+                                <md-option ng-repeat="fabricated in dataset.fe_filters.fabricated" value="{{fabricated.title}}" ng-if="dataset.fe_filters.fabricated">
+                                    {{fabricated.title}}
+                                </md-option>
                             </md-select>
                             <div ng-messages="dialog.form.defaultName.$error">
                                 <div ng-message="required">This is required.</div>
