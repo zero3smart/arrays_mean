@@ -60,8 +60,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
             raw_rowObjects_coercionSchema[groupBy_realColumnName].operation == "ToDate");
             var groupBy_outputInFormat = '';
-            if (dataSourceDescription.fe_views.views.barChart.outputInFormat && dataSourceDescription.fe_views.views.barChart.outputInFormat[groupBy_realColumnName] && dataSourceDescription.fe_views.views.barChart.outputInFormat[groupBy_realColumnName].format) {
-                groupBy_outputInFormat = dataSourceDescription.fe_views.views.barChart.outputInFormat[groupBy_realColumnName].format;
+
+            var findOutputFormatObj = func.findItemInArrayOfObject(dataSourceDescription.fe_views.views.barChart.outputInFormat,groupBy_realColumnName);
+
+
+            if (findOutputFormatObj != null) {
+                groupBy_outputInFormat = findOutputFormatObj.value;
             } else if (dataSourceDescription.raw_rowObjects_coercionScheme && dataSourceDescription.raw_rowObjects_coercionScheme[groupBy_realColumnName] &&
                 dataSourceDescription.raw_rowObjects_coercionScheme[groupBy_realColumnName].outputFormat) {
                 groupBy_outputInFormat = dataSourceDescription.raw_rowObjects_coercionScheme[groupBy_realColumnName].outputFormat;
@@ -414,7 +418,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     });
 
-                    var barColors = dataSourceDescription.fe_views.views.barChart.stackedBarColors ? dataSourceDescription.fe_views.views.barChart.stackedBarColors : {};
+                    var barColors = dataSourceDescription.fe_views.views.barChart.stackedBarColors ? dataSourceDescription.fe_views.views.barChart.stackedBarColors : [];
 
                     graphData = {categories: [], data: [], colors: barColors};
                     var i = 0;

@@ -12,25 +12,21 @@
         </div>
     </md-toolbar>
 
-
-
     <md-dialog-content>
 
         <md-content layout-padding>
-
           <form name="fieldForm">
                <div layout="row" layout-xs="column" layout-sm="column" layout-align="space-between center">
-               
                     <md-input-container class="md-block" flex-gt-sm>
                      
-                        <md-checkbox ng-model="dataset.fe_views.views[viewName].visible" aria-label="Filter Multiple Selection {{fieldName}}">
+                        <md-checkbox ng-model="dataset.fe_views.views[viewName].visible" aria-label="Visible {{viewName}}">
                          <strong>Visible</strong>
                           
                         </md-checkbox>
                     </md-input-container>
 
                     <md-input-container class="md-block" flex-gt-sm>
-                        <md-checkbox ng-model="isDefault" aria-label="Filter Multiple Selection {{fieldName}}">
+                        <md-checkbox ng-model="isDefault" aria-label="Default {{viewName}}">
                            <strong>Default</strong>
                         </md-checkbox>
                     </md-input-container>
@@ -40,12 +36,12 @@
                 <md-input-container class="md-block" flex-gt-sm>  
 
     
-                    <input type="text" ng-model="viewDisplayName" readonly="readonly" aria-label="Filter Multiple Selection {{fieldName}}">
+                    <input type="text" ng-model="viewDisplayName" readonly="readonly" aria-label="Display Name {{viewName}}">
                 </md-input-container>
 
                 <label>Description</label>
                 <md-input-container class="md-block" flex-gt-sm>            
-                    <textarea class="md-block" md-maxlength="100" rows="3" aria-label="Filter Multiple Selection {{fieldName}}"
+                    <textarea class="md-block" md-maxlength="500" rows="3" aria-label="Description {{viewName}}"
                            ng-model="dataset.fe_views.views[viewName].description"></textarea>
                 </md-input-container>
 
@@ -57,39 +53,99 @@
                 <div ng-if="setting.inputType == 'textbox'">
                  <label>{{setting.displayAs}}</label>
                      <md-input-container class="md-block" flex-gt-sm>
-                        <input aria-label="Filter Multiple Selection {{fieldName}}" type="text" ng-model="dataset.fe_views.views[viewName][setting.name]">
+                        <input aria-label="{{setting.name}} For {{viewName}}" type="text" ng-model="dataset.fe_views.views[viewName][setting.name]">
                     </md-input-container>
                 </div>
 
 
 
 
-                 <div ng-if="setting.inputType == 'select' || setting.inputType=='multiselect'">
-                  <label>{{setting.displayAs}}</label>
+                 <div ng-if="setting.inputType == 'select'" ng-init="dep = checkDependency(setting.selectFrom)">
+                  <label>{{setting.displayAs}}</label> 
+                    <small class="pull-right" ng-if="dep">
+                      Dropdown selections are based on {{dep.display}} </small>
                      <md-input-container class="md-block" flex-gt-sm>  
-                        <md-select ng-multiple="{{setting.inputType=='multiselect'}}" aria-label="Filter Multiple Selection {{fieldName}}" ng-model="dataset.fe_views.views[viewName][setting.name]">
-                            <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in dataset.colNames | filter:'!All' && DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
+
+
+                        <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="dataset.fe_views.views[viewName][setting.name][setting.selectNestedField] || dataset.fe_views.views[viewName][setting.name] " ng-model-options="{getterSetter: true}">
+
+
+                          <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType" value="Object Title"> Object Title</md-option>
+                          <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in dataset.colNames | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
                                 {{col}}
+                            </md-option>
+
+                            <md-option  ng-if="setting.selectFrom=='duration'" ng-repeat="dur in availableForDuration | filter:'!_all' && DataTypeMatch(setting.restrictColumnDataType)" ng-value="dur">
+                                {{dur}}
+                            </md-option>
+
+                            <md-option ng-if="dep" ng-repeat="opt in dataset.fe_views.views[viewName][setting.selectFrom]" ng-value="opt">
+                              {{opt}}
+
                             </md-option>
                         </md-select>
                     </md-input-container>
                 </div>
 
+
+                  <div ng-if="setting.inputType=='multiselect'">
+                  <label>{{setting.displayAs}}</label>
+                     <md-input-container class="md-block" flex-gt-sm>  
+                        <md-select multiple aria-label="{{setting.name}} for {{viewName}}" ng-model="dataset.fe_views.views[viewName][setting.name]">
+                            <md-option  ng-if="setting.selectFrom=='column'  && !setting.restrictColumnDataType " ng-repeat="col in dataset.colNames | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
+                                {{col}}
+                            </md-option>
+
+                            <md-option  ng-if="setting.selectFrom=='duration'" ng-repeat="dur in availableForDuration | filter:'!_all' && DataTypeMatch(setting.restrictColumnDataType)" ng-value="dur">
+                                {{dur}}
+                            </md-option>
+
+                            <md-option ng-if="settingNames.indexOf(setting.selectFrom) >= 0" ng-repeat="opt in dataset.fe_views.views[viewName][setting.selectFrom]" ng-value="opt">
+                              {{opt}}
+
+                            </md-option>
+                        </md-select>
+                    </md-input-container>
+                </div>
+
+
+                <div ng-if="setting.inputType == 'multivalueTextbox'" ng-init="dataset.fe_views.views[viewName][setting.name]=dataset.fe_views.views[viewName][setting.name]|| []">
+                <label>{{setting.displayAs}}</label>
+
+                  <md-input-container class="md-block" >
+                            <md-chips ng-model="dataset.fe_views.views[viewName][setting.name]"
+                        
+                                  md-enable-chip-edit="true"
+                                  placeholder="Enter a Value" secondary-placeholder="+Value">
+                              <md-chip-template>
+                                  {{$chip}}
+                              </md-chip-template>
+                          </md-chips>
+
+                    </md-input-container>
+
+                </div>
+
+
+
                 <div ng-if="setting.inputType=='keyValue'">
                   <label>{{setting.displayAs}}</label>
                   <div ng-repeat=" item in dataset.fe_views.views[viewName][setting.name]" layout="row">
-                      <md-input-container flex="15">                  
-                          <md-select aria-label="Filter Multiple Selection {{fieldName}}" ng-model="item.col">
+                      <md-input-container flex="25">                  
+                          <md-select ng-if="setting.keyInputType=='select'" aria-label="{{setting.name}} for {{viewName}}" ng-model="item.key">
+                              <md-option ng-if="setting.keySelectFrom == 'column'" value="_all"> All Columns</md-option>
                               <md-option  ng-if="setting.keySelectFrom=='column'" ng-repeat="col in dataset.colNames" ng-value="col">
-                                  {{col | displaySpecialColName}}
+                                  {{col}}
                               </md-option>
                           </md-select>
+
+
+                          <input ng-if="setting.keyInputType=='textbox'" type="text" ng-model="item.key" aria-label="Display Name {{viewName}}">
                       </md-input-container>
 
 
-                        <md-input-container flex="75" ng-init="item.value=item.value || []">
-                                <md-chips  ng-if="setting.valueInputType =='multivalueTextbox'"
-                                  ng-model="item.value"
+                      <md-input-container flex="65" ng-if="setting.valueInputType =='multivalueTextbox'" ng-init="item.value=item.value || []">
+                                <md-chips ng-model="item.value"
                                       md-enable-chip-edit="true"
                                       placeholder="Enter a Value" secondary-placeholder="+Value">
                                   <md-chip-template>
@@ -97,9 +153,35 @@
                                   </md-chip-template>
                               </md-chips>
 
-                        </md-input-container>
+                      </md-input-container>
+
+                      <md-input-container flex="65" ng-if="setting.valueInputType=='select'">                  
+                          <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="item.value">
+                              <md-option  ng-if="setting.valueSelectFrom=='column'" ng-repeat="col in dataset.colNames" ng-value="col">
+                                  {{col}}
+                              </md-option>
+                          </md-select>
+                      </md-input-container>
+
+
+                      <md-input-container flex="65" ng-if="setting.valueInputType=='textbox'">                  
+                         <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
+                      </md-input-container>
+
+
+                       <md-input-container flex="65" ng-if="setting.valueInputType=='colorpicker'" class="md-color-picker">
+                          <div md-color-picker md-color-clear-button="false" ng-model="item.value"></div>
+                      </md-input-container>
+
+
+
+
+
+
+
+
                         <div flex="10">
-                            <md-button class="md-raised" ng-click="remove()" aria-label="Remove OneToOneOverride"><span class="glyphicon glyphicon-remove"></span></md-button>
+                            <md-button class="md-raised" ng-click="remove()" aria-label="Remove {{setting.name}} For {{viewName}}"><span class="glyphicon glyphicon-remove"></span></md-button>
                         </div>
                   </div>
                   <md-button class="md-raised" ng-click="addMore(dataset.fe_views.views[viewName][setting.name],'object')"><span
