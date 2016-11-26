@@ -39,14 +39,3 @@ app.filter('typeCoercionToString', function () {
     }
 });
 
-app.filter('displaySpecialColName',function() {
-    return function(input) {
-        if (input) {
-            if (input == '_all') {
-                return "All";
-            } else {
-                return input;
-            }
-        }
-    }
-})

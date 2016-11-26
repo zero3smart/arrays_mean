@@ -5,14 +5,6 @@ angular.module('arraysApp')
             $scope.$parent.$parent.views = views;
             $scope.$parent.$parent.currentNavItem = 'Views';
 
-            if ($scope.dataset.fe_designatedFields && $scope.dataset.fe_designatedFields.objectTitle) {
-                $scope.dataset.colNames.unshift("Object Title");
-                $scope.dataset.colNames.unshift("_all");
-            }
-
-
-
-
             $scope.openViewDialog = function (evt, id) {
             	viewResource.get({id:id},function(data) {
 
@@ -47,7 +39,27 @@ angular.module('arraysApp')
                 $scope.viewDisplayName = viewDisplayName;
 				$scope.viewSetting = viewSetting;
                 $scope.isDefault = false;
-          
+
+                $scope.availableForDuration = [ "Decade", "Year", "Month", "Day"];
+
+
+               var findDependency = function (settingName) {
+                    for (var i = 0; i < viewSetting.length; i++) {
+                        if (viewSetting[i].name == settingName) {
+                            return {name: settingName, display: viewSetting[i].displayAs};
+                        }
+                    }
+                    return null;
+                }
+
+                $scope.checkDependency = function(selectFrom) {
+                    if (selectFrom == 'column' || selectFrom == 'duration') {
+                        return null;
+                    } else {
+                        return findDependency(selectFrom);
+                    }
+                }
+
 
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
@@ -115,8 +127,6 @@ angular.module('arraysApp')
                 $scope.DataTypeMatch = function(requireType) {
 
                     return function(col) {
-
-            
                         if (typeof requireType !== 'undefined') {
                             if ($scope.dataset.raw_rowObjects_coercionScheme[col] &&
                                 $scope.dataset.raw_rowObjects_coercionScheme[col].operation) {
