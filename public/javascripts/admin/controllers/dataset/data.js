@@ -614,6 +614,10 @@ angular.module('arraysApp')
                     $scope.dialog.form['newField_' + index].$setValidity('valid', valid);
                 };
 
+                $scope.changeDesignatedField = function() {
+
+                };
+
                 $scope.cancel = function () {
                     $mdDialog.cancel();
                 };

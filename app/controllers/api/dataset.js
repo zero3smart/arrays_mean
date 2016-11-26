@@ -157,8 +157,10 @@ module.exports.get = function (req, res) {
                     return res.json({dataset: description});
                 })
             } else {
-                description.colNames = req.session.datasource[req.params.id].colNames;
-                description.firstRecord = req.session.datasource[req.params.id].firstRecord;
+                if (req.session.datasource[req.params.id]) {
+                    description.colNames = req.session.datasource[req.params.id].colNames;
+                    description.firstRecord = req.session.datasource[req.params.id].firstRecord;
+                }
                 return res.json({dataset: description});
             }
         });
@@ -329,7 +331,7 @@ module.exports.upload = function (req, res) {
     _.forEach(req.files, function (file) {
         batch.push(function (done) {
 
-            if (file.mimetype == 'text/csv') {
+            if (file.mimetype == 'text/csv' || file.mimeType == 'application/octet-stream') {
                 description.format = 'CSV';
             } else if (file.mimetype == 'text/tab-separated-values') {
                 description.format = 'TSV';
