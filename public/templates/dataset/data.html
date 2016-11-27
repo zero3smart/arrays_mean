@@ -31,7 +31,7 @@
                     ng-click="openFieldDialog($event, colName, dataset.firstRecord[$index])">
                     <td>{{ finalizedColName=(colName|dotless);$index+1 }}</td>
                     <td>
-                        <md-checkbox name="fe_excludeFields[]" ng-model="dataset.fe_excludeFields[finalizedColName]"
+                        <md-checkbox name="fe_excludeFields_{{$index}}" ng-model="dataset.fe_excludeFields[finalizedColName]"
                                      aria-label="Exclude {{colName}}" ng-click="$event.stopPropagation()"></md-checkbox>
                     </td>
                     <td>{{ colName }}</td>

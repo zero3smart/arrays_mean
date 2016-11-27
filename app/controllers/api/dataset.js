@@ -551,7 +551,7 @@ module.exports.postImport = function (req, res) {
                             if (err) return res.json({error: err.message});
                             if (!updatedDataset) return res.json({error: 'Invalid Operation'});
 
-                            return res.json({dataset: updatedDataset});
+                            return res.json({dataset: dataset});
                         });
                     });
             }
