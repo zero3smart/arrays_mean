@@ -523,7 +523,8 @@ angular.module('arraysApp')
                     clickOutsideToClose: true,
                     fullscreen: true, // Only for -xs, -sm breakpoints.
                     locals: {
-                        dataset: $scope.$parent.$parent.dataset
+                        dataset: $scope.$parent.$parent.dataset,
+                        availableDesignatedFields: availableDesignatedFields,
                     }
                 })
                     .then(function (savedDataset) {
@@ -534,7 +535,7 @@ angular.module('arraysApp')
                     });
             };
 
-            function ImageScrapingDialogController($scope, $mdDialog, $filter, dataset) {
+            function ImageScrapingDialogController($scope, $mdDialog, $filter, dataset, availableDesignatedFields) {
 
                 function getColumnNameFromDotless(dotlessColumnName) {
                     return $scope.dataset.colNames.find(function (colName) {
@@ -544,11 +545,20 @@ angular.module('arraysApp')
 
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
+                    $scope.data = {};
 
                     if (!$scope.dataset.imageScraping) $scope.dataset.imageScraping = [];
                     $scope.dataset.imageScraping.forEach(function(imageScraping) {
                         imageScraping.htmlSourceAtURLInField = getColumnNameFromDotless(imageScraping.htmlSourceAtURLInField);
                     });
+
+                    $scope.availableDesignatedFields = availableDesignatedFields;
+
+                    if (!$scope.dataset.fe_designatedFields) $scope.dataset.fe_designatedFields = {};
+                    $scope.data.designatedFields = {};
+                    for (var key in $scope.dataset.fe_designatedFields) {
+                        $scope.data.designatedFields[$scope.dataset.fe_designatedFields[key]] = key;
+                    }
 
                     if ($scope.dialog.form) $scope.dialog.form.$setPristine();
                 };
@@ -579,7 +589,7 @@ angular.module('arraysApp')
                         prependToImageURLs: '',
                         resize: 600
                     });
-                }
+                };
 
                 $scope.removeField = function(setFields, index) {
                     setFields.splice(index, 1);
@@ -622,6 +632,10 @@ angular.module('arraysApp')
                     $scope.dataset.imageScraping.forEach(function(imageScraping) {
                         imageScraping.htmlSourceAtURLInField = $filter('dotless')(imageScraping.htmlSourceAtURLInField);
                     });
+
+                    for (var fieldName in $scope.data.designatedFields) {
+                        $scope.dataset.fe_designatedFields[$scope.data.designatedFields[fieldName]] = fieldName;
+                    }
 
                     $mdDialog.hide($scope.dataset);
                 };

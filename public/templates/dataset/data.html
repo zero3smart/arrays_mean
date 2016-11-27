@@ -34,7 +34,7 @@
                         <md-checkbox name="fe_excludeFields[]" ng-model="dataset.fe_excludeFields[finalizedColName]"
                                      aria-label="Exclude {{colName}}" ng-click="$event.stopPropagation()"></md-checkbox>
                     </td>
-                    <td>{{ finalizedColName }}</td>
+                    <td>{{ colName }}</td>
                     <td class="md-select-container">
                         <md-select name="raw_rowObjects_coercionScheme[]"
                                    ng-model="dataset.raw_rowObjects_coercionScheme[finalizedColName]"
