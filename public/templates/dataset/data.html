@@ -36,12 +36,12 @@
                     </td>
                     <td>{{ colName }}</td>
                     <td class="md-select-container">
-                        <md-select name="raw_rowObjects_coercionScheme[]"
-                                   ng-model="dataset.raw_rowObjects_coercionScheme[finalizedColName]"
+                        <md-select name="raw_rowObjects_coercionScheme"
+                                   ng-model="coercionScheme[finalizedColName]"
                                    ng-model-options="{trackBy: '$value | typeCoercionToString'}"
                                    ng-click="$event.stopPropagation()"
-                                   aria-label="Type - {{colName}}"
-                                   placeholder="String">
+                                   ng-change="changeCoercionSchemeByOperation(coercionScheme[finalizedColName], finalizedColName)"
+                                   aria-label="Type - {{colName}}" placeholder="String">
                             <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="{{coercion}}">
                                 {{coercion | typeCoercionToString}}
                             </md-option>

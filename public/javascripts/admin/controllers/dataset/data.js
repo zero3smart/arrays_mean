@@ -6,12 +6,6 @@ angular.module('arraysApp')
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
             if (!dataset.fe_excludeFields) dataset.fe_excludeFields = {};
 
-            $scope.$parent.$parent.dataset = angular.copy(dataset);
-            $scope.data = {};
-            $scope.data.primaryKey = dataset.colNames.find(function (colName) {
-                return $filter('dotless')(colName) == dataset.fn_new_rowPrimaryKeyFromRowObject;
-            });
-
             $scope.$parent.$parent.currentNavItem = 'Data';
             $scope.availableTypeCoercions = availableTypeCoercions;
 
@@ -124,6 +118,9 @@ angular.module('arraysApp')
                         $scope.data.fields = $scope.customField.fieldsToMergeIntoArray.map(getColumnNameFromDotless);
                     }
 
+                    // Data Type Coercion
+                    $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
+
                     if ($scope.dialog.fieldForm) $scope.dialog.fieldForm.$setPristine();
                 };
 
@@ -163,6 +160,18 @@ angular.module('arraysApp')
 
                     $scope.dialog.fieldForm['overrideValue_' + index].$setValidity('unique', valueOverrideUnique);
                     $scope.dialog.fieldForm['overrideValueTitle_' + index].$setValidity('unique', valueOverrideTitleUnique);
+                };
+
+                $scope.changeCoercionSchemeByOperation = function(coercion, finalizedColName) {
+                    if ($filter('typeCoercionToString')(coercion) != 'Date') {
+                        $scope.dataset.raw_rowObjects_coercionScheme[finalizedColName] = coercion;
+                    } else {
+                        if (!$scope.dataset.raw_rowObjects_coercionScheme[finalizedColName]) {
+                            $scope.dataset.raw_rowObjects_coercionScheme[finalizedColName] = coercion;
+                        } else {
+                            $scope.dataset.raw_rowObjects_coercionScheme[finalizedColName].operation = coercion.operation;
+                        }
+                    }
                 };
 
                 $scope.cancel = function () {
@@ -643,8 +652,28 @@ angular.module('arraysApp')
 
             $scope.reset = function () {
                 $scope.$parent.$parent.dataset = angular.copy(dataset);
-                $scope.vm.dataForm.$setPristine();
+                $scope.data = {};
+                $scope.data.primaryKey = dataset.colNames.find(function (colName) {
+                    return $filter('dotless')(colName) == dataset.fn_new_rowPrimaryKeyFromRowObject;
+                });
+
+                $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
+
+                if ($scope.vm) $scope.vm.dataForm.$setPristine();
             };
+
+            $scope.changeCoercionSchemeByOperation = function(coercion, finalizedColName) {
+                if ($filter('typeCoercionToString')(coercion) != 'Date') {
+                    $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[finalizedColName] = coercion;
+                } else {
+                    if (!$scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[finalizedColName])
+                        $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[finalizedColName] = coercion;
+                    else
+                        $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[finalizedColName].operation = coercion.operation;
+                }
+            };
+
+            $scope.reset();
 
             $scope.submitForm = function (isValid) {
                 if (isValid) {
@@ -652,8 +681,6 @@ angular.module('arraysApp')
                     finalizedDataset.fn_new_rowPrimaryKeyFromRowObject = $filter('dotless')($scope.data.primaryKey);
                     delete finalizedDataset.firstRecord;
                     delete finalizedDataset.colNames;
-
-                    console.log(finalizedDataset);
 
                     DatasetService.save(finalizedDataset)
                         .then(function (id) {
