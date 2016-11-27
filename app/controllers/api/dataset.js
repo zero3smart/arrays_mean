@@ -508,16 +508,23 @@ module.exports.preImport = function (req, res) {
 
         var fn = function (err) {
             if (err) {
-                res.end(JSON.stringify({error: err.message})); // error code
+                if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
+                    winston.info("🔁  Waiting 3 seconds to restart...");
+                    setTimeout(function () {
+                        import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(descriptions, fn);
+                    }, 3000);
+                } else {
+                    res.end(JSON.stringify({error: err.message})); // error code
+                }
             } else {
-                res.end(JSON.stringify({uid: uid}));
+                res.end(JSON.stringify({uid: uid})); // all good
             }
         };
 
         import_controller.Import_dataSourceDescriptions(descriptions, fn);
 
     });
-};
+}
 
 module.exports.postImport = function (req, res) {
     if (!req.body.uid) {
