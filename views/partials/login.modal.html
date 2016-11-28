@@ -12,12 +12,15 @@
        
          <div class="tab-content modal-body">
 
+            <!-- for login ajax call !-->
+            <div class="flash">
+            </div>
 
 
+            <!-- for server flash message, like redirecting from verify email !-->
+          {% if error %}
 
-
-          {% if flash.error %}
-            {% set error = flash.error | first %}
+           {% set error = flash.error | first %}
            <div class="alert alert-danger">
             <strong><i class="fa fa-times"></i> </strong> {% if error.message== "activation pending"%} You have not activated your account yet. You could resend the email <a class="alert-link pointer" href="{{error.link}}">here</a>  {% else %} {{error.message}} {%endif%}
           </div>
@@ -25,7 +28,6 @@
 
 
            {% if flash.success %}
-
             {% set success = flash.success | first %}
            <div class="alert alert-success">
             <strong><i class="fa fa-check"></i> </strong> {{success.message}} 
@@ -34,7 +36,7 @@
 
 
 
-            <form class="loginForm" autocomplete="off" method="POST" action="login">
+            <form id="loginForm" autocomplete="off" method="POST">
                   <div class="input-group">
                     <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                     <input type="text" class="form-control" name="email" placeholder="email address">
