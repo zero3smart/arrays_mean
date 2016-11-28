@@ -3,11 +3,13 @@
         .module('arraysApp')
         .service('AuthService', AuthService);
 
-    AuthService.$inject = ['$http', '$window', '$q'];
-    function AuthService ($http, $window, $q) {
+    AuthService.$inject = [ '$window', '$q'];
+    function AuthService ( $window, $q) {
+
+     
 
         var isLoggedIn = function() {
-            return $window.user && $window.user.displayName ? true : false;
+            return $window.sessionStorage.user? true: false
         };
 
         // This method will be used by UI-Router resolves
@@ -24,9 +26,11 @@
 
         var currentUser = function() {
             if (!isLoggedIn()) return null;
-            return $window.user;
+            return JSON.parse($window.sessionStorage.user);
         };
 
+
+        //ToDo: modify, using $http-> ciricular dependency
         var updateProfile = function(user) {
             var deferred = $q.defer();
             if (isLoggedIn()) {

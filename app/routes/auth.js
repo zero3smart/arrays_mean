@@ -1,6 +1,7 @@
 var express = require('express');
 var passport = require('passport');
 var router = express.Router();
+var jwt = require('jsonwebtoken');
 
 
 router.get('/google', passport.authenticate('google', {
@@ -30,21 +31,23 @@ router.get('/google/callback',function(req,res,next) {
     })(req,res,next);
 })
 
-
-
 router.post('/login',function(req,res,next) {
     passport.authenticate('local',function(err,user,info) {
         if (err) {return next(err);}
         if (!user) {
-            req.flash("error",info);
-            return res.redirect('/auth/login');
+            return res.json(401, {error: info});
         } else {
-            return res.redirect('/admin');
+            var userInfo = {
+                _id: user._id,
+                provider: user.provider,
+                _team: user._team,
+                firstName: user.firstName,
+                lastName: user.lastName
+            }
+            return res.json(userInfo);
         }
     })(req,res,next);
 })
-
-
 
 router.get('/login', function (req, res) {
     if (req.user) {

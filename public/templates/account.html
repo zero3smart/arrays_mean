@@ -17,26 +17,28 @@
         <div ng-show="error" class="alert alert-danger" role="alert">{{ error }}</div>
 
         <div>
-            <form ng-if="user.provider=='auth0'" ng-submit="updateProfile()">
-                <div class="form-group">
-                    <img src="{{ user.picture }}" width="100" height="100" ng-if="user.picture">
+            <form ng-if="user.provider=='local'" ng-submit="updateProfile()">
+                <div class="form-group" ng-if="user.profileImageUrl">
+           
+                    <img ng-src="{{ user.profileImageUrl }}" width="100" height="100">
                 </div>
                 <div class="form-group">
                     <label for="displayName">Display Name</label>
                     <input type="text" class="form-control" id="displayName" name="displayName"
-                           value="{{ user.displayName }}" readonly>
+                           value="{{ user.firstName }} , {{user.lastName}}" readonly>
                 </div>
                 <div class="form-group">
                     <label for="givenName">First Name</label>
                     <input type="text" class="form-control" id="givenName" name="givenName"
-                           ng-model="userFormData.givenName" autocomplete="off">
+                           ng-model="user.firstName" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label for="familyName">Last Name</label>
                     <input type="text" class="form-control" id="familyName" name="familyName"
-                           ng-model="userFormData.familyName" autocomplete="off">
+                           ng-model="user.lastName" autocomplete="off">
                 </div>
-                <div class="form-group">
+                <div class="form-group">    
+                    <!-- toDo: ask them to type their current password, and then set new -->
                     <label for="password">Change Password</label>
                     <input type="password" class="form-control" id="password" name="password" ng-model="userFormData.password"
                            placeholder="Type new password" autocomplete="off">
@@ -46,31 +48,31 @@
                 </div>
             </form>
 
-            <div ng-if="user.provider!='auth0'">
+            <div ng-if="user.provider!='local'">
                 <div class="form-group">
                     <label for="provider">Authentication Provider</label>
                     <p class="form-control-static">{{ user.provider }}</p>
                 </div>
-                <div class="form-group">
+         <!--        <div class="form-group">
                     <label for="displayName">Display Name</label>
                     <p class="form-control-static">{{ user.displayName }}</p>
-                </div>
+                </div> -->
                 <div class="form-group">
                     <label for="givenName">First Name</label>
-                    <p class="form-control-static">{{ user.name.givenName }}</p>
+                    <p class="form-control-static">{{ user.firstName }}</p>
                 </div>
                 <div class="form-group">
                     <label for="familyName">Last Name</label>
-                    <p class="form-control-static">{{ user.name.familyName }}</p>
+                    <p class="form-control-static">{{ user.lastName }}</p>
                 </div>
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <p class="form-control-static" ng-repeat="email in user.emails">{{ email.value }}</p>
+                    <p class="form-control-static" ng-repeat="email in user.emails">{{ user.email }}</p>
                 </div>
-                <div class="form-group">
+               <!--  <div class="form-group">
                     <label for="picture">Picture</label><br/>
-                    <img src="{{ user.picture }}" width="100" height="100" ng-if="user.picture.length!=0">
-                </div>
+                    <img src="{{ user.profileImageUrl }}" width="100" height="100" ng-if="user.profileImageUrl">
+                </div> -->
             </div>
         </div>
     </div>

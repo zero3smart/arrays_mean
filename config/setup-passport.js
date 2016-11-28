@@ -7,7 +7,9 @@ var localStrategy = new LocalStrategy({
     usernameField: "email",
     passwordField: "password"
 },function(email,password,done) {
-    User.findOne({email:email},function(err,user) {
+    User.findOne({email:email})
+    .populate('_team')
+    .exec(function(err,user) {
         if (err) {return done(err);}
         if (!user) {return done(null,false,{message: "user not found"});}
         if (!user.activated) {

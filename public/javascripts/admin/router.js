@@ -10,8 +10,8 @@ angular.module('arraysApp')
         ]
     )
     .config(
-        ['$stateProvider', '$urlRouterProvider', '$locationProvider',
-            function ($stateProvider, $urlRouterProvider, $locationProvider) {
+        ['$stateProvider', '$urlRouterProvider', '$locationProvider','$httpProvider',
+            function ($stateProvider, $urlRouterProvider, $locationProvider,$httpProvider) {
 
                 $urlRouterProvider
                     .otherwise('/admin/dataset/list');
@@ -21,12 +21,12 @@ angular.module('arraysApp')
                         abstract: true,
                         url: '/admin',
                         templateUrl: "templates/admin.html",
-                        resolve: {
-                            auth: function(AuthService) {
-                                /* return AuthService.ensureLogin(); */
-                                return true;
-                            }
-                        }
+                        controller: "AdminCtrl"
+                        // resolve: {
+                        //     auth: function(AuthService) {
+                        //         return AuthService.ensureLogin(); 
+                        //     }
+                        // }
                     })
                     .state('admin.account', {
                         url: '/account',
@@ -131,6 +131,7 @@ angular.module('arraysApp')
 
                 // use the HTML5 History API
                 $locationProvider.html5Mode(true);
+                $httpProvider.interceptors.push('TokenInterceptor');
 
             }
         ]);
