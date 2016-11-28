@@ -1,7 +1,6 @@
 <md-content layout-padding ng-if="dataset.uid">
  
-
-    <form name="viewsForm" ng-submit="submitForm(!viewsForm.$invalid && viewsForm.$dirty)">
+    <form name="vc.viewsForm" ng-submit="submitForm(!vc.viewsForm.$invalid && vc.viewsForm.$dirty)">
         <md-input-container class="md-block" flex-gt-sm>
             <label>Default View</label>
             <md-select required name="default"
@@ -38,12 +37,11 @@
         </div>
 
         <div layout="row" layout-align="end center" class="panel-footer">
-            <md-button class="md-raised" ng-click="reset()" ng-disabled="!viewsForm.$dirty">
+            <md-button class="md-raised" ng-click="reset()" ng-disabled="!vc.viewsForm.$dirty">
                 <i class="glyphicon glyphicon-refresh"></i> Reset
             </md-button>
 
-            {{viewsForm}}
-            <md-button class="md-raised" type="submit" ng-disabled="viewsForm.$invalid || !viewsForm.$dirty">
+            <md-button class="md-raised" type="submit" ng-disabled="vc.viewsForm.$invalid || !vc.viewsForm.$dirty">
                 <i class="glyphicon glyphicon-ok"></i> Save
             </md-button>
         </div>

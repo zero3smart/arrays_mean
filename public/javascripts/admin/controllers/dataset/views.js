@@ -5,7 +5,17 @@ angular.module('arraysApp')
             $scope.$parent.$parent.views = views;
             $scope.$parent.$parent.currentNavItem = 'Views';
 
+            if (!$scope.$parent.$parent.dataset.fe_views) {
+                $scope.$parent.$parent.dataset.fe_views = {};
+                 $scope.$parent.$parent.dataset.fe_views.views = {};
+            }
+
+            console.log($scope);
+
+
+
             $scope.openViewDialog = function (evt, id) {
+
             	viewResource.get({id:id},function(data) {
 
             		$mdDialog.show({
@@ -42,12 +52,12 @@ angular.module('arraysApp')
 
             $scope.submitForm = function (isValid) {
                 if (isValid) {
-                    // var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
+                    var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
                     // finalizedDataset.fn_new_rowPrimaryKeyFromRowObject = $filter('dotless')($scope.data.primaryKey);
                     // delete finalizedDataset.firstRecord;
                     // delete finalizedDataset.colNames;
 
-                    // console.log(finalizedDataset);
+                    console.log(finalizedDataset);
 
                     // DatasetService.save(finalizedDataset)
                     //     .then(function (id) {
@@ -110,6 +120,10 @@ angular.module('arraysApp')
 
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
+
+                    if (!$scope.dataset.fe_views.views[viewName]) {
+                        $scope.dataset.fe_views.views[viewName] = {};
+                    }
                     if ($scope.dataset.fe_views.default_view == viewName) {
                         $scope.isDefault = true;
                     } else {

@@ -3,13 +3,13 @@ var bucket = process.env.AWS_S3_BUCKET;
 var fs = require('fs');
 var s3 = new aws.S3();
 
-function _uploadDataSource(filePath, newFilename, contentType, cb) {
+function _uploadDataSource(filePath, newFilename, contentType,teamId, datasetId, cb) {
     fs.readFile(filePath, function (err, data) {
         if (err) return cb(err);
 
         var params = {
             Bucket: bucket,
-            Key: "datasources/" + newFilename,
+            Key:  teamId + "/" + datasetId + "/datasources/" + newFilename,
             ContentType: contentType,
             Body: data,
             ACL: "private"
@@ -21,6 +21,7 @@ function _uploadDataSource(filePath, newFilename, contentType, cb) {
 module.exports.uploadDataSource = _uploadDataSource;
 
 function _fileNameToUpload(datasourceDescription) {
+
     var fileName = datasourceDescription.uid;
     if (datasourceDescription.dataset_uid)
         fileName += '__' + datasourceDescription.dataset_uid;
@@ -34,9 +35,10 @@ module.exports.fileNameToUpload = _fileNameToUpload;
 function _getDatasource(description) {
     var fileName = _fileNameToUpload(description);
 
+
     var param = {
         Bucket: bucket,
-        Key: "datasources/" + fileName
+        Key: description._team._id + '/' + description._id + '/datasources/' + fileName
     }
 
     return s3.getObject(param)

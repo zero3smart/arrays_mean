@@ -12,6 +12,8 @@ angular.module('arraysApp')
                 return $filter('dotless')(colName) == dataset.fn_new_rowPrimaryKeyFromRowObject;
             });
 
+        
+
             $scope.$parent.$parent.currentNavItem = 'Data';
             $scope.availableTypeCoercions = availableTypeCoercions;
 
