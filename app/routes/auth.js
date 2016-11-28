@@ -50,9 +50,7 @@ router.get('/login', function (req, res) {
     if (req.user) {
         res.redirect('/admin');
     } else {
-
         var info = req.flash();
-
         res.render('auth/login', {
             env: process.env,
             flash: info

@@ -282,7 +282,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         /*eachCtx could be array or object*/
 
         if (eachCtx == null || typeof eachCtx == 'undefined' || (Array.isArray(eachCtx) && eachCtx.length==0) || 
-            (typeof eachCtx == 'object' && !Object.keys(eachCtx).length) ) {
+            (typeof eachCtx == 'object' && !eachCtx.fields )) {  //mongoose create empty array for object, fe_nestedObject will always have fields:[]
             continueToAfterIterating();
         } else {
             eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation

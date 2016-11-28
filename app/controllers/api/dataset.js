@@ -2,6 +2,7 @@ var winston = require('winston');
 var datasource_description = require('../../models/descriptions');
 var raw_source_documents = require('../../models/raw_source_documents');
 var mongoose_client = require('../../models/mongoose_client');
+var team = require('../../models/teams');
 var _ = require('lodash');
 var Batch = require('batch');
 var aws = require('aws-sdk');
@@ -15,6 +16,8 @@ var import_controller = require('../../libs/import/data_ingest/controller');
 var postimport_caching_controller = require('../../libs/import/cache/controller');
 
 module.exports.getAll = function (req, res) {
+
+
     datasource_description.find({schema_id: {$exists: false}}, {
         _id: 1,
         title: 1,
@@ -130,6 +133,8 @@ module.exports.remove = function (req, res) {
 }
 
 module.exports.get = function (req, res) {
+
+
     if (!req.params.id)
         return res.json({error: 'No ID given'});
 
@@ -148,6 +153,8 @@ module.exports.get = function (req, res) {
             if (!req.session.datasource) req.session.datasource = {};
 
             if (description.uid && !req.session.datasource[req.params.id]) {
+
+
                 _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, datasource) {
                     if (err) return res.json({error: err.message});
 
@@ -188,14 +195,32 @@ module.exports.update = function (req, res) {
     if (!req.body._id) {
 
         // Creating of New Dataset
+        req.body.author = req.user._id;
+        req.body._team = req.user._team;
+
         datasource_description.create(req.body, function (err, doc) {
-            if (err) return res.json({error: err.message});
-            return res.json({id: doc.id});
+            if (err) {
+                return res.json({error: err.message});
+            } else {
+                team.findById(req.user._team,function(err,team) {
+                    if (err) {
+                        return res.json({error:err.message});
+                    } else {
+                        team.datasourceDescriptions.push(doc.id);
+                        team.save(function(err,saved) {
+                            if (err) return res.json({error:err.message});
+                            return res.json({id: doc.id});
+                        });
+                    }
+                })
+
+            }
         });
 
     } else {
 
         // Update of Existing Dataset
+        req.body.updatedBy = req.user._id;
         datasource_description.findById(req.body._id, function (err, doc) {
             if (err) return res.json({error: err.message});
             if (!doc) return res.json({error: 'Invalid Operation'});
@@ -354,7 +379,7 @@ module.exports.upload = function (req, res) {
                 // Upload datasource to AWS S3
                 if (!description.uid) description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
                 var newFileName = datasource_file_service.fileNameToUpload(description);
-                datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, function (err) {
+                datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, description._team,description._id,function (err) {
                     if (err) {
                         winston.error("❌  Error during uploading the dataset into AWS : " + description.title + " (" + err.message + ")");
                     }

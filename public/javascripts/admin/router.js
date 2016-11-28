@@ -93,7 +93,7 @@ angular.module('arraysApp')
                     .state('admin.dataset.views', {
                         url: '/views/:id',
                         templateUrl: 'templates/dataset/views.html',
-                        controller: 'DatasetViewsCtrl',
+                        controller: 'DatasetViewsCtrl as vc',
                         resolve: {
                             dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
 

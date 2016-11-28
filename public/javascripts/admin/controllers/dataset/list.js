@@ -38,7 +38,7 @@ angular.module('arraysApp')
                 });
             }
 
-            $scope.select = function (id) {
+            $scope.select = function (id) { 
                 $state.go('admin.dataset.settings', {id: id});
             }
 
