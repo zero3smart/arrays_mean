@@ -1,3 +1,4 @@
+var winston = require('winston');
 var aws = require('aws-sdk');
 var bucket = process.env.AWS_S3_BUCKET;
 var fs = require('fs');
@@ -34,12 +35,13 @@ module.exports.fileNameToUpload = _fileNameToUpload;
 
 function _getDatasource(description) {
     var fileName = _fileNameToUpload(description);
-
+    var key = description._team._id + '/' + description._id + '/datasources/' + fileName;
 
     var param = {
         Bucket: bucket,
-        Key: description._team._id + '/' + description._id + '/datasources/' + fileName
-    }
+        Key: key
+    };
+    winston.info("🔁  Reading the datasource from S3 " + key);
 
     return s3.getObject(param)
 

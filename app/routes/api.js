@@ -13,8 +13,6 @@ var upload = multer({ dest: path.join(__dirname, '../../tmp') });
 
 var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn('/auth/login');
 
-
-
 var ctrlAuth = require('../controllers/api/authentication');
 var ctrlAccount = require('../controllers/api/account');
 var ctrlDataset = require('../controllers/api/dataset');
@@ -28,27 +26,27 @@ router.post('/login', ctrlAuth.login);
 router.post('/isLoggedIn', ctrlAuth.isLoggedIn);
 
 // account settings
-router.post('/account/update',  ensureLoggedIn,ctrlAccount.updateAccount);
+router.post('/account/update',  /*ensureLoggedIn, */ctrlAccount.updateAccount);
 
 // dataset settings
-router.get('/dataset/getAll',ensureLoggedIn,ctrlDataset.getAll);
+router.get('/dataset/getAll',/*ensureLoggedIn, */ctrlDataset.getAll);
 router.post('/dataset/remove', ensureLoggedIn   ,ctrlDataset.remove);
-router.get('/dataset/get/:id', ensureLoggedIn,ctrlDataset.get);
-router.get('/dataset/getSources/:id', ensureLoggedIn,ctrlDataset.getSourcesWithSchemaID)
-router.post('/dataset/update', ensureLoggedIn,ctrlDataset.update);
+router.get('/dataset/get/:id', /*ensureLoggedIn, */ctrlDataset.get);
+router.get('/dataset/getSources/:id', /*ensureLoggedIn, */ctrlDataset.getSourcesWithSchemaID)
+router.post('/dataset/update', /*ensureLoggedIn, */ctrlDataset.update);
 
 // dataset upload
-router.post('/dataset/upload', ensureLoggedIn,upload.array('file', 12), ctrlDataset.upload);
-router.get('/dataset/download/:id', ensureLoggedIn,ctrlDataset.download);
+router.post('/dataset/upload', /*ensureLoggedIn, */upload.array('file', 12), ctrlDataset.upload);
+router.get('/dataset/download/:id', /*ensureLoggedIn, */ctrlDataset.download);
 
 // dataset format data
-router.get('/dataset/getAvailableTypeCoercions', ensureLoggedIn,ctrlDataset.getAvailableTypeCoercions);
-router.get('/dataset/getAvailableDesignatedFields', ensureLoggedIn,ctrlDataset.getAvailableDesignatedFields);
+router.get('/dataset/getAvailableTypeCoercions', /*ensureLoggedIn, */ctrlDataset.getAvailableTypeCoercions);
+router.get('/dataset/getAvailableDesignatedFields', /*ensureLoggedIn, */ctrlDataset.getAvailableDesignatedFields);
 
 // dataset import
-router.post('/dataset/initializeToImport', ensureLoggedIn,ctrlDataset.initializeToImport);
-router.post('/dataset/preImport', ensureLoggedIn,ctrlDataset.preImport);
-router.post('/dataset/postImport', ensureLoggedIn,ctrlDataset.postImport);
+router.post('/dataset/initializeToImport', /*ensureLoggedIn, */ctrlDataset.initializeToImport);
+router.post('/dataset/preImport', /*ensureLoggedIn, */ctrlDataset.preImport);
+router.post('/dataset/postImport', /*ensureLoggedIn, */ctrlDataset.postImport);
 
 // website settings
 

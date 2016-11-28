@@ -17,7 +17,6 @@ var postimport_caching_controller = require('../../libs/import/cache/controller'
 
 module.exports.getAll = function (req, res) {
 
-
     datasource_description.find({schema_id: {$exists: false}}, {
         _id: 1,
         title: 1,
@@ -153,7 +152,6 @@ module.exports.get = function (req, res) {
             if (!req.session.datasource) req.session.datasource = {};
 
             if (description.uid && !req.session.datasource[req.params.id]) {
-
 
                 _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, datasource) {
                     if (err) return res.json({error: err.message});
