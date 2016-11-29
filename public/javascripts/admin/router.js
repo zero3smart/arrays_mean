@@ -23,6 +23,7 @@ angular.module('arraysApp')
                         templateUrl: "templates/admin.html",
                         controller: "AdminCtrl",
                         resolve: {
+                        
                             auth : function(AuthService) {
                                 return AuthService.ensureLogIn();
                             }

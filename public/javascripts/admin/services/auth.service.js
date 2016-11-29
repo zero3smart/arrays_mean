@@ -8,22 +8,22 @@
      
         var isLoggedIn = false;
 
-        if (!$window.sessionStorage.user) {
-            $http.get('/api/user/currentUser')
-            .then(function(result) {
+        // if (!$window.sessionStorage.user) {
+        //     $http.get('/api/user/currentUser')
+        //     .then(function(result) {
 
-                console.log(result);
+        //         console.log(result);
 
-                var userData = result.data;
-                console.log(userData);
-                if (userData) {
-                    isLoggedIn = true;
-                    $window.sessionStorage.setItem('user',JSON.stringify(userData));
-                } 
-            })
-        } else {
-            isLoggedIn = true;
-        }
+        //         var userData = result.data;
+        //         console.log(userData);
+        //         if (userData) {
+        //             isLoggedIn = true;
+        //             $window.sessionStorage.setItem('user',JSON.stringify(userData));
+        //         } 
+        //     })
+        // } else {
+        //     isLoggedIn = true;
+        // }
 
         var getToken = function() {
             var user = currentUser();
@@ -41,8 +41,31 @@
             if (isLoggedIn && currentUser() != null) {
                 deferred.resolve();
             } else {
-                deferred.reject();
-                $window.location.href= '/auth/login';
+                console.log(isLoggedIn);
+                console.log(currentUser);
+
+                if (currentUser() == null) {
+                    $http.get('/api/user/currentUser')
+                    .then(function(result) {
+
+                        console.log(result);
+
+                        var userData = result.data;
+                        console.log(userData);
+                        if (userData) {
+                            isLoggedIn = true;
+                            $window.sessionStorage.setItem('user',JSON.stringify(userData));
+                        } 
+                    })
+                } else {
+                    isLoggedIn = true;
+                }
+
+
+
+
+                // deferred.reject();
+                // $window.location.href= '/auth/login';
             }
 
             return deferred.promise;

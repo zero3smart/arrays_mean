@@ -261,11 +261,12 @@ $(document).ready(function () {
     });
 
     $('#logout').on('click',function(e) {
+        e.preventDefault();
         $.get('/auth/logout')
         .then(function(response) {
-            if (response.status == 200) {
-                $window.sessionStorage.removeItem('user');
-                $window.location.href='/';
+            if (response == 'ok') {
+                window.sessionStorage.removeItem('user');
+                window.location.href='/';
             }
 
         })
