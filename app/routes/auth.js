@@ -37,12 +37,14 @@ router.post('/login',function(req,res,next) {
         if (!user) {
             return res.json(401, {error: info});
         } else {
+            var token = jwt.sign({_id:user._id},process.env.SESSION_SECRET);
             var userInfo = {
                 _id: user._id,
                 provider: user.provider,
                 _team: user._team,
                 firstName: user.firstName,
-                lastName: user.lastName
+                lastName: user.lastName,
+                authToken: token
             }
             return res.json(userInfo);
         }

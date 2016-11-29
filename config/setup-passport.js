@@ -7,7 +7,7 @@ var localStrategy = new LocalStrategy({
     usernameField: "email",
     passwordField: "password"
 },function(email,password,done) {
-    User.findOne({email:email})
+    User.findOne({email:email,provider:'local'})
     .populate('_team')
     .exec(function(err,user) {
         if (err) {return done(err);}

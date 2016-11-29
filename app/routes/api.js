@@ -5,8 +5,7 @@ var path = require('path');
 var multer  = require('multer');
 var upload = multer({ dest: path.join(__dirname, '../../tmp') });
 
-
-
+var unless = require('express-unless');
 var ctrlAuth = require('../controllers/api/authentication');
 var ctrlAccount = require('../controllers/api/account');
 var ctrlDataset = require('../controllers/api/dataset');
@@ -15,7 +14,27 @@ var ctrlTeam = require('../controllers/api/team');
 var ctrlView = require('../controllers/api/views');
 
 
+var ejwt = require('express-jwt');
 
+
+
+var auth = ejwt({
+   secret: process.env.SESSION_SECRET,
+   userProperty: 'payload'
+}).unless({
+	path: [  /\/api\/user/i,
+			/\/api\/team/i,
+			/\/api\/view/i
+	]
+});
+
+router.use(auth,function(err,req,res,next) {
+	if (err.name == 'UnauthorizedError') {
+		res.status(401).send('unauthorized');
+	} else {
+		return next();
+	}
+});
 
 // authentication
 router.post('/register', ctrlAuth.register);

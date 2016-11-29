@@ -263,6 +263,8 @@ $(document).ready(function () {
 
     $('#login-submit').on('click',function(e) {
         e.preventDefault();
+
+
         var formData = $('#loginForm').serialize();
         $.post('/auth/login',formData)
         .success(function(user){

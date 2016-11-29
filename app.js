@@ -11,7 +11,6 @@ var passport = require('passport');
 var dotenv = require('dotenv');
 var fs = require('fs');
 var cors = require('cors');
-var routes = require('./app/routes');
 var async = require('async');
 
 var isDev = process.env.NODE_ENV == 'production' ? false : true;
@@ -88,6 +87,8 @@ app.use(function (req, res, next) {
     next();
 });
 
+
+var routes = require('./app/routes');
 
 app.use(bodyParser.urlencoded({extended: false})); // application/x-www-form-urlencoded
 app.use(bodyParser.json()); // application/JSON
