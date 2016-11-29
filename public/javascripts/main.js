@@ -257,11 +257,14 @@ $(document).ready(function () {
     $('#login').on('click', function (e) {
         e.preventDefault();
         window.location.href = '/auth/login';
+        
     });
 
 
 
     $('#login-submit').on('click',function(e) {
+
+
         e.preventDefault();
 
 
@@ -271,7 +274,9 @@ $(document).ready(function () {
             
          
             window.sessionStorage.setItem('user',JSON.stringify(user));
-            window.location.href = '/admin';
+
+            console.log(window.sessionStorage)
+            // window.location.href = '/admin';
         })
         .error(function(result) {
             var error = result.responseJSON.error;

@@ -10,7 +10,6 @@ angular.module('arraysApp')
                  $scope.$parent.$parent.dataset.fe_views.views = {};
             }
 
-            console.log($scope);
 
 
 

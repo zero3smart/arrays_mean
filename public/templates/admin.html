@@ -5,9 +5,20 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
 
+
+<ng-include src="templates/blocks/left-nav.html"></ng-include>
+
+
 <div id="content" class="site-content">
 
-    <div ui-view>
+
+	<div class="col-xs-2 container-fluid">
+		<ng-include src="'templates/blocks/left-nav.html'"></ng-include>
+	</div>
+
+
+
+    <div class="col-xs-10" ui-view>
     </div>
 
 </div><!-- #content -->

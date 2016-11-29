@@ -14,7 +14,7 @@ angular.module('arraysApp')
             function ($stateProvider, $urlRouterProvider, $locationProvider,$httpProvider) {
 
                 $urlRouterProvider
-                    .otherwise('/admin/dataset/list');
+                    .otherwise('/admin/account');
 
                 $stateProvider
                     .state('admin', {
@@ -22,16 +22,12 @@ angular.module('arraysApp')
                         url: '/admin',
                         templateUrl: "templates/admin.html",
                         controller: "AdminCtrl"
-                        // resolve: {
-                        //     auth: function(AuthService) {
-                        //         return AuthService.ensureLogin(); 
-                        //     }
-                        // }
                     })
                     .state('admin.account', {
                         url: '/account',
                         controller: 'AccountCtrl',
                         templateUrl: 'templates/account.html',
+
                     })
                     .state('admin.dataset', {
                         abstract: true,

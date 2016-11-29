@@ -52,6 +52,8 @@ router.post('/login',function(req,res,next) {
 })
 
 router.get('/login', function (req, res) {
+
+
     if (req.user) {
         res.redirect('/admin');
     } else {

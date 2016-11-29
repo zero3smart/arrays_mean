@@ -7,6 +7,16 @@
 {% block content %}
     {% include "../partials/login.modal.html" %}
 
+    <script>
+
+           var user = window.sessionStorage.getItem('user');
+           if (user) {
+                window.location.href= "/admin";
+           }
+
+    </script>
+
+
     <div id="primary" class="content-area">
     <main id="main" class="site-main" role="main">
 

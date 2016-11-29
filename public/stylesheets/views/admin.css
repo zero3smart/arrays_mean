@@ -11,6 +11,19 @@
     font-size: 18px;
 }
 
+#leftnav_admin {
+    list-style: none;
+    margin-top:200px;
+}
+
+#leftnav_admin li {
+    padding:20px;
+}
+
+#leftnav_admin li:hover{
+    text-color:white;
+}
+
 md-toolbar:not(.md-menu-toolbar) {
     background-color: var(--color-primary);
 }

@@ -4,9 +4,7 @@
         .service('AuthService', AuthService);
 
     AuthService.$inject = [ '$window', '$q'];
-    function AuthService ( $window, $q) {
-
-     
+    function AuthService ( $window, $q) {     
 
         var isLoggedIn = function() {
             return $window.sessionStorage.user? true: false
@@ -21,17 +19,20 @@
             
         }
 
-        // This method will be used by UI-Router resolves
-        var ensureLogin = function() {
-            var deferred = $q.defer();
-            if (isLoggedIn()) {
-                deferred.resolve(true);
-            } else {
-                deferred.resolve(false);
-                window.location = '/auth/login';
-            }
-            return deferred.promise();
-        };
+        // too many iterations off $digest, aborting 
+
+        // // This method will be used by UI-Router resolves
+        // var ensureLogin = function() {
+        //     var deferred = $q.defer();
+
+        //     if (isLoggedIn()) {
+        //         deferred.resolve(true);
+        //     } else {
+        //         deferred.resolve(false);
+        //         window.location.href = '/auth/login';
+        //     }
+        //     return deferred.promise();
+        // };
 
         var currentUser = function() {
             if (!isLoggedIn()) return null;
@@ -41,34 +42,34 @@
 
         //ToDo: modify, using $http-> ciricular dependency, maybe using fac.
         var updateProfile = function(user) {
-            var deferred = $q.defer();
-            if (isLoggedIn()) {
-                $http.post('/api/account/update', user).then(function(data) {
-                    if (!data.error) {
-                        // Update User
-                        if (!$window.user._json.user_metadata) $window.user._json.user_metadata = {};
-                        if (!$window.user._json.user_metadata.name) $window.user._json.user_metadata.name = {};
+            // var deferred = $q.defer();
+            // if (isLoggedIn()) {
+            //     $http.post('/api/account/update', user).then(function(data) {
+            //         if (!data.error) {
+            //             // Update User
+            //             if (!$window.user._json.user_metadata) $window.user._json.user_metadata = {};
+            //             if (!$window.user._json.user_metadata.name) $window.user._json.user_metadata.name = {};
 
-                        $window.user._json.user_metadata.name.givenName = user.givenName;
-                        $window.user._json.user_metadata.name.familyName = user.familyName;
+            //             $window.user._json.user_metadata.name.givenName = user.givenName;
+            //             $window.user._json.user_metadata.name.familyName = user.familyName;
 
-                        return deferred.resolve(data.message);
-                    } else {
-                        return deferred.reject(data.error);
-                    }
-                }, function(err) {
-                    return deferred.reject(data.error);
-                });
-            } else {
-                return deferred.reject('You need to login first!');
-            }
-            return deferred.promise;
+            //             return deferred.resolve(data.message);
+            //         } else {
+            //             return deferred.reject(data.error);
+            //         }
+            //     }, function(err) {
+            //         return deferred.reject(data.error);
+            //     });
+            // } else {
+            //     return deferred.reject('You need to login first!');
+            // }
+            // return deferred.promise;
         };
 
         return {
             currentUser : currentUser,
             isLoggedIn : isLoggedIn,
-            ensureLogin : ensureLogin,
+            // ensureLogin : ensureLogin,
             updateProfile: updateProfile,
             getToken : getToken
         };

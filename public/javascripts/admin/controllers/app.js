@@ -1,10 +1,14 @@
 angular
     .module('arraysApp')
-    .controller('AdminCtrl', ['$scope', '$state', 'AuthService',
-        function ($scope, $state, AuthService) {
+    .controller('AdminCtrl', ['$scope', '$state', 'AuthService', '$window',
+        function ($scope, $state, AuthService,$window) {
 
         
 
 
-             $scope.user = AuthService.currentUser();
+            $scope.user = AuthService.currentUser();
+            if ($scope.user == null) {
+                 $window.location.href = '/auth/login';
+            }
+
         }]);
