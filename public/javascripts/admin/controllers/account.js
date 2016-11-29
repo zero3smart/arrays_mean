@@ -3,10 +3,7 @@ angular.module('arraysApp')
         function($scope, AuthService) {
 
 
-            $scope.logout = function() {
-                console.log("logout click");
-                // AuthService.logout();
-            }
+          
 
 
             $scope.updateProfile = function() {

@@ -37,7 +37,10 @@ router.post('/login',function(req,res,next) {
             req.flash("error",info);
             return res.redirect('/auth/login');
         } else {
-           return res.redirect(req.session.returnTo || '/admin');
+            req.logIn(user,function(err) {
+                if (err) {return next(err);}
+                return res.redirect(req.session.returnTo || '/admin');
+            })
         }
     })(req,res,next);
 })

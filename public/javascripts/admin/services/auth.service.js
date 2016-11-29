@@ -13,6 +13,7 @@
             $http.get('/api/user/currentUser')
             .then(function(result) {
                 var userData = result.data;
+                console.log(userData);
                 if (userData) {
                     isLoggedIn = true;
                     $window.sessionStorage.setItem('user',JSON.stringify(userData));
