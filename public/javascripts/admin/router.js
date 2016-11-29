@@ -21,7 +21,12 @@ angular.module('arraysApp')
                         abstract: true,
                         url: '/admin',
                         templateUrl: "templates/admin.html",
-                        controller: "AdminCtrl"
+                        controller: "AdminCtrl",
+                        resolve: {
+                            auth : function(AuthService) {
+                                return AuthService.ensureLogIn();
+                            }
+                        }
                     })
                     .state('admin.account', {
                         url: '/account',

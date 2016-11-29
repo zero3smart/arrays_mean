@@ -12,9 +12,9 @@
        
          <div class="tab-content modal-body">
 
-            <div class="flash">
+          
 
-              {% if error %}
+            {% if flash.error %}
 
              {% set error = flash.error | first %}
              <div class="alert alert-danger">
@@ -32,8 +32,6 @@
 
 
 
-
-            </div>
 
 
         

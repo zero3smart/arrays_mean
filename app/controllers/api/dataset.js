@@ -195,8 +195,8 @@ module.exports.update = function (req, res) {
     if (!req.body._id) {
 
         // Creating of New Dataset
-        req.body.author = req.user._id;
-        req.body._team = req.user._team;
+        // req.body.author = req.user._id;
+        // req.body._team = req.user._team;
 
         datasource_description.create(req.body, function (err, doc) {
             if (err) {
@@ -220,7 +220,7 @@ module.exports.update = function (req, res) {
     } else {
 
         // Update of Existing Dataset
-        req.body.updatedBy = req.user._id;
+        // req.body.updatedBy = req.user._id;
         datasource_description.findById(req.body._id, function (err, doc) {
             if (err) return res.json({error: err.message});
             if (!doc) return res.json({error: 'Invalid Operation'});

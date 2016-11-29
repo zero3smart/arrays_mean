@@ -7,8 +7,9 @@ angular
 
 
             $scope.user = AuthService.currentUser();
-            if ($scope.user == null) {
-                 $window.location.href = '/auth/login';
+
+            $scope.logout = function() {
+                AuthService.logout();
             }
 
         }]);

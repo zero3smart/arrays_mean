@@ -1,12 +1,11 @@
 (function() {
 	angular.module('arraysApp')
-		.factory('TokenInterceptor',function($q,$window,
-			AuthService) {
+		.factory('TokenInterceptor',function($q,$window,$injector) {
 		return {
 			request: function(config) {
 
-				if (config.url.indexOf("api") >= 0) {
-					var token = AuthService.getToken();
+				if (config.url.indexOf("api") >= 0 && config.url.indexOf('currentUser') == -1) {
+					var token = $injector.get('AuthService').getToken();
 					if (token) {
 						config.headers.Authorization = 'Bearer ' + token;
 					}
@@ -17,18 +16,9 @@
 
 			responseError : function(rejectedResponse) {
 
-
-				//ToDO: revoke token 
-
-
-
-
-
 				if (rejectedResponse.status == 401) {
 					$window.location.href= "/auth/login";
 				}
-
-
 				return rejectedResponse;
 
 			},

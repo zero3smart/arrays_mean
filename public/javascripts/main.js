@@ -260,46 +260,6 @@ $(document).ready(function () {
         
     });
 
-
-
-    $('#login-submit').on('click',function(e) {
-
-
-        e.preventDefault();
-
-
-        var formData = $('#loginForm').serialize();
-        $.post('/auth/login',formData)
-        .success(function(user){
-            
-         
-            window.sessionStorage.setItem('user',JSON.stringify(user));
-
-            console.log(window.sessionStorage)
-            // window.location.href = '/admin';
-        })
-        .error(function(result) {
-            var error = result.responseJSON.error;
-            if (error.message == 'activation pending') {
-                var htmlText = "<div class='alert alert-danger'>" + 
-            "<strong><i class='fa fa-times'></i> </strong> You have not activated your account yet. You could resend the email <a class='alert-link pointer' href='" + 
-            error.link + "'>here</a></div>";
-                $('.flash').html(htmlText);
-
-            } else {
-                var htmlText = "<div class='alert alert-danger'><strong><i class='fa fa-times'</i>  " + error.message + 
-                    "</div>";
-                $('.flash').html(htmlText);
-            }
-
-        })
-
-        
-    })
-
-
-
-
     $('#revealPassword').change(function(e) {
         if($(this).is(":checked")) {
             $('#passwordInput').attr('type','text');
