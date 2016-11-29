@@ -260,6 +260,20 @@ $(document).ready(function () {
         
     });
 
+    $('#logout').on('click',function(e) {
+        $.get('/auth/logout')
+        .then(function(response) {
+            if (response.status == 200) {
+                $window.sessionStorage.removeItem('user');
+                $window.location.href='/';
+            }
+
+        })
+    })
+
+
+              
+
     $('#revealPassword').change(function(e) {
         if($(this).is(":checked")) {
             $('#passwordInput').attr('type','text');

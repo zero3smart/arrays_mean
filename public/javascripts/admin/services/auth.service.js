@@ -8,10 +8,12 @@
      
         var isLoggedIn = false;
 
-
         if (!$window.sessionStorage.user) {
             $http.get('/api/user/currentUser')
             .then(function(result) {
+
+                console.log(result);
+
                 var userData = result.data;
                 console.log(userData);
                 if (userData) {
@@ -19,6 +21,8 @@
                     $window.sessionStorage.setItem('user',JSON.stringify(userData));
                 } 
             })
+        } else {
+            isLoggedIn = true;
         }
 
         var getToken = function() {
@@ -32,21 +36,16 @@
 
         var ensureLogin = function() {
 
-            if (isLoggedIn && currentUser() !== null) {
-                return true;
-            } else {
-                return
-            }
             var deferred = $q.defer();
-            if (isLoggedIn && currentUser() !== null) {
-
-                deferred.resolve(true);
+            console.log(isLoggedIn);
+            if (isLoggedIn && currentUser() != null) {
+                deferred.resolve();
             } else {
-
-              deferred.reject();
+                deferred.reject();
+                $window.location.href= '/auth/login';
             }
 
-            return deferred.promise();
+            return deferred.promise;
         };
 
         var currentUser = function() {
@@ -61,7 +60,10 @@
             $http.get('/auth/logout')
             .then(function(response) {
 
+                console.log(response);
+
                 if (response.status == 200) {
+                    isLoggedIn = false;
                     $window.sessionStorage.removeItem('user');
                     $window.location.href = '/';
 

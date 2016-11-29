@@ -5,9 +5,19 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
+
             $scope.submitForm = function(isValid) {
                 if (isValid) {
                     $scope.submitting = true;
+                    if (!dataset.author) {
+                        dataset.author = $scope.user._id;
+                        dataset._team = $scope.user._team._id;
+                        dataset.fe_displayTitleOverrides = {};
+                    } 
+                    dataset.updatedBy = $scope.user._id;
+
+
+
                     DatasetService.save(dataset).then(function(id) {
                         $mdToast.show(
                             $mdToast.simple()

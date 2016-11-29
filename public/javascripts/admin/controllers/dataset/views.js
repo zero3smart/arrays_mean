@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetViewsCtrl', ['$scope', 'dataset','views', 'viewResource','$mdDialog',
-        function($scope, dataset,views,viewResource,$mdDialog) {
+    .controller('DatasetViewsCtrl', ['$scope', 'dataset','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state',
+        function($scope, dataset,views,viewResource,$mdDialog,DatasetService,$mdToast,$state) {
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.views = views;
             $scope.$parent.$parent.currentNavItem = 'Views';
@@ -28,12 +28,15 @@ angular.module('arraysApp')
 	                        viewName: data.name,
 	                        viewDisplayName: data.displayAs,
 	                        dataset: $scope.$parent.$parent.dataset,
-	                        viewSetting: data.settings,
+	                        viewSetting: data.settings
 	                    }
 	                })
 	                    .then(function (savedDataset) {
+
+                            // console.log(savedDataset);
+
 	                       $scope.$parent.$parent.dataset = savedDataset;
-                            $scope.viewsForm.$setDirty();
+                            $scope.vm.viewsForm.$setDirty();
 	                    }, function () {
 	                        console.log('You cancelled the dialog.');
 	                    });
@@ -46,40 +49,40 @@ angular.module('arraysApp')
 
             $scope.reset = function () {
                 $scope.$parent.$parent.dataset = angular.copy(dataset);
-                $scope.viewsForm.$setPristine();
+                $scope.vm.viewsForm.$setPristine();
             };
 
             $scope.submitForm = function (isValid) {
+
+
                 if (isValid) {
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
-                    // finalizedDataset.fn_new_rowPrimaryKeyFromRowObject = $filter('dotless')($scope.data.primaryKey);
-                    // delete finalizedDataset.firstRecord;
-                    // delete finalizedDataset.colNames;
+                    delete finalizedDataset.firstRecord;
+                    delete finalizedDataset.colNames;
+    
 
-                    console.log(finalizedDataset);
+                    DatasetService.save(finalizedDataset)
+                        .then(function (id) {
+                            $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent('Dataset updated successfully!')
+                                    .position('top right')
+                                    .hideDelay(3000)
+                            );
 
-                    // DatasetService.save(finalizedDataset)
-                    //     .then(function (id) {
-                    //         $mdToast.show(
-                    //             $mdToast.simple()
-                    //                 .textContent('Dataset updated successfully!')
-                    //                 .position('top right')
-                    //                 .hideDelay(3000)
-                    //         );
-
-                    //         $state.transitionTo('admin.dataset.views', {id: id}, {
-                    //             reload: true,
-                    //             inherit: false,
-                    //             notify: true
-                    //         });
-                    //     }, function (error) {
-                    //         $mdToast.show(
-                    //             $mdToast.simple()
-                    //                 .textContent(error)
-                    //                 .position('top right')
-                    //                 .hideDelay(5000)
-                    //         );
-                    //     });
+                            $state.transitionTo('admin.dataset.done', {id: id}, {
+                                reload: true,
+                                inherit: false,
+                                notify: true
+                            });
+                        }, function (error) {
+                            $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent(error)
+                                    .position('top right')
+                                    .hideDelay(5000)
+                            );
+                        });
                 }
             }
 
@@ -133,7 +136,12 @@ angular.module('arraysApp')
                         var setting_name = viewSetting[i].name;
                         $scope.data[setting_name] =  $scope.dataset.fe_views.views[viewName][setting_name];
 
+                        if (typeof $scope.data[setting_name] == 'undefined' && viewSetting[i].inputType =='keyValue') {
+                            $scope.data[setting_name] = [];
+                        }
                     }
+                    $scope.data.visible =  $scope.dataset.fe_views.views[viewName].visible;
+                    $scope.data.description = $scope.dataset.fe_views.views[viewName].description;
                 };
 
                 $scope.reset();
@@ -192,10 +200,15 @@ angular.module('arraysApp')
                 };
 
                 $scope.save = function () {
+
+                    console.log($scope.isDefault);
                     if ($scope.isDefault == true) {
-                        $scope.dataset.default_view = viewName;
+                        $scope.dataset.fe_views.default_view = viewName;
                     } 
                     $scope.dataset.fe_views.views[viewName] = $scope.data;
+
+
+                    // console.log($scope.dataset);
                     $mdDialog.hide($scope.dataset);
                 };
             }

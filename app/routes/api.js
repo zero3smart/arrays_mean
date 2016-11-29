@@ -30,6 +30,8 @@ var auth = ejwt({
 
 router.use(auth,function(err,req,res,next) {
 	if (err.name == 'UnauthorizedError') {
+
+		console.log(err);
 		res.status(401).send('unauthorized');
 	} else {
 		return next();

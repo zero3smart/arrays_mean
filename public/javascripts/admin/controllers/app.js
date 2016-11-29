@@ -3,7 +3,6 @@ angular
     .controller('AdminCtrl', ['$scope', '$state', 'AuthService', '$window',
         function ($scope, $state, AuthService,$window) {
 
-        
 
 
             $scope.user = AuthService.currentUser();

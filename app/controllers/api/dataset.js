@@ -199,7 +199,8 @@ module.exports.update = function (req, res) {
             if (err) {
                 return res.json({error: err.message});
             } else {
-                team.findById(req.user._team,function(err,team) {
+
+                team.findById(req.body._team,function(err,team) {
                     if (err) {
                         return res.json({error:err.message});
                     } else {
