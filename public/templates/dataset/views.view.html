@@ -159,7 +159,6 @@
                 <div ng-if="setting.inputType=='keyValue'">
                   <label>{{setting.displayAs}}</label>
 
-                  {{data[setting.name]}}
                   <div ng-repeat=" item in data[setting.name] track by $index" layout="row">
             
                       <md-input-container flex="25" >                  

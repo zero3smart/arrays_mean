@@ -3,14 +3,27 @@
         .module('arraysApp')
         .service('AuthService', AuthService);
 
-    AuthService.$inject = [ '$window', '$q'];
-    function AuthService ( $window, $q) {
-
+    AuthService.$inject = [ '$window', '$q','$http'];
+    function AuthService ( $window, $q,$http) { 
      
+        var isLoggedIn = false;
 
-        var isLoggedIn = function() {
-            return $window.sessionStorage.user? true: false
-        };
+        // if (!$window.sessionStorage.user) {
+        //     $http.get('/api/user/currentUser')
+        //     .then(function(result) {
+
+        //         console.log(result);
+
+        //         var userData = result.data;
+        //         console.log(userData);
+        //         if (userData) {
+        //             isLoggedIn = true;
+        //             $window.sessionStorage.setItem('user',JSON.stringify(userData));
+        //         } 
+        //     })
+        // } else {
+        //     isLoggedIn = true;
+        // }
 
         var getToken = function() {
             var user = currentUser();
@@ -18,28 +31,73 @@
                 return user.authToken;
             } 
             return null;
-            
         }
 
-        // This method will be used by UI-Router resolves
+
         var ensureLogin = function() {
+
             var deferred = $q.defer();
-            if (isLoggedIn()) {
-                deferred.resolve(true);
+            console.log(isLoggedIn);
+            if (isLoggedIn && currentUser() != null) {
+                deferred.resolve();
             } else {
-                deferred.resolve(false);
-                window.location = '/auth/login';
+                console.log(isLoggedIn);
+                console.log(currentUser);
+
+                if (currentUser() == null) {
+                    $http.get('/api/user/currentUser')
+                    .then(function(result) {
+
+                        console.log(result);
+
+                        var userData = result.data;
+                        console.log(userData);
+                        if (userData) {
+                            isLoggedIn = true;
+                            $window.sessionStorage.setItem('user',JSON.stringify(userData));
+                        } 
+                    })
+                } else {
+                    isLoggedIn = true;
+                }
+
+
+
+
+                // deferred.reject();
+                // $window.location.href= '/auth/login';
             }
-            return deferred.promise();
+
+            return deferred.promise;
         };
 
         var currentUser = function() {
-            if (!isLoggedIn()) return null;
-            return JSON.parse($window.sessionStorage.user);
+            if ($window.sessionStorage.user) {
+                return JSON.parse($window.sessionStorage.user);
+            } else {
+                return null;
+            }
         };
 
+        var logout = function() {
+            $http.get('/auth/logout')
+            .then(function(response) {
 
-        //ToDo: modify, using $http-> ciricular dependency, maybe using fac.
+                console.log(response);
+
+                if (response.status == 200) {
+                    isLoggedIn = false;
+                    $window.sessionStorage.removeItem('user');
+                    $window.location.href = '/';
+
+                }
+              
+            })
+
+        }
+
+
+        //ToDo: modify,
         var updateProfile = function(user) {
             var deferred = $q.defer();
             if (isLoggedIn()) {
@@ -60,7 +118,7 @@
                     return deferred.reject(data.error);
                 });
             } else {
-                return deferred.reject('You need to login first!');
+                return deferred.reject('You need to login first!'); 
             }
             return deferred.promise;
         };
@@ -68,8 +126,9 @@
         return {
             currentUser : currentUser,
             isLoggedIn : isLoggedIn,
-            ensureLogin : ensureLogin,
+            ensureLogIn : ensureLogin,
             updateProfile: updateProfile,
+            logout: logout,
             getToken : getToken
         };
     }

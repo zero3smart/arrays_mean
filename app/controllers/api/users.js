@@ -1,7 +1,7 @@
 var User = require('../../models/users');
 var Team = require('../../models/teams');
 var mailer = require('../../libs/utils/nodemailer');
-
+var jwt = require('jsonwebtoken');
 
 module.exports.index = function (req, next) {
     var self = this;
@@ -32,16 +32,41 @@ module.exports.search = function(req,res) {
 
 
 module.exports.get = function(req,res) {
+
 	var id = req.params.id;
-	User.findById(id)
-	.populate('_team')
-	.exec(function(err,user) {
-		if (err) {
-			res.send(err);
+	if (id == 'currentUser') {
+		if (!req.user) {
+			res.status(401).send({error: 'unauthorized'});
 		} else {
-			res.json(user);
+			var userId = req.user;
+			User.findById(userId)
+			.populate('_team')
+			.exec(function(err,user) {
+				var token = jwt.sign({_id:user._id},process.env.SESSION_SECRET);
+	            var userInfo = {
+	                _id: user._id,
+	                provider: user.provider,
+	                _team: user._team,
+	                firstName: user.firstName,
+	                lastName: user.lastName,
+	                authToken: token
+	            }
+	            return res.json(userInfo);
+			})
 		}
-	})
+
+	} else {
+		User.findById(id)
+			.populate('_team')
+			.exec(function(err,user) {
+				if (err) {
+					res.send(err);
+				} else {
+					res.json(user);
+				}
+			})
+	}
+	
 } 
 
 module.exports.create = function(req,res) {

@@ -50,7 +50,7 @@ passport.use(googleStrategy)
 
 // This is not a best practice, but we want to keep things simple for now
 passport.serializeUser(function (user, done) {
-    done(null, user);
+    done(null, user._id);
 });
 
 passport.deserializeUser(function (user, done) {

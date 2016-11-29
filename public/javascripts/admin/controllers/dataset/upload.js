@@ -1,16 +1,22 @@
 angular.module('arraysApp')
-    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'sources', 'FileUploader', '$mdToast', '$state',
-        function($scope, dataset, sources, FileUploader, $mdToast, $state) {
+    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'sources', 'FileUploader', '$mdToast', '$state','AuthService',
+        function($scope, dataset, sources, FileUploader, $mdToast, $state,AuthService) {
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Upload';
             $scope.progressMode = "determinate";
             $scope.sources = sources;
 
+            var token = AuthService.getToken();
+
             $scope.uploader = new FileUploader({
                 url: '/api/dataset/upload',
                 formData: [{id: dataset._id}],
-                queueLimit: 1 // Limited for each dataset
+                queueLimit: 1, // Limited for each dataset
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+
             });
 
             // CALLBACKS

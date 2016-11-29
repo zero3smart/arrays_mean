@@ -14,24 +14,26 @@ angular.module('arraysApp')
             function ($stateProvider, $urlRouterProvider, $locationProvider,$httpProvider) {
 
                 $urlRouterProvider
-                    .otherwise('/admin/dataset/list');
+                    .otherwise('/admin/account');
 
                 $stateProvider
                     .state('admin', {
                         abstract: true,
                         url: '/admin',
                         templateUrl: "templates/admin.html",
-                        controller: "AdminCtrl"
-                        // resolve: {
-                        //     auth: function(AuthService) {
-                        //         return AuthService.ensureLogin(); 
-                        //     }
-                        // }
+                        controller: "AdminCtrl",
+                        resolve: {
+                        
+                            auth : function(AuthService) {
+                                return AuthService.ensureLogIn();
+                            }
+                        }
                     })
                     .state('admin.account', {
                         url: '/account',
                         controller: 'AccountCtrl',
                         templateUrl: 'templates/account.html',
+
                     })
                     .state('admin.dataset', {
                         abstract: true,
@@ -93,7 +95,7 @@ angular.module('arraysApp')
                     .state('admin.dataset.views', {
                         url: '/views/:id',
                         templateUrl: 'templates/dataset/views.html',
-                        controller: 'DatasetViewsCtrl as vc',
+                        controller: 'DatasetViewsCtrl as vm',
                         resolve: {
                             dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
 

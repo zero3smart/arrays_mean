@@ -6,6 +6,7 @@ angular.module('arraysApp')
             $scope.$parent.$parent.currentNavItem = 'Done';
             $scope.importLogger = [];
             $scope.inProgress = false;
+ 
 
             function preImport(uid) {
                 $scope.importLogger.push("🔁 Importing ...");

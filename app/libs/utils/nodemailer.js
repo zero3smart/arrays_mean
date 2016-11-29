@@ -5,7 +5,6 @@ var host = process.env.HOST || 'localhost';
 var port = process.env.PORT || 9080;
 var url = "http://" + host + ":" + port
 
-// ToDo: switching out gmail service to Amazon SES
 var transporter = nodemailer.createTransport({
 	transport: 'ses',
 	accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -26,7 +25,7 @@ module.exports.sendActivationEmail = function(user,cb) {
 	var token = jwt.sign({
 		_id: user._id,
 		email: user.email
-	},jwtSecret,{expiresIn:'1m'});
+	},jwtSecret,{expiresIn:'2h'});
 	var activationLink = url + '/account/verify?token=' + token;
 	var mailOptions = {
 		from: 'info@arrays.co',

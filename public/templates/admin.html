@@ -5,13 +5,25 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
 
+
+<ng-include src="templates/blocks/left-nav.html"></ng-include>
+
+
 <div id="content" class="site-content">
 
-    <div ui-view>
+
+	<div class="col-xs-3 container-fluid">
+		<ng-include src="'templates/blocks/left-nav.html'"></ng-include>
+	</div>
+
+
+
+    <div class="col-xs-9" ui-view>
     </div>
 
 </div><!-- #content -->
 
-<!-- footer -->
-<ng-include src="'templates/blocks/footer.html'"></ng-include>
+
+<!-- footer , hiding it for now for display-->
+<!-- <ng-include src="'templates/blocks/footer.html'"></ng-include> -->
 <!-- /footer -->

@@ -5,38 +5,28 @@
                 <a class="navbar-brand navbar-brand-arrays" href="/array" target="_self">Arrays</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a href="#" class="sidebar-filter-slide-toggle"><span class="icon-filter"
-                                                                              aria-hidden="true"></span></a>
-                    </li>
-                    <li class="dropdown">
+                <ul class="nav navbar-nav navbar-right ">
+
+
+
+                    <li class="dropdown right">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false"><span class="icon-gallery" aria-hidden="true"></span></a>
+                           aria-expanded="false">{{user.firstName}}, {{ user.lastName}} </span></a>
+
+
                         <ul class="dropdown-menu">
-                            <li class="background-color-brand-hover" ui-sref-active="active">
-                                <a ui-sref="admin.account"><span class="icon-gallery color-brand"
-                                                                  aria-hidden="true"></span> Account Settings</a>
+                            <li class="background-color-brand-hover"><a ng-click="logout()" >Log Out</a>
                             </li>
+                            <li class="background-color-brand-hover"><a href="mailto:Arrays Support<info@arrays.co>">Contact
+                                Support</a></li>
 
-                            <li class="background-color-brand-hover" ui-sref-active="active">
-                                <a ui-sref="admin.website"><span class="icon-gallery color-brand"
-                                                                 aria-hidden="true"></span> Website Settings</a>
-                            </li>
 
-                            <li class="background-color-brand-hover" ng-class="{'active': $state.includes('admin.dataset')}">
-                                <a ui-sref="admin.dataset.list"><span class="icon-gallery color-brand"
-                                                                 aria-hidden="true"></span> Dataset Settings</a>
-                            </li>
-
-                            <li class="background-color-brand-hover" ui-sref-active="active">
-                                <a ui-sref="admin.users"><span class="icon-gallery color-brand"
-                                                                 aria-hidden="true"></span> Manage User</a>
-                            </li>
                         </ul>
                     </li>
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
+
+
+            <!--     <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false">
@@ -50,7 +40,10 @@
                                 Support</a></li>
                         </ul>
                     </li>
-                </ul>
+                </ul> -->
+
+
+
             </div><!--/.nav-collapse -->
         </div>
 

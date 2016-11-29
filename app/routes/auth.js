@@ -17,7 +17,6 @@ router.get('/google/callback',function(req,res,next) {
         if (err) {return next(err);}
         if (!user) {return res.redirect('auth/login');}
         else {
-
             if (!user._team) {
                 return res.redirect('/signup/info/' + user._id);
                 
@@ -35,37 +34,31 @@ router.post('/login',function(req,res,next) {
     passport.authenticate('local',function(err,user,info) {
         if (err) {return next(err);}
         if (!user) {
-            return res.json(401, {error: info});
+            req.flash("error",info);
+            return res.redirect('/auth/login');
         } else {
-            var token = jwt.sign({_id:user._id},process.env.SESSION_SECRET);
-            var userInfo = {
-                _id: user._id,
-                provider: user.provider,
-                _team: user._team,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                authToken: token
-            }
-            return res.json(userInfo);
+            req.logIn(user,function(err) {
+                if (err) {return next(err);}
+                return res.redirect(req.session.returnTo || '/admin');
+            })
         }
     })(req,res,next);
 })
 
 router.get('/login', function (req, res) {
-    if (req.user) {
-        res.redirect('/admin');
-    } else {
-        var info = req.flash();
-        res.render('auth/login', {
-            env: process.env,
-            flash: info
-        });
-    }
+ 
+    var info = req.flash();
+    res.render('auth/login', {
+        env: process.env,
+        flash: info
+    });
+
 });
 
 router.get('/logout', function (req, res) {
     req.logout();
-    res.redirect('/');
+    res.status(200).send('ok');
+    
 });
 
 router.get('/callback', passport.authenticate('auth0', {failureRedirect: '/'}), function (req, res) {
