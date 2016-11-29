@@ -12,6 +12,15 @@
             return $window.sessionStorage.user? true: false
         };
 
+        var getToken = function() {
+            var user = currentUser();
+            if (user) {
+                return user.authToken;
+            } 
+            return null;
+            
+        }
+
         // This method will be used by UI-Router resolves
         var ensureLogin = function() {
             var deferred = $q.defer();
@@ -30,7 +39,7 @@
         };
 
 
-        //ToDo: modify, using $http-> ciricular dependency
+        //ToDo: modify, using $http-> ciricular dependency, maybe using fac.
         var updateProfile = function(user) {
             var deferred = $q.defer();
             if (isLoggedIn()) {
@@ -60,7 +69,8 @@
             currentUser : currentUser,
             isLoggedIn : isLoggedIn,
             ensureLogin : ensureLogin,
-            updateProfile: updateProfile
+            updateProfile: updateProfile,
+            getToken : getToken
         };
     }
 

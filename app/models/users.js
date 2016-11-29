@@ -37,17 +37,17 @@ userSchema.methods.validPassword = function(password) {
     return this.hash === hash;
 };
 
-userSchema.methods.generateJwt = function() {
-    var expiry = new Date();
-    expiry.setDate(expiry.getDate() + 7);
+// userSchema.methods.generateJwt = function() {
+//     var expiry = new Date();
+//     expiry.setDate(expiry.getDate() + 7);
 
-    return jwt.sign({
-        _id: this._id,
-        email: this.email,
-        name: this.name,
-        exp: parseInt(expiry.getTime() / 1000),
-    }, "MY_SECRET"); // DO NOT KEEP YOUR SECRET IN THE CODE!
-};
+//     return jwt.sign({
+//         _id: this._id,
+//         email: this.email,
+//         name: this.name,
+//         exp: parseInt(expiry.getTime() / 1000),
+//     }, "MY_SECRET"); // DO NOT KEEP YOUR SECRET IN THE CODE!
+// };
 
 
 

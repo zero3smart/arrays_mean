@@ -48,6 +48,8 @@ var controllers = {
     pie_set: pie_set_controller
 };
 
+
+//toDo: get view from api
 var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
 
 viewTypes.forEach(function (viewType) {
