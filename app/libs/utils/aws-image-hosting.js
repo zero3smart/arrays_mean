@@ -6,32 +6,30 @@ var sharp = require('sharp');
 var bucket = process.env.AWS_S3_BUCKET;
 var s3 = new aws.S3();
 
-
-function _uploadToS3(destFilename,response,callback) {
-
-    var hostedFilePublicUrl = _hostedPublicUrlFrom(destFilename);
-
-    var payload = {
-        Bucket: bucket,
-        Key: "images/" + destFilename,
+function _uploadToS3(folder,destinationFileName,response,callback) {
+    var hostedFilePublicUrl = _hostedPublicUrlFrom(folder,destinationFileName);
+    var payload = { 
+        Bucket:bucket,
+        Key: folder + destinationFileName,
         Body: response,
         ACL: 'public-read'
     };
 
-    s3.upload(payload, function(err){
+    s3.upload(payload,function(err) {
         if (err) {
-            winston.error("❌  AWS S3 write stream error for url " + hostedFilePublicUrl + " and dest filename " + destFilename, " err: " , err);
+            winston.error("❌  AWS S3 write stream error for url " + hostedFilePublicUrl + " and dest filename " + destinationFileName, " err: " , err);
         }
+        return callback(err,hostedFilePublicUrl);
 
-
-        return callback(err, hostedFilePublicUrl);
-    });
+    })
 }
 
 
 
 
-function _proceedToStreamToHost(resize,remoteImageSourceURL, destFilename, callback)
+
+
+function _proceedToStreamToHost(folder,resize,remoteImageSourceURL, destFilename, callback)
 {
     
         var options = {
@@ -58,7 +56,7 @@ function _proceedToStreamToHost(resize,remoteImageSourceURL, destFilename, callb
                     .resize(resize)
                     .toBuffer()
                     .then(function(data) {
-                       _uploadToS3(destFilename,data,callback)
+                       _uploadToS3(folder,destFilename,data,callback)
                     },function(err) {
                         winston.info("❌  returning url as null, since Could not read the remote image " + remoteImageSourceURL + ": " , err);
                         return callback(null,null);
@@ -66,7 +64,7 @@ function _proceedToStreamToHost(resize,remoteImageSourceURL, destFilename, callb
                     })
                 } else {
                     if (body) {
-                        _uploadToS3(destFilename,body,callback)
+                        _uploadToS3(folder,destFilename,body,callback)
 
                     }
                 }
@@ -96,13 +94,13 @@ function _dotPlusExtnameSansQueryParamsFrom(url)
 }
 //
 //
-function _hostedPublicUrlFrom(filename)
+function _hostedPublicUrlFrom(folder,filename)
 {
-    return 'https://' + bucket + '.s3.amazonaws.com/images/' + filename;
+    return 'https://' + bucket + '.s3.amazonaws.com/' + folder + filename;
 }
 //
 //
-module.exports.hostImageLocatedAtRemoteURL = function(resize,remoteImageSourceURL, destinationFilenameSansExt, hostingOpts, callback)
+module.exports.hostImageLocatedAtRemoteURL = function(folder,resize,remoteImageSourceURL, destinationFilenameSansExt, hostingOpts, callback)
 {
     //
 
@@ -110,18 +108,18 @@ module.exports.hostImageLocatedAtRemoteURL = function(resize,remoteImageSourceUR
     var dotPlusExtname = _dotPlusExtnameSansQueryParamsFrom(remoteImageSourceURL);
     var finalizedFilenameWithExt = destinationFilenameSansExt + dotPlusExtname; // construct after extracting ext from image src url
     //
-    var hostedFilePublicUrl = _hostedPublicUrlFrom(finalizedFilenameWithExt);
+    var hostedFilePublicUrl = _hostedPublicUrlFrom(folder,finalizedFilenameWithExt);
     //
     hostingOpts = hostingOpts || {};
     if (typeof hostingOpts.overwrite === 'undefined') {
         hostingOpts.overwrite = false;
     }
     if (hostingOpts.overwrite == true) { // overwrite if exists
-        _proceedToStreamToHost(resize,remoteImageSourceURL, finalizedFilenameWithExt, callback);
+        _proceedToStreamToHost(folder,resize,remoteImageSourceURL, finalizedFilenameWithExt, callback);
     } else {
         var params = {
             Bucket: bucket,
-            Key: "images/" + finalizedFilenameWithExt
+            Key:  folder + finalizedFilenameWithExt
         };
         try {
             s3.headObject(params, function (err, data) {
@@ -132,7 +130,7 @@ module.exports.hostImageLocatedAtRemoteURL = function(resize,remoteImageSourceUR
                 // if (err.code == 'NotFound')
 
 
-                    _proceedToStreamToHost(resize,remoteImageSourceURL, finalizedFilenameWithExt, callback);
+                    _proceedToStreamToHost(folder,resize,remoteImageSourceURL, finalizedFilenameWithExt, callback);
             });
         } catch (err) {
 
@@ -140,7 +138,7 @@ module.exports.hostImageLocatedAtRemoteURL = function(resize,remoteImageSourceUR
 
     
             if (err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT')
-                _proceedToStreamToHost(resize,remoteImageSourceURL, finalizedFilenameWithExt, callback);
+                _proceedToStreamToHost(folder,resize,remoteImageSourceURL, finalizedFilenameWithExt, callback);
         }
     }
 }

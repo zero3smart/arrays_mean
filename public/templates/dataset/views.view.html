@@ -31,6 +31,8 @@
                         </md-checkbox>
                     </md-input-container>
 
+
+
                </div>
                <label>Name</label>
                 <md-input-container class="md-block" flex-gt-sm>  
@@ -74,7 +76,8 @@
                         <md-select ng-if="setting.selectNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name][setting.selectNestedField]">
 
 
-                          <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType" value="Object Title"> Object Title</md-option>
+                          <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType
+                          && dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
                           <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col | dotless ">
                                 {{col}}
                             </md-option>
@@ -91,7 +94,7 @@
 
 
                          <md-select ng-if="!setting.selectNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
-                          <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType" value="Object Title"> Object Title</md-option>
+                          <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
                           <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col | dotless">
                                 {{col}}
                             </md-option>

@@ -8,7 +8,7 @@ var Schema = mongoose.Schema;
 //
 var team_scheme = Schema({
     title: String,
-    subdomain: String,
+    subdomain: String, //not changable once set
     description: String,
     logo: String,
     logoHeader: String,
@@ -67,24 +67,24 @@ team.GetTeamsAndDatasources = function(userId,fn) {
         .exec(function(err,foundUser) {
             if (err) return fn(err);
             if (foundUser.isSuperAdmin()) {
-                getTeamsAndPopulateDatasetWithQuery({},fn);
+                getTeamsAndPopulateDatasetWithQuery({imported:true},fn);
             } else if (foundUser._team.editors.indexOf(userId) >= 0 || foundUser._team.admin == userId) {
-                console.log("im team admin")
                 var myTeamId = foundUser._team._id;
                 var otherTeams = {_team: {$ne: myTeamId},isPublished:true};
                 var myTeam = {_team: foundUser._team};
-                getTeamsAndPopulateDatasetWithQuery({$or:[otherTeams,myTeam]},fn);
+
+                getTeamsAndPopulateDatasetWithQuery({$and:[{$or:[myTeam,otherTeams]},{imported:true}]},fn);
 
             } else { //get published and unpublished dataset if currentUser is one of the viewers
                 var myTeamId = foundUser._team._id;
                 var otherTeams = {_team: {$ne: myTeamId},isPublished:true};
                 var myTeam = {_team: foundUser._team,viewers:userId};
-                getTeamsAndPopulateDatasetWithQuery({$or:[myTeam,otherTeams]},fn);
+                getTeamsAndPopulateDatasetWithQuery({$and:[{$or:[myTeam,otherTeams]},{imported:true}]},fn);
             }
         })
 
     } else {
-        getTeamsAndPopulateDatasetWithQuery({isPublished:true},fn);
+        getTeamsAndPopulateDatasetWithQuery({isPublished:true,imported:true},fn);
     }
 
 }

@@ -906,7 +906,7 @@ function extractRawUrl(scrapedString) {
 
 }
 
-function scrapeImages(mongooseModel, doc, htmlSourceAtURLInField, setFields, selectors, outterCallback) {
+function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFields, selectors, outterCallback) {
 
     var htmlSourceAtURL = doc["rowParams"][htmlSourceAtURLInField];
 
@@ -927,7 +927,7 @@ function scrapeImages(mongooseModel, doc, htmlSourceAtURLInField, setFields, sel
 
 
     if (stillNeedScrape == false) {
-        outterCallback(null, mongooseModel, doc, returnObj, setFields);
+        outterCallback(null, folder,mongooseModel, doc, returnObj, setFields);
         return;
     }
 
@@ -938,10 +938,10 @@ function scrapeImages(mongooseModel, doc, htmlSourceAtURLInField, setFields, sel
                 for (var attr in selectors) {
                     returnObj[attr] = null;
                 }
-                outterCallback(err, doc, setFields, returnObj);
+                outterCallback(err, folder,mongoosemodel,doc, returnObj,setFields);
             } else {
                 winston.error("❌  Error while scraping " + htmlSourceAtURL + ": ", err);
-                outterCallback(err, null);
+                outterCallback(err, null,null,null,null,null);
             }
 
         }
@@ -969,7 +969,7 @@ function scrapeImages(mongooseModel, doc, htmlSourceAtURLInField, setFields, sel
             }
 
         }, function (err) {
-            outterCallback(err, mongooseModel, doc, returnObj, setFields);
+            outterCallback(err, folder,mongooseModel, doc, returnObj, setFields);
         })
     })
 }
@@ -993,7 +993,7 @@ function proceedToPersistHostedImageURLOrNull_forKey(err, mongooseModel, docQuer
 }
 
 
-function updateDocWithImageUrl(mongooseModel, doc, scrapedObject, setFields, outterCallback) {
+function updateDocWithImageUrl(folder,mongooseModel, doc, scrapedObject, setFields, outterCallback) {
 
 
     var docQuery = {
@@ -1048,7 +1048,7 @@ function updateDocWithImageUrl(mongooseModel, doc, scrapedObject, setFields, out
 
             // winston.info("🔁  Download/host and store hosted url for original " + finalized_imageSourceURLForSize)
 
-            image_hosting.hostImageLocatedAtRemoteURL(resize, finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, function (err, hostedUrl) {
+            image_hosting.hostImageLocatedAtRemoteURL(folder,resize, finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, function (err, hostedUrl) {
                 if (err) {
                     eachCb(err);
                 } else {
@@ -1096,7 +1096,7 @@ function updateDocWithImageUrl(mongooseModel, doc, scrapedObject, setFields, out
 
             var resize = setFields[index].resize;
 
-            image_hosting.hostImageLocatedAtRemoteURL(resize, finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, function (err, hostedUrl) {
+            image_hosting.hostImageLocatedAtRemoteURL(folder,resize, finalized_imageSourceURLForSize, destinationFilenameSansExt, hostingOpts, function (err, hostedUrl) {
                 if (err) {
                     eachCb(err);
                 } else {
@@ -1118,7 +1118,7 @@ function updateDocWithImageUrl(mongooseModel, doc, scrapedObject, setFields, out
 
 
 module.exports.GenerateImageURLFieldsByScraping
-    = function (dataSource_uid,
+    = function (dataSource_team_subdomain,dataSource_uid,
                 dataSource_importRevision,
                 dataSource_title,
                 dataset_uid,
@@ -1144,6 +1144,7 @@ module.exports.GenerateImageURLFieldsByScraping
         datasetQuery["rowParams." + htmlSourceAtURLInField] = {$exists: true};
         datasetQuery["rowParams." + htmlSourceAtURLInField] = {$ne: ""};
 
+        var folder = dataSource_team_subdomain + '/' + dataSource_uid + '/images/';
 
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously
             var concurrencyLimit = 15; // at a time
@@ -1165,7 +1166,7 @@ module.exports.GenerateImageURLFieldsByScraping
                 } else {
 
                     async.waterfall(
-                        [async.apply(scrapeImages, mongooseModel, doc, htmlSourceAtURLInField, setFields, selectors),
+                        [async.apply(scrapeImages, folder,mongooseModel, doc, htmlSourceAtURLInField, setFields, selectors),
                             updateDocWithImageUrl
                         ], function (err) {
                             eachCb(err);

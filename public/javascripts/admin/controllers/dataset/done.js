@@ -7,7 +7,7 @@ angular.module('arraysApp')
             $scope.importLogger = [];
             $scope.inProgress = false;
 
-
+            console.log($scope.$datatset);
 
 
             $scope.togglePublish = function() {
