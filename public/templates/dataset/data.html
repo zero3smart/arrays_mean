@@ -26,7 +26,8 @@
                     <div class="sampel">Sample</div>
                 </div>
                 <ul ui-sortable="sortableOptions" ng-model="dataset.colNames" class="fields">
-                    <li ng-repeat="colName in dataset.colNames" class="field">
+                    <li ng-repeat="colName in dataset.colNames" class="field"
+                        ng-click="openFieldDialog($event, colName, dataset.firstRecord[$index])">
                         <div class="handler"><span class="glyphicon glyphicon-move"></span></div>
                         <div class="order">
                             {{
