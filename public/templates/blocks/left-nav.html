@@ -6,9 +6,11 @@
                 <a ui-sref="admin.account"> Account</a>
             </li>
 
-            <li ng-if="userRole=='admin' || userRole=='sueprAdmin'" class="background-color-brand-hover" ui-sref-active="active">
+            <li ng-if="userRole=='admin' || userRole=='superAdmin'" class="background-color-brand-hover" ui-sref-active="active">
                 <a ui-sref="admin.website">Website Settings</a>
             </li>
+
+
 
             <li ng-if="userRole=='admin' || userRole=='superAdmin' || userRole=='editor'" class="background-color-brand-hover" ng-class="{'active': $state.includes('admin.dataset')}">
                 <a ui-sref="admin.dataset.list"> Dataset Settings</a>
