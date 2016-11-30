@@ -223,7 +223,7 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
     async.eachSeries(
         dataSourceDescription.imageScraping,
         function (description, cb) {
-            processed_row_objects.GenerateImageURLFieldsByScraping(dataSourceDescription.uid,
+            processed_row_objects.GenerateImageURLFieldsByScraping(dataSourceDescription._team.subdomain,dataSourceDescription.uid,
                 dataSourceDescription.importRevision,
                 dataSourceDescription.title,
                 dataSourceDescription.dataset_uid,

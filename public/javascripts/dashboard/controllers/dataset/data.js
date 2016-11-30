@@ -10,6 +10,27 @@ angular.module('arraysApp')
             if (!dataset.fe_excludeFields) dataset.fe_excludeFields = {};
             if (!dataset.fe_displayTitleOverrides) dataset.fe_displayTitleOverrides = {};
 
+            $scope.$parent.$parent.dataset = angular.copy(dataset);
+            $scope.data = {};
+            $scope.data.primaryKey = dataset.colNames.find(function (colName) {
+                return $filter('dotless')(colName) == dataset.fn_new_rowPrimaryKeyFromRowObject;
+            });
+
+
+
+            $scope.$parent.$parent.currentNavItem = 'Data';
+            $scope.availableTypeCoercions = availableTypeCoercions;
+
+            $scope.checkAll = false;
+
+
+            $scope.toggleCheck = function() {
+                $scope.checkAll = !$scope.checkAll;
+                for (var i = 0; i <  $scope.dataset.colNames.length ; i++) {
+                    $scope.dataset.fe_excludeFields[$scope.dataset.colNames[i]] = $scope.checkAll;
+                }
+
+            }
             $scope.openFieldDialog = function (evt, fieldName, firstRecord, customFieldIndex) {
                 $mdDialog.show({
                     controller: FieldDialogController,

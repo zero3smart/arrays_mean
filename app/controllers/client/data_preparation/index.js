@@ -49,9 +49,15 @@ module.exports.BindData = function (req, callback) {
 
     	}
 
+    	if (teamDescription.datasourceDescriptions.length == 0) {
+    		return cb(null);
+    	}
+
+
     	if (!teamsObj[subdomain]) {
     		teamsObj[subdomain] = {};
     	}
+    	
     	teamsObj[subdomain].team = t;
 
 

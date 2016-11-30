@@ -365,6 +365,7 @@ module.exports.upload = function (req, res) {
 
     batch.push(function (done) {
         datasource_description.findById(req.body.id)
+            .populate('_team')
             .exec(function (err, doc) {
                 if (err) return done(err);
 
@@ -399,7 +400,7 @@ module.exports.upload = function (req, res) {
                 // Upload datasource to AWS S3
                 if (!description.uid) description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
                 var newFileName = datasource_file_service.fileNameToUpload(description);
-                datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, description._team,description._id,function (err) {
+                datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, description._team.subdomain,description.uid,function (err) {
                     if (err) {
                         winston.error("❌  Error during uploading the dataset into AWS : " + description.title + " (" + err.message + ")");
                     }

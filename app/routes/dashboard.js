@@ -21,9 +21,6 @@ router.get('/logout', function (req, res) {
     res.redirect('/');
 });
 
-router.get('/callback', passport.authenticate('auth0', {failureRedirect: '/'}), function (req, res) {
-    res.redirect(req.session.returnTo || '/dashboard');
-});
 
 router.get('/*',  function (req, res) {
 

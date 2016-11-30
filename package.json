@@ -47,7 +47,6 @@
     "nodemailer-ses-transport": "^1.5.0",
     "nunjucks-comma-filter": "^1.0.0",
     "passport": "^0.3.2",
-    "passport-auth0": "^0.5.2",
     "passport-google-oauth": "^1.0.0",
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
