@@ -53,6 +53,22 @@
             }
         };
 
+        var currentUserRole = function() {
+            var curr = currentUser();
+            if (curr) {
+                if (curr.email.indexOf('schemadesign.com') >= 0 || curr.email.indexOf('arrays.co') >= 0) {
+                    return 'superAdmin';
+                } else if (curr._team.admin == curr._id) {
+                    return 'admin'
+                } else if (curr._team.editors.indexOf(curr._id) >= 0){
+                    return 'editor';
+                } else {
+                    return 'viewer';
+                }
+            } 
+            return null;
+        }
+
         var logout = function() {
             $http.get('/auth/logout')
             .then(function(response) {
@@ -101,6 +117,7 @@
             currentUser : currentUser,
             isLoggedIn : isLoggedIn,
             ensureLogIn : ensureLogin,
+            currentUserRole: currentUserRole,
             updateProfile: updateProfile,
             logout: logout,
             getToken : getToken

@@ -1,6 +1,7 @@
 var mongoose_client = require('./mongoose_client');
 var integerValidator = require('mongoose-integer');
 var _ = require("lodash")
+var User = require('./users');
 
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
@@ -38,13 +39,11 @@ team.GetTeams = function (fn) {
     })
 };
 
-
-// arrays' public page data
-team.GetTeamsAndPublishedDatasources = function(fn) {
-    team.find({})
+function getTeamsAndPopulateDatasetWithQuery(query,fn) {
+     team.find({})
     .deepPopulate('datasourceDescriptions datasourceDescriptions.updatedBy datasourceDescriptions.author', { populate: {
         'datasourceDescriptions' : {
-            match: {isPublished:true},
+            match: query,
             select: 'description uid urls title importRevision updatedBy author brandColor fe_views.default_view fe_filters.default'
         },
         'datasourceDescriptions.updatedBy' : {
@@ -58,6 +57,36 @@ team.GetTeamsAndPublishedDatasources = function(fn) {
         if (err) fn(err);
         fn(null,teams);
     })
+}
+// arrays' public page data
+team.GetTeamsAndDatasources = function(userId,fn) {
+
+    if (userId) {
+        User.findById(userId)
+        .populate('_team')
+        .exec(function(err,foundUser) {
+            if (err) return fn(err);
+            if (foundUser.isSuperAdmin()) {
+                getTeamsAndPopulateDatasetWithQuery({},fn);
+            } else if (foundUser._team.editors.indexOf(userId) >= 0 || foundUser._team.admin == userId) {
+                console.log("im team admin")
+                var myTeamId = foundUser._team._id;
+                var otherTeams = {_team: {$ne: myTeamId},isPublished:true};
+                var myTeam = {_team: foundUser._team};
+                getTeamsAndPopulateDatasetWithQuery({$or:[otherTeams,myTeam]},fn);
+
+            } else { //get published and unpublished dataset if currentUser is one of the viewers
+                var myTeamId = foundUser._team._id;
+                var otherTeams = {_team: {$ne: myTeamId},isPublished:true};
+                var myTeam = {_team: foundUser._team,viewers:userId};
+                getTeamsAndPopulateDatasetWithQuery({$or:[myTeam,otherTeams]},fn);
+            }
+        })
+
+    } else {
+        getTeamsAndPopulateDatasetWithQuery({isPublished:true},fn);
+    }
+
 }
 
 team.GetTeamBySubdomain = function (team_key, fn) {

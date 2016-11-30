@@ -36,7 +36,8 @@
                                                 <div>
                                                     <a class="panel-view-array color-brand">View Team</a>
                                                 </div>
-                                                <span class="source-count hidden-xs">{{ value.dataSourceDescriptions.length | comma }} Dataset{{ "s" if value.dataSourceDescriptions.length != 1 else "" }}</span>
+                                                <span class="source-count hidden-xs"> {% if not value.dataSourceDescriptions %}0 Dataset
+                                                {% else %}{{ value.dataSourceDescriptions.length | comma }} Dataset{{ "s" if value.dataSourceDescriptions.length != 1 else "" }} {% endif %}</span>
                                             </div>
                                             <p class="panel-body-description">{{ value.team.description }}</p>
                                         </div>

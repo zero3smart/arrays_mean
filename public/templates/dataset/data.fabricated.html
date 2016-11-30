@@ -48,7 +48,7 @@
                             <md-input-container class="md-block" flex="50">
                                 <label>Field</label>
                                 <md-select required name="field_{{$index}}" ng-model="fabricated.choices[0].match.field">
-                                    <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
+                                    <md-option ng-repeat="columnName in colsAvailable" value="{{columnName}}">
                                         {{columnName}}
                                     </md-option>
                                 </md-select>
@@ -86,7 +86,7 @@
                             <label>Name</label>
                             <md-select name="defaultName_{{$index}}"
                                        ng-model="default.name" required>
-                                <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
+                                <md-option ng-repeat="columnName in colsAvailable" value="{{columnName}}">
                                     {{columnName}}
                                 </md-option>
                                 <md-option ng-repeat="fabricated in dataset.fe_filters.fabricated" value="{{fabricated.title}}" ng-if="dataset.fe_filters.fabricated">

@@ -17,7 +17,7 @@
     <md-input-container class="md-block" flex-gt-sm ng-if="isCustom">
         <label>Fields To Merge</label>
         <md-select required name="fields" ng-model="data.fields" multiple>
-            <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
+            <md-option ng-repeat="columnName in colsAvailable" value="{{columnName}}">
                 {{columnName}}
             </md-option>
         </md-select>

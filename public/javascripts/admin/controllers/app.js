@@ -6,7 +6,8 @@ angular
 
 
             $scope.user = AuthService.currentUser();
-
+            $scope.userRole = AuthService.currentUserRole();
+            
             $scope.logout = function() {
                 AuthService.logout();
             }
