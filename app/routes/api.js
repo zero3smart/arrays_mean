@@ -29,6 +29,8 @@ var auth = ejwt({
 });
 
 router.use(auth,function(err,req,res,next) {
+
+
 	if (err.name == 'UnauthorizedError') {
 
 		console.log(err);
@@ -53,6 +55,7 @@ router.post('/dataset/remove',ctrlDataset.remove);
 router.get('/dataset/get/:id', ctrlDataset.get);
 router.get('/dataset/getSources/:id',ctrlDataset.getSourcesWithSchemaID)
 router.post('/dataset/update',ctrlDataset.update);
+router.put('/dataset/publish/',ctrlDataset.publish);
 
 // dataset upload
 router.post('/dataset/upload',upload.array('file', 12), ctrlDataset.upload);

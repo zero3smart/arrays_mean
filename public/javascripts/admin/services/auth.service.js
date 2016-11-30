@@ -8,23 +8,6 @@
      
         var isLoggedIn = false;
 
-        // if (!$window.sessionStorage.user) {
-        //     $http.get('/api/user/currentUser')
-        //     .then(function(result) {
-
-        //         console.log(result);
-
-        //         var userData = result.data;
-        //         console.log(userData);
-        //         if (userData) {
-        //             isLoggedIn = true;
-        //             $window.sessionStorage.setItem('user',JSON.stringify(userData));
-        //         } 
-        //     })
-        // } else {
-        //     isLoggedIn = true;
-        // }
-
         var getToken = function() {
             var user = currentUser();
             if (user) {
@@ -37,35 +20,26 @@
         var ensureLogin = function() {
 
             var deferred = $q.defer();
-            console.log(isLoggedIn);
             if (isLoggedIn && currentUser() != null) {
                 deferred.resolve();
             } else {
-                console.log(isLoggedIn);
-                console.log(currentUser);
-
-                if (currentUser() == null) {
-                    $http.get('/api/user/currentUser')
-                    .then(function(result) {
-
-                        console.log(result);
-
-                        var userData = result.data;
-                        console.log(userData);
-                        if (userData) {
-                            isLoggedIn = true;
-                            $window.sessionStorage.setItem('user',JSON.stringify(userData));
-                        } 
-                    })
-                } else {
-                    isLoggedIn = true;
-                }
-
-
-
-
-                // deferred.reject();
-                // $window.location.href= '/auth/login';
+   
+                $http.get('/api/user/currentUser')
+                .then(function(result) {
+                    var userData = result.data;
+                    if (userData) {
+                        isLoggedIn = true;
+                        $window.sessionStorage.setItem('user',JSON.stringify(userData));
+                        deferred.resolve();
+                    } else {
+                        deferred.reject();
+                        $window.location.href= '/auth/login';
+                    }
+                },function(err) {
+                    //response error catch the redirecting
+                    deferred.reject();
+                })
+        
             }
 
             return deferred.promise;

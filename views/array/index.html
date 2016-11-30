@@ -22,34 +22,84 @@
                             </div><!-- .row -->
                         </header>
 
-                        {% for source in sources %}
+                        {% for key,value in sources %}
+
+                
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="team_key" value="{{ source.subdomain }}" class="hidden">
-                                    <div class="panel panel-default panel-source team-{{ source.subdomain }} js-panel-team">
-                                        {% if source.brandColor %}
-                                            <style scoped>
-                                                .source-{{ source.key }} .color-brand,
-                                                .source-{{ source.key }} a.color-brand:hover,
-                                                .source-{{ source.key }} a.color-brand:focus,
-                                                .source-{{ source.key }} a.color-brand:active {
-                                                    color: {{ source.brandColor }};
-                                                }
-                                            </style>
-                                        {% endif %}
+                                    <input type="radio" name="team_key" value="{{ key }}" class="hidden">
+                                    <div class="panel panel-default panel-source team-{{ key }} js-panel-team">
+    
                                         <div class="panel-body border-top-color-brand">
-                                            <h2 class="panel-body-title">{{ source.title }}</h2>
+                                            <h2 class="panel-body-title">{{ value.team.title }}</h2>
                                             <div class="panel-body-meta">
                                                 <div>
                                                     <a class="panel-view-array color-brand">View Team</a>
                                                 </div>
-                                                <span class="source-count hidden-xs">{{ source.datasourceDescriptions.length | comma }} Dataset{{ "s" if source.datasourceDescriptions.length != 1 else "" }}</span>
+                                                <span class="source-count hidden-xs">{{ value.dataSourceDescriptions.length | comma }} Dataset{{ "s" if value.dataSourceDescriptions.length != 1 else "" }}</span>
                                             </div>
-                                            <p class="panel-body-description">{{ source.description }}</p>
+                                            <p class="panel-body-description">{{ value.team.description }}</p>
                                         </div>
                                     </div><!-- .panel -->
                                 </label>
                             </div><!-- .radio -->
+
+
+
+                            {% for teamDesc in value.dataSourceDescriptions %}
+
+                            
+                             {{teamDesc.uid}}
+
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="source_key" value="{{ teamDesc .key }}" class="hidden">
+                                    <input type="hidden" name="default_filterJSON" value="{{ teamDesc.default_filterJSON }}" class="hidden">
+                                    <input type="hidden" name="default_view" value="{{ teamDesc.default_view }}" class="hidden">
+                                    <div class="panel panel-default panel-source source-{{ teamDesc.key }} js-panel-array">
+                                        {% if teamDesc.brandColor %}
+                                            <style scoped>
+                                                .source-{{ teamDesc.key }} .color-brand,
+                                                .source-{{ teamDesc.key }} a.color-brand:hover,
+                                                .source-{{ teamDesc.key }} a.color-brand:focus,
+                                                .source-{{ teamDesc.key }} a.color-brand:active {
+                                                    color: {{ teamDesc.brandColor }};
+                                                }
+                                            </style>
+                                        {% endif %}
+
+
+                                        <div class="panel-body border-top-color-brand">
+                                            <h2 class="panel-body-title">{{ teamDesc.title }}</h2>
+                                            <div class="panel-body-meta">
+                                                 <div class="panel-body-meta">
+                                                    <div>
+                                                        <a class="panel-view-array color-brand">View Dataset</a>
+                                                    </div>
+
+                                                    By Team: {{value.team.title}}
+                                                     <span class="source-divider hidden-xs"></span>
+                                                    {% set comma = joiner() %}
+                                                    {% for url in teamDesc.urls -%}
+                                                      {{ comma() }} <a href="{{ url }}" class="source-link" target="_blank">{{ url }}</a>
+                                                    {%- endfor %}
+
+                                                    <span class="source-divider hidden-xs"></span>
+                                                    <span class="source-count hidden-xs">{{ teamDesc.sourceDoc.numberOfRows | comma }} Record{{ "s" if teamDesc.sourceDoc.numberOfRows != 1 else "" }}</span>
+                                                    <span class="source-divider hidden-xs"></span>
+                                                    <span class="source-updated hidden-xs">Last Updated {{ teamDesc.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                                                </div>
+                                                <p class="panel-body-description">{{ teamDesc.description }}</p>
+                                        </div>
+                                    </div><!-- .panel -->
+                                </label>
+                            </div><!-- .radio -->
+
+
+
+
+
+                            {% endfor %}
 
                         {% endfor %}
                     </form>

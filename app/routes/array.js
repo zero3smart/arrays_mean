@@ -14,6 +14,7 @@ router.get('/create', function (req, res) {
 var index_controller = require('../controllers/client/data_preparation');
 
 router.get('/', function (req, res) {
+
     index_controller.BindData(req, function (err, bindData) {
 
         if (err) {
@@ -22,6 +23,7 @@ router.get('/', function (req, res) {
 
             return;
         }
+
         res.render('array/index', bindData);
     });
 });

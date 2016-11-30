@@ -6,6 +6,14 @@ angular.module('arraysApp')
             $scope.$parent.$parent.currentNavItem = 'Done';
             $scope.importLogger = [];
             $scope.inProgress = false;
+
+
+
+
+            $scope.togglePublish = function() {
+                var isPublised = $scope.dataset.isPublished;
+                DatasetService.publish(dataset._id,isPublised)
+            }
  
 
             function preImport(uid) {
@@ -65,6 +73,7 @@ angular.module('arraysApp')
             }
 
             $scope.importData = function() {
+
                 var uid = dataset.dataset_uid ? dataset.dataset_uid : dataset.uid;
                 $scope.inProgress = true;
 
