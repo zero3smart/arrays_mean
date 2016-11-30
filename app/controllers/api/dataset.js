@@ -191,6 +191,16 @@ module.exports.getSourcesWithSchemaID = function (req, res) {
         });
 }
 
+module.exports.publish = function (req,res) {
+    datasource_description.findByIdAndUpdate(req.body.id,{$set:{isPublished:req.body.isPublished}},function(err,savedDesc) {
+        if (err) {
+            res.status(500).send({error: err.message});
+        } else {
+            res.status(200).send('ok');
+        }
+    })
+}
+
 module.exports.update = function (req, res) {
     if (!req.body._id) {
 

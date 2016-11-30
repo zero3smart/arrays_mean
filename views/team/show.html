@@ -65,10 +65,11 @@
                                                     {% for url in source.urls -%}
                                                       {{ comma() }} <a href="{{ url }}" class="source-link" target="_blank">{{ url }}</a>
                                                     {%- endfor %}
+                                                    <span class="source-divider hidden-xs"> Author: {{source.author}}</span>
                                                     <span class="source-divider hidden-xs"></span>
                                                     <span class="source-count hidden-xs">{{ source.sourceDoc.numberOfRows | comma }} Record{{ "s" if source.sourceDoc.numberOfRows != 1 else "" }}</span>
                                                     <span class="source-divider hidden-xs"></span>
-                                                    <span class="source-updated hidden-xs">Last Updated {{ source.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                                                    <span class="source-updated hidden-xs">Last Updated {{ source.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }} By {{source.lastUpdatedBy}}</span>
                                                 </div>
                                                 <p class="panel-body-description">{{ source.description }}</p>
                                             </div>

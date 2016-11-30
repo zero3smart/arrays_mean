@@ -53,6 +53,30 @@
             return deferred.promise;
         };
 
+        var publish = function(id,isPublished) {
+
+
+            var deferred = $q.defer();
+            var body = {
+                id: id,
+                isPublished: isPublished
+            }
+            $http.put('api/dataset/publish',body)
+                .success(function(data) {
+                    console.log(data);
+
+                     if (!data.error && data.dataset) {
+                        return deferred.resolve(data.dataset);
+                    } else {
+                        return deferred.reject(data.error);
+                    }
+                })
+                .error(function(err) {
+                    console.log(err);
+                });
+            return deferred.promise;
+        }
+
         var getSources = function(id) {
             var deferred = $q.defer();
             $http.get('api/dataset/getSources/' + id)
@@ -155,6 +179,7 @@
             get: get,
             getSources: getSources,
             save: save,
+            publish: publish,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
             getAvailableDesignatedFields: getAvailableDesignatedFields,
             initializeToImport: initializeToImport,

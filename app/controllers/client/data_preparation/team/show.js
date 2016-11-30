@@ -54,6 +54,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (typeof dataSourceDescription.fe_views.default_view !== 'undefined') {
                 default_view = dataSourceDescription.fe_views.default_view;
             }
+            var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + "," + dataSourceDescription.updatedBy.lastName
+            var authorDisplayName = dataSourceDescription.author.firstName + "," + dataSourceDescription.author.lastName
             var sourceDescription = {
                 key: source_pKey,
                 sourceDoc: doc,
@@ -61,6 +63,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 brandColor: dataSourceDescription.brandColor,
                 description: dataSourceDescription.description,
                 urls: dataSourceDescription.urls,
+                lastUpdatedBy: updatedByDisplayName,
+                author: authorDisplayName,
                 arrayListed: default_listed,
 
                 default_filterJSON: default_filterJSON,
