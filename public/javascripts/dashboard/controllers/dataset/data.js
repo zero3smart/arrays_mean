@@ -8,6 +8,7 @@ angular.module('arraysApp')
             // Assert some of the fields should be available
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
             if (!dataset.fe_excludeFields) dataset.fe_excludeFields = {};
+            if (!dataset.fe_displayTitleOverrides) dataset.fe_displayTitleOverrides = {};
 
             $scope.openFieldDialog = function (evt, fieldName, firstRecord, customFieldIndex) {
                 $mdDialog.show({
@@ -43,11 +44,18 @@ angular.module('arraysApp')
                 $scope.availableDesignatedFields = availableDesignatedFields;
                 $scope.isCustom = customFieldIndex != undefined;
 
+
+                $scope.colsAvailable = angular.copy(dataset.colNames).sort();
+
+
+
                 function getColumnNameFromDotless(dotlessColumnName) {
                     return $scope.dataset.colNames.find(function (colName) {
                         return dotlessColumnName == $filter('dotless')(colName);
                     });
                 }
+
+
 
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
@@ -389,6 +397,9 @@ angular.module('arraysApp')
             }
 
             $scope.openFabricatedFilterDialog = function(evt) {
+
+          
+
                 $mdDialog.show({
                     controller: FabricatedFilterDialogController,
                     controllerAs: 'dialog',
@@ -398,7 +409,7 @@ angular.module('arraysApp')
                     clickOutsideToClose: true,
                     fullscreen: true, // Only for -xs, -sm breakpoints.
                     locals: {
-                        dataset: $scope.$parent.$parent.dataset
+                        dataset: $scope.$parent.$parent.dataset,
                     }
                 })
                     .then(function (savedDataset) {
@@ -415,6 +426,8 @@ angular.module('arraysApp')
                         return dotlessColumnName == $filter('dotless')(colName);
                     });
                 }
+
+                $scope.colsAvailable = angular.copy(dataset.colNames).sort();
 
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);

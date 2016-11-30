@@ -13,12 +13,16 @@
         </tr>
         </thead>
         <tbody>
+
+
         <tr ng-if="dataset.uid && false">
             <td class="no-padding-vertical">
                 <strong><a href="/api/dataset/download/{{dataset.id}}" target="_self">{{ datasource.uid }}</a></strong>
                 <md-button class="md-raised pull-right">Change</md-button>
             </td>
             <td ng-show="uploader.isHTML5" nowrap></td>
+
+
             <td ng-show="uploader.isHTML5">
                 <div class="progress progress-container">
                     <div class="progress progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
@@ -75,6 +79,8 @@
             <td ng-show="uploader.isHTML5" class="progress-container">
                 <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
             </td>
+
+
             <td class="text-center">
                 <span ng-show="item.isSuccess" class="text-success"><i class="glyphicon glyphicon-ok"></i></span>
                 <span ng-show="item.isCancel" class="text-warning"><i class="glyphicon glyphicon-ban-circle"></i></span>

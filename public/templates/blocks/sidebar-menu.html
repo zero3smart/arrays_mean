@@ -3,15 +3,15 @@
         <a ui-sref="dashboard.account" role="button"> Account</a>
     </li>
 
-    <li ui-sref-active="active">
+    <li ng-if="userRole=='admin' || userRole=='superAdmin'" ui-sref-active="active">
         <a ui-sref="dashboard.website" role="button">Website Settings</a>
     </li>
 
-    <li ng-class="{'active': $state.includes('dashboard.dataset')}">
+    <li ng-if="userRole=='admin' || userRole=='superAdmin' || userRole=='editor'" ng-class="{'active': $state.includes('dashboard.dataset')}">
         <a ui-sref="dashboard.dataset.list" role="button"> Dataset Settings</a>
     </li>
 
-    <li ui-sref-active="active">
+    <li ng-if="userRole=='admin' || userRole=='superAdmin'" ui-sref-active="active">
         <a ui-sref="dashboard.users" role="button"> Manage User</a>
     </li>
 

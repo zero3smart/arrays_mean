@@ -267,6 +267,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     var eachCtx;
     var eachCtx = dataSourceDescription.customFieldsToProcess;
+
     if (typeof dataSourceDescription.fe_nestedObject != 'undefined' && dataSourceDescription.fe_nestedObject.prefix) {
         eachCtx = dataSourceDescription.fe_nestedObject;
         eachCtx.nested = true;
@@ -282,7 +283,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         /*eachCtx could be array or object*/
 
         if (eachCtx == null || typeof eachCtx == 'undefined' || (Array.isArray(eachCtx) && eachCtx.length==0) || 
-            (typeof eachCtx == 'object' && !eachCtx.fields )) {  //mongoose create empty array for object, fe_nestedObject will always have fields:[]
+            (!Array.isArray(eachCtx) && !eachCtx.fields )) { 
             continueToAfterIterating();
         } else {
             eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation
@@ -428,7 +429,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             var fieldName = withValuesInFieldsNamed[i];
             var fieldValue = rowDoc["rowParams"][fieldName];
             if (typeof fieldValue !== 'undefined' && fieldValue !== null && fieldValue !== "") {
-                if (typeof delimiterArrays !== 'undefined' && Array.isArray(delimiterArrays)) {
+                if (typeof delimiterArrays !== 'undefined' && Array.isArray(delimiterArrays) &&
+                    delimiterArrays.length > 0) {
                     fieldValue = fieldValue.split(delimiterArrays[i]);
                     var refinedValue = [];
                     fieldValue.forEach(function(value) {

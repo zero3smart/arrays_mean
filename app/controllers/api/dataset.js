@@ -3,6 +3,7 @@ var datasource_description = require('../../models/descriptions');
 var raw_source_documents = require('../../models/raw_source_documents');
 var mongoose_client = require('../../models/mongoose_client');
 var team = require('../../models/teams');
+var User = require('../../models/users');
 var _ = require('lodash');
 var Batch = require('batch');
 var aws = require('aws-sdk');
@@ -15,22 +16,36 @@ var datatypes = require('../../libs/datasources/datatypes');
 var import_controller = require('../../libs/import/data_ingest/controller');
 var postimport_caching_controller = require('../../libs/import/cache/controller');
 
-module.exports.getAll = function (req, res) {
 
-    datasource_description.find({schema_id: {$exists: false}}, {
+function getAllDatasetsWithQuery (query,res) {
+    datasource_description.find({$and:[{schema_id:{$exists:false}},query]},{
         _id: 1,
         title: 1,
-        importRevision: 1
-    }, function (err, datasets) {
+        importRevision:1
+    },function(err,datasets) {
         if (err) {
-            winston.error("❌  Error getting all datasets: " + err.message);
-
-            return res.json({
-                error: err.message
-            })
+            return res.json({error:err.message});
         }
-        return res.json({datasets: datasets});
-    });
+        return res.json({datasets:datasets});
+    })
+
+}
+
+module.exports.getAll = function (req, res) {
+
+    var userId = req.user; //user already login, validated by express-jwt
+    User.findById(userId).populate('_team').exec(function(err,foundUser) {
+        if (err) {return res.json({error:err.message})};
+        var subquery = {};
+        if (foundUser.isSuperAdmin()) { //grab everything
+            getAllDatasetsWithQuery(subquery,res);
+        } else if (foundUser._team.editors.indexOf(userId) >= 0 || foundUser._team.admin == userId) { //admin or editor
+            subquery = {_team: foundUser._team._id};
+            getAllDatasetsWithQuery(subquery,res);
+        } else {
+            res.json({datasets:[]});
+        }
+    })
 };
 
 module.exports.remove = function (req, res) {
@@ -234,7 +249,7 @@ module.exports.update = function (req, res) {
 
             _.forOwn(req.body, function (value, key) {
                 if (key != '_id' && !_.isEqual(value, doc._doc[key])) {
-                    winston.info('✅ Updated ' + doc.title + ' with - ' + key + ' with ' + value);
+                    winston.info('✅ Updated ' + doc.title + ' with - ' + key + ' with ' + JSON.stringify(value));
 
                     if (key == 'dirty') return;
 

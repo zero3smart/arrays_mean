@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetViewsCtrl', ['$scope', 'dataset','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state',
-        function($scope, dataset,views,viewResource,$mdDialog,DatasetService,$mdToast,$state) {
+    .controller('DatasetViewsCtrl', ['$scope', 'dataset','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state','$filter',
+        function($scope, dataset,views,viewResource,$mdDialog,DatasetService,$mdToast,$state,$filter) {
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.views = views;
             $scope.$parent.$parent.currentNavItem = 'Views';
@@ -10,7 +10,23 @@ angular.module('arraysApp')
                  $scope.$parent.$parent.dataset.fe_views.views = {};
             }
 
+            var colsAvailable = [];
 
+  
+
+
+            for (var i = 0; i < dataset.colNames.length ; i++) {
+                var dotless = $filter('dotless')(dataset.colNames[i]);
+                if (!$scope.dataset.fe_excludeFields[dotless]) {
+                    colsAvailable.push(dataset.colNames[i]);
+                }
+            }
+            for (var j = 0 ; j < dataset.customFieldsToProcess.length; j++) {
+                colsAvailable.push(dataset.customFieldsToProcess[j].fieldName);
+            }
+
+
+     
 
 
             $scope.openViewDialog = function (evt, id) {
@@ -28,7 +44,8 @@ angular.module('arraysApp')
 	                        viewName: data.name,
 	                        viewDisplayName: data.displayAs,
 	                        dataset: $scope.$parent.$parent.dataset,
-	                        viewSetting: data.settings
+	                        viewSetting: data.settings,
+                            colsAvailable: colsAvailable
 	                    }
 	                })
 	                    .then(function (savedDataset) {
@@ -91,12 +108,13 @@ angular.module('arraysApp')
 
 
 
-            function ViewDialogController($scope, $mdDialog, $filter, viewName,viewDisplayName,dataset,viewSetting) {
+            function ViewDialogController($scope, $mdDialog, $filter, viewName,viewDisplayName,dataset,viewSetting,colsAvailable) {
 
                 $scope.viewName = viewName;
                 $scope.viewDisplayName = viewDisplayName;
 				$scope.viewSetting = viewSetting;
                 $scope.isDefault = false;
+                $scope.colsAvailable = colsAvailable;
           
 
                 $scope.availableForDuration = [ "Decade", "Year", "Month", "Day"];
@@ -201,14 +219,10 @@ angular.module('arraysApp')
 
                 $scope.save = function () {
 
-                    console.log($scope.isDefault);
                     if ($scope.isDefault == true) {
                         $scope.dataset.fe_views.default_view = viewName;
                     } 
                     $scope.dataset.fe_views.views[viewName] = $scope.data;
-
-
-                    // console.log($scope.dataset);
                     $mdDialog.hide($scope.dataset);
                 };
             }

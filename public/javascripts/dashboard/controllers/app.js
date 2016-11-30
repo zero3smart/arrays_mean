@@ -4,6 +4,8 @@ angular
         function ($scope, $state, AuthService, $window) {
 
             $scope.user = AuthService.currentUser();
+            $scope.userRole = AuthService.currentUserRole();
+
             if (!isSmartDevice($window)) {
                 $scope.showSideMenu = true;
             }

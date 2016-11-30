@@ -37,6 +37,10 @@ userSchema.methods.validPassword = function(password) {
     return this.hash === hash;
 };
 
+userSchema.methods.isSuperAdmin = function() {
+    return (this.email.indexOf('schemadesign.com') >= 0 || this.email.indexOf('arrays.co') >= 0)
+};
+
 // userSchema.methods.generateJwt = function() {
 //     var expiry = new Date();
 //     expiry.setDate(expiry.getDate() + 7);

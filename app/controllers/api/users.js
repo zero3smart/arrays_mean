@@ -46,6 +46,7 @@ module.exports.get = function(req,res) {
 	            var userInfo = {
 	                _id: user._id,
 	                provider: user.provider,
+	                email: user.email,
 	                _team: user._team,
 	                firstName: user.firstName,
 	                lastName: user.lastName,

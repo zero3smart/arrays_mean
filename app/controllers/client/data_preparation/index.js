@@ -15,16 +15,13 @@ module.exports.BindData = function (req, callback) {
 
 	var teamsObj = {};
  
-    teamDescriptions.GetTeamsAndPublishedDatasources(function(err,teamWithDesc) {
+    teamDescriptions.GetTeamsAndDatasources(req.user,function(err,teamWithDesc) {
 
     	 async.map(teamWithDesc, iterateeFn, completionFn);
 
     })
 
      var completionFn = function (err) {
-
-
-
    
         var data = {
             env: process.env,
