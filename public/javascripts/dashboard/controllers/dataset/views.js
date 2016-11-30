@@ -70,7 +70,7 @@ angular.module('arraysApp')
                                     .hideDelay(3000)
                             );
 
-                            $state.transitionTo('admin.dataset.done', {id: id}, {
+                            $state.transitionTo('dashboard.dataset.done', {id: id}, {
                                 reload: true,
                                 inherit: false,
                                 notify: true

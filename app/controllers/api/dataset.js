@@ -377,7 +377,7 @@ module.exports.upload = function (req, res) {
                 }
                 winston.info("✅  File validation okay : " + description.title);
 
-                // Store columnNames and firstRecords for latter call on admin pages
+                // Store columnNames and firstRecords for latter call on dashboard pages
                 if (!req.session.datasource) req.session.datasource = {};
                 req.session.datasource[description.id] = datasource;
 

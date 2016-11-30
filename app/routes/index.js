@@ -78,7 +78,7 @@ var _mountRoutes_endPoints = function (app) {
     });
     app.use('/signup',require('./signup'));
 
-    app.use('/admin', require('./admin'));
+    app.use('/dashboard', require('./dashboard'));
     app.use('/api', require('./api'));
     app.use('/account',require('./account'));
 };

@@ -2,18 +2,18 @@ angular.module('arraysApp')
     .controller('DatasetDataCtrl', ['$scope', '$state', 'DatasetService', '$mdToast', '$mdDialog', '$filter', 'dataset', 'availableTypeCoercions', 'availableDesignatedFields',
         function ($scope, $state, DatasetService, $mdToast, $mdDialog, $filter, dataset, availableTypeCoercions, availableDesignatedFields) {
 
+            $scope.$parent.$parent.currentNavItem = 'Data';
+            $scope.availableTypeCoercions = availableTypeCoercions;
+
             // Assert some of the fields should be available
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
             if (!dataset.fe_excludeFields) dataset.fe_excludeFields = {};
-
-            $scope.$parent.$parent.currentNavItem = 'Data';
-            $scope.availableTypeCoercions = availableTypeCoercions;
 
             $scope.openFieldDialog = function (evt, fieldName, firstRecord, customFieldIndex) {
                 $mdDialog.show({
                     controller: FieldDialogController,
                     controllerAs: 'dialog',
-                    templateUrl: 'templates/dataset/data.field.html',
+                    templateUrl: 'templates/blocks/data.field.html',
                     parent: angular.element(document.body),
                     targetEvent: evt,
                     clickOutsideToClose: true,
@@ -205,7 +205,6 @@ angular.module('arraysApp')
                     var index = $scope.dataset.fe_fieldDisplayOrder.indexOf($scope.finalizedFieldName);
                     if (index != -1) $scope.dataset.fe_fieldDisplayOrder.splice(index, 1);
                     if ($scope.data.displayOrder) {
-                        // TODO: Consider to shift the existing elements at the same position?
                         $scope.dataset.fe_fieldDisplayOrder.splice($scope.data.displayOrder, 0, $scope.finalizedFieldName);
                     }
 
@@ -267,7 +266,7 @@ angular.module('arraysApp')
                 $mdDialog.show({
                     controller: NestedDialogController,
                     controllerAs: 'dialog',
-                    templateUrl: 'templates/dataset/data.nested.html',
+                    templateUrl: 'templates/blocks/data.nested.html',
                     parent: angular.element(document.body),
                     targetEvent: evt,
                     clickOutsideToClose: true,
@@ -393,7 +392,7 @@ angular.module('arraysApp')
                 $mdDialog.show({
                     controller: FabricatedFilterDialogController,
                     controllerAs: 'dialog',
-                    templateUrl: 'templates/dataset/data.fabricated.html',
+                    templateUrl: 'templates/blocks/data.fabricated.html',
                     parent: angular.element(document.body),
                     targetEvent: evt,
                     clickOutsideToClose: true,
@@ -527,7 +526,7 @@ angular.module('arraysApp')
                 $mdDialog.show({
                     controller: ImageScrapingDialogController,
                     controllerAs: 'dialog',
-                    templateUrl: 'templates/dataset/data.imagescraping.html',
+                    templateUrl: 'templates/blocks/data.imagescraping.html',
                     parent: angular.element(document.body),
                     targetEvent: evt,
                     clickOutsideToClose: true,
@@ -653,12 +652,22 @@ angular.module('arraysApp')
 
             $scope.reset = function () {
                 $scope.$parent.$parent.dataset = angular.copy(dataset);
+
+                if (!dataset.colNames) return;
+
                 $scope.data = {};
                 $scope.data.primaryKey = dataset.colNames.find(function (colName) {
                     return $filter('dotless')(colName) == dataset.fn_new_rowPrimaryKeyFromRowObject;
                 });
 
                 $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
+
+                $scope.sortableOptions = {
+                    handle: '> .glyphicon',
+                    stop: function(e, ui) {
+                        console.log($scope.$parent.$parent.dataset.colNames);
+                    }
+                }
 
                 if ($scope.vm) $scope.vm.dataForm.$setPristine();
             };
@@ -692,7 +701,7 @@ angular.module('arraysApp')
                                     .hideDelay(3000)
                             );
 
-                            $state.transitionTo('admin.dataset.views', {id: id}, {
+                            $state.transitionTo('dashboard.dataset.views', {id: id}, {
                                 reload: true,
                                 inherit: false,
                                 notify: true

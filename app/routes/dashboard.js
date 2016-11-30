@@ -5,7 +5,7 @@ var router = express.Router();
 
 router.get('/login', function(req, res) {
     if (req.user) {
-        res.redirect('/admin');
+        res.redirect('/dashboard');
     } else {
         res.render('auth/login', {
             env: process.env,
@@ -22,12 +22,12 @@ router.get('/logout', function (req, res) {
 });
 
 router.get('/callback', passport.authenticate('auth0', {failureRedirect: '/'}), function (req, res) {
-    res.redirect(req.session.returnTo || '/admin');
+    res.redirect(req.session.returnTo || '/dashboard');
 });
 
 router.get('/*',  function (req, res) {
 
-    res.render('admin/index', {
+    res.render('dashboard/index', {
         env: process.env,
         user: req.user
     });

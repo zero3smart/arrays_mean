@@ -11,5 +11,6 @@ angular
         'ngAria',
         'ngCookies',
         'mdColorPicker',
-        'angularFileUpload'
+        'angularFileUpload',
+        'ui.sortable'
     ]);

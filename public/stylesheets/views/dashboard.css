@@ -1,27 +1,35 @@
 /* @override 
-	http://localhost:9080/stylesheets/views/admin.css */
+	http://localhost:9080/stylesheets/views/dashboard.css */
 
-.dataset .md-toolbar-tools {
+.dashboard-content {
+    padding-top: var(--navbar-height-tablet);
+}
+
+@media (max-width: 767px) {
+    .dashboard-content {
+        padding-top: var(--navbar-height-mobile);
+    }
+}
+
+.dashboard-content .array-content {
+    padding: 15px;
+}
+
+.dashboard-content .md-toolbar-tools {
     background-color: var(--color-primary);
 }
+
+@media (max-width: 1300px) {
+    .nav-item-label {
+        display: none;
+    }
+}
+
 .dataset .md-content {
     overflow: hidden;
 }
 .dataset a._md-nav-button {
     font-size: 18px;
-}
-
-#leftnav_admin {
-    list-style: none;
-    margin-top:70px;
-}
-
-#leftnav_admin li {
-    padding:20px;
-}
-
-#leftnav_admin li:hover{
-    text-color:white;
 }
 
 md-toolbar:not(.md-menu-toolbar) {
@@ -33,16 +41,16 @@ md-tabs .md-tab.md-active {
 }
 
 
-.site-admin md-toast {
+.dashboard md-toast {
     position: fixed;
     top: 64px;
     z-index: 1000;
 }
 
-.site-admin .glyphicon {
+.dashboard .glyphicon {
     color: grey;
 }
-.site-admin .glyphicon.ready {
+.dashboard .glyphicon.ready {
     color: black;
 }
 
@@ -50,13 +58,9 @@ md-tabs .md-tab.md-active {
     font-size: 20px;
 }
 
-.site-admin section.md-container {
+.dashboard section.md-container {
     box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);
     border-radius: 4px;
-}
-
-.dataset .ext-content {
-    padding: 8px 0;
 }
 
 .dataset .layout-padding, .dataset .layout-padding > * {
@@ -65,7 +69,7 @@ md-tabs .md-tab.md-active {
 
 /* Dataset Breadcrumb */
 
-.site-admin .dataset .md-button {
+.dashboard .dataset .md-button {
     min-width: 40px;
 }
 
@@ -108,32 +112,89 @@ md-tabs .md-tab.md-active {
 }
 
 /* Dataset Format Data */
-.table-container {
+.fields-container {
     overflow-x: auto;
 }
 
-.dataset table.data > tbody > tr > td > md-checkbox {
+.dataset .field-row-header {
+}
+
+.dataset ul.fields {
+    list-style: none;
+    -webkit-padding-start: 0;
+}
+
+.dataset .field {
+    display: block;
+    border-bottom: 1px solid #e5e5e5;
+}
+.dataset .field:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.dataset .field .glyphicon {
+    cursor: pointer;
+}
+
+.dataset .field > * {
+    float: left;
+    padding: 6px;
+}
+
+.dataset .field .handler {
+    min-width: 30px;
+    width: 4%;
+}
+.dataset .field .order {
+    min-width: 30px;
+    width: 4%;
+}
+.dataset .field .exclude {
+    min-width: 40px;
+    width: 6%;
+}
+.dataset .field .name {
+    min-width: 100px;
+    width: 18%;
+}
+.dataset .field .override {
+    min-width: 100px;
+    width: 18%;
+}
+.dataset .field .type {
+    min-width: 100px;
+    width: 15%;
+}
+.dataset .field .sample {
+    min-width: 100px;
+    width: 35%;
+}
+
+
+.dataset .field .exclude > md-checkbox {
     margin-bottom: 6px;
 }
-.dataset table.data td.md-select-container {
-    padding-top: 5px;
+.dataset .field .type {
+    padding-top: 4px;
 }
-.dataset table.data > tbody > tr > td > md-select {
+.dataset .field > .type > md-select {
     margin-top: 0;
     margin-bottom: 0;
 }
 
-.dataset table.data > tbody > tr {
+.dataset .field {
     cursor: pointer;
     -webkit-transition: box-shadow .4s cubic-bezier(.25,.8,.25,1),background-color .4s cubic-bezier(.25,.8,.25,1);
     transition: box-shadow .4s cubic-bezier(.25,.8,.25,1),background-color .4s cubic-bezier(.25,.8,.25,1);
 }
 
-.dataset table.data > tbody > tr:hover {
+.dataset .field:hover {
     background-color: var(--color-item-hover);
 }
 
-.dataset table.data > tbody > tr:active {
+.dataset .field:active, .dataset .field:focus {
     background-color: var(--color-item-active);
 }
 

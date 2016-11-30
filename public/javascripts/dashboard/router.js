@@ -14,33 +14,32 @@ angular.module('arraysApp')
             function ($stateProvider, $urlRouterProvider, $locationProvider,$httpProvider) {
 
                 $urlRouterProvider
-                    .otherwise('/admin/account');
+                    .otherwise('/dashboard/account');
 
                 $stateProvider
-                    .state('admin', {
+                    .state('dashboard', {
                         abstract: true,
-                        url: '/admin',
-                        templateUrl: "templates/admin.html",
+                        url: '/dashboard',
+                        templateUrl: "templates/dashboard.html",
                         controller: "AdminCtrl",
                         resolve: {
-                        
                             auth : function(AuthService) {
                                 return AuthService.ensureLogIn();
                             }
                         }
                     })
-                    .state('admin.account', {
+                    .state('dashboard.account', {
                         url: '/account',
                         controller: 'AccountCtrl',
                         templateUrl: 'templates/account.html',
 
                     })
-                    .state('admin.dataset', {
+                    .state('dashboard.dataset', {
                         abstract: true,
                         url: '/dataset',
                         templateUrl: 'templates/dataset.html'
                     })
-                    .state('admin.dataset.list', {
+                    .state('dashboard.dataset.list', {
                         url: '/list',
                         templateUrl: 'templates/dataset/list.html',
                         controller: 'DatasetListCtrl',
@@ -50,7 +49,7 @@ angular.module('arraysApp')
                             }]
                         }
                     })
-                    .state('admin.dataset.settings', {
+                    .state('dashboard.dataset.settings', {
                         url: '/settings/:id',
                         controller: 'DatasetSettingsCtrl',
                         templateUrl: 'templates/dataset/settings.html',
@@ -60,7 +59,7 @@ angular.module('arraysApp')
                             }]
                         }
                     })
-                    .state('admin.dataset.upload', {
+                    .state('dashboard.dataset.upload', {
                         url: '/upload/:id',
                         templateUrl: 'templates/dataset/upload.html',
                         controller: 'DatasetUploadCtrl',
@@ -76,7 +75,7 @@ angular.module('arraysApp')
                             }]
                         }
                     })
-                    .state('admin.dataset.data', {
+                    .state('dashboard.dataset.data', {
                         url: '/data/:id',
                         templateUrl: 'templates/dataset/data.html',
                         controller: 'DatasetDataCtrl as vm',
@@ -92,7 +91,7 @@ angular.module('arraysApp')
                             }]
                         }
                     })
-                    .state('admin.dataset.views', {
+                    .state('dashboard.dataset.views', {
                         url: '/views/:id',
                         templateUrl: 'templates/dataset/views.html',
                         controller: 'DatasetViewsCtrl as vm',
@@ -108,7 +107,7 @@ angular.module('arraysApp')
                             }]
                         }
                     })
-                    .state('admin.dataset.done', {
+                    .state('dashboard.dataset.done', {
                         url: '/done/:id',
                         templateUrl: 'templates/dataset/done.html',
                         controller: 'DatasetDoneCtrl',
@@ -118,11 +117,11 @@ angular.module('arraysApp')
                             }]
                         }
                     })
-                    .state('admin.website', {
+                    .state('dashboard.website', {
                         url: '/website',
                         templateUrl: 'templates/website.html'
                     })
-                    .state('admin.users', {
+                    .state('dashboard.users', {
                         url: '/users',
                         templateUrl: 'templates/users.html'
                     })

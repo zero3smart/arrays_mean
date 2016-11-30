@@ -14,7 +14,7 @@ function _uploadDataSource(filePath, newFilename, contentType,teamId, datasetId,
             ContentType: contentType,
             Body: data,
             ACL: "private"
-        }
+        };
 
         s3.putObject(params, cb);
     });

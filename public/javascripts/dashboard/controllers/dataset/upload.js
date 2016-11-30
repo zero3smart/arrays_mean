@@ -74,7 +74,7 @@ angular.module('arraysApp')
                             .hideDelay(3000)
                     );
 
-                    $state.transitionTo('admin.dataset.data', {id: response.id}, { reload: true, inherit: false, notify: true });
+                    $state.transitionTo('dashboard.dataset.data', {id: response.id}, { reload: true, inherit: false, notify: true });
                 } else {
                     // Error
                     $mdToast.show(

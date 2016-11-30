@@ -40,7 +40,8 @@
 @import url('views/linechart.css');
 @import url('views/word-cloud.css');
 @import url('views/pie-set.css');
-@import url('views/admin.css');
+@import url('views/dashboard.css');
+@import url('views/sidebar-menu.css');
 @import url('views/bar-chart.css');
 
 @import url('views/login.css');
