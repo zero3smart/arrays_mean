@@ -33,10 +33,13 @@ function getAllDatasetsWithQuery (query,res) {
 
 module.exports.getAll = function (req, res) {
 
-    var userId = req.user; //user already login, validated by express-jwt
+    var userId = req.user; 
     User.findById(userId).populate('_team').exec(function(err,foundUser) {
         if (err) {return res.json({error:err.message})};
         var subquery = {};
+        if (!foundUser) {
+            res.status(401).send('unauthorized');
+        }
         if (foundUser.isSuperAdmin()) { //grab everything
             getAllDatasetsWithQuery(subquery,res);
         } else if (foundUser._team.editors.indexOf(userId) >= 0 || foundUser._team.admin == userId) { //admin or editor
@@ -47,6 +50,9 @@ module.exports.getAll = function (req, res) {
         }
     })
 };
+
+
+
 
 module.exports.remove = function (req, res) {
     if (!req.body.id)
@@ -185,6 +191,37 @@ module.exports.get = function (req, res) {
             }
         });
 };
+
+
+module.exports.loadDatasourceColumnsForMapping = function(req,res) {
+
+    if (req.params.pKey) {
+        var cols = [];
+
+        var split = req.params.pKey.split("-");
+
+        var query = {uid: split[0],importRevision:parseInt(split[1].substring(1))};
+   
+        
+        datasource_description.findOne(query)
+        .populate('_team')
+        .lean()
+        .exec(function(err,description) {
+            _readDatasourceColumnsAndSampleRecords(description,datasource_file_service.getDatasource(description).createReadStream(),function(err,datasource) {
+                if (err) {
+                    return res.json({error: err.message});
+                } else {
+                    for (var i = 0; i < datasource.colNames.length; i++) {
+                        if (!description.fe_excludeFields[datasource.colNames[i]]) {
+                            cols.push(datasource.colNames[i]);
+                        }                    
+                    }
+                    return res.json({cols: cols});
+                }
+            })
+        })
+    }
+}
 
 module.exports.getSourcesWithSchemaID = function (req, res) {
     if (!req.params.id)

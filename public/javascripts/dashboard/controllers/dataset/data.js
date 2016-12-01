@@ -450,6 +450,17 @@ angular.module('arraysApp')
 
                 $scope.colsAvailable = angular.copy(dataset.colNames).sort();
 
+
+                $scope.indexInFabricatedFilter = function(input) {
+                    for (var i = 0 ; i <  $scope.dataset.fe_filters.fabricated.length; i++) {
+                        var currentFab = $scope.dataset.fe_filters.fabricated[i];
+                        if (currentFab.title == input) {
+                            return i;
+                        }
+                    }
+                    return -1;
+                }
+
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
                     $scope.data = {};

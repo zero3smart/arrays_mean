@@ -85,6 +85,9 @@ router.get('/user/:id/resend',ctrlUsers.resend);
 router.get('/view', ctrlView.index);
 router.get('/view/:id',ctrlView.get);
 
+//datasourceMapping in format view
+router.get('/dataset/getMappingDatasourceCols/:pKey',ctrlDataset.loadDatasourceColumnsForMapping);
+
 
 
 //teams

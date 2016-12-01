@@ -61,18 +61,75 @@
                 </div>
 
 
+                <div ng-if="setting.inputType == 'datasetMapping' && setting.mappingType=='dataset'" ng-init="loadDatasetsForMapping();">
+                 <label>{{setting.displayAs}}</label> 
+
+
+                  <md-input-container class="md-block">
+                      <md-select ng-model="data[setting.name].pKey">
+                        <md-option ng-repeat="dataset in otherAvailableDatasets" ng-value="dataset.mappingPkey">
+                            {{dataset.displayAs}}
+                        </md-option>
+                      </md-select>
+                      
+                  </md-input-container>
+                </div>
+
+                <div ng-if="setting.inputType == 'datasetMapping' && setting.mappingType=='fields' && 
+                data[setting.name].pKey" ng-init="loadDatasetColumnsByPkey(data[setting.name].pKey);">
+                 <label>{{setting.displayAs}}</label> 
+
+
+                      <div ng-repeat="item in data[setting.name].mappings">
+                        <div layout="row">  
+                            <md-input-container flex="40" >                  
+                              <md-select ng-model="item.key">
+                                 
+                                  <md-option  ng-repeat="col in colsAvailable | filter: checkDuplicateKey(data[setting.name],$index) &&
+                                  keyExcludeBy(setting.keyExcludeBy)" ng-value="col | dotless">
+                                      {{col}}
+                                  </md-option>
+                              </md-select>
+
+                          </md-input-container>
+
+
+                           <md-input-container flex="50" >                  
+                              <md-select ng-model="item.value">
+                                  <md-option  ng-repeat="col in otherDatasetCols[data[setting.name].pKey]" ng-value="col | dotless">
+                                      {{col}}
+                                  </md-option>
+                              </md-select>
+                          </md-input-container>
+
+                        </div>
+                      </div>
+
+                    
+
+
+                 <!--  <md-input-container class="md-block">
+                      <md-option ng-if="setting.selectFrom=='dataset'"
+                        ng-repeat="dataset in otherAvailableDatasets" ng-value="dataset.mappingPkey">
+                          {{dataset.displayAs}}
+                      </md-option>
+                  </md-input-container> -->
+                </div>
+
+
 
 
                  <div ng-if="setting.inputType == 'select'" ng-init="dep = checkDependency(setting.selectFrom);">
                   <label>{{setting.displayAs}}</label> 
                     <small class="pull-right" ng-if="dep">
                       Dropdown selections are based on {{dep.display}} </small>
+                      <small class="pull-right" ng-if="setting.restrictColumnDataType">
+                      Field type is restrcited to {{setting.restrictColumnDataType.toLowerCase()}} </small>
                      <md-input-container class="md-block" flex-gt-sm>  
 
 
-                        <md-select ng-if="setting.selectNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name][setting.selectNestedField]">
 
-
+                        <md-select ng-if="setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name][setting.settingNestedField]">
                           <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType
                           && dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
                           <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col | dotless ">
@@ -87,10 +144,12 @@
                               {{opt}}
 
                             </md-option>
+
+
                         </md-select>
 
 
-                         <md-select ng-if="!setting.selectNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
+                         <md-select ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
                           <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
                           <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col | dotless">
                                 {{col}}
@@ -104,6 +163,11 @@
                               {{opt}}
 
                             </md-option>
+
+
+                      
+
+
                         </md-select>
 
 
@@ -114,6 +178,7 @@
 
                     </md-input-container>
                 </div>
+
 
 
                   <div ng-if="setting.inputType=='multiselect'">
@@ -160,7 +225,6 @@
                   <label>{{setting.displayAs}}</label>
 
                   <div ng-repeat=" item in data[setting.name] track by $index" layout="row">
-            
                       <md-input-container flex="25" >                  
                           <md-select ng-if="setting.keyInputType=='select' && setting.keySelectFrom=='column'" aria-label="{{setting.name}} for {{viewName}}" ng-model="item.key">
                               <md-option value="_all" ng-if="notChosen(data[setting.name],'_all',$index) && !setting.restrictColumnDataType" > All Columns </md-option>
@@ -169,7 +233,6 @@
                                   {{col}}
                               </md-option>
                           </md-select>
-
                           <input ng-if="setting.keyInputType=='textbox'" type="text" ng-model="item.key" aria-label="Display Name {{viewName}}">
                       </md-input-container>
 
@@ -206,10 +269,8 @@
 
 
 
-
-
                         <div flex="10">
-                            <md-button class="md-raised" ng-click="remove()" aria-label="Remove {{setting.name}} For {{viewName}}"><span class="glyphicon glyphicon-remove"></span></md-button>
+                            <md-button class="md-raised" ng-click="remove(setting.name,$index)" aria-label="Remove {{setting.name}} For {{viewName}}"><span class="glyphicon glyphicon-remove"></span></md-button>
                         </div>
                   </div>
                   <md-button class="md-raised" ng-click="addMore(data[setting.name],'object')"><span

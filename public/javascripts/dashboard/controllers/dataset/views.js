@@ -69,6 +69,7 @@ angular.module('arraysApp')
                 $scope.vm.viewsForm.$setPristine();
             };
 
+
             $scope.submitForm = function (isValid) {
 
 
@@ -108,13 +109,17 @@ angular.module('arraysApp')
 
 
 
-            function ViewDialogController($scope, $mdDialog, $filter, viewName,viewDisplayName,dataset,viewSetting,colsAvailable,AssetService) {
+            function ViewDialogController($scope, $mdDialog, $filter, viewName,viewDisplayName,dataset,viewSetting,colsAvailable,AssetService,
+                DatasetService) {
 
                 $scope.viewName = viewName;
                 $scope.viewDisplayName = viewDisplayName;
 				$scope.viewSetting = viewSetting;
                 $scope.isDefault = false;
                 $scope.colsAvailable = colsAvailable;
+                $scope.otherAvailableDatasets = [];
+                $scope.otherDatasetsloaded = false;
+                $scope.otherDatasetCols = {};
           
 
                 $scope.availableForDuration = [ "Decade", "Year", "Month", "Day"];
@@ -127,6 +132,47 @@ angular.module('arraysApp')
                     })
 
                 }
+
+                var getPkeyFromDatasource = function(title,importRevision) {
+                    var uid = title.toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
+                    return uid + '-r' + importRevision;
+                }
+
+
+
+
+                $scope.loadDatasetsForMapping = function() {
+                    if ($scope.otherAvailableDatasets.length == 0 && $scope.otherDatasetsloaded==false) {
+
+                            DatasetService.getAll()
+                                .then(function(all) {
+                                    $scope.otherDatasetsloaded = true;
+                                    for (var i = 0; i < all.length; i++) {
+                                        if (all[i].title !== dataset.title) {
+                                            var mappingPkey = getPkeyFromDatasource(all[i].title,
+                                                all[i].importRevision);
+                                            $scope.otherAvailableDatasets.push({displayAs:all[i].title,mappingPkey:
+                                            mappingPkey});
+                                        }
+                                    }
+                                })
+
+                    }
+                
+
+                }
+
+                $scope.loadDatasetColumnsByPkey = function(pKey) {
+                    if (pKey && !$scope.otherDatasetCols[pKey]) {
+                        DatasetService.getMappingDatasourceCols(pKey)
+                        .then(function(cols) {
+                            $scope.otherDatasetCols[pKey] = cols; 
+                        
+                        })
+                    }
+                }
+
+
 
                 $scope.initIcons = function(settingName) {
                     if (!$scope.data[settingName]) {
@@ -160,6 +206,8 @@ angular.module('arraysApp')
                         return findDependency(selectFrom);
                     }
                 }
+
+
 
 
                 $scope.reset = function () {
@@ -214,6 +262,26 @@ angular.module('arraysApp')
                         return true;
 
                     }
+                }
+
+                $scope.keyExcludeBy = function(excludeValueArray) {
+                    return function(Input) {
+                        if (typeof excludeValueArray !== 'undefined') {
+                            return excludeValueArray.indexOf(Input) == -1;
+
+                        }
+                        return true;
+                    }
+                }
+
+                $scope.loadColumnsForMappingDataset = function() {
+
+                }
+
+
+
+                $scope.remove = function(setting,index) {
+                    $scope.data[setting].splice(index,1);
                 }
 
 

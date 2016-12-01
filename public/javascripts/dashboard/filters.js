@@ -37,3 +37,9 @@ app.filter('typeCoercionToString', function () {
     }
 });
 
+app.filter('viewToName',function() {
+    return function(input) {
+        return input.split(/(?=[A-Z])/).join("-").toLowerCase();
+    }
+})
+

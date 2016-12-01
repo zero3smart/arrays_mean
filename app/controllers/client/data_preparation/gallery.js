@@ -110,6 +110,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
+
+
             var filterObj = func.filterObjFromQueryParams(urlQuery);
 
           
@@ -175,9 +177,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
+               
                     done();
                 });
             });
+
+
 
             // Count whole set
             batch.push(function (done) {

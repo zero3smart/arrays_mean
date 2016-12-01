@@ -68,8 +68,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
             return;
         }
         var limitToNTopValues = 100;
-        // var feVisible_filter_keys = imported_data_preparation.RowParamKeysFromSampleRowObject_whichAreAvailableAsFilters(sampleDoc, dataSourceDescription);
-
+     
         var filterKeys = Object.keys(sampleDoc.rowParams);
 
         for (var key in dataSourceDescription.fe_excludeFields) {
@@ -80,6 +79,16 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 }
             }
         }
+
+        for (var i = 0; i < dataSourceDescription.fe_filters.fieldsNotAvailable.length; i++) {
+            
+            var index = filterKeys.indexOf(dataSourceDescription.fe_filters.fieldsNotAvailable[i]);
+            if (index != -1) {
+                filterKeys.splice(index, 1);
+            }
+            
+        }
+
 
         // var feVisible_filter_keys_length = feVisible_filter_keys.length;
         var uniqueFieldValuesByFieldName = {};

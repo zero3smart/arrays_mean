@@ -117,6 +117,8 @@ var _activeFilter_matchOp_orErrDescription_fromMultiFilter = function (dataSourc
 module.exports.activeFilter_matchOp_orErrDescription_fromMultiFilter = _activeFilter_matchOp_orErrDescription_fromMultiFilter;
 
 //
+
+
 var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescription, filterCol, filterVal) {
     var matchConditions = undefined;
     var isAFabricatedFilter = false; // finalize
@@ -143,6 +145,10 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
                             $nin: choice["match"].nin
 
                         }
+
+
+
+
 
                         matchConditions = [{$match: reformQuery}];
 
@@ -172,8 +178,11 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
         var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
             && raw_rowObjects_coercionSchema[realColumnName].operation === "ToDate";
 
+         console.log(realColumnName)   
         if (!isDate) {
             var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
+            console.log(oneToOneOverrideWithValuesByTitleByFieldName);
+
             var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
             if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
                 var valueByOverride = oneToOneOverrideWithValuesByTitle_forThisColumn.find(function(valueByOverride) {
@@ -499,7 +508,6 @@ var _neededFilterValues = function(dataSourceDescription) {
     }
     return excluding;
 
-
 }
 
 var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescription, callback) {
@@ -576,6 +584,7 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
             /* getting illegal values list */
             var illegalValues = [];
 
+
             if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey) {
 
                 if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all) {
@@ -606,7 +615,16 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
 
             columnValue.forEach(function(rowValue,index) {
 
+                if (rowValue == null || typeof rowValue == 'undefined' || rowValue == "") {
+                    return;
+                }
+
                 var existsInIllegalValueList = illegalValues.indexOf(rowValue);
+
+                 
+
+
+
 
                 if (existsInIllegalValueList == -1) {
                     if (revertType) {
@@ -614,8 +632,9 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                     }
 
                     if (overwriteValue) {
+                  
                         var valueByOverride = oneToOneOverrideWithValuesByTitleByFieldName.find(function(valueByOverride) {
-                            return valueByOverride.override = rowValue;
+                            return valueByOverride.override == rowValue;
                         });
                         if (valueByOverride) row[index] = valueByOverride.value;
                     }
@@ -662,6 +681,8 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                 name: columnName,
                 values: row
             });
+
+
 
         });
 

@@ -20,6 +20,17 @@
             return deferred.promise;
         };
 
+        var getMappingDatasourceCols = function(pKey) {
+            var deferred = $q.defer();
+            $http.get('api/dataset/getMappingDatasourceCols/'+pKey)
+                .success(function(data) {
+                    return deferred.resolve(data.cols);
+                })
+                .error(deferred.reject);
+            return deferred.promise;
+
+        }
+
         var remove = function(id) {
             var deferred = $q.defer();
             $http.post('api/dataset/remove', {id: id})
@@ -182,6 +193,7 @@
             publish: publish,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
             getAvailableDesignatedFields: getAvailableDesignatedFields,
+            getMappingDatasourceCols: getMappingDatasourceCols,
             initializeToImport: initializeToImport,
             preImport: preImport,
             postImport: postImport
