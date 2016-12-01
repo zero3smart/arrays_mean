@@ -89,6 +89,7 @@ router.get('/view/:id',ctrlView.get);
 
 //teams
 router.get('/team/search',ctrlTeam.search);
+router.get('/team/loadIcons',ctrlTeam.loadIcons);
 
 
 

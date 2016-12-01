@@ -12,7 +12,7 @@ function _uploadDataSource(filePath, newFilename, contentType,teamSubdomin, data
 
         var params = {
             Bucket: bucket,
-            Key:  teamSubdomin + "/" + datasetUID + "/datasources/" + newFilename,
+            Key:   teamSubdomin + "/datasets/" + datasetUID + "/datasources/" + newFilename,
             ContentType: contentType,
             Body: data,
             ACL: "private"
@@ -43,7 +43,7 @@ function _getDatasource(description) {
 
     var param = {
         Bucket: bucket,
-        Key: description._team.subdomain + '/' + description.uid + '/datasources/' + fileName
+        Key: description._team.subdomain + '/datasets/' + description.uid + '/datasources/' + fileName
     }
     return s3.getObject(param)
 

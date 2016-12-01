@@ -24,6 +24,31 @@ function _uploadToS3(folder,destinationFileName,response,callback) {
     })
 }
 
+function _getAllIconsForTeam(teamSubdomain,callback) {
+    s3.listObjects({
+        Bucket: bucket,
+        Prefix: teamSubdomain + '/assets/icons/',
+        Marker: teamSubdomain + '/assets/icons/'
+    },function(err,data) {
+        if (err) { callback (err);} 
+        else {
+            var listOfUrls = [];
+            var objects = data.Contents;
+            for (var i = 0; i < objects.length; i++) {
+                var objKey = objects[i].Key;
+                var url = _appendKeyToBucket(objKey);
+
+                listOfUrls.push(url);
+            }
+            callback(null,listOfUrls);
+        }
+    })
+
+}
+
+
+module.exports.getAllIconsForTeam = _getAllIconsForTeam;
+
 
 
 
@@ -96,8 +121,16 @@ function _dotPlusExtnameSansQueryParamsFrom(url)
 //
 function _hostedPublicUrlFrom(folder,filename)
 {
-    return 'https://' + bucket + '.s3.amazonaws.com/' + folder + filename;
+    var key = folder + filename
+    return _appendKeyToBucket(key);
 }
+
+
+function _appendKeyToBucket(key) {
+    return 'https://' + bucket + '.s3.amazonaws.com/' + key;
+}
+
+
 //
 //
 module.exports.hostImageLocatedAtRemoteURL = function(folder,resize,remoteImageSourceURL, destinationFilenameSansExt, hostingOpts, callback)

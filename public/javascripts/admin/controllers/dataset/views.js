@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetViewsCtrl', ['$scope', 'dataset','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state','$filter',
-        function($scope, dataset,views,viewResource,$mdDialog,DatasetService,$mdToast,$state,$filter) {
+    .controller('DatasetViewsCtrl', ['$scope', 'dataset','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state','$filter', 'AssetService',
+        function($scope, dataset,views,viewResource,$mdDialog,DatasetService,$mdToast,$state,$filter,AssetService) {
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.views = views;
             $scope.$parent.$parent.currentNavItem = 'Views';
@@ -108,7 +108,7 @@ angular.module('arraysApp')
 
 
 
-            function ViewDialogController($scope, $mdDialog, $filter, viewName,viewDisplayName,dataset,viewSetting,colsAvailable) {
+            function ViewDialogController($scope, $mdDialog, $filter, viewName,viewDisplayName,dataset,viewSetting,colsAvailable,AssetService) {
 
                 $scope.viewName = viewName;
                 $scope.viewDisplayName = viewDisplayName;
@@ -118,6 +118,30 @@ angular.module('arraysApp')
           
 
                 $scope.availableForDuration = [ "Decade", "Year", "Month", "Day"];
+
+                $scope.loadIcons = function() {
+
+                    AssetService.loadIcons()
+                    .then(function(data) {
+                        $scope.iconsUrl = data;
+                    })
+
+                }
+
+                $scope.initIcons = function(settingName) {
+                    if (!$scope.data[settingName]) {
+                        $scope.data[settingName] = {};
+                    }
+                    if (!$scope.data[settingName].conditions) {
+                        $scope.data[settingName].conditions = [];
+                        $scope.data[settingName].conditions.push({});
+
+                    }
+                  
+                  
+                    $scope.loadIcons();
+                }
+
 
 
                var findDependency = function (settingName) {
@@ -218,6 +242,8 @@ angular.module('arraysApp')
                 };
 
                 $scope.save = function () {
+
+        
 
                     if ($scope.isDefault == true) {
                         $scope.dataset.fe_views.default_view = viewName;

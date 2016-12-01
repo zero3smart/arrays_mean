@@ -44,41 +44,23 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (galleryViewSettings.galleryItemConditionsForIconWhenMissingImage) {
                 var cond = galleryViewSettings.galleryItemConditionsForIconWhenMissingImage;
 
-                var checkConditionAndApplyClasses = function (conditions, value, opr) {
+                var checkConditionAndApplyClasses = function (conditions, value,multiple) {
 
+                    if (typeof value == 'undefined' || value == "" || value == null) {
+                        return '<span class="icon-tile-null"></span>';
+                    }
                     for (var i = 0; i < conditions.length; i++) {
-                        if (conditions[i].operator == "in" && Array.isArray(conditions[i].value)) {
-
-                            if (conditions[i].value.indexOf(value) > 0) {
-
-                                var string = conditions[i].applyClasses.toString();
-
-                                var classes = string.replace(",", " ");
-
-                                return '<span class="' + classes + '"></span>';
-                            }
-                        }
-
-                        if (conditions[i].operator == "equal") {
 
 
-                            if (opr !== null) {
-
-                                if (opr == "trim") {
-                                    value = value.trim();
-                                }
+                        if (value == conditions[i].value) {
+                            if (multiple) {
+                                return "<img class='icon-tile category-icon-2' src='" + conditions[i].applyIconFromUrl +"'>"
                             }
 
-                            if (conditions[i].value == value) {
-
-                                var string = conditions[i].applyClasses.toString();
-
-                                var classes = string.replace(",", " ");
-
-                                return '<span class="' + classes + '"></span>';
-                            }
+                            return "<img class='icon-tile' src='" + conditions[i].applyIconFromUrl +"'>"
                         }
                     }
+                    return null;
                 };
 
                 galleryItem_htmlWhenMissingImage = function (rowObject) {
@@ -88,13 +70,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
                     var fieldValue = rowObject["rowParams"][fieldName];
-                    if (Array.isArray(fieldValue) === true) {
-                        var opr = null;
 
-                        if (cond.operationForEachValue) opr = cond.operationForEachValue;
+
+                    if (Array.isArray(fieldValue) === true) {
+
 
                         for (var i = 0; i < fieldValue.length; i++) {
-                            htmlElem += checkConditionAndApplyClasses(conditions, fieldValue[i], opr);
+                            htmlElem += checkConditionAndApplyClasses(conditions, fieldValue[i],true);
                         }
 
                     } else if (typeof fieldValue == "string") {

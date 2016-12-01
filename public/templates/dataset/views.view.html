@@ -248,7 +248,55 @@
                </div>
 
 
+                <div ng-if="setting.inputType=='iconMapping'" ng-init="initIcons(setting.name)">
+                  <label>{{setting.displayAs}}</label> 
+                    <div layout="row">
 
+                        <md-select flex="30" class="md-block" ng-model="data[setting.name].field" ng-model-options="{updateOn:'blur'}">
+
+
+                        <md-option  ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col | dotless ">
+                                {{col}}
+                        </md-select>
+                        <div flex="20"></div>
+                        
+                    </div>
+
+
+
+
+                  <div ng-if="data[setting.name].field" ng-repeat="item in data[setting.name].conditions track by $index">
+                      <div layout="row" >
+
+                          <md-input-container flex="50">                  
+                             <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
+                          </md-input-container>
+                          <md-input-container flex="50">
+                           <md-select data-ng-model="data[setting.name].conditions[$index].applyIconFromUrl" flex="50">
+                            <md-select-label><img class="iconMap" ng-if="data[setting.name].conditions[$index].applyIconFromUrl" 
+                            ng-src="{{data[setting.name].conditions[$index].applyIconFromUrl}}" ></md-select-label>
+                             <md-option  data-ng-repeat="icon_url in iconsUrl" data-ng-value="icon_url" >
+                                <img class="iconMap" ng-src="{{icon_url}}"></md-option>
+                              </md-select>
+                          </md-select>
+                          </md-input-container>
+                         
+                      </div>
+
+
+                  
+
+                    </div>
+
+                    <md-button ng-if="data[setting.name].field" class="md-raised" ng-click="addMore(data[setting.name].conditions,'object')"><span
+                        class="glyphicon glyphicon-plus"></span>Add more
+                    </md-button>
+                      
+          
+
+                  </div>
+
+         
 
 
 

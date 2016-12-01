@@ -32,6 +32,10 @@ md-tabs .md-tab.md-active {
     color: var(--color-text-dark);
 }
 
+img.iconMap {
+    height:40px;
+}
+
 
 .site-admin md-toast {
     position: fixed;
