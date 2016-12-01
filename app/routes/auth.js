@@ -3,7 +3,6 @@ var passport = require('passport');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
 
-
 router.get('/google', passport.authenticate('google', {
     scope: ['https://www.googleapis.com/auth/userinfo.profile',
         'https://www.googleapis.com/auth/userinfo.email']
@@ -23,12 +22,12 @@ router.get('/google/callback',function(req,res,next) {
             } else {
                 req.logIn(user,function(err) {
                     if (err) {return next(err);}
-                    return res.redirect(req.session.returnTo || '/admin');
+                    return res.redirect(req.session.returnTo || '/dashboard');
                 })
             }
         }
     })(req,res,next);
-})
+});
 
 router.post('/login',function(req,res,next) {
     passport.authenticate('local',function(err,user,info) {
@@ -39,11 +38,11 @@ router.post('/login',function(req,res,next) {
         } else {
             req.logIn(user,function(err) {
                 if (err) {return next(err);}
-                return res.redirect(req.session.returnTo || '/admin');
+                return res.redirect(req.session.returnTo || '/dashboard');
             })
         }
     })(req,res,next);
-})
+});
 
 router.get('/login', function (req, res) {
  
@@ -59,10 +58,6 @@ router.get('/logout', function (req, res) {
     req.logout();
     res.status(200).send('ok');
     
-});
-
-router.get('/callback', passport.authenticate('auth0', {failureRedirect: '/'}), function (req, res) {
-    res.redirect(req.session.returnTo || '/admin');
 });
 
 module.exports = router;

@@ -38,10 +38,10 @@
     <md-input-container class="md-block" flex-gt-sm>
         <label>Data Type</label>
         <md-select name="dataType"
-                   ng-model="dataset.raw_rowObjects_coercionScheme[finalizedFieldName]"
+                   ng-model="coercionScheme[finalizedFieldName]"
                    ng-model-options="{trackBy: '$value | typeCoercionToString'}"
-                   aria-label="Field Type - {{fieldName}}"
-                   placeholder="String" ng-if="!isCustom">
+                   ng-change="changeCoercionSchemeByOperation(coercionScheme[finalizedFieldName], finalizedFieldName)"
+                   aria-label="Field Type - {{fieldName}}" placeholder="String" ng-if="!isCustom">
             <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="coercion">
                 {{coercion | typeCoercionToString}}
             </md-option>

@@ -4,7 +4,7 @@ var raw_source_documents = require('../../models/raw_source_documents');
 var mongoose_client = require('../../models/mongoose_client');
 var team = require('../../models/teams');
 var User = require('../../models/users');
-var _ = require('lodash');P:42
+var _ = require('lodash');
 var Batch = require('batch');
 var aws = require('aws-sdk');
 var fs = require('fs');
@@ -25,10 +25,10 @@ function getAllDatasetsWithQuery (query,res) {
     },function(err,datasets) {
         if (err) {
             return res.json({error:err.message});
-        } 
+        }
         return res.json({datasets:datasets});
     })
- 
+
 }
 
 module.exports.getAll = function (req, res) {
@@ -167,7 +167,6 @@ module.exports.get = function (req, res) {
             if (!req.session.datasource) req.session.datasource = {};
 
             if (description.uid && !req.session.datasource[req.params.id]) {
-
 
                 _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, datasource) {
                     if (err) return res.json({error: err.message});
@@ -394,7 +393,7 @@ module.exports.upload = function (req, res) {
                 }
                 winston.info("✅  File validation okay : " + description.title);
 
-                // Store columnNames and firstRecords for latter call on admin pages
+                // Store columnNames and firstRecords for latter call on dashboard pages
                 if (!req.session.datasource) req.session.datasource = {};
                 req.session.datasource[description.id] = datasource;
 
@@ -555,16 +554,23 @@ module.exports.preImport = function (req, res) {
 
         var fn = function (err) {
             if (err) {
-                res.end(JSON.stringify({error: err.message})); // error code
+                if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
+                    winston.info("🔁  Waiting 3 seconds to restart...");
+                    setTimeout(function () {
+                        import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(descriptions, fn);
+                    }, 3000);
+                } else {
+                    res.end(JSON.stringify({error: err.message})); // error code
+                }
             } else {
-                res.end(JSON.stringify({uid: uid}));
+                res.end(JSON.stringify({uid: uid})); // all good
             }
         };
 
         import_controller.Import_dataSourceDescriptions(descriptions, fn);
 
     });
-};
+}
 
 module.exports.postImport = function (req, res) {
     if (!req.body.uid) {
@@ -591,7 +597,7 @@ module.exports.postImport = function (req, res) {
                             if (err) return res.json({error: err.message});
                             if (!updatedDataset) return res.json({error: 'Invalid Operation'});
 
-                            return res.json({dataset: updatedDataset});
+                            return res.json({dataset: dataset});
                         });
                     });
             }

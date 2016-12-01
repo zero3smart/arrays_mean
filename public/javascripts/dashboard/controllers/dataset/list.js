@@ -39,11 +39,11 @@ angular.module('arraysApp')
             }
 
             $scope.select = function (id) { 
-                $state.go('admin.dataset.settings', {id: id});
+                $state.go('dashboard.dataset.settings', {id: id});
             }
 
             $scope.add = function() {
-                $state.go('admin.dataset.settings');
+                $state.go('dashboard.dataset.settings');
             }
         }]
     );

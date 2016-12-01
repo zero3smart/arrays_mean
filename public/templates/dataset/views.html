@@ -1,5 +1,4 @@
 <md-content layout-padding ng-if="dataset.uid">
- 
     <form name="vm.viewsForm" ng-submit="submitForm(!vm.viewsForm.$invalid && vm.viewsForm.$dirty)">
         <md-input-container class="md-block" flex-gt-sm>
             <label>Default View</label>
@@ -47,3 +46,5 @@
         </div>
     </form>
 </md-content>
+
+<ng-include src="'/templates/blocks/dataset.empty.html'" ng-if="!dataset.uid"></ng-include>

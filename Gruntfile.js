@@ -91,7 +91,9 @@ module.exports = function (grunt) {
                     'form2js/src/*',
                     'spectrum/spectrum.js',
                     'tinycolor/dist/tinycolor-min.js',
-                    'md-color-picker/dist/*'
+                    'md-color-picker/dist/*',
+                    'angular-ui-sortable/sortable.min.js',
+                    'jquery-ui/jquery-ui.min.js'
                 ],
                 dest: 'public/vendors'
             }
@@ -148,6 +150,7 @@ module.exports = function (grunt) {
     
     // Default task.
     grunt.registerTask('default', ['jshint']);
-    grunt.registerTask('build', ['copy', 'sass', 'postcss','subgrunt']);
+    // Disabled subgrunt to avoid aborting issue.
+    grunt.registerTask('build', ['copy', 'sass', 'postcss'/*, 'subgrunt'*/]);
 
 };

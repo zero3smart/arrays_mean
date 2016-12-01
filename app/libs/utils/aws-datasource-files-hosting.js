@@ -1,3 +1,4 @@
+var winston = require('winston');
 var aws = require('aws-sdk');
 var bucket = process.env.AWS_S3_BUCKET;
 var fs = require('fs');
@@ -16,7 +17,7 @@ function _uploadDataSource(filePath, newFilename, contentType,teamSubdomin, data
             ContentType: contentType,
             Body: data,
             ACL: "private"
-        }
+        };
 
         s3.putObject(params, cb);
     });
@@ -35,16 +36,17 @@ function _fileNameToUpload(datasourceDescription) {
 }
 module.exports.fileNameToUpload = _fileNameToUpload;
 
-
-
 function _getDatasource(description) {
     var fileName = _fileNameToUpload(description);
-
+    var key = description._team.subdomain +  '/datasets/' + description.uid + '/datasources/' + fileName;
 
     var param = {
         Bucket: bucket,
-        Key: description._team.subdomain + '/datasets/' + description.uid + '/datasources/' + fileName
+        Key:key
     }
+
+    winston.info("🔁  Reading the datasource from S3 " + key);
+
     return s3.getObject(param)
 
 }

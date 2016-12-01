@@ -15,42 +15,94 @@
 
         <fieldset class="standard">
             <legend>Original Fields</legend>
-            <div class="table-container">
-            <table class="table data">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Exclude <md-switch ng-model="checkAll" ng-click="toggleCheck()">check/uncheck</md-switch></th>
-                    <th>Column Name</th>
-                    <th>Type</th>
-                    <th>Sample</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="colName in dataset.colNames"
-                    ng-click="openFieldDialog($event, colName, dataset.firstRecord[$index])">
-                    <td>{{ finalizedColName=(colName|dotless);$index+1 }}</td>
-                    <td>
-                        <md-checkbox name="fe_excludeFields[]" ng-model="dataset.fe_excludeFields[finalizedColName]"
-                                     aria-label="Exclude {{colName}}" ng-click="$event.stopPropagation()"></md-checkbox>
-                    </td>
-                    <td>{{ colName }}</td>
-                    <td class="md-select-container">
-                        <md-select name="raw_rowObjects_coercionScheme[]"
-                                   ng-model="dataset.raw_rowObjects_coercionScheme[finalizedColName]"
-                                   ng-model-options="{trackBy: '$value | typeCoercionToString'}"
-                                   ng-click="$event.stopPropagation()"
-                                   aria-label="Type - {{colName}}"
-                                   placeholder="String">
-                            <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="{{coercion}}">
-                                {{coercion | typeCoercionToString}}
-                            </md-option>
-                        </md-select>
-                    </td>
-                    <td>{{ dataset.firstRecord[$index] | limitTo: 200 }}{{dataset.firstRecord[$index].length > 200 ? '...' : ''}}</td>
-                </tr>
-                </tbody>
-                </table>
+            <div class="fields-container">
+                <div class="field-row-header field hidden-xs">
+                    <div class="handler"></div>
+                    <div class="order">Order</div>
+                    <div class="exclude">Exclude <md-switch ng-model="checkAll" ng-click="toggleCheck()">check/uncheck</md-switch></div>
+                    <div class="name">Column Name</div>
+                    <div class="override">Override</div>
+                    <div class="type">Type</div>
+                    <div class="sampel">Sample</div>
+                </div>
+                <ul ui-sortable="sortableOptions" ng-model="dataset.colNames" class="fields">
+                    <li ng-repeat="colName in dataset.colNames" class="field"
+                        ng-click="openFieldDialog($event, colName, dataset.firstRecord[$index])">
+                        <div class="handler"><span class="glyphicon glyphicon-move"></span></div>
+                        <div class="order">
+                            {{
+                            finalizedColName=(colName|dotless);
+                            dataset.fe_fieldDisplayOrder.indexOf(finalizedColName) != -1 ?
+                                dataset.fe_fieldDisplayOrder.indexOf(finalizedColName)+1 : ''
+                            }}
+                        </div>
+                        <div class="exclude">
+                            <md-checkbox name="fe_excludeFields_{{$index}}"
+                                         ng-model="dataset.fe_excludeFields[finalizedColName]"
+                                         aria-label="Exclude {{colName}}"
+                                         ng-click="$event.stopPropagation()"></md-checkbox>
+                        </div>
+                        <div class="name">{{ colName }}</div>
+                        <div class="override">{{ dataset.fe_displayTitleOverrides[finalizedColName] }}</div>
+                        <div class="type">
+                            <md-select name="raw_rowObjects_coercionScheme"
+                                       ng-model="coercionScheme[finalizedColName]"
+                                       ng-model-options="{trackBy: '$value | typeCoercionToString'}"
+                                       ng-click="$event.stopPropagation()"
+                                       ng-change="changeCoercionSchemeByOperation(coercionScheme[finalizedColName], finalizedColName)"
+                                       aria-label="Type - {{colName}}" placeholder="String">
+                                <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="{{coercion}}">
+                                    {{coercion | typeCoercionToString}}
+                                </md-option>
+                            </md-select>
+                        </div>
+                        <div class="sample">
+                            {{ dataset.firstRecord[$index] | limitTo: 200 }}{{dataset.firstRecord[$index].length > 200 ? '...' : ''}}
+                        </div>
+                    </li>
+                </ul>
+
+                <!--table class="table data">
+                    <thead>
+                    <tr>
+                        <th>Display Order</th>
+                        <th>Exclude</th>
+                        <th>Column Name</th>
+                        <th>Title Override</th>
+                        <th>Type</th>
+                        <th>Sample</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="colName in dataset.colNames"
+                        ng-click="openFieldDialog($event, colName, dataset.firstRecord[$index])">
+                        <td>{{ finalizedColName=(colName|dotless);$index+1 }}</td>
+                        <td>
+                            <md-checkbox name="fe_excludeFields_{{$index}}"
+                                         ng-model="dataset.fe_excludeFields[finalizedColName]"
+                                         aria-label="Exclude {{colName}}"
+                                         ng-click="$event.stopPropagation()"></md-checkbox>
+                        </td>
+                        <td>{{ colName }}</td>
+                        <td>{{ dataset.fe_displayTitleOverrides[finalizedColName] }}</td>
+                        <td class="md-select-container">
+                            <md-select name="raw_rowObjects_coercionScheme"
+                                       ng-model="coercionScheme[finalizedColName]"
+                                       ng-model-options="{trackBy: '$value | typeCoercionToString'}"
+                                       ng-click="$event.stopPropagation()"
+                                       ng-change="changeCoercionSchemeByOperation(coercionScheme[finalizedColName], finalizedColName)"
+                                       aria-label="Type - {{colName}}" placeholder="String">
+                                <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="{{coercion}}">
+                                    {{coercion | typeCoercionToString}}
+                                </md-option>
+                            </md-select>
+                        </td>
+                        <td>{{ dataset.firstRecord[$index] | limitTo: 200 }}{{dataset.firstRecord[$index].length > 200 ?
+                            '...' : ''}}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table-->
             </div>
         </fieldset>
 
@@ -82,7 +134,8 @@
         </fieldset>
 
         <div layout="column">
-            <md-button class="md-raised" ng-click="openFieldDialog($event, '', null, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
+            <md-button class="md-raised"
+                       ng-click="openFieldDialog($event, '', null, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
                 Add a New Custom Field
             </md-button>
         </div>

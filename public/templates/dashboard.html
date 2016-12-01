@@ -1,0 +1,19 @@
+<!-- header -->
+<ng-include src="'templates/blocks/header.html'"></ng-include>
+<!-- /header -->
+
+<div ng-class="{'sidebar-menu-in': showSideMenu}" >
+	<div class="sidebar-menu">
+		<ng-include src="'templates/blocks/sidebar-menu.html'"></ng-include>
+	</div>
+
+	<div class="dashboard-content">
+		<div ui-view></div>
+    </div>
+
+</div><!-- #content -->
+
+
+<!-- footer -->
+<!--<ng-include src="'templates/blocks/footer.html'"></ng-include>-->
+<!-- /footer -->

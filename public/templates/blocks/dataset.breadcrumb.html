@@ -1,17 +1,17 @@
-<md-nav-bar class="dataset-breadcrumb" md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links" ng-if="$state.is('admin.dataset') == false">
-    <md-nav-item md-nav-href="/admin/dataset/settings/{{dataset._id}}" name="Settings">
-        <span class="glyphicon glyphicon-cog" ng-class="{'ready':dataset.title}"></span><span class="hidden-xs btn-label">1. General Settings</span>
+<md-nav-bar class="dataset-breadcrumb" md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links" ng-if="$state.is('dashboard.dataset') == false">
+    <md-nav-item md-nav-href="/dashboard/dataset/settings/{{dataset._id}}" name="Settings">
+        <span class="glyphicon glyphicon-cog" ng-class="{'ready':dataset.title}"></span><span class="nav-item-label btn-label">1. General Settings</span>
     </md-nav-item>
-    <md-nav-item md-nav-href="/admin/dataset/upload/{{dataset._id}}" name="Upload" aria-disabled="true">
-        <span class="glyphicon glyphicon-cloud-upload" ng-class="{'ready':dataset.uid}"></span><span class="hidden-xs btn-label">2. Upload Data</span>
+    <md-nav-item md-nav-href="/dashboard/dataset/upload/{{dataset._id}}" name="Upload" aria-disabled="true">
+        <span class="glyphicon glyphicon-cloud-upload" ng-class="{'ready':dataset.uid}"></span><span class="nav-item-label btn-label">2. Upload Data</span>
     </md-nav-item>
-    <md-nav-item md-nav-href="/admin/dataset/data/{{dataset._id}}" name="Data" aria-disabled="true">
-        <span class="glyphicon glyphicon-edit" ng-class="{'ready':dataset.raw_rowObjects_coercionScheme}"></span><span class="hidden-xs btn-label">3. Format Data</span>
+    <md-nav-item md-nav-href="/dashboard/dataset/data/{{dataset._id}}" name="Data" aria-disabled="true">
+        <span class="glyphicon glyphicon-edit" ng-class="{'ready':(dataset.raw_rowObjects_coercionScheme && !dataset.dirty)}"></span><span class="nav-item-label btn-label">3. Format Data</span>
     </md-nav-item>
-    <md-nav-item md-nav-href="/admin/dataset/views/{{dataset._id}}" name="Views" aria-disabled="true">
-        <span class="glyphicon glyphicon-equalizer" ng-class="{'ready':dataset.fe_views.views }"></span><span class="hidden-xs btn-label">4. Format Views</span>
+    <md-nav-item md-nav-href="/dashboard/dataset/views/{{dataset._id}}" name="Views" aria-disabled="true">
+        <span class="glyphicon glyphicon-equalizer" ng-class="{'ready':dataset.fe_views.views}"></span><span class="nav-item-label btn-label">4. Format Views</span>
     </md-nav-item>
-    <md-nav-item md-nav-href="/admin/dataset/done/{{dataset._id}}" name="Done" aria-disabled="true">
-        <span class="glyphicon" ng-class="dataset.fe_views.views ? 'glyphicon-check ready' : 'glyphicon-unchecked'"></span><span class="hidden-xs btn-label">5. Done!</span>
+    <md-nav-item md-nav-href="/dashboard/dataset/done/{{dataset._id}}" name="Done" aria-disabled="true">
+        <span class="glyphicon" ng-class="(dataset.fe_views.views && dataset.imported) ? 'glyphicon-check ready' : 'glyphicon-unchecked'"></span><span class="nav-item-label btn-label">5. Done!</span>
     </md-nav-item>
 </md-nav-bar>

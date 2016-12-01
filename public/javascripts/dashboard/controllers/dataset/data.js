@@ -2,6 +2,9 @@ angular.module('arraysApp')
     .controller('DatasetDataCtrl', ['$scope', '$state', 'DatasetService', '$mdToast', '$mdDialog', '$filter', 'dataset', 'availableTypeCoercions', 'availableDesignatedFields',
         function ($scope, $state, DatasetService, $mdToast, $mdDialog, $filter, dataset, availableTypeCoercions, availableDesignatedFields) {
 
+            $scope.$parent.$parent.currentNavItem = 'Data';
+            $scope.availableTypeCoercions = availableTypeCoercions;
+
             // Assert some of the fields should be available
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
             if (!dataset.fe_excludeFields) dataset.fe_excludeFields = {};
@@ -13,7 +16,7 @@ angular.module('arraysApp')
                 return $filter('dotless')(colName) == dataset.fn_new_rowPrimaryKeyFromRowObject;
             });
 
-        
+
 
             $scope.$parent.$parent.currentNavItem = 'Data';
             $scope.availableTypeCoercions = availableTypeCoercions;
@@ -32,7 +35,7 @@ angular.module('arraysApp')
                 $mdDialog.show({
                     controller: FieldDialogController,
                     controllerAs: 'dialog',
-                    templateUrl: 'templates/dataset/data.field.html',
+                    templateUrl: 'templates/blocks/data.field.html',
                     parent: angular.element(document.body),
                     targetEvent: evt,
                     clickOutsideToClose: true,
@@ -48,6 +51,7 @@ angular.module('arraysApp')
                 })
                     .then(function (savedDataset) {
                         $scope.$parent.$parent.dataset = savedDataset;
+                        $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
                         console.log('You cancelled the field dialog.');
@@ -144,6 +148,9 @@ angular.module('arraysApp')
                         $scope.data.fields = $scope.customField.fieldsToMergeIntoArray.map(getColumnNameFromDotless);
                     }
 
+                    // Data Type Coercion
+                    $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
+
                     if ($scope.dialog.fieldForm) $scope.dialog.fieldForm.$setPristine();
                 };
 
@@ -185,6 +192,18 @@ angular.module('arraysApp')
                     $scope.dialog.fieldForm['overrideValueTitle_' + index].$setValidity('unique', valueOverrideTitleUnique);
                 };
 
+                $scope.changeCoercionSchemeByOperation = function(coercion, finalizedColName) {
+                    if ($filter('typeCoercionToString')(coercion) != 'Date') {
+                        $scope.dataset.raw_rowObjects_coercionScheme[finalizedColName] = coercion;
+                    } else {
+                        if (!$scope.dataset.raw_rowObjects_coercionScheme[finalizedColName]) {
+                            $scope.dataset.raw_rowObjects_coercionScheme[finalizedColName] = coercion;
+                        } else {
+                            $scope.dataset.raw_rowObjects_coercionScheme[finalizedColName].operation = coercion.operation;
+                        }
+                    }
+                };
+
                 $scope.cancel = function () {
                     $mdDialog.cancel();
                 };
@@ -215,7 +234,6 @@ angular.module('arraysApp')
                     var index = $scope.dataset.fe_fieldDisplayOrder.indexOf($scope.finalizedFieldName);
                     if (index != -1) $scope.dataset.fe_fieldDisplayOrder.splice(index, 1);
                     if ($scope.data.displayOrder) {
-                        // TODO: Consider to shift the existing elements at the same position?
                         $scope.dataset.fe_fieldDisplayOrder.splice($scope.data.displayOrder, 0, $scope.finalizedFieldName);
                     }
 
@@ -277,7 +295,7 @@ angular.module('arraysApp')
                 $mdDialog.show({
                     controller: NestedDialogController,
                     controllerAs: 'dialog',
-                    templateUrl: 'templates/dataset/data.nested.html',
+                    templateUrl: 'templates/blocks/data.nested.html',
                     parent: angular.element(document.body),
                     targetEvent: evt,
                     clickOutsideToClose: true,
@@ -406,7 +424,7 @@ angular.module('arraysApp')
                 $mdDialog.show({
                     controller: FabricatedFilterDialogController,
                     controllerAs: 'dialog',
-                    templateUrl: 'templates/dataset/data.fabricated.html',
+                    templateUrl: 'templates/blocks/data.fabricated.html',
                     parent: angular.element(document.body),
                     targetEvent: evt,
                     clickOutsideToClose: true,
@@ -542,7 +560,7 @@ angular.module('arraysApp')
                 $mdDialog.show({
                     controller: ImageScrapingDialogController,
                     controllerAs: 'dialog',
-                    templateUrl: 'templates/dataset/data.imagescraping.html',
+                    templateUrl: 'templates/blocks/data.imagescraping.html',
                     parent: angular.element(document.body),
                     targetEvent: evt,
                     clickOutsideToClose: true,
@@ -668,8 +686,38 @@ angular.module('arraysApp')
 
             $scope.reset = function () {
                 $scope.$parent.$parent.dataset = angular.copy(dataset);
-                $scope.vm.dataForm.$setPristine();
+
+                if (!dataset.colNames) return;
+
+                $scope.data = {};
+                $scope.data.primaryKey = dataset.colNames.find(function (colName) {
+                    return $filter('dotless')(colName) == dataset.fn_new_rowPrimaryKeyFromRowObject;
+                });
+
+                $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
+
+                $scope.sortableOptions = {
+                    handle: '> .glyphicon',
+                    stop: function(e, ui) {
+                        console.log($scope.$parent.$parent.dataset.colNames);
+                    }
+                }
+
+                if ($scope.vm) $scope.vm.dataForm.$setPristine();
             };
+
+            $scope.changeCoercionSchemeByOperation = function(coercion, finalizedColName) {
+                if ($filter('typeCoercionToString')(coercion) != 'Date') {
+                    $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[finalizedColName] = coercion;
+                } else {
+                    if (!$scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[finalizedColName])
+                        $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[finalizedColName] = coercion;
+                    else
+                        $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[finalizedColName].operation = coercion.operation;
+                }
+            };
+
+            $scope.reset();
 
             $scope.submitForm = function (isValid) {
                 if (isValid) {
@@ -677,8 +725,6 @@ angular.module('arraysApp')
                     finalizedDataset.fn_new_rowPrimaryKeyFromRowObject = $filter('dotless')($scope.data.primaryKey);
                     delete finalizedDataset.firstRecord;
                     delete finalizedDataset.colNames;
-
-                    console.log(finalizedDataset);
 
                     DatasetService.save(finalizedDataset)
                         .then(function (id) {
@@ -689,7 +735,7 @@ angular.module('arraysApp')
                                     .hideDelay(3000)
                             );
 
-                            $state.transitionTo('admin.dataset.views', {id: id}, {
+                            $state.transitionTo('dashboard.dataset.views', {id: id}, {
                                 reload: true,
                                 inherit: false,
                                 notify: true

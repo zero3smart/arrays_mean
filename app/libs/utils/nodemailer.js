@@ -1,9 +1,6 @@
 var nodemailer = require('nodemailer');
 var jwt = require('jsonwebtoken');
 var jwtSecret = process.env.SESSION_SECRET;
-var host = process.env.HOST || 'localhost';
-var port = process.env.PORT || 9080;
-var url = "http://" + host + ":" + port
 
 var transporter = nodemailer.createTransport({
 	transport: 'ses',
@@ -21,12 +18,13 @@ function sendEmail (mailOptions,callback) {
 	})
 }
 
-module.exports.sendActivationEmail = function(user,cb) {
+module.exports.sendActivationEmail = function(user, baseUrl, cb) {
 	var token = jwt.sign({
 		_id: user._id,
 		email: user.email
 	},jwtSecret,{expiresIn:'2h'});
-	var activationLink = url + '/account/verify?token=' + token;
+
+	var activationLink = baseUrl + '/account/verify?token=' + token;
 	var mailOptions = {
 		from: 'info@arrays.co',
 		to: user.email,
