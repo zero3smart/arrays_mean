@@ -89,7 +89,8 @@ module.exports.resend = function(req,res) {
 			else if (!user) {
 				res.status(404).send('Cannot find User');
 			} else {
-				mailer.sendActivationEmail(user,function(err) {
+				var siteBaseUrl = req.protocol + '://' + req.get('host');
+				mailer.sendActivationEmail(user, siteBaseUrl, function(err) {
 					if (err) {
 						res.status(500).send('Cannot send activation email');
 					} else {
@@ -135,7 +136,8 @@ module.exports.update = function(req,res) {
 						user.save(function(err,savedUser) {
 							if (err) {res.send(err);}
 							else {
-								mailer.sendActivationEmail(savedUser,function(err) {
+								var siteBaseUrl = req.protocol + '://' + req.get('host');
+								mailer.sendActivationEmail(savedUser, siteBaseUrl, function(err) {
 									if (err) {
 										res.status(500).send('Cannot send activation email');
 									} else {
