@@ -88,8 +88,6 @@ module.exports = function (grunt) {
                     'angular-material/**',
                     'angular-aria/angular-aria.min.js',
                     'angular-messages/angular-messages.min.js',
-                    'form2js/src/*',
-                    'spectrum/spectrum.js',
                     'tinycolor/dist/tinycolor-min.js',
                     'md-color-picker/dist/*',
                     'angular-ui-sortable/sortable.min.js',

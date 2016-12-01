@@ -17,7 +17,7 @@ var DatasourceDescription_scheme = Schema({
     uid: String, // It is not changeable once it's generated automaticlly when creating a descrpition
     importRevision: {type: Number,integer: true, default: 1},
     schema_id: {type: Schema.Types.ObjectId, ref:'DatasourceDescription'},
-    logo: String,
+    banner: String,
     dataset_uid: String, // It is not changeable once it's generated automaticlly when creating a descrpition
     format: String,
     title: String,

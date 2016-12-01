@@ -5,9 +5,13 @@ var aws = require('aws-sdk');
 var sharp = require('sharp');
 var bucket = process.env.AWS_S3_BUCKET;
 var s3 = new aws.S3();
+var fs = require('fs');
 
-function _uploadToS3(folder,destinationFileName,response,callback) {
+function _uploadToS3(folder,destinationFileName,response,readFromFile,callback) {
     var hostedFilePublicUrl = _hostedPublicUrlFrom(folder,destinationFileName);
+    if (readFromFile) {
+
+    }
     var payload = { 
         Bucket:bucket,
         Key: folder + destinationFileName,
@@ -23,6 +27,12 @@ function _uploadToS3(folder,destinationFileName,response,callback) {
 
     })
 }
+
+function _getPreSignedUrl() {
+
+}
+module.exports.getPreSignedUrl
+
 
 function _getAllIconsForTeam(teamSubdomain,callback) {
     s3.listObjects({
@@ -81,7 +91,7 @@ function _proceedToStreamToHost(folder,resize,remoteImageSourceURL, destFilename
                     .resize(resize)
                     .toBuffer()
                     .then(function(data) {
-                       _uploadToS3(folder,destFilename,data,callback)
+                       _uploadToS3(folder,destFilename,data,false,callback)
                     },function(err) {
                         winston.info("❌  returning url as null, since Could not read the remote image " + remoteImageSourceURL + ": " , err);
                         return callback(null,null);
@@ -89,7 +99,7 @@ function _proceedToStreamToHost(folder,resize,remoteImageSourceURL, destFilename
                     })
                 } else {
                     if (body) {
-                        _uploadToS3(folder,destFilename,body,callback)
+                        _uploadToS3(folder,destFilename,body,false,callback)
 
                     }
                 }
