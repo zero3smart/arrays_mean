@@ -13,17 +13,18 @@ var transporter = nodemailer.createTransport({
 function sendEmail (mailOptions,callback) {
 	transporter.sendMail(mailOptions,function(err,info) {
 		if (err) console.log(err);
-		console.log(info)
+		console.log(info);
 		callback(err);
 	})
 }
 
-module.exports.sendActivationEmail = function(user, baseUrl, cb) {
+module.exports.sendActivationEmail = function(user, cb) {
 	var token = jwt.sign({
 		_id: user._id,
 		email: user.email
 	},jwtSecret,{expiresIn:'2h'});
 
+	var baseUrl = process.env.SITE_BASE_URL ? process.env.SITE_BASE_URL : 'http://localhost:9080';
 	var activationLink = baseUrl + '/account/verify?token=' + token;
 	var mailOptions = {
 		from: 'info@arrays.co',

@@ -23,11 +23,12 @@ var localStrategy = new LocalStrategy({
 })
 
 
+var baseUrl = process.env.SITE_BASE_URL ? process.env.SITE_BASE_URL : 'http://localhost:9080';
 
 var googleStrategy = new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:9080/auth/google/callback"
+    callbackURL: baseUrl + "/auth/google/callback"
 
 },function(accessToken,refreshToken,profile,done) {
     var findQuery = {email:profile.emails[0].value};
