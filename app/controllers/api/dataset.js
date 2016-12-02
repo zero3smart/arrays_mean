@@ -480,14 +480,13 @@ module.exports.getAvailableDesignatedFields = function (req, res) {
             "objectTitle", "originalImageURL", "medThumbImageURL"
         ]
     });
-}
+};
 
-module.export.uploadBanner = function(req,res) {
+module.exports.uploadBanner = function(req,res) {
     if (!req.body.id)
         return res.json({error: 'No ID given'});
-    
 
-}
+};
 
 module.exports.download = function (req, res) {
     if (!req.params.id)
