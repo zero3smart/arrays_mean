@@ -6,7 +6,6 @@ var multer  = require('multer');
 var upload = multer({ dest: path.join(__dirname, '../../tmp') });
 
 var unless = require('express-unless');
-var ctrlAuth = require('../controllers/api/authentication');
 var ctrlAccount = require('../controllers/api/account');
 var ctrlDataset = require('../controllers/api/dataset');
 var ctrlUsers = require('../controllers/api/users');
@@ -39,11 +38,6 @@ router.use(auth,function(err,req,res,next) {
 		return next();
 	}
 });
-
-// authentication
-router.post('/register', ctrlAuth.register);
-router.post('/login', ctrlAuth.login);
-router.post('/isLoggedIn', ctrlAuth.isLoggedIn);
 
 // account settings
 router.post('/account/update',ctrlAccount.updateAccount);

@@ -37,7 +37,7 @@ var googleStrategy = new GoogleStrategy({
         firstName: profile.name.givenName,
         lastName: profile.name.familyName,
         profileImageUrl: profile.photos[0].value
-    }
+    };
     User.findOrCreate(findQuery,insertQuery,function(err,user,created) {
         return done(err,user);
     })
@@ -45,7 +45,7 @@ var googleStrategy = new GoogleStrategy({
 
 passport.use(localStrategy);
 
-passport.use(googleStrategy)
+passport.use(googleStrategy);
 
 
 // This is not a best practice, but we want to keep things simple for now
