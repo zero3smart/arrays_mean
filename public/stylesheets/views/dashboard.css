@@ -129,7 +129,7 @@ img.iconMap {
 }
 
 .dataset .field {
-    display: block;
+    display: flex;
     border-bottom: 1px solid #e5e5e5;
 }
 .dataset .field:after {
@@ -138,49 +138,54 @@ img.iconMap {
     clear: both;
 }
 
-.dataset .field .glyphicon {
-    cursor: pointer;
-}
-
 .dataset .field > * {
-    float: left;
     padding: 6px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
 }
 
-.dataset .field .handler {
-    min-width: 30px;
-    width: 4%;
+.dataset .field.custom {
+    font-weight: bold;
 }
-.dataset .field .order {
-    min-width: 30px;
+
+.dataset .field > .handler {
     width: 4%;
+    min-width: 20px;
 }
-.dataset .field .exclude {
-    min-width: 40px;
+.dataset .field > .order {
+    width: 4%;
+    min-width: 50px;
+}
+.dataset .field > .exclude {
     width: 6%;
+    min-width: 63px;
 }
-.dataset .field .name {
-    min-width: 100px;
+.dataset .field > .name {
     width: 18%;
-}
-.dataset .field .override {
     min-width: 100px;
+}
+.dataset .field > .override {
     width: 18%;
-}
-.dataset .field .type {
     min-width: 100px;
-    width: 15%;
 }
-.dataset .field .sample {
-    min-width: 100px;
-    width: 35%;
+.dataset .field > .type {
+    width: 12%;
+    min-width: 80px;
+}
+.dataset .field > .sample {
+    min-width: 180px;
+    width: 38%;
 }
 
 
 .dataset .field .exclude > md-checkbox {
     margin-bottom: 6px;
 }
-.dataset .field .type {
+.dataset .field .exclude > md-switch {
+    margin: 0;
+}
+.dataset .field:not(.custom) .type {
     padding-top: 4px;
 }
 .dataset .field > .type > md-select {
@@ -188,23 +193,29 @@ img.iconMap {
     margin-bottom: 0;
 }
 
-.dataset .field {
+.dataset .field:not(.field-row-header) {
     cursor: pointer;
-    -webkit-transition: box-shadow .4s cubic-bezier(.25,.8,.25,1),background-color .4s cubic-bezier(.25,.8,.25,1);
-    transition: box-shadow .4s cubic-bezier(.25,.8,.25,1),background-color .4s cubic-bezier(.25,.8,.25,1);
+    /*To protect flash issue while object is being updated*/
+    /*-webkit-transition: box-shadow .4s cubic-bezier(.25,.8,.25,1),background-color .4s cubic-bezier(.25,.8,.25,1);*/
+    /*transition: box-shadow .4s cubic-bezier(.25,.8,.25,1),background-color .4s cubic-bezier(.25,.8,.25,1);*/
 }
 
-.dataset .field:hover {
+.dataset .field:not(.field-row-header):hover {
     background-color: var(--color-item-hover);
 }
 
-.dataset .field:active, .dataset .field:focus {
+.dataset .field:not(.field-row-header):focus {
     background-color: var(--color-item-active);
 }
 
+
 .md-select-menu-container {
-    z-index: 1100;
+    z-index: 1102;
 }
+md-backdrop.md-select-backdrop {
+    z-index: 1101;
+}
+
 
 md-dialog .md-button {
     min-width: 25px;
@@ -229,7 +240,6 @@ md-dialog fieldset legend,
 .no-padding {
     padding: 0 !important;
 }
-
 
 
 /* -----------   for toggle slider  ----------------  */

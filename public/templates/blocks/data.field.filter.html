@@ -1,35 +1,35 @@
 <md-content layout-padding>
     <md-input-container class="md-block" flex-gt-sm>
         <md-checkbox name="filterNotAvailable" ng-model="data.filterNotAvailable"
-                     aria-label="Filter Not Available {{fieldName}}">
+                     aria-label="Filter Not Available">
             Not Available
         </md-checkbox>
     </md-input-container>
 
     <md-input-container class="md-block" flex-gt-sm>
         <md-checkbox name="commaSeparatedAsIndividual" ng-model="data.commaSeparatedAsIndividual"
-                     aria-label="Filter Comma Separated {{fieldName}}">
+                     aria-label="Filter Comma Separated">
             Comma Separated As Individual
         </md-checkbox>
     </md-input-container>
 
     <md-input-container class="md-block" flex-gt-sm>
         <md-checkbox name="multipleSelection" ng-model="data.multipleSelection"
-                     aria-label="Filter Multiple Selection {{fieldName}}">
+                     aria-label="Filter Multiple Selection">
             Allow Multiple Selection
         </md-checkbox>
     </md-input-container>
 
     <md-input-container class="md-block" flex-gt-sm>
         <md-checkbox name="sortableByInt" ng-model="data.sortableByInt"
-                     aria-label="Filter Sortable By Integer {{fieldName}}">
+                     aria-label="Filter Sortable By Integer">
             Sortable By Integer
         </md-checkbox>
     </md-input-container>
 
     <md-input-container class="md-block" flex-gt-sm>
         <md-checkbox name="sortableInReverse" ng-model="data.sortableInReverse"
-                     aria-label="Filter Sortable In Reverse Order {{fieldName}}">
+                     aria-label="Filter Sortable In Reverse Order">
             Sortable In Reverse Order
         </md-checkbox>
     </md-input-container>
@@ -37,7 +37,7 @@
     <fieldset class="standard" ng-if="!isCustom">
         <legend>One To One Override Values By Title</legend>
         <div layout="row"
-             ng-repeat="valueByOverride in dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[finalizedFieldName]">
+             ng-repeat="valueByOverride in dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName]">
             <md-input-container flex="45">
                 <label>Value</label>
                 <input type="text" name="overrideValue_{{$index}}"
@@ -86,7 +86,7 @@
 
         <md-input-container class="md-block md-padding">
             <label>{{fieldName}}</label>
-            <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey[finalizedFieldName]"
+            <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey[fieldName]"
                       name="valuesToExcludeSelf"
                       md-enable-chip-edit="true"
                       placeholder="Enter a Value" secondary-placeholder="+Value">

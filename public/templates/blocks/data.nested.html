@@ -15,9 +15,9 @@
                 <md-input-container class="md-block" flex-gt-sm>
                     <label>Criteria (**All the empty rows would be nested)</label>
                     <md-select required name="criteria"
-                               ng-model="data.criteria">
-                        <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
-                            {{columnName}}
+                               ng-model="dataset.fe_nestedObject.criteria.fieldName">
+                        <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
+                            {{column.name}}
                         </md-option>
                     </md-select>
                     <div ng-messages="dialog.form.criteria.$error">
@@ -28,8 +28,8 @@
                 <md-input-container class="md-block" flex-gt-sm>
                     <label>Nested Fields</label>
                     <md-select required name="fields" ng-model="data.fields" multiple>
-                        <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
-                            {{columnName}}
+                        <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
+                            {{column.name}}
                         </md-option>
                     </md-select>
                     <div ng-messages="dialog.form.fields.$error">
@@ -46,8 +46,8 @@
                             <md-input-container class="md-block">
                                 <label>Field</label>
                                 <md-select required name="fieldOverrideField_{{$index}}" ng-model="fieldOverride.field">
-                                    <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
-                                        {{columnName}}
+                                    <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
+                                        {{column.name}}
                                     </md-option>
                                 </md-select>
                                 <div ng-messages="dialog.form.fieldOverrideField.$error">
@@ -87,8 +87,8 @@
                         <md-input-container class="md-block" flex="30">
                             <label>Field</label>
                             <md-select required name="valueOverrideField_{{$index}}" ng-model="valueOverrideByField.field">
-                                <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
-                                    {{columnName}}
+                                <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
+                                    {{column.name}}
                                 </md-option>
                             </md-select>
                             <div ng-messages="dialog.form.valueOverrideField.$error">

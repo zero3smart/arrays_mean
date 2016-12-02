@@ -19,8 +19,8 @@
                             <md-select required name="imageScrapingField_{{$index}}"
                                        ng-model="imageScraping.htmlSourceAtURLInField"
                                        ng-change="verifyUniqueHtmlSource(imageScraping, $index)">
-                                <md-option ng-repeat="columnName in dataset.colNames" value="{{columnName}}">
-                                    {{columnName}}
+                                <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
+                                    {{column.name}}
                                 </md-option>
                             </md-select>
                             <div ng-messages="dialog.form.imageScrapingField.$error">
