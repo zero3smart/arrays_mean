@@ -12,26 +12,18 @@ angular.module('arraysApp')
 
             $scope.$parent.$parent.dataset = angular.copy(dataset);
             $scope.data = {};
-            $scope.data.primaryKey = dataset.colNames.find(function (colName) {
-                return $filter('dotless')(colName) == dataset.fn_new_rowPrimaryKeyFromRowObject;
-            });
-
-
 
             $scope.$parent.$parent.currentNavItem = 'Data';
             $scope.availableTypeCoercions = availableTypeCoercions;
 
-            $scope.checkAll = false;
-
-
-            $scope.toggleCheck = function() {
-                $scope.checkAll = !$scope.checkAll;
-                for (var i = 0; i <  $scope.dataset.colNames.length ; i++) {
-                    $scope.dataset.fe_excludeFields[$scope.dataset.colNames[i]] = $scope.checkAll;
+            $scope.toggleExclude = function (exclude) {
+                for (var i = 0; i < $scope.dataset.columns.length; i++) {
+                    $scope.dataset.fe_excludeFields[$scope.dataset.columns[i].name] = exclude;
                 }
+            };
 
-            }
             $scope.openFieldDialog = function (evt, fieldName, firstRecord, customFieldIndex) {
+
                 $mdDialog.show({
                     controller: FieldDialogController,
                     controllerAs: 'dialog',
@@ -52,6 +44,8 @@ angular.module('arraysApp')
                     .then(function (savedDataset) {
                         $scope.$parent.$parent.dataset = savedDataset;
                         $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
+                        sortColumnsByDisplayOrder();
+
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
                         console.log('You cancelled the field dialog.');
@@ -65,23 +59,54 @@ angular.module('arraysApp')
                 $scope.availableDesignatedFields = availableDesignatedFields;
                 $scope.isCustom = customFieldIndex != undefined;
 
+                function refreshFieldByName(name) {
+                    // General
+                    if (!$scope.dataset.fe_designatedFields) $scope.dataset.fe_designatedFields = {};
+                    for (var key in $scope.dataset.fe_designatedFields) {
+                        if ($scope.dataset.fe_designatedFields[key] == name) {
+                            $scope.data.designatedField = key;
+                            break;
+                        }
+                    }
 
-                $scope.colsAvailable = angular.copy(dataset.colNames).sort();
+                    if (!$scope.dataset.fe_fieldDisplayOrder) $scope.dataset.fe_fieldDisplayOrder = [];
+                    var index = $scope.dataset.fe_fieldDisplayOrder.indexOf(name);
+                    if (index != -1) $scope.data.displayOrder = index;
 
+                    // Filter
+                    if (!$scope.dataset.fe_filters.fieldsNotAvailable) $scope.dataset.fe_filters.fieldsNotAvailable = [];
+                    $scope.data.filterNotAvailable = $scope.dataset.fe_filters.fieldsNotAvailable.indexOf(name) != -1;
 
+                    if (!$scope.dataset.fe_filters.fieldsCommaSeparatedAsIndividual) $scope.dataset.fe_filters.fieldsCommaSeparatedAsIndividual = [];
+                    $scope.data.commaSeparatedAsIndividual = $scope.dataset.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf(name) != -1;
 
-                function getColumnNameFromDotless(dotlessColumnName) {
-                    return $scope.dataset.colNames.find(function (colName) {
-                        return dotlessColumnName == $filter('dotless')(colName);
+                    if (!$scope.dataset.fe_filters.fieldsMultiSelectable) $scope.dataset.fe_filters.fieldsMultiSelectable = [];
+                    $scope.data.multipleSelection = $scope.dataset.fe_filters.fieldsMultiSelectable.indexOf(name) != -1;
+
+                    if (!$scope.dataset.fe_filters.fieldsSortableByInteger) $scope.dataset.fe_filters.fieldsSortableByInteger = [];
+                    $scope.data.sortableByInt = $scope.dataset.fe_filters.fieldsSortableByInteger.indexOf(name) != -1;
+
+                    if (!$scope.dataset.fe_filters.fieldsSortableInReverseOrder) $scope.dataset.fe_filters.fieldsSortableInReverseOrder = [];
+                    $scope.data.sortableInReverse = $scope.dataset.fe_filters.fieldsSortableInReverseOrder.indexOf(name) != -1;
+
+                    if (!$scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName) $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName = {};
+
+                    if (!$scope.dataset.fe_filters.valuesToExcludeByOriginalKey) $scope.dataset.fe_filters.valuesToExcludeByOriginalKey = {};
+                    if (!$scope.dataset.fe_filters.valuesToExcludeByOriginalKey[name])
+                        $scope.dataset.fe_filters.valuesToExcludeByOriginalKey[name] = [];
+                    if (!$scope.dataset.fe_filters.valuesToExcludeByOriginalKey._all)
+                        $scope.dataset.fe_filters.valuesToExcludeByOriginalKey._all = [];
+
+                    if (!$scope.dataset.fe_filters.keywords) $scope.dataset.fe_filters.keywords = [];
+                    $scope.data.keywords = $scope.dataset.fe_filters.keywords.find(function (elem) {
+                        return elem.title == name;
                     });
+                    if (!$scope.data.keywords) $scope.data.keywords = {title: name, choices: []};
                 }
-
-
 
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
                     $scope.fieldName = fieldName;
-                    $scope.finalizedFieldName = $filter('dotless')(fieldName);
 
                     if ($scope.isCustom) {
                         if (!dataset.customFieldsToProcess)
@@ -96,57 +121,13 @@ angular.module('arraysApp')
                             };
                         }
                         if (!$scope.customField.delimiterOnFields) $scope.customField.delimiterOnFields = [];
+
+                        $scope.fieldName = $scope.customField.fieldName;
                     }
 
                     $scope.data = {};
 
-                    // General
-                    if (!$scope.dataset.fe_designatedFields) $scope.dataset.fe_designatedFields = {};
-                    for (var key in $scope.dataset.fe_designatedFields) {
-                        if ($scope.dataset.fe_designatedFields[key] == $scope.finalizedFieldName) {
-                            $scope.data.designatedField = key;
-                            break;
-                        }
-                    }
-
-                    if (!$scope.dataset.fe_fieldDisplayOrder) $scope.dataset.fe_fieldDisplayOrder = [];
-                    var index = $scope.dataset.fe_fieldDisplayOrder.indexOf($scope.finalizedFieldName);
-                    if (index != -1) $scope.data.displayOrder = index;
-
-                    // Filter
-                    if (!$scope.dataset.fe_filters.fieldsNotAvailable) $scope.dataset.fe_filters.fieldsNotAvailable = [];
-                    $scope.data.filterNotAvailable = $scope.dataset.fe_filters.fieldsNotAvailable.indexOf($scope.finalizedFieldName) != -1;
-
-                    if (!$scope.dataset.fe_filters.fieldsCommaSeparatedAsIndividual) $scope.dataset.fe_filters.fieldsCommaSeparatedAsIndividual = [];
-                    $scope.data.commaSeparatedAsIndividual = $scope.dataset.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf($scope.finalizedFieldName) != -1;
-
-                    if (!$scope.dataset.fe_filters.fieldsMultiSelectable) $scope.dataset.fe_filters.fieldsMultiSelectable = [];
-                    $scope.data.multipleSelection = $scope.dataset.fe_filters.fieldsMultiSelectable.indexOf($scope.finalizedFieldName) != -1;
-
-                    if (!$scope.dataset.fe_filters.fieldsSortableByInteger) $scope.dataset.fe_filters.fieldsSortableByInteger = [];
-                    $scope.data.sortableByInt = $scope.dataset.fe_filters.fieldsSortableByInteger.indexOf($scope.finalizedFieldName) != -1;
-
-                    if (!$scope.dataset.fe_filters.fieldsSortableInReverseOrder) $scope.dataset.fe_filters.fieldsSortableInReverseOrder = [];
-                    $scope.data.sortableInReverse = $scope.dataset.fe_filters.fieldsSortableInReverseOrder.indexOf($scope.finalizedFieldName) != -1;
-
-                    if (!$scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName) $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName = {};
-
-                    if (!$scope.dataset.fe_filters.valuesToExcludeByOriginalKey) $scope.dataset.fe_filters.valuesToExcludeByOriginalKey = {};
-                    if (!$scope.dataset.fe_filters.valuesToExcludeByOriginalKey[$scope.finalizedFieldName])
-                        $scope.dataset.fe_filters.valuesToExcludeByOriginalKey[$scope.finalizedFieldName] = [];
-                    if (!$scope.dataset.fe_filters.valuesToExcludeByOriginalKey._all)
-                        $scope.dataset.fe_filters.valuesToExcludeByOriginalKey._all = [];
-
-                    if (!$scope.dataset.fe_filters.keywords) $scope.dataset.fe_filters.keywords = [];
-                    $scope.data.keywords = $scope.dataset.fe_filters.keywords.find(function (elem) {
-                        return elem.title == $scope.finalizedFieldName;
-                    });
-                    if (!$scope.data.keywords) $scope.data.keywords = {title: $scope.finalizedFieldName, choices: []};
-
-                    // Custom Fields
-                    if ($scope.isCustom) {
-                        $scope.data.fields = $scope.customField.fieldsToMergeIntoArray.map(getColumnNameFromDotless);
-                    }
+                    refreshFieldByName($scope.fieldName);
 
                     // Data Type Coercion
                     $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
@@ -157,21 +138,21 @@ angular.module('arraysApp')
                 $scope.reset();
 
                 $scope.removeOneToOneOverride = function (valueByOverride) {
-                    var index = $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.finalizedFieldName].indexOf(valueByOverride);
+                    var index = $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName].indexOf(valueByOverride);
                     if (index != -1) {
-                        $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.finalizedFieldName].splice(index, 1);
+                        $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName].splice(index, 1);
                         $scope.dialog.fieldForm.$setDirty();
                     }
                 };
 
                 $scope.addOneToOneOverride = function () {
-                    if (!$scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.finalizedFieldName])
-                        $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.finalizedFieldName] = [];
-                    var emptyElem = $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.finalizedFieldName].find(function (elem) {
+                    if (!$scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName])
+                        $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName] = [];
+                    var emptyElem = $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName].find(function (elem) {
                         return elem.value == '';
                     });
                     if (!emptyElem) {
-                        $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.finalizedFieldName].push({
+                        $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName].push({
                             override: '',
                             value: ''
                         });
@@ -181,7 +162,7 @@ angular.module('arraysApp')
 
                 $scope.verifyUniqueValueOverride = function (valueOverride, index) {
                     var valueOverrideUnique = true, valueOverrideTitleUnique = true;
-                    $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.finalizedFieldName].forEach(function (elem) {
+                    $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName].forEach(function (elem) {
                         if (valueOverride == elem) return;
 
                         if (valueOverride.value == elem.value) valueOverrideUnique = false;
@@ -192,14 +173,15 @@ angular.module('arraysApp')
                     $scope.dialog.fieldForm['overrideValueTitle_' + index].$setValidity('unique', valueOverrideTitleUnique);
                 };
 
-                $scope.changeCoercionSchemeByOperation = function(coercion, finalizedColName) {
+                $scope.changeCoercionSchemeByOperation = function (colName) {
+                    var coercion = $scope.coercionScheme[colName];
                     if ($filter('typeCoercionToString')(coercion) != 'Date') {
-                        $scope.dataset.raw_rowObjects_coercionScheme[finalizedColName] = coercion;
+                        $scope.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
                     } else {
-                        if (!$scope.dataset.raw_rowObjects_coercionScheme[finalizedColName]) {
-                            $scope.dataset.raw_rowObjects_coercionScheme[finalizedColName] = coercion;
+                        if (!$scope.dataset.raw_rowObjects_coercionScheme[colName]) {
+                            $scope.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
                         } else {
-                            $scope.dataset.raw_rowObjects_coercionScheme[finalizedColName].operation = coercion.operation;
+                            $scope.dataset.raw_rowObjects_coercionScheme[colName].operation = coercion.operation;
                         }
                     }
                 };
@@ -208,7 +190,7 @@ angular.module('arraysApp')
                     $mdDialog.cancel();
                 };
 
-                $scope.delete = function() {
+                $scope.delete = function () {
                     $scope.reset();
                     if (customFieldIndex < $scope.dataset.customFieldsToProcess.length) {
                         $scope.dataset.customFieldsToProcess.splice(customFieldIndex, 1);
@@ -217,73 +199,90 @@ angular.module('arraysApp')
                     $mdDialog.hide($scope.dataset);
                 };
 
+                $scope.verifyUniqueFieldName = function(name) {
+                    refreshFieldByName(name);
+
+                    $scope.fieldName = name;
+
+                    var unique = ($scope.dataset.columns.find(function(column) {
+                        return name == column.name;
+                    }) == undefined);
+
+                    if (unique && $scope.dataset.customFieldsToProcess) {
+                        unique = ($scope.dataset.customFieldsToProcess.find(function(customField, index) {
+                            if (index == customFieldIndex) return false;
+                            return name == customField.fieldName;
+                        }) == undefined);
+                    }
+
+                    $scope.dialog.fieldForm.fieldName.$setValidity('unique', unique);
+                };
 
                 $scope.save = function () {
                     // General
                     if ($scope.data.designatedField != undefined)
-                        $scope.dataset.fe_designatedFields[$scope.data.designatedField] = $scope.finalizedFieldName;
+                        $scope.dataset.fe_designatedFields[$scope.data.designatedField] = $scope.fieldName;
                     else {
                         for (var key in $scope.dataset.fe_designatedFields) {
-                            if ($scope.dataset.fe_designatedFields[key] == $scope.finalizedFieldName) {
+                            if ($scope.dataset.fe_designatedFields[key] == $scope.fieldName) {
                                 delete $scope.dataset[key];
                                 break;
                             }
                         }
                     }
 
-                    var index = $scope.dataset.fe_fieldDisplayOrder.indexOf($scope.finalizedFieldName);
+                    var index = $scope.dataset.fe_fieldDisplayOrder.indexOf($scope.fieldName);
                     if (index != -1) $scope.dataset.fe_fieldDisplayOrder.splice(index, 1);
-                    if ($scope.data.displayOrder) {
-                        $scope.dataset.fe_fieldDisplayOrder.splice($scope.data.displayOrder, 0, $scope.finalizedFieldName);
+                    if ($scope.data.displayOrder != undefined) {
+                        $scope.dataset.fe_fieldDisplayOrder.splice($scope.data.displayOrder, 0, $scope.fieldName);
                     }
 
                     // Filter
-                    index = $scope.dataset.fe_filters.fieldsNotAvailable.indexOf($scope.finalizedFieldName);
+                    index = $scope.dataset.fe_filters.fieldsNotAvailable.indexOf($scope.fieldName);
                     if (index != -1) $scope.dataset.fe_filters.fieldsNotAvailable.splice(index, 1);
                     if ($scope.data.filterNotAvailable) {
-                        $scope.dataset.fe_filters.fieldsNotAvailable.push($scope.finalizedFieldName);
+                        $scope.dataset.fe_filters.fieldsNotAvailable.push($scope.fieldName);
                     }
 
-                    index = $scope.dataset.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf($scope.finalizedFieldName);
+                    index = $scope.dataset.fe_filters.fieldsCommaSeparatedAsIndividual.indexOf($scope.fieldName);
                     if (index != -1) $scope.dataset.fe_filters.fieldsCommaSeparatedAsIndividual.splice(index, 1);
                     if ($scope.data.commaSeparatedAsIndividual) {
-                        $scope.dataset.fe_filters.fieldsCommaSeparatedAsIndividual.push($scope.finalizedFieldName);
+                        $scope.dataset.fe_filters.fieldsCommaSeparatedAsIndividual.push($scope.fieldName);
                     }
 
-                    index = $scope.dataset.fe_filters.fieldsMultiSelectable.indexOf($scope.finalizedFieldName);
+                    index = $scope.dataset.fe_filters.fieldsMultiSelectable.indexOf($scope.fieldName);
                     if (index != -1) $scope.dataset.fe_filters.fieldsMultiSelectable.splice(index, 1);
                     if ($scope.data.multipleSelection) {
-                        $scope.dataset.fe_filters.fieldsMultiSelectable.push($scope.finalizedFieldName);
+                        $scope.dataset.fe_filters.fieldsMultiSelectable.push($scope.fieldName);
                     }
 
-                    index = $scope.dataset.fe_filters.fieldsSortableByInteger.indexOf($scope.finalizedFieldName);
+                    index = $scope.dataset.fe_filters.fieldsSortableByInteger.indexOf($scope.fieldName);
                     if (index != -1) $scope.dataset.fe_filters.fieldsSortableByInteger.splice(index, 1);
                     if ($scope.data.sortableByInt) {
-                        $scope.dataset.fe_filters.fieldsSortableByInteger.push($scope.finalizedFieldName);
+                        $scope.dataset.fe_filters.fieldsSortableByInteger.push($scope.fieldName);
                     }
 
-                    index = $scope.dataset.fe_filters.fieldsSortableInReverseOrder.indexOf($scope.finalizedFieldName);
+                    index = $scope.dataset.fe_filters.fieldsSortableInReverseOrder.indexOf($scope.fieldName);
                     if (index != -1) $scope.dataset.fe_filters.fieldsSortableInReverseOrder.splice(index, 1);
                     if ($scope.data.sortableInReverse) {
-                        $scope.dataset.fe_filters.fieldsSortableInReverseOrder.push($scope.finalizedFieldName);
+                        $scope.dataset.fe_filters.fieldsSortableInReverseOrder.push($scope.fieldName);
                     }
 
-                    if ($scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.finalizedFieldName]) {
-                        $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.finalizedFieldName] =
-                            $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.finalizedFieldName].filter(function (elem) {
+                    if ($scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.fieldName]) {
+                        $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.fieldName] =
+                            $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.fieldName].filter(function (elem) {
                                 return elem.value != '' || elem.override != '';
                             });
-                        if ($scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.finalizedFieldName].length == 0)
-                            delete $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.finalizedFieldName];
+                        if ($scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.fieldName].length == 0)
+                            delete $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[$scope.fieldName];
                     }
 
                     $scope.dataset.fe_filters.keywords = $scope.dataset.fe_filters.keywords.filter(function (elem) {
-                        return elem.title != $scope.finalizedFieldName;
+                        return elem.title != $scope.fieldName;
                     });
                     if ($scope.data.keywords.choices.length > 0) $scope.dataset.fe_filters.keywords = $scope.dataset.fe_filters.keywords.concat($scope.data.keywords);
 
                     if ($scope.isCustom) {
-                        $scope.customField.fieldsToMergeIntoArray = $scope.data.fields.map($filter('dotless'));
                         $scope.dataset.customFieldsToProcess.splice(customFieldIndex, 1, $scope.customField);
                     }
 
@@ -313,13 +312,6 @@ angular.module('arraysApp')
             };
 
             function NestedDialogController($scope, $mdDialog, $filter, dataset) {
-
-                function getColumnNameFromDotless(dotlessColumnName) {
-                    return $scope.dataset.colNames.find(function (colName) {
-                        return dotlessColumnName == $filter('dotless')(colName);
-                    });
-                }
-
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
 
@@ -332,35 +324,30 @@ angular.module('arraysApp')
                             value: ''
                         };
                     }
-                    $scope.data.criteria = $scope.dataset.colNames.find(function (colName) {
-                        return $filter('dotless')(colName) == $scope.dataset.fe_nestedObject.criteria.fieldName;
-                    });
 
                     if (!$scope.dataset.fe_nestedObject.fields) $scope.dataset.fe_nestedObject.fields = [];
-                    $scope.data.fields = $scope.dataset.fe_nestedObject.fields.map(getColumnNameFromDotless);
 
                     if (!$scope.dataset.fe_nestedObject.fieldOverrides) $scope.dataset.fe_nestedObject.fieldOverrides = {};
                     $scope.data.fieldOverrides = [];
                     // Convert Object into Array
-                    Object.keys($scope.dataset.fe_nestedObject.fieldOverrides).map(function (dotlessColName) {
-                        var realColumnName = getColumnNameFromDotless(dotlessColName);
+                    Object.keys($scope.dataset.fe_nestedObject.fieldOverrides).map(function (colName) {
                         $scope.data.fieldOverrides.push({
-                            field: realColumnName,
-                            override: $scope.dataset.fe_nestedObject.fieldOverrides[dotlessColName]
+                            field: colName,
+                            override: $scope.dataset.fe_nestedObject.fieldOverrides[colName]
                         });
                     });
 
                     if (!$scope.dataset.fe_nestedObject.valueOverrides) $scope.dataset.fe_nestedObject.valueOverrides = {};
                     $scope.data.valueOverrides = [];
+
                     // Convert Object into Array
-                    Object.keys($scope.dataset.fe_nestedObject.valueOverrides).map(function (dotlessColName) {
-                        var realColumnName = getColumnNameFromDotless(dotlessColName);
-                        var orgValueOverrides = $scope.dataset.fe_nestedObject.valueOverrides[dotlessColName];
+                    Object.keys($scope.dataset.fe_nestedObject.valueOverrides).map(function (colName) {
+                        var orgValueOverrides = $scope.dataset.fe_nestedObject.valueOverrides[colName];
                         var valueOverrides = [];
                         Object.keys(orgValueOverrides).map(function (value) {
                             valueOverrides.push({value: value, override: orgValueOverrides[value]})
                         });
-                        $scope.data.valueOverrides.push({field: realColumnName, valueOverrides: valueOverrides});
+                        $scope.data.valueOverrides.push({field: colName, valueOverrides: valueOverrides});
                     });
 
                     if ($scope.dialog.form) $scope.dialog.form.$setPristine();
@@ -395,13 +382,9 @@ angular.module('arraysApp')
                 };
 
                 $scope.save = function () {
-                    $scope.dataset.fe_nestedObject.criteria.fieldName = $filter('dotless')($scope.data.criteria);
-
-                    $scope.dataset.fe_nestedObject.fields = $scope.data.fields.map($filter('dotless'));
-
                     $scope.dataset.fe_nestedObject.fieldOverrides = {};
                     $scope.data.fieldOverrides.map(function (elem) {
-                        $scope.dataset.fe_nestedObject.fieldOverrides[$filter('dotless')(elem.field)] = elem.override;
+                        $scope.dataset.fe_nestedObject.fieldOverrides[elem.field] = elem.override;
                     });
 
                     $scope.dataset.fe_nestedObject.valueOverrides = {};
@@ -410,17 +393,14 @@ angular.module('arraysApp')
                         elem.valueOverrides.map(function (el) {
                             valueOverrides[el.value] = el.override;
                         });
-                        $scope.dataset.fe_nestedObject.valueOverrides[$filter('dotless')(elem.field)] = valueOverrides;
+                        $scope.dataset.fe_nestedObject.valueOverrides[elem.field] = valueOverrides;
                     });
 
                     $mdDialog.hide($scope.dataset);
                 }
             }
 
-            $scope.openFabricatedFilterDialog = function(evt) {
-
-          
-
+            $scope.openFabricatedFilterDialog = function (evt) {
                 $mdDialog.show({
                     controller: FabricatedFilterDialogController,
                     controllerAs: 'dialog',
@@ -430,7 +410,7 @@ angular.module('arraysApp')
                     clickOutsideToClose: true,
                     fullscreen: true, // Only for -xs, -sm breakpoints.
                     locals: {
-                        dataset: $scope.$parent.$parent.dataset,
+                        dataset: $scope.$parent.$parent.dataset
                     }
                 })
                     .then(function (savedDataset) {
@@ -442,38 +422,27 @@ angular.module('arraysApp')
             };
 
             function FabricatedFilterDialogController($scope, $mdDialog, $filter, dataset) {
-                function getColumnNameFromDotless(dotlessColumnName) {
-                    return $scope.dataset.colNames.find(function (colName) {
-                        return dotlessColumnName == $filter('dotless')(colName);
-                    });
-                }
-
-                $scope.colsAvailable = angular.copy(dataset.colNames).sort();
-
-
-                $scope.indexInFabricatedFilter = function(input) {
-                    for (var i = 0 ; i <  $scope.dataset.fe_filters.fabricated.length; i++) {
+                $scope.indexInFabricatedFilter = function (input) {
+                    for (var i = 0; i < $scope.dataset.fe_filters.fabricated.length; i++) {
                         var currentFab = $scope.dataset.fe_filters.fabricated[i];
                         if (currentFab.title == input) {
                             return i;
                         }
                     }
                     return -1;
-                }
+                };
 
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
                     $scope.data = {};
 
-                    $scope.dataset.fe_filters.fabricated.map(function(fabricated) {
-                        fabricated.choices[0].match.field = getColumnNameFromDotless(fabricated.choices[0].match.field.replace('rowParams.', ''));
+                    $scope.dataset.fe_filters.fabricated.map(function (fabricated) {
+                        fabricated.choices[0].match.field = fabricated.choices[0].match.field.replace('rowParams.', '');
                     });
 
                     $scope.data.defaultFilters = [];
                     for (var name in $scope.dataset.fe_filters.default) {
-                        var realName = getColumnNameFromDotless(name);
-                        if (!realName) realName = name;
-                        $scope.data.defaultFilters.push({name: realName, value: $scope.dataset.fe_filters.default[name]});
+                        $scope.data.defaultFilters.push({name: name, value: $scope.dataset.fe_filters.default[name]});
                     }
 
                     if ($scope.dialog.form) $scope.dialog.form.$setPristine();
@@ -499,7 +468,7 @@ angular.module('arraysApp')
 
                 $scope.addFabricated = function () {
                     var emptyFabricated = $scope.dataset.fe_filters.fabricated.find(function (elem) {
-                        return elem.title == '' && elem.choices[0].match.field == 'rowParams.' + $scope.finalizedFieldName;
+                        return elem.title == '' && elem.choices[0].match.field == 'rowParams.' + fieldName;
                     });
                     if (emptyFabricated) return;
 
@@ -531,7 +500,7 @@ angular.module('arraysApp')
                     $mdDialog.cancel();
                 };
 
-                $scope.verifyUniqueDefaultFilter = function(defaultFilter, index) {
+                $scope.verifyUniqueDefaultFilter = function (defaultFilter, index) {
                     var defaultFilterUnique = true;
 
                     $scope.data.defaultFilters.forEach(function (elem) {
@@ -544,23 +513,23 @@ angular.module('arraysApp')
                     $scope.dialog.form['defaultValue_' + index].$setValidity('unique', defaultFilterUnique);
                 };
 
-                $scope.removeDefaultFilter = function(index) {
+                $scope.removeDefaultFilter = function (index) {
                     $scope.data.defaultFilters.splice(index, 1);
                     $scope.dialog.form.$setDirty();
                 };
 
-                $scope.addDefaultFilter = function() {
+                $scope.addDefaultFilter = function () {
                     $scope.data.defaultFilters.push({name: '', value: ''});
                 };
 
                 $scope.save = function () {
-                    $scope.dataset.fe_filters.fabricated.map(function(fabricated) {
-                        fabricated.choices[0].match.field = 'rowParams.' + $filter('dotless')(fabricated.choices[0].match.field);
+                    $scope.dataset.fe_filters.fabricated.map(function (fabricated) {
+                        fabricated.choices[0].match.field = 'rowParams.' + fabricated.choices[0].match.field;
                     });
 
-                    $scope.data.defaultFilters.forEach(function(filter) {
+                    $scope.data.defaultFilters.forEach(function (filter) {
                         if (!$scope.dataset.fe_filters.default) $scope.dataset.fe_filters.default = {};
-                        $scope.dataset.fe_filters.default[$filter('dotless')(filter.name)] = filter.value;
+                        $scope.dataset.fe_filters.default[filter.name] = filter.value;
                     });
 
                     $mdDialog.hide($scope.dataset);
@@ -590,22 +559,11 @@ angular.module('arraysApp')
             };
 
             function ImageScrapingDialogController($scope, $mdDialog, $filter, dataset, availableDesignatedFields) {
-
-                function getColumnNameFromDotless(dotlessColumnName) {
-                    return $scope.dataset.colNames.find(function (colName) {
-                        return dotlessColumnName == $filter('dotless')(colName);
-                    });
-                }
-
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
                     $scope.data = {};
 
                     if (!$scope.dataset.imageScraping) $scope.dataset.imageScraping = [];
-                    $scope.dataset.imageScraping.forEach(function(imageScraping) {
-                        imageScraping.htmlSourceAtURLInField = getColumnNameFromDotless(imageScraping.htmlSourceAtURLInField);
-                    });
-
                     $scope.availableDesignatedFields = availableDesignatedFields;
 
                     if (!$scope.dataset.fe_designatedFields) $scope.dataset.fe_designatedFields = {};
@@ -619,7 +577,7 @@ angular.module('arraysApp')
 
                 $scope.reset();
 
-                $scope.addImageToScrap = function() {
+                $scope.addImageToScrap = function () {
                     $scope.dataset.imageScraping.push({
                         htmlSourceAtURLInField: '',
                         setFields: [
@@ -632,12 +590,12 @@ angular.module('arraysApp')
                     });
                 };
 
-                $scope.removeImageToScrap = function(index) {
+                $scope.removeImageToScrap = function (index) {
                     $scope.dataset.imageScraping.splice(index, 1);
                     $scope.dialog.form.$setDirty();
                 };
 
-                $scope.addField = function(setFields) {
+                $scope.addField = function (setFields) {
                     setFields.push({
                         newFieldName: '',
                         prependToImageURLs: '',
@@ -645,14 +603,14 @@ angular.module('arraysApp')
                     });
                 };
 
-                $scope.removeField = function(setFields, index) {
+                $scope.removeField = function (setFields, index) {
                     setFields.splice(index, 1);
                     $scope.dialog.form.$setDirty();
                 };
 
-                $scope.verifyUniqueHtmlSource = function(imageScraping, index) {
+                $scope.verifyUniqueHtmlSource = function (imageScraping, index) {
                     var unique = true;
-                    $scope.dataset.imageScraping.forEach(function(_imageScraping) {
+                    $scope.dataset.imageScraping.forEach(function (_imageScraping) {
                         if (_imageScraping == imageScraping) return;
 
                         if (imageScraping.htmlSourceAtURLInField == _imageScraping.htmlSourceAtURLInField)
@@ -662,13 +620,13 @@ angular.module('arraysApp')
                     $scope.dialog.form['imageScrapingField_' + index].$setValidity('unique', unique);
                 };
 
-                $scope.verifyValidNewFieldName = function(fieldName, index) {
+                $scope.verifyValidNewFieldName = function (fieldName, index) {
                     var unique = true, valid = true;
-                    $scope.dataset.imageScraping.forEach(function(_imageScraping) {
+                    $scope.dataset.imageScraping.forEach(function (_imageScraping) {
                         var i = 0;
-                        _imageScraping.setFields.forEach(function(field) {
+                        _imageScraping.setFields.forEach(function (field) {
                             if (field.newFieldName == fieldName && i != index) unique = false;
-                            i ++;
+                            i++;
                         });
                     });
 
@@ -683,7 +641,7 @@ angular.module('arraysApp')
                 };
 
                 $scope.save = function () {
-                    $scope.dataset.imageScraping.forEach(function(imageScraping) {
+                    $scope.dataset.imageScraping.forEach(function (imageScraping) {
                         imageScraping.htmlSourceAtURLInField = $filter('dotless')(imageScraping.htmlSourceAtURLInField);
                     });
 
@@ -695,36 +653,63 @@ angular.module('arraysApp')
                 };
             }
 
+            function sortColumnsByDisplayOrder() {
+                $scope.data.fields = $scope.$parent.$parent.dataset.columns.concat(
+                    $scope.$parent.$parent.dataset.customFieldsToProcess.map(function(customField, index) {
+                        return {
+                            name: customField.fieldName,
+                            sample: null,
+                            customField: customField,
+                            customFieldIndex: index
+                        };
+                    })
+                );
+                $scope.data.fields.sort(function (column1, column2) {
+                    if ($scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column1.name) == -1 &&
+                        $scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column2.name) != -1)
+                        return 1;
+                    else if ($scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column2.name) == -1 &&
+                        $scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column1.name) != -1)
+                        return -1;
+                    else
+                        return $scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column1.name) -
+                            $scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column2.name);
+                });
+            }
+
+            $scope.fieldSortableOptions = {
+                stop: function (e, ui) {
+                    $scope.$parent.$parent.dataset.fe_fieldDisplayOrder =
+                        $scope.data.fields.map(function (field) {
+                            return field.name;
+                        });
+
+                    $scope.vm.dataForm.$setDirty();
+                }
+            };
+
             $scope.reset = function () {
                 $scope.$parent.$parent.dataset = angular.copy(dataset);
 
-                if (!dataset.colNames) return;
+                if (!dataset.columns) return;
 
                 $scope.data = {};
-                $scope.data.primaryKey = dataset.colNames.find(function (colName) {
-                    return $filter('dotless')(colName) == dataset.fn_new_rowPrimaryKeyFromRowObject;
-                });
-
                 $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
 
-                $scope.sortableOptions = {
-                    handle: '> .glyphicon',
-                    stop: function(e, ui) {
-                        console.log($scope.$parent.$parent.dataset.colNames);
-                    }
-                }
+                sortColumnsByDisplayOrder();
 
                 if ($scope.vm) $scope.vm.dataForm.$setPristine();
             };
 
-            $scope.changeCoercionSchemeByOperation = function(coercion, finalizedColName) {
+            $scope.changeCoercionSchemeByOperation = function (colName) {
+                var coercion = $scope.coercionScheme[colName];
                 if ($filter('typeCoercionToString')(coercion) != 'Date') {
-                    $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[finalizedColName] = coercion;
+                    $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
                 } else {
-                    if (!$scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[finalizedColName])
-                        $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[finalizedColName] = coercion;
+                    if (!$scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName])
+                        $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
                     else
-                        $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[finalizedColName].operation = coercion.operation;
+                        $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName].operation = coercion.operation;
                 }
             };
 
@@ -733,9 +718,7 @@ angular.module('arraysApp')
             $scope.submitForm = function (isValid) {
                 if (isValid) {
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
-                    finalizedDataset.fn_new_rowPrimaryKeyFromRowObject = $filter('dotless')($scope.data.primaryKey);
-                    delete finalizedDataset.firstRecord;
-                    delete finalizedDataset.colNames;
+                    delete finalizedDataset.columns;
 
                     DatasetService.save(finalizedDataset)
                         .then(function (id) {

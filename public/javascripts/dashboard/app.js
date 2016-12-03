@@ -8,7 +8,6 @@ angular
         'ngMessages',
         'ngStorage',
         'ngResource',
-        'ngAria',
         'ngCookies',
         'mdColorPicker',
         'angularFileUpload',

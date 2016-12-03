@@ -34,12 +34,6 @@
     width: calc(100% - var(--sidebar-width));
 }
 
-@media (max-width: 1024px) {
-    .sidebar-menu-in .dashboard-content {
-        width: 100%;
-    }
-}
-
 @media (max-width: 767px) {
     .sidebar-menu {
         left: var(--sidebar-width-negative);
@@ -64,7 +58,7 @@
 }
 
 .sidebar-menu .nav > li > a:hover,
-.sidebar-menu .nav > li > a:active,
+.sidebar-menu .nav > li.active > a,
 .sidebar-menu .nav > li > a:focus {
     background-color: var(--color-primary);
 }

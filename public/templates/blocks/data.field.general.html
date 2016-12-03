@@ -1,24 +1,29 @@
 <md-content layout-padding>
-    <md-input-container class="md-block" flex-gt-sm>
+    <md-input-container class="md-block">
         <label>Name</label>
-        <input type="text" required ng-model="fieldName" name="fieldForm" ng-if="!isCustom">
-        <input type="text" required ng-model="customField.fieldName" name="fieldName" ng-if="isCustom">
+        <input type="text" required ng-model="customField.fieldName" name="fieldName"
+               ng-change="verifyUniqueFieldName(customField.fieldName)" ng-readonly="!isCustom">
         <div ng-messages="dialog.fieldForm.fieldName.$error">
             <div ng-message="required">This is required.</div>
+            <div ng-message="unique">Must be unique.</div>
         </div>
     </md-input-container>
 
-    <md-input-container class="md-block" flex-gt-sm ng-if="!isCustom">
+    <md-input-container class="md-block" ng-if="!isCustom">
         <label>First Record</label>
         <input type="text" value="{{ firstRecord | limitTo: 200 }}{{firstRecord.length > 200 ? '...' : ''}}"
                readonly="readonly">
     </md-input-container>
 
-    <md-input-container class="md-block" flex-gt-sm ng-if="isCustom">
+    <md-input-container class="md-block" ng-if="isCustom">
         <label>Fields To Merge</label>
-        <md-select required name="fields" ng-model="data.fields" multiple>
-            <md-option ng-repeat="columnName in colsAvailable" value="{{columnName}}">
-                {{columnName}}
+        <md-select required name="fields" ng-model="customField.fieldsToMergeIntoArray" multiple
+                   aria-label="fieldToMerge">
+            <md-option ng-repeat="column in dataset.columns" ng-value="column.name">
+                {{column.name}}
+            </md-option>
+            <md-option ng-repeat="customField in dataset.customFieldsToProcess" ng-value="customField.fieldName">
+                {{customField.fieldName}}
             </md-option>
         </md-select>
         <div ng-messages="dialog.fieldForm.fields.$error">
@@ -26,7 +31,7 @@
         </div>
     </md-input-container>
 
-    <md-input-container class="md-block" flex-gt-sm ng-if="isCustom">
+    <md-input-container class="md-block" ng-if="isCustom">
         <label>Delimiter</label>
         <md-chips ng-model="customField.delimiterOnFields"
                   name="delimiters"
@@ -37,11 +42,12 @@
 
     <md-input-container class="md-block" flex-gt-sm>
         <label>Data Type</label>
-        <md-select name="dataType"
-                   ng-model="coercionScheme[finalizedFieldName]"
+        <md-select ng-if="!isCustom"
+                   name="dataType"
+                   ng-model="coercionScheme[fieldName]"
                    ng-model-options="{trackBy: '$value | typeCoercionToString'}"
-                   ng-change="changeCoercionSchemeByOperation(coercionScheme[finalizedFieldName], finalizedFieldName)"
-                   aria-label="Field Type - {{fieldName}}" placeholder="String" ng-if="!isCustom">
+                   ng-change="changeCoercionSchemeByOperation(fieldName)"
+                   aria-label="Field Type - {{fieldName}}" placeholder="String">
             <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="coercion">
                 {{coercion | typeCoercionToString}}
             </md-option>
@@ -50,23 +56,23 @@
         <div class="md-errors-spacer"></div>
     </md-input-container>
 
-    <md-input-container class="md-block" flex-gt-sm
-                        ng-show="(dataset.raw_rowObjects_coercionScheme[finalizedFieldName] | typeCoercionToString) == 'Date'"
-                        ng-if="!isCustom">
+    <md-input-container ng-if="!isCustom"
+                        class="md-block" flex-gt-sm
+                        ng-show="(dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
         <label>Format</label>
         <input type="text" name="dataType_format"
-               ng-model="dataset.raw_rowObjects_coercionScheme[finalizedFieldName].format">
+               ng-model="dataset.raw_rowObjects_coercionScheme[fieldName].format">
     </md-input-container>
 
     <md-input-container class="md-block" flex-gt-sm
-                        ng-show="(dataset.raw_rowObjects_coercionScheme[finalizedFieldName] | typeCoercionToString) == 'Date'">
+                        ng-show="(dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
         <label>Output Format</label>
         <input type="text" name="dataType_outputFormat"
-               ng-model="dataset.raw_rowObjects_coercionScheme[finalizedFieldName].outputFormat">
+               ng-model="dataset.raw_rowObjects_coercionScheme[fieldName].outputFormat">
     </md-input-container>
 
     <md-input-container class="md-block" flex-gt-sm ng-if="!isCustom">
-        <md-checkbox name="exclude" ng-model="dataset.fe_excludeFields[finalizedFieldName]"
+        <md-checkbox name="exclude" ng-model="dataset.fe_excludeFields[fieldName]"
                      aria-label="Field Exclude {{fieldName}}">
             Exclude
         </md-checkbox>
@@ -75,7 +81,7 @@
     <md-input-container class="md-block" flex-gt-sm ng-if="!isCustom">
         <label>Title Override</label>
         <input type="text" name="titleOverride"
-               ng-model="dataset.fe_displayTitleOverrides[finalizedFieldName]">
+               ng-model="dataset.fe_displayTitleOverrides[fieldName]">
     </md-input-container>
 
     <md-input-container class="md-block" flex-gt-sm>

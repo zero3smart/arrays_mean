@@ -10,24 +10,13 @@ angular.module('arraysApp')
                  $scope.$parent.$parent.dataset.fe_views.views = {};
             }
 
-            var colsAvailable = [];
-
-  
-
-
-            for (var i = 0; i < dataset.colNames.length ; i++) {
-                var dotless = $filter('dotless')(dataset.colNames[i]);
-                if (!$scope.dataset.fe_excludeFields[dotless]) {
-                    colsAvailable.push(dataset.colNames[i]);
-                }
-            }
-            for (var j = 0 ; j < dataset.customFieldsToProcess.length; j++) {
-                colsAvailable.push(dataset.customFieldsToProcess[j].fieldName);
-            }
-
-
-     
-
+            var colsAvailable = dataset.columns.filter(function(column) {
+                return !$scope.dataset.fe_excludeFields[column.name];
+            }).map(function(column) {
+                return column.name;
+            }).concat(dataset.customFieldsToProcess.map(function(customField) {
+                return customField.fieldName;
+            }));
 
             $scope.openViewDialog = function (evt, id) {
 
@@ -75,9 +64,7 @@ angular.module('arraysApp')
 
                 if (isValid) {
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
-                    delete finalizedDataset.firstRecord;
-                    delete finalizedDataset.colNames;
-    
+                    delete finalizedDataset.columns;
 
                     DatasetService.save(finalizedDataset)
                         .then(function (id) {

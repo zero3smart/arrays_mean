@@ -39,7 +39,7 @@ module.exports.getAll = function (req, res) {
         if (err) {return res.json({error:err.message})};
         var subquery = {};
         if (!foundUser) {
-            res.status(401).send('unauthorized');
+            retres.status(401).send('unauthorized');
         }
         if (foundUser.isSuperAdmin()) { //grab everything
             getAllDatasetsWithQuery(subquery,res);
@@ -171,7 +171,6 @@ module.exports.remove = function (req, res) {
 
 module.exports.get = function (req, res) {
 
-
     if (!req.params.id)
         return res.json({error: 'No ID given'});
 
@@ -187,23 +186,22 @@ module.exports.get = function (req, res) {
                 description = datasource_description.Consolidate_descriptions_hasSchema(description);
             }
 
-            if (!req.session.datasource) req.session.datasource = {};
+            if (!req.session.columns) req.session.columns = {};
 
-            if (description.uid && !req.session.datasource[req.params.id]) {
+            if (description.uid && !req.session.columns[req.params.id]) {
 
-                _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, datasource) {
+                _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
                     if (err) return res.json({error: err.message});
 
-                    req.session.datasource[req.params.id] = datasource;
-                    description.colNames = datasource.colNames;
-                    description.firstRecord = datasource.firstRecord;
+                    req.session.columns[req.params.id] = columns;
+                    description.columns = columns;
                     return res.json({dataset: description});
-                })
+                });
+
             } else {
-                if (req.session.datasource[req.params.id]) {
-                    description.colNames = req.session.datasource[req.params.id].colNames;
-                    description.firstRecord = req.session.datasource[req.params.id].firstRecord;
-                }
+
+                if (req.session.columns[req.params.id]) description.columns = req.session.columns[req.params.id];
+
                 return res.json({dataset: description});
             }
         });
@@ -211,38 +209,43 @@ module.exports.get = function (req, res) {
 
 
 module.exports.loadDatasourceColumnsForMapping = function(req,res) {
+    if (!req.params.pKey) return res.json({error: 'No Primary Key given'});
 
-    if (req.params.pKey) {
-        var cols = [];
+    var split = req.params.pKey.split("-");
+    var query = {uid: split[0],importRevision:parseInt(split[1].substring(1))};
 
-        var split = req.params.pKey.split("-");
+    datasource_description.findOne(query)
+    .populate('_team')
+    .lean()
+    .exec(function(err, description) {
+        if (err) return res.json({error: err.message});
 
-        var query = {uid: split[0],importRevision:parseInt(split[1].substring(1))};
-   
-        
-        datasource_description.findOne(query)
-        .populate('_team')
-        .lean()
-        .exec(function(err,description) {
-            _readDatasourceColumnsAndSampleRecords(description,datasource_file_service.getDatasource(description).createReadStream(),function(err,datasource) {
-                if (err) {
-                    return res.json({error: err.message});
-                } else {
-                    for (var i = 0; i < datasource.colNames.length; i++) {
-                        if (!description.fe_excludeFields[datasource.colNames[i]]) {
-                            cols.push(datasource.colNames[i]);
-                        }                    
-                    }
-                    return res.json({cols: cols});
-                }
-            })
-        })
-    }
-}
+        if (!req.session.columns) req.session.columns = {};
+        if (description.uid && !req.session.columns[description.id]) {
+            _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function(err, columns) {
+                if (err) return res.json({error: err.message});
+
+                res.json({
+                    cols: columns.filter(function(e) {
+                        return !description.fe_excludeFields[e.name];
+                    })
+                });
+            });
+        } else {
+            if (req.session.columns[description.id])
+                return res.json({
+                    cols: req.session.columns[description.id].filter(function(e) {
+                        return !description.fe_excludeFields[e.name];
+                    })
+                });
+            else
+                return res.json({error: 'No datasource uploaded!'});
+        }
+    });
+};
 
 module.exports.getSourcesWithSchemaID = function (req, res) {
-    if (!req.params.id)
-        return res.json({error: 'No SchemaID given'});
+    if (!req.params.id) return res.json({error: 'No SchemaID given'});
 
     datasource_description.find({schema_id: req.params.id})
         .lean()
@@ -364,7 +367,7 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 
     var countOfLines = 0;
     var cachedLines = '';
-    var datasource = {};
+    var columns = [];
 
     var readStream = fileReadStream
         .pipe(es.split())
@@ -392,14 +395,14 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
                         countOfLines++;
 
                         if (countOfLines == 1) {
-                            datasource.colNames = output[0];
+                            columns = output[0].map(function(e) { return {name: e.replace(/\./g, '_')}; });
                             readStream.resume();
                         } else if (countOfLines == 2) {
-                            datasource.firstRecord = output[0];
+                            columns = columns.map(function(e, i) { return {name: e.name, sample: output[0][i]}; });
                             readStream.resume();
                         } else {
                             readStream.destroy();
-                            if (countOfLines == 3) next(null, datasource);
+                            if (countOfLines == 3) next(null, columns);
                         }
                     });
             })
@@ -440,7 +443,7 @@ module.exports.upload = function (req, res) {
             }
 
             // Verify that the file is readable & in the valid format.
-            _readDatasourceColumnsAndSampleRecords(description, fs.createReadStream(file.path), function (err, datasource) {
+            _readDatasourceColumnsAndSampleRecords(description, fs.createReadStream(file.path), function (err, columns) {
                 if (err) {
                     winston.error("❌  Error validating datasource : " + description.title + " : error " + err.message);
                     return done(err);
@@ -448,8 +451,8 @@ module.exports.upload = function (req, res) {
                 winston.info("✅  File validation okay : " + description.title);
 
                 // Store columnNames and firstRecords for latter call on dashboard pages
-                if (!req.session.datasource) req.session.datasource = {};
-                req.session.datasource[description.id] = datasource;
+                if (!req.session.columns) req.session.columns = {};
+                req.session.columns[description.id] = columns;
 
                 // Upload datasource to AWS S3
                 if (!description.uid) description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
@@ -497,7 +500,7 @@ module.exports.getAvailableDesignatedFields = function (req, res) {
             "objectTitle", "originalImageURL", "medThumbImageURL"
         ]
     });
-}
+};
 
 
 module.exports.download = function (req, res) {

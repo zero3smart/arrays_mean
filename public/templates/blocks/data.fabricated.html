@@ -48,8 +48,11 @@
                             <md-input-container class="md-block" flex="50">
                                 <label>Field</label>
                                 <md-select required name="field_{{$index}}" ng-model="fabricated.choices[0].match.field">
-                                    <md-option ng-repeat="columnName in colsAvailable" value="{{columnName}}">
-                                        {{columnName}}
+                                    <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
+                                        {{column.name}}
+                                    </md-option>
+                                    <md-option ng-repeat="customField in customFieldsToProcess" value="{{customField.fieldName}}">
+                                        {{customField.fieldName}}
                                     </md-option>
                                 </md-select>
                                 <div ng-messages="dialog.form.field.$error">

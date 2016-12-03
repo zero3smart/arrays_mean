@@ -14,7 +14,7 @@
                 return user.authToken;
             } 
             return null;
-        }
+        };
 
 
         var ensureLogin = function() {
@@ -67,7 +67,7 @@
                 }
             } 
             return null;
-        }
+        };
 
         var logout = function() {
             $http.get('/auth/logout')
@@ -84,7 +84,7 @@
               
             })
 
-        }
+        };
 
 
         //ToDo: modify,

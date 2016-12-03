@@ -23,11 +23,12 @@ var localStrategy = new LocalStrategy({
 })
 
 
+var baseUrl = process.env.SITE_BASE_URL ? process.env.SITE_BASE_URL : 'http://localhost:9080';
 
 var googleStrategy = new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:9080/auth/google/callback"
+    callbackURL: baseUrl + "/auth/google/callback"
 
 },function(accessToken,refreshToken,profile,done) {
     var findQuery = {email:profile.emails[0].value};
@@ -37,7 +38,7 @@ var googleStrategy = new GoogleStrategy({
         firstName: profile.name.givenName,
         lastName: profile.name.familyName,
         profileImageUrl: profile.photos[0].value
-    }
+    };
     User.findOrCreate(findQuery,insertQuery,function(err,user,created) {
         return done(err,user);
     })
@@ -45,7 +46,7 @@ var googleStrategy = new GoogleStrategy({
 
 passport.use(localStrategy);
 
-passport.use(googleStrategy)
+passport.use(googleStrategy);
 
 
 // This is not a best practice, but we want to keep things simple for now
