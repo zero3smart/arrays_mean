@@ -7,14 +7,14 @@ var bucket = process.env.AWS_S3_BUCKET;
 var s3 = new aws.S3();
 var fs = require('fs');
 
-function _uploadToS3(folder,destinationFileName,response,readFromFile,callback) {
-    var hostedFilePublicUrl = _hostedPublicUrlFrom(folder,destinationFileName);
+function _uploadToS3(key,response,readFromFile,callback) {
+    var hostedFilePublicUrl = _appendKeyToBucket(key);
     if (readFromFile) {
 
     }
     var payload = { 
         Bucket:bucket,
-        Key: folder + destinationFileName,
+        Key: key,
         Body: response,
         ACL: 'public-read'
     };
@@ -28,10 +28,22 @@ function _uploadToS3(folder,destinationFileName,response,readFromFile,callback) 
     })
 }
 
-function _getPreSignedUrl() {
+
+function _signedUrlForPutObject(key,fileType,callback) {
+    var params = {
+        Bucket: bucket,
+        Key: key,
+        ACL: 'public-read',
+        ContentType: fileType
+    };
+    s3.getSignedUrl('putObject',params,function(err,signedUrl) {
+        callback(err,{putSignedUrl: signedUrl, publicUrl: _appendKeyToBucket(key)});
+    })
 
 }
-module.exports.getPreSignedUrl
+
+module.exports.signedUrlForPutObject = _signedUrlForPutObject;
+
 
 
 function _getAllIconsForTeam(teamSubdomain,callback) {
@@ -64,7 +76,7 @@ module.exports.getAllIconsForTeam = _getAllIconsForTeam;
 
 
 
-function _proceedToStreamToHost(folder,resize,remoteImageSourceURL, destFilename, callback)
+function _proceedToStreamToHost(resize,remoteImageSourceURL, bucketKey, callback)
 {
     
         var options = {
@@ -91,7 +103,7 @@ function _proceedToStreamToHost(folder,resize,remoteImageSourceURL, destFilename
                     .resize(resize)
                     .toBuffer()
                     .then(function(data) {
-                       _uploadToS3(folder,destFilename,data,false,callback)
+                       _uploadToS3(bucketKey,data,false,callback)
                     },function(err) {
                         winston.info("❌  returning url as null, since Could not read the remote image " + remoteImageSourceURL + ": " , err);
                         return callback(null,null);
@@ -99,7 +111,7 @@ function _proceedToStreamToHost(folder,resize,remoteImageSourceURL, destFilename
                     })
                 } else {
                     if (body) {
-                        _uploadToS3(folder,destFilename,body,false,callback)
+                        _uploadToS3(bucketKey,body,false,callback)
 
                     }
                 }
@@ -126,13 +138,6 @@ function _dotPlusExtnameSansQueryParamsFrom(url)
     }
     
     return extname;
-}
-//
-//
-function _hostedPublicUrlFrom(folder,filename)
-{
-    var key = folder + filename
-    return _appendKeyToBucket(key);
 }
 
 
@@ -173,7 +178,7 @@ module.exports.hostImageLocatedAtRemoteURL = function(folder,resize,remoteImageS
                 // if (err.code == 'NotFound')
 
 
-                    _proceedToStreamToHost(folder,resize,remoteImageSourceURL, finalizedFilenameWithExt, callback);
+                    _proceedToStreamToHost(resize,remoteImageSourceURL, folder + finalizedFilenameWithExt, callback);
             });
         } catch (err) {
 
@@ -181,7 +186,7 @@ module.exports.hostImageLocatedAtRemoteURL = function(folder,resize,remoteImageS
 
     
             if (err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT')
-                _proceedToStreamToHost(folder,resize,remoteImageSourceURL, finalizedFilenameWithExt, callback);
+                _proceedToStreamToHost(resize,remoteImageSourceURL, folder + finalizedFilenameWithExt, callback);
         }
     }
 }

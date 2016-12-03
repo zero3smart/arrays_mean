@@ -15,6 +15,7 @@ var imported_data_preparation = require('../../libs/datasources/imported_data_pr
 var datatypes = require('../../libs/datasources/datatypes');
 var import_controller = require('../../libs/import/data_ingest/controller');
 var postimport_caching_controller = require('../../libs/import/cache/controller');
+var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
 
 
 function getAllDatasetsWithQuery (query,res) {
@@ -51,6 +52,22 @@ module.exports.getAll = function (req, res) {
     })
 };
 
+
+module.exports.signedUrlForAssetsUpload = function(req,res) {
+    datasource_description.findById(req.params.id)
+        .populate('_team')
+        .exec(function(err,description) {
+            var key = description._team.subdomain + '/datasets/' + description.uid + '/assets/banner';
+            s3ImageHosting.signedUrlForPutObject(key,req.query.fileType,function(err,data) {
+                if (err) {
+                    return res.status(500).send(err);
+                } else {
+                    return res.json({putUrl: data.putSignedUrl, publicUrl: data.publicUrl});
+                }
+            })
+        })
+
+}
 
 
 
@@ -482,12 +499,6 @@ module.exports.getAvailableDesignatedFields = function (req, res) {
     });
 }
 
-module.export.uploadBanner = function(req,res) {
-    if (!req.body.id)
-        return res.json({error: 'No ID given'});
-    
-
-}
 
 module.exports.download = function (req, res) {
     if (!req.params.id)

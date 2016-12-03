@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'sources', 'FileUploader', '$mdToast', '$state','AuthService',
-        function($scope, dataset, sources, FileUploader, $mdToast, $state,AuthService) {
+    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'sources', 'FileUploader', '$mdToast', '$state','AuthService','DatasetService',
+        function($scope, dataset, sources, FileUploader, $mdToast, $state,AuthService,DatasetService) {
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Upload';
@@ -18,6 +18,60 @@ angular.module('arraysApp')
                 }
 
             });
+
+            //right now only for uploading banner, later maybe icons. 
+            $scope.imageUploader = new FileUploader({
+                method: 'PUT',
+                disableMultipart: true,
+                filters:[
+                    {
+                        name: "imageFilter",
+                        fn: function(item,options) {
+                            var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+                            return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+                        }
+                    }
+                ],
+
+            })
+
+
+            $scope.imageUploader.onCompleteItem = function(fileItem,response,status,header) {
+                if (status == 200) {
+                    // console.log(dataset);
+                    var reload = false;
+                    if (dataset.banner) {
+                        reload = true;
+                    }
+                    dataset.banner = fileItem.publicUrl;
+                    DatasetService.save(dataset).then(function() {
+                        if (reload) {
+                             dataset.banner = dataset.banner + '?' + new Date().getTime();
+                        }
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Image upload successfully!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        )
+                    })
+                }
+            }
+
+            $scope.imageUploader.onBeforeUploadItem = function(item) {
+                item.headers['Content-Type'] = item.file.type;
+            }
+
+            $scope.imageUploader.onAfterAddingFile = function(fileItem) {
+                if ($scope.imageUploader.queue.length > 0) {
+                    $scope.imageUploader.queue[0] = fileItem;
+                }
+                DatasetService.getAssetUploadSignedUrl($scope.dataset._id,fileItem.file.type)
+                .then(function(urlInfo) {
+                    fileItem.url = urlInfo.putUrl;
+                    fileItem.publicUrl = urlInfo.publicUrl;
+                })
+            }   
 
             // CALLBACKS
 

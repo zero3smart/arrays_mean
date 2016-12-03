@@ -57,6 +57,9 @@ router.get('/dataset/getSources/:id',ctrlDataset.getSourcesWithSchemaID)
 router.post('/dataset/update',ctrlDataset.update);
 router.put('/dataset/publish/',ctrlDataset.publish);
 
+router.get('/dataset/getAssetUploadSignedUrl/:id',ctrlDataset.signedUrlForAssetsUpload);
+
+
 // dataset upload
 router.post('/dataset/upload',upload.array('file', 12), ctrlDataset.upload);
 router.get('/dataset/download/:id',ctrlDataset.download);

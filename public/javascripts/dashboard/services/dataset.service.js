@@ -184,6 +184,21 @@
             return deferred.promise;
         };
 
+        var getAssetUploadSignedUrl = function(id,fileType) {
+            var deferred = $q.defer();
+            $http.get('api/dataset/getAssetUploadSignedUrl/'+ id + '?fileType='+fileType )
+                .success(function(data) {
+                   if (data.putUrl && data.publicUrl) {
+                        return deferred.resolve(data);
+                   } else {
+                        return deferred.reject();
+                   }
+
+                })
+                .error(deferred.reject)
+            return deferred.promise;
+        }
+
         return {
             getAll: getAll,
             remove: remove,
@@ -196,7 +211,8 @@
             getMappingDatasourceCols: getMappingDatasourceCols,
             initializeToImport: initializeToImport,
             preImport: preImport,
-            postImport: postImport
+            postImport: postImport,
+            getAssetUploadSignedUrl: getAssetUploadSignedUrl
         }
     }
 })();

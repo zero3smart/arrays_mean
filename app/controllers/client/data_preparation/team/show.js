@@ -69,7 +69,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 default_filterJSON: default_filterJSON,
                 default_view: default_view,
-                logo: dataSourceDescription.logo
+                banner: dataSourceDescription.banner
             };
 
             cb(err, sourceDescription);
@@ -78,6 +78,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
     });
 
     var completionFn = function (err, sourceDescriptions) {
+        
+
         var data = {
             env: process.env,
 

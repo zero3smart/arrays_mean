@@ -1,27 +1,15 @@
 angular.module('arraysApp')
-    .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast','FileUploader'
-        function($scope, $state, dataset, DatasetService, $mdToast,FileUploader) {
+    .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast',
+        function($scope, $state, dataset, DatasetService, $mdToast) {
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
 
-             var uploader = $scope.uploader = new FileUploader({
-                url: 'upload.php'
-            });
-
-        // FILTERS
-
-        uploader.filters.push({
-            name: 'imageFilter',
-            fn: function(item /*{File|FileLikeObject}*/, options) {
-                var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
-                return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
-            }
-        });
 
 
         
+
 
 
             $scope.submitForm = function(isValid) {

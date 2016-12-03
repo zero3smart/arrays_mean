@@ -107,7 +107,8 @@ team.findOneBySubdomainAndPopulateDatasourceDescription = function (team_key, fn
             populate: {
                 'datasourceDescriptions' : {
                     match: {fe_visible: true},
-                    select: 'description uid urls title importRevision updatedBy author brandColor fe_views.default_view fe_filters.default'
+                    select: 'description uid urls title importRevision updatedBy author brandColor fe_views.default_view fe_filters.default' + 
+                    ' banner'
                 },
                 'datasourceDescriptions.updatedBy' : {
                     select: 'firstName lastName'
