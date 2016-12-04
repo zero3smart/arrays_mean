@@ -1,3 +1,5 @@
+var winston = require('winston');
+var url = require('url');
 var express = require('express');
 var router = express.Router();
 var teams = require('../models/teams');
@@ -8,9 +10,10 @@ router.get('/', function (req, res, next) {
     var team_key = null;
     var subdomains = req.subdomains;
     if (subdomains.length >= 1) {
-        if (subdomains[subdomains.length - 1] == 'staging') {
-            subdomains.splice(-1, 1);
+        if (subdomains[0] == 'staging') {
+            subdomains.splice(0, 1);
         }
+        subdomains.reverse();
         team_key = subdomains.join('.');
     }
 
@@ -22,6 +25,8 @@ router.get('/', function (req, res, next) {
 
     teams.GetTeamBySubdomain(team_key, function(err, teamDescription) {
         if (err) return next();
+        // No team exists
+        if (!teamDescription) return next();
 
         var url_parts = url.parse(req.url, true);
         var query = url_parts.query;
