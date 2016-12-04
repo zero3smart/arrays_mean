@@ -93,8 +93,8 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
         // var feVisible_filter_keys_length = feVisible_filter_keys.length;
         var uniqueFieldValuesByFieldName = {};
 
-        for (var i = 0; i < filterKeys.length ; i++) {
-            var key = filterKeys[i];
+        for (i = 0; i < filterKeys.length ; i++) {
+            key = filterKeys[i];
             uniqueFieldValuesByFieldName[key] = [];
         }
 
@@ -118,14 +118,14 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 }
                 if (results == undefined || results == null || results.length == 0) {
 
-                    console.log(key)
+                    console.log(key);
                     callback(new Error('Unexpectedly empty unique field value aggregation'));
 
                     return;
                 }
                 
                 valuesRaw = results.map(function (el) {
-                    return el._id;
+                    return el._id.trim();
                 });
 
                 // flatten array of arrays (for nested tables)
