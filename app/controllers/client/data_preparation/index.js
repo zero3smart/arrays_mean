@@ -2,13 +2,13 @@ var async = require('async');
 var queryString = require('querystring');
 
 var dataSourceDescriptions = require('../../../models/descriptions');
-var teamDescriptions = require('../../../models/teams')
+var teamDescriptions = require('../../../models/teams');
 
 var Promise = require('q').Promise;
 
 var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
 var raw_source_documents = require('../../../models/raw_source_documents');
-var _ = require("lodash")
+var _ = require("lodash");
 
 module.exports.BindData = function (req, callback) {
 
@@ -19,7 +19,7 @@ module.exports.BindData = function (req, callback) {
 
     	 async.map(teamWithDesc, iterateeFn, completionFn);
 
-    })
+    });
 
      var completionFn = function (err) {
    
