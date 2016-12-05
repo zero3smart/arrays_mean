@@ -11,6 +11,11 @@
     }
 }
 
+.table > thead > tr > th, .table > thead > tr > td, .table > tbody > tr > th, .table > tbody > tr > td, .table > tfoot > tr > th, .table > tfoot > tr > td {
+    vertical-align: inherit;
+}
+
+
 .dashboard-content .array-content {
     padding: 15px;
 }

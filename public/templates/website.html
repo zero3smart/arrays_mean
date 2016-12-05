@@ -3,5 +3,80 @@
 </header>
 
 <div class="array-content">
-    <h2>Coming Soon!</h2>
+    <!-- <h2>Coming Soon!</h2> -->
+
+ <label>Choose images</label>
+    <input type="file" nv-file-select="" uploader="assetsUploader" multiple>
+
+     <table class="table upload">
+        <thead>
+        <tr>
+            <th width="50%">Asset Name</th>
+            <th>Type</th>
+            <th ng-show="assetsUploader.isHTML5">Size</th>
+            <th ng-show="assetsUploader.isHTML5">Progress</th>
+            <th>Status</th>
+            <th>Actions</th>
+            
+        </tr>
+        </thead>
+        <tbody>
+
+
+
+        
+        <tr ng-repeat="item in assetsUploader.queue track by $index"> 
+
+
+            <td><strong>{{ item.file.name }}</strong></td> 
+
+            	<!-- toDo: validation, team logo only one!-->
+
+             <td>
+	      
+	         		 <md-select ng-change="getUploadUrl($index,item)" required ng-model="item.assetType"
+	                   aria-label="assetType">
+			            <md-option value="logo">Logo</md-option>
+			            <md-option value="icon">Icon</md-option>
+                        <md-option value="logo_header">Logo Header</md-option>
+			        </md-select>
+	      
+            	
+			</td>
+
+
+
+            <td ng-show="assetsUploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+             <td ng-show="assetsUploader.isHTML5" class="progress-container">
+                <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
+            </td>
+
+
+
+
+
+            <td class="text-center">
+                <span ng-show="item.isSuccess" class="text-success"><i class="glyphicon glyphicon-ok"></i></span>
+                <span ng-show="item.isCancel" class="text-warning"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                <span ng-show="item.isError" class="text-danger"><i class="glyphicon glyphicon-remove"></i></span>
+            </td>
+            <td nowrap class="no-padding-vertical">
+                <md-button class="md-raised" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess || !item.assetType">
+                    Upload
+                </md-button>
+                <md-button class="md-raised" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                    Cancel
+                </md-button>
+                <md-button class="md-raised" ng-click="item.remove()">
+                    Remove
+                </md-button>
+            </td>
+           
+        </tr>
+        </tbody>
+
+    </table>
+
+
+
 </div>

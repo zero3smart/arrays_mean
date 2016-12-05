@@ -82,6 +82,7 @@ router.get('/dataset/getMappingDatasourceCols/:pKey',ctrlDataset.loadDatasourceC
 //teams
 router.get('/team/search',ctrlTeam.search);
 router.get('/team/loadIcons',ctrlTeam.loadIcons);
+router.get('/team/getAssetUploadSignedUrl/:id', ctrlTeam.signedUrlForAssetsUpload);
 
 
 module.exports = router;

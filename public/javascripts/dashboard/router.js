@@ -119,6 +119,7 @@ angular.module('arraysApp')
                     })
                     .state('dashboard.website', {
                         url: '/website',
+                        controller: 'WebsiteCtrl',
                         templateUrl: 'templates/website.html'
                     })
                     .state('dashboard.users', {

@@ -1,6 +1,7 @@
 var Team = require('../../models/teams');
 var User = require('../../models/users')
-var ImageHosting = require('../../libs/utils/aws-image-hosting');
+var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
+
 
 module.exports.search = function(req,res) {
 	Team.find(req.query,function(err,foundTeams) {
@@ -13,6 +14,47 @@ module.exports.search = function(req,res) {
 	})
 }
 
+module.exports.update = function(req,res) {
+	Team.findById(req.body._id)
+	.lean()
+	.exec(function(err,team) {
+		if (err) {
+			return res.status(500).send(err);
+		} else {
+			if (!team) {
+				res.status(404).send('Team not found.');
+			} else {
+
+			}
+		}
+	})
+
+
+}
+
+
+module.exports.signedUrlForAssetsUpload = function(req,res) {
+
+    Team.findById(req.params.id)
+        .exec(function(err,team) {
+        	var key;
+        	if (req.query.assetType == 'logo' || req.query.assetType == 'logo_header') {
+        		key = team.subdomain + '/assets/logo/' + req.query.fileName
+        	} else if (req.query.assetType == 'icon') {
+        		key = team.subdomain + '/assets/icon/' + req.query.fileName
+        	}
+        	s3ImageHosting.signedUrlForPutObject(key,req.query.fileType,function(err,data) {
+        		if (err) {
+                    return res.status(500).send(err);
+                } else {
+                    return res.json({putUrl: data.putSignedUrl, publicUrl: data.publicUrl});
+                }
+        	})
+
+        })
+
+}
+
 
 module.exports.loadIcons = function(req,res) {
 	if (req.user) {
@@ -22,7 +64,7 @@ module.exports.loadIcons = function(req,res) {
 			if (err) {
 				res.status(500).send({error:err.message});
 			} else {
-				ImageHosting.getAllIconsForTeam(user._team.subdomain,function(err,data) {
+				s3ImageHosting.getAllIconsForTeam(user._team.subdomain,function(err,data) {
 					if (err) {
 						res.status(500).send({error:err.message})
 					} else {
