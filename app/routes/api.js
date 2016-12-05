@@ -11,11 +11,7 @@ var ctrlDataset = require('../controllers/api/dataset');
 var ctrlUsers = require('../controllers/api/users');
 var ctrlTeam = require('../controllers/api/team');
 var ctrlView = require('../controllers/api/views');
-
-
 var ejwt = require('express-jwt');
-
-
 
 var auth = ejwt({
    secret: process.env.SESSION_SECRET,
@@ -28,8 +24,6 @@ var auth = ejwt({
 });
 
 router.use(auth,function(err,req,res,next) {
-
-
 	if (err.name == 'UnauthorizedError') {
 
 		console.log(err);
@@ -85,14 +79,9 @@ router.get('/view/:id',ctrlView.get);
 //datasourceMapping in format view
 router.get('/dataset/getMappingDatasourceCols/:pKey',ctrlDataset.loadDatasourceColumnsForMapping);
 
-
-
 //teams
 router.get('/team/search',ctrlTeam.search);
 router.get('/team/loadIcons',ctrlTeam.loadIcons);
-
-
-
 
 
 module.exports = router;

@@ -202,7 +202,7 @@ angular.module('arraysApp')
                 $scope.verifyUniqueFieldName = function(name) {
                     refreshFieldByName(name);
 
-                    $scope.fieldName = name;
+                    $scope.customField.fieldName = name;
 
                     var unique = ($scope.dataset.columns.find(function(column) {
                         return name == column.name;

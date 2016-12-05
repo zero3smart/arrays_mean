@@ -2,14 +2,10 @@ var winston = require('winston');
 var expressWinston = require('express-winston');
 var url = require('url');
 var path = require('path');
-var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn('/auth/login');
 
 var isDev = !process.env.NODE_ENV || process.env.NODE_ENV == 'development';
 var __DEBUG_enableEnsureWWWForDev = false; // for debug
 var shouldEnsureWWW = isDev == false || __DEBUG_enableEnsureWWWForDev;
-
-
-
 
 
 //
@@ -67,7 +63,9 @@ var _mountRoutes_errorHandling = function (app) {
 var _mountRoutes_endPoints = function (app) {
     // View endpoints
     app.use('/', require('./homepage'));
+    app.use('/', require('./views'));
     app.use('/array', require('./array'));
+    app.use('/array', require('./views'));
     app.use('/team', require('./team'));
     app.use('/s', require('./shared_pages'));
     var apiVersion = 'v1';

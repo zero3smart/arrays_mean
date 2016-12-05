@@ -1,8 +1,8 @@
 <md-content layout-padding>
     <md-input-container class="md-block">
         <label>Name</label>
-        <input type="text" required ng-model="customField.fieldName" name="fieldName"
-               ng-change="verifyUniqueFieldName(customField.fieldName)" ng-readonly="!isCustom">
+        <input type="text" required ng-model="fieldName" name="fieldName"
+               ng-change="verifyUniqueFieldName(fieldName)" ng-readonly="!isCustom">
         <div ng-messages="dialog.fieldForm.fieldName.$error">
             <div ng-message="required">This is required.</div>
             <div ng-message="unique">Must be unique.</div>

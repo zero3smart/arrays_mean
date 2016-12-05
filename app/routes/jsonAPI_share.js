@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var url = require('url');
 var winston = require('winston');
-var ensureLoggedIn = require('connect-ensure-login').ensureLoggedIn();
 var shared_pages_model = require('../models/shared_pages');
 
 router.post('/share', function (req, res) {

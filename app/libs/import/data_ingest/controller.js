@@ -282,11 +282,11 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
         /*eachCtx could be array or object*/
 
-        if (eachCtx == null || typeof eachCtx == 'undefined' || (Array.isArray(eachCtx) && eachCtx.length==0) || 
-            (!Array.isArray(eachCtx) && !eachCtx.fields )) { 
+        if (eachCtx == null || typeof eachCtx == 'undefined' || (Array.isArray(eachCtx) && !eachCtx.length) ||
+            (!Array.isArray(eachCtx) && !eachCtx.fields.length)) {
             continueToAfterIterating();
         } else {
-            eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation
+            eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation;
 
             processed_row_objects.EnumerateProcessedDataset(
                 dataSource_uid,
@@ -312,8 +312,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
         var bulkOperationQueryFragment;
 
-
-        if (typeof eachCtx.nested !== 'undefined' && eachCtx.nested == true) {
+        if (typeof eachCtx.nested !== 'undefined' && eachCtx.nested == true &&
+            ((Array.isArray(eachCtx) && eachCtx.length != 0) || (!Array.isArray(eachCtx) && eachCtx.fields.length))) {
 
             if (!ifHasAndMeetCriteria(eachCtx, rowDoc)) {
                 var updateFragment = {$pushAll: {}};
@@ -435,7 +435,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     var refinedValue = [];
                     fieldValue.forEach(function(value) {
                         refinedValue.push(value.toString().trim());
-                    })
+                    });
                     generatedArray = generatedArray.concat(refinedValue);
                 } else {
                     generatedArray.push(fieldValue);
