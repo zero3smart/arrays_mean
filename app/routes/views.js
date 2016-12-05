@@ -2,6 +2,7 @@ var winston = require('winston');
 var queryString = require('querystring');
 var express = require('express');
 var router = express.Router();
+var ensureAuthorized = require('../libs/utils/ensureAuthorized').ensureAuthorized;
 
 var gallery_controller = require('../controllers/client/data_preparation/gallery');
 var chart_controller = require('../controllers/client/data_preparation/chart');
@@ -30,7 +31,7 @@ var controllers = {
 var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
 
 viewTypes.forEach(function (viewType) {
-    router.get('/:source_key/' + viewType, function (req, res) {
+    router.get('/:source_key/' + viewType, ensureAuthorized, function (req, res, next) {
         var source_key = req.params.source_key;
         if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
             return res.status(403).send("Bad Request - source_key missing");
@@ -54,7 +55,7 @@ viewTypes.forEach(function (viewType) {
 
 var object_details_controller = require('../controllers/client/data_preparation/object_details');
 
-router.get('/:source_key/:object_id', function (req, res) {
+router.get('/:source_key/:object_id', ensureAuthorized, function (req, res, next) {
     var source_key = req.params.source_key;
     if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
         return res.status(403).send("Bad Request - source_key missing");

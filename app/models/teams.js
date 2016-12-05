@@ -102,7 +102,7 @@ team.GetTeamBySubdomain = function (subdomains, fn) {
     }
 
     if (team_key === null || typeof team_key === 'undefined' || team_key === "") {
-        return fn(new Error('No Team Exists!'));
+        return fn(new Error('No SubDomain Asked!'));
     }
 
     team.findOne({subdomain: team_key})

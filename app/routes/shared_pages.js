@@ -16,6 +16,8 @@ var chart_controller = require('../controllers/client/data_preparation/chart');
 var pie_set_controller = require('../controllers/client/data_preparation/pie_set');
 var bar_chart_controller = require('../controllers/client/data_preparation/bar_chart');
 
+var ensureAuthorized = require('../libs/utils/ensureAuthorized').ensureAuthorized;
+
 var controllers = {
     object_details: object_details_controller,
     gallery: gallery_controller,
@@ -29,7 +31,7 @@ var controllers = {
     barChart: bar_chart_controller
 };
 
-router.get('/:shared_page_id', function (req, res) {
+router.get('/:shared_page_id', ensureAuthorized, function (req, res) {
     var shared_page_id = req.params.shared_page_id;
     if (!shared_page_id || shared_page_id == "") {
         res.status(403).send("Bad Request - shared_page_id missing")
