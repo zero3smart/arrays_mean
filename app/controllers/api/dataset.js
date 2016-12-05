@@ -39,7 +39,7 @@ module.exports.getAll = function (req, res) {
         if (err) {return res.json({error:err.message})};
         var subquery = {};
         if (!foundUser) {
-            retres.status(401).send('unauthorized');
+            res.status(401).send('unauthorized');
         }
         if (foundUser.isSuperAdmin()) { //grab everything
             getAllDatasetsWithQuery(subquery,res);
