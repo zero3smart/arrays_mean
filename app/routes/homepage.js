@@ -1,5 +1,3 @@
-var winston = require('winston');
-var url = require('url');
 var express = require('express');
 var router = express.Router();
 var ensureAuthorized = require('../libs/utils/ensureAuthorized').ensureAuthorized;
