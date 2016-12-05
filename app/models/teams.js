@@ -91,7 +91,20 @@ team.GetTeamsAndDatasources = function (userId, fn) {
 
 };
 
-team.GetTeamBySubdomain = function (team_key, fn) {
+team.GetTeamBySubdomain = function (subdomains, fn) {
+    var team_key = null;
+    if (subdomains.length >= 1) {
+        if (subdomains[0] == 'staging') {
+            subdomains.splice(0, 1);
+        }
+        subdomains.reverse();
+        team_key = subdomains.join('.');
+    }
+
+    if (team_key === null || typeof team_key === 'undefined' || team_key === "") {
+        return fn(new Error('No Team Exists!'));
+    }
+
     team.findOne({subdomain: team_key})
         .exec(function (err, teamDesc) {
             fn(err, teamDesc);
