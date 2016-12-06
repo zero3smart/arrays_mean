@@ -24,8 +24,10 @@ module.exports.sendActivationEmail = function(user, cb) {
 		email: user.email
 	},jwtSecret,{expiresIn:'2h'});
 
-	var baseUrl = process.env.SITE_BASE_URL ? process.env.SITE_BASE_URL : 'http://localhost:9080';
-	var activationLink = baseUrl + '/account/verify?token=' + token;
+    var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+    baseURL += process.env.HOST ? process.env.HOST : 'localhost:9080';
+
+    var activationLink = baseURL + '/account/verify?token=' + token;
 	var mailOptions = {
 		from: 'info@arrays.co',
 		to: user.email,

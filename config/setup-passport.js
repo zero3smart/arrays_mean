@@ -23,12 +23,13 @@ var localStrategy = new LocalStrategy({
 })
 
 
-var baseUrl = process.env.SITE_BASE_URL ? process.env.SITE_BASE_URL : 'http://localhost:9080';
+var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+baseURL += process.env.HOST ? process.env.HOST : 'localhost:9080';
 
 var googleStrategy = new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: baseUrl + "/auth/google/callback"
+    callbackURL: baseURL + "/auth/google/callback"
 
 },function(accessToken,refreshToken,profile,done) {
     var findQuery = {email:profile.emails[0].value};
