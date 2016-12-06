@@ -395,7 +395,7 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                         if (foundUser.isSuperAdmin()) {
                             return fn(null, datasourceDescription);
                         } else {
-                            if (foundUser._team.datasourceDescriptions.indexOf(datasourceDescription.id) != -1)
+                            if (foundUser._team.datasourceDescriptions.indexOf(datasourceDescription._id) != -1)
                                 return fn(null, datasourceDescription);
                             else
                                 return fn();
