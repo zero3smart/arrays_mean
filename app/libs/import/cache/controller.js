@@ -125,7 +125,11 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 }
                 
                 valuesRaw = results.map(function (el) {
-                    return el._id.trim();
+                    var value = el._id;
+                    if (typeof value === 'string')
+                        return value.trim();
+                    else
+                        return value;
                 });
 
                 // flatten array of arrays (for nested tables)

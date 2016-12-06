@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var url = require('url');
 var winston = require('winston');
-var ensureAuthorized = require('../libs/utils/ensureAuthorized').ensureAuthorized;
+var ensureAuthorized = require('../libs/middleware/ensure-authorized').ensureAuthorized;
 
 var team_show_controller = require('../controllers/client/data_preparation/team/show');
 

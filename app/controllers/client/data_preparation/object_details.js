@@ -8,6 +8,7 @@ var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
 var datatypes = require('../../../libs/datasources/datatypes');
+var User = require('../../../models/users');
 
 module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
     var self = this;
@@ -144,6 +145,19 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
             });
 
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            });
+
             batch.end(function (err) {
                 if (err) return callback(err);
 
@@ -248,7 +262,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 {
                     env: process.env,
 
-                    user: req.user,
+                    user: user,
 
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,

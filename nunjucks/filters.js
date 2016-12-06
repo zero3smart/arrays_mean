@@ -292,4 +292,13 @@ module.exports = function (nunjucks_env) {
     nunjucks_env.addFilter('fieldDataType_coercion_toString', function(field) {
         return datatypes.fieldDataType_coercion_toString(field);
     });
+
+    nunjucks_env.addFilter('addSubdomain', function(siteBaseUrl, strSubdomain) {
+        if (!siteBaseUrl) return '/team/' + strSubdomain;
+
+        var result = url.parse(siteBaseUrl);
+        var urlParts = result.host.replace('www.', '');
+        urlParts = [strSubdomain].concat(urlParts);
+        return result.protocol + '//' + urlParts.join('.');
+    });
 };

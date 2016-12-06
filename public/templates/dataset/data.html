@@ -2,7 +2,7 @@
     <form name="vm.dataForm" ng-submit="submitForm(!vm.dataForm.$invalid && vm.dataForm.$dirty)">
         <md-input-container class="md-block" flex-gt-sm>
             <label>Primary Key</label>
-            <md-select required name="primaryKey"
+            <md-select required name="primaryKey" aria-label="primaryKey"
                        ng-model="dataset.fn_new_rowPrimaryKeyFromRowObject">
                 <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
                     {{column.name}}

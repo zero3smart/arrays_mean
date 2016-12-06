@@ -9,6 +9,7 @@ var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+var User = require('../../../models/users');
 
 /**
  * @param {Object} urlQuery - URL params

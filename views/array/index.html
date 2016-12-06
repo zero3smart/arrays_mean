@@ -27,7 +27,7 @@
                 
                             <div class="radio">
                                 <label>
-                                    <input type="radio" name="team_key" value="{{ key }}" class="hidden">
+                                    <input type="radio" name="subdomain" value="{{ env.SITE_BASE_URL | addSubdomain(key) }}" class="hidden">
                                     <div class="panel panel-default panel-source team-{{ key }} js-panel-team">
     
                                         <div class="panel-body border-top-color-brand">

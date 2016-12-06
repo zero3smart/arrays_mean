@@ -55,7 +55,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 default_view = dataSourceDescription.fe_views.default_view;
             }
             var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + "," + dataSourceDescription.updatedBy.lastName
-            var authorDisplayName = dataSourceDescription.author.firstName + "," + dataSourceDescription.author.lastName
+            var authorDisplayName = dataSourceDescription.author.firstName + "," + dataSourceDescription.author.lastName;
+
             var sourceDescription = {
                 key: source_pKey,
                 sourceDoc: doc,
@@ -72,7 +73,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 banner: dataSourceDescription.banner
             };
 
-            cb(err, sourceDescription);
+            if (req.user) {
+                User.findById(req.user, function(err, user) {
+                    if (err) return cb(err);
+                    sourceDescription.user = user;
+                    cb(err, sourceDescription);
+                })
+            } else {
+                cb(err, sourceDescription);
+            }
         });
 
     });

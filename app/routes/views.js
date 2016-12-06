@@ -2,7 +2,7 @@ var winston = require('winston');
 var queryString = require('querystring');
 var express = require('express');
 var router = express.Router();
-var ensureAuthorized = require('../libs/utils/ensureAuthorized').ensureAuthorized;
+var ensureAuthorized = require('../libs/middleware/ensure-authorized').ensureAuthorized;
 
 var gallery_controller = require('../controllers/client/data_preparation/gallery');
 var chart_controller = require('../controllers/client/data_preparation/chart');
