@@ -4,7 +4,9 @@
 .dashboard-content {
     padding-top: var(--navbar-height-tablet);
 }
-
+.formInput{
+    padding-top:20px;
+}
 @media (max-width: 767px) {
     .dashboard-content {
         padding-top: var(--navbar-height-mobile);

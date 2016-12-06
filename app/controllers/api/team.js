@@ -1,6 +1,7 @@
 var Team = require('../../models/teams');
 var User = require('../../models/users')
 var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
+var _ = require('lodash')
 
 
 module.exports.search = function(req,res) {
@@ -15,21 +16,25 @@ module.exports.search = function(req,res) {
 }
 
 module.exports.update = function(req,res) {
-	Team.findById(req.body._id)
-	.lean()
+	Team.findByIdAndUpdate(req.params.id)
 	.exec(function(err,team) {
 		if (err) {
 			return res.status(500).send(err);
+		} else if (!team) {
+			return res.status(401).send("Team not found.");
 		} else {
-			if (!team) {
-				res.status(404).send('Team not found.');
-			} else {
-
+			for (var attr in req.body) {
+				team[attr] = req.body[attr];
 			}
+			team.save(function(err) {
+				if (!err) {
+					return res.status(200).send("ok");
+				} else {
+					return res.status(500).send(err);
+				}
+			})
 		}
 	})
-
-
 }
 
 

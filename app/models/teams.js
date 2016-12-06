@@ -11,7 +11,7 @@ var team_scheme = Schema({
     subdomain: String, //not changable once set
     description: String,
     logo: String,
-    logoHeader: String,
+    logo_header: String,
     admin: {type: Schema.Types.ObjectId, ref: 'User'},
     editors: [{type: Schema.Types.ObjectId, ref: 'User'}],
     datasourceDescriptions: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}]

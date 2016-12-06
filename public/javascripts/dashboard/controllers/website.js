@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('WebsiteCtrl', ['$scope', 'AuthService', 'FileUploader','AssetService',
-        function($scope, AuthService,FileUploader,AssetService) {
+    .controller('WebsiteCtrl', ['$scope', 'AuthService', 'FileUploader','AssetService','Team','$mdToast',
+        function($scope, AuthService,FileUploader,AssetService,Team,$mdToast) {
 
 
             $scope.progressMode = "determinate";
@@ -43,33 +43,46 @@ angular.module('arraysApp')
             $scope.assetsUploader.onCompleteItem = function(fileItem,response,status,header) {
 
                 if (status == 200) {
-                    console.log('done');
+                    var asset = fileItem.assetType;
+                
+                    $scope.user._team[asset] = fileItem.uploadUrls[asset].publicUrl + '?' + new Date().getTime();
+
+                    if ($scope.vm.websiteForm.$pristine) {
+                        $scope.vm.websiteForm.$setDirty();
+                    }
+
+                     $mdToast.show(
+                        $mdToast.simple()
+                            .textContent('Image uploaded successfully!')
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+
                 }
             }
 
+            $scope.submitForm = function(isValid) {
+                // console.log($scope.user._team);
+                if (isValid) {
+                    Team.update({id:$scope.user._team._id},$scope.user._team)
+                    .$promise.then(function() {
+                         $scope.vm.websiteForm.$setPristine();
 
-            //  $scope.assetsUploader.onCompleteItem = function(fileItem,response,status,header) {
-            //     if (status == 200) {
-            //         var reload = false;
-            //         if (dataset.banner) {
-            //             reload = true;
-            //         }
-            //         dataset.banner = fileItem.publicUrl;
-            //         DatasetService.save(dataset).then(function() {
-            //             if (reload) {
-            //                  dataset.banner = dataset.banner + '?' + new Date().getTime();
-            //             }
-            //             $mdToast.show(
-            //                 $mdToast.simple()
-            //                     .textContent('Image upload successfully!')
-            //                     .position('top right')
-            //                     .hideDelay(3000)
-            //             )
-            //         })
-            //     }
-            // }
+                         $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Team updated successfully!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    })
 
 
+                }
+               
+            }
+
+
+   
 
 
 

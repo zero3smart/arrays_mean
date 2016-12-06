@@ -3,12 +3,70 @@
 </header>
 
 <div class="array-content">
-    <!-- <h2>Coming Soon!</h2> -->
+     <form name="vm.websiteForm" ng-submit="submitForm(vm.websiteForm.$valid && vm.websiteForm.$dirty)" novalidate>
+        <md-input-container class="md-block">
+            <label>Title</label>
+            <input required name="title" ng-model="user._team.title">
+            <div ng-messages="vm.websiteForm.title.$error">
+                <div ng-message="required">This is required.</div>
+            </div>
+        </md-input-container>
 
- <label>Choose images</label>
-    <input type="file" nv-file-select="" uploader="assetsUploader" multiple>
+        <md-input-container class="md-block">
+            <label>Description</label>
+            <textarea required md-no-asterisk name="description" ng-model="user._team.description"></textarea>
+        </md-input-container>
 
-     <table class="table upload">
+         <div flex="50" layout="row">
+            <md-input-container flex>
+                <label>Subdoamin</label>
+                <input ng-model="user._team.subdomain" readonly="true">
+            </md-input-container>
+            <md-icon md-font-set="regular-font">.arrays.co</md-icon>
+        </div>
+
+
+
+
+     <div class="formInput">
+            <label>Logo</label>
+            <div ng-if="!user._team.logo">
+                No team logo uploaded.
+                
+            </div>
+
+            <div flex="50">
+                 <img class="img-responsive" ng-if="user._team.logo" ng-src="{{user._team.logo}}">
+            </div>
+    </div>
+
+
+      
+
+    <div class="formInput">
+        <label>Logo Header</label>
+         <div ng-if="!user._team.logo_header">
+                No team logo header uploaded.
+                
+            </div>
+
+        <div flex="50">
+             <img class="img-responsive" ng-if="user._team.logo_header" ng-src="{{user._team.logo_header}}">
+        </div>
+
+    </div>
+
+
+     
+
+
+
+
+
+    <label class="formInput">Choose images</label>
+         <input type="file" nv-file-select="" uploader="assetsUploader" multiple>
+
+        <table class="table upload">
         <thead>
         <tr>
             <th width="50%">Asset Name</th>
@@ -30,19 +88,14 @@
 
             <td><strong>{{ item.file.name }}</strong></td> 
 
-            	<!-- toDo: validation, team logo only one!-->
-
              <td>
-	      
-	         		 <md-select ng-change="getUploadUrl($index,item)" required ng-model="item.assetType"
-	                   aria-label="assetType">
-			            <md-option value="logo">Logo</md-option>
-			            <md-option value="icon">Icon</md-option>
+                  <md-select ng-change="getUploadUrl($index,item)" required ng-model="item.assetType"
+                       aria-label="assetType">
+                        <md-option value="logo">Logo</md-option>
+                        <md-option value="icon">Icon</md-option>
                         <md-option value="logo_header">Logo Header</md-option>
-			        </md-select>
-	      
-            	
-			</td>
+                    </md-select>                
+            </td>
 
 
 
@@ -50,9 +103,6 @@
              <td ng-show="assetsUploader.isHTML5" class="progress-container">
                 <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
             </td>
-
-
-
 
 
             <td class="text-center">
@@ -76,6 +126,25 @@
         </tbody>
 
     </table>
+
+
+      <div layout="row" layout-align="end center" class="panel-footer">
+            <md-button class="md-raised" type="submit"
+                       ng-disabled="vm.websiteForm.$invalid || !vm.websiteForm.$dirty"><span
+                    class="glyphicon glyphicon-ok"></span><span class="btn-label">Save</span></md-button>
+        </div>
+
+
+
+
+
+    </form>
+
+
+
+
+
+
 
 
 
