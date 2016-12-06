@@ -78,8 +78,6 @@ module.exports.BindData = function (req, callback) {
 
         async.each(teamDescription.datasourceDescriptions, function (dataSourceDescription, innerCallback) {
 
-            if (!dataSourceDescription.fe_listed) return innerCallback(null);
-
             var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription, raw_source_documents);
 
 
@@ -115,6 +113,7 @@ module.exports.BindData = function (req, callback) {
                         teamsObj[subdomain].dataSourceDescriptions = [];
                     }
                     teamsObj[subdomain].dataSourceDescriptions.push(s);
+
                     innerCallback(null);
                 }
 
