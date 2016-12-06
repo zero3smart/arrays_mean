@@ -65,7 +65,6 @@ var _mountRoutes_endPoints = function (app) {
     app.use('/', require('./homepage'));
     app.use('/array', require('./array'));
     app.use('/array', require('./views'));
-    // app.use('/team', require('./team'));
     app.use('/s', require('./shared_pages'));
     var apiVersion = 'v1';
     app.use('/' + apiVersion, require('./jsonAPI_share'));

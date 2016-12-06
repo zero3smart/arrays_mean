@@ -26,7 +26,7 @@ team_scheme.plugin(integerValidator);
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
 
-team_scheme.plugin(deepPopulate, {whitelist: ['datasourceDescriptions.author', 'datasourceDescriptions.updatedBy']})
+team_scheme.plugin(deepPopulate, {whitelist: ['datasourceDescriptions.author', 'datasourceDescriptions.updatedBy']});
 
 
 var team = mongoose.model(modelName, team_scheme);
@@ -47,7 +47,7 @@ function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
             populate: {
                 'datasourceDescriptions': {
                     match: datasetQuery,
-                    select: 'description uid urls title importRevision updatedBy author brandColor fe_views.default_view fe_filters.default'
+                    select: 'description uid urls title importRevision updatedBy author brandColor fe_views.default_view fe_filters.default banner'
                 },
                 'datasourceDescriptions.updatedBy': {
                     select: 'firstName lastName'
@@ -72,24 +72,24 @@ team.GetTeamsAndDatasources = function (userId, fn) {
             .exec(function (err, foundUser) {
                 if (err) return fn(err);
                 if (foundUser.isSuperAdmin()) {
-                    getTeamsAndPopulateDatasetWithQuery({}, {imported: true}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({}, {imported: true, fe_visible: true}, fn);
 
                 } else if (foundUser._team.editors.indexOf(userId) >= 0 || foundUser._team.admin == userId) {
                     var myTeamId = foundUser._team._id;
                     var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
                     var myTeam = {_team: foundUser._team};
-                    getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true}]}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_visible: true}]}, fn);
 
                 } else { //get published and unpublished dataset if currentUser is one of the viewers
                     var myTeamId = foundUser._team._id;
                     var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
                     var myTeam = {_team: foundUser._team, viewers: userId};
-                    getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true}]}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_visible: true}]}, fn);
                 }
             })
 
     } else {
-        getTeamsAndPopulateDatasetWithQuery({}, {isPublished: true, imported: true}, fn);
+        getTeamsAndPopulateDatasetWithQuery({}, {isPublished: true, imported: true, fe_visible: true}, fn);
     }
 
 };
@@ -109,31 +109,29 @@ team.GetTeamBySubdomain = function (req, fn) {
     }
 
     var userId = req.user;
-    console.log('userId ', userId);
     if (userId) {
         User.findById(userId)
             .populate('_team')
             .exec(function (err, foundUser) {
                 if (err) return fn(err);
                 if (foundUser.isSuperAdmin()) {
-                    console.log('superAdmin');
-                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {imported: true, fe_listed: true}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {imported: true, fe_visible: true}, fn);
 
                 } else if (foundUser._team.editors.indexOf(userId) >= 0 || foundUser._team.admin == userId) {
-                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {imported: true, fe_listed: true}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {imported: true, fe_visible: true}, fn);
 
                 } else { //get published and unpublished dataset if currentUser is one of the viewers
-                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {$and: [{viewers: userId}, {imported: true, fe_listed: true}]}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {$and: [{viewers: userId}, {imported: true, fe_visible: true}]}, fn);
                 }
             })
 
     } else {
-        getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {isPublished: true, imported: true, fe_listed: true}, fn);
+        getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {isPublished: true, imported: true}, fn);
     }
 
 };
 
-team.findOneBySubdomainAndPopulateDatasourceDescription = function (team_key, fn) {
+team.findOneBySubdomainAndPopulateDatasourceDescription = function (userId, team_key, fn) {
 
     var obj = null;
 

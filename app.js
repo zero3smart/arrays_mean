@@ -105,7 +105,6 @@ if (process.env.HOST) {
     urlParts[urlParts.length-1] = urlParts[urlParts.length-1].split(':')[0];
     domain = '.' + urlParts.join('.');
 }
-console.log(domain);
 // Mongo Store to prevent a warnning.
 app.use(session({
     secret: process.env.SESSION_SECRET,

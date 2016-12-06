@@ -3,34 +3,20 @@ var queryString = require('querystring');
 var _ = require("lodash");
 
 var dataSourceDescriptions = require('../../../../models/descriptions');
-var teamDescriptions = require('../../../../models/teams')
+var teamDescriptions = require('../../../../models/teams');
 var importedDataPreparation = require('../../../../libs/datasources/imported_data_preparation');
 var raw_source_documents = require('../../../../models/raw_source_documents');
+var User = require('../../../../models/users');
 
-module.exports.BindData = function (req, urlQuery, callback) {
-    var self = this;
-
-
-    var team;
-    var team_dataSourceDescriptions;
-
-    //To Do: check user identify , if team member, show unpublished page (with check viewer role) , if not, only published page
-
-    teamDescriptions.findOneBySubdomainAndPopulateDatasourceDescription(urlQuery.team_key, function (err, objReturned) {
-
-        team = objReturned.team;
-        team_dataSourceDescriptions = objReturned.team_dataSourceDescriptions;
-
-        async.map(team_dataSourceDescriptions, iterateeFn, completionFn);
-    })
-
+module.exports.BindData = function (req, teamDescription, callback) {
+    var team = _.omit(teamDescription, 'datasourceDescriptions');
+    var team_dataSourceDescriptions = teamDescription.datasourceDescriptions;
 
     var iterateeFn = async.ensureAsync(function (dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
     {
 
         var err = null;
         var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription);
-
 
         raw_source_documents.Model.findOne({
             primaryKey: source_pKey
@@ -73,30 +59,29 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 banner: dataSourceDescription.banner
             };
 
-            if (req.user) {
-                User.findById(req.user, function(err, user) {
-                    if (err) return cb(err);
-                    sourceDescription.user = user;
-                    cb(err, sourceDescription);
-                })
-            } else {
-                cb(err, sourceDescription);
-            }
+            cb(err, sourceDescription);
         });
 
     });
 
     var completionFn = function (err, sourceDescriptions) {
-        
-
         var data = {
             env: process.env,
-
-            user: req.user,
             sources: sourceDescriptions,
             team: team
         };
-        callback(err, data);
+
+        if (req.user) {
+            User.findById(req.user, function(err, user) {
+                if (err) return callback(err);
+                data.user = user;
+                callback(err, data);
+            })
+        } else {
+            callback(err, data);
+        }
     };
+
+    async.map(team_dataSourceDescriptions, iterateeFn, completionFn);
 
 };
