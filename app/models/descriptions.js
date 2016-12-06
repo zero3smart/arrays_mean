@@ -9,14 +9,15 @@ var async = require('async');
 var mongoose_client = require('./mongoose_client');
 var imported_data_preparation = require('../libs/datasources/imported_data_preparation');
 var import_controller = require('../libs/import/data_ingest/controller');
+var User = require('../models/users');
 
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 //
 var DatasourceDescription_scheme = Schema({
     uid: String, // It is not changeable once it's generated automaticlly when creating a descrpition
-    importRevision: {type: Number,integer: true, default: 1},
-    schema_id: {type: Schema.Types.ObjectId, ref:'DatasourceDescription'},
+    importRevision: {type: Number, integer: true, default: 1},
+    schema_id: {type: Schema.Types.ObjectId, ref: 'DatasourceDescription'},
     banner: String,
     dataset_uid: String, // It is not changeable once it's generated automaticlly when creating a descrpition
     format: String,
@@ -59,7 +60,7 @@ var DatasourceDescription_scheme = Schema({
 
     _team: {type: Schema.Types.ObjectId, ref: 'Team'},
 
-    isPublished : {type: Boolean, default: false},
+    isPublished: {type: Boolean, default: false},
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
 
@@ -72,17 +73,17 @@ var DatasourceDescription_scheme = Schema({
         valueOverrides: Object,
         criteria: {
             fieldName: String,
-            operatorName:String, // "equal"
+            operatorName: String, // "equal"
             value: String // ""
         }
     },
 
-    author: {type: Schema.Types.ObjectId,ref: 'User'},
-    updatedBy: {type: Schema.Types.ObjectId,ref:'User'},
+    author: {type: Schema.Types.ObjectId, ref: 'User'},
+    updatedBy: {type: Schema.Types.ObjectId, ref: 'User'},
     viewers: [{type: Schema.Types.ObjectId, ref: 'User'}],
 
     imported: {type: Boolean, default: false},
-    dirty: {type:Number, integer: true, default: 0}
+    dirty: {type: Number, integer: true, default: 0}
     // 1: Only post cache,
     // 2: Need to Import data without sraping & post cache as well,
     // 4: Full import as well as image scraping
@@ -91,7 +92,7 @@ var DatasourceDescription_scheme = Schema({
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
 DatasourceDescription_scheme.plugin(integerValidator);
 
-DatasourceDescription_scheme.plugin(deepPopulate,{whitelist:['_otherSources','_otherSources._team','schema_id','_team']})
+DatasourceDescription_scheme.plugin(deepPopulate, {whitelist: ['_otherSources', '_otherSources._team', 'schema_id', '_team']})
 
 var datasource_description = mongoose.model('DatasourceDescription', DatasourceDescription_scheme);
 
@@ -107,8 +108,8 @@ var _mergeObject = function (obj1, obj2) {
     return obj3;
 }
 
-var _consolidate_descriptions_hasSchema = function(description) {
-    var desc = _.omit(description,['schema_id'])
+var _consolidate_descriptions_hasSchema = function (description) {
+    var desc = _.omit(description, ['schema_id'])
     var schemaDesc = description.schema_id
     for (var attrname in schemaDesc) {
         if (desc[attrname]) {
@@ -130,7 +131,7 @@ var _consolidate_descriptions_hasSchema = function(description) {
 
 datasource_description.Consolidate_descriptions_hasSchema = _consolidate_descriptions_hasSchema;
 
-var _checkCollection = function(datasource_description,schemaKey,eachCb) {
+var _checkCollection = function (datasource_description, schemaKey, eachCb) {
     if (schemaKey != null) {
         mongoose_client.checkIfDatasetImportedInSchemaCollection('rawrowobjects-' + schemaKey, datasource_description.dataset_uid, function (err, existInRaw) {
 
@@ -229,10 +230,10 @@ var _GetDescriptions = function (fn) {
     mongoose_client.WhenMongoDBConnected(function () {
 
         self.find({
-                fe_visible: true,
-                schema_id: {$exists: false},
-                _team: {$exists: false}
-            }) /*dont get the one in the team, as it is gonna get from team descriptions */
+            fe_visible: true,
+            schema_id: {$exists: false},
+            _team: {$exists: false}
+        }) /*dont get the one in the team, as it is gonna get from team descriptions */
             .lean()
             .exec(function (err, descriptions) {
 
@@ -307,17 +308,17 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
 datasource_description.GetDescriptionsToSetup = _GetDescriptionsToSetupByFilenames;
 
 
-var _findAllDescriptionAndSetup = function(fn) {
+var _findAllDescriptionAndSetup = function (fn) {
 
-    this.find({imported:3})
+    this.find({imported: 3})
         .lean()
         .deepPopulate('schema_id _team')
-        .exec(function(err,descriptions) {
+        .exec(function (err, descriptions) {
 
             /* avoid write operation lock for datasource depend on others */
             var dependentOnSchemaToBeLoaded = {};
-            async.each(descriptions,function(desc,eachCb) {
-                if (typeof desc.schema_id !== 'undefined' ) {
+            async.each(descriptions, function (desc, eachCb) {
+                if (typeof desc.schema_id !== 'undefined') {
 
                     desc = _consolidate_descriptions_hasSchema(desc);
                     keyname = imported_data_preparation.DataSourcePKeyFromDataSourceDescription(desc).toLowerCase();
@@ -326,29 +327,29 @@ var _findAllDescriptionAndSetup = function(fn) {
 
                     eachCb(null);
                 } else {
-                    _checkCollection(desc,null,eachCb);
+                    _checkCollection(desc, null, eachCb);
 
                 }
 
-            },function(err) {
+            }, function (err) {
 
 
                 if (Object.keys(dependentOnSchemaToBeLoaded).length !== 0) {
 
-                    async.forEachOf(dependentOnSchemaToBeLoaded,function(value,key,eachCbForEachOf) {
+                    async.forEachOf(dependentOnSchemaToBeLoaded, function (value, key, eachCbForEachOf) {
 
 
-                        async.eachSeries(value,function(single_desc,eachCb) {
+                        async.eachSeries(value, function (single_desc, eachCb) {
 
-                            _checkCollection(single_desc,key,eachCb);
+                            _checkCollection(single_desc, key, eachCb);
 
-                        },function(err) {
+                        }, function (err) {
 
                             eachCbForEachOf(err);
 
                         })
 
-                    },function(err) {
+                    }, function (err) {
                         fn(err);
                     })
 
@@ -378,5 +379,38 @@ var _GetDescriptionsWith_uid_importRevision = function (uid, revision, fn) {
 };
 
 datasource_description.GetDescriptionsWith_uid_importRevision = _GetDescriptionsWith_uid_importRevision;
+
+function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
+    imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
+        .then(function(datasourceDescription) {
+
+            if (!datasourceDescription.fe_visible || !datasourceDescription.imported) return fn();
+            if (datasourceDescription.isPublished) return fn(null, datasourceDescription);
+
+            if (userId) {
+                User.findById(userId)
+                    .populate('_team')
+                    .exec(function (err, foundUser) {
+                        if (err) return fn(err);
+                        if (foundUser.isSuperAdmin()) {
+                            return fn(null, datasourceDescription);
+                        } else {
+                            if (foundUser._team.datasourceDescriptions.indexOf(datasourceDescription.id) != -1)
+                                return fn(null, datasourceDescription);
+                            else
+                                return fn();
+                        }
+                    });
+            } else {
+                fn();
+            }
+
+        })
+        .catch(function(err) {
+            winston.error("❌  cannot bind Data to the view, error: ", err);
+        });
+}
+
+datasource_description.GetDatasourceByUserAndKey = _GetDatasourceByUserAndKey;
 
 module.exports = datasource_description;
