@@ -131,37 +131,4 @@ team.GetTeamBySubdomain = function (req, fn) {
 
 };
 
-team.findOneBySubdomainAndPopulateDatasourceDescription = function (userId, team_key, fn) {
-
-    var obj = null;
-
-    team.findOne({subdomain: team_key})
-        .deepPopulate('datasourceDescriptions datasourceDescriptions.updatedBy datasourceDescriptions.author', {
-            populate: {
-                'datasourceDescriptions': {
-                    match: {fe_visible: true},
-                    select: 'description uid urls title importRevision updatedBy author brandColor fe_views.default_view fe_filters.default' +
-                    ' banner'
-                },
-                'datasourceDescriptions.updatedBy': {
-                    select: 'firstName lastName'
-                },
-                'datasourceDescriptions.author': {
-                    select: 'firstName lastName'
-                }
-            }
-        })
-
-        .exec(function (err, teamDesc) {
-            if (teamDesc) {
-                obj = {
-                    team: _.omit(teamDesc, 'datasourceDescriptions'),
-                    team_dataSourceDescriptions: teamDesc.datasourceDescriptions
-                };
-            }
-            fn(err, obj);
-        })
-
-};
-
 module.exports = team;
