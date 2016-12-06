@@ -113,7 +113,7 @@ app.use(session({
     cookie: {domain: domain},
     store: new MongoSessionStore({
         url: process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/arraysdb',
-        touchAfter: 240 * 3600 // time period in seconds
+        // touchAfter: 240 * 3600 // time period in seconds
     })
 }));
 
