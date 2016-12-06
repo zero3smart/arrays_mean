@@ -72,24 +72,24 @@ team.GetTeamsAndDatasources = function (userId, fn) {
             .exec(function (err, foundUser) {
                 if (err) return fn(err);
                 if (foundUser.isSuperAdmin()) {
-                    getTeamsAndPopulateDatasetWithQuery({}, {imported: true, fe_listed: true}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({}, {imported: true}, fn);
 
                 } else if (foundUser._team.editors.indexOf(userId) >= 0 || foundUser._team.admin == userId) {
                     var myTeamId = foundUser._team._id;
                     var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
                     var myTeam = {_team: foundUser._team};
-                    getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_listed: true}]}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true}]}, fn);
 
                 } else { //get published and unpublished dataset if currentUser is one of the viewers
                     var myTeamId = foundUser._team._id;
                     var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
                     var myTeam = {_team: foundUser._team, viewers: userId};
-                    getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_listed: true}]}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true}]}, fn);
                 }
             })
 
     } else {
-        getTeamsAndPopulateDatasetWithQuery({}, {isPublished: true, imported: true, fe_listed: true}, fn);
+        getTeamsAndPopulateDatasetWithQuery({}, {isPublished: true, imported: true}, fn);
     }
 
 };

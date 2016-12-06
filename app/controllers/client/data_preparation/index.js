@@ -52,6 +52,9 @@ module.exports.BindData = function (req, callback) {
 
     var iterateeFn = async.ensureAsync(function (teamDescription, cb) {
 
+        if (teamDescription.datasourceDescriptions.length == 0) {
+            return cb(null);
+        }
 
         var err = null;
         var subdomain = teamDescription.subdomain;
@@ -65,10 +68,6 @@ module.exports.BindData = function (req, callback) {
 
         };
 
-        if (teamDescription.datasourceDescriptions.length == 0) {
-            return cb(null);
-        }
-
 
         if (!teamsObj[subdomain]) {
             teamsObj[subdomain] = {};
@@ -78,6 +77,8 @@ module.exports.BindData = function (req, callback) {
 
 
         async.each(teamDescription.datasourceDescriptions, function (dataSourceDescription, innerCallback) {
+
+            if (!dataSourceDescription.fe_listed) return innerCallback(null);
 
             var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription, raw_source_documents);
 
