@@ -49,8 +49,8 @@ module.exports.signedUrlForPutObject = _signedUrlForPutObject;
 function _getAllIconsForTeam(teamSubdomain,callback) {
     s3.listObjects({
         Bucket: bucket,
-        Prefix: teamSubdomain + '/assets/icons/',
-        Marker: teamSubdomain + '/assets/icons/'
+        Prefix: teamSubdomain + '/assets/icon/',
+        Marker: teamSubdomain + '/assets/icon/'
     },function(err,data) {
         if (err) { callback (err);} 
         else {

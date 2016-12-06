@@ -1,6 +1,8 @@
 var Team = require('../../models/teams');
 var User = require('../../models/users')
-var ImageHosting = require('../../libs/utils/aws-image-hosting');
+var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
+var _ = require('lodash')
+
 
 module.exports.search = function(req,res) {
 	Team.find(req.query,function(err,foundTeams) {
@@ -13,6 +15,51 @@ module.exports.search = function(req,res) {
 	})
 }
 
+module.exports.update = function(req,res) {
+	Team.findByIdAndUpdate(req.params.id)
+	.exec(function(err,team) {
+		if (err) {
+			return res.status(500).send(err);
+		} else if (!team) {
+			return res.status(401).send("Team not found.");
+		} else {
+			for (var attr in req.body) {
+				team[attr] = req.body[attr];
+			}
+			team.save(function(err) {
+				if (!err) {
+					return res.status(200).send("ok");
+				} else {
+					return res.status(500).send(err);
+				}
+			})
+		}
+	})
+}
+
+
+module.exports.signedUrlForAssetsUpload = function(req,res) {
+
+    Team.findById(req.params.id)
+        .exec(function(err,team) {
+        	var key;
+        	if (req.query.assetType == 'logo' || req.query.assetType == 'logo_header') {
+        		key = team.subdomain + '/assets/logo/' + req.query.fileName
+        	} else if (req.query.assetType == 'icon') {
+        		key = team.subdomain + '/assets/icon/' + req.query.fileName
+        	}
+        	s3ImageHosting.signedUrlForPutObject(key,req.query.fileType,function(err,data) {
+        		if (err) {
+                    return res.status(500).send(err);
+                } else {
+                    return res.json({putUrl: data.putSignedUrl, publicUrl: data.publicUrl});
+                }
+        	})
+
+        })
+
+}
+
 
 module.exports.loadIcons = function(req,res) {
 	if (req.user) {
@@ -22,7 +69,7 @@ module.exports.loadIcons = function(req,res) {
 			if (err) {
 				res.status(500).send({error:err.message});
 			} else {
-				ImageHosting.getAllIconsForTeam(user._team.subdomain,function(err,data) {
+				s3ImageHosting.getAllIconsForTeam(user._team.subdomain,function(err,data) {
 					if (err) {
 						res.status(500).send({error:err.message})
 					} else {

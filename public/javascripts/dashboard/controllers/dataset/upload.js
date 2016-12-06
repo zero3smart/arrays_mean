@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'sources', 'FileUploader', '$mdToast', '$state','AuthService','DatasetService',
-        function($scope, dataset, sources, FileUploader, $mdToast, $state,AuthService,DatasetService) {
+    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'sources', 'FileUploader', '$mdToast', '$state','AuthService','DatasetService','AssetService',
+        function($scope, dataset, sources, FileUploader, $mdToast, $state,AuthService,DatasetService,AssetService) {
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Upload';
@@ -38,7 +38,6 @@ angular.module('arraysApp')
 
             $scope.imageUploader.onCompleteItem = function(fileItem,response,status,header) {
                 if (status == 200) {
-                    // console.log(dataset);
                     var reload = false;
                     if (dataset.banner) {
                         reload = true;
@@ -63,10 +62,11 @@ angular.module('arraysApp')
             }
 
             $scope.imageUploader.onAfterAddingFile = function(fileItem) {
+                console.log(fileItem);
                 if ($scope.imageUploader.queue.length > 0) {
                     $scope.imageUploader.queue[0] = fileItem;
                 }
-                DatasetService.getAssetUploadSignedUrl($scope.dataset._id,fileItem.file.type)
+                AssetService.getPutUrlForDatasetAssets($scope.dataset._id,fileItem.file.type,fileItem.file.name)
                 .then(function(urlInfo) {
                     fileItem.url = urlInfo.putUrl;
                     fileItem.publicUrl = urlInfo.publicUrl;

@@ -16,7 +16,6 @@ module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromData
 
 
 var _dataSourceDescriptionWithPKey = function (source_pKey) {
-
     var split = source_pKey.split("-");
     var uid = split[0];
     var revision = split[1].substring(1);

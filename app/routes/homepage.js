@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 var winston = require('winston');
-var url = require('url');
 var teams = require('../models/teams');
 var team_show_controller = require('../controllers/client/data_preparation/team/show');
 

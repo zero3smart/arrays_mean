@@ -43,3 +43,12 @@ app.filter('viewToName',function() {
     }
 })
 
+
+app.filter('omit',function() {
+    return function(input,keyName) {
+        var copy = angular.copy(input);
+        delete copy[keyName];
+        return copy;
+    }
+})
+

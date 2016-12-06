@@ -4,12 +4,19 @@
 .dashboard-content {
     padding-top: var(--navbar-height-tablet);
 }
-
+.formInput{
+    padding-top:20px;
+}
 @media (max-width: 767px) {
     .dashboard-content {
         padding-top: var(--navbar-height-mobile);
     }
 }
+
+.table > thead > tr > th, .table > thead > tr > td, .table > tbody > tr > th, .table > tbody > tr > td, .table > tfoot > tr > th, .table > tfoot > tr > td {
+    vertical-align: inherit;
+}
+
 
 .dashboard-content .array-content {
     padding: 15px;
