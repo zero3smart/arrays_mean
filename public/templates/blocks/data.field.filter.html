@@ -34,7 +34,7 @@
         </md-checkbox>
     </md-input-container>
 
-    <fieldset class="standard" ng-if="!isCustom && !nested">
+    <fieldset class="standard" ng-if="!isCustom">
         <legend>One To One Override Values By Title</legend>
         <div layout="row"
              ng-repeat="valueByOverride in dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName]">
@@ -69,14 +69,14 @@
         </md-button>
     </fieldset>
 
-    <fieldset class="standard" ng-if="!isCustom && !nested">
+    <fieldset class="standard" ng-if="!isCustom">
         <legend>Values to Exclude by Original Key</legend>
         <md-input-container class="md-block md-padding">
             <label>All</label>
             <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey._all"
                       name="valuesToExcludeAll"
                       md-enable-chip-edit="true"
-                      placeholder="Enter a Value" secondary-placeholder="+Value">
+                      placeholder="Enter a Value" secondary-placeholder="+Value" ng-trim="false">
                 <md-chip-template>
                     {{$chip}}
                     <em>(All)</em>
@@ -89,7 +89,8 @@
             <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey[fieldName]"
                       name="valuesToExcludeSelf"
                       md-enable-chip-edit="true"
-                      placeholder="Enter a Value" secondary-placeholder="+Value">
+                      placeholder="Enter a Value" secondary-placeholder="+Value"
+                      ng-trim="false">
                 <md-chip-template>
                     {{$chip}}
                     <em>({{fieldName}})</em>
@@ -98,7 +99,7 @@
         </md-input-container>
     </fieldset>
 
-    <md-input-container class="md-block" flex-gt-sm ng-if="!isCustom && !nested">
+    <md-input-container class="md-block" flex-gt-sm ng-if="!isCustom">
         <label>Keywords</label>
         <md-chips ng-model="data.keywords.choices" name="keywords"
                   md-enable-chip-edit="true"
