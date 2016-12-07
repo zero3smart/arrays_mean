@@ -20,12 +20,7 @@ var userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    _team: {type: Schema.Types.ObjectId, ref: 'Team'},
-    role: {
-        type: String,
-        enum: ['Admin', 'Editor', 'Viewer'],
-        default : 'Admin'
-    }
+    _team: {type: Schema.Types.ObjectId, ref: 'Team'}
 }, {timestamps:true});
 
 userSchema.plugin(findOrCreate);
