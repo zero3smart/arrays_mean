@@ -126,19 +126,15 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                     return;
                 }
 
-                if (dataSourceDescription.raw_rowObjects_coercionScheme[key] && 
-                    dataSourceDescription.raw_rowObjects_coercionScheme[key].operation !== 'ToInteger' && 
-                    dataSourceDescription.raw_rowObjects_coercionScheme[key].operation !== 'ToFloat') {
-                     valuesRaw = results.map(function (el) {
-                        return el._id.toString().trim(); //will throw error if this is not string type.
-                    });
-                } else {
-                     valuesRaw = results.map(function (el) {
-                        return el._id;
-                    });
-                }
-                
-               
+
+                valuesRaw = results.map(function (el) {
+                    var value = el._id;
+                    if (typeof value === 'string')
+                        return value.trim();
+                    else
+                        return value;
+                });
+
 
                 // flatten array of arrays (for nested tables)
                 var values = [].concat.apply([], valuesRaw).filter(function (elem, index, self) {

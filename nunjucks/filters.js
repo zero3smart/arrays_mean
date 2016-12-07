@@ -292,4 +292,19 @@ module.exports = function (nunjucks_env) {
     nunjucks_env.addFilter('fieldDataType_coercion_toString', function(field) {
         return datatypes.fieldDataType_coercion_toString(field);
     });
+
+    nunjucks_env.addFilter('siteBaseURL', function(env) {
+        var baseURL = env.USE_SSL === 'true' ? 'https://' : 'http://';
+        baseURL += env.HOST ? env.HOST : 'localhost:9080';
+        return baseURL;
+    });
+
+    nunjucks_env.addFilter('addSubdomain', function(siteBaseUrl, strSubdomain) {
+        if (!siteBaseUrl) return '/team/' + strSubdomain;
+
+        var result = url.parse(siteBaseUrl);
+        var urlParts = result.host.replace('www.', '');
+        urlParts = [strSubdomain].concat(urlParts);
+        return result.protocol + '//' + urlParts.join('.');
+    });
 };

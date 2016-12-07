@@ -8,6 +8,7 @@ var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+var User = require('../../../models/users');
 
 /**
  * @param {Object} urlQuery - URL params
@@ -210,6 +211,19 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
                     done();
                 });
+            });
+
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
             });
 
             // Obtain Grouped ResultSet

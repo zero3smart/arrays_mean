@@ -9,6 +9,7 @@ var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+var User = require('../../../models/users');
 //
 module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
@@ -366,6 +367,19 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
 
 
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            });
+
             batch.end(function (err) {
                 if (err) return callback(err);
 
@@ -374,7 +388,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 {
                     env: process.env,
 
-                    user: req.user,
+                    user: user,
 
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,

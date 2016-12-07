@@ -63,10 +63,8 @@ var _mountRoutes_errorHandling = function (app) {
 var _mountRoutes_endPoints = function (app) {
     // View endpoints
     app.use('/', require('./homepage'));
-    // app.use('/', require('./views'));
     app.use('/array', require('./array'));
     app.use('/array', require('./views'));
-    app.use('/team', require('./team'));
     app.use('/s', require('./shared_pages'));
     var apiVersion = 'v1';
     app.use('/' + apiVersion, require('./jsonAPI_share'));

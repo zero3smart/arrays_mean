@@ -97,15 +97,23 @@ app.set('trust proxy', true);
 app.use(cookieParser());
 app.use(cors());
 
+var domain = 'localhost';
+if (process.env.HOST) {
+    var urlParts = process.env.HOST.split('.');
+    urlParts.splice(0, urlParts.length-2);
+    // Remove port
+    urlParts[urlParts.length-1] = urlParts[urlParts.length-1].split(':')[0];
+    domain = '.' + urlParts.join('.');
+}
 // Mongo Store to prevent a warnning.
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
-    cookie: {maxAge: 100 * 60 * 60},
+    cookie: {domain: domain},
     store: new MongoSessionStore({
         url: process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/arraysdb',
-        touchAfter: 24 * 3600 // time period in seconds
+        // touchAfter: 240 * 3600 // time period in seconds
     })
 }));
 

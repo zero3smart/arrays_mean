@@ -65,9 +65,8 @@ $(document).ready(function () {
     $('.js-panel-team').on('click', function (e) {
         e.preventDefault();
         var $parent = $(this).parent();
-        var sourceKey = $parent.find("[name='team_key']").val();
-        var href = '/team/' + sourceKey;
-        window.location.href = href;
+        var subdomain = $parent.find("[name='subdomain']").val();
+        window.location.href = subdomain;
     });
 
     /**

@@ -20,8 +20,13 @@ var userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    _team: {type: Schema.Types.ObjectId, ref: 'Team'}
-},{timestamps:true});
+    _team: {type: Schema.Types.ObjectId, ref: 'Team'},
+    role: {
+        type: String,
+        enum: ['Admin', 'Editor', 'Viewer'],
+        default : 'Admin'
+    }
+}, {timestamps:true});
 
 userSchema.plugin(findOrCreate);
 
@@ -52,7 +57,6 @@ userSchema.methods.isSuperAdmin = function() {
 //         exp: parseInt(expiry.getTime() / 1000),
 //     }, "MY_SECRET"); // DO NOT KEEP YOUR SECRET IN THE CODE!
 // };
-
 
 
 
