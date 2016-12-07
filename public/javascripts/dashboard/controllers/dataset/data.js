@@ -306,10 +306,10 @@ angular.module('arraysApp')
                     }
                 })
                     .then(function (savedDataset) {
-
-        
-
                         $scope.$parent.$parent.dataset = savedDataset;
+                        $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
+                        sortColumnsByDisplayOrder();
+
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
                         console.log('You cancelled the nested dialog.');
