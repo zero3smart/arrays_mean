@@ -22,7 +22,7 @@ angular.module('arraysApp')
                 }
             };
 
-            $scope.openFieldDialog = function (evt, fieldName, firstRecord, customFieldIndex) {
+            $scope.openFieldDialog = function (evt, fieldName, firstRecord, customFieldIndex, nested) {
 
                 $mdDialog.show({
                     controller: FieldDialogController,
@@ -38,7 +38,8 @@ angular.module('arraysApp')
                         dataset: $scope.$parent.$parent.dataset,
                         availableTypeCoercions: availableTypeCoercions,
                         availableDesignatedFields: availableDesignatedFields,
-                        customFieldIndex: customFieldIndex
+                        customFieldIndex: customFieldIndex,
+                        nested: nested
                     }
                 })
                     .then(function (savedDataset) {
@@ -52,12 +53,13 @@ angular.module('arraysApp')
                     });
             };
 
-            function FieldDialogController($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields, customFieldIndex) {
+            function FieldDialogController($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields, customFieldIndex, nested) {
 
                 $scope.firstRecord = firstRecord;
                 $scope.availableTypeCoercions = availableTypeCoercions;
                 $scope.availableDesignatedFields = availableDesignatedFields;
                 $scope.isCustom = customFieldIndex != undefined;
+                $scope.nested = nested;
 
                 function refreshFieldByName(name) {
                     // General
@@ -108,7 +110,7 @@ angular.module('arraysApp')
                     $scope.dataset = angular.copy(dataset);
                     $scope.fieldName = fieldName;
 
-                    if ($scope.isCustom) {
+                    if ($scope.isCustom && !$scope.nested) {
                         if (!dataset.customFieldsToProcess)
                             $scope.dataset.customFieldsToProcess = [];
                         $scope.customField = $scope.dataset.customFieldsToProcess[customFieldIndex];
@@ -282,7 +284,7 @@ angular.module('arraysApp')
                     });
                     if ($scope.data.keywords.choices.length > 0) $scope.dataset.fe_filters.keywords = $scope.dataset.fe_filters.keywords.concat($scope.data.keywords);
 
-                    if ($scope.isCustom) {
+                    if ($scope.isCustom && !$scope.nested) {
                         $scope.dataset.customFieldsToProcess.splice(customFieldIndex, 1, $scope.customField);
                     }
 
@@ -668,6 +670,14 @@ angular.module('arraysApp')
                             sample: null,
                             customField: customField,
                             customFieldIndex: index
+                        };
+                    })
+                ).concat(
+                    $scope.$parent.$parent.dataset.fe_nestedObject.fields.map(function(field, index) {
+                        return {
+                            name: $scope.$parent.$parent.dataset.fe_nestedObject.prefix + field,
+                            sample: null,
+                            nested: true
                         };
                     })
                 );

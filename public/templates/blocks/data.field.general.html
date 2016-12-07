@@ -9,13 +9,13 @@
         </div>
     </md-input-container>
 
-    <md-input-container class="md-block" ng-if="!isCustom">
+    <md-input-container class="md-block" ng-if="!isCustom && !nested">
         <label>First Record</label>
         <input type="text" value="{{ firstRecord | limitTo: 200 }}{{firstRecord.length > 200 ? '...' : ''}}"
                readonly="readonly">
     </md-input-container>
 
-    <md-input-container class="md-block" ng-if="isCustom">
+    <md-input-container class="md-block" ng-if="isCustom && !nested">
         <label>Fields To Merge</label>
         <md-select required name="fields" ng-model="customField.fieldsToMergeIntoArray" multiple
                    aria-label="fieldToMerge">
@@ -31,7 +31,7 @@
         </div>
     </md-input-container>
 
-    <md-input-container class="md-block" ng-if="isCustom">
+    <md-input-container class="md-block" ng-if="isCustom && !nested">
         <label>Delimiter</label>
         <md-chips ng-model="customField.delimiterOnFields"
                   name="delimiters"
@@ -42,7 +42,7 @@
 
     <md-input-container class="md-block" flex-gt-sm>
         <label>Data Type</label>
-        <md-select ng-if="!isCustom"
+        <md-select ng-if="!isCustom && !nested"
                    name="dataType"
                    ng-model="coercionScheme[fieldName]"
                    ng-model-options="{trackBy: '$value | typeCoercionToString'}"
@@ -53,10 +53,11 @@
             </md-option>
         </md-select>
         <input type="text" value="Array" readonly="readonly" ng-if="isCustom">
+        <input type="text" value="Nested" readonly="readonly" ng-if="nested">
         <div class="md-errors-spacer"></div>
     </md-input-container>
 
-    <md-input-container ng-if="!isCustom"
+    <md-input-container ng-if="!isCustom && !nested"
                         class="md-block" flex-gt-sm
                         ng-show="(dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
         <label>Format</label>
@@ -65,6 +66,7 @@
     </md-input-container>
 
     <md-input-container class="md-block" flex-gt-sm
+                        ng-if="!isCustom && !nested"
                         ng-show="(dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
         <label>Output Format</label>
         <input type="text" name="dataType_outputFormat"
