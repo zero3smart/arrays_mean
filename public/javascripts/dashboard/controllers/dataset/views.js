@@ -10,12 +10,16 @@ angular.module('arraysApp')
                  $scope.$parent.$parent.dataset.fe_views.views = {};
             }
 
-            var colsAvailable = dataset.columns.filter(function(column) {
-                return !$scope.dataset.fe_excludeFields[column.name];
-            }).map(function(column) {
+            var colsAvailable = dataset.columns.map(function(column) {
                 return column.name;
             }).concat(dataset.customFieldsToProcess.map(function(customField) {
                 return customField.fieldName;
+            })).concat(dataset.fe_nestedObject.fields.map(function(fieldName) {
+                if (dataset.fe_nestedObject.prefix)
+                    return dataset.fe_nestedObject.prefix + fieldName;
+                return fieldName;
+            }).filter(function(fieldName){
+                return !$scope.dataset.fe_excludeFields[fieldName];
             }));
 
             $scope.openViewDialog = function (evt, id) {
@@ -89,11 +93,7 @@ angular.module('arraysApp')
                             );
                         });
                 }
-            }
-
-
-
-
+            };
 
 
             function ViewDialogController($scope, $mdDialog, $filter, viewName,viewDisplayName,dataset,viewSetting,colsAvailable,AssetService,
