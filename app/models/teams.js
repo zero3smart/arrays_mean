@@ -118,10 +118,16 @@ team.GetTeamBySubdomain = function (req, fn) {
                     getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {imported: true, fe_visible: true}, fn);
 
                 } else if (foundUser._team.editors.indexOf(userId) >= 0 || foundUser._team.admin == userId) {
-                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {imported: true, fe_visible: true}, fn);
+                    var myTeamId = foundUser._team._id;
+                    var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
+                    var myTeam = {_team: foundUser._team};
+                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_visible: true}]}, fn);
 
                 } else { //get published and unpublished dataset if currentUser is one of the viewers
-                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {$and: [{viewers: userId}, {imported: true, fe_visible: true}]}, fn);
+                    var myTeamId = foundUser._team._id;
+                    var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
+                    var myTeam = {_team: foundUser._team, viewers: userId};
+                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_visible: true}]}, fn);
                 }
             })
 
