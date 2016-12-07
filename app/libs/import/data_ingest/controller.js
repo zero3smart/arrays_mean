@@ -312,8 +312,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
         var bulkOperationQueryFragment;
 
-        if (typeof eachCtx.nested !== 'undefined' && eachCtx.nested == true &&
-            ((Array.isArray(eachCtx) && eachCtx.length != 0) || (!Array.isArray(eachCtx) && eachCtx.fields.length))) {
+        if (typeof eachCtx.nested !== 'undefined' && eachCtx.nested == true) {
 
             if (!ifHasAndMeetCriteria(eachCtx, rowDoc)) {
                 var updateFragment = {$pushAll: {}};

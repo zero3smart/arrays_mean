@@ -627,6 +627,8 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
 
 
                 if (existsInIllegalValueList == -1) {
+                    console.log(columnName);
+                    console.log(rowValue)
                     if (revertType) {
                         row.push(datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
                     }
@@ -656,20 +658,38 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
 
             } else {
 
-                row.sort(function(a, b) {
-                    var A = a.toUpperCase();
-                    var B = b.toUpperCase();
+                if ( (raw_rowObjects_coercionSchema[columnName] &&
+                    raw_rowObjects_coercionSchema[columnName].operation !== 'ToFloat' && 
+                    raw_rowObjects_coercionSchema[columnName].operation !== 'ToInteger') || 
+                    !raw_rowObjects_coercionSchema[columnName]) {
 
-                    if (A < B) {
-                        return -1;
-                    }
-                    if (A > B) {
-                        return 1;
-                    }
+                    row.sort(function(a, b) {
+                        if (a !== null && b !== null) {
+                            var A = a.toString().toUpperCase();
+                            var B = b.toString().toUpperCase();
 
-                    // names must be equal
-                    return 0;
-                });
+                            if (A < B) {
+                                return -1;
+                            }
+                            if (A > B) {
+                                return 1;
+                            }
+
+                        }
+                       
+
+                        // names must be equal
+                        return 0;
+                    });
+                } else {
+                    row.sort(function(a,b) {
+                        return a - b;
+                    })
+
+
+                }
+
+              
 
             }
 

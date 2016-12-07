@@ -304,6 +304,9 @@ angular.module('arraysApp')
                     }
                 })
                     .then(function (savedDataset) {
+
+        
+
                         $scope.$parent.$parent.dataset = savedDataset;
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
@@ -326,6 +329,7 @@ angular.module('arraysApp')
                     }
 
                     if (!$scope.dataset.fe_nestedObject.fields) $scope.dataset.fe_nestedObject.fields = [];
+                    $scope.data.fields = $scope.dataset.fe_nestedObject.fields;
 
                     if (!$scope.dataset.fe_nestedObject.fieldOverrides) $scope.dataset.fe_nestedObject.fieldOverrides = {};
                     $scope.data.fieldOverrides = [];
@@ -382,12 +386,15 @@ angular.module('arraysApp')
                 };
 
                 $scope.save = function () {
+
                     $scope.dataset.fe_nestedObject.fieldOverrides = {};
                     $scope.data.fieldOverrides.map(function (elem) {
                         $scope.dataset.fe_nestedObject.fieldOverrides[elem.field] = elem.override;
                     });
 
+
                     $scope.dataset.fe_nestedObject.valueOverrides = {};
+                    $scope.dataset.fe_nestedObject.fields = $scope.data.fields;
                     $scope.data.valueOverrides.map(function (elem) {
                         var valueOverrides = {};
                         elem.valueOverrides.map(function (el) {
