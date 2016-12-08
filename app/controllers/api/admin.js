@@ -20,14 +20,13 @@ module.exports.invite = function(req,res) {
             }
             var invitedUser;
             if (!req.body._id) {
+
                 var new_user = {
                     email: req.body.email,
-                    _team: foundUser._team._id
+                    _team: foundUser._team._id,
+                    provider: 'local'
                 }
-                // console.log(foundUser._team);
-                // console.log(new_user);
-
-                User.create(req.body,function(err,createdUser) {
+                User.create(new_user,function(err,createdUser) {
                     if (err) {
                         console.log(err);
                         res.status(500).send(err);
@@ -64,54 +63,4 @@ module.exports.invite = function(req,res) {
         }
     })
 }
-
-
-// function(admin,invite,role,datasets,cb)
-
-// function assignRoleToDatasets(req,callback) {
-//     asyn.each(req.body.roleMappings,function(map,eachCb) {
-//         var pushQuery = {$push: {}};
-//         if (map.roleMappings.role == 'editors') {
-//             pushQuery.$push["editors"] = req.body._id;
-//         } else if (map.roleMappings.role == 'viewer') {
-//             pushQuery.$push["viewers"] = req.body._id;
-//         }
-//         datasource_description.update({_id: {$in: map.datasets}},pushQuery,function(err) {
-//             eachCb(err);
-//         })
-
-//     },function(err) {
-//         callback(err);
-//     })
-// }
-
-  // if (req.body._id) {
-            //     assignRoleToDatasets(req,function(err) {
-            //         if (err) {
-            //             res.status(500).send(err);
-            //         } else {
-
-            //         }
-            //     })
-            // } else {
-            //     var new_user = {
-            //         email: req.body.email,
-            //         _team: foundUser._team._id
-            //     }
-
-            //     User.create(req.body,function(err,createdUser) {
-            //         if (err) {
-            //             res.status(500).send(err);
-            //         } else {
-            //             req.body._id = createdUser._id;
-            //             assignRoleToDatasets(req,function(err) {
-            //                 if (err) {
-            //                     res.status(500).send(err);
-            //                 } else {
-
-            //                 }
-            //             })
-            //         }
-            //     })
-            // }          
 

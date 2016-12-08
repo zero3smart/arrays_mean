@@ -71,14 +71,18 @@
 			require: 'ngModel',
 			link: function(scope,elem,attr,model) {
 
-				model.$asyncValidators.subdomainAvailable = function(modelValue,viewValue) {
+			
 
+				model.$asyncValidators.subdomainAvailable = function(modelValue,viewValue) {
+					
 					var value = modelValue|| viewValue;
 					var params = {subdomain: value};
 					var deferred = $q.defer();
 
-
-					Team.search(params)
+					if (scope.invitedUser) {
+						deferred.resolve(true);
+					} else {
+						Team.search(params)
 						.$promise.then(function(data) {
 							if (data.length == 0) {
 								deferred.resolve(true);
@@ -89,6 +93,8 @@
 						},function() {
 							deferred.reject(false);
 						})
+
+					}
 					return deferred.promise;
 				}
 

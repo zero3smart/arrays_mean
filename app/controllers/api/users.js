@@ -2,7 +2,8 @@ var User = require('../../models/users');
 var Team = require('../../models/teams');
 var mailer = require('../../libs/utils/nodemailer');
 var jwt = require('jsonwebtoken');
-
+var Batch = require('batch');
+var datasource_descriptions = require('../../models/descriptions');
 module.exports.index = function (req, next) {
     var self = this;
 
@@ -43,16 +44,51 @@ module.exports.get = function(req,res) {
 			.populate('_team')
 			.exec(function(err,user) {
 				var token = jwt.sign({_id:user._id},process.env.SESSION_SECRET);
-	            var userInfo = {
-	                _id: user._id,
-	                provider: user.provider,
-	                email: user.email,
-	                _team: user._team,
-	                firstName: user.firstName,
-	                lastName: user.lastName,
-	                authToken: token
-	            }
-	            return res.json(userInfo);
+				var role;
+
+
+				var batch = new Batch();
+
+				batch.concurrency(1);
+				batch.push(function(done) {
+					if (user.isSuperAdmin()) {
+						role = 'superAdmin';
+						done();
+					} else if (user._team.admin == userId) {
+						role = 'admin';
+						done();
+					} else {
+						datasource_descriptions.find({editors:userId},function(err,desc) {
+							if (err) {
+								done(err);
+							} else if (!desc || desc.length == 0) {
+								role = "viewer";
+
+							} else {
+								role = "editor";
+							}
+							done();
+						})
+					}
+				})
+				
+				batch.end(function(err) {
+					if(err) {
+						res.status(500).send(err);
+					} else {
+						var userInfo = {
+							_id: user._id,
+			                provider: user.provider,
+			                email: user.email,
+			                _team: user._team,
+			                firstName: user.firstName,
+			                lastName: user.lastName,
+			                authToken: token,
+			                role: role
+						}
+						return res.json(userInfo);
+					}
+				})
 			})
 		}
 

@@ -47,7 +47,7 @@ module.exports.sendInvitationEmail = function(admin,invite,role,datasets,cb) {
 		_id: invite._id,
 		email: invite.email,
 		role: role,
-		dataset: datasets,
+		datasets: datasets,
 		admin: admin._id
 	},jwtSecret,{expiresIn:'2h'});
 

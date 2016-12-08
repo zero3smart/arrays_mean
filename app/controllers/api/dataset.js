@@ -43,11 +43,12 @@ module.exports.getAll = function (req, res) {
         }
         if (foundUser.isSuperAdmin()) { //grab everything
             getAllDatasetsWithQuery(subquery,res);
-        } else if (foundUser._team.editors.indexOf(userId) >= 0 || foundUser._team.admin == userId) { //admin or editor
+        } else if (foundUser._team.admin == userId) { //admin or editor
             subquery = {_team: foundUser._team._id};
             getAllDatasetsWithQuery(subquery,res);
-        } else {
-            res.json({datasets:[]});
+        } else { 
+           subquery = {_team: foundUser._team._id, editors: foundUser};
+           getAllDatasetsWithQuery(subquery,res);
         }
     })
 };

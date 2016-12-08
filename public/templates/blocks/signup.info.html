@@ -87,7 +87,7 @@
 			<label>Team Title</label><small class="pull-right">You can change this later</small>
 	  		<div class="input-group">
 			  <span class="input-group-addon"><i class="fa fa-group"></i></span>
-			  <input ng-model='user._team.title' ng-model-options="{updateOn:'blur'}" type="text" class="form-control">
+			  <input ng-model='user._team.title' ng-disabled="invitedUser" ng-model-options="{updateOn:'blur'}" type="text" class="form-control">
 			</div>
 		</div>
 		<subdomain-suggestion team-title='user._team.title' subdomain='user._team.subdomain'></subdomain-suggestion>
@@ -98,7 +98,7 @@
 	  		<div class="input-group">
 	  			
 				  <span class="input-group-addon"><i class="fa fa-mouse-pointer"></i></span>
-				  <input name="subdomain" ng-model-options="{updateOn:'blur'}"  ng-model="user._team.subdomain" unique-subdomain
+				  <input ng-disabled="invitedUser" name="subdomain" ng-model-options="{updateOn:'blur'}"  ng-model="user._team.subdomain" unique-subdomain
 				  type="text" class="form-control" ng-pattern="/^[a-z0-9]*$/" required>
 				  <span class="input-group-addon">.arrays.co</span>
 			</div>
@@ -110,6 +110,7 @@
 			</div>
 		</div>
 
+{{infoForm}}
 		<div>
 			<button type="submit" class="btn btn-success pull-right"
 			ng-disabled="infoForm.$invalid">Register</button>
