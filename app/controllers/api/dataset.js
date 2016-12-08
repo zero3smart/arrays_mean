@@ -2,7 +2,7 @@ var winston = require('winston');
 var datasource_description = require('../../models/descriptions');
 var raw_source_documents = require('../../models/raw_source_documents');
 var mongoose_client = require('../../models/mongoose_client');
-var team = require('../../models/teams');
+var Team = require('../../models/teams');
 var User = require('../../models/users');
 var _ = require('lodash');
 var Batch = require('batch');
@@ -33,22 +33,32 @@ function getAllDatasetsWithQuery (query,res) {
 }
 
 module.exports.getAll = function (req, res) {
+    var team = req.params.teamId;
 
-    var userId = req.user; 
-    User.findById(userId).populate('_team').exec(function(err,foundUser) {
-        if (err) {return res.json({error:err.message})};
-        var subquery = {};
-        if (!foundUser) {
-            return res.status(401).send('unauthorized');
+    Team.findById(team).exec(function(err,foundTeam) {
+        if (err) {
+            return res.json({error: err.message});
         }
-        if (foundUser.isSuperAdmin()) { //grab everything
-            getAllDatasetsWithQuery(subquery,res);
-        } else if (foundUser._team.admin == userId) { //admin or editor
-            subquery = {_team: foundUser._team._id};
-            getAllDatasetsWithQuery(subquery,res);
-        } else { 
-           subquery = {_team: foundUser._team._id, editors: foundUser};
-           getAllDatasetsWithQuery(subquery,res);
+        var subquery = {};
+        if (!foundTeam) {
+            return res.status(404).send('Team not found.');
+        } else {
+           User.findById(req.user)
+           .exec(function(err,foundUser) {
+                if (err) {
+                    return res.json({error: err.message});
+                } else if (!foundUser) {
+                    res.status(404).send("User not found");
+                } else {
+                    if (foundTeam.admin == foundUser._id || foundUser.isSuperAdmin()) {
+                        subquery = {_team: team};
+                        getAllDatasetsWithQuery(subquery,res);
+                    } else {
+                        subquery = {_team: team, editors: foundUser._id}
+                        getAllDatasetsWithQuery(subquery,res);
+                    }
+                }
+           })
         }
     })
 };
@@ -281,7 +291,7 @@ module.exports.update = function (req, res) {
                 return res.json({error: err.message});
             } else {
 
-                team.findById(req.body._team,function(err,team) {
+                Team.findById(req.body._team,function(err,team) {
                     if (err) {
                         return res.json({error:err.message});
                     } else {

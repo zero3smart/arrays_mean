@@ -30,6 +30,7 @@
                     if (userData) {
                         isLoggedIn = true;
                         $window.sessionStorage.setItem('user',JSON.stringify(userData));
+                        $window.sessionStorage.setItem('team',JSON.stringify(userData._team));
                         deferred.resolve();
                     } else {
                         deferred.reject();
@@ -53,6 +54,24 @@
             }
         };
 
+        var currentTeam = function() {
+            if ($window.sessionStorage.team) {
+                return JSON.parse($window.sessionStorage.team);
+            } else {
+                return null;
+            }
+        }
+
+        var switchTeam = function(teamInfo) {
+            var user = currentUser();
+
+            if (user.role  == 'superAdmin') {
+                $window.sessionStorage.setItem('team',JSON.stringify(teamInfo));
+            }
+
+        }
+
+
 
 
         var logout = function() {
@@ -63,6 +82,7 @@
                 if (response.status == 200) {
                     isLoggedIn = false;
                     $window.sessionStorage.removeItem('user');
+                    $window.sessionStorage.removeItem('team');
                     $window.location.href = '/';
 
                 }
@@ -116,10 +136,12 @@
 
         return {
             currentUser : currentUser,
+            currentTeam: currentTeam,
             isLoggedIn : isLoggedIn,
             ensureLogIn : ensureLogin,
             // updateProfile: updateProfile,
             inviteUser: inviteUser,
+            switchTeam: switchTeam,
             logout: logout,
             getToken : getToken
         };

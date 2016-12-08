@@ -4,6 +4,7 @@ angular
         function ($scope, $state, AuthService, $window) {
 
             $scope.user = AuthService.currentUser();
+            $scope.team = AuthService.currentTeam();
 
 
             if (!isSmartDevice($window)) {

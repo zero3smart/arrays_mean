@@ -1,6 +1,7 @@
 angular.module('arraysApp')
     .controller('WebsiteCtrl', ['$scope', 'AuthService', 'FileUploader','AssetService','Team','$mdToast',
         function($scope, AuthService,FileUploader,AssetService,Team,$mdToast) {
+            // $scope.team = AuthService.currentTeam();
 
 
             $scope.progressMode = "determinate";
@@ -26,7 +27,7 @@ angular.module('arraysApp')
 
             $scope.getUploadUrl = function(index,fileItem) {
                 if (!fileItem.uploadUrls[fileItem.assetType]) {
-                    AssetService.getPutUrlForTeamAssets($scope.user._team._id,fileItem.file.type,fileItem.assetType,fileItem.file.name)
+                    AssetService.getPutUrlForTeamAssets($scope.team._id,fileItem.file.type,fileItem.assetType,fileItem.file.name)
                         .then(function(urlInfo) {
                             fileItem.uploadUrls[fileItem.assetType] = {url:urlInfo.putUrl,publicUrl: urlInfo.publicUrl};
                         })
@@ -45,7 +46,7 @@ angular.module('arraysApp')
                 if (status == 200) {
                     var asset = fileItem.assetType;
                 
-                    $scope.user._team[asset] = fileItem.uploadUrls[asset].publicUrl + '?' + new Date().getTime();
+                    $scope.team[asset] = fileItem.uploadUrls[asset].publicUrl + '?' + new Date().getTime();
 
                     if ($scope.vm.websiteForm.$pristine) {
                         $scope.vm.websiteForm.$setDirty();
@@ -64,7 +65,7 @@ angular.module('arraysApp')
             $scope.submitForm = function(isValid) {
                 // console.log($scope.user._team);
                 if (isValid) {
-                    Team.update({id:$scope.user._team._id},$scope.user._team)
+                    Team.update({id:$scope.team._id},$scope.team)
                     .$promise.then(function() {
                          $scope.vm.websiteForm.$setPristine();
 

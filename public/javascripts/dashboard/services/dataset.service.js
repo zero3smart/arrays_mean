@@ -6,9 +6,9 @@
     DatasetService.$inject = ['$http', '$q'];
     function DatasetService($http, $q) {
 
-        var getAll = function() {
+        var getAll = function(TeamId) {
             var deferred = $q.defer();
-            $http.get('/api/dataset/getAll')
+            $http.get('/api/dataset/getAll/'+ TeamId)
                 .success(function(data) {
                     if (!data.error) {
                         return deferred.resolve(data.datasets);

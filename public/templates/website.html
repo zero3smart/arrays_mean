@@ -6,7 +6,7 @@
      <form name="vm.websiteForm" ng-submit="submitForm(vm.websiteForm.$valid && vm.websiteForm.$dirty)" novalidate>
         <md-input-container class="md-block">
             <label>Title</label>
-            <input required name="title" ng-model="user._team.title">
+            <input required name="title" ng-model="team.title">
             <div ng-messages="vm.websiteForm.title.$error">
                 <div ng-message="required">This is required.</div>
             </div>
@@ -14,13 +14,13 @@
 
         <md-input-container class="md-block">
             <label>Description</label>
-            <textarea required md-no-asterisk name="description" ng-model="user._team.description"></textarea>
+            <textarea required md-no-asterisk name="description" ng-model="team.description"></textarea>
         </md-input-container>
 
          <div flex="50" layout="row">
             <md-input-container flex>
                 <label>Subdoamin</label>
-                <input ng-model="user._team.subdomain" readonly="true">
+                <input ng-model="team.subdomain" readonly="true">
             </md-input-container>
             <md-icon md-font-set="regular-font">.arrays.co</md-icon>
         </div>
@@ -30,13 +30,13 @@
 
      <div class="formInput">
             <label>Logo</label>
-            <div ng-if="!user._team.logo">
+            <div ng-if="!team.logo">
                 No team logo uploaded.
                 
             </div>
 
             <div flex="50">
-                 <img class="img-responsive" ng-if="user._team.logo" ng-src="{{user._team.logo}}">
+                 <img class="img-responsive" ng-if="team.logo" ng-src="{{team.logo}}">
             </div>
     </div>
 
@@ -45,13 +45,13 @@
 
     <div class="formInput">
         <label>Logo Header</label>
-         <div ng-if="!user._team.logo_header">
+         <div ng-if="!team.logo_header">
                 No team logo header uploaded.
                 
             </div>
 
         <div flex="50">
-             <img class="img-responsive" ng-if="user._team.logo_header" ng-src="{{user._team.logo_header}}">
+             <img class="img-responsive" ng-if="team.logo_header" ng-src="{{team.logo_header}}">
         </div>
 
     </div>

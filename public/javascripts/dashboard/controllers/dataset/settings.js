@@ -15,7 +15,7 @@ angular.module('arraysApp')
                     $scope.submitting = true;
                     if (!dataset.author) {
                         dataset.author = $scope.user._id;
-                        dataset._team = $scope.user._team._id;
+                        dataset._team = $scope.team._id;
                         dataset.fe_displayTitleOverrides = {};
                     }
                     dataset.updatedBy = $scope.user._id;

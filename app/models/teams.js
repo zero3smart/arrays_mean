@@ -13,9 +13,7 @@ var team_scheme = Schema({
     logo: String,
     logo_header: String,
     admin: {type: Schema.Types.ObjectId, ref: 'User'},
-    editors: [{type: Schema.Types.ObjectId, ref: 'User'}], //easy reference to check if can create new dataset
-    datasourceDescriptions: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
-    isPublished : {type: Boolean, default: true},
+    datasourceDescriptions: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}]
 });
 
 

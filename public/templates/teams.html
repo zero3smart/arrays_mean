@@ -1,0 +1,55 @@
+<header class="array-header">
+    <h1 class="array-title">Team Management</h1>
+</header>
+
+<div class="array-content">
+
+    <form name="teamForm" ng-submit="createTeam()" autocomplete="off">
+      <div layout-gt-xs="row">
+            <md-input-container class="md-block" flex="40">
+              <label>Title</label>
+              <input required name="title" ng-model="newTeam.title">
+            </md-input-container>
+
+             <md-input-container class="md-block" flex-gt-xs>
+              <label>Subdomain</label>
+              <input ng-model-options="{updateOn:'blur'}" ng-change="checkSubdomain()" required name="subdomain" ng-model="newTeam.subdomain">
+               <div ng-messages="teamForm.subdomain.$error">
+                <div ng-message="unique">This subdomain is already taken.</div>
+            </div>
+
+            </md-input-container>
+
+            
+
+           
+       </div>
+      
+
+       <div layout="row" layout-align="end center">
+          <md-button ng-disabled="teamForm.$invalid || !teamForm.$dirty" class="md-raised" type="submit">
+           <span class="fa fa-plus"></span><span class="btn-label">Create Team</span></md-button>
+      </div>
+ </form>
+
+
+
+  <div ng-repeat="tm in teams track by $index">
+      <div layout="row">
+          <md-button ng-disabled="team._id == tm._id" ng-click="signInWithTeam($index)" class="md-raised" ng-disabled="" type="submit">
+           <span class="fa fa-sign-in"></span><span class="btn-label">{{tm.title}} ({{tm.subdomain}}.arrays.co)</span></md-button>
+      </div>
+
+  </div>
+
+
+
+
+
+   
+
+
+    
+
+
+</div>

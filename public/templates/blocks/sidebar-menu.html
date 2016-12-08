@@ -1,4 +1,8 @@
 <ul class="nav">
+
+   
+
+
     <li ui-sref-active="active">
         <a ui-sref="dashboard.account" role="button"> Account</a>
     </li>
@@ -12,7 +16,11 @@
     </li>
 
     <li ng-if="user.role=='admin' || user.role=='superAdmin'" ui-sref-active="active">
-        <a ui-sref="dashboard.users" role="button"> Manage User</a>
+        <a ui-sref="dashboard.users" role="button"> Manage Users</a>
+    </li>
+
+     <li ng-if="user.role=='superAdmin'" ui-sref-active="active">
+        <a ui-sref="dashboard.teams" role="button"> Manage Teams </a>
     </li>
 
 </ul>

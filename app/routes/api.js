@@ -38,7 +38,7 @@ router.use(auth,function(err,req,res,next) {
 router.post('/admin/invite',ctrlAdmin.invite);
 
 // dataset settings
-router.get('/dataset/getAll',ctrlDataset.getAll);
+router.get('/dataset/getAll/:teamId',ctrlDataset.getAll);
 
 router.post('/dataset/remove',ctrlDataset.remove);
 router.get('/dataset/get/:id', ctrlDataset.get);
@@ -73,13 +73,15 @@ router.get('/user/:id/resend',ctrlUsers.resend);
 
 
 //views
-router.get('/view', ctrlView.index);
+router.get('/view', ctrlView.getAll);
 router.get('/view/:id',ctrlView.get);
 
 //datasourceMapping in format view
 router.get('/dataset/getMappingDatasourceCols/:pKey',ctrlDataset.loadDatasourceColumnsForMapping);
 
 //teams, website setting info
+router.post('/team',ctrlTeam.create);
+router.get('/team',ctrlTeam.getAll);
 router.get('/team/search',ctrlTeam.search);
 router.get('/team/loadIcons',ctrlTeam.loadIcons);
 router.get('/team/getAssetUploadSignedUrl/:id', ctrlTeam.signedUrlForAssetsUpload);

@@ -44,8 +44,9 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset/list.html',
                         controller: 'DatasetListCtrl',
                         resolve: {
-                            datasets: ['DatasetService', function(DatasetService) {
-                                return DatasetService.getAll();
+                            datasets: ['DatasetService','AuthService', function(DatasetService,AuthService) {
+                                var currentTeam = AuthService.currentTeam();
+                                return DatasetService.getAll(currentTeam._id);
                             }]
                         }
                     })
@@ -127,11 +128,25 @@ angular.module('arraysApp')
                         controller: 'UserCtrl as vm',
                         templateUrl: 'templates/users.html',
                         resolve: {
-                            datasets: ['DatasetService', function(DatasetService) {
-                                return DatasetService.getAll();
+                            datasets: ['DatasetService','AuthService', function(DatasetService,AuthService) {
+                                var currentTeam = AuthService.currentTeam();
+                                return DatasetService.getAll(currentTeam._id);
                             }]
                         }
                     })
+
+                     .state('dashboard.teams', {
+                        url: '/teams',
+                        controller: 'TeamCtrl',
+                        templateUrl: 'templates/teams.html',
+                        resolve: {
+                            teams: ['Team',function(Team) {
+                                return Team.query();
+                            }]
+                        }
+                    })
+
+
                     .state('login', {
                         url: '/login',
                         templateUrl: 'templates/login.html'

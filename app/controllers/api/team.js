@@ -5,7 +5,31 @@ var _ = require('lodash')
 
 
 
+module.exports.getAll = function (req, res) {
 
+	Team.find({})
+	.exec(function(err,teams) {
+		if (err) {
+			res.send(err);
+		} else {
+			// console.log(teams);
+			res.json(teams);
+		}
+	})
+    
+};
+
+
+
+module.exports.create = function(req,res) {
+	Team.create(req.body,function(err,createdTeam) {
+		if (err) {
+			res.send(err);
+		} else {
+			res.json(createdTeam);
+		}
+	})
+}
 
 module.exports.search = function(req,res) {
 	Team.find(req.query,function(err,foundTeams) {

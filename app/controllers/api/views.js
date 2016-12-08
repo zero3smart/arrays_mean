@@ -2,7 +2,7 @@ var View = require('../../models/views');
 
 
 
-module.exports.index = function (req, res) {
+module.exports.getAll = function (req, res) {
 	View.find({})
 	.select('_id name displayAs icon')
 	.exec(function(err,views) {
