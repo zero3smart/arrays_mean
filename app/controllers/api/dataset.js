@@ -434,12 +434,19 @@ module.exports.upload = function (req, res) {
     _.forEach(req.files, function (file) {
         batch.push(function (done) {
 
-            if (file.mimetype == 'text/csv' || file.mimetype == 'application/octet-stream') {
-                description.format = 'CSV';
-            } else if (file.mimetype == 'text/tab-separated-values') {
-                description.format = 'TSV';
+            if (file.mimetype == 'text/csv' || file.mimetype == 'application/octet-stream'
+                || file.mimetype == 'text/tab-separated-values' || file.mimetype == 'application/vnd.ms-excel') {
+                var exts = file.originalname.split('.');
+                var ext = exts[exts.length-1].toLowerCase();
+                if (ext == 'csv') {
+                    description.format = 'CSV';
+                } else if (ext == 'tsv') {
+                    description.format = 'TSV';
+                } else {
+                    return done(new Error('Invalid File Format : ' + file.mimetype + ', ' + ext));
+                }
             } else {
-                return done(new Error('Invalid File Format : ' + file.mimetype));
+                return done(new Error('Invalid File Format : ' + file.mimetype + ', ' + ext));
             }
 
             // Verify that the file is readable & in the valid format.
