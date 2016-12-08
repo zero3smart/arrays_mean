@@ -434,7 +434,7 @@ module.exports.upload = function (req, res) {
     _.forEach(req.files, function (file) {
         batch.push(function (done) {
 
-            if (file.mimetype == 'text/csv' || file.mimeType == 'application/octet-stream') {
+            if (file.mimetype == 'text/csv' || file.mimetype == 'application/octet-stream') {
                 description.format = 'CSV';
             } else if (file.mimetype == 'text/tab-separated-values') {
                 description.format = 'TSV';
