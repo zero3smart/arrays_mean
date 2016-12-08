@@ -6,7 +6,7 @@ var multer  = require('multer');
 var upload = multer({ dest: path.join(__dirname, '../../tmp') });
 
 var unless = require('express-unless');
-var ctrlAccount = require('../controllers/api/account');
+var ctrlAdmin = require('../controllers/api/admin');
 var ctrlDataset = require('../controllers/api/dataset');
 var ctrlUsers = require('../controllers/api/users');
 var ctrlTeam = require('../controllers/api/team');
@@ -33,8 +33,9 @@ router.use(auth,function(err,req,res,next) {
 	}
 });
 
-// account settings
-router.post('/account/update',ctrlAccount.updateAccount);
+
+//admin functions
+router.post('/admin/invite',ctrlAdmin.invite);
 
 // dataset settings
 router.get('/dataset/getAll',ctrlDataset.getAll);
@@ -61,16 +62,15 @@ router.post('/dataset/initializeToImport',ctrlDataset.initializeToImport);
 router.post('/dataset/preImport',ctrlDataset.preImport);
 router.post('/dataset/postImport', ctrlDataset.postImport);
 
-// website settings
-
-// manage users
 
 
+//signup users, profile update
 router.get('/user/search',ctrlUsers.search);
 router.post('/user',ctrlUsers.create);
 router.get('/user/:id',ctrlUsers.get);
 router.put('/user/:id',ctrlUsers.update);
 router.get('/user/:id/resend',ctrlUsers.resend);
+
 
 //views
 router.get('/view', ctrlView.index);
@@ -79,7 +79,7 @@ router.get('/view/:id',ctrlView.get);
 //datasourceMapping in format view
 router.get('/dataset/getMappingDatasourceCols/:pKey',ctrlDataset.loadDatasourceColumnsForMapping);
 
-//teams
+//teams, website setting info
 router.get('/team/search',ctrlTeam.search);
 router.get('/team/loadIcons',ctrlTeam.loadIcons);
 router.get('/team/getAssetUploadSignedUrl/:id', ctrlTeam.signedUrlForAssetsUpload);

@@ -102,8 +102,6 @@ module.exports.resend = function(req,res) {
 	} else { //resend invitation user
 
 	}
-
-
 }
 
 

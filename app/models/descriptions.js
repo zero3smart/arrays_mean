@@ -80,7 +80,9 @@ var DatasourceDescription_scheme = Schema({
 
     author: {type: Schema.Types.ObjectId, ref: 'User'},
     updatedBy: {type: Schema.Types.ObjectId, ref: 'User'},
+    
     viewers: [{type: Schema.Types.ObjectId, ref: 'User'}],
+    editors: [{type: Schema.Types.ObjectId, ref: 'User'}],
 
     imported: {type: Boolean, default: false},
     dirty: {type: Number, integer: true, default: 0}

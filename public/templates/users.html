@@ -3,5 +3,58 @@
 </header>
 
 <div class="array-content">
-    <h2>Coming Soon!</h2>
+    <form name="vm.userForm">
+        <div layout-gt-xs="row">
+            <md-input-container class="md-block" flex-gt-xs>
+              <label>Email</label>
+              <input name="email" ng-model="newUser.email">
+            </md-input-container>
+
+
+             <div ng-messages="vm.userForm.email.$error">
+                <div ng-message="team">This user belongs to another team.</div>
+            </div>
+           
+       </div>
+       <div layout-gt-xs="row">
+           <md-input-container class="md-block" flex-gt-sm>
+                <label>Select Datasets</label>
+                <md-select name="datasets" required multiple ng-model="newUser.datasets">
+                  <md-option ng-repeat="dataset in datasets" value="{{dataset._id}}">
+                    {{dataset.title}}
+                  </md-option>
+                </md-select>
+           </md-input-container>
+
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Role</label>
+                <md-select name="role" required ng-model="newUser.role">
+                  <md-option ng-repeat="user in availableUserRoles" value="{{user.value}}">
+                    {{user.name}}
+                  </md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+
+      </md-button>
+
+      <div layout="row" layout-align="end center">
+          <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-raised" type="button">
+           <span class="fa fa-plus"></span><span class="btn-label">Invite User</span></md-button>
+      </div>
+
+    </form>
+    
+
+    
+
+
+
+
+
+    </form>
+
+
+
+
 </div>

@@ -7,6 +7,8 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
+
+    
            $scope.submitForm = function(isValid) {
 
                 if (isValid) {

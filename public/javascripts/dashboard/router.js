@@ -124,7 +124,13 @@ angular.module('arraysApp')
                     })
                     .state('dashboard.users', {
                         url: '/users',
-                        templateUrl: 'templates/users.html'
+                        controller: 'UserCtrl as vm',
+                        templateUrl: 'templates/users.html',
+                        resolve: {
+                            datasets: ['DatasetService', function(DatasetService) {
+                                return DatasetService.getAll();
+                            }]
+                        }
                     })
                     .state('login', {
                         url: '/login',
