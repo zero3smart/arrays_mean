@@ -106,7 +106,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             //
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
-            var routePath_base = "/array/" + source_pKey + "/gallery";
+            var routePath_base = "/" + source_pKey + "/gallery";
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);

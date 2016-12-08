@@ -83,7 +83,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
 
-            var routePath_base = "/array/" + source_pKey + "/bar-chart";
+            var routePath_base = "/" + source_pKey + "/bar-chart";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //

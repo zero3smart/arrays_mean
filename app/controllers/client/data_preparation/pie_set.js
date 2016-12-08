@@ -69,7 +69,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             //
-            var routePath_base = "/array/" + source_pKey + "/pie-set";
+            var routePath_base = "/" + source_pKey + "/pie-set";
             var sourceDocURL = dataSourceDescription.urls && dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //

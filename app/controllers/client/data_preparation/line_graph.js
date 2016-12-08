@@ -70,7 +70,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var stackBy = dataSourceDescription.fe_views.views.lineGraph.defaultStackByColumnName;
             //
-            var routePath_base = "/array/" + source_pKey + "/line-graph";
+            var routePath_base = "/" + source_pKey + "/line-graph";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //

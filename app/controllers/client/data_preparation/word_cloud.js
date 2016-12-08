@@ -46,7 +46,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var keywords = dataSourceDescription.fe_views.views.wordCloud.keywords;
             //
-            var routePath_base = "/array/" + source_pKey + "/word-cloud";
+            var routePath_base = "/" + source_pKey + "/word-cloud";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //

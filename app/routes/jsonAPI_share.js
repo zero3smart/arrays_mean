@@ -29,38 +29,38 @@ router.post('/share', function (req, res) {
         return matches[1];
     }
 
-    var urlRegEx = /^\/array\/(.*)\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart)/g;
+    var urlRegEx = /^\/(.*)\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart)/g;
 
-    if (/^\/array\/(.*)\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart)/g.test(pathname) == true) {
+    if (/^\/(.*)\/(gallery|chart|choropleth|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart)/g.test(pathname) == true) {
         pageType = "array_view";
         //
-        if (/^\/array\/.*\/gallery/g.test(pathname) == true) {
+        if (/^\/.*\/gallery/g.test(pathname) == true) {
             viewType_orNull = 'gallery';
-        } else if (/^\/array\/.*\/chart/g.test(pathname) == true) {
+        } else if (/^\/.*\/chart/g.test(pathname) == true) {
             viewType_orNull = "chart";
-        } else if (/^\/array\/.*\/choropleth/g.test(pathname) == true) {
+        } else if (/^\/.*\/choropleth/g.test(pathname) == true) {
             viewType_orNull = "choropleth";
-        } else if (/^\/array\/.*\/timeline/g.test(pathname) == true) {
+        } else if (/^\/.*\/timeline/g.test(pathname) == true) {
             viewType_orNull = "timeline";
-        } else if (/^\/array\/.*\/word-cloud/g.test(pathname) == true) {
+        } else if (/^\/.*\/word-cloud/g.test(pathname) == true) {
             viewType_orNull = "word-cloud";
-        } else if (/^\/array\/.*\/scatterplot/g.test(pathname) == true) {
+        } else if (/^\/.*\/scatterplot/g.test(pathname) == true) {
             viewType_orNull = "scatterplot";
-        } else if (/^\/array\/.*\/line-graph/g.test(pathname) == true) {
+        } else if (/^\/.*\/line-graph/g.test(pathname) == true) {
             viewType_orNull = "line-graph";
-        } else if (/^\/array\/.*\/pie-set/g.test(pathname) == true) {
+        } else if (/^\/.*\/pie-set/g.test(pathname) == true) {
             viewType_orNull = "pie-set";
-        } else if (/^\/array\/.*\/bar-chart/g.test(pathname) == true) {
+        } else if (/^\/.*\/bar-chart/g.test(pathname) == true) {
             viewType_orNull = "bar-chart";
         }
         //
         source_key = _stringFromPathNameWithRegEx(urlRegEx);
-    } else if (/^\/array\/.*\/.*/g.test(pathname) == true) {
+    } else if (/^\/.*\/.*/g.test(pathname) == true) {
         pageType = "object_details";
         //
-        source_key = _stringFromPathNameWithRegEx(/^\/array\/(.*)\/.*/g);
+        source_key = _stringFromPathNameWithRegEx(/^\/(.*)\/.*/g);
         //
-        rowObjectId_orNull = _stringFromPathNameWithRegEx(/^\/array\/.*\/(.*)/g);
+        rowObjectId_orNull = _stringFromPathNameWithRegEx(/^\/.*\/(.*)/g);
     } else if (/^\/s\/.*/g.test(pathname) == true) { // special case
         // Trying to share an already shared page - just use the same URL
         var alreadySharedPageId = _stringFromPathNameWithRegEx(/^\/s\/(.*)/g);

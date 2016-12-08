@@ -48,7 +48,7 @@
                    href="{% if team.subdomain | length %}{{ env | siteBaseURL | addSubdomain(team.subdomain) }}{% else %}/array{% endif %}">{% if team.logo_header
                     | length %}<img src="{{ team.logo_header }}"/>{% elif team.title | length %}{{ team.title }}{% else
                     %}Arrays{% endif %}</a><br/>
-                <a class="navbar-brand navbar-brand-array-title" href="/array/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
+                <a class="navbar-brand navbar-brand-array-title" href="/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="truncate">{{ arrayTitle }}</span></a>
@@ -67,7 +67,7 @@
                         <ul class="dropdown-menu">
                             {% if view_visibility.gallery.visible == true %}
                             <li class="background-color-brand-hover menu-item-gallery {{ " active
-                            " if currentView == "gallery" }}"><a href="/array/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
+                            " if currentView == "gallery" }}"><a href="/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
 
 					searchQ: searchQ,
 					searchCol: searchCol
@@ -76,7 +76,7 @@
 
                             {% if view_visibility.choropleth.visible == true %}
                             <li class="background-color-brand-hover menu-item-choropleth {{ " active
-                            " if currentView == "choropleth" }}"><a href="/array/{{ array_source_key }}/{{ 'choropleth' | constructedRoutePath(filterObj, {
+                            " if currentView == "choropleth" }}"><a href="/{{ array_source_key }}/{{ 'choropleth' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-choropleth color-brand" aria-hidden="true"></span> Choropleth</a></li>
@@ -84,7 +84,7 @@
 
                             {% if view_visibility.chart.visible == true %}
                             <li class="background-color-brand-hover menu-item-chart {{ " active
-                            " if currentView == "chart" }}"><a href="/array/{{ array_source_key }}/{{ 'chart' | constructedRoutePath(filterObj, {
+                            " if currentView == "chart" }}"><a href="/{{ array_source_key }}/{{ 'chart' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-chart color-brand" aria-hidden="true"></span> Chart</a></li>
@@ -92,7 +92,7 @@
                             {% if view_visibility.timeline.visible == true %}
 
                             <li class="background-color-brand-hover menu-item-timeline {{ " active
-                            " if currentView == "timeline" }}"><a href="/array/{{ array_source_key }}/{{ 'timeline' | constructedRoutePath(filterObj, {
+                            " if currentView == "timeline" }}"><a href="/{{ array_source_key }}/{{ 'timeline' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-timeline color-brand" aria-hidden="true"></span> Timeline</a></li>
@@ -100,7 +100,7 @@
 
                             {% if view_visibility.scatterplot.visible == true %}
                             <li class="background-color-brand-hover menu-item-scatterplot {{ " active
-                            " if currentView == "scatterplot" }}"><a href="/array/{{ array_source_key }}/{{ 'scatterplot' | constructedRoutePath(filterObj, {
+                            " if currentView == "scatterplot" }}"><a href="/{{ array_source_key }}/{{ 'scatterplot' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-scatterplot color-brand" aria-hidden="true"></span> Scatterplot</a></li>
@@ -109,14 +109,14 @@
                             {% if view_visibility.wordCloud.visible == true %}
 
                             <li class="background-color-brand-hover menu-item-word-cloud {{ " active
-                            " if currentView == "word-cloud" }}"><a href="/array/{{ array_source_key }}/{{ 'word-cloud' | constructedRoutePath(filterObj, {
+                            " if currentView == "word-cloud" }}"><a href="/{{ array_source_key }}/{{ 'word-cloud' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-word-cloud color-brand" aria-hidden="true"></span> Word cloud</a></li>
                             {% endif %}
                             {% if view_visibility.lineGraph.visible == true %}
                             <li class="background-color-brand-hover menu-item-line-graph {{ " active
-                            " if currentView == "line-graph" }}"><a href="/array/{{ array_source_key }}/{{ 'line-graph' | constructedRoutePath(filterObj, {
+                            " if currentView == "line-graph" }}"><a href="/{{ array_source_key }}/{{ 'line-graph' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 
@@ -124,14 +124,14 @@
                             {% endif %}
                             {% if view_visibility.pieSet.visible == true %}
                             <li class="background-color-brand-hover menu-item-pie-set {{ " active
-                            " if currentView == "pie-set" }}"><a href="/array/{{ array_source_key }}/{{ 'pie-set' | constructedRoutePath(filterObj, {
+                            " if currentView == "pie-set" }}"><a href="/{{ array_source_key }}/{{ 'pie-set' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-pie-set color-brand" aria-hidden="true"></span> Pie Set</a></li>
                             {% endif %}
                             {% if view_visibility.barChart.visible == true %}
                             <li class="background-color-brand-hover menu-item-bar-chart {{ " active
-                            " if currentView == "bar-chart" }}"><a href="/array/{{ array_source_key }}/{{ 'bar-chart' | constructedRoutePath(filterObj, {
+                            " if currentView == "bar-chart" }}"><a href="/{{ array_source_key }}/{{ 'bar-chart' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
 				}) }}"><span class="icon-bar-chart color-brand" aria-hidden="true"></span> Bar Chart</a></li>

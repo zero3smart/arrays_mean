@@ -59,7 +59,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.choropleth.defaultMapByColumnName] ||
             dataSourceDescription.fe_views.views.choropleth.defaultMapByColumnName;
             //
-            var routePath_base = "/array/" + source_pKey + "/choropleth";
+            var routePath_base = "/" + source_pKey + "/choropleth";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
