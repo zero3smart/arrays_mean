@@ -24,8 +24,8 @@ module.exports.invite = function(req,res) {
                     email: req.body.email,
                     _team: foundUser._team._id
                 }
-                console.log(foundUser._team);
-                console.log(new_user);
+                // console.log(foundUser._team);
+                // console.log(new_user);
 
                 User.create(req.body,function(err,createdUser) {
                     if (err) {

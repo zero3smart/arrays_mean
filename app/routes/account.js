@@ -35,6 +35,17 @@ router.get('/verify', function(req, res) {
 
 
 router.get('/invitation', function (req, res) {
+    var token = req.query.token;
+    jwt.verify(token,process.env.SESSION_SECRET,function(err,decoded) {
+        if (err) {
+
+            return res.render("partials/invitation.error.html", {name: err.name, message: err.message});
+
+
+        } else {
+            console.log(decoded);
+        }
+    })
   
 });
 

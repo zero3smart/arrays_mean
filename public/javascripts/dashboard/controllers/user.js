@@ -16,6 +16,8 @@ angular
               var queryParams = {
                 email: $scope.newUser.email
               }
+
+
               User.search(queryParams)
                 .$promise.then(function(data) {
                   if (data.length > 0) {
@@ -24,73 +26,40 @@ angular
 
                     } else {
                       $scope.newUser._id = data[0]._id;
-                      AuthService.inviteUser($scope.newUser)
-                        .$promise.then(function(data) {
-
-                        })
+                      inviteAndSentEmail();
                     }
                   } else {
-                    AuthService.inviteUser($scope.newUser,function(data) {
-                      
-                    })
-                      // .$promise.then(function(data) {
-                      //   console.log(data);
-                      //   // $mdToast.show(
-                      //   //     $mdToast.simple()
-                      //   //         .textContent("Invi")
-                      //   //         .position('top right')
-                      //   //         .hideDelay(3000)
-                      //   // );
-
-
-                      // },function(err) {
-                      //   console.log(err);
-                      //   $mdToast.show(
-                      //       $mdToast.simple()
-                      //           .textContent(err.message)
-                      //           .position('top right')
-                      //           .hideDelay(3000)
-                      //   );
-
-                      // })
-
+                    inviteAndSentEmail();
                   }
-
-
-
-                  
                 })
 
            }
 
-           // $scope.error = "";
+          var inviteAndSentEmail = function () {
+            AuthService.inviteUser($scope.newUser)
+                .then(function(data) {
+                   $mdToast.show(
+                        $mdToast.simple()
+                            .textContent(data)
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+                   $scope.newUser = {};
+                   $scope.vm.userForm.$setPristine();
+                   $scope.vm.userForm.$setUntouched();
+                   
 
-           // $scope.inviteUser = function() { 
-           //    var queryParams = {
-           //      email: $scope.newUser.email
-           //    }
+                },function(err) {
+                   $mdToast.show(
+                        $mdToast.simple()
+                            .textContent(err)
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+                })
+           }
 
-           //    User.search(queryParams)
-           //      .$promise.then(function(data) {
-           //        if (data.length > 0) { 
-           //          if (data[0]._team !== $scope.user._team) {
-           //            $scope.error = "This user is a member of another team";
-           //          } else {
-           //            $scope.newUser._id = data[0]._id;
-           //          }
-           //        }
-           //        if (!$scope.error) {
 
-           //          AuthService.inviteUser($scope.newUser)
-           //          .$promise.then(function(data) {
-           //            console.log(data);
-           //          })
-                
-
-           //        }
-           //      }
-
-           // }
 
    
           

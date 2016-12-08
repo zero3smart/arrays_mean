@@ -119,7 +119,9 @@
             $http.post('/api/admin/invite',newUser)
                 .then(function(response) {  
                     if (response.status == 200) {
-
+                        return deferred.resolve(response.data.message);
+                    } else {
+                        
                     }
 
                 })
