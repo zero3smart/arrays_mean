@@ -51,7 +51,7 @@ $(document).ready(function () {
 
 
         } else {
-            href = '/array/' + sourceKey + '/' + default_view_url;
+            href = '/' + sourceKey + '/' + default_view_url;
             if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
                 href += "?" + default_filterJSON;
             }

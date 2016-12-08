@@ -26,8 +26,9 @@
                     <div class="sample">Sample</div>
                 </div>
                 <ul ui-sortable="fieldSortableOptions" ng-model="data.fields" class="fields">
-                    <li ng-repeat="field in data.fields" class="field" ng-class="{'custom': field.customField}"
-                        ng-click="openFieldDialog($event, field.name, field.sample, field.customFieldIndex)">
+                    <li ng-repeat="field in data.fields" class="field"
+                        ng-class="{'custom': (field.customField || field.nested)}"
+                        ng-click="openFieldDialog($event, field.name, field.sample, field.customFieldIndex, field.nested)">
                         <div class="handler"><span class="glyphicon glyphicon-move"></span></div>
                         <div class="order">
                             {{
@@ -45,7 +46,7 @@
                         <div class="name">{{ field.name }}</div>
                         <div class="override">{{ dataset.fe_displayTitleOverrides[field.name] }}</div>
                         <div class="type">
-                            <md-select ng-if="!field.customField"
+                            <md-select ng-if="!field.customField && !field.nested"
                                        name="raw_rowObjects_coercionScheme"
                                        ng-model="coercionScheme[field.name]"
                                        ng-model-options="{trackBy: '$value | typeCoercionToString'}"
@@ -56,11 +57,14 @@
                                     {{coercion | typeCoercionToString}}
                                 </md-option>
                             </md-select>
-                            <b ng-if="field.customField">{{ (field.customField.fieldType | capitalize) }}</b>
+                            <b ng-if="field.customField">
+                                {{ (field.customField.fieldType | capitalize) }}
+                            </b>
+                            <b ng-if="field.nested">Nested</b>
                         </div>
                         <div class="sample">
-                            <span ng-if="!field.customField">{{ field.sample | limitTo: 200 }}{{ field.sample.length > 200 ? '...' : '' }}</span>
-                            <span ng-if="field.customField" ng-repeat="mergeField in field.customField.fieldsToMergeIntoArray" >{{mergeField}}, </span>
+                            <span ng-if="!field.customField && !field.nested">{{ field.sample | limitTo: 200 }}{{ field.sample.length > 200 ? '...' : '' }}</span>
+                            <span ng-if="field.customField && !field.nested" ng-repeat="mergeField in field.customField.fieldsToMergeIntoArray" >{{mergeField}}, </span>
                         </div>
                     </li>
                 </ul>

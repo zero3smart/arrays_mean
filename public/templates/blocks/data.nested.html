@@ -101,7 +101,7 @@
                                                 ng-repeat-start="valueOverride in valueOverrideByField.valueOverrides">
                                 <label>Value</label>
                                 <input required type="text" name="valueOverrideValue_{{$index}}"
-                                       ng-model="valueOverride.value">
+                                       ng-model="valueOverride.value" ng-trim="false">
                                 <div ng-messages="dialog.form.valueOverrideValue.$error">
                                     <div ng-message="required">This is required.</div>
                                 </div>
@@ -110,7 +110,7 @@
                             <md-input-container class="md-block" flex="50" ng-repeat-end>
                                 <label>Override</label>
                                 <input required type="text" name="valueOverride_{{$index}}"
-                                       ng-model="valueOverride.override">
+                                       ng-model="valueOverride.override" ng-trim="false">
                                 <div ng-messages="dialog.form.valueOverride.$error">
                                     <div ng-message="required">This is required.</div>
                                 </div>
@@ -132,7 +132,7 @@
                 <md-input-container class="md-block" flex-gt-sm>
                     <label>Prefix (Will be linked to the column name)</label>
                     <input type="text" name="prefix"
-                           ng-model="dataset.fe_nestedObject.prefix">
+                           ng-model="dataset.fe_nestedObject.prefix" ng-trim="false">
                 </md-input-container>
 
             </md-content>

@@ -120,7 +120,7 @@ var fieldValueDataTypeCoercion_revertFunctions = function (value, field) {
         }
         if (dateFormatString == "ISO_8601")
             dateFormatString = "MMMM Do, YYYY";
-        console.log(typeof date);
+
         if (date == null || isNaN(date.getTime())) {
             // Invalid
             return null;

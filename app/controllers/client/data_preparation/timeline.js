@@ -72,7 +72,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName
 
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
-            var routePath_base = "/array/" + source_pKey + "/timeline";
+            var routePath_base = "/" + source_pKey + "/timeline";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //

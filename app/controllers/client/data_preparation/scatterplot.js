@@ -114,7 +114,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                          numericFields.push(i);
                          }
                          }*/
-                        var routePath_base = '/array/' + sourceKey + '/scatterplot';
+                        var routePath_base = '/' + sourceKey + '/scatterplot';
                         if (urlQuery.embed == 'true') routePath_base += '?embed=true';
 
                         if (req.user) {

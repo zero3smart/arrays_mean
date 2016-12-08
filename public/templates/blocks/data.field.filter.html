@@ -76,7 +76,7 @@
             <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey._all"
                       name="valuesToExcludeAll"
                       md-enable-chip-edit="true"
-                      placeholder="Enter a Value" secondary-placeholder="+Value">
+                      placeholder="Enter a Value" secondary-placeholder="+Value" ng-trim="false">
                 <md-chip-template>
                     {{$chip}}
                     <em>(All)</em>
@@ -89,7 +89,8 @@
             <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey[fieldName]"
                       name="valuesToExcludeSelf"
                       md-enable-chip-edit="true"
-                      placeholder="Enter a Value" secondary-placeholder="+Value">
+                      placeholder="Enter a Value" secondary-placeholder="+Value"
+                      ng-trim="false">
                 <md-chip-template>
                     {{$chip}}
                     <em>({{fieldName}})</em>
