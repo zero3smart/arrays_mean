@@ -21,11 +21,12 @@ var userSchema = new mongoose.Schema({
         default: false
     },
     _team: {type: Schema.Types.ObjectId, ref: 'Team'},
-    role: {
-        type: String,
-        enum: ['Admin', 'Editor', 'Viewer'],
-        default : 'Admin'
-    }
+    // role: {
+    //     type: String,
+    //     enum: ['Admin', 'Editor', 'Viewer'],
+    //     default : 'Admin'
+    // },
+    invited: Array //tmp array for user hasnt confirmed invitation
 }, {timestamps:true});
 
 userSchema.plugin(findOrCreate);
@@ -45,23 +46,6 @@ userSchema.methods.validPassword = function(password) {
 userSchema.methods.isSuperAdmin = function() {
     return (this.email.indexOf('schemadesign.com') >= 0 || this.email.indexOf('arrays.co') >= 0)
 };
-
-// userSchema.methods.generateJwt = function() {
-//     var expiry = new Date();
-//     expiry.setDate(expiry.getDate() + 7);
-
-//     return jwt.sign({
-//         _id: this._id,
-//         email: this.email,
-//         name: this.name,
-//         exp: parseInt(expiry.getTime() / 1000),
-//     }, "MY_SECRET"); // DO NOT KEEP YOUR SECRET IN THE CODE!
-// };
-
-
-
-
-
 
 
 module.exports = mongoose.model('User', userSchema);

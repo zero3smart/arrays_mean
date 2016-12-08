@@ -4,6 +4,9 @@ var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
 var _ = require('lodash')
 
 
+
+
+
 module.exports.search = function(req,res) {
 	Team.find(req.query,function(err,foundTeams) {
 		if (err) {
@@ -21,7 +24,7 @@ module.exports.update = function(req,res) {
 		if (err) {
 			return res.status(500).send(err);
 		} else if (!team) {
-			return res.status(401).send("Team not found.");
+			return res.status(404).send("Team not found.");
 		} else {
 			for (var attr in req.body) {
 				team[attr] = req.body[attr];
