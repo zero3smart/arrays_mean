@@ -30,8 +30,7 @@ module.exports.search = function (req, res) {
         }
 
     })
-}
-
+};
 
 module.exports.get = function (req, res) {
 
