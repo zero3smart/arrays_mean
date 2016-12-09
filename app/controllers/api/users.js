@@ -32,6 +32,16 @@ module.exports.search = function(req,res) {
 	})
 }
 
+module.exports.getAll = function(req,res) {
+	var teamId = req.params.id;
+	User.find({_team:teamId},function(err,allUsers) {
+		if (err) {
+			// res.status(400).send()
+		}
+	})
+
+}
+
 
 module.exports.get = function(req,res) {
 

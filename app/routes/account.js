@@ -68,11 +68,11 @@ function assignRoleToDatasets(decoded,callback) {
     async.each(decoded.datasets,function(datasetId,eachCb) {
         var pushQuery = {$push: {}};
         if (decoded.role == 'editor') {
-            pushQuery.$push["editors"] = decoded._id;
+            pushQuery.$push["_editors"] = decoded._id;
         } else if (decoded.role == 'viewer') {
-            pushQuery.$push["viewers"] = decoded._id;
+            pushQuery.$push["_viewers"] = decoded._id;
         }
-        datasource_description.update({_id: datasetId},pushQuery,function(err) {
+        User.findByIdAndUpdate(decoded._id,pushQuery,function(err) {
             eachCb(err);
         })
 
@@ -89,6 +89,7 @@ function assignRoleToDatasets(decoded,callback) {
                     }
                     theAdmin.save(function(err) {
                         callback(err);
+
                     });
                 } else {
                     callback(err);

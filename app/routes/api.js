@@ -70,6 +70,7 @@ router.post('/user',ctrlUsers.create);
 router.get('/user/:id',ctrlUsers.get);
 router.put('/user/:id',ctrlUsers.update);
 router.get('/user/:id/resend',ctrlUsers.resend);
+router.get('/user/getAll/:id',ctrlUsers.getAll);
 
 
 //views

@@ -21,13 +21,9 @@ angular
               User.search(queryParams)
                 .$promise.then(function(data) {
                   if (data.length > 0) {
-                    if (data[0]._team !== $scope.team._id) {
-                      $scope.vm.userForm.email.$setValidity('team', false);
-
-                    } else {
                       $scope.newUser._id = data[0]._id;
                       inviteAndSentEmail();
-                    }
+                    
                   } else {
                     inviteAndSentEmail();
                   }

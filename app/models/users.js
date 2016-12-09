@@ -21,7 +21,9 @@ var userSchema = new mongoose.Schema({
         default: false
     },
     _team: {type: Schema.Types.ObjectId, ref: 'Team'},
-    invited: Array //tmp array for user hasnt confirmed invitation
+    invited: Array, //tmp array for user hasnt confirmed invitation
+    _editors: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
+    _viewers: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}]
 }, {timestamps:true});
 
 userSchema.plugin(findOrCreate);

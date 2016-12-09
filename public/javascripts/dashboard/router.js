@@ -131,6 +131,11 @@ angular.module('arraysApp')
                             datasets: ['DatasetService','AuthService', function(DatasetService,AuthService) {
                                 var currentTeam = AuthService.currentTeam();
                                 return DatasetService.getAll(currentTeam._id);
+                            }],
+                            users: ['AuthService', 'User',function(AuthService,User) {
+                                var currentTeam = AuthService.currentTeam();
+                               return User.getAllByTeamId({id:currentTeam._id});
+
                             }]
                         }
                     })
