@@ -28,8 +28,7 @@
                 })
                 .error(deferred.reject);
             return deferred.promise;
-
-        }
+        };
 
         var remove = function(id) {
             var deferred = $q.defer();

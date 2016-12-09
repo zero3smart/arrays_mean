@@ -17,6 +17,11 @@ module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromData
 
 var _dataSourceDescriptionWithPKey = function (source_pKey) {
     var split = source_pKey.split("-");
+    if (split.length != 2) {
+        return new Promise(function (resolve, reject) {
+            reject();
+        });
+    }
     var uid = split[0];
     var revision = split[1].substring(1);
 
@@ -32,15 +37,12 @@ var _dataSourceDescriptionWithPKey = function (source_pKey) {
 module.exports.DataSourceDescriptionWithPKey = _dataSourceDescriptionWithPKey;
 
 
-
 function _realColumnNameFromHumanReadableColumnName(humanReadableColumnName, dataSourceDescription) {
 
 
     if (humanReadableColumnName === humanReadableColumnName_objectTitle) {
         return dataSourceDescription.fe_designatedFields.objectTitle;
     }
-
-
 
 
     var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
@@ -135,7 +137,7 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByD
 module.exports.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown = _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown;
 
 //
-function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleRowObject, dataSourceDescription, viewType, fieldName,restrictFieldType) {
+function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleRowObject, dataSourceDescription, viewType, fieldName, restrictFieldType) {
 
 
     var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
@@ -153,12 +155,12 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdow
             }
         }
         if (restrictFieldType != null) {
-            if (!dataSourceDescription.raw_rowObjects_coercionScheme[key] || 
+            if (!dataSourceDescription.raw_rowObjects_coercionScheme[key] ||
                 dataSourceDescription.raw_rowObjects_coercionScheme[key].operation != restrictFieldType) {
                 return;
             }
 
-        } 
+        }
         var displayTitleForKey = fe_displayTitleOverrides[key];
         var humanReadable_key = displayTitleForKey || key;
         available_keys.push(humanReadable_key);

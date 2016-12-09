@@ -18,16 +18,16 @@ var postimport_caching_controller = require('../../libs/import/cache/controller'
 var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
 
 
-function getAllDatasetsWithQuery (query,res) {
-    datasource_description.find({$and:[{schema_id:{$exists:false}},query]},{
+function getAllDatasetsWithQuery(query, res) {
+    datasource_description.find({$and: [{schema_id: {$exists: false}}, query]}, {
         _id: 1,
         title: 1,
-        importRevision:1
-    },function(err,datasets) {
+        importRevision: 1
+    }, function (err, datasets) {
         if (err) {
-            return res.json({error:err.message});
+            return res.json({error: err.message});
         }
-        return res.json({datasets:datasets});
+        return res.json({datasets: datasets});
     })
 
 }
@@ -35,7 +35,7 @@ function getAllDatasetsWithQuery (query,res) {
 module.exports.getAll = function (req, res) {
     var team = req.params.teamId;
 
-    Team.findById(team).exec(function(err,foundTeam) {
+    Team.findById(team).exec(function (err, foundTeam) {
         if (err) {
             return res.json({error: err.message});
         }
@@ -43,33 +43,33 @@ module.exports.getAll = function (req, res) {
         if (!foundTeam) {
             return res.status(404).send('Team not found.');
         } else {
-           User.findById(req.user)
-           .exec(function(err,foundUser) {
-                if (err) {
-                    return res.json({error: err.message});
-                } else if (!foundUser) {
-                    res.status(404).send("User not found");
-                } else {
-                    if (foundTeam.admin == foundUser._id || foundUser.isSuperAdmin()) {
-                        subquery = {_team: team};
-                        getAllDatasetsWithQuery(subquery,res);
+            User.findById(req.user)
+                .exec(function (err, foundUser) {
+                    if (err) {
+                        return res.json({error: err.message});
+                    } else if (!foundUser) {
+                        res.status(404).send("User not found");
                     } else {
-                        subquery = {_team: team, editors: foundUser._id}
-                        getAllDatasetsWithQuery(subquery,res);
+                        if (foundTeam.admin == foundUser._id || foundUser.isSuperAdmin()) {
+                            subquery = {_team: team};
+                            getAllDatasetsWithQuery(subquery, res);
+                        } else {
+                            subquery = {_team: team, editors: foundUser._id}
+                            getAllDatasetsWithQuery(subquery, res);
+                        }
                     }
-                }
-           })
+                })
         }
     })
 };
 
 
-module.exports.signedUrlForAssetsUpload = function(req,res) {
+module.exports.signedUrlForAssetsUpload = function (req, res) {
     datasource_description.findById(req.params.id)
         .populate('_team')
-        .exec(function(err,description) {
+        .exec(function (err, description) {
             var key = description._team.subdomain + '/datasets/' + description.uid + '/assets/banner/' + req.query.fileName;
-            s3ImageHosting.signedUrlForPutObject(key,req.query.fileType,function(err,data) {
+            s3ImageHosting.signedUrlForPutObject(key, req.query.fileType, function (err, data) {
                 if (err) {
                     return res.status(500).send(err);
                 } else {
@@ -79,7 +79,6 @@ module.exports.signedUrlForAssetsUpload = function(req,res) {
         })
 
 }
-
 
 
 module.exports.remove = function (req, res) {
@@ -219,40 +218,40 @@ module.exports.get = function (req, res) {
 };
 
 
-module.exports.loadDatasourceColumnsForMapping = function(req,res) {
+module.exports.loadDatasourceColumnsForMapping = function (req, res) {
     if (!req.params.pKey) return res.json({error: 'No Primary Key given'});
 
     var split = req.params.pKey.split("-");
-    var query = {uid: split[0],importRevision:parseInt(split[1].substring(1))};
+    var query = {uid: split[0], importRevision: parseInt(split[1].substring(1))};
 
     datasource_description.findOne(query)
-    .populate('_team')
-    .lean()
-    .exec(function(err, description) {
-        if (err) return res.json({error: err.message});
+        .populate('_team')
+        .lean()
+        .exec(function (err, description) {
+            if (err) return res.json({error: err.message});
 
-        if (!req.session.columns) req.session.columns = {};
-        if (description.uid && !req.session.columns[description.id]) {
-            _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function(err, columns) {
-                if (err) return res.json({error: err.message});
+            if (!req.session.columns) req.session.columns = {};
+            if (description.uid && !req.session.columns[description.id]) {
+                _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
+                    if (err) return res.json({error: err.message});
 
-                res.json({
-                    cols: columns.filter(function(e) {
-                        return !description.fe_excludeFields[e.name];
-                    })
+                    res.json({
+                        cols: columns.filter(function (e) {
+                            return !description.fe_excludeFields[e.name];
+                        })
+                    });
                 });
-            });
-        } else {
-            if (req.session.columns[description.id])
-                return res.json({
-                    cols: req.session.columns[description.id].filter(function(e) {
-                        return !description.fe_excludeFields[e.name];
-                    })
-                });
-            else
-                return res.json({error: 'No datasource uploaded!'});
-        }
-    });
+            } else {
+                if (req.session.columns[description.id])
+                    return res.json({
+                        cols: req.session.columns[description.id].filter(function (e) {
+                            return !description.fe_excludeFields[e.name];
+                        })
+                    });
+                else
+                    return res.json({error: 'No datasource uploaded!'});
+            }
+        });
 };
 
 module.exports.getSourcesWithSchemaID = function (req, res) {
@@ -272,8 +271,8 @@ module.exports.getSourcesWithSchemaID = function (req, res) {
         });
 }
 
-module.exports.publish = function (req,res) {
-    datasource_description.findByIdAndUpdate(req.body.id,{$set:{isPublished:req.body.isPublished}},function(err,savedDesc) {
+module.exports.publish = function (req, res) {
+    datasource_description.findByIdAndUpdate(req.body.id, {$set: {isPublished: req.body.isPublished}}, function (err, savedDesc) {
         if (err) {
             res.status(500).send({error: err.message});
         } else {
@@ -291,13 +290,13 @@ module.exports.update = function (req, res) {
                 return res.json({error: err.message});
             } else {
 
-                Team.findById(req.body._team,function(err,team) {
+                Team.findById(req.body._team, function (err, team) {
                     if (err) {
-                        return res.json({error:err.message});
+                        return res.json({error: err.message});
                     } else {
                         team.datasourceDescriptions.push(doc.id);
-                        team.save(function(err,saved) {
-                            if (err) return res.json({error:err.message});
+                        team.save(function (err, saved) {
+                            if (err) return res.json({error: err.message});
                             return res.json({id: doc.id});
                         });
                     }
@@ -406,10 +405,14 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
                         countOfLines++;
 
                         if (countOfLines == 1) {
-                            columns = output[0].map(function(e) { return {name: e.replace(/\./g, '_')}; });
+                            columns = output[0].map(function (e) {
+                                return {name: e.replace(/\./g, '_')};
+                            });
                             readStream.resume();
                         } else if (countOfLines == 2) {
-                            columns = columns.map(function(e, i) { return {name: e.name, sample: output[0][i]}; });
+                            columns = columns.map(function (e, i) {
+                                return {name: e.name, sample: output[0][i]};
+                            });
                             readStream.resume();
                         } else {
                             readStream.destroy();
@@ -428,7 +431,7 @@ module.exports.upload = function (req, res) {
     batch.concurrency(1);
     var description;
 
-    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.writeHead(200, {'Content-Type': 'application/json'});
     res.connection.setTimeout(0); // this could take a while
 
     batch.push(function (done) {
@@ -448,7 +451,7 @@ module.exports.upload = function (req, res) {
             if (file.mimetype == 'text/csv' || file.mimetype == 'application/octet-stream'
                 || file.mimetype == 'text/tab-separated-values' || file.mimetype == 'application/vnd.ms-excel') {
                 var exts = file.originalname.split('.');
-                var ext = exts[exts.length-1].toLowerCase();
+                var ext = exts[exts.length - 1].toLowerCase();
                 if (ext == 'csv') {
                     description.format = 'CSV';
                 } else if (ext == 'tsv') {
@@ -475,7 +478,7 @@ module.exports.upload = function (req, res) {
                 // Upload datasource to AWS S3
                 if (!description.uid) description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
                 var newFileName = datasource_file_service.fileNameToUpload(description);
-                datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, description._team.subdomain,description.uid,function (err) {
+                datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, description._team.subdomain, description.uid, function (err) {
                     if (err) {
                         winston.error("❌  Error during uploading the dataset into AWS : " + description.title + " (" + err.message + ")");
                     }
@@ -623,7 +626,7 @@ module.exports.preImport = function (req, res) {
 
     var uid = req.body.uid;
 
-    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.writeHead(200, {'Content-Type': 'application/json'});
     res.connection.setTimeout(0); // this could take a while
 
     datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
@@ -657,7 +660,7 @@ module.exports.postImport = function (req, res) {
 
     datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
 
-        var fn = function(err) {
+        var fn = function (err) {
             if (err) {
                 res.json({error: err.message}); // error code
             } else {

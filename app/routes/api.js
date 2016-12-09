@@ -2,8 +2,8 @@ var express = require('express');
 var router = express.Router();
 
 var path = require('path');
-var multer  = require('multer');
-var upload = multer({ dest: path.join(__dirname, '../../tmp') });
+var multer = require('multer');
+var upload = multer({dest: path.join(__dirname, '../../tmp')});
 
 var unless = require('express-unless');
 var ctrlAdmin = require('../controllers/api/admin');
@@ -14,78 +14,79 @@ var ctrlView = require('../controllers/api/views');
 var ejwt = require('express-jwt');
 
 var auth = ejwt({
-   secret: process.env.SESSION_SECRET,
-   userProperty: 'payload'
+    secret: process.env.SESSION_SECRET,
+    userProperty: 'payload'
 }).unless({
-	path: [  /\/api\/user/i,
-			/\/api\/team/i,
-			/\/api\/view/i
-	]
+    path: [/\/api\/user/i,
+        /\/api\/team/i,
+        /\/api\/view/i
+    ]
 });
 
-router.use(auth,function(err,req,res,next) {
-	if (err.name == 'UnauthorizedError') {
+router.use(auth, function (err, req, res, next) {
+    if (err.name == 'UnauthorizedError') {
 
-		console.log(err);
-		res.status(401).send('unauthorized');
-	} else {
-		return next();
-	}
+        console.log(err);
+        res.status(401).send('unauthorized');
+    } else {
+        return next();
+    }
 });
 
 
 //admin functions
-router.post('/admin/invite',ctrlAdmin.invite);
+router.post('/admin/invite', ctrlAdmin.invite);
 
 // dataset settings
-router.get('/dataset/getAll/:teamId',ctrlDataset.getAll);
+router.get('/dataset/getAll/:teamId', ctrlDataset.getAll);
 
-router.post('/dataset/remove',ctrlDataset.remove);
+router.post('/dataset/remove', ctrlDataset.remove);
 router.get('/dataset/get/:id', ctrlDataset.get);
-router.get('/dataset/getSources/:id',ctrlDataset.getSourcesWithSchemaID)
-router.post('/dataset/update',ctrlDataset.update);
-router.put('/dataset/publish/',ctrlDataset.publish);
+router.get('/dataset/getSources/:id', ctrlDataset.getSourcesWithSchemaID);
+router.post('/dataset/update', ctrlDataset.update);
+router.put('/dataset/publish/', ctrlDataset.publish);
 
-router.get('/dataset/getAssetUploadSignedUrl/:id',ctrlDataset.signedUrlForAssetsUpload);
+router.get('/dataset/getAssetUploadSignedUrl/:id', ctrlDataset.signedUrlForAssetsUpload);
 
 
 // dataset upload
-router.post('/dataset/upload',upload.array('file', 12), ctrlDataset.upload);
-router.get('/dataset/download/:id',ctrlDataset.download);
+router.post('/dataset/upload', upload.array('file', 12), ctrlDataset.upload);
+router.get('/dataset/download/:id', ctrlDataset.download);
 
 // dataset format data
 router.get('/dataset/getAvailableTypeCoercions', ctrlDataset.getAvailableTypeCoercions);
 router.get('/dataset/getAvailableDesignatedFields', ctrlDataset.getAvailableDesignatedFields);
 
 // dataset import
-router.post('/dataset/initializeToImport',ctrlDataset.initializeToImport);
-router.post('/dataset/preImport',ctrlDataset.preImport);
+router.post('/dataset/initializeToImport', ctrlDataset.initializeToImport);
+router.post('/dataset/preImport', ctrlDataset.preImport);
 router.post('/dataset/postImport', ctrlDataset.postImport);
 
 
-
-//signup users, profile update
-router.get('/user/search',ctrlUsers.search);
-router.post('/user',ctrlUsers.create);
-router.get('/user/:id',ctrlUsers.get);
-router.put('/user/:id',ctrlUsers.update);
-router.get('/user/:id/resend',ctrlUsers.resend);
+//manage users
+router.get('/user/search', ctrlUsers.search);
+router.post('/user', ctrlUsers.create);
+router.get('/user/:id', ctrlUsers.get);
+router.put('/user/:id', ctrlUsers.update);
+router.get('/user/:id/resend', ctrlUsers.resend);
+router.post('/user/:id', ctrlUsers.save);
+router.delete('/user/:id', ctrlUsers.delete);
 
 
 //views
 router.get('/view', ctrlView.getAll);
-router.get('/view/:id',ctrlView.get);
+router.get('/view/:id', ctrlView.get);
 
 //datasourceMapping in format view
-router.get('/dataset/getMappingDatasourceCols/:pKey',ctrlDataset.loadDatasourceColumnsForMapping);
+router.get('/dataset/getMappingDatasourceCols/:pKey', ctrlDataset.loadDatasourceColumnsForMapping);
 
 //teams, website setting info
-router.post('/team',ctrlTeam.create);
-router.get('/team',ctrlTeam.getAll);
-router.get('/team/search',ctrlTeam.search);
-router.get('/team/loadIcons',ctrlTeam.loadIcons);
+router.post('/team', ctrlTeam.create);
+router.get('/team', ctrlTeam.getAll);
+router.get('/team/search', ctrlTeam.search);
+router.get('/team/loadIcons', ctrlTeam.loadIcons);
 router.get('/team/getAssetUploadSignedUrl/:id', ctrlTeam.signedUrlForAssetsUpload);
-router.put('/team/:id',ctrlTeam.update);
+router.put('/team/:id', ctrlTeam.update);
 
 
 module.exports = router;

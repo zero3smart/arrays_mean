@@ -36,14 +36,14 @@ angular.module('arraysApp')
                 }, function () {
                     console.log('You decided to keep your dataset.');
                 });
-            }
+            };
 
             $scope.select = function (id) { 
                 $state.go('dashboard.dataset.settings', {id: id});
-            }
+            };
 
             $scope.add = function() {
                 $state.go('dashboard.dataset.settings');
-            }
+            };
         }]
     );

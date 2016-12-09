@@ -3,50 +3,50 @@
         .module('arraysApp')
         .service('AuthService', AuthService);
 
-    AuthService.$inject = [ '$window', '$q','$http'];
-    function AuthService ( $window, $q,$http) { 
-     
+    AuthService.$inject = ['$window', '$q', '$http'];
+    function AuthService($window, $q, $http) {
+
         var isLoggedIn = false;
 
-        var getToken = function() {
+        var getToken = function () {
             var user = currentUser();
             if (user) {
                 return user.authToken;
-            } 
+            }
             return null;
         };
 
 
-        var ensureLogin = function() {
+        var ensureLogin = function () {
 
             var deferred = $q.defer();
             if (isLoggedIn && currentUser() != null) {
                 deferred.resolve();
             } else {
-   
+
                 $http.get('/api/user/currentUser')
-                .then(function(result) {
-                    var userData = result.data;
-                    if (userData) {
-                        isLoggedIn = true;
-                        $window.sessionStorage.setItem('user',JSON.stringify(userData));
-                        $window.sessionStorage.setItem('team',JSON.stringify(userData._team));
-                        deferred.resolve();
-                    } else {
+                    .then(function (result) {
+                        var userData = result.data;
+                        if (userData) {
+                            isLoggedIn = true;
+                            $window.sessionStorage.setItem('user', JSON.stringify(userData));
+                            $window.sessionStorage.setItem('team', JSON.stringify(userData._team));
+                            deferred.resolve();
+                        } else {
+                            deferred.reject();
+                            $window.location.href = '/auth/login';
+                        }
+                    }, function (err) {
+                        //response error catch the redirecting
                         deferred.reject();
-                        $window.location.href= '/auth/login';
-                    }
-                },function(err) {
-                    //response error catch the redirecting
-                    deferred.reject();
-                })
-        
+                    })
+
             }
 
             return deferred.promise;
         };
 
-        var currentUser = function() {
+        var currentUser = function () {
             if ($window.sessionStorage.user) {
                 return JSON.parse($window.sessionStorage.user);
             } else {
@@ -54,40 +54,37 @@
             }
         };
 
-        var currentTeam = function() {
+        var currentTeam = function () {
             if ($window.sessionStorage.team) {
                 return JSON.parse($window.sessionStorage.team);
             } else {
                 return null;
             }
-        }
+        };
 
-        var switchTeam = function(teamInfo) {
+        var switchTeam = function (teamInfo) {
             var user = currentUser();
 
-            if (user.role  == 'superAdmin') {
-                $window.sessionStorage.setItem('team',JSON.stringify(teamInfo));
+            if (user.role == 'superAdmin') {
+                $window.sessionStorage.setItem('team', JSON.stringify(teamInfo));
             }
 
-        }
+        };
 
-
-
-
-        var logout = function() {
+        var logout = function () {
             $http.get('/auth/logout')
-            .then(function(response) {
+                .then(function (response) {
 
-                console.log(response);
-                if (response.status == 200) {
-                    isLoggedIn = false;
-                    $window.sessionStorage.removeItem('user');
-                    $window.sessionStorage.removeItem('team');
-                    $window.location.href = '/';
+                    console.log(response);
+                    if (response.status == 200) {
+                        isLoggedIn = false;
+                        $window.sessionStorage.removeItem('user');
+                        $window.sessionStorage.removeItem('team');
+                        $window.location.href = '/';
 
-                }
-              
-            })
+                    }
+
+                })
 
         };
 
@@ -120,14 +117,14 @@
         // };
 
 
-        var inviteUser = function(newUser) {
+        var inviteUser = function (newUser) {
             var deferred = $q.defer();
-            $http.post('/api/admin/invite',newUser)
-                .then(function(response) {  
+            $http.post('/api/admin/invite', newUser)
+                .then(function (response) {
                     if (response.status == 200) {
                         return deferred.resolve(response.data.message);
                     } else {
-                        
+
                     }
 
                 })
@@ -135,15 +132,15 @@
         }
 
         return {
-            currentUser : currentUser,
+            currentUser: currentUser,
             currentTeam: currentTeam,
-            isLoggedIn : isLoggedIn,
-            ensureLogIn : ensureLogin,
+            isLoggedIn: isLoggedIn,
+            ensureLogIn: ensureLogin,
             // updateProfile: updateProfile,
             inviteUser: inviteUser,
             switchTeam: switchTeam,
             logout: logout,
-            getToken : getToken
+            getToken: getToken
         };
     }
 

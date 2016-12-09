@@ -10,8 +10,8 @@ angular.module('arraysApp')
         ]
     )
     .config(
-        ['$stateProvider', '$urlRouterProvider', '$locationProvider','$httpProvider',
-            function ($stateProvider, $urlRouterProvider, $locationProvider,$httpProvider) {
+        ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider',
+            function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
                 $urlRouterProvider
                     .otherwise('/dashboard/account');
@@ -23,7 +23,7 @@ angular.module('arraysApp')
                         templateUrl: "templates/dashboard.html",
                         controller: "AdminCtrl",
                         resolve: {
-                            auth : function(AuthService) {
+                            auth: function (AuthService) {
                                 return AuthService.ensureLogIn();
                             }
                         }
@@ -44,7 +44,7 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset/list.html',
                         controller: 'DatasetListCtrl',
                         resolve: {
-                            datasets: ['DatasetService','AuthService', function(DatasetService,AuthService) {
+                            datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
                                 var currentTeam = AuthService.currentTeam();
                                 return DatasetService.getAll(currentTeam._id);
                             }]
@@ -55,7 +55,7 @@ angular.module('arraysApp')
                         controller: 'DatasetSettingsCtrl',
                         templateUrl: 'templates/dataset/settings.html',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
+                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
                             }]
                         }
@@ -65,10 +65,10 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset/upload.html',
                         controller: 'DatasetUploadCtrl',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
+                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
                             }],
-                            sources: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
+                            sources: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
                                 if ($stateParams.id)
                                     return DatasetService.getSources($stateParams.id);
                                 else
@@ -81,13 +81,13 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset/data.html',
                         controller: 'DatasetDataCtrl as vm',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
+                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
                             }],
-                            availableTypeCoercions: ['DatasetService', function(DatasetService) {
+                            availableTypeCoercions: ['DatasetService', function (DatasetService) {
                                 return DatasetService.getAvailableTypeCoercions();
                             }],
-                            availableDesignatedFields: ['DatasetService', function(DatasetService) {
+                            availableDesignatedFields: ['DatasetService', function (DatasetService) {
                                 return DatasetService.getAvailableDesignatedFields();
                             }]
                         }
@@ -97,12 +97,12 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset/views.html',
                         controller: 'DatasetViewsCtrl as vm',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
+                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
 
                                 return DatasetService.get($stateParams.id);
                             }],
                             viewResource: 'View',
-                            views: ['View',function(View) {
+                            views: ['View', function (View) {
 
                                 return View.query();
                             }]
@@ -113,7 +113,7 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset/done.html',
                         controller: 'DatasetDoneCtrl',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams', function(DatasetService, $stateParams) {
+                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
                             }]
                         }
@@ -123,33 +123,51 @@ angular.module('arraysApp')
                         controller: 'WebsiteCtrl as vm',
                         templateUrl: 'templates/website.html'
                     })
-                    .state('dashboard.users', {
-                        url: '/users',
+                    .state('dashboard.user', {
+                        url: '/user',
                         controller: 'UserCtrl as vm',
-                        templateUrl: 'templates/users.html',
+                        templateUrl: 'templates/user.html'
+                    })
+                    .state('dashboard.user.list', {
+                        url: '/list',
+                        controller: 'UserListCtrl as vm',
+                        templateUrl: 'templates/user/list.html',
                         resolve: {
-                            datasets: ['DatasetService','AuthService', function(DatasetService,AuthService) {
+                            users: ['User', 'AuthService', function (User, AuthService) {
                                 var currentTeam = AuthService.currentTeam();
-                                return DatasetService.getAll(currentTeam._id);
+                                var users = [];
+                                if (currentTeam.editors) users = currentTeam.editors;
+                                var users = users.concat([currentTeam.admin]);
+                                return User.search({_id: users});
                             }]
                         }
                     })
-
-                     .state('dashboard.teams', {
+                    .state('dashboard.user.edit', {
+                        url: '/edit/:id',
+                        controller: 'UserEditCtrl as vm',
+                        templateUrl: 'templates/user/edit.html',
+                        resolve: {
+                            datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
+                                var currentTeam = AuthService.currentTeam();
+                                return DatasetService.getAll(currentTeam._id);
+                            }],
+                            selectedUser: ['User', '$stateParams', function (User, $stateParams) {
+                                if ($stateParams.id)
+                                    return User.get({id: $stateParams.id});
+                                else
+                                    return {};
+                            }]
+                        }
+                    })
+                    .state('dashboard.teams', {
                         url: '/teams',
                         controller: 'TeamCtrl',
                         templateUrl: 'templates/teams.html',
                         resolve: {
-                            teams: ['Team',function(Team) {
+                            teams: ['Team', function (Team) {
                                 return Team.query();
                             }]
                         }
-                    })
-
-
-                    .state('login', {
-                        url: '/login',
-                        templateUrl: 'templates/login.html'
                     });
 
                 // use the HTML5 History API

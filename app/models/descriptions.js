@@ -80,7 +80,7 @@ var DatasourceDescription_scheme = Schema({
 
     author: {type: Schema.Types.ObjectId, ref: 'User'},
     updatedBy: {type: Schema.Types.ObjectId, ref: 'User'},
-    
+
     viewers: [{type: Schema.Types.ObjectId, ref: 'User'}],
     editors: [{type: Schema.Types.ObjectId, ref: 'User'}],
 
@@ -384,7 +384,7 @@ datasource_description.GetDescriptionsWith_uid_importRevision = _GetDescriptions
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
-        .then(function(datasourceDescription) {
+        .then(function (datasourceDescription) {
 
             if (!datasourceDescription.fe_visible || !datasourceDescription.imported) return fn();
             if (datasourceDescription.isPublished) return fn(null, datasourceDescription);
@@ -408,8 +408,9 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
             }
 
         })
-        .catch(function(err) {
-            winston.error("❌  cannot bind Data to the view, error: ", err);
+        .catch(function (err) {
+            if (err) winston.error("❌  cannot bind Data to the view, error: ", err);
+            fn(err);
         });
 }
 

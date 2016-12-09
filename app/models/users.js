@@ -21,6 +21,10 @@ var userSchema = new mongoose.Schema({
         default: false
     },
     _team: {type: Schema.Types.ObjectId, ref: 'Team'},
+    active: {
+        type: Boolean,
+        default: true
+    },
     invited: Array //tmp array for user hasnt confirmed invitation
 }, {timestamps:true});
 

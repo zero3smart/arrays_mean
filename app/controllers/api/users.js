@@ -4,6 +4,7 @@ var mailer = require('../../libs/utils/nodemailer');
 var jwt = require('jsonwebtoken');
 var Batch = require('batch');
 var datasource_descriptions = require('../../models/descriptions');
+var winston = require('winston');
 
 module.exports.index = function (req, next) {
     var self = this;
@@ -20,191 +21,228 @@ module.exports.index = function (req, next) {
 };
 
 
+module.exports.search = function (req, res) {
+    User.find(req.query, function (err, foundUsers) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.json(foundUsers);
+        }
 
-module.exports.search = function(req,res) {
-	User.find(req.query,function(err,foundUsers) {
-		if (err) {
-			res.send(err);
-		} else {
-			res.json(foundUsers);
-		}
-
-	})
+    })
 }
 
 
-module.exports.get = function(req,res) {
+module.exports.get = function (req, res) {
 
-	var id = req.params.id;
-	if (id == 'currentUser') {
-		if (!req.user) {
-			res.status(401).send({error: 'unauthorized'});
-		} else {
-			var userId = req.user;
-			User.findById(userId)
-			.populate('_team')
-			.exec(function(err,user) {
-				var token = jwt.sign({_id:user._id},process.env.SESSION_SECRET);
-				var role;
+    var id = req.params.id;
+    if (id == 'currentUser') {
+        if (!req.user) {
+            res.status(401).send({error: 'unauthorized'});
+        } else {
+            var userId = req.user;
+            User.findById(userId)
+                .populate('_team')
+                .exec(function (err, user) {
+                    var token = jwt.sign({_id: user._id}, process.env.SESSION_SECRET);
+                    var role;
 
+                    var batch = new Batch();
 
-				var batch = new Batch();
+                    batch.concurrency(1);
+                    batch.push(function (done) {
+                        if (user.isSuperAdmin()) {
+                            role = 'superAdmin';
+                            done();
+                        } else if (user._team.admin == userId) {
+                            role = 'admin';
+                            done();
+                        } else {
+                            datasource_descriptions.find({editors: userId}, function (err, desc) {
+                                if (err) {
+                                    done(err);
+                                } else if (!desc || desc.length == 0) {
+                                    role = "viewer";
 
-				batch.concurrency(1);
-				batch.push(function(done) {
-					if (user.isSuperAdmin()) {
-						role = 'superAdmin';
-						done();
-					} else if (user._team.admin == userId) {
-						role = 'admin';
-						done();
-					} else {
-						datasource_descriptions.find({editors:userId},function(err,desc) {
-							if (err) {
-								done(err);
-							} else if (!desc || desc.length == 0) {
-								role = "viewer";
+                                } else {
+                                    role = "editor";
+                                }
+                                done();
+                            })
+                        }
+                    })
 
-							} else {
-								role = "editor";
-							}
-							done();
-						})
-					}
-				})
-				
-				batch.end(function(err) {
-					if(err) {
-						res.status(500).send(err);
-					} else {
-						var userInfo = {
-							_id: user._id,
-			                provider: user.provider,
-			                email: user.email,
-			                _team: user._team,
-			                firstName: user.firstName,
-			                lastName: user.lastName,
-			                authToken: token,
-			                role: role
-						}
-						return res.json(userInfo);
-					}
-				})
-			})
-		}
+                    batch.end(function (err) {
+                        if (err) {
+                            res.status(500).send(err);
+                        } else {
+                            var userInfo = {
+                                _id: user._id,
+                                provider: user.provider,
+                                email: user.email,
+                                _team: user._team,
+                                firstName: user.firstName,
+                                lastName: user.lastName,
+                                authToken: token,
+                                role: role
+                            }
+                            return res.json(userInfo);
+                        }
+                    })
+                })
+        }
 
-	} else {
-		User.findById(id)
-			.populate('_team')
-			.exec(function(err,user) {
-				if (err) {
-					res.send(err);
-				} else {
-					res.json(user);
-				}
-			})
-	}
-	
-} 
+    } else {
+        User.findById(id)
+            .populate('_team')
+            .exec(function (err, user) {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.json(user);
+                }
+            })
+    }
 
-module.exports.create = function(req,res) {
-	User.create(req.body,function(err,user) {
-		if (err) {
-			res.send(err);
-		} else {
-			res.json(user);
-		}
-	})
+}
+
+module.exports.create = function (req, res) {
+    User.create(req.body, function (err, user) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.json(user);
+        }
+    })
 }
 
 
-module.exports.resend = function(req,res) {
-	var userId = req.params.id;
-	if (req.query.emailType == 'activation') {
-		User.findById(userId,function(err,user){
-			if (err) {res.send(err);}
-			else if (!user) {
-				res.status(404).send('Cannot find User');
-			} else {
-				mailer.sendActivationEmail(user, function(err) {
-					if (err) {
-						res.status(500).send('Cannot send activation email');
-					} else {
-						return res.redirect('/signup/success/'+userId);
-					}
-				})
-			}
-		})
+module.exports.resend = function (req, res) {
+    var userId = req.params.id;
+    if (req.query.emailType == 'activation') {
+        User.findById(userId, function (err, user) {
+            if (err) {
+                res.send(err);
+            }
+            else if (!user) {
+                res.status(404).send('Cannot find User');
+            } else {
+                mailer.sendActivationEmail(user, function (err) {
+                    if (err) {
+                        res.status(500).send('Cannot send activation email');
+                    } else {
+                        return res.redirect('/signup/success/' + userId);
+                    }
+                })
+            }
+        })
 
-	} else { //resend invitation user
+    } else { //resend invitation user
 
-	}
+    }
 }
 
 
+module.exports.update = function (req, res) {
+
+    var team = req.body._team;
+    var teamId = req.body._team._id;
+    if (!teamId) { // admin/owner of the team signing up
+        team.admin = req.body._id;
+        Team.create(team, function (err, createdTeam) {
+            if (err) {
+                res.send(err);
+            }
+            else {
+                teamId = createdTeam._id;
+                User.findById(req.body._id, function (err, user) {
+                    if (err) {
+                        res.send(err);
+                    } else if (!user) {
+                        res.status(404).send('User not found');
+                    } else {
+                        user.firstName = req.body.firstName;
+                        user.lastName = req.body.lastName;
+                        if (user.provider == 'local' && req.body.password) {
+                            user.setPassword(req.body.password);
+                        }
+                        user._team = teamId;
+                        user.save(function (err, savedUser) {
+                            if (err) {
+                                res.send(err);
+                            }
+                            else {
+                                mailer.sendActivationEmail(savedUser, function (err) {
+                                    if (err) {
+                                        res.status(500).send('Cannot send activation email');
+                                    } else {
+                                        res.json(savedUser);
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        })
+    } else { //invited people, no need to send email
+        User.findById(req.body._id, function (err, user) {
+            if (err) {
+                res.send(err);
+            } else if (!user) {
+                res.status(404).send('User not found');
+            } else {
+                user.firstName = req.body.firstName;
+                user.lastName = req.body.lastName;
+                user.activated = true;
+                if (user.provider == 'local' && req.body.password) {
+                    user.setPassword(req.body.password);
+                }
+                user.save(function (err, savedUser) {
+                    if (err) {
+                        res.send(err);
+                    }
+                    else {
+                        res.json(savedUser);
+                    }
+                })
+            }
+        })
+    }
+};
 
 
+module.exports.save = function(req, res) {
+    if (!req.params.id) { return res.send(new Error('No Id given'))};
 
-module.exports.update = function(req,res) {
+    console.log(req.params.id, req.body.active);
 
-	var team = req.body._team;
-	var teamId = req.body._team._id;
-	if (!teamId) { // admin/owner of the team signing up
-		team.admin = req.body._id;
-		Team.create(team,function(err,createdTeam) {
-			if (err) {res.send(err);}
-			else {
-				teamId = createdTeam._id;
-				User.findById(req.body._id,function(err,user) {
-					if (err) {
-						res.send(err);
-					} else if (!user) {
-						res.status(404).send('User not found');
-					} else {
-						user.firstName = req.body.firstName;
-						user.lastName = req.body.lastName;
-						if (user.provider == 'local' && req.body.password) {
-							user.setPassword(req.body.password);
-						} 
-						user._team = teamId;
-						user.save(function(err,savedUser) {
-							if (err) {res.send(err);}
-							else {
-								mailer.sendActivationEmail(savedUser, function(err) {
-									if (err) {
-										res.status(500).send('Cannot send activation email');
-									} else {
-										res.json(savedUser);
-									}
-								})
-							}
-						})
-					}
-				})
-			}
-		})
-	} else { //invited people, no need to send email
-		User.findById(req.body._id,function(err,user) {
-			if (err) {
-				res.send(err);
-			} else if (!user) {
-				res.status(404).send('User not found');
-			} else {
-				user.firstName = req.body.firstName;
-				user.lastName = req.body.lastName;
-				user.activated = true;
-				if (user.provider == 'local' && req.body.password) {
-					user.setPassword(req.body.password);
-				} 
-				user.save(function(err,savedUser) {
-					if (err) {res.send(err);}
-					else {
-						res.json(savedUser);
-					}
-				})
-			}
-		})
-	}
-}
+    User.findById(req.params.id, function(err, user) {
+        if (err) return res.send(err);
+        if (!user) return res.send(new Error('No User Exists'));
 
+        user.firstName = req.body.firstName;
+        user.lastName = req.body.lastName;
+        user.active = req.body.active;
+        user.save(function (err, savedUser) {
+            if (err)
+                res.send(err);
+            else
+                res.json(savedUser);
+        });
+    });
+};
 
+module.exports.delete = function(req, res) {
+    User.findById(req.params.id, function(err, user) {
+        if (err) return res.send(err);
+        if (!user) return res.send(new Error('No User Exists'));
+
+        // user.remove(function(err) {
+            if (err) return res.send(err);
+
+            winston.info("✅  Removed user : " + user._id);
+            res.json({success: 'ok'});
+        // });
+    });
+};
