@@ -1,10 +1,11 @@
 angular
     .module('arraysApp')
-    .controller('TeamCtrl', ['$scope', '$state', 'AuthService','Team','teams','$mdToast',
-        function ($scope, $state, AuthService,Team,teams,$mdToast) {
+    .controller('TeamCtrl', ['$scope', '$state', 'AuthService','Team','$mdToast',
+        function ($scope, $state, AuthService,Team,$mdToast) {
 
-          $scope.teams = teams;
+          console.log($scope.teams);
 
+         
 
             $scope.checkSubdomain = function() {
 
@@ -53,17 +54,14 @@ angular
 
                 })
                
-                
-            
-
-
             }
 
             $scope.signInWithTeam = function($index) {
-              AuthService.switchTeam($scope.teams[$index]);
-              $scope.$parent.team = AuthService.currentTeam();
+              AuthService.switchTeam($scope.teams[$index]._id)
+              .then(function() {
+                  $scope.$parent.team = AuthService.currentTeam();
 
-
+              })
             }
            
    

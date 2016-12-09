@@ -112,8 +112,8 @@ module.exports.get = function (req, res) {
             .lean()
             .exec(function (err, user) {
 
-                console.log(err);
-                console.log(user);
+                // console.log(err);
+                // console.log(user);
                 if (err) {
                     res.send(err);
                 } else {
@@ -184,7 +184,7 @@ module.exports.update = function (req, res) {
                         if (user.provider == 'local' && req.body.password) {
                             user.setPassword(req.body.password);
                         }
-                        user._team = teamId;
+                        user._team = [teamId];
                         user.save(function (err, savedUser) {
                             if (err) {
                                 res.send(err);

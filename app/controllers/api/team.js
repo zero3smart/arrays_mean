@@ -11,7 +11,6 @@ module.exports.getAll = function (req, res) {
             if (err) {
                 res.send(err);
             } else {
-                // console.log(teams);
                 res.json(teams);
             }
         })
@@ -30,6 +29,7 @@ module.exports.create = function (req, res) {
 }
 
 module.exports.search = function (req, res) {
+
     Team.find(req.query, function (err, foundTeams) {
         if (err) {
             res.send(err);

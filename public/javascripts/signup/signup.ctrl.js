@@ -32,7 +32,7 @@
 		$scope.invitedUser = false;
 		$scope.showPasswordToolTip = false;
 		$scope.user = User.get({id:userId},function() {
-			if (!$scope.user._team){
+			if (!$scope.user._team || $scope.user._team.length == 0){
 				$scope.user._team = {};
 			} else {
 				$scope.infoForm.subdomain.$setValidity('subdomainAvailable',false);

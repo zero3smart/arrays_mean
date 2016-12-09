@@ -5,6 +5,7 @@ angular
 
             $scope.user = AuthService.currentUser();
             $scope.team = AuthService.currentTeam();
+            $scope.teams = AuthService.allTeams();
 
 
             if (!isSmartDevice($window)) {

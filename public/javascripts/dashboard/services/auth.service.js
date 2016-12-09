@@ -3,8 +3,8 @@
         .module('arraysApp')
         .service('AuthService', AuthService);
 
-    AuthService.$inject = ['$window', '$q', '$http'];
-    function AuthService($window, $q, $http) {
+    AuthService.$inject = ['$window', '$q', '$http','Team'];
+    function AuthService($window, $q, $http,Team) {
 
         var isLoggedIn = false;
 
@@ -29,8 +29,18 @@
                         var userData = result.data;
                         if (userData) {
                             isLoggedIn = true;
+
                             $window.sessionStorage.setItem('user', JSON.stringify(userData));
-                            $window.sessionStorage.setItem('team', JSON.stringify(userData._team));
+                            $window.sessionStorage.setItem('team', JSON.stringify(userData._team[0]));
+
+                            if (userData.role == "superAdmin") {
+                                Team.query()
+                                .$promise.then(function(allTeams) {
+                                     $window.sessionStorage.setItem('teams', JSON.stringify(allTeams));
+                                })
+                            } else if (userData.role == 'editor' || userData.role == 'admin') {
+                                $window.sessionStorage.setItem('teams', JSON.stringify(userData._team));
+                            }
                             deferred.resolve();
                         } else {
                             deferred.reject();
@@ -45,6 +55,14 @@
 
             return deferred.promise;
         };
+
+        var allTeams = function() {
+             if ($window.sessionStorage.teams) {
+                return JSON.parse($window.sessionStorage.teams);
+            } else {
+                return null;
+            }
+        }
 
         var currentUser = function () {
             if ($window.sessionStorage.user) {
@@ -62,14 +80,21 @@
             }
         };
 
-        var switchTeam = function (teamInfo) {
-            var user = currentUser();
 
-            if (user.role == 'superAdmin') {
-                $window.sessionStorage.setItem('team', JSON.stringify(teamInfo));
-            }
+        var switchTeam = function (teamId) {
+            var deferred = $q.defer();
 
+            Team.search({_id: teamId})
+                .$promise
+                .then(function(teams) {
+                    $window.sessionStorage.setItem('team', JSON.stringify(teams[0]));
+                    deferred.resolve();
+                })
+            return deferred.promise;
+                
         };
+
+
 
         var logout = function () {
             $http.get('/auth/logout')
@@ -136,6 +161,7 @@
             currentTeam: currentTeam,
             isLoggedIn: isLoggedIn,
             ensureLogIn: ensureLogin,
+            allTeams: allTeams,
             // updateProfile: updateProfile,
             inviteUser: inviteUser,
             switchTeam: switchTeam,

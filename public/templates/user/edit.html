@@ -6,7 +6,7 @@
         </md-input-container>
 
         <div ng-messages="vm.userForm.email.$error">
-            <div ng-message="team">This user belongs to another team.</div>
+            <div ng-message="unique">This user is an existing user. </div>
         </div>
 
     </div>
@@ -26,14 +26,14 @@
             <md-input-container class="md-block" flex-gt-sm>
                 <label>Select Datasets</label>
                 <md-select name="datasets" required multiple ng-model="role.datasets">
-                    <md-option ng-repeat="dataset in datasets" value="{{dataset._id}}">
+                    <md-option ng-repeat="dataset in datasets | filter: checkDuplicateDatasets($index)" value="{{dataset._id}}">
                         {{dataset.title}}
                     </md-option>
                 </md-select>
             </md-input-container>
 
            <div flex="10">
-                <md-button class="md-raised" aria-label="Remove OneToOneOverride"><span
+                <md-button class="md-raised" ng-click="removeUserRole($index)" aria-label="Remove userRole"><span
                         class="glyphicon glyphicon-remove"></span></md-button>
             </div>
 

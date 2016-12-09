@@ -160,11 +160,6 @@ angular.module('arraysApp')
                         url: '/teams',
                         controller: 'TeamCtrl',
                         templateUrl: 'templates/teams.html',
-                        resolve: {
-                            teams: ['Team', function (Team) {
-                                return Team.query();
-                            }]
-                        }
                     });
 
                 // use the HTML5 History API
