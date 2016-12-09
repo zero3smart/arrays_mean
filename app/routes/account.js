@@ -68,9 +68,9 @@ function assignRoleToDatasets(decoded,callback) {
     async.each(decoded.datasets,function(datasetId,eachCb) {
         var pushQuery = {$push: {}};
         if (decoded.role == 'editor') {
-            pushQuery.$push["_editors"] = decoded._id;
+            pushQuery.$push["_editors"] = datasetId
         } else if (decoded.role == 'viewer') {
-            pushQuery.$push["_viewers"] = decoded._id;
+            pushQuery.$push["_viewers"] = datasetId
         }
         User.findByIdAndUpdate(decoded._id,pushQuery,function(err) {
             eachCb(err);

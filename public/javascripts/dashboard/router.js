@@ -133,12 +133,9 @@ angular.module('arraysApp')
                         controller: 'UserListCtrl as vm',
                         templateUrl: 'templates/user/list.html',
                         resolve: {
-                            users: ['User', 'AuthService', function (User, AuthService) {
+                            users: ['User', 'AuthService', function (User, AuthService) { //all users in this team, except myself
                                 var currentTeam = AuthService.currentTeam();
-                                var users = [];
-                                if (currentTeam.editors) users = currentTeam.editors;
-                                var users = users.concat([currentTeam.admin]);
-                                return User.search({_id: users});
+                                return User.getAll({teamId: currentTeam._id});
                             }]
                         }
                     })
@@ -153,7 +150,7 @@ angular.module('arraysApp')
                             }],
                             selectedUser: ['User', '$stateParams', function (User, $stateParams) {
                                 if ($stateParams.id)
-                                    return User.get({id: $stateParams.id});
+                                    return User.get({id: $stateParams.id}).$promise;
                                 else
                                     return {};
                             }]

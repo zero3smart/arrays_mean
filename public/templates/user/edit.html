@@ -10,26 +10,47 @@
         </div>
 
     </div>
-    <div layout-gt-xs="row">
-        <md-input-container class="md-block" flex-gt-sm>
-            <label>Select Datasets</label>
-            <md-select name="datasets" required multiple ng-model="selectedUser.datasets">
-                <md-option ng-repeat="dataset in datasets" value="{{dataset._id}}">
-                    {{dataset.title}}
-                </md-option>
-            </md-select>
-        </md-input-container>
 
-        <md-input-container class="md-block" flex-gt-sm>
-            <label>Role</label>
-            <md-select name="role" required ng-model="selectedUser.role">
-                <md-option ng-repeat="user in availableUserRoles" value="{{user.value}}">
-                    {{user.name}}
-                </md-option>
-            </md-select>
-        </md-input-container>
+
+    <div ng-repeat="role in userRoles track by $index" >
+        <div layout-gt-xs="row">
+            <md-input-container class="md-block" flex-gt-sm>
+                    <label>Role</label>
+                   <md-select name="role" required ng-model="role.name">
+                        <md-option ng-repeat="role in availableUserRoles | filter: checkDuplicateRole($index)" value="{{role.value}}">
+                            {{role.name}}
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+            
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Select Datasets</label>
+                <md-select name="datasets" required multiple ng-model="role.datasets">
+                    <md-option ng-repeat="dataset in datasets" value="{{dataset._id}}">
+                        {{dataset.title}}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+
+           <div flex="10">
+                <md-button class="md-raised" aria-label="Remove OneToOneOverride"><span
+                        class="glyphicon glyphicon-remove"></span></md-button>
+            </div>
+
+        
+        </div>
     </div>
 
+
+
+    <md-button class="md-raised" ng-click="addMoreRole()"><span
+            class="glyphicon glyphicon-plus"></span>Add Role
+    </md-button>
+
+
+
+
+    
 
     <div layout="row" layout-align="end center">
         <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-raised" type="button" ng-if="!userId">

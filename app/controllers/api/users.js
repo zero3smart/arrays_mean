@@ -32,6 +32,21 @@ module.exports.search = function (req, res) {
     })
 };
 
+module.exports.getAll = function(req,res) {
+    if (!req.user) {
+        res.status(401).send({error: 'unauthorized'});
+    }
+    var teamId = req.params.teamId;
+    User.find({_team: teamId, _id:{$ne: req.user}})
+    .exec(function(err,allOtherUsers) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.json(allOtherUsers);
+        }
+    })
+}
+
 module.exports.get = function (req, res) {
 
     var id = req.params.id;
@@ -94,7 +109,11 @@ module.exports.get = function (req, res) {
     } else {
         User.findById(id)
             .populate('_team')
+            .lean()
             .exec(function (err, user) {
+
+                console.log(err);
+                console.log(user);
                 if (err) {
                     res.send(err);
                 } else {
