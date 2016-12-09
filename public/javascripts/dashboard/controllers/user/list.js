@@ -7,8 +7,11 @@ angular
             $scope.selectedUser = null;
 
             $scope.select = function(currentUser, user) {
-                if (currentUser._id != user._id)
-                    $state.go('dashboard.user.edit', {id: currentUser._id});
+                if (currentUser._id != user._id) {
+                      $state.go('dashboard.user.edit', {id: currentUser._id});
+
+                }
+                  
             };
 
             $scope.toggleActive = function(user) {

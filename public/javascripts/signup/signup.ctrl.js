@@ -37,6 +37,7 @@
 			} else {
 				$scope.infoForm.subdomain.$setValidity('subdomainAvailable',false);
 				$scope.invitedUser = true;
+				$scope.user._team = $scope.user._team[0];
 
 			}
 		});

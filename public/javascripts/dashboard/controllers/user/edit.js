@@ -22,7 +22,7 @@ angular
                 }
 
             } else {
-                $scope.$parent.$parent.selectedUser._team = $scope.team._id;
+                $scope.$parent.$parent.selectedUser._team = [$scope.team._id];
 
                 $scope.userRoles.push({name:"",datasets:[]});
             }

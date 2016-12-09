@@ -37,18 +37,21 @@ module.exports.sendActivationEmail = function(user, cb) {
 
 	}
 	sendEmail(mailOptions,function(err) {
+		console.log(err);
 		cb(err);
 	})
 }
 
 
-module.exports.sendInvitationEmail = function(admin,invite,role,datasets,cb) {
+
+
+module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,cb) {
 	var token = jwt.sign({
-		_id: invite._id,
-		email: invite.email,
-		role: role,
-		datasets: datasets,
-		admin: admin._id
+		_id: invitee._id,
+		email: invitee.email,
+		_editors: editors,
+		_viewers: viewers,
+		host: host._id
 	},jwtSecret,{expiresIn:'2h'});
 
 	var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
@@ -57,12 +60,11 @@ module.exports.sendInvitationEmail = function(admin,invite,role,datasets,cb) {
     var invitationLink = baseURL + '/account/invitation?token=' + token;
     var mailOptions = {
     	from: 'info@arrays.co',
-    	to: invite.email,
-    	subject: 'Invitation from ' + admin.firstName + " " + admin.lastName,
-    	html: 'Hi! <br>This is a notice that ' + admin.firstName + " " + admin.lastName + " from team " +
-    	admin._team.title + " invited you to join their projects. <br> Please use the" + 
+    	to: invitee.email,
+    	subject: 'Invitation from Team ' + team.title,
+    	html: 'Hi! <br>This is a notice that the admin of the team ' +
+    	team.title + " invited you to join their projects. <br> Please use the" + 
     	" following link to accept the invitation: <a href='" + invitationLink + "'> here</a><br><br> Sincerely, <br> The Arrays Team"
-
     }
     sendEmail(mailOptions,function(err) {
     	console.log(err);

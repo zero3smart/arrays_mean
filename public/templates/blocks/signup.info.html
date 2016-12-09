@@ -87,10 +87,10 @@
 			<label>Team Title</label><small class="pull-right">You can change this later</small>
 	  		<div class="input-group">
 			  <span class="input-group-addon"><i class="fa fa-group"></i></span>
-			  <input ng-model='user._team.title[0]' ng-disabled="invitedUser" ng-model-options="{updateOn:'blur'}" type="text" class="form-control">
+			  <input ng-model='user._team.title' ng-disabled="invitedUser" ng-model-options="{updateOn:'blur'}" type="text" class="form-control">
 			</div>
 		</div>
-		<subdomain-suggestion team-title='user._team.title[0]' subdomain='user._team.subdomain'></subdomain-suggestion>
+		<subdomain-suggestion team-title='user._team.title' subdomain='user._team.subdomain'></subdomain-suggestion>
 
 		<div class="form-group" ng-class="{ 'has-error': infoForm.subdomain.$touched && infoForm.subdomain.$invalid}">
 	 		<label>Your subdomain</label>

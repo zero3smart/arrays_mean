@@ -37,12 +37,10 @@ router.get('/invitation', function (req, res) {
         if (err) {
             return res.render("partials/invitation.error.html", {name: err.name, message: err.message});
         } else {
-            assignRoleToDatasets(decoded,function(err) {
+            assignRoleToUser(decoded,function(err) {
                 if (err) {
                     return res.render("partials/invitation.error.html", {name: err.name, message: err.message});
                 } else {
-                    //TODO: only redirect to here when user is new, otherwise -> /auth/login show message "The invitation" has 
-                    // been confirmed;
                     return res.redirect("/signup/info/"+ decoded._id);
                 }
             })
@@ -64,42 +62,25 @@ function compareArrays(array1,array2) {
 }
 
 
-function assignRoleToDatasets(decoded,callback) {
-    async.each(decoded.datasets,function(datasetId,eachCb) {
-        var pushQuery = {$push: {}};
-        if (decoded.role == 'editor') {
-            pushQuery.$push["_editors"] = datasetId
-        } else if (decoded.role == 'viewer') {
-            pushQuery.$push["_viewers"] = datasetId
-        }
-        User.findByIdAndUpdate(decoded._id,pushQuery,function(err) {
-            eachCb(err);
-        })
-
-    },function(err) {
-        if (!err) {
-            User.findById(decoded.admin,function(err,theAdmin) {
-                if (!err) {
-                    for (var i = 0; i < theAdmin.invited.length; i++) {
-                        if (theAdmin.invited[i].user == decoded._id && theAdmin.invited[i].role == decoded.role &&
-                            compareArrays(theAdmin.invited[i].datasets,decoded.datasets)) {
-                            theAdmin.invited.splice(i,1);
-                            break;
-                        }
-                    }
+function assignRoleToUser (decoded,callback) {
+    User.findOneAndUpdate(decoded._id,{$set: {"_editors" : decoded._editors, "_viewers" : decoded._viewers}})
+    .exec(function(err) {
+        if (err) {
+            callback(err);
+        } else {
+            User.findById(decoded.host,function(err,theAdmin) {
+                if (err) {
+                    callback(err);
+                } else {
+                    delete theAdmin.invited[decoded._id];
                     theAdmin.save(function(err) {
                         callback(err);
-
-                    });
-                } else {
-                    callback(err);
+                    })
                 }
             })
-
-        } else {
-            callback(err);
         }
     })
+
 }
 
 

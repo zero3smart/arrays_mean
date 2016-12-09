@@ -11,6 +11,10 @@
 
     </div>
 
+     <md-button ng-if="selectedUser.activated==false && selectedUser._team.length > 0" class="md-raised" ng-click="addMoreRole()"><span
+            class="fa fa-share"></span> Resend Invitation
+    </md-button>
+
 
     <div ng-repeat="role in userRoles track by $index" >
         <div layout-gt-xs="row">
@@ -43,7 +47,7 @@
 
 
 
-    <md-button class="md-raised" ng-click="addMoreRole()"><span
+    <md-button ng-if="selectedUser.activated==true" class="md-raised" ng-click="addMoreRole()"><span
             class="glyphicon glyphicon-plus"></span>Add Role
     </md-button>
 
@@ -57,7 +61,7 @@
             <span class="fa fa-plus"></span><span class="btn-label">Invite User</span>
         </md-button>
 
-        <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="saveUser()" class="md-raised" type="button" ng-if="userId">
+        <md-button ng-if="selectedUser.activated==true" ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="saveUser()" class="md-raised" type="button" ng-if="userId">
             <span class="fa fa-check"></span><span class="btn-label">Save User</span>
         </md-button>
     </div>

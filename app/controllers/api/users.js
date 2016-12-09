@@ -165,6 +165,7 @@ module.exports.update = function (req, res) {
 
     var team = req.body._team;
     var teamId = req.body._team._id;
+
     if (!teamId) { // admin/owner of the team signing up
         team.admin = req.body._id;
         Team.create(team, function (err, createdTeam) {

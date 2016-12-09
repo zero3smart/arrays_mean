@@ -8,14 +8,22 @@
 
 <md-list ng-cloak>
     <md-list-item ng-repeat="person in users"  ng-click="select(person, user)" class="noright">
+
         <p>
             {{ $index+1 }}. {{person.firstName}} {{person.lastName}} ({{ person.email }})
         </p>
+
         <md-checkbox class="md-secondary" ng-model="person.active" ng-change="toggleActive(person)"
-                     ng-if="user._id != person._id">{{ person.active ? 'Active' : 'Inactive' }}
+                 ng-if="user._id != person._id && person.activated==true">{{ person.active ? 'Active' : 'Inactive' }}
         </md-checkbox>
         <i class="md-secondary glyphicon glyphicon-trash" ng-click="remove(person)" aria-label="Delete"
-           ng-if="user._id != person._id"></i>
-        <md-divider ng-if="!$last"></md-divider>
+           ng-if="user._id != person._id && person.activated==true"></i>
+  
+        <div ng-if="person.activated==false && person._team.length > 0">
+            <span>Pending Invitation</span>
+        </div>
+         <md-divider ng-if="!$last"></md-divider>
+
+      
     </md-list-item>
 </md-list>
