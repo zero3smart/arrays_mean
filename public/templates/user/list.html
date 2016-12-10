@@ -7,7 +7,7 @@
 </md-toolbar>
 
 <md-list ng-cloak>
-    <md-list-item ng-repeat="person in users"  ng-click="select(person, user)" class="noright">
+    <md-list-item ng-repeat="person in users track by $index"  ng-click="select(person, user)" class="noright">
 
         <p>
             {{ $index+1 }}. {{person.firstName}} {{person.lastName}} ({{ person.email }})
@@ -16,9 +16,9 @@
         <md-checkbox class="md-secondary" ng-model="person.active" ng-change="toggleActive(person)"
                  ng-if="user._id != person._id && person.activated==true">{{ person.active ? 'Active' : 'Inactive' }}
         </md-checkbox>
-        <i class="md-secondary glyphicon glyphicon-trash" ng-click="remove(person)" aria-label="Delete"
+
+        <i class="md-secondary glyphicon glyphicon-trash" ng-click="remove($index)" aria-label="Delete"
            ng-if="user._id != person._id && person.activated==true"></i>
-  
         <div ng-if="person.activated==false && person._team.length > 0">
             <span>Pending Invitation</span>
         </div>

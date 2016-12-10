@@ -46,8 +46,6 @@ angular
                bindUserRolesToSelectedUser();
 
 
-
-
                 $scope.selectedUser.$save(function(savedUser) {
                     if (savedUser) {
 
@@ -57,6 +55,9 @@ angular
                                 .position('top right')
                                 .hideDelay(3000)
                         );
+
+                        $scope.vm.userForm.$setPristine();
+                        $scope.vm.userForm.$setUntouched();
                     }
                 },function(err) {
 
@@ -116,8 +117,6 @@ angular
                         );
 
                         $scope.selectedUser = null;
-                        $scope.userRoles = [{name:"",datasets:[]}];
-
                         $scope.vm.userForm.$setPristine();
                         $scope.vm.userForm.$setUntouched();
 

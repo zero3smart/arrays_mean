@@ -260,11 +260,10 @@ module.exports.delete = function(req, res) {
         if (err) return res.send(err);
         if (!user) return res.send(new Error('No User Exists'));
 
-        // user.remove(function(err) {
+        user.remove(function(err) {
             if (err) return res.send(err);
-
             winston.info("✅  Removed user : " + user._id);
             res.json({success: 'ok'});
-        // });
+        });
     });
 };

@@ -1,9 +1,11 @@
 angular
     .module('arraysApp')
-    .controller('UserListCtrl', ['$scope', '$state', 'AuthService', 'User', '$mdToast', 'users',
-        function ($scope, $state, AuthService, User, $mdToast, users) {
+    .controller('UserListCtrl', ['$scope', '$state', 'AuthService', 'User', '$mdToast', 'users','$mdDialog',
+        function ($scope, $state, AuthService, User, $mdToast, users,$mdDialog) {
 
             $scope.users = users;
+
+
             $scope.selectedUser = null;
 
             $scope.select = function(currentUser, user) {
@@ -34,10 +36,44 @@ angular
                 });
             };
 
-            $scope.remove = function(user) {
-                user.$remove(function(res) {
-                    console.log(user, res);
+            $scope.remove = function($index) {
+
+                var confirm = $mdDialog.confirm()
+                    .title('Are you sure to delete this user? ')
+                    .textContent('This user will be deleted permanently.')
+                    .targetEvent(event)
+                    .ok('Yes')
+                    .cancel('No');
+                $mdDialog.show(confirm).then(function () {
+                    var user = $scope.users[$index];
+                    user.$remove(function(res) {
+                        if (res.success == 'ok') {
+                            $scope.users.splice($index,1);
+
+                             $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent('User deleted successfully!')
+                                    .position('top right')
+                                    .hideDelay(5000)
+                            );
+
+                        
+                        }
+
+
+                    },function(err) {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent(err)
+                                .position('top right')
+                                .hideDelay(5000)
+                        );
+                    })
+
+                }, function () {
+                    console.log('You decided to keep this user.');
                 });
+            
             };
 
         }]);

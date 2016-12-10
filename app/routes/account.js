@@ -77,16 +77,12 @@ function assignRoleToUser (decoded,callback) {
         if (err) {
             callback(err);
         } else {
-            User.findById(decoded.host,function(err,theAdmin) {
-                if (err) {
-                    callback(err);
-                } else {
-                    delete theAdmin.invited[decoded._id];
-                    theAdmin.save(function(err) {
-                        callback(err);
-                    })
-                }
-            })
+            var unsetQuery = {};
+            unsetQuery[$unset] = {};
+            unsetQuery[$unset]["invited."+ decoded._id] = 1;
+
+            User.update({_id: decoded.host},unsetQuery)
+            .exec(callback);
         }
     })
 

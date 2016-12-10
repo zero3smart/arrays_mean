@@ -177,7 +177,7 @@ module.exports.remove = function (req, res) {
 
 
     batch.push(function(done) {
-        User.find({_editors:req.body.id},{$pull: {_editors: req.body.id}},done);
+        User.update({_editors:req.body.id},{$pull: {_editors: req.body.id}},done);
     })
 
     batch.end(function (err) {
