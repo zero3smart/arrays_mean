@@ -16,7 +16,7 @@
     <div ng-show="error" class="alert alert-danger" role="alert">{{ error }}</div>
 
     <div>
-        <form ng-if="user.provider=='local'" ng-submit="updateProfile()">
+       <!--  <form ng-if="user.provider=='local'" ng-submit="updateProfile()">
             <div class="form-group" ng-if="user.profileImageUrl">
 
                 <img ng-src="{{ user.profileImageUrl }}" width="100" height="100">
@@ -37,7 +37,7 @@
                        ng-model="user.lastName" autocomplete="off">
             </div>
             <div class="form-group">
-                <!-- toDo: ask them to type their current password, and then set new -->
+             
                 <label for="password">Change Password</label>
                 <input type="password" class="form-control" id="password" name="password" ng-model="userFormData.password"
                        placeholder="Type new password" autocomplete="off">
@@ -45,9 +45,9 @@
             <div class="panel-footer clearfix">
                 <button type="submit" class="btn btn-default pull-right">Save</button>
             </div>
-        </form>
+        </form> -->
 
-        <div ng-if="user.provider!='local'">
+        <div>
             <div class="form-group">
                 <label for="provider">Authentication Provider</label>
                 <p class="form-control-static">{{ user.provider }}</p>
@@ -66,7 +66,7 @@
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
-                <p class="form-control-static" ng-repeat="email in user.emails">{{ user.email }}</p>
+                <p class="form-control-static">{{ user.email }}</p>
             </div>
            <!--  <div class="form-group">
                 <label for="picture">Picture</label><br/>

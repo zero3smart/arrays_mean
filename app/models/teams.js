@@ -14,7 +14,7 @@ var team_scheme = Schema({
     logo_header: String,
     admin: {type: Schema.Types.ObjectId, ref: 'User'},
     datasourceDescriptions: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}]
-});
+},{timestamps:true});
 
 
 var modelName = 'Team';

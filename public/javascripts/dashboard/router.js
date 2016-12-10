@@ -46,6 +46,7 @@ angular.module('arraysApp')
                         resolve: {
                             datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
                                 var currentTeam = AuthService.currentTeam();
+
                                 return DatasetService.getAll(currentTeam._id);
                             }]
                         }

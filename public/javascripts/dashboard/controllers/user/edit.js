@@ -3,98 +3,64 @@ angular
     .controller('UserEditCtrl', ['$scope', '$state', '$stateParams', '$mdToast', 'AuthService', 'datasets', 'User', 'selectedUser',
         function ($scope, $state, $stateParams, $mdToast, AuthService, datasets, User, selectedUser) {
 
-
-           
-
-
             $scope.datasets = datasets;
             $scope.$parent.$parent.selectedUser = selectedUser;
             $scope.userId = $stateParams.id;
-            $scope.userRoles = [];
+
+            $scope.userRoles = {};
+
       
-            if (selectedUser._id) {
-              
-                if ($scope.selectedUser._editors && $scope.selectedUser._editors.length > 0) {
-                    $scope.userRoles.push({name: "editor", datasets: $scope.selectedUser._editors});
-                }
-                if ($scope.selectedUser._viewers && $scope.selectedUser._viewers.length > 0) {
-                    $scope.userRoles.push({name: "viewer",datasets: $scope.selectedUser._viewers});
-                }
-
-            } else {
+            if (!selectedUser._id) {
                 $scope.$parent.$parent.selectedUser._team = [$scope.team._id];
+                $scope.$parent.$parent.selectedUser._editors = [];
+                $scope.$parent.$parent.selectedUser._viewers = [];
+            } 
 
-                $scope.userRoles.push({name:"",datasets:[]});
+
+
+            for (var i  = 0; i < datasets.length ; i++) {
+                var Id = datasets[i]._id;
+                if ($scope.selectedUser._editors.indexOf(Id) >= 0) {
+                    $scope.userRoles[Id] = "editor"
+                } else if ($scope.selectedUser._viewers.indexOf(Id) >= 0 ) {
+                    $scope.userRoles[Id] = "viewer";
+                } else {
+                    $scope.userRoles[Id] = "";
+                }
             }
             
-            $scope.addMoreRole = function() {
-                $scope.userRoles.push({name:"",datasets:[]});
-            }
-
+    
             $scope.availableUserRoles = [
                 {name: "Editor", value: 'editor'},
-                {name: "Viewer", value: 'viewer'}
+                {name: "Viewer", value: 'viewer'},
+                {name: "None", value: ""}
             ];
 
 
-            $scope.checkDuplicateRole = function($index) {
-                return function(col) {
-                
-                
-                   return $scope.notChosenRole(col.value,$index);
-                }
-            }
-
-            $scope.checkDuplicateDatasets = function($index) {
-                return function(col) {
-                    return $scope.notChosenDataset(col._id,$index);
-                }
-            }
-
-            $scope.notChosenRole = function(target,index) {
-
-                for (var i = 0; i < $scope.userRoles.length ;i++) {
-                    if (index !== i) {
-                        if ($scope.userRoles[i].name == target) {
-                            return false;
-                        }
-                    }
-                }
-                return true;
-            }
-
-             $scope.notChosenDataset = function(target,index) {
-
-                for (var i = 0; i < $scope.userRoles.length ;i++) {
-                    if (index !== i) {
-                        if ($scope.userRoles[i].datasets.indexOf(target) >= 0) {
-                            return false;
-                        }
-                    }
-                }
-                return true;
-            }
-
-
-
-
-            $scope.removeUserRole = function(index) {
-                $scope.userRoles.splice(index,1);
-            }
-
-
-
-
+     
+   
 
             $scope.error = "";
 
             $scope.saveUser = function() {
-               console.log($scope.selectedUser);
+               bindUserRolesToSelectedUser();
 
-               console.log($scope.userRoles);
-                // TODO: Update user
-                // user.$save(function(err, savedUser) {
-                // });
+
+
+
+                $scope.selectedUser.$save(function(savedUser) {
+                    if (savedUser) {
+
+                         $mdToast.show(
+                            $mdToast.simple()
+                                .textContent("User Role saved successfully!")
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    }
+                },function(err) {
+
+                });
             };
 
             $scope.inviteUser = function() {
@@ -119,15 +85,19 @@ angular
             };
 
             var bindUserRolesToSelectedUser = function() {
-                var userToInvite = angular.copy($scope.$parent.$parent.selectedUser); 
-                for (var i = 0 ; i < $scope.userRoles.length; i++) {
-                    var role = $scope.userRoles[i].name;
+                $scope.$parent.$parent.selectedUser._editors = [];
+                $scope.$parent.$parent.selectedUser._viewers = [];
+
+                for (var datasetId in $scope.userRoles) {
+                    var role = $scope.userRoles[datasetId];
                     if (role == 'editor') {
-                        $scope.$parent.$parent.selectedUser._editors = $scope.userRoles[i].datasets;
+                        $scope.$parent.$parent.selectedUser._editors.push(datasetId);
+
                     } else if (role == 'viewer') {
-                        $scope.$parent.$parent.selectedUser._viewers = $scope.userRoles[i].datasets;
+                        $scope.$parent.$parent.selectedUser._viewers.push(datasetId);
 
                     }
+
                 }
             }
 

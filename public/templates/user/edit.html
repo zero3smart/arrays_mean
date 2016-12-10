@@ -2,12 +2,13 @@
     <div layout-gt-xs="row">
         <md-input-container class="md-block" flex-gt-xs>
             <label>Email</label>
-            <input name="email" ng-model="selectedUser.email">
+            <input aria-label="email" required name="email" ng-model="selectedUser.email">
+            <div ng-messages="vm.userForm.email.$error">
+                <div ng-message="unique">This user is an existing user. </div>
+            </div>
         </md-input-container>
 
-        <div ng-messages="vm.userForm.email.$error">
-            <div ng-message="unique">This user is an existing user. </div>
-        </div>
+      
 
     </div>
 
@@ -15,46 +16,43 @@
             class="fa fa-share"></span> Resend Invitation
     </md-button>
 
+    <h3 ng-if="datasets.length==0"> THhere is no dataset to set permissions with</h3>
 
-    <div ng-repeat="role in userRoles track by $index" >
-        <div layout-gt-xs="row">
-            <md-input-container class="md-block" flex-gt-sm>
-                    <label>Role</label>
-                   <md-select name="role" required ng-model="role.name">
-                        <md-option ng-repeat="role in availableUserRoles | filter: checkDuplicateRole($index)" value="{{role.value}}">
-                            {{role.name}}
-                        </md-option>
-                    </md-select>
-                </md-input-container>
-            
-            <md-input-container class="md-block" flex-gt-sm>
-                <label>Select Datasets</label>
-                <md-select name="datasets" required multiple ng-model="role.datasets">
-                    <md-option ng-repeat="dataset in datasets | filter: checkDuplicateDatasets($index)" value="{{dataset._id}}">
-                        {{dataset.title}}
-                    </md-option>
-                </md-select>
-            </md-input-container>
 
-           <div flex="10">
-                <md-button class="md-raised" ng-click="removeUserRole($index)" aria-label="Remove userRole"><span
-                        class="glyphicon glyphicon-remove"></span></md-button>
-            </div>
+    <form>
+       
+        <div class="table-container">
+            <table ng-hide="selectedUser.activated==false && selectedUser._team.length > 0 || datasets.length == 0" class="table data">
+                <thead>
+                <tr>
+                    <th>Dataset Title</th>
+                    <th>User Permission</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="dataset in datasets">
+                    <td>
+                       {{dataset.title}}
+                    </td>
+                    <td>
+                        <md-select aria-label="userRoles" name="role" required ng-model="userRoles[dataset._id]">
+                            <md-option ng-repeat="role in availableUserRoles " value="{{role.value}}">
+                                {{role.name}}
+                            </md-option>
+                        </md-select>
 
+
+                    </td>
         
+                </tr>
+                </tbody>
+            </table>
         </div>
-    </div>
-
-
-
-    <md-button ng-if="selectedUser.activated==true" class="md-raised" ng-click="addMoreRole()"><span
-            class="glyphicon glyphicon-plus"></span>Add Role
-    </md-button>
+    </form>
 
 
 
 
-    
 
     <div layout="row" layout-align="end center">
         <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-raised" type="button" ng-if="!userId">

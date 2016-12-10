@@ -35,6 +35,8 @@ function getAllDatasetsWithQuery(query, res) {
 module.exports.getAll = function (req, res) {
     var team = req.params.teamId;
 
+
+
     Team.findById(team).exec(function (err, foundTeam) {
         if (err) {
             return res.json({error: err.message});
@@ -54,7 +56,7 @@ module.exports.getAll = function (req, res) {
                             subquery = {_team: team};
                             getAllDatasetsWithQuery(subquery, res);
                         } else {
-                            subquery = {_team: team, editors: foundUser._id}
+                            subquery = {_team: team,_id: {$in: foundUser._editors}}
                             getAllDatasetsWithQuery(subquery, res);
                         }
                     }
@@ -90,6 +92,8 @@ module.exports.remove = function (req, res) {
 
     var description;
     var srcDocPKey;
+
+
     batch.push(function (done) {
         datasource_description.findById(req.body.id, function (err, data) {
             if (err) return done(err);
@@ -101,6 +105,8 @@ module.exports.remove = function (req, res) {
             done();
         });
     });
+
+
 
     // Remove processed row object
     batch.push(function (done) {
@@ -168,6 +174,11 @@ module.exports.remove = function (req, res) {
 
         });
     });
+
+
+    batch.push(function(done) {
+        User.find({_editors:req.body.id},{$pull: {_editors: req.body.id}},done);
+    })
 
     batch.end(function (err) {
         if (err) {

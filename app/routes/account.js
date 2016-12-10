@@ -63,7 +63,16 @@ function compareArrays(array1,array2) {
 
 
 function assignRoleToUser (decoded,callback) {
-    User.findOneAndUpdate(decoded._id,{$set: {"_editors" : decoded._editors, "_viewers" : decoded._viewers}})
+
+
+    if (!decoded._viewers) {
+        decoded._viewers = [];
+    }
+    if (!decoded._editors) {
+        decoded._editors = [];
+    }
+    
+    User.findByIdAndUpdate(decoded._id,{$set: {"_editors" : decoded._editors, "_viewers" : decoded._viewers}})
     .exec(function(err) {
         if (err) {
             callback(err);

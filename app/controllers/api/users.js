@@ -67,23 +67,19 @@ module.exports.get = function (req, res) {
                     batch.push(function (done) {
                         if (user.isSuperAdmin()) {
                             role = 'superAdmin';
-                            done();
-                        } else if (user._team.admin == userId) {
-                            role = 'admin';
-                            done();
-                        } else {
-                            datasource_descriptions.find({editors: userId}, function (err, desc) {
-                                if (err) {
-                                    done(err);
-                                } else if (!desc || desc.length == 0) {
-                                    role = "viewer";
 
-                                } else {
-                                    role = "editor";
-                                }
-                                done();
-                            })
+                        } else if (user._team[0].admin == userId) {
+                            role = 'admin';
+
+                        } else if (user._editors.length > 0){
+                            role = 'editor';
+              
+                        } else {
+                            role = 'viewer';
+
                         }
+                        done();
+
                     })
 
                     batch.end(function (err) {
@@ -232,6 +228,11 @@ module.exports.update = function (req, res) {
 
 
 module.exports.save = function(req, res) {
+
+    console.log(req.body);
+
+
+
     if (!req.params.id) { return res.send(new Error('No Id given'))};
 
     console.log(req.params.id, req.body.active);
@@ -243,6 +244,8 @@ module.exports.save = function(req, res) {
         user.firstName = req.body.firstName;
         user.lastName = req.body.lastName;
         user.active = req.body.active;
+        user._editors = req.body._editors;
+        user._viewers = req.body._viewers;
         user.save(function (err, savedUser) {
             if (err)
                 res.send(err);
