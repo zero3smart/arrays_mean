@@ -104,7 +104,6 @@ module.exports.get = function (req, res) {
 
     } else {
         User.findById(id)
-            .populate('_team')
             .lean()
             .exec(function (err, user) {
 

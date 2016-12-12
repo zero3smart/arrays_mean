@@ -27,7 +27,8 @@ var userSchema = new mongoose.Schema({
     },
     invited: Object, //tmp object to store invited new user
     _editors: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
-    _viewers: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}]
+    _viewers: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
+    defaultLoginTeam: {type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}
 }, {timestamps:true});
 
 userSchema.plugin(findOrCreate);

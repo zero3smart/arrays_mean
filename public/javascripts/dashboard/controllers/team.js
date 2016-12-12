@@ -3,7 +3,7 @@ angular
     .controller('TeamCtrl', ['$scope', '$state', 'AuthService','Team','$mdToast',
         function ($scope, $state, AuthService,Team,$mdToast) {
 
-
+            $scope.newTeam = {};
          
 
             $scope.checkSubdomain = function() {
@@ -12,9 +12,9 @@ angular
               Team.search(params)
                 .$promise.then(function(data) {
                   if (data.length == 0) {
-                    $scope.teamForm.subdomain.$setValidity('unique', true);
+                    $scope.vm.teamForm.subdomain.$setValidity('unique', true);
                   } else {
-                    $scope.teamForm.subdomain.$setValidity('unique', false);
+                    $scope.vm.teamForm.subdomain.$setValidity('unique', false);
                   }
                 },function(err) {
 
@@ -34,11 +34,12 @@ angular
                           .position('top right')
                           .hideDelay(3000)
                   );
-                   $scope.$parent.teams.push(team);
 
+
+                   $scope.$parent.teams.push(team);
                    $scope.newTeam = {};
-                   $scope.teamForm.$setPristine();
-                   $scope.teamForm.$setUntouched();
+                   $scope.vm.teamForm.$setPristine();
+                   $scope.vm.teamForm.$setUntouched();
 
 
                   

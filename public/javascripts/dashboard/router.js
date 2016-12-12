@@ -159,7 +159,7 @@ angular.module('arraysApp')
                     })
                     .state('dashboard.teams', {
                         url: '/teams',
-                        controller: 'TeamCtrl',
+                        controller: 'TeamCtrl as vm',
                         templateUrl: 'templates/teams.html',
                     });
 

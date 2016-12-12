@@ -45,6 +45,7 @@ angular
 
             $scope.error = "";
 
+
             $scope.saveUser = function() {
                bindUserRolesToSelectedUser();
 
@@ -143,11 +144,9 @@ angular
             };
 
             var bindUserRolesToSelectedUser = function() {
+                
 
-           
-
-
-                if ($scope.selectedUser._team.indexOf($scope.team._id) >= 0) {
+                if ($scope.selectedUser._team.indexOf($scope.team._id) >= 0 ) {
                     $scope.selectedUser._editors = [];
                     $scope.selectedUser._viewers = [];
 
@@ -175,7 +174,7 @@ angular
 
             var inviteAndSentEmail = function () {
 
-
+                console.log($scope.selectedUser);
 
 
                 AuthService.inviteUser($scope.selectedUser)
