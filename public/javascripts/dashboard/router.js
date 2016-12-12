@@ -47,7 +47,7 @@ angular.module('arraysApp')
                             datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
                                 var user = AuthService.currentUser();
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
-                                    return DatasetService.getDatasetsWithQuery({});
+                                    return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id});
                                 } else if (user.role == 'editor') {
                                     return DatasetService.getDatasetsWithQuery({_id: {$in: user._editors}});
                                 } else {
@@ -153,7 +153,7 @@ angular.module('arraysApp')
                             datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
                                 var user = AuthService.currentUser();
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
-                                    return DatasetService.getDatasetsWithQuery({});
+                                    return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id});
                                 } else {
                                     return [];
                                 }

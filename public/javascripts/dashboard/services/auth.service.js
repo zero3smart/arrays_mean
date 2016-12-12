@@ -31,8 +31,6 @@
                         var userData = result.data;
                         if (userData) {
                             isLoggedIn = true;  
-                            // console.log(userData);
-
                             $window.sessionStorage.setItem('user', JSON.stringify(userData));
                             $window.sessionStorage.setItem('team', JSON.stringify(userData.defaultLoginTeam));
 
@@ -104,17 +102,45 @@
                 
         };
 
+        var updateTeam = function(team) {
+           
+            var deferred = $q.defer();
+            var currentTeamId = currentTeam()._id;
+
+
+             Team.update({id:currentTeamId},team)  
+                .$promise
+                .then(function(data) {
+                    $window.sessionStorage.setItem('team', JSON.stringify(data.team));
+                    var teams = allTeams();
+                    for (var i = 0; i < teams.length; i++) {
+                        if (teams[i]._id == data.team._id) {
+                            teams[i] = data.team;
+                            break;
+                        }
+                    }
+                     $window.sessionStorage.setItem('teams', JSON.stringify(teams));
+
+                     console.log(teams);
+
+                    deferred.resolve(data.team);
+                },function(){   
+                    deferred.reject();
+                })
+            return deferred.promise;
+        }
+
 
 
         var logout = function () {
             $http.get('/auth/logout')
                 .then(function (response) {
-
                     console.log(response);
                     if (response.status == 200) {
                         isLoggedIn = false;
                         $window.sessionStorage.removeItem('user');
                         $window.sessionStorage.removeItem('team');
+                        $window.sessionStorage.removeItem('teams');
                         $window.location.href = '/';
 
                     }
@@ -166,6 +192,8 @@
             return deferred.promise;
         }
 
+
+
         return {
             currentUser: currentUser,
             currentTeam: currentTeam,
@@ -173,6 +201,7 @@
             ensureLogIn: ensureLogin,
             allTeams: allTeams,
             // updateProfile: updateProfile,
+            updateTeam: updateTeam,
             inviteUser: inviteUser,
             switchTeam: switchTeam,
             logout: logout,

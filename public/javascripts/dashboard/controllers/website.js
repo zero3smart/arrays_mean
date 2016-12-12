@@ -1,8 +1,6 @@
 angular.module('arraysApp')
     .controller('WebsiteCtrl', ['$scope', 'AuthService', 'FileUploader','AssetService','Team','$mdToast',
         function($scope, AuthService,FileUploader,AssetService,Team,$mdToast) {
-            // $scope.team = AuthService.currentTeam();
-
 
             $scope.progressMode = "determinate";
 
@@ -65,9 +63,12 @@ angular.module('arraysApp')
             $scope.submitForm = function(isValid) {
                 // console.log($scope.user._team);
                 if (isValid) {
-                    Team.update({id:$scope.team._id},$scope.team)
-                    .$promise.then(function() {
-                         $scope.vm.websiteForm.$setPristine();
+                    AuthService.updateTeam($scope.team)
+                    .then(function(teams) {
+                        $scope.$parent.teams = AuthService.allTeams();
+                        $scope.$parent.team = AuthService.currentTeam();
+
+                        $scope.vm.websiteForm.$setPristine();
 
                          $mdToast.show(
                             $mdToast.simple()
@@ -75,7 +76,13 @@ angular.module('arraysApp')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
+
+
                     })
+
+
+
+
 
 
                 }

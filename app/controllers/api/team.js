@@ -53,9 +53,9 @@ module.exports.update = function (req, res) {
                 }
                 team.save(function (err) {
                     if (!err) {
-                        return res.status(200).send("ok");
+                        return res.json({team: team});
                     } else {
-                        return res.status(500).send(err);
+                        return res.status(500).send({error: err.message});
                     }
                 })
             }
