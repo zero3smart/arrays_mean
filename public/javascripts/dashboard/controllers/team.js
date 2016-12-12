@@ -4,9 +4,7 @@ angular
         function ($scope, $state, AuthService,Team,$mdToast) {
 
             $scope.newTeam = {};
-
-            console.log($scope.user);
-         
+            $scope.newTeam.admin = $scope.user._id;
 
             $scope.checkSubdomain = function() {
 
@@ -25,7 +23,6 @@ angular
             }
 
             $scope.createTeam = function() {
-          
            
                 var team = new Team($scope.newTeam);
                 team.$save(function(team) {
@@ -37,14 +34,11 @@ angular
                           .hideDelay(3000)
                   );
 
-
                    $scope.$parent.teams.push(team);
                    $scope.newTeam = {};
                    $scope.vm.teamForm.$setPristine();
                    $scope.vm.teamForm.$setUntouched();
 
-
-                  
                 },function(err) {
                   $mdToast.show(
                       $mdToast.simple()

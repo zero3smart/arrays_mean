@@ -32,38 +32,11 @@ function getAllDatasetsWithQuery(query, res) {
 
 }
 
-module.exports.getAll = function (req, res) {
-    var team = req.params.teamId;
 
-
-
-    Team.findById(team).exec(function (err, foundTeam) {
-        if (err) {
-            return res.json({error: err.message});
-        }
-        var subquery = {};
-        if (!foundTeam) {
-            return res.status(404).send('Team not found.');
-        } else {
-            User.findById(req.user)
-                .exec(function (err, foundUser) {
-                    if (err) {
-                        return res.json({error: err.message});
-                    } else if (!foundUser) {
-                        res.status(404).send("User not found");
-                    } else {
-                        if (foundTeam.admin == foundUser._id || foundUser.isSuperAdmin()) {
-                            subquery = {_team: team};
-                            getAllDatasetsWithQuery(subquery, res);
-                        } else {
-                            subquery = {_team: team,_id: {$in: foundUser._editors}}
-                            getAllDatasetsWithQuery(subquery, res);
-                        }
-                    }
-                })
-        }
-    })
-};
+module.exports.getDatasetsWithQuery = function(req,res) {
+    var query = req.body;
+    getAllDatasetsWithQuery(query,res);
+}
 
 
 module.exports.signedUrlForAssetsUpload = function (req, res) {

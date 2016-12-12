@@ -4,7 +4,7 @@
 
 <div class="array-content">
 
-    <form ng-if="user.role=='superAdmin' || user.role=='admin'" name="vm.teamForm" ng-submit="createTeam()" autocomplete="off">
+    <form ng-if="user.role=='superAdmin'" name="vm.teamForm" ng-submit="createTeam()" autocomplete="off">
       <div layout-gt-xs="row">
             <md-input-container class="md-block" flex="40">
               <label>Title</label>
@@ -19,10 +19,6 @@
             </div>
 
             </md-input-container>
-
-            
-
-           
        </div>
       
 

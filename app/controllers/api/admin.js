@@ -22,7 +22,8 @@ module.exports.invite = function(req,res) {
                 var new_user = {
                     email: req.body.email,
                     _team: req.body._team,
-                    provider: 'local'
+                    provider: 'local',
+                    defaultLoginTeam: req.body.defaultLoginTeam
                 }
                 User.create(new_user,function(err,createdUser) {
                     if (err) {

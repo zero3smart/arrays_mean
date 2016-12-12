@@ -60,27 +60,23 @@ module.exports.get = function (req, res) {
                 .populate('defaultLoginTeam')
                 .exec(function (err, user) {
 
-
-                    console.log(user);
-
-
                     var token = jwt.sign({_id: user._id}, process.env.SESSION_SECRET);
                     var role;
-
                     var batch = new Batch();
 
                     batch.concurrency(1);
                     batch.push(function (done) {
                         if (user.isSuperAdmin()) {
                             role = 'superAdmin';
-
-                        } else if (user._team[0].admin == userId) {
-                            role = 'admin';
-
-                        } else if (user._editors.length > 0){ 
-              
+                        } else if (user.defaultLoginTeam.admin && user.defaultLoginTeam.admin == userId) {
+                            role = 'admin'
                         } else {
-                            role = 'viewer';
+                            var isEditor = _checkIfUserIsEditor(user.defaultLoginTeam.datasourceDescriptions,user._editors);
+                            if (isEditor) {
+                                role = 'editor';
+                            } else {
+                                role = 'viewer';
+                            }
 
                         }
                         done();
@@ -89,6 +85,7 @@ module.exports.get = function (req, res) {
 
                     batch.end(function (err) {
                         if (err) {
+                            console.log(err);
                             res.status(500).send(err);
                         } else {
                             var userInfo = {
@@ -98,6 +95,8 @@ module.exports.get = function (req, res) {
                                 _team: user._team,
                                 firstName: user.firstName,
                                 lastName: user.lastName,
+                                _editors : user._editors,
+                                _viewers: user._viewers,
                                 authToken: token,
                                 role: role,
                                 defaultLoginTeam: user.defaultLoginTeam
@@ -109,20 +108,34 @@ module.exports.get = function (req, res) {
         }
 
     } else {
+        
         User.findById(id)
+            .populate('_team')
             .lean()
             .exec(function (err, user) {
-
-                // console.log(err);
-                // console.log(user);
                 if (err) {
                     res.send(err);
                 } else {
+                    user.team = user._team;
+
                     res.json(user);
                 }
             })
+
+       
     }
 
+}
+
+var _checkIfUserIsEditor = function(teamDatasourceDescriptions, userEditors) {
+
+    for (var i = 0; i < teamDatasourceDescriptions.length; i++) {
+        var datasetId = teamDatasourceDescriptions[i];
+        if (userEditors.indexOf(datasetId) >= 0) {
+            return true;
+        }
+    }
+    return false;
 }
 
 module.exports.create = function (req, res) {
@@ -234,6 +247,10 @@ module.exports.update = function (req, res) {
 
 
 module.exports.save = function(req, res) {
+
+
+    console.log(req.body);
+
 
     if (!req.params.id) { return res.send(new Error('No Id given'))};
 

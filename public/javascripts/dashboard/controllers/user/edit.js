@@ -133,6 +133,7 @@ angular
 
                         
                         $scope.selectedUser._team = [$scope.team._id];
+                        $scope.selectedUser.defaultLoginTeam = $scope.team._id;
                         
                         bindUserRolesToSelectedUser();
                         inviteAndSentEmail();
@@ -146,7 +147,7 @@ angular
             var bindUserRolesToSelectedUser = function() {
                 
 
-                if ($scope.selectedUser._team.indexOf($scope.team._id) >= 0 ) {
+                if (TeamIdExist) {
                     $scope.selectedUser._editors = [];
                     $scope.selectedUser._viewers = [];
 
@@ -167,6 +168,21 @@ angular
                     }
 
                 }
+            }
+
+            var TeamIdExist  = function() {
+                for (var i = 0; i < $scope.selectedUser._team.length; i++) {
+                    if (typeof $scope.selectedUser._team[i] == 'string') {
+                        if ($scope.selectedUser._team[i] == $scope.team._id) {
+                            return true;
+                        }
+                    } else if (typeof $scope.selectedUser._team[i] == 'object') {
+                        if ($scope.selectedUser._team[i]._id == $scope.team._id) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
             }
 
            

@@ -32,6 +32,8 @@
 		$scope.invitedUser = false;
 		$scope.showPasswordToolTip = false;
 		$scope.user = User.get({id:userId},function() {
+
+
 			if (!$scope.user._team || $scope.user._team.length == 0){
 				$scope.user._team = {};
 			} else {
@@ -40,6 +42,8 @@
 				$scope.user._team = $scope.user._team[0];
 
 			}
+
+			console.log($scope.user)
 		});
 
 		$scope.registerUser = function() {

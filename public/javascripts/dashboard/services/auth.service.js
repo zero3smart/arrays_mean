@@ -30,7 +30,8 @@
 
                         var userData = result.data;
                         if (userData) {
-                            isLoggedIn = true;
+                            isLoggedIn = true;  
+                            // console.log(userData);
 
                             $window.sessionStorage.setItem('user', JSON.stringify(userData));
                             $window.sessionStorage.setItem('team', JSON.stringify(userData.defaultLoginTeam));

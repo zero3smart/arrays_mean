@@ -6,20 +6,6 @@
     DatasetService.$inject = ['$http', '$q'];
     function DatasetService($http, $q) {
 
-        var getAll = function(TeamId) {
-            var deferred = $q.defer();
-            $http.get('/api/dataset/getAll/'+ TeamId)
-                .success(function(data) {
-                    if (!data.error) {
-                        return deferred.resolve(data.datasets);
-                    } else {
-                        return deferred.reject(data.error);
-                    }
-                })
-                .error(deferred.reject);
-            return deferred.promise;
-        };
-
         var getMappingDatasourceCols = function(pKey) {
             var deferred = $q.defer();
             $http.get('api/dataset/getMappingDatasourceCols/'+pKey)
@@ -184,10 +170,23 @@
             return deferred.promise;
         };
 
+        var getDatasetsWithQuery = function(query) {
+            var deferred = $q.defer();
+            $http.post('api/dataset/getDatasetsWithQuery',query)
+                .success(function(data) {
+                    if (!data.error && data.datasets)
+                        return deferred.resolve(data.datasets);
+                    else
+                        return deferred.reject(data.error);
+                })
+                .error(deferred.reject);
+            return deferred.promise;
+
+        }
+
        
 
         return {
-            getAll: getAll,
             remove: remove,
             get: get,
             getSources: getSources,
@@ -195,6 +194,7 @@
             publish: publish,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
             getAvailableDesignatedFields: getAvailableDesignatedFields,
+            getDatasetsWithQuery: getDatasetsWithQuery,
             getMappingDatasourceCols: getMappingDatasourceCols,
             initializeToImport: initializeToImport,
             preImport: preImport,
