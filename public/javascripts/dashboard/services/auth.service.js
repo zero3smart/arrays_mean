@@ -33,7 +33,7 @@
                             isLoggedIn = true;
 
                             $window.sessionStorage.setItem('user', JSON.stringify(userData));
-                            $window.sessionStorage.setItem('team', JSON.stringify(userData._team[0]));
+                            $window.sessionStorage.setItem('team', JSON.stringify(userData.defaultLoginTeam));
 
                             if (userData.role == "superAdmin") {
                                 Team.query()
@@ -90,7 +90,14 @@
                 .$promise
                 .then(function(teams) {
                     $window.sessionStorage.setItem('team', JSON.stringify(teams[0]));
-                    deferred.resolve();
+                    $http.put('/api/user/defaultLoginTeam/' + teamId)
+                        .then(function(response) {
+                            deferred.resolve();
+                        },function() {
+                            deferred.reject();
+                        })
+                },function() {
+                    deferred.reject();
                 })
             return deferred.promise;
                 

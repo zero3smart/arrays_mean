@@ -57,7 +57,13 @@ module.exports.get = function (req, res) {
             var userId = req.user;
             User.findById(userId)
                 .populate('_team')
+                .populate('defaultLoginTeam')
                 .exec(function (err, user) {
+
+
+                    console.log(user);
+
+
                     var token = jwt.sign({_id: user._id}, process.env.SESSION_SECRET);
                     var role;
 
@@ -71,8 +77,7 @@ module.exports.get = function (req, res) {
                         } else if (user._team[0].admin == userId) {
                             role = 'admin';
 
-                        } else if (user._editors.length > 0){
-                            role = 'editor';
+                        } else if (user._editors.length > 0){ 
               
                         } else {
                             role = 'viewer';
@@ -94,7 +99,8 @@ module.exports.get = function (req, res) {
                                 firstName: user.firstName,
                                 lastName: user.lastName,
                                 authToken: token,
-                                role: role
+                                role: role,
+                                defaultLoginTeam: user.defaultLoginTeam
                             }
                             return res.json(userInfo);
                         }
@@ -181,6 +187,7 @@ module.exports.update = function (req, res) {
                             user.setPassword(req.body.password);
                         }
                         user._team = [teamId];
+                        user.defaultLoginTeam = teamId;
                         user.save(function (err, savedUser) {
                             if (err) {
                                 res.send(err);
@@ -228,10 +235,6 @@ module.exports.update = function (req, res) {
 
 module.exports.save = function(req, res) {
 
-    console.log(req.body);
-
-
-
     if (!req.params.id) { return res.send(new Error('No Id given'))};
 
     console.log(req.params.id, req.body.active);
@@ -254,6 +257,23 @@ module.exports.save = function(req, res) {
         });
     });
 };
+
+
+module.exports.defaultLoginTeam = function(req,res) {
+    var teamId = req.params.teamId;
+    if (!teamId) {
+        return res.send(new Error("No teamId given"));
+    } 
+    if (!req.user) {
+        return res.status(401).send("unauthorized");
+    } else {
+        User.findByIdAndUpdate(req.user,{$set: {defaultLoginTeam: teamId}})
+        .exec(function(err,result) {
+            if (err) return res.send(err);
+            res.json(result);
+        })
+    }
+}
 
 module.exports.delete = function(req, res) {
     User.findById(req.params.id, function(err, user) {

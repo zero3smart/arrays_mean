@@ -154,7 +154,6 @@ angular
                      $scope.selectedUser._team.push($scope.team._id);
                 }
 
-                console.log($scope.userRoles);
 
 
                 for (var datasetId in $scope.userRoles) {
@@ -173,9 +172,6 @@ angular
            
 
             var inviteAndSentEmail = function () {
-
-                console.log($scope.selectedUser);
-
 
                 AuthService.inviteUser($scope.selectedUser)
                     .then(function(data) {

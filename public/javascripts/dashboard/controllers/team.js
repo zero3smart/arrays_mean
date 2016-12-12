@@ -4,6 +4,8 @@ angular
         function ($scope, $state, AuthService,Team,$mdToast) {
 
             $scope.newTeam = {};
+
+            console.log($scope.user);
          
 
             $scope.checkSubdomain = function() {
@@ -57,12 +59,20 @@ angular
             }
 
             $scope.signInWithTeam = function($index) {
-              AuthService.switchTeam($scope.teams[$index]._id)
+              var changeToTeam = $scope.teams[$index]._id;
+              AuthService.switchTeam(changeToTeam)
               .then(function() {
                   $scope.$parent.team = AuthService.currentTeam();
+                 
+
 
               })
             }
+
+
+
+
+            
            
    
           
