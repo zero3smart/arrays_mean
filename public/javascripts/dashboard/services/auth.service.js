@@ -20,12 +20,14 @@
         var ensureLogin = function () {
 
             var deferred = $q.defer();
+
             if (isLoggedIn && currentUser() != null) {
                 deferred.resolve();
             } else {
 
                 $http.get('/api/user/currentUser')
                     .then(function (result) {
+
                         var userData = result.data;
                         if (userData) {
                             isLoggedIn = true;

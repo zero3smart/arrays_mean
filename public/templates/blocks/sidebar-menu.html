@@ -16,7 +16,8 @@
         <a ui-sref="dashboard.user.list" role="button"> Manage Users</a>
     </li>
 
-     <li ng-if="user._team.found" ui-sref-active="active">
+
+     <li ng-if="user.role=='admin' || user.role=='superAdmin' || user._team.length > 1" ui-sref-active="active">
         <a ui-sref="dashboard.teams" role="button"> Manage Teams </a>
     </li>
 

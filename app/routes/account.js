@@ -83,12 +83,12 @@ function assignRoleToUser (decoded,callback) {
 
                 } else {
                     delete admin.invited[decoded._id];
-                    console.log(admin);
+                    admin.markModified('invited');
+                    admin.save(callback);
                 }
             }) 
 
-            // User.update({_id: decoded.host},unsetQuery)
-            // .exec(callback);
+
         }
     })
 

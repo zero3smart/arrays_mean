@@ -246,6 +246,7 @@ module.exports.save = function(req, res) {
         user.active = req.body.active;
         user._editors = req.body._editors;
         user._viewers = req.body._viewers;
+        user._team = req.body._team;
         user.save(function (err, savedUser) {
             if (err)
                 res.send(err);

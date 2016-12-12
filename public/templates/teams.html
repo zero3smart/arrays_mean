@@ -4,7 +4,7 @@
 
 <div class="array-content">
 
-    <form name="teamForm" ng-submit="createTeam()" autocomplete="off">
+    <form ng-if="user.role=='superAdmin' || user.role=='admin'" name="teamForm" ng-submit="createTeam()" autocomplete="off">
       <div layout-gt-xs="row">
             <md-input-container class="md-block" flex="40">
               <label>Title</label>
@@ -27,7 +27,7 @@
       
 
        <div layout="row" layout-align="end center">
-          <md-button ng-disabled="teamForm.$invalid || !teamForm.$dirty" class="md-raised" type="submit">
+          <md-button  ng-disabled="teamForm.$invalid || !teamForm.$dirty" class="md-raised" type="submit">
            <span class="fa fa-plus"></span><span class="btn-label">Create Team</span></md-button>
       </div>
  </form>

@@ -2,7 +2,7 @@
     <div layout-gt-xs="row">
         <md-input-container class="md-block" flex-gt-xs>
             <label>Email</label>
-            <input aria-label="email" required name="email" ng-model="selectedUser.email">
+            <input ng-readonly="selectedUser._id" aria-label="email" required name="email" ng-model="selectedUser.email">
             <div ng-messages="vm.userForm.email.$error">
                 <div ng-message="unique">This user is an existing user. </div>
             </div>
@@ -48,11 +48,8 @@
     </form>
 
 
-
-
-
     <div layout="row" layout-align="end center">
-        <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-raised" type="button" ng-if="!userId">
+        <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-raised" type="button" ng-hide="userId || selectedUser._team.indexOf(team._id) >= 0">
             <span class="fa fa-plus"></span><span class="btn-label">Invite User</span>
         </md-button>
 

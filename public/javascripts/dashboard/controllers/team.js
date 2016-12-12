@@ -3,7 +3,6 @@ angular
     .controller('TeamCtrl', ['$scope', '$state', 'AuthService','Team','$mdToast',
         function ($scope, $state, AuthService,Team,$mdToast) {
 
-          console.log($scope.teams);
 
          
 
@@ -35,7 +34,7 @@ angular
                           .position('top right')
                           .hideDelay(3000)
                   );
-                   $scope.teams.push(team);
+                   $scope.$parent.teams.push(team);
 
                    $scope.newTeam = {};
                    $scope.teamForm.$setPristine();
