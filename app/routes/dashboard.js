@@ -23,6 +23,9 @@ router.get('/logout', function (req, res) {
 
 router.get('/*',  function (req, res) {
 
+    console.log("getting dashboard page");
+    console.log(req.user);
+
     res.render('dashboard/index', {
         env: process.env,
         user: req.user

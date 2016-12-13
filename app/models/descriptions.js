@@ -391,13 +391,12 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                     .populate('_team')
                     .exec(function (err, foundUser) {
                         if (err) return fn(err);
-                        if (foundUser.isSuperAdmin()) {
+                        if (foundUser.isSuperAdmin() || datasourceDescription.author == foundUser._id || 
+                            foundUser._editors.indexOf(datasourceDescription._id) >= 0 || foundUser._viewers.indexOf(datasourceDescription._id) >= 0) {
                             return fn(null, datasourceDescription);
                         } else {
-                            if (foundUser._team.datasourceDescriptions.indexOf(datasourceDescription._id) != -1)
-                                return fn(null, datasourceDescription);
-                            else
-                                return fn();
+                        
+                            return fn();
                         }
                     });
             } else {

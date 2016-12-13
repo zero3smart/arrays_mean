@@ -5,6 +5,7 @@ var teams = require('../models/teams');
 var team_show_controller = require('../controllers/client/data_preparation/team/show');
 
 router.get('/', function (req, res) {
+    console.log()
     teams.GetTeamBySubdomain(req, function (err, teamDescriptions) {
         if (err && err.message != 'No SubDomain Asked!') {
             winston.error("❌  Error getting bind data during authorizing : ", err);

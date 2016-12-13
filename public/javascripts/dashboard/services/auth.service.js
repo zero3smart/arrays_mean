@@ -121,8 +121,6 @@
                     }
                      $window.sessionStorage.setItem('teams', JSON.stringify(teams));
 
-                     console.log(teams);
-
                     deferred.resolve(data.team);
                 },function(){   
                     deferred.reject();

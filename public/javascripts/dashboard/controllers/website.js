@@ -67,7 +67,6 @@ angular.module('arraysApp')
                     .then(function(teams) {
                         $scope.$parent.teams = AuthService.allTeams();
                         $scope.$parent.team = AuthService.currentTeam();
-
                         $scope.vm.websiteForm.$setPristine();
 
                          $mdToast.show(

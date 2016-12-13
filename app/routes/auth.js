@@ -31,13 +31,18 @@ router.get('/google/callback',function(req,res,next) {
 
 router.post('/login',function(req,res,next) {
     passport.authenticate('local',function(err,user,info) {
+
+
         if (err) {return next(err);}
         if (!user) {
             req.flash("error",info);
             return res.redirect('/auth/login');
         } else {
+            console.log("logging in user and setting req.user");
             req.logIn(user,function(err) {
                 if (err) {return next(err);}
+                console.log("req.user is set");
+                console.log(req.user);
                 return res.redirect(req.session.returnTo || '/dashboard');
             })
         }

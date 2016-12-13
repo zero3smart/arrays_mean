@@ -51,6 +51,8 @@ module.exports.get = function (req, res) {
 
     var id = req.params.id;
     if (id == 'currentUser') {
+        console.log(req.user);
+        
         if (!req.user) {
             res.status(401).send({error: 'unauthorized'});
         } else {

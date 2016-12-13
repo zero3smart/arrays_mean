@@ -16,6 +16,8 @@ module.exports.BindData = function (req, callback) {
 
     var teamsObj = {};
 
+
+
     teamDescriptions.GetTeamsAndDatasources(req.user, function (err, teamWithDesc) {
 
         async.map(teamWithDesc, iterateeFn, completionFn);
@@ -51,6 +53,8 @@ module.exports.BindData = function (req, callback) {
 
 
     var iterateeFn = async.ensureAsync(function (teamDescription, cb) {
+
+
 
         if (teamDescription.datasourceDescriptions.length == 0) {
             return cb(null);

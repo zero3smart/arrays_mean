@@ -26,6 +26,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
         .then(function (dataSourceDescription) {
 
+
+
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
                 callback(new Error("No data source with that source pkey " + source_pKey), null);
                 return;

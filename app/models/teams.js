@@ -66,21 +66,22 @@ team.GetTeamsAndDatasources = function (userId, fn) {
     if (userId) {
         User.findById(userId)
             .populate('_team')
+            .populate('defaultLoginTeam')
             .exec(function (err, foundUser) {
                 if (err) return fn(err);
                 if (foundUser.isSuperAdmin()) {
                     getTeamsAndPopulateDatasetWithQuery({}, {imported: true, fe_visible: true}, fn);
 
-                } else if (foundUser._team.admin == userId) {
-                    var myTeamId = foundUser._team._id;
+                } else if (foundUser.defaultLoginTeam.admin == userId) { 
+                    var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
-                    var myTeam = {_team: foundUser._team};
+                    var myTeam = {_team: foundUser.defaultLoginTeam._id};
                     getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_visible: true}]}, fn);
 
-                } else { //get published and unpublished dataset if currentUser is one of the viewers
-                    var myTeamId = foundUser._team._id;
+                } else { //get published and unpublished dataset if currentUser is one of the viewers or editiors
+                    var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
-                    var myTeam = {_team: foundUser._team,  $or: [{viewers: userId}, {editors: userId}]};
+                    var myTeam = {_team: foundUser.defaultLoginTeam._id, _id: {$or:[ {$in:foundUser._editors}, {$in: foundUser._viewers}  ] } };
                     getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_visible: true}]}, fn);
                 }
             })
@@ -93,6 +94,10 @@ team.GetTeamsAndDatasources = function (userId, fn) {
 
 team.GetTeamBySubdomain = function (req, fn) {
     var subdomains = req.subdomains;
+
+    console.log(req.subdomains);
+
+    
     if (subdomains.length >= 1) {
         if (process.env.NODE_ENV != 'production' && (subdomains[0] == 'staging' || subdomains[0] == 'local')) {
             subdomains.splice(0, 1);

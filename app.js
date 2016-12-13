@@ -90,6 +90,7 @@ app.use(function (req, res, next) {
 
 var routes = require('./app/routes');
 
+
 app.use(bodyParser.urlencoded({extended: false})); // application/x-www-form-urlencoded
 app.use(bodyParser.json()); // application/JSON
 app.use(require('compression')());
@@ -98,19 +99,27 @@ app.use(cookieParser());
 app.use(cors());
 
 var domain = 'localhost';
+
+console.log("im here");
+console.log(process.env.HOST);
+
+
 if (process.env.HOST) {
     var urlParts = process.env.HOST.split('.');
     urlParts.splice(0, urlParts.length-2);
     // Remove port
     urlParts[urlParts.length-1] = urlParts[urlParts.length-1].split(':')[0];
     domain = '.' + urlParts.join('.');
+
+
+
 }
 // Mongo Store to prevent a warnning.
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
-    cookie: {domain: domain},
+    cookie: {domain: '.example.com' , expires:false},
     store: new MongoSessionStore({
         url: process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/arraysdb',
         // touchAfter: 240 * 3600 // time period in seconds
