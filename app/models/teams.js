@@ -72,19 +72,19 @@ team.GetTeamsAndDatasources = function (userId, fn) {
             .exec(function (err, foundUser) {
                 if (err) return fn(err);
                 if (foundUser.isSuperAdmin()) {
-                    getTeamsAndPopulateDatasetWithQuery({}, {imported: true, fe_visible: true}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({}, {imported: true, fe_listed: true,fe_visible: true}, fn);
 
                 } else if (foundUser.defaultLoginTeam.admin == userId) { 
                     var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
                     var myTeam = {_team: foundUser.defaultLoginTeam._id};
-                    getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_visible: true}]}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_listed: true,fe_visible: true}]}, fn);
 
                 } else { //get published and unpublished dataset if currentUser is one of the viewers or editiors
                     var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
                     var myTeam = {_team: foundUser.defaultLoginTeam._id, _id: {$or:[ {$in:foundUser._editors}, {$in: foundUser._viewers}  ] } };
-                    getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_visible: true}]}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_listed:true,fe_visible: true}]}, fn);
                 }
             })
 
@@ -101,7 +101,6 @@ team.GetTeamBySubdomain = function (req, fn) {
 
     var team_key = subdomains[0];
 
-    console.log(team_key);
 
     if (team_key === null || typeof team_key === 'undefined' || team_key === "") {
         return fn(new Error('No SubDomain Asked!'));
@@ -134,7 +133,6 @@ team.GetTeamBySubdomain = function (req, fn) {
             })
 
     } else {
-        console.log("no user Id");
         getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {isPublished: true, imported: true}, fn);
     }
 

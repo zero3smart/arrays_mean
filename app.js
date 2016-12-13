@@ -79,6 +79,8 @@ fs.readdir(userFolderPath, function (err, files) {
     })
 })
 
+app.use(cors());
+
 
 app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
 app.use(express.static(path.join(__dirname, '/public')));
@@ -101,7 +103,7 @@ app.use(bodyParser.json()); // application/JSON
 app.use(require('compression')());
 app.set('trust proxy', true);
 app.use(cookieParser());
-app.use(cors());
+
 
 var domain = 'localhost';
 

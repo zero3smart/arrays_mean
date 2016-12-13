@@ -8,6 +8,7 @@ var __DEBUG_enableEnsureWWWForDev = false; // for debug
 var shouldEnsureWWW = isDev == false || __DEBUG_enableEnsureWWWForDev;
 
 
+
 //
 var _mountRoutes_monitoring = function (app) {
     app.get('/_ah/health', function (req, res) {
@@ -60,8 +61,38 @@ var _mountRoutes_errorHandling = function (app) {
     });
 };
 //
+
+
+var isNotRootDomain = function(subdomains) {
+    
+    if (subdomains.length == 1 && subdomains[0] !== 'www') { // pattern: subdomain.arrays.co
+        return true;
+    } else if (subdomains.length == 2 && subdomains[0] == 'www') { //pattern: subdomain.www.arrays.co
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+var rootDomain = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+    rootDomain += process.env.HOST ? process.env.HOST : 'localhost:9080';
+
+
+var urlRegexForDataset = /(\/[a-z_\d-]+)(-r\d)\/(gallery|bar-chart|chart|choropleth|timeline|word-cloud|scatterplot|line-graph|pie-set)/g;
+
 var _mountRoutes_endPoints = function (app) {
     // View endpoints
+
+    app.all('*',function(req,res,next) {
+
+        if (isNotRootDomain(req.subdomains) && req.url!== '/' && !urlRegexForDataset.test(req.url)) {
+            return res.redirect(rootDomain+req.url);
+        } else {
+            next();
+        }
+    })
+
     app.use('/', require('./homepage'));
     
     app.use('/array', require('./array'));

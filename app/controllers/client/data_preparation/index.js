@@ -15,7 +15,7 @@ module.exports.BindData = function (req, callback) {
 
 
     var teamsObj = {};
-
+   
 
 
     teamDescriptions.GetTeamsAndDatasources(req.user, function (err, teamWithDesc) {
@@ -46,7 +46,6 @@ module.exports.BindData = function (req, callback) {
                 user: user,
                 sources: teamsObj
             };
-
             callback(err, data);
         }
     };
@@ -61,7 +60,7 @@ module.exports.BindData = function (req, callback) {
         }
 
         var err = null;
-        var subdomain = teamDescription.subdomain;
+        subdomain = teamDescription.subdomain;
 
         var t = {
             title: teamDescription.title,
@@ -110,7 +109,8 @@ module.exports.BindData = function (req, callback) {
                         description: dataSourceDescription.description,
                         urls: dataSourceDescription.urls,
                         default_view: default_view,
-                        default_filterJSON: default_filterJSON
+                        default_filterJSON: default_filterJSON,
+
                     };
 
                     if (!teamsObj[subdomain].dataSourceDescriptions) {
