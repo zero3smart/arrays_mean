@@ -266,10 +266,12 @@ module.exports.publish = function (req, res) {
 }
 
 module.exports.update = function (req, res) {
+
     if (!req.body._id) {
 
         // Creating of New Dataset
         datasource_description.create(req.body, function (err, doc) {
+
             if (err) {
                 return res.json({error: err.message});
             } else {
@@ -293,6 +295,7 @@ module.exports.update = function (req, res) {
 
         // Update of Existing Dataset
         datasource_description.findById(req.body._id, function (err, doc) {
+
             if (err) return res.json({error: err.message});
             if (!doc) return res.json({error: 'Invalid Operation'});
 

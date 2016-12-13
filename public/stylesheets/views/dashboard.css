@@ -88,6 +88,10 @@ img.iconMap {
     margin-left: 10px;
 }
 
+.md-button.active {
+    background-color: rgba(158,158,158,0.2);
+}
+
 /* Dataset List */
 .dataset .row {
     margin-left: 0;
