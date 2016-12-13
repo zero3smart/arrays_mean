@@ -293,10 +293,15 @@ module.exports.publish = function (req, res) {
 }
 
 module.exports.update = function (req, res) {
+    console.log("update the dataset");
+
     if (!req.body._id) {
 
         // Creating of New Dataset
         datasource_description.create(req.body, function (err, doc) {
+
+            console.log("when updating new dataset, dirty is: " + doc.dirty);
+
             if (err) {
                 return res.json({error: err.message});
             } else {
@@ -320,6 +325,9 @@ module.exports.update = function (req, res) {
 
         // Update of Existing Dataset
         datasource_description.findById(req.body._id, function (err, doc) {
+
+            console.log("existing dataset before update " + doc.dirty);
+
             if (err) return res.json({error: err.message});
             if (!doc) return res.json({error: 'Invalid Operation'});
 
@@ -364,6 +372,8 @@ module.exports.update = function (req, res) {
                         doc.dirty = 3;
                 }
             });
+
+            console.log("existing dataset after update " + doc.dirty);
 
             doc.save(function (err, updatedDoc) {
                 if (err) return res.json({error: err.message});

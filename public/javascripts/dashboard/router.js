@@ -37,7 +37,8 @@ angular.module('arraysApp')
                     .state('dashboard.dataset', {
                         abstract: true,
                         url: '/dataset',
-                        templateUrl: 'templates/dataset.html'
+                        templateUrl: 'templates/dataset.html',
+                        controller: 'DatasetCtrl'
                     })
                     .state('dashboard.dataset.list', {
                         url: '/list',
