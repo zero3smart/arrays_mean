@@ -3,14 +3,25 @@ var router = express.Router();
 var winston = require('winston');
 var teams = require('../models/teams');
 var team_show_controller = require('../controllers/client/data_preparation/team/show');
+var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+    baseURL += process.env.HOST ? process.env.HOST : 'localhost:9080';
+
 
 router.get('/', function (req, res) {
-    console.log()
+    if (req.subdomains.length == 1 && req.subdomains[0] == 'www') {
+         var bindData =
+        {
+            env: process.env
+        };
+        return res.render('homepage/homepage', bindData);
+    }
+
     teams.GetTeamBySubdomain(req, function (err, teamDescriptions) {
         if (err && err.message != 'No SubDomain Asked!') {
             winston.error("❌  Error getting bind data during authorizing : ", err);
             return res.status(500).send(err.response || 'Internal Server Error');
         }
+
 
         if (!teamDescriptions || teamDescriptions.length == 0
             || teamDescriptions[0].datasourceDescriptions.length == 0
@@ -19,9 +30,9 @@ router.get('/', function (req, res) {
             {
                 env: process.env
             };
-            return res.render('homepage/homepage', bindData);
+            return res.redirect(baseURL);
+            
         }
-
         // If a subdomain is asked, the team page would be displayed at the base url
         team_show_controller.BindData(req, teamDescriptions[0], function (err, bindData) {
             if (err) {
@@ -32,5 +43,6 @@ router.get('/', function (req, res) {
         });
     });
 });
+
 
 module.exports = router;

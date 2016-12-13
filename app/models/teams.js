@@ -6,6 +6,8 @@ var User = require('./users');
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 //
+
+
 var team_scheme = Schema({
     title: String,
     subdomain: String, //not changable once set
@@ -93,47 +95,46 @@ team.GetTeamsAndDatasources = function (userId, fn) {
 };
 
 team.GetTeamBySubdomain = function (req, fn) {
+
     var subdomains = req.subdomains;
 
-    console.log(req.subdomains);
 
-    
-    if (subdomains.length >= 1) {
-        if (process.env.NODE_ENV != 'production' && (subdomains[0] == 'staging' || subdomains[0] == 'local')) {
-            subdomains.splice(0, 1);
-        }
-        subdomains.reverse();
-    }
+    var team_key = subdomains[0];
 
-    var team_key = subdomains.join('.');
+    console.log(team_key);
+
     if (team_key === null || typeof team_key === 'undefined' || team_key === "") {
         return fn(new Error('No SubDomain Asked!'));
     }
 
     var userId = req.user;
+ 
     if (userId) {
+  
         User.findById(userId)
             .populate('_team')
+            .populate('defaultLoginTeam')
             .exec(function (err, foundUser) {
                 if (err) return fn(err);
                 if (foundUser.isSuperAdmin()) {
                     getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {imported: true, fe_visible: true}, fn);
 
-                } else if (foundUser._team.admin == userId) {
-                    var myTeamId = foundUser._team._id;
+                } else if (foundUser.defaultLoginTeam.admin == userId) {
+                    var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
-                    var myTeam = {_team: foundUser._team};
+                    var myTeam = {_team: foundUser.defaultLoginTeam._id};
                     getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_visible: true}]}, fn);
 
                 } else { //get published and unpublished dataset if currentUser is one of the viewers
-                    var myTeamId = foundUser._team._id;
+                    var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
-                    var myTeam = {_team: foundUser._team, $or: [{viewers: userId}, {editors: userId}]};
+                    var myTeam = {_team: foundUser.defaultLoginTeam._id, _id: {$or:[ {$in:foundUser._editors}, {$in: foundUser._viewers}  ] } };
                     getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_visible: true}]}, fn);
                 }
             })
 
     } else {
+        console.log("no user Id");
         getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {isPublished: true, imported: true}, fn);
     }
 

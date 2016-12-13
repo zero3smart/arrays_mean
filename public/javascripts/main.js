@@ -258,8 +258,11 @@ $(document).ready(function () {
         e.preventDefault();
         $.get('/auth/logout')
         .then(function(response) {
+
             if (response == 'ok') {
                 window.sessionStorage.removeItem('user');
+                window.sessionStorage.removeItem('team');
+                window.sessionStorage.removeItem('teams');
                 window.location.href='/';
             }
 

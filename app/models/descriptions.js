@@ -390,12 +390,13 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                 User.findById(userId)
                     .populate('_team')
                     .exec(function (err, foundUser) {
+                  
                         if (err) return fn(err);
-                        if (foundUser.isSuperAdmin() || datasourceDescription.author == foundUser._id || 
+                        if (foundUser.isSuperAdmin() || datasourceDescription.author.equals(foundUser._id)|| 
                             foundUser._editors.indexOf(datasourceDescription._id) >= 0 || foundUser._viewers.indexOf(datasourceDescription._id) >= 0) {
                             return fn(null, datasourceDescription);
                         } else {
-                        
+            
                             return fn();
                         }
                     });

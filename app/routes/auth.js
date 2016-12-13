@@ -60,6 +60,7 @@ router.get('/login', function (req, res) {
 });
 
 router.get('/logout', function (req, res) {
+    console.log("im herre???? to log out");
     req.logout();
     res.status(200).send('ok');
     

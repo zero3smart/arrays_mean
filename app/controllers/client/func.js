@@ -178,10 +178,10 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
         var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
             && raw_rowObjects_coercionSchema[realColumnName].operation === "ToDate";
 
-         console.log(realColumnName)   
+      
         if (!isDate) {
             var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
-            console.log(oneToOneOverrideWithValuesByTitleByFieldName);
+    
 
             var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
             if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
@@ -621,14 +621,8 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
 
                 var existsInIllegalValueList = illegalValues.indexOf(rowValue);
 
-                 
-
-
-
-
                 if (existsInIllegalValueList == -1) {
-                    console.log(columnName);
-                    console.log(rowValue)
+ 
                     if (revertType) {
                         row.push(datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
                     }

@@ -152,9 +152,9 @@
                             {% if env.NODE_ENV != 'production' %}
                             {% if user %}
                             <li class="background-color-brand-hover"><a href="/dashboard">Account Settings</a></li>
-                            <li class="background-color-brand-hover"><a id="logout">Log Out</a></li>
+                            <li class="background-color-brand-hover"><a class="pointer" id="logout">Log Out</a></li>
                             {% else %}
-                            <li class="background-color-brand-hover"><a id="login">Log In</a></li>
+                            <li class="background-color-brand-hover"><a class="pointer" id="login">Log In</a></li>
                             {% endif %}
                             <li role="separator" class="divider"></li>
                             {% endif %}

@@ -20,6 +20,7 @@ dotenv.config({
     silent: true
 });
 
+
 require('./config/setup-passport');
 
 var app = express();
@@ -32,6 +33,10 @@ viewsToSet.push(__dirname + '/views');
 
 var nunjucks = require('express-nunjucks');
 app.set('view engine', 'html');
+
+if (isDev) {
+    app.set('subdomain offset',3);
+}
 
 fs.readdir(userFolderPath, function (err, files) {
     if (!files) {
@@ -100,8 +105,6 @@ app.use(cors());
 
 var domain = 'localhost';
 
-console.log("im here");
-console.log(process.env.HOST);
 
 
 if (process.env.HOST) {
@@ -119,7 +122,7 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
-    cookie: {domain: '.example.com' , expires:false},
+    cookie: {domain: domain },
     store: new MongoSessionStore({
         url: process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/arraysdb',
         // touchAfter: 240 * 3600 // time period in seconds

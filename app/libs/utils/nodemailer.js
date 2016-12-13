@@ -32,8 +32,8 @@ module.exports.sendActivationEmail = function(user, cb) {
 		from: 'info@arrays.co',
 		to: user.email,
 		subject: 'Welcome To Arrays!',
-		html: 'Hi ' + user.firstName + ", <br> Thank you for signing up with us ! Your account has been created, please use the following link to activate it: <br> " + 
-		activationLink + "<br> This link will expire in two hours. <br><br><br> Sincerely, <br>The Arrays Team"
+		html: 'Hi ' + user.firstName + ", <br> Thank you for signing up with us ! Your account has been created, please" + 
+		" activate your account using the folowing link: " + activationLink+ "<br> This link will expire in two hours. <br><br><br> Sincerely, <br>The Arrays Team"
 
 	}
 	sendEmail(mailOptions,function(err) {

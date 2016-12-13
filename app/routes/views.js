@@ -31,6 +31,7 @@ var controllers = {
 var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
 
 viewTypes.forEach(function (viewType) {
+
     router.get('/:source_key/' + viewType, ensureAuthorized, function (req, res, next) {
         var source_key = req.params.source_key;
         if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
@@ -54,6 +55,8 @@ viewTypes.forEach(function (viewType) {
 });
 
 var object_details_controller = require('../controllers/client/data_preparation/object_details');
+
+
 
 router.get('/:source_key/:object_id', ensureAuthorized, function (req, res, next) {
     var source_key = req.params.source_key;

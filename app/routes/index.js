@@ -63,6 +63,7 @@ var _mountRoutes_errorHandling = function (app) {
 var _mountRoutes_endPoints = function (app) {
     // View endpoints
     app.use('/', require('./homepage'));
+    
     app.use('/array', require('./array'));
     app.use('/s', require('./shared_pages'));
     var apiVersion = 'v1';
@@ -76,8 +77,9 @@ var _mountRoutes_endPoints = function (app) {
     app.use('/dashboard', require('./dashboard'));
     app.use('/api', require('./api'));
     app.use('/account',require('./account'));
-
     app.use('/', require('./views'));
+
+    
 };
 
 module.exports.MountRoutes = function (app) {
