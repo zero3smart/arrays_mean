@@ -1,18 +1,19 @@
 <md-nav-bar class="dataset-breadcrumb" md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links" ng-if="$state.is('dashboard.dataset') == false">
-    <md-nav-item md-nav-click="navigate('Settings')" name="Settings">
+    <md-button ng-click="navigate('Settings')" name="Settings">
         <span class="glyphicon glyphicon-cog" ng-class="{'ready':dataset.title}"></span><span class="nav-item-label btn-label">1. General Settings</span>
-    </md-nav-item>
+    </md-button>
 
-    <md-nav-item name="Upload" aria-disabled="true" md-nav-click="navigate('Upload')">
+    <md-button name="Upload" aria-disabled="true" ng-click="navigate('Upload')" ng-disabled="!dataset.title">
         <span class="glyphicon glyphicon-cloud-upload" ng-class="{'ready':dataset.uid}"></span><span class="nav-item-label btn-label">2. Upload Data</span>
-    </md-nav-item>
-    <md-nav-item md-nav-click="navigate('Data')" name="Data" aria-disabled="true" ng-click="navigate('Data')">
-        <span class="glyphicon glyphicon-edit" ng-class="{'ready':(dataset.raw_rowObjects_coercionScheme && !dataset.dirty)}"></span><span class="nav-item-label btn-label">3. Format Data</span>
-    </md-nav-item>
-    <md-nav-item md-nav-click="navigate('Views')" name="Views" aria-disabled="true">
+    </md-button>
+    <md-button ng-click="navigate('Data')" name="Data" aria-disabled="true" ng-disabled="!dataset.uid">
+        <span class="glyphicon glyphicon-edit" ng-class="{'ready':(dataset.raw_rowObjects_coercionScheme)}"></span><span class="nav-item-label btn-label">3. Format Data</span>
+    </md-button>
+    <md-button ng-click="navigate('Views')" name="Views" aria-disabled="true" ng-disabled="!dataset.fn_new_rowPrimaryKeyFromRowObject" class="no-animate">
         <span class="glyphicon glyphicon-equalizer" ng-class="{'ready':dataset.fe_views.views}"></span><span class="nav-item-label btn-label">4. Format Views</span>
-    </md-nav-item>
-    <md-nav-item md-nav-click="navigate('Done')" name="Done" aria-disabled="true">
+    </md-button>
+    <md-button ng-click="navigate('Done')" name="Done" aria-disabled="true" ng-disabled="!dataset.fe_views">
         <span class="glyphicon" ng-class="(dataset.fe_views.views && dataset.imported) ? 'glyphicon-check ready' : 'glyphicon-unchecked'"></span><span class="nav-item-label btn-label">5. Done!</span>
-    </md-nav-item>
+    </md-button>
 </md-nav-bar>
+
