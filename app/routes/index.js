@@ -89,20 +89,23 @@ var _mountRoutes_endPoints = function (app) {
 
         if (isNotRootDomain(req.subdomains)) { 
             if (urlRegexForDataset.test(req.url)) { //example: arrays.co/dataset-r4/xxx
-                next();
+                return next();
             } else {
                 if (req.url == '/') {
                     return next();
+                } else {
+                    return res.redirect(rootDomain+req.url);
                 }
-                return res.redirect(rootDomain+req.url);
+                
             }
         } else {
             if (urlRegexForDataset.test(req.url)) {
                 return res.redirect(rootDomain+'/');
+            } else {
+                return next();
             }
-            return next();
+            
         }
-
 
     })
 
