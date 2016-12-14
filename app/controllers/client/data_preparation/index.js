@@ -101,6 +101,15 @@ module.exports.BindData = function (req, callback) {
                         default_view = dataSourceDescription.fe_views.default_view;
                     }
 
+                   
+
+                    var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
+                    var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+
+                    baseUrl += teamDescription.subdomain + "." + rootDomain
+
+
+
                     var s = {
                         key: source_pKey,
                         sourceDoc: doc,
@@ -110,6 +119,7 @@ module.exports.BindData = function (req, callback) {
                         urls: dataSourceDescription.urls,
                         default_view: default_view,
                         default_filterJSON: default_filterJSON,
+                        datasetBaseLink: baseUrl
 
                     };
 

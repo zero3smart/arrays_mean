@@ -156,11 +156,21 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         } else {
                             /*
                              * Run callback function to finish action.
+
+
+
                              */
+
+                            var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
+                            var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+
+                            baseUrl += dataSourceDescription._team.subdomain + "." + rootDomain;
+
                             callback(err, {
                                 env: process.env,
 
                                 user: user,
+                                baseUrl: baseUrl,
 
                                 displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
 

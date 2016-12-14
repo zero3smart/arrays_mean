@@ -30,13 +30,17 @@ mixpanel.init("{{ env.MIXPANEL_TOKEN }}");</script><!-- end Mixpanel -->
 
 
 {% if baseUrl %}
-	<base href="{{baseUrl}}">
+	<base href="{{baseUrl}}/">
 {% else %}
 	 {% if env.USE_SSL == true and env.HOST%}
 
 	 <base href="https://{{env.HOST}}/">
-	 {% elif env.HOST%}
+	 {% elif env.HOST %}
 
 	 <base href="http://{{env.HOST}}/">
+	 {% else %}
+	 <base href="/">
 	 {% endif %}
+
+
 {% endif %}

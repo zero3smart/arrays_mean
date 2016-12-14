@@ -79,18 +79,31 @@ var rootDomain = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
     rootDomain += process.env.HOST ? process.env.HOST : 'localhost:9080';
 
 
-var urlRegexForDataset = /(\/[a-z_\d-]+)(-r\d)\/(gallery|bar-chart|chart|choropleth|timeline|word-cloud|scatterplot|line-graph|pie-set)/g;
+var urlRegexForDataset = /(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24}|gallery|bar-chart|chart|choropleth|timeline|word-cloud|scatterplot|line-graph|pie-set)/g;
 
 var _mountRoutes_endPoints = function (app) {
     // View endpoints
 
     app.all('*',function(req,res,next) {
 
-        if (isNotRootDomain(req.subdomains) && req.url!== '/' && !urlRegexForDataset.test(req.url)) {
-            return res.redirect(rootDomain+req.url);
+
+        if (isNotRootDomain(req.subdomains)) { 
+            if (urlRegexForDataset.test(req.url)) { //example: arrays.co/dataset-r4/xxx
+                next();
+            } else {
+                if (req.url == '/') {
+                    return next();
+                }
+                return res.redirect(rootDomain+req.url);
+            }
         } else {
-            next();
+            if (urlRegexForDataset.test(req.url)) {
+                return res.redirect(rootDomain+'/');
+            }
+            return next();
         }
+
+
     })
 
     app.use('/', require('./homepage'));

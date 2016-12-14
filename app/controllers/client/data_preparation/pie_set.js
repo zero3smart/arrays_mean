@@ -363,12 +363,18 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 });
 
                 //
+                var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
+                var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+
+                baseUrl += dataSourceDescription._team.subdomain + "." + rootDomain
+
+
                 var data =
                 {
                     env: process.env,
 
                     user: req.user,
-
+                    baseUrl: baseUrl,
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,

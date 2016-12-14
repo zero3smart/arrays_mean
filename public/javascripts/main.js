@@ -29,6 +29,10 @@ $(document).ready(function () {
         var default_filterJSON = $parent.find("[name='default_filterJSON']").val();
 
         var sourceKey = $parent.find("[name='source_key']").val();
+        var baseUrl = $parent.find("[name='subdomainUrl']").val();
+        if (typeof baseUrl == 'undefined') {
+            baseUrl = ""; 
+        }
 
 
         //toDo: get view from api
@@ -55,7 +59,7 @@ $(document).ready(function () {
             if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
                 href += "?" + default_filterJSON;
             }
-            window.location.href = href;
+            window.location.href = baseUrl + href;
          }
     });
 
@@ -235,6 +239,7 @@ $(document).ready(function () {
      * Array description expand/collapse text
      */
     $('.array-description-expand').on('click', function (e) {
+      
         $('.array-description').css("display", "none");
         $('.array-description-full').css("display", "inline");
         $('.array-description-expand').css("display", "none");

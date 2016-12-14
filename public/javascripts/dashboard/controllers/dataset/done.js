@@ -1,14 +1,15 @@
 angular.module('arraysApp')
-    .controller('DatasetDoneCtrl', ['$scope', '$mdToast', 'dataset', 'DatasetService',
-        function($scope, $mdToast, dataset, DatasetService) {
+    .controller('DatasetDoneCtrl', ['$scope', '$mdToast', 'dataset', 'DatasetService','$location',
+        function($scope, $mdToast, dataset, DatasetService,$location) {
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Done';
             $scope.importLogger = [];
             $scope.inProgress = false;
 
-            console.log($scope.$datatset);
-
+       
+            $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $location.host() + ":" + $location.port();
+        
 
             $scope.togglePublish = function() {
                 var isPublised = $scope.dataset.isPublished;

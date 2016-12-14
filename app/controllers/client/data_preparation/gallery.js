@@ -283,9 +283,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 if (err) return callback(err);
 
+                var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
+                var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+
+                baseUrl += dataSourceDescription._team.subdomain + "." + rootDomain
+
                 var data =
                 {
                     env: process.env,
+                    baseUrl:baseUrl,
 
                     user: user,
 
@@ -299,7 +305,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                    view_description: dataSourceDescription.fe_views.views.gallery.description ? dataSourceDescription.fe_view.views.gallery.description : "",
+                    view_description: dataSourceDescription.fe_views.views.gallery.description ? dataSourceDescription.fe_views.views.gallery.description : "",
                     //
                     pageSize: config.pageSize < nonpagedCount ? config.pageSize : nonpagedCount,
                     onPageNum: pageNumber,

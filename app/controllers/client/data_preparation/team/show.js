@@ -42,8 +42,8 @@ module.exports.BindData = function (req, teamDescription, callback) {
             if (typeof dataSourceDescription.fe_views.default_view !== 'undefined') {
                 default_view = dataSourceDescription.fe_views.default_view;
             }
-            var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + "," + dataSourceDescription.updatedBy.lastName
-            var authorDisplayName = dataSourceDescription.author.firstName + "," + dataSourceDescription.author.lastName;
+            var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + " " + dataSourceDescription.updatedBy.lastName
+            var authorDisplayName = dataSourceDescription.author.firstName + " " + dataSourceDescription.author.lastName;
 
             var sourceDescription = {
                 key: source_pKey,
@@ -71,7 +71,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
 
         var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
         var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-        
+
         baseUrl += team.subdomain + "." + rootDomain
 
         var data = {

@@ -56,6 +56,7 @@
                                     <input type="radio" name="source_key" value="{{ teamDesc.key }}" class="hidden">
                                     <input type="hidden" name="default_filterJSON" value="{{ teamDesc.default_filterJSON }}" class="hidden">
                                     <input type="hidden" name="default_view" value="{{ teamDesc.default_view }}" class="hidden">
+                                    <input type="hidden" name="subdomainUrl" value="{{teamDesc.datasetBaseLink}}" class="hidden">
                                     <div class="panel panel-default panel-source source-{{ teamDesc.key }} js-panel-array">
                                         {% if teamDesc.brandColor %}
                                             <style scoped>
@@ -80,11 +81,12 @@
                                                     By Team: {{value.team.title}}
                                                      <span class="source-divider hidden-xs"></span>
                                                     {% set comma = joiner() %}
+
                                                     {% for url in teamDesc.urls -%}
                                                       {{ comma() }} <a href="{{ url }}" class="source-link" target="_blank">{{ url }}</a>
                                                     {%- endfor %}
 
-                                                    <span class="source-divider hidden-xs"></span>
+                                                    {%if teamDesc.urls.length > 0 %}<span class="source-divider hidden-xs"></span>{%endif%}
                                                     <span class="source-count hidden-xs">{{ teamDesc.sourceDoc.numberOfRows | comma }} Record{{ "s" if teamDesc.sourceDoc.numberOfRows != 1 else "" }}</span>
                                                     <span class="source-divider hidden-xs"></span>
                                                     <span class="source-updated hidden-xs">Last Updated {{ teamDesc.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
