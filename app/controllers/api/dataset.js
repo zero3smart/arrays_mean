@@ -36,7 +36,7 @@ function getAllDatasetsWithQuery(query, res) {
 module.exports.getDatasetsWithQuery = function(req,res) {
     var query = req.body;
     getAllDatasetsWithQuery(query,res);
-}
+};
 
 
 module.exports.signedUrlForAssetsUpload = function (req, res) {
@@ -53,7 +53,7 @@ module.exports.signedUrlForAssetsUpload = function (req, res) {
             })
         })
 
-}
+};
 
 
 module.exports.remove = function (req, res) {
@@ -151,7 +151,7 @@ module.exports.remove = function (req, res) {
 
     batch.push(function(done) {
         User.update({_editors:req.body.id},{$pull: {_editors: req.body.id}},done);
-    })
+    });
 
     batch.end(function (err) {
         if (err) {
@@ -161,7 +161,7 @@ module.exports.remove = function (req, res) {
         winston.info("✅  Removed dataset : " + description.title);
         res.json({success: 'ok'});
     });
-}
+};
 
 module.exports.get = function (req, res) {
 
@@ -170,7 +170,7 @@ module.exports.get = function (req, res) {
 
     datasource_description.findById(req.params.id)
         .lean()
-        .deepPopulate('_otherSources schema_id _team _otherSources._team')
+        .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, description) {
 
             if (err) return res.json({error: err.message});
@@ -243,7 +243,7 @@ module.exports.getSourcesWithSchemaID = function (req, res) {
 
     datasource_description.find({schema_id: req.params.id})
         .lean()
-        .deepPopulate('_otherSources schema_id _team _otherSources._team')
+        .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, sources) {
             if (err) return res.json({error: "Error getting the sources with schema id : " + req.params.id});
 
@@ -253,7 +253,7 @@ module.exports.getSourcesWithSchemaID = function (req, res) {
                 })
             });
         });
-}
+};
 
 module.exports.publish = function (req, res) {
     datasource_description.findByIdAndUpdate(req.body.id, {$set: {isPublished: req.body.isPublished}}, function (err, savedDesc) {
@@ -263,7 +263,7 @@ module.exports.publish = function (req, res) {
             res.status(200).send('ok');
         }
     })
-}
+};
 
 module.exports.update = function (req, res) {
 
@@ -411,15 +411,15 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 }
 
 module.exports.upload = function (req, res) {
-    if (!req.body.id)
-        return res.json({error: 'No ID given'});
+    if (!req.body.id) return res.json({error: 'No ID given'});
+    var child = req.body.child;
 
     var batch = new Batch;
     batch.concurrency(1);
-    var description;
+    var description, schema_description;
 
     res.writeHead(200, {'Content-Type': 'application/json'});
-    res.connection.setTimeout(0); // this could take a while
+    res.connection.setTimeout(0);
 
     batch.push(function (done) {
         datasource_description.findById(req.body.id)
@@ -431,6 +431,26 @@ module.exports.upload = function (req, res) {
                 done();
             })
     });
+
+    if (child) {
+        batch.push(function (done) {
+            schema_description = description;
+
+            var findQuery = {dataset_uid:req.body.uid, schema_id: req.body.id};
+            var insertQuery = {
+                dataset_uid: req.body.uid,
+                schema_id: req.body.id,
+                fe_listed: false,
+                fe_visible: false
+            };
+            datasource_description.findOrCreate(findQuery, insertQuery, function (err, doc, created) {
+                if (err) return done(err);
+
+                description = datasource_description.Consolidate_descriptions_hasSchema(doc);
+                done();
+            })
+        });
+    }
 
     _.forEach(req.files, function (file) {
         batch.push(function (done) {
@@ -477,15 +497,30 @@ module.exports.upload = function (req, res) {
         batch.push(function (done) {
             winston.info("✅  Uploaded datasource : " + description.title + ", " + description.uid);
 
-            description.dirty = 3; // Full Import with image scraping
+            if (!child) {
+                description.dirty = 3; // Full Import with image scraping
 
-            description.save(function (err, updatedDescription) {
-                if (err) {
-                    winston.error("❌  Error saving the dataset into the database : " + description.title + " (" + err.message + ")");
-                    return done(err);
-                }
-                done();
-            });
+                description.save(function (err, updatedDescription) {
+                    if (err)
+                        winston.error("❌  Error saving the dataset into the database : " + description.title + " (" + err.message + ")");
+                    done(err);
+                });
+            } else {
+                schema_description.dirty = 3;
+                schema_description.save(function(err, updatedDescription) {
+                    if (err) {
+                        winston.error("❌  Error saving the dataset into the database : " + description.title + " (" + err.message + ")");
+                        return done(err);
+                    }
+                    var findQuery = {_id: description.id};
+                    var updateQuery = {format: description.format};
+                    datasource_description.findOneAndUpdate(findQuery, updateQuery, function(err, doc) {
+                        if (err)
+                            winston.error("❌  Error saving the dataset into the database : " + description.title + " (" + err.message + ")");
+                        done(err);
+                    });
+                })
+            }
         });
     });
 
