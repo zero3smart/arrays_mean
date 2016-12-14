@@ -52,9 +52,9 @@
                 <div ng-if="setting.inputType == 'textbox'">
                  <label>{{setting.displayAs}}</label>
                      <md-input-container class="md-block" flex-gt-sm>
-                        <input ng-if="!setting.expectedInputType" aria-label="{{setting.name}} For {{viewName}}" type="text" ng-model="data[setting.name]">
+                        <input ng-if="!setting.expectedInputType" type="text" ng-model="data[setting.name]">
 
-                        <input ng-if="setting.expectedInputType=='float'" aria-label="{{setting.name}} For {{viewName}}" min="0" step="0.1" type="number" ng-model="data[setting.name]">
+                        <input ng-if="setting.expectedInputType=='float'" min="0" step="0.1" type="number" ng-model="data[setting.name]">
 
 
                     </md-input-container>
@@ -66,7 +66,7 @@
 
 
                   <md-input-container class="md-block">
-                      <md-select ng-model="data[setting.name].pKey">
+                      <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name].pKey">
                         <md-option ng-repeat="dataset in otherAvailableDatasets" ng-value="dataset.mappingPkey">
                             {{dataset.displayAs}}
                         </md-option>
@@ -83,7 +83,7 @@
                       <div ng-repeat="item in data[setting.name].mappings">
                         <div layout="row">  
                             <md-input-container flex="40" >                  
-                              <md-select ng-model="item.key">
+                              <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="item.key">
                                  
                                   <md-option  ng-repeat="col in colsAvailable | filter: checkDuplicateKey(data[setting.name],$index) &&
                                   keyExcludeBy(setting.keyExcludeBy)" ng-value="col">
@@ -95,7 +95,7 @@
 
 
                            <md-input-container flex="50" >                  
-                              <md-select ng-model="item.value">
+                              <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="item.value">
                                   <md-option  ng-repeat="col in otherDatasetCols[data[setting.name].pKey]" ng-value="col">
                                       {{col}}
                                   </md-option>
@@ -104,16 +104,6 @@
 
                         </div>
                       </div>
-
-                    
-
-
-                 <!--  <md-input-container class="md-block">
-                      <md-option ng-if="setting.selectFrom=='dataset'"
-                        ng-repeat="dataset in otherAvailableDatasets" ng-value="dataset.mappingPkey">
-                          {{dataset.displayAs}}
-                      </md-option>
-                  </md-input-container> -->
                 </div>
 
 
@@ -310,7 +300,7 @@
                   <label>{{setting.displayAs}}</label> 
                     <div layout="row">
 
-                        <md-select flex="30" class="md-block" ng-model="data[setting.name].field" ng-model-options="{updateOn:'blur'}">
+                        <md-select aria-label="{{setting.name}} for {{viewName}}" flex="30" class="md-block" ng-model="data[setting.name].field" ng-model-options="{updateOn:'blur'}">
 
 
                         <md-option  ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
@@ -330,7 +320,7 @@
                              <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
                           </md-input-container>
                           <md-input-container flex="50">
-                           <md-select data-ng-model="data[setting.name].conditions[$index].applyIconFromUrl" flex="50">
+                           <md-select aria-label="{{setting.name}} for {{viewName}}" data-ng-model="data[setting.name].conditions[$index].applyIconFromUrl" flex="50">
                             <md-select-label><img class="iconMap" ng-if="data[setting.name].conditions[$index].applyIconFromUrl" 
                             ng-src="{{data[setting.name].conditions[$index].applyIconFromUrl}}" ></md-select-label>
                              <md-option  data-ng-repeat="icon_url in iconsUrl" data-ng-value="icon_url" >
@@ -354,34 +344,13 @@
 
                   </div>
 
-         
-
-
-
-
-
-
-
-
-                  
-
-
             </div>
-
-        
-
-     
-
-
-           
 
         </form>
 
         </md-content>
 
     
-
-
     </md-dialog-content> 
 
     <md-dialog-actions layout="row" layout-align="end center">

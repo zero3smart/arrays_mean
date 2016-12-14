@@ -18,9 +18,15 @@ angular.module('arraysApp')
                 if (dataset.fe_nestedObject.prefix)
                     return dataset.fe_nestedObject.prefix + fieldName;
                 return fieldName;
-            }).filter(function(fieldName){
-                return !$scope.dataset.fe_excludeFields[fieldName];
             }));
+            colsAvailable = colsAvailable.filter(function(fieldName){
+                return !$scope.dataset.fe_excludeFields[fieldName];
+            });
+
+
+
+
+
 
             $scope.openViewDialog = function (evt, id) {
 
