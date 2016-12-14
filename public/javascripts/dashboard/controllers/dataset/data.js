@@ -1,7 +1,6 @@
 angular.module('arraysApp')
     .controller('DatasetDataCtrl', ['$scope', '$state', 'DatasetService', '$mdToast', '$mdDialog', '$filter', 'dataset', 'availableTypeCoercions', 'availableDesignatedFields',
         function ($scope, $state, DatasetService, $mdToast, $mdDialog, $filter, dataset, availableTypeCoercions, availableDesignatedFields) {
-
             $scope.$parent.$parent.currentNavItem = 'Data';
             $scope.availableTypeCoercions = availableTypeCoercions;
 
@@ -11,10 +10,12 @@ angular.module('arraysApp')
             if (!dataset.fe_displayTitleOverrides) dataset.fe_displayTitleOverrides = {};
 
             $scope.$parent.$parent.dataset = angular.copy(dataset);
+            
             $scope.data = {};
 
             $scope.$parent.$parent.currentNavItem = 'Data';
             $scope.availableTypeCoercions = availableTypeCoercions;
+
 
             $scope.toggleExclude = function (exclude) {
                 for (var i = 0; i < $scope.dataset.columns.length; i++) {
@@ -138,6 +139,8 @@ angular.module('arraysApp')
                 };
 
                 $scope.reset();
+
+
 
                 $scope.removeOneToOneOverride = function (valueByOverride) {
                     var index = $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName].indexOf(valueByOverride);
@@ -705,6 +708,15 @@ angular.module('arraysApp')
                 }
             };
 
+            //may not need these functions
+            $scope.changePrimaryKey = function(key) {               
+                $scope.data.fn_new_rowPrimaryKeyFromRowObject = key;
+                console.log($scope.data.fn_new_rowPrimaryKeyFromRowObject);
+            }
+            $scope.savePrimaryKey = function() {
+                $scope.$parent.$parent.dataset.fn_new_rowPrimaryKeyFromRowObject = $scope.data.fn_new_rowPrimaryKeyFromRowObject;
+            }
+
             $scope.reset = function () {
                 $scope.$parent.$parent.dataset = angular.copy(dataset);
 
@@ -712,7 +724,7 @@ angular.module('arraysApp')
 
                 $scope.data = {};
                 $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
-
+                $scope.data.fn_new_rowPrimaryKeyFromRowObject = dataset.fn_new_rowPrimaryKeyFromRowObject;
                 sortColumnsByDisplayOrder();
 
                 if ($scope.vm) $scope.vm.dataForm.$setPristine();
@@ -732,9 +744,17 @@ angular.module('arraysApp')
 
             $scope.reset();
 
+            $scope.data.fn_new_rowPrimaryKeyFromRowObject = dataset.fn_new_rowPrimaryKeyFromRowObject;
+
+
             $scope.submitForm = function (isValid) {
+                //Save Primary Key UI setting iof the primary key
+                $scope.savePrimaryKey();
+
                 if (isValid) {
+
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
+                    console.log($scope.$parent.$parent.dataset);
                     delete finalizedDataset.columns;
 
                     DatasetService.save(finalizedDataset)
