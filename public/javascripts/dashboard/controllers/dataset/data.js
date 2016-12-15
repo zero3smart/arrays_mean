@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetDataCtrl', ['$scope', '$state', 'DatasetService', '$mdToast', '$mdDialog', '$filter', 'dataset', 'availableTypeCoercions', 'availableDesignatedFields',
-        function ($scope, $state, DatasetService, $mdToast, $mdDialog, $filter, dataset, availableTypeCoercions, availableDesignatedFields) {
+    .controller('DatasetDataCtrl', ['$scope', '$state', '$q', 'DatasetService', '$mdToast', '$mdDialog', '$filter', 'dataset', 'additionalDatasources', 'availableTypeCoercions', 'availableDesignatedFields',
+        function ($scope, $state, $q, DatasetService, $mdToast, $mdDialog, $filter, dataset, additionalDatasources, availableTypeCoercions, availableDesignatedFields) {
             $scope.$parent.$parent.currentNavItem = 'Data';
             $scope.availableTypeCoercions = availableTypeCoercions;
 
@@ -11,12 +11,12 @@ angular.module('arraysApp')
             if (!dataset.fe_designatedFields) dataset.fe_designatedFields = {};
 
             $scope.$parent.$parent.dataset = angular.copy(dataset);
-            
+            $scope.additionalDatasources = angular.copy(additionalDatasources);
+
             $scope.data = {};
 
             $scope.$parent.$parent.currentNavItem = 'Data';
             $scope.availableTypeCoercions = availableTypeCoercions;
-
 
             $scope.toggleExclude = function (exclude) {
                 for (var i = 0; i < $scope.dataset.columns.length; i++) {
@@ -313,12 +313,15 @@ angular.module('arraysApp')
                     clickOutsideToClose: true,
                     fullscreen: true, // Only for -xs, -sm breakpoints.
                     locals: {
-                        dataset: $scope.$parent.$parent.dataset
+                        dataset: $scope.$parent.$parent.dataset,
+                        additionalDatasources: $scope.additionalDatasources
                     }
                 })
-                    .then(function (savedDataset) {
-                        $scope.$parent.$parent.dataset = savedDataset;
-                        $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
+                    .then(function (result) {
+                        $scope.$parent.$parent.dataset = result.dataset;
+                        $scope.additionalDatasources = result.additionalDatasources;
+
+                        $scope.coercionScheme = angular.copy(result.dataset.raw_rowObjects_coercionScheme);
                         sortColumnsByDisplayOrder();
 
                         $scope.vm.dataForm.$setDirty();
@@ -327,10 +330,12 @@ angular.module('arraysApp')
                     });
             };
 
-            function NestedDialogController($scope, $mdDialog, $filter, dataset) {
+            function NestedDialogController($scope, $mdDialog, $filter, dataset, additionalDatasources) {
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
+                    $scope.additionalDatasources = angular.copy(additionalDatasources);
 
+                    // Master datasource
                     $scope.data = {};
 
                     if (!$scope.dataset.fe_nestedObject) $scope.dataset.fe_nestedObject = {};
@@ -367,6 +372,46 @@ angular.module('arraysApp')
                         $scope.data.valueOverrides.push({field: colName, valueOverrides: valueOverrides});
                     });
 
+                    // Additional Datasources
+                    $scope.additionalData = [];
+                    $scope.additionalDatasources.forEach(function(datasource, index) {
+                        $scope.additionalData.push({});
+
+                        if (!datasource.fe_nestedObject) $scope.dataset.fe_nestedObject = {};
+                        if (!datasource.fe_nestedObject.criteria) {
+                            datasource.fe_nestedObject.criteria = {
+                                operatorName: 'equal',
+                                value: ''
+                            };
+                        }
+
+                        if (!datasource.fe_nestedObject.fields) datasource.fe_nestedObject.fields = [];
+                        $scope.additionalData[index].fields = datasource.fe_nestedObject.fields;
+
+                        if (!datasource.fe_nestedObject.fieldOverrides) datasource.fe_nestedObject.fieldOverrides = {};
+                        $scope.additionalData[index].fieldOverrides = [];
+                        // Convert Object into Array
+                        Object.keys(datasource.fe_nestedObject.fieldOverrides).map(function (colName) {
+                            $scope.additionalData[index].fieldOverrides.push({
+                                field: colName,
+                                override: datasource.fe_nestedObject.fieldOverrides[colName]
+                            });
+                        });
+
+                        if (!datasource.fe_nestedObject.valueOverrides) datasource.fe_nestedObject.valueOverrides = {};
+                        $scope.additionalData[index].valueOverrides = [];
+
+                        // Convert Object into Array
+                        Object.keys(datasource.fe_nestedObject.valueOverrides).map(function (colName) {
+                            var orgValueOverrides = datasource.fe_nestedObject.valueOverrides[colName];
+                            var valueOverrides = [];
+                            Object.keys(orgValueOverrides).map(function (value) {
+                                valueOverrides.push({value: value, override: orgValueOverrides[value]})
+                            });
+                            $scope.additionalData[index].valueOverrides.push({field: colName, valueOverrides: valueOverrides});
+                        });
+                    });
+
                     if ($scope.dialog.form) $scope.dialog.form.$setPristine();
                 };
 
@@ -376,35 +421,50 @@ angular.module('arraysApp')
                     $mdDialog.cancel();
                 };
 
-                $scope.addValueOverride = function () {
-                    $scope.data.valueOverrides.push({field: '', valueOverrides: [{value: '', override: ''}]});
+                $scope.addValueOverride = function (additionalIndex) {
+                    if (additionalIndex === undefined)
+                        $scope.data.valueOverrides.push({field: '', valueOverrides: [{value: '', override: ''}]});
+                    else
+                        $scope.additionalData[additionalIndex].valueOverrides.push({field: '', valueOverrides: [{value: '', override: ''}]});
                     $scope.dialog.form.$setDirty();
                 };
 
-                $scope.removeValueOverride = function (override) {
-                    var index = $scope.data.valueOverrides.indexOf(override);
-                    if (index != -1) $scope.data.valueOverrides.splice(index, 1);
+                $scope.removeValueOverride = function (override, additionalIndex) {
+                    if (additionalIndex === undefined) {
+                        var index = $scope.data.valueOverrides.indexOf(override);
+                        if (index != -1) $scope.data.valueOverrides.splice(index, 1);
+                    } else {
+                        index = $scope.additionalData[additionalIndex].valueOverrides.indexOf(override);
+                        if (index != -1) $scope.additionalData[additionalIndex].valueOverrides.splice(index, 1);
+                    }
                     $scope.dialog.form.$setDirty();
                 };
 
-                $scope.addFieldOverride = function () {
-                    $scope.data.fieldOverrides.push({field: '', override: ''});
+                $scope.addFieldOverride = function (additionalIndex) {
+                    if (additionalIndex === undefined)
+                        $scope.data.fieldOverrides.push({field: '', override: ''});
+                    else
+                        $scope.additionalData[additionalIndex].fieldOverrides.push({field: '', override: ''});
                     $scope.dialog.form.$setDirty();
                 };
 
-                $scope.removeFieldOverride = function (override) {
-                    var index = $scope.data.fieldOverrides.indexOf(override);
-                    if (index != -1) $scope.data.fieldOverrides.splice(index, 1);
+                $scope.removeFieldOverride = function (override, additionalIndex) {
+                    if (additionalIndex === undefined) {
+                        var index = $scope.data.fieldOverrides.indexOf(override);
+                        if (index != -1) $scope.data.fieldOverrides.splice(index, 1);
+                    } else {
+                        index = $scope.additionalData[additionalIndex].fieldOverrides.indexOf(override);
+                        if (index != -1) $scope.additionalData[additionalIndex].fieldOverrides.splice(index, 1);
+                    }
                     $scope.dialog.form.$setDirty();
                 };
 
                 $scope.save = function () {
-
+                    // Master Dataset
                     $scope.dataset.fe_nestedObject.fieldOverrides = {};
                     $scope.data.fieldOverrides.map(function (elem) {
                         $scope.dataset.fe_nestedObject.fieldOverrides[elem.field] = elem.override;
                     });
-
 
                     $scope.dataset.fe_nestedObject.valueOverrides = {};
                     $scope.dataset.fe_nestedObject.fields = $scope.data.fields;
@@ -416,7 +476,28 @@ angular.module('arraysApp')
                         $scope.dataset.fe_nestedObject.valueOverrides[elem.field] = valueOverrides;
                     });
 
-                    $mdDialog.hide($scope.dataset);
+                    // Additional Datasources
+                    $scope.additionalDatasources.forEach(function(datasource, index) {
+                        datasource.fe_nestedObject.fieldOverrides = {};
+                        $scope.additionalData[index].fieldOverrides.map(function (elem) {
+                            datasource.fe_nestedObject.fieldOverrides[elem.field] = elem.override;
+                        });
+
+                        datasource.fe_nestedObject.valueOverrides = {};
+                        datasource.fe_nestedObject.fields = $scope.additionalData[index].fields;
+                        $scope.additionalData[index].valueOverrides.map(function (elem) {
+                            var valueOverrides = {};
+                            elem.valueOverrides.map(function (el) {
+                                valueOverrides[el.value] = el.override;
+                            });
+                            datasource.fe_nestedObject.valueOverrides[elem.field] = valueOverrides;
+                        });
+                    });
+
+                    $mdDialog.hide({
+                        dataset: $scope.dataset,
+                        additionalDatasources: $scope.additionalDatasources
+                    });
                 }
             }
 
@@ -720,10 +801,11 @@ angular.module('arraysApp')
             $scope.changePrimaryKey = function(key) {               
                 $scope.data.fn_new_rowPrimaryKeyFromRowObject = key;
                 console.log($scope.data.fn_new_rowPrimaryKeyFromRowObject);
-            }
+            };
+
             $scope.savePrimaryKey = function() {
                 $scope.$parent.$parent.dataset.fn_new_rowPrimaryKeyFromRowObject = $scope.data.fn_new_rowPrimaryKeyFromRowObject;
-            }
+            };
 
             $scope.reset = function () {
                 $scope.$parent.$parent.dataset = angular.copy(dataset);
@@ -738,7 +820,7 @@ angular.module('arraysApp')
 
                 if ($scope.vm) $scope.vm.dataForm.$setPristine();
 
-                console.log($scope.data);
+                // console.log($scope.data);
             };
 
             $scope.changeCoercionSchemeByOperation = function (colName) {
@@ -764,34 +846,66 @@ angular.module('arraysApp')
 
                 if (isValid) {
 
+                    var errorHandler = function (error) {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent(error)
+                                .position('top right')
+                                .hideDelay(5000)
+                        );
+                    }, done = function() {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Dataset updated successfully!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+
+                        $state.transitionTo('dashboard.dataset.views', {id: dataset._id}, {
+                            reload: true,
+                            inherit: false,
+                            notify: true
+                        });
+                    };
+
+                    var queue = [];
+
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
-                    console.log($scope.$parent.$parent.dataset);
+                    console.log(finalizedDataset);
                     delete finalizedDataset.columns;
 
-                    DatasetService.save(finalizedDataset)
-                        .then(function (id) {
-                            $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent('Dataset updated successfully!')
-                                    .position('top right')
-                                    .hideDelay(3000)
-                            );
+                    queue.push(DatasetService.save(finalizedDataset));
 
-                            $state.transitionTo('dashboard.dataset.views', {id: id}, {
-                                reload: true,
-                                inherit: false,
-                                notify: true
-                            });
-                        }, function (error) {
-                            $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent(error)
-                                    .position('top right')
-                                    .hideDelay(5000)
-                            );
-                        });
+                    $scope.additionalDatasources.forEach(function(datasource) {
+                        var finalizedDatasource = angular.copy(datasource);
+                        delete finalizedDatasource.fn_new_rowPrimaryKeyFromRowObject;
+                        delete finalizedDatasource.raw_rowObjects_coercionScheme;
+                        delete finalizedDatasource._otherSources;
+                        delete finalizedDatasource._team;
+                        delete finalizedDatasource.title;
+                        delete finalizedDatasource.importRevision;
+                        delete finalizedDatasource.author;
+                        delete finalizedDatasource.updatedBy;
+                        delete finalizedDatasource.brandColor;
+                        delete finalizedDatasource.customFieldsToProcess;
+                        delete finalizedDatasource.urls;
+                        delete finalizedDatasource.description;
+                        delete finalizedDatasource.fe_designatedFields;
+                        delete finalizedDatasource.fe_excludeFields;
+                        delete finalizedDatasource.fe_displayTitleOverrides;
+                        delete finalizedDatasource.fe_fieldDisplayOrder;
+                        delete finalizedDatasource.imageScraping;
+                        delete finalizedDatasource.isPublished;
+                        delete finalizedDatasource.fe_views;
+                        delete finalizedDatasource.fe_filters;
+                        queue.push(DatasetService.save(finalizedDatasource));
+                    });
+
+                    $q.all(queue)
+                        .then(done)
+                        .catch(errorHandler);
                 }
-            }
+            };
 
         }
     ]);

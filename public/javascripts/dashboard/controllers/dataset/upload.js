@@ -1,15 +1,15 @@
 angular.module('arraysApp')
-    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'sources', 'FileUploader', '$mdToast', '$mdDialog', '$state', 'AuthService', 'DatasetService', 'AssetService',
-        function ($scope, dataset, sources, FileUploader, $mdToast, $mdDialog, $state, AuthService, DatasetService, AssetService) {
+    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'additionalDatasources', 'FileUploader', '$mdToast', '$mdDialog', '$state', 'AuthService', 'DatasetService', 'AssetService',
+        function ($scope, dataset, additionalDatasources, FileUploader, $mdToast, $mdDialog, $state, AuthService, DatasetService, AssetService) {
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Upload';
             $scope.progressMode = "determinate";
-            $scope.sources = sources.map(function(source) {
-                return initSource(source)
+            $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
+                return initSource(additionalDatasource)
             });
 
-            function initSource(source) {
+            function initSource(additionalDatasource) {
                 var uploader = new FileUploader({
                     url: '/api/dataset/upload',
                     formData: [{id: dataset._id, child: true}],
@@ -22,41 +22,41 @@ angular.module('arraysApp')
                 uploader.onWhenAddingFileFailed = onWhenAddingFileFailed;
 
                 uploader.onAfterAddingFile = function(item) {
-                    if (!source.dataset_uid)
-                        source.dataset_uid = item.file.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
+                    if (!additionalDatasource.dataset_uid)
+                        additionalDatasource.dataset_uid = item.file.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
 
-                    item.formData[0].dataset_uid = source.dataset_uid;
+                    item.formData[0].dataset_uid = additionalDatasource.dataset_uid;
                 };
 
                 uploader.onProgressAll = function(progress) {
                     // TODO: Need to calculate the uploading progress into the AWS
                     if (progress == 100) {
                         var self = this;
-                        var source = $scope.sources.find(function(a) {
+                        var additionalDatasource = $scope.additionalDatasources.find(function(a) {
                             return a.uploader == self;
                         });
-                        source.progressMode = "indeterminate";
+                        additionalDatasource.progressMode = "indeterminate";
                     }
                 };
 
                 uploader.onCompleteItem = function(fileItem, response, status, headers) {
                     var self = this;
-                    var source = $scope.sources.find(function(a) {
+                    var additionalDatasource = $scope.additionalDatasources.find(function(a) {
                         return a.uploader == self;
                     });
-                    source.progressMode = "determinate";
+                    additionalDatasource.progressMode = "determinate";
 
                     if (status != 200 || response == '') return;
 
                     if (!response.error && response.id) {
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent(source.dataset_uid + ' was uploaded successfully!')
+                                .textContent(additionalDatasource.dataset_uid + ' was uploaded successfully!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
 
-                        source._id = response._id;
+                        additionalDatasource._id = response.id;
                     } else {
                         $mdToast.show(
                             $mdToast.simple()
@@ -71,9 +71,9 @@ angular.module('arraysApp')
                     }
                 };
 
-                source.uploader = uploader;
-                source.progressMode = "determinate";
-                return source;
+                additionalDatasource.uploader = uploader;
+                additionalDatasource.progressMode = "determinate";
+                return additionalDatasource;
             }
 
             $scope.uploader = new FileUploader({
@@ -100,7 +100,7 @@ angular.module('arraysApp')
                     }
                 ],
 
-            })
+            });
 
             $scope.imageUploader.onCompleteItem = function (fileItem, response, status, header) {
                 if (status == 200) {
@@ -121,7 +121,7 @@ angular.module('arraysApp')
                         )
                     })
                 }
-            }
+            };
 
             $scope.imageUploader.onBeforeUploadItem = function (item) {
                 item.headers['Content-Type'] = item.file.type;
@@ -204,23 +204,23 @@ angular.module('arraysApp')
                     return;
                 }
 
-                $scope.sources.push(initSource({}));
+                $scope.additionalDatasources.push(initSource({}));
             };
 
-            $scope.removeSubdatasource = function () {
-                var length = $scope.sources.length;
+            $scope.removeAdditionalDatasource = function () {
+                var length = $scope.additionalDatasources.length;
                 if (length > 0) {
-                    var source = $scope.sources[length - 1];
-                    if (source._id) {
-                        var dataset_uid = source.dataset_uid;
-                        DatasetService.removeSubdataset(source._id).then(function () {
+                    var additionalDatasource = $scope.additionalDatasources[length - 1];
+                    if (additionalDatasource._id) {
+                        var dataset_uid = additionalDatasource.dataset_uid;
+                        DatasetService.removeSubdataset(additionalDatasource._id).then(function () {
                             $mdToast.show(
                                 $mdToast.simple()
                                     .textContent(dataset_uid + ' was removed successfully!')
                                     .position('top right')
                                     .hideDelay(5000)
                             );
-                            $scope.sources.splice(length - 1, 1);
+                            $scope.additionalDatasources.splice(length - 1, 1);
                         }, function (error) {
                             $mdToast.show(
                                 $mdToast.simple()
@@ -230,7 +230,7 @@ angular.module('arraysApp')
                             );
                         });
                     } else {
-                        $scope.sources.splice(length - 1, 1);
+                        $scope.additionalDatasources.splice(length - 1, 1);
                     }
                 }
             };

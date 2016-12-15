@@ -241,14 +241,14 @@ module.exports.loadDatasourceColumnsForMapping = function (req, res) {
         });
 };
 
-module.exports.getSourcesWithSchemaID = function (req, res) {
+module.exports.getAdditionalSourcesWithSchemaID = function (req, res) {
     if (!req.params.id) return res.json({error: 'No SchemaID given'});
 
     datasource_description.find({schema_id: req.params.id})
         .lean()
         .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, sources) {
-            if (err) return res.json({error: "Error getting the sources with schema id : " + req.params.id});
+            if (err) return res.json({error: "Error getting the addiontal datasources with schema id : " + req.params.id});
 
             return res.json({
                 sources: sources.map(function (source) {
@@ -297,60 +297,93 @@ module.exports.update = function (req, res) {
     } else {
 
         // Update of Existing Dataset
-        datasource_description.findById(req.body._id, function (err, doc) {
+        datasource_description.findById(req.body._id)
+            .populate('schema_id')
+            .exec(function (err, doc) {
 
-            if (err) return res.json({error: err.message});
-            if (!doc) return res.json({error: 'Invalid Operation'});
-
-            winston.info("🔁  Updating the dataset " + doc.title);
-
-            _.forOwn(req.body, function (value, key) {
-                if (key != '_id' && !_.isEqual(value, doc._doc[key])) {
-                    winston.info('✅ Updated ' + doc.title + ' with - ' + key + ' with ' + JSON.stringify(value));
-
-                    if (key == 'dirty') return;
-
-                    doc[key] = value;
-                    if (typeof value === 'object')
-                        doc.markModified(key);
-
-                    // detect whether you need to re-import dataset to the system or not, and inform that the client
-
-                    // Only post-import cache
-                    var keysForNeedToImport = [
-                        'fe_filters'
-                    ];
-                    if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 1)
-                        doc.dirty = 1;
-
-                    // Import without image scrapping
-                    keysForNeedToImport = [
-                        'importRevision',
-                        'fn_new_rowPrimaryKeyFromRowObject',
-                        'raw_rowObjects_coercionScheme',
-                        'relationshipFields',
-                        'customFieldsToProcess',
-                        'fe_nestedObject',
-                    ];
-                    if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 2)
-                        doc.dirty = 2;
-
-                    // Full Import
-                    keysForNeedToImport = [
-                        'imageScraping',
-                    ];
-                    if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 3)
-                        doc.dirty = 3;
-                }
-            });
-
-            doc.save(function (err, updatedDoc) {
                 if (err) return res.json({error: err.message});
-                if (!updatedDoc) return res.json({error: 'Invalid Operation'});
+                if (!doc) return res.json({error: 'Invalid Operation'});
 
-                return res.json({id: updatedDoc.id});
+                var description = doc, description_title = doc.title;
+                if (doc.schema_id) {
+                    description = datasource_description.Consolidate_descriptions_hasSchema(doc);
+                    description_title = description.title + ' (' + doc.dataset_uid + ')';
+                }
+                winston.info("🔁  Updating the dataset " + description_title + "...");
+
+                _.forOwn(req.body, function (value, key) {
+                    if (key != '_id' && ((!doc.schema_id && !_.isEqual(value, doc._doc[key]))
+                        || (doc.schema_id && !_.isEqual(value, description[key])))) {
+
+                        winston.info('  ✅ ' + key + ' with ' + JSON.stringify(value));
+
+                        if (key == 'dirty') return;
+
+                        doc[key] = value;
+                        if (typeof value === 'object')
+                            doc.markModified(key);
+
+                        // detect whether you need to re-import dataset to the system or not, and inform that the client
+
+                        // Only post-import cache
+                        var keysForNeedToImport = [
+                            'fe_filters',
+                            'fe_excludeFields'
+                        ];
+                        if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 1)
+                            doc.dirty = 1;
+
+                        // Import without image scrapping
+                        keysForNeedToImport = [
+                            'importRevision',
+                            'fn_new_rowPrimaryKeyFromRowObject',
+                            'raw_rowObjects_coercionScheme',
+                            'relationshipFields',
+                            'customFieldsToProcess',
+                            'fe_nestedObject'
+                        ];
+                        if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 2)
+                            doc.dirty = 2;
+
+                        // Full Import
+                        keysForNeedToImport = [
+                            'imageScraping',
+                        ];
+                        if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 3)
+                            doc.dirty = 3;
+                    }
+                });
+
+                doc.save(function (err, updatedDoc) {
+                    if (err) return res.json({error: err.message});
+                    if (!updatedDoc) return res.json({error: 'Invalid Operation'});
+
+                    if (!doc.schema_id) {
+                        return res.json({id: updatedDoc.id});
+                    } else {
+                        var findQuery = {_id: doc.id};
+                        // Inherited fields from the schema should be undefined
+                        // TODO: Is there anyway to update the selected fields only?
+                        var updateQuery = { $unset: {
+                            imageScraping: 1,
+                            isPublished: 1,
+                            customFieldsToProcess: 1,
+                            _otherSources: 1,
+                            fe_filters: 1,
+                            fe_fieldDisplayOrder: 1,
+                            urls: 1,
+                            importRevision: 1
+                        } };
+                        datasource_description.findOneAndUpdate(findQuery, updateQuery, {upsert: true, new: true},
+                            function(err, updatedDoc) {
+                                if (err) return res.json({error: err.message});
+                                if (!updatedDoc) return res.json({error: 'Invalid Operation'});
+
+                                return res.json({id: updatedDoc.id});
+                            });
+                    }
+                });
             });
-        });
 
     }
 };
@@ -499,6 +532,8 @@ module.exports.upload = function (req, res) {
 
                 // Store columnNames and firstRecords for latter call on dashboard pages
                 if (!req.session.columns) req.session.columns = {};
+                // TODO: Do we need to save the columns for the additional datasource,
+                // since it should be same as the master datasource???
                 req.session.columns[description.id] = columns;
 
                 // Upload datasource to AWS S3
@@ -525,35 +560,29 @@ module.exports.upload = function (req, res) {
                     done(err);
                 });
             } else {
-                schema_description.dirty = 3;
-                schema_description.save(function(err, updatedDescription) {
-                    if (err) {
-                        winston.error("❌  Error saving the dataset into the database : " + description_title + " (" + err.message + ")");
-                        return done(err);
+                var findQuery = {_id: description.id};
+                // TODO: Need to update the selected fields only!
+                var updateQuery = {
+                    format: description.format,
+                    dirty: 3,
+                    imported: false,
+                    $unset: {
+                        fe_nestedObject: 1,
+                        imageScraping: 1,
+                        isPublished: 1,
+                        customFieldsToProcess: 1,
+                        _otherSources: 1,
+                        fe_filters: 1,
+                        fe_fieldDisplayOrder: 1,
+                        urls: 1,
+                        importRevision: 1
                     }
-                    var findQuery = {_id: description.id};
-                    // TODO: Need to update the selected fields only!
-                    var updateQuery = {
-                        format: description.format,
-                        dirty: 3,
-                        $unset: {
-                            fe_nestedObject: 1,
-                            imageScraping: 1,
-                            isPublished: 1,
-                            customFieldsToProcess: 1,
-                            _otherSources: 1,
-                            fe_filters: 1,
-                            fe_fieldDisplayOrder: 1,
-                            urls: 1,
-                            importRevision: 1
-                        }
-                    };
-                    datasource_description.findOneAndUpdate(findQuery, updateQuery, function(err, doc) {
-                        if (err)
-                            winston.error("❌  Error saving the dataset into the database : " + description_title + " (" + err.message + ")");
-                        done(err);
-                    });
-                })
+                };
+                datasource_description.findOneAndUpdate(findQuery, updateQuery, function(err, doc) {
+                    if (err)
+                        winston.error("❌  Error saving the dataset into the database : " + description_title + " (" + err.message + ")");
+                    done(err);
+                });
             }
         });
     });
@@ -605,9 +634,7 @@ module.exports.download = function (req, res) {
 }
 
 module.exports.initializeToImport = function (req, res) {
-    if (!req.body.uid) {
-        return res.json({error: 'No UID given'});
-    }
+    if (!req.body.uid) return res.json({error: 'No UID given'});
 
     var uid = req.body.uid;
 
@@ -618,12 +645,12 @@ module.exports.initializeToImport = function (req, res) {
     var description;
     var srcDocPKey;
     batch.push(function (done) {
-        datasource_description.findOne({$or: [{uid: uid}, {dataset_uid: uid}]},
-            function (err, data) {
+        datasource_description.findOne({uid: uid}, function (err, data) {
                 if (err) return done(err);
                 if (!data) return done(new Error('No datasource exists : ' + uid));
 
                 description = data;
+
                 srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
                 done();
             });
@@ -675,9 +702,7 @@ module.exports.initializeToImport = function (req, res) {
 }
 
 module.exports.preImport = function (req, res) {
-    if (!req.body.uid) {
-        return res.json({error: 'No UID given'});
-    }
+    if (!req.body.uid) return res.json({error: 'No UID given'});
 
     var uid = req.body.uid;
 

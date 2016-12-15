@@ -41,7 +41,7 @@ router.post('/admin/invite', ctrlAdmin.invite);
 router.post('/dataset/getDatasetsWithQuery',ctrlDataset.getDatasetsWithQuery);
 router.post('/dataset/remove', ctrlDataset.remove);
 router.get('/dataset/get/:id', ctrlDataset.get);
-router.get('/dataset/getSources/:id', ctrlDataset.getSourcesWithSchemaID);
+router.get('/dataset/getAdditionalSources/:id', ctrlDataset.getAdditionalSourcesWithSchemaID);
 router.post('/dataset/update', ctrlDataset.update);
 router.put('/dataset/publish/', ctrlDataset.publish);
 router.post('/dataset/removeSubdataset', ctrlDataset.removeSubdataset);

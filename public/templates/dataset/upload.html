@@ -45,27 +45,27 @@
             </tbody>
         </table>
 
-        <div ng-repeat="source in sources">
-            <label>Choose datasource file to merge {{source.dataset_uid ? '(' + source.dataset_uid + ')' : ''}}</label>
-            <input type="file" nv-file-select="" uploader="source.uploader" accept=".csv,.tsv|text/csv,text/csv-schema,text/tsv"/>
+        <div ng-repeat="additionalDatasource in additionalDatasources">
+            <label>Choose datasource file to merge {{additionalDatasource.dataset_uid ? '(' + additionalDatasource.dataset_uid + ')' : ''}}</label>
+            <input type="file" nv-file-select="" uploader="additionalDatasource.uploader" accept=".csv,.tsv|text/csv,text/csv-schema,text/tsv"/>
 
             <table class="table upload">
                 <thead>
                 <tr>
                     <th width="50%">DataSource Name</th>
-                    <th ng-show="source.uploader.isHTML5">Size</th>
-                    <th ng-show="source.uploader.isHTML5">Progress</th>
+                    <th ng-show="additionalDatasource.uploader.isHTML5">Size</th>
+                    <th ng-show="additionalDatasource.uploader.isHTML5">Progress</th>
                     <th>Status</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>
 
-                <tr ng-repeat="item in source.uploader.queue">
+                <tr ng-repeat="item in additionalDatasource.uploader.queue">
                     <td><strong>{{ item.file.name }}</strong></td>
-                    <td ng-show="source.uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
-                    <td ng-show="source.uploader.isHTML5" class="progress-container">
-                        <md-progress-linear md-mode="{{source.progressMode}}" value="{{item.progress}}"></md-progress-linear>
+                    <td ng-show="additionalDatasource.uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+                    <td ng-show="additionalDatasource.uploader.isHTML5" class="progress-container">
+                        <md-progress-linear md-mode="{{additionalDatasource.progressMode}}" value="{{item.progress}}"></md-progress-linear>
                     </td>
 
                     <td class="text-center">
@@ -91,11 +91,11 @@
         <md-input-container>
             <md-button class="md-raised" ng-click="addNewDatasource()"><span class="glyphicon glyphicon-plus"
                                                                              aria-hidden="true"></span><span
-                    class="btn-label">Add New Datasource To Merge</span></md-button>
+                    class="btn-label">Add New Additional Datasource To Merge</span></md-button>
         </md-input-container>
 
         <md-input-container>
-            <md-button class="md-raised" ng-click="removeSubdatasource()" ng-disabled="sources.length == 0"><span class="glyphicon glyphicon-minus"
+            <md-button class="md-raised" ng-click="removeAdditionalDatasource()" ng-disabled="additionalDatasources.length == 0"><span class="glyphicon glyphicon-minus"
                                                                              aria-hidden="true"></span><span
                     class="btn-label">Remove Last Sub Datasource </span></md-button>
         </md-input-container>

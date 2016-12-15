@@ -15,7 +15,8 @@ var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 //
 var DatasourceDescription_scheme = Schema({
-    uid: {type: String,unique: true},
+    // uid: {type: String, unique: true},
+    uid: {type: String},
     importRevision: {type: Number, integer: true, default: 1},
     schema_id: {type: Schema.Types.ObjectId, ref: 'DatasourceDescription'},
     banner: String,
@@ -104,7 +105,7 @@ var _mergeObject = function (obj1, obj2) {
         obj3[attrname] = obj2[attrname];
     }
     return obj3;
-}
+};
 
 var _consolidate_descriptions_hasSchema = function (description) {
     var desc = _.omit(description, ['schema_id'])
@@ -263,7 +264,7 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
 
             self.findOne({$or: [{uid: file}, {dataset_uid: file}]})
                 .lean()
-                .deepPopulate('_otherSources schema_id _team _otherSources._team')
+                .deepPopulate('_otherSources schema_id _team _otherSources._team schema_id._team')
                 .exec(function (err, description) {
 
                     if (err) {
@@ -276,7 +277,7 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
                             _.map(description._otherSources, function (src) {
                                 var excludeOtherSource = _.omit(src, ["_otherSources"])
                                 descriptions.push(excludeOtherSource);
-                            })
+                            });
                             cb();
 
                         } else if (!description.schema_id) {
@@ -310,7 +311,7 @@ var _findAllDescriptionAndSetup = function (fn) {
 
     this.find({imported: 3})
         .lean()
-        .deepPopulate('schema_id _team')
+        .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, descriptions) {
 
             /* avoid write operation lock for datasource depend on others */
