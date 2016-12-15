@@ -250,8 +250,6 @@ module.exports.save = function(req, res) {
 
     if (!req.params.id) { return res.send(new Error('No Id given'))};
 
-    console.log(req.params.id, req.body.active);
-
     User.findById(req.params.id, function(err, user) {
         if (err) return res.send(err);
         if (!user) return res.send(new Error('No User Exists'));

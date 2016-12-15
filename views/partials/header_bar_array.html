@@ -45,7 +45,7 @@
         <div class="container-fluid container-full-width">
             <div class="navbar-brand-container">
                 <a class="navbar-brand navbar-brand-arrays {% if team.logo | length %}navbar-brand-team-logo{% endif %}"
-                   href="{% if team.subdomain | length %}{{ env | siteBaseURL | addSubdomain(team.subdomain) }}{% else %}/array{% endif %}">{% if team.logo_header
+                   href="{% if team.subdomain | length %}{{ env | siteBaseURL | addSubdomain(team.subdomain) }}{% else %}/explore{% endif %}">{% if team.logo_header
                     | length %}<img src="{{ team.logo_header }}"/>{% elif team.title | length %}{{ team.title }}{% else
                     %}Arrays{% endif %}</a><br/>
                 <a class="navbar-brand navbar-brand-array-title" href="/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
@@ -143,7 +143,7 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             {% if user %}
-                            {{user.firstName}}, {{user.lastName}}
+                            {{user.firstName}} {{user.lastName}}
                             {% else %}
                             <span class="icon-menu" aria-hidden="true"></span>
                             {% endif %}
@@ -163,7 +163,7 @@
                             {% endif %}
                             <li class="background-color-brand-hover"><a href="#" class="share-link">Share</a></li>
                             <li role="separator" class="divider"></li>
-                            <li class="background-color-brand-hover"><a href="/array">Explore Arrays</a></li>
+                            <li class="background-color-brand-hover"><a href="/explore">Explore Arrays</a></li>
                             <li class="background-color-brand-hover"><a
                                     href="mailto:{{ 'Arrays Support<info@arrays.co>' | urlencode}}">Contact Support</a>
                             </li>

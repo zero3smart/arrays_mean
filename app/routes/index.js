@@ -87,28 +87,36 @@ var _mountRoutes_endPoints = function (app) {
     app.all('*',function(req,res,next) {
 
 
+
+        urlRegexForDataset.lastIndex = 0;
+        
+        var isRouteForDataset = urlRegexForDataset.test(req.url);
+
         if (isNotRootDomain(req.subdomains)) { 
-            if (urlRegexForDataset.test(req.url)) { //example: arrays.co/dataset-r4/xxx
-                next();
+            if (isRouteForDataset) { 
+                return next();
             } else {
                 if (req.url == '/') {
                     return next();
+                } else {
+                    return res.redirect(rootDomain+req.url);
                 }
-                return res.redirect(rootDomain+req.url);
             }
         } else {
-            if (urlRegexForDataset.test(req.url)) {
-                return res.redirect(rootDomain+'/');
-            }
-            return next();
-        }
 
+            if (isRouteForDataset) {
+                return res.redirect(rootDomain+'/');
+            } else {
+                return next();
+            }
+            
+        }
 
     })
 
     app.use('/', require('./homepage'));
     
-    app.use('/array', require('./array'));
+    app.use('/explore', require('./array'));
     app.use('/s', require('./shared_pages'));
     var apiVersion = 'v1';
     app.use('/' + apiVersion, require('./jsonAPI_share'));

@@ -10,7 +10,7 @@ var Schema = mongoose.Schema;
 
 var team_scheme = Schema({
     title: String,
-    subdomain: String, //not changable once set
+    subdomain: {type: String, unique: true},
     description: String,
     logo: String,
     logo_header: String,
@@ -58,6 +58,8 @@ function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
         })
         .exec(function (err, teams) {
             if (err) fn(err);
+
+            console.log(teams);
             fn(null, teams);
         })
 }
@@ -120,15 +122,14 @@ team.GetTeamBySubdomain = function (req, fn) {
 
                 } else if (foundUser.defaultLoginTeam.admin == userId) {
                     var myTeamId = foundUser.defaultLoginTeam._id;
-                    var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
+               
                     var myTeam = {_team: foundUser.defaultLoginTeam._id};
-                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_visible: true}]}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {$and: [ myTeam, {imported: true, fe_visible: true}]}, fn);
 
                 } else { //get published and unpublished dataset if currentUser is one of the viewers
                     var myTeamId = foundUser.defaultLoginTeam._id;
-                    var otherTeams = {_team: {$ne: myTeamId}, isPublished: true};
                     var myTeam = {_team: foundUser.defaultLoginTeam._id, _id: {$or:[ {$in:foundUser._editors}, {$in: foundUser._viewers}  ] } };
-                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {$and: [{$or: [myTeam, otherTeams]}, {imported: true, fe_visible: true}]}, fn);
+                    getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {$and: [myTeam, {imported: true, fe_visible: true}]}, fn);
                 }
             })
 

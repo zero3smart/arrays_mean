@@ -3,7 +3,7 @@
         <md-input-container class="md-block" flex-gt-sm>
             <label>Default View</label>
             <md-select required name="default"
-                       ng-model="dataset.fe_views.default_view">
+                       ng-model="data.default_view">
                 <md-option ng-repeat="view in views" value="{{view.name}}">
                     {{view.displayAs}}
                 </md-option>

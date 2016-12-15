@@ -38,11 +38,8 @@ router.post('/login',function(req,res,next) {
             req.flash("error",info);
             return res.redirect('/auth/login');
         } else {
-            console.log("logging in user and setting req.user");
             req.logIn(user,function(err) {
                 if (err) {return next(err);}
-                console.log("req.user is set");
-                console.log(req.user);
                 return res.redirect(req.session.returnTo || '/dashboard');
             })
         }
@@ -60,7 +57,6 @@ router.get('/login', function (req, res) {
 });
 
 router.get('/logout', function (req, res) {
-    console.log("im herre???? to log out");
     req.logout();
     res.status(200).send('ok');
     

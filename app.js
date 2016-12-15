@@ -124,7 +124,7 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
-    cookie: {domain: domain },
+    cookie: {domain: domain},
     store: new MongoSessionStore({
         url: process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/arraysdb',
         // touchAfter: 240 * 3600 // time period in seconds

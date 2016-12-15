@@ -3,8 +3,9 @@
         <md-input-container class="md-block" flex-gt-sm>
             <label>Primary Key</label>
             <md-select required name="primaryKey" aria-label="primaryKey"
-                       ng-model="dataset.fn_new_rowPrimaryKeyFromRowObject">
-                <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
+                       ng-model="data.fn_new_rowPrimaryKeyFromRowObject"
+                       >
+                <md-option ng-repeat="column in dataset.columns track by column.name" value="{{column.name}}">
                     {{column.name}}
                 </md-option>
             </md-select>
@@ -12,6 +13,23 @@
                 <div ng-message="required">This is required.</div>
             </div>
         </md-input-container>
+
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>ObjectTitle</label>
+            <md-select required name="ObjectTitle" aria-label="primaryKey"
+                       ng-model="data.fe_designatedFields.objectTitle"
+                       >
+                <md-option ng-repeat="column in dataset.columns track by column.name" value="{{column.name}}">
+                    {{column.name}}
+                </md-option>
+            </md-select>
+            <div ng-messages="vm.dataForm.fe_designatedFields.$error">
+                <div ng-message="required">This is required.</div>
+            </div>
+        </md-input-container>
+
+
+
 
         <fieldset class="standard">
             <legend>Fields</legend>
@@ -64,7 +82,8 @@
                         </div>
                         <div class="sample">
                             <span ng-if="!field.customField && !field.nested">{{ field.sample | limitTo: 200 }}{{ field.sample.length > 200 ? '...' : '' }}</span>
-                            <span ng-if="field.customField && !field.nested" ng-repeat="mergeField in field.customField.fieldsToMergeIntoArray" >{{mergeField}}, </span>
+                            <span ng-if="field.customField && !field.nested" ng-repeat="mergeField in field.customField.fieldsToMergeIntoArray" >{{mergeField}} <span
+                            ng-if="!$last">,</span> </span>
                         </div>
                     </li>
                 </ul>

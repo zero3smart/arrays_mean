@@ -32,11 +32,12 @@
                        {{dataset.title}}
                     </td>
                     <td>
-                        <md-select aria-label="userRoles" name="role" required ng-model="userRoles[dataset._id]">
-                            <md-option ng-repeat="role in availableUserRoles " value="{{role.value}}">
+                        <md-select ng-hide="team.admin==selectedUser._id" aria-label="userRoles" name="role" required ng-model="userRoles[dataset._id]">
+                            <md-option ng-repeat="role in availableUserRoles " value="{{role.value}}" ">
                                 {{role.name}}
                             </md-option>
                         </md-select>
+                        <p ng-if="team.admin==selectedUser._id">Admin</p>
 
 
                     </td>
@@ -49,6 +50,11 @@
 
 
     <div layout="row" layout-align="end center">
+
+        <md-button ng-if="selectedUser._id !== team.admin" class="md-raised" type="button" ng-if="userId">
+            <span class="fa fa-user"></span><span class="btn-label">Make Team Admin</span>
+        </md-button>
+
         <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-raised" type="button" ng-hide="userId || selectedUser._team.indexOf(team._id) >= 0">
             <span class="fa fa-plus"></span><span class="btn-label">Invite User</span>
         </md-button>
@@ -56,5 +62,9 @@
         <md-button ng-if="selectedUser.activated==true" ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="saveUser()" class="md-raised" type="button" ng-if="userId">
             <span class="fa fa-check"></span><span class="btn-label">Save User</span>
         </md-button>
+
+
+       
+
     </div>
 </form>

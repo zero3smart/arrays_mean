@@ -19,6 +19,7 @@ $(document).ready(function () {
      */
     $('.js-panel-array').on('click', function (e) {
         e.preventDefault();
+        console.log("here");
         var $parent = $(this).parent();
        
         var default_view = $parent.find("[name='default_view']").val();
@@ -30,6 +31,9 @@ $(document).ready(function () {
 
         var sourceKey = $parent.find("[name='source_key']").val();
         var baseUrl = $parent.find("[name='subdomainUrl']").val();
+
+        console.log(baseUrl);
+        
         if (typeof baseUrl == 'undefined') {
             baseUrl = ""; 
         }

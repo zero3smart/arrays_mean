@@ -18,9 +18,19 @@ angular.module('arraysApp')
                 if (dataset.fe_nestedObject.prefix)
                     return dataset.fe_nestedObject.prefix + fieldName;
                 return fieldName;
-            }).filter(function(fieldName){
-                return !$scope.dataset.fe_excludeFields[fieldName];
             }));
+            colsAvailable = colsAvailable.filter(function(fieldName){
+                return !$scope.dataset.fe_excludeFields[fieldName];
+            });
+
+
+
+
+
+
+            $scope.data = {};
+
+            $scope.data.default_view = dataset.fe_views.default_view;
 
             $scope.openViewDialog = function (evt, id) {
 
@@ -38,13 +48,11 @@ angular.module('arraysApp')
 	                        viewDisplayName: data.displayAs,
 	                        dataset: $scope.$parent.$parent.dataset,
 	                        viewSetting: data.settings,
-                            colsAvailable: colsAvailable
+                            colsAvailable: colsAvailable,
+                            team: $scope.$parent.$parent.team
 	                    }
 	                })
 	                    .then(function (savedDataset) {
-
-                            // console.log(savedDataset);
-
 	                       $scope.$parent.$parent.dataset = savedDataset;
                             $scope.vm.viewsForm.$setDirty();
 	                    }, function () {
@@ -58,13 +66,14 @@ angular.module('arraysApp')
 
 
             $scope.reset = function () {
+                $scope.data.default_view = $scope.$parent.$parent.dataset.fe_views.default_view;
                 $scope.$parent.$parent.dataset = angular.copy(dataset);
                 $scope.vm.viewsForm.$setPristine();
             };
 
 
             $scope.submitForm = function (isValid) {
-
+                $scope.$parent.$parent.dataset.fe_views.default_view = $scope.data.default_view;
 
                 if (isValid) {
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
@@ -97,7 +106,7 @@ angular.module('arraysApp')
 
 
             function ViewDialogController($scope, $mdDialog, $filter, viewName,viewDisplayName,dataset,viewSetting,colsAvailable,AssetService,
-                DatasetService) {
+                DatasetService,team) {
 
                 $scope.viewName = viewName;
                 $scope.viewDisplayName = viewDisplayName;
@@ -107,9 +116,8 @@ angular.module('arraysApp')
                 $scope.otherAvailableDatasets = [];
                 $scope.otherDatasetsloaded = false;
                 $scope.otherDatasetCols = {};
-          
 
-                $scope.availableForDuration = [ "Decade", "Year", "Month", "Day"];
+                // $scope.availableForDuration = [ "Decade", "Year", "Month", "Day"];
 
                 $scope.loadIcons = function() {
 
@@ -129,10 +137,14 @@ angular.module('arraysApp')
 
 
                 $scope.loadDatasetsForMapping = function() {
+
+          
+
+
                     if ($scope.otherAvailableDatasets.length == 0 && $scope.otherDatasetsloaded==false) {
 
-                            DatasetService.getAll()
-                                .then(function(all) {
+                             DatasetService.getDatasetsWithQuery({_team:team._id})
+                                .then(function(all) {     
                                     $scope.otherDatasetsloaded = true;
                                     for (var i = 0; i < all.length; i++) {
                                         if (all[i].title !== dataset.title) {
@@ -150,11 +162,13 @@ angular.module('arraysApp')
                 }
 
                 $scope.loadDatasetColumnsByPkey = function(pKey) {
+
+                    $scope.loading = true;
                     if (pKey && !$scope.otherDatasetCols[pKey]) {
                         DatasetService.getMappingDatasourceCols(pKey)
                         .then(function(cols) {
-                            $scope.otherDatasetCols[pKey] = cols; 
-                        
+                            $scope.otherDatasetCols[pKey] = cols;
+                            $scope.loading = false;                         
                         })
                     }
                 }
@@ -223,7 +237,8 @@ angular.module('arraysApp')
 
                 $scope.reset();
 
-             
+                $scope.data.default_view = dataset.fe_views.default_view;
+    
 
                 $scope.addMore = function (field,pushType) {
                     if (pushType == 'object') {
@@ -236,36 +251,33 @@ angular.module('arraysApp')
                 $scope.DataTypeMatch = function(requireType) {
 
                     return function(col) {
+
                         if (typeof requireType !== 'undefined') {
                             if ($scope.dataset.raw_rowObjects_coercionScheme[col] &&
                                 $scope.dataset.raw_rowObjects_coercionScheme[col].operation) {
 
                                 var lowercase = $scope.dataset.raw_rowObjects_coercionScheme[col].operation.toLowerCase();
-
+    
                                 return lowercase.indexOf(requireType.toLowerCase()) >= 0
                             }
+
                             return false;                       
                         }
+
                         return true;
 
                     }
                 }
 
-                $scope.keyExcludeBy = function(excludeValueArray) {
+                $scope.excludeBy = function(excludeValueArray) {
                     return function(Input) {
+
                         if (typeof excludeValueArray !== 'undefined') {
                             return excludeValueArray.indexOf(Input) == -1;
-
                         }
                         return true;
                     }
                 }
-
-                $scope.loadColumnsForMappingDataset = function() {
-
-                }
-
-
 
                 $scope.remove = function(setting,index) {
                     $scope.data[setting].splice(index,1);

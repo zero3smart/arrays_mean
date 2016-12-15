@@ -91,6 +91,9 @@
                     $window.sessionStorage.setItem('team', JSON.stringify(teams[0]));
                     $http.put('/api/user/defaultLoginTeam/' + teamId)
                         .then(function(response) {
+                            var cu = currentUser();
+                            cu.defaultLoginTeam = teams[0];
+                            $window.sessionStorage.setItem('user', JSON.stringify(cu));
                             deferred.resolve();
                         },function() {
                             deferred.reject();

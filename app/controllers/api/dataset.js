@@ -1,6 +1,7 @@
 var winston = require('winston');
 var datasource_description = require('../../models/descriptions');
 var raw_source_documents = require('../../models/raw_source_documents');
+var cached_values = require('../../models/cached_values');
 var mongoose_client = require('../../models/mongoose_client');
 var Team = require('../../models/teams');
 var User = require('../../models/users');
@@ -113,6 +114,16 @@ module.exports.remove = function (req, res) {
         });
     });
 
+    //Remove cache filter
+    batch.push(function(done) {
+        cached_values.findOne({srcDocPKey: srcDocPKey},function(err,document) {
+            if (err) return done(err);
+            if (!document) return done();
+             winston.info("✅  Removed cached unique values : " + srcDocPKey + ", error: " + err);
+             document.remove(done);
+        })
+    });
+
     // Remove datasource description
     batch.push(function (done) {
         description.remove(done);
@@ -142,9 +153,8 @@ module.exports.remove = function (req, res) {
         });
     });
 
-
     batch.push(function(done) {
-        User.update({_editors:req.body.id},{$pull: {_editors: req.body.id}},done);
+        User.update({$or: [{_editors:req.body.id},{_viewers: req.body.id}]},{$pull: {_editors: req.body.id,_viewers:req.body.id}},done);
     });
 
     batch.end(function (err) {

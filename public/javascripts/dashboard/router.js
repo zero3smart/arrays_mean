@@ -50,7 +50,7 @@ angular.module('arraysApp')
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
                                     return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id});
                                 } else if (user.role == 'editor') {
-                                    return DatasetService.getDatasetsWithQuery({_id: {$in: user._editors}});
+                                    return DatasetService.getDatasetsWithQuery({_id: {$in: user._editors}, _team:user.defaultLoginTeam._id});
                                 } else {
                                     return [];
                                 }
