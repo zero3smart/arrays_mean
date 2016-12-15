@@ -75,6 +75,7 @@ router.put('/user/defaultLoginTeam/:teamId',ctrlUsers.defaultLoginTeam);
 
 
 
+
 //views
 router.get('/view', ctrlView.getAll);
 router.get('/view/:id', ctrlView.get);
@@ -89,6 +90,7 @@ router.get('/team/search', ctrlTeam.search);
 router.get('/team/loadIcons', ctrlTeam.loadIcons);
 router.get('/team/getAssetUploadSignedUrl/:id', ctrlTeam.signedUrlForAssetsUpload);
 router.put('/team/:id', ctrlTeam.update);
+router.put('/team/admin/:id',ctrlTeam.switchAdmin);
 
 
 module.exports = router;

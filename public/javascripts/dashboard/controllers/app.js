@@ -8,6 +8,8 @@ angular
 
             $scope.teams = AuthService.allTeams();
 
+            
+
 
             if (!isSmartDevice($window)) {
                 $scope.showSideMenu = true;

@@ -1,7 +1,8 @@
 var Team = require('../../models/teams');
 var User = require('../../models/users')
 var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
-var _ = require('lodash')
+var _ = require('lodash');
+var Batch = require('batch');
 
 
 module.exports.getAll = function (req, res) {
@@ -9,7 +10,7 @@ module.exports.getAll = function (req, res) {
     Team.find({})
         .exec(function (err, teams) {
             if (err) {
-                res.send(err);
+                res.send({error:err.message});
             } else {
                 res.json(teams);
             }
@@ -21,7 +22,7 @@ module.exports.getAll = function (req, res) {
 module.exports.create = function (req, res) {
     Team.create(req.body, function (err, createdTeam) {
         if (err) {
-            res.send(err);
+            res.send({error: err.message});
         } else {
             res.json(createdTeam);
         }
@@ -32,7 +33,7 @@ module.exports.search = function (req, res) {
 
     Team.find(req.query, function (err, foundTeams) {
         if (err) {
-            res.send(err);
+            res.send({error: err.message});
         } else {
             res.json(foundTeams);
         }
@@ -75,7 +76,7 @@ module.exports.signedUrlForAssetsUpload = function (req, res) {
             }
             s3ImageHosting.signedUrlForPutObject(key, req.query.fileType, function (err, data) {
                 if (err) {
-                    return res.status(500).send(err);
+                    return res.status(500).send({error:err.message});
                 } else {
                     return res.json({putUrl: data.putSignedUrl, publicUrl: data.publicUrl});
                 }
@@ -89,12 +90,12 @@ module.exports.signedUrlForAssetsUpload = function (req, res) {
 module.exports.loadIcons = function (req, res) {
     if (req.user) {
         User.findById(req.user)
-            .populate('_team')
+            .populate('defaultLoginTeam')
             .exec(function (err, user) {
                 if (err) {
                     res.status(500).send({error: err.message});
                 } else {
-                    s3ImageHosting.getAllIconsForTeam(user._team.subdomain, function (err, data) {
+                    s3ImageHosting.getAllIconsForTeam(user.defaultLoginTeam.subdomain, function (err, data) {
                         if (err) {
                             res.status(500).send({error: err.message})
                         } else {
@@ -106,7 +107,60 @@ module.exports.loadIcons = function (req, res) {
 
             })
     } else {
-        res.status(401).send('unauthorized');
+        res.status(401).send({error:'unauthorized'});
     }
 }
+
+
+module.exports.switchAdmin = function(req,res) {
+
+    var newAdminId = req.params.id;
+    if (req.user) {
+        var batch = new Batch();
+        batch.concurrency(1);
+
+        var newAdmin;
+        var team;
+        var oldAdmin;
+
+        //find the newAdmin
+        batch.push(function(done) {
+            User.findById(req.user)
+            .populate('defaultLoginTeam')
+            .exec(function(err,superAdminOrAdmin) {
+                if (err) return done(err);
+                team = superAdminOrAdmin.defaultLoginTeam;
+                oldAdmin = team.admin;
+                done();
+            })
+        })
+
+        //set this newAdmin to the team
+        batch.push(function(done) {
+            Team.findOneAndUpdate({_id:team._id},{admin:newAdminId},done);
+        })
+
+        //set old admin team to null
+        batch.push(function(done) {
+            User.findOneAndUpdate({_id:oldAdmin},{ $pull: {_team: team._id}, $unset: {defaultLoginTeam:1}},done);
+        })
+
+        batch.end(function(err) {
+            if (err) {
+                res.status(500).send({error:err.message});
+            } else {
+                res.status(200).send({error:null});
+            }
+
+        })
+
+    } else {
+        res.status(401).send({error: "unauthorized"});
+    }
+
+}
+
+
+
+
 

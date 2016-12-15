@@ -67,6 +67,10 @@ module.exports.get = function (req, res) {
 
                     batch.concurrency(1);
                     batch.push(function (done) {
+                        if (!user.defaultLoginTeam || user._team.length == 0) {
+                            return res.status(401).send({error: 'unauthorized'});
+                        }
+
                         if (user.isSuperAdmin()) {
                             role = 'superAdmin';
                         } else if (user.defaultLoginTeam.admin && user.defaultLoginTeam.admin == userId) {
@@ -118,7 +122,6 @@ module.exports.get = function (req, res) {
                     res.send(err);
                 } else {
                     user.team = user._team;
-
                     res.json(user);
                 }
             })
@@ -197,7 +200,7 @@ module.exports.update = function (req, res) {
                     } else {
                         user.firstName = req.body.firstName;
                         user.lastName = req.body.lastName;
-                        if (user.provider == 'local' && req.body.password) {
+                        if (user.provider == 'local' && req.body.password && (!user.hash || !user.salt)) {
                             user.setPassword(req.body.password);
                         }
                         user._team = [teamId];
@@ -207,13 +210,18 @@ module.exports.update = function (req, res) {
                                 res.send(err);
                             }
                             else {
-                                mailer.sendActivationEmail(savedUser, function (err) {
-                                    if (err) {
-                                        res.status(500).send('Cannot send activation email');
-                                    } else {
-                                        res.json(savedUser);
-                                    }
-                                })
+                                if (user.activated) {
+                                    res.json(savedUser);
+                                } else {
+                                    mailer.sendActivationEmail(savedUser, function (err) {
+                                        if (err) {
+                                            res.status(500).send('Cannot send activation email');
+                                        } else {
+                                            res.json(savedUser);
+                                        }
+                                    })
+                                }
+                                
                             }
                         })
                     }

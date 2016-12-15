@@ -26,6 +26,9 @@ var localStrategy = new LocalStrategy({
             if (!user.active) {
                 return done(null, false, {message: "You are banned"});
             }
+            if (!user.defaultLoginTeam || user._team.length == 0) {
+                return done(null,false,{message: "no team set up",userId:user._id});
+            }
             return done(null, user);
         })
 })

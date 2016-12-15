@@ -39,7 +39,7 @@
 		</div>
 
 	
-		<div ng-if="user.provider=='local'" class="form-group"
+		<div ng-if="user.provider=='local' && (!user.hash || !user.salt)" class="form-group"
 		 ng-class="{ 'has-error': infoForm.password.$touched && infoForm.password.$invalid}" >
 
 	
@@ -68,7 +68,7 @@
 
 		</div>
 
-		<div ng-if="user.provider=='local'" class="form-group" ng-class="{ 'has-error': infoForm.verifyPassword.$touched && infoForm.verifyPassword.$invalid}">
+		<div ng-if="user.provider=='local' && (!user.hash || !user.salt) " class="form-group" ng-class="{ 'has-error': infoForm.verifyPassword.$touched && infoForm.verifyPassword.$invalid}">
 			<label>Verify Password</label>
 	  		<div class="input-group">
 			  <span class="input-group-addon"><i class="fa fa-lock"></i></span>
@@ -90,7 +90,7 @@
 			  <input ng-model='user._team.title' ng-disabled="invitedUser" ng-model-options="{updateOn:'blur'}" type="text" class="form-control">
 			</div>
 		</div>
-		<subdomain-suggestion team-title='user._team.title' subdomain='user._team.subdomain'></subdomain-suggestion>
+		<subdomain-suggestion ng-hide="invitedUser" team-title='user._team.title' subdomain='user._team.subdomain'></subdomain-suggestion>
 
 		<div class="form-group" ng-class="{ 'has-error': infoForm.subdomain.$touched && infoForm.subdomain.$invalid}">
 	 		<label>Your subdomain</label>

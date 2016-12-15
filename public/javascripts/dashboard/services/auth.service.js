@@ -17,6 +17,44 @@
         };
 
 
+        var reload = function(cb) {
+
+            $http.get('/api/user/currentUser')
+                .then(function (result) {
+
+                    var userData = result.data;
+                    if (userData) {
+                        isLoggedIn = true;  
+                        $window.sessionStorage.setItem('user', JSON.stringify(userData));
+                        $window.sessionStorage.setItem('team', JSON.stringify(userData.defaultLoginTeam));
+            
+
+                        if (userData.role == "superAdmin") {
+                            Team.query()
+                            .$promise.then(function(allTeams) {
+
+                                 $window.sessionStorage.setItem('teams', JSON.stringify(allTeams));
+                                 cb({success:true})
+                            })
+                        } else if (userData.role == 'editor' || userData.role == 'admin') {
+                            $window.sessionStorage.setItem('teams', JSON.stringify(userData._team));
+                            cb({success:true})
+                        } else {
+                            cb({success:true})
+                        }
+                        
+                    } else {
+                        cb({success:false})
+                        $window.location.href = '/auth/login';
+                    }
+                }, function (err) {
+                    cb({success:false})
+
+                    deferred.reject();
+                })
+        }
+
+
         var ensureLogin = function () {
 
             var deferred = $q.defer();
@@ -25,33 +63,16 @@
                 deferred.resolve();
             } else {
 
-                $http.get('/api/user/currentUser')
-                    .then(function (result) {
+               reload(function(data) {
+                    if (data.success) {
+                        deferred.resolve();
 
-                        var userData = result.data;
-                        if (userData) {
-                            isLoggedIn = true;  
-                            $window.sessionStorage.setItem('user', JSON.stringify(userData));
-                            $window.sessionStorage.setItem('team', JSON.stringify(userData.defaultLoginTeam));
-
-                            if (userData.role == "superAdmin") {
-                                Team.query()
-                                .$promise.then(function(allTeams) {
-                                     $window.sessionStorage.setItem('teams', JSON.stringify(allTeams));
-                                })
-                            } else if (userData.role == 'editor' || userData.role == 'admin') {
-                                $window.sessionStorage.setItem('teams', JSON.stringify(userData._team));
-                            }
-                            deferred.resolve();
-                        } else {
-                            deferred.reject();
-                            $window.location.href = '/auth/login';
-                        }
-                    }, function (err) {
-                        //response error catch the redirecting
+                    } else {
                         deferred.reject();
-                    })
+                        $window.location.href="/auth/login";
 
+                    }
+               })
             }
 
             return deferred.promise;
@@ -202,6 +223,7 @@
             ensureLogIn: ensureLogin,
             allTeams: allTeams,
             // updateProfile: updateProfile,
+            reload: reload,
             updateTeam: updateTeam,
             inviteUser: inviteUser,
             switchTeam: switchTeam,

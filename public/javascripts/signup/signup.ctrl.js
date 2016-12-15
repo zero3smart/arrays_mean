@@ -40,7 +40,6 @@
 				$scope.infoForm.subdomain.$setValidity('subdomainAvailable',false);
 				$scope.invitedUser = true;
 				$scope.user._team = $scope.user._team[0];
-
 			}
 
 			console.log($scope.user)
@@ -53,7 +52,11 @@
 				if ($scope.invitedUser) {
 					$state.go('signup.success',{isInvite: true,id:null});
 				} else { 
-					$state.go('signup.success',{isInvite: false,id:data._id});
+					if ($scope.user.activated) {
+						$state.go('signup.success',{isInvite: true,id:null});
+					} else {
+						$state.go('signup.success',{isInvite: false,id:data._id});
+					}
 				}
 			},function(err) {
 
@@ -71,8 +74,6 @@
 		}
 		$scope.login = function() {
 			$window.location.href = 'auth/login';
-			
-
 		}
 		
 	}])

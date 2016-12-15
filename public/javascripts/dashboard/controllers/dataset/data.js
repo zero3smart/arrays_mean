@@ -738,7 +738,6 @@ angular.module('arraysApp')
 
                 if ($scope.vm) $scope.vm.dataForm.$setPristine();
 
-                console.log($scope.data);
             };
 
             $scope.changeCoercionSchemeByOperation = function (colName) {

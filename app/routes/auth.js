@@ -35,8 +35,14 @@ router.post('/login',function(req,res,next) {
 
         if (err) {return next(err);}
         if (!user) {
-            req.flash("error",info);
-            return res.redirect('/auth/login');
+            if (info.message == "no team set up") {
+                return res.redirect('/signup/info/' + info.userId);
+            } else {
+                req.flash("error",info);
+                return res.redirect('/auth/login');
+
+            }
+          
         } else {
             req.logIn(user,function(err) {
                 if (err) {return next(err);}

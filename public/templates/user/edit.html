@@ -51,7 +51,7 @@
 
     <div layout="row" layout-align="end center">
 
-        <md-button ng-if="selectedUser._id !== team.admin" class="md-raised" type="button" ng-if="userId">
+        <md-button ng-if="selectedUser._id !== team.admin && userId" class="md-raised" type="button" ng-click="makeTeamAdmin()">
             <span class="fa fa-user"></span><span class="btn-label">Make Team Admin</span>
         </md-button>
 

@@ -10,8 +10,9 @@ var mailer = require('../../libs/utils/nodemailer');
 module.exports.invite = function(req,res) {
 
     User.findById(req.user)
+    .populate('defaultLoginTeam')
     .exec(function(err,foundUser) {
-        if (foundUser.isSuperAdmin() || foundUser._admins.indexOf(req.user) >= 0) {
+        if (foundUser.isSuperAdmin() || foundUser.defaultLoginTeam.admin  == req.user) {
        
             if (!foundUser.invited) {
                 foundUser.invited = {};
@@ -34,7 +35,7 @@ module.exports.invite = function(req,res) {
 
                         foundUser.invited[invitedUser] = {"_editors": req.body._editors, "_viewers": req.body._viewers};
                         
-                        console.log(foundUser.invited);
+                        // console.log(foundUser.invited);
                         foundUser.save(function(err) {
                             if (err) {
                                 console.log(err);

@@ -5,6 +5,8 @@ angular
 
             $scope.newTeam = {};
             $scope.newTeam.admin = $scope.user._id;
+      
+
 
             $scope.checkSubdomain = function() {
 

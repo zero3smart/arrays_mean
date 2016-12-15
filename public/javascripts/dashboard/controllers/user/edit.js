@@ -1,8 +1,9 @@
 angular
     .module('arraysApp')
     .controller('UserEditCtrl', ['$scope', '$state', '$stateParams', '$mdToast', 'AuthService', 'datasets', 'User', 'selectedUser','$mdDialog',
+        'Team','$window',
         function ($scope, $state, $stateParams, $mdToast, AuthService, datasets, User, selectedUser,
-            $mdDialog) {
+            $mdDialog,Team,$window) {
 
             $scope.datasets = datasets;
             $scope.selectedUser = selectedUser;
@@ -45,6 +46,52 @@ angular
    
 
             $scope.error = "";
+
+
+            $scope.makeTeamAdmin = function() {
+
+                var confirm = $mdDialog.confirm()
+                        .title("Are you sure to make this user the team's admin ?")
+                        .textContent('Admin role would be transfered and the admin user will be deleted.')
+                        .targetEvent(event)
+                        .ok('Yes')
+                        .cancel('No');
+                    $mdDialog.show(confirm).then(function () {
+           
+                        Team.switchAdmin({_id:$scope.selectedUser._id})
+                        .$promise.then(function(res) {
+                            if (!res.error) {
+                                AuthService.reload(function(data) {
+                                    if (data.success) {
+                                        $mdToast.show(
+                                            $mdToast.simple()
+                                                .textContent("Admin transfer successfully!")
+                                                .position('top right')
+                                                .hideDelay(3000)
+                                        );
+
+                                    } else {
+                                         $mdToast.show(
+                                                $mdToast.simple()
+                                                    .textContent("Opps! Admin did not get transfer!")
+                                                    .position('top right')
+                                                    .hideDelay(3000)
+                                            );
+
+
+                                    }
+
+                                })
+                            }
+                        },function(err) {
+                            console.log("err");
+                            console.log(err);
+                        })
+                    }, function () {
+                        console.log("User decided not to transfer admin");
+                       
+                    });
+            }
 
 
             $scope.saveUser = function() {
