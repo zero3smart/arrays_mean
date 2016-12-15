@@ -114,12 +114,15 @@
                     <small class="pull-right" ng-if="dep">
                       Dropdown selections are based on {{dep.display}} </small>
                       <small class="pull-right" ng-if="setting.restrictColumnDataType">
-                      Field type is restrcited to {{setting.restrictColumnDataType.toLowerCase()}} </small>
+                      Field type is restrcited to {{setting.restrictColumnDataType.toLowerCase()}}. </small><br ng-if="setting.restrictColumnDataType">
+                       <small class="pull-right" ng-if="setting.require">
+                      This is a required field. </small>
+
                      <md-input-container class="md-block" flex-gt-sm>  
 
-
-
+                
                         <md-select ng-if="setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name][setting.settingNestedField]">
+
                           <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType
                           && dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
                           <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
@@ -139,7 +142,9 @@
                         </md-select>
 
 
-                         <md-select ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
+              
+
+                         <md-select ng-attr-required='{{setting.require}}' ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
                           <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
                           <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType) | filter:
                                   excludeBy(data[setting.selectExcludeBy])" ng-value="col">

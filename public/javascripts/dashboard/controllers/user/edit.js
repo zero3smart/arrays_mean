@@ -37,6 +37,7 @@ angular
                 {name: "Editor", value: 'editor'},
                 {name: "Viewer", value: 'viewer'},
                 {name: "None", value: ""}
+              
             ];
 
 
@@ -95,7 +96,6 @@ angular
 
                                 
                                 bindUserRolesToSelectedUser();
-                                
 
 
                                 $scope.selectedUser.$save(function(savedUser) {

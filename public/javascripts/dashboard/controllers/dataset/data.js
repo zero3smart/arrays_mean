@@ -8,6 +8,7 @@ angular.module('arraysApp')
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
             if (!dataset.fe_excludeFields) dataset.fe_excludeFields = {};
             if (!dataset.fe_displayTitleOverrides) dataset.fe_displayTitleOverrides = {};
+            if (!dataset.fe_designatedFields) dataset.fe_designatedFields = {};
 
             $scope.$parent.$parent.dataset = angular.copy(dataset);
             
@@ -44,11 +45,16 @@ angular.module('arraysApp')
                     }
                 })
                     .then(function (savedDataset) {
+
+
                         $scope.$parent.$parent.dataset = savedDataset;
+                        $scope.data.fe_designatedFields = savedDataset.fe_designatedFields;
                         $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
                         sortColumnsByDisplayOrder();
 
                         $scope.vm.dataForm.$setDirty();
+
+                        console.log($scope.data);
                     }, function () {
                         console.log('You cancelled the field dialog.');
                     });
@@ -136,6 +142,8 @@ angular.module('arraysApp')
                     $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
 
                     if ($scope.dialog.fieldForm) $scope.dialog.fieldForm.$setPristine();
+
+
                 };
 
                 $scope.reset();
@@ -725,9 +733,12 @@ angular.module('arraysApp')
                 $scope.data = {};
                 $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
                 $scope.data.fn_new_rowPrimaryKeyFromRowObject = dataset.fn_new_rowPrimaryKeyFromRowObject;
+                $scope.data.fe_designatedFields = dataset.fe_designatedFields;
                 sortColumnsByDisplayOrder();
 
                 if ($scope.vm) $scope.vm.dataForm.$setPristine();
+
+                console.log($scope.data);
             };
 
             $scope.changeCoercionSchemeByOperation = function (colName) {

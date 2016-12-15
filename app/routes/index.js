@@ -93,20 +93,14 @@ var _mountRoutes_endPoints = function (app) {
         var isRouteForDataset = urlRegexForDataset.test(req.url);
 
         if (isNotRootDomain(req.subdomains)) { 
-
-
-            
             if (isRouteForDataset) { 
                 return next();
             } else {
-
                 if (req.url == '/') {
-            
                     return next();
                 } else {
                     return res.redirect(rootDomain+req.url);
                 }
-                
             }
         } else {
 
@@ -122,7 +116,7 @@ var _mountRoutes_endPoints = function (app) {
 
     app.use('/', require('./homepage'));
     
-    app.use('/array', require('./array'));
+    app.use('/explore', require('./array'));
     app.use('/s', require('./shared_pages'));
     var apiVersion = 'v1';
     app.use('/' + apiVersion, require('./jsonAPI_share'));
