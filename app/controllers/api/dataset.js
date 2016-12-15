@@ -32,12 +32,10 @@ function getAllDatasetsWithQuery(query, res) {
 
 }
 
-
 module.exports.getDatasetsWithQuery = function(req,res) {
     var query = req.body;
     getAllDatasetsWithQuery(query,res);
 };
-
 
 module.exports.signedUrlForAssetsUpload = function (req, res) {
     datasource_description.findById(req.params.id)
@@ -55,7 +53,6 @@ module.exports.signedUrlForAssetsUpload = function (req, res) {
 
 };
 
-
 module.exports.remove = function (req, res) {
     if (!req.body.id)
         return res.json({error: 'No ID given'});
@@ -65,7 +62,6 @@ module.exports.remove = function (req, res) {
 
     var description;
     var srcDocPKey;
-
 
     batch.push(function (done) {
         datasource_description.findById(req.body.id, function (err, data) {
@@ -78,8 +74,6 @@ module.exports.remove = function (req, res) {
             done();
         });
     });
-
-
 
     // Remove processed row object
     batch.push(function (done) {
@@ -200,7 +194,6 @@ module.exports.get = function (req, res) {
             }
         });
 };
-
 
 module.exports.loadDatasourceColumnsForMapping = function (req, res) {
     if (!req.params.pKey) return res.json({error: 'No Primary Key given'});
@@ -416,7 +409,7 @@ module.exports.upload = function (req, res) {
 
     var batch = new Batch;
     batch.concurrency(1);
-    var description, schema_description;
+    var description, schema_description, description_title;
 
     res.writeHead(200, {'Content-Type': 'application/json'});
     res.connection.setTimeout(0);
@@ -428,6 +421,7 @@ module.exports.upload = function (req, res) {
                 if (err) return done(err);
 
                 description = doc;
+                description_title = description.title;
                 done();
             })
     });
@@ -436,19 +430,34 @@ module.exports.upload = function (req, res) {
         batch.push(function (done) {
             schema_description = description;
 
-            var findQuery = {dataset_uid:req.body.uid, schema_id: req.body.id};
+            var findQuery = {dataset_uid: req.body.dataset_uid, schema_id: req.body.id};
+            // Inherited fields from the schema should be undefined
+            // TODO: Is there anyway to update the selected fields only?
             var insertQuery = {
-                dataset_uid: req.body.uid,
+                dataset_uid: req.body.dataset_uid,
                 schema_id: req.body.id,
                 fe_listed: false,
-                fe_visible: false
+                fe_visible: false,
+                $unset: {
+                    fe_nestedObject: 1,
+                    imageScraping: 1,
+                    isPublished: 1,
+                    customFieldsToProcess: 1,
+                    _otherSources: 1,
+                    fe_filters: 1,
+                    fe_fieldDisplayOrder: 1,
+                    urls: 1,
+                    importRevision: 1
+                }
             };
-            datasource_description.findOrCreate(findQuery, insertQuery, function (err, doc, created) {
+            datasource_description.findOneAndUpdate(findQuery, insertQuery, {upsert: true, new: true}, function(err, doc) {
                 if (err) return done(err);
-
+                doc.schema_id = schema_description;
                 description = datasource_description.Consolidate_descriptions_hasSchema(doc);
+
+                description_title = description.title + "(" + description.dataset_uid + ")";
                 done();
-            })
+            });
         });
     }
 
@@ -473,10 +482,10 @@ module.exports.upload = function (req, res) {
             // Verify that the file is readable & in the valid format.
             _readDatasourceColumnsAndSampleRecords(description, fs.createReadStream(file.path), function (err, columns) {
                 if (err) {
-                    winston.error("❌  Error validating datasource : " + description.title + " : error " + err.message);
+                    winston.error("❌  Error validating datasource : " + description_title + " : error " + err.message);
                     return done(err);
                 }
-                winston.info("✅  File validation okay : " + description.title);
+                winston.info("✅  File validation okay : " + description_title);
 
                 // Store columnNames and firstRecords for latter call on dashboard pages
                 if (!req.session.columns) req.session.columns = {};
@@ -487,7 +496,7 @@ module.exports.upload = function (req, res) {
                 var newFileName = datasource_file_service.fileNameToUpload(description);
                 datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, description._team.subdomain, description.uid, function (err) {
                     if (err) {
-                        winston.error("❌  Error during uploading the dataset into AWS : " + description.title + " (" + err.message + ")");
+                        winston.error("❌  Error during uploading the dataset into AWS : " + description_title + " (" + err.message + ")");
                     }
                     done(err);
                 });
@@ -495,28 +504,43 @@ module.exports.upload = function (req, res) {
         });
 
         batch.push(function (done) {
-            winston.info("✅  Uploaded datasource : " + description.title + ", " + description.uid);
+            winston.info("✅  Uploaded datasource : " + description_title);
 
             if (!child) {
                 description.dirty = 3; // Full Import with image scraping
 
                 description.save(function (err, updatedDescription) {
                     if (err)
-                        winston.error("❌  Error saving the dataset into the database : " + description.title + " (" + err.message + ")");
+                        winston.error("❌  Error saving the dataset into the database : " + description_title + " (" + err.message + ")");
                     done(err);
                 });
             } else {
                 schema_description.dirty = 3;
                 schema_description.save(function(err, updatedDescription) {
                     if (err) {
-                        winston.error("❌  Error saving the dataset into the database : " + description.title + " (" + err.message + ")");
+                        winston.error("❌  Error saving the dataset into the database : " + description_title + " (" + err.message + ")");
                         return done(err);
                     }
                     var findQuery = {_id: description.id};
-                    var updateQuery = {format: description.format};
+                    // TODO: Need to update the selected fields only!
+                    var updateQuery = {
+                        format: description.format,
+                        dirty: 3,
+                        $unset: {
+                            fe_nestedObject: 1,
+                            imageScraping: 1,
+                            isPublished: 1,
+                            customFieldsToProcess: 1,
+                            _otherSources: 1,
+                            fe_filters: 1,
+                            fe_fieldDisplayOrder: 1,
+                            urls: 1,
+                            importRevision: 1
+                        }
+                    };
                     datasource_description.findOneAndUpdate(findQuery, updateQuery, function(err, doc) {
                         if (err)
-                            winston.error("❌  Error saving the dataset into the database : " + description.title + " (" + err.message + ")");
+                            winston.error("❌  Error saving the dataset into the database : " + description_title + " (" + err.message + ")");
                         done(err);
                     });
                 })
@@ -531,11 +555,11 @@ module.exports.upload = function (req, res) {
 
         return res.end(JSON.stringify({id: description.id}));
     });
-}
+};
 
 module.exports.getAvailableTypeCoercions = function (req, res) {
     return res.json({availableTypeCoercions: datatypes.available_forFieldDataType_coercions()});
-}
+};
 
 module.exports.getAvailableDesignatedFields = function (req, res) {
     return res.json({
@@ -545,14 +569,13 @@ module.exports.getAvailableDesignatedFields = function (req, res) {
     });
 };
 
-
 module.exports.download = function (req, res) {
     if (!req.params.id)
         return res.json({error: 'No ID given'});
 
     datasource_description.findById(req.params.id)
         .lean()
-        .deepPopulate('_otherSources schema_id _team _otherSources._team')
+        .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, description) {
 
             if (err) return res.json({error: err.message});
@@ -705,5 +728,27 @@ module.exports.postImport = function (req, res) {
         };
 
         postimport_caching_controller.GeneratePostImportCaches(descriptions, fn);
+    });
+};
+
+module.exports.removeSubdataset = function(req, res) {
+    if (!req.body.id)
+        return res.json({error: 'No ID given'});
+
+    datasource_description.findById(req.body.id, function (err, doc) {
+        if (err) {
+            winston.error("❌  Error encountered during find description : ", err);
+            return res.json({error: err.message});
+        }
+        if (!doc) return res.json({success: 'Not available'});
+
+        doc.remove(function(err) {
+            if (err) {
+                winston.error("❌  Error encountered during remove description : ", err);
+                return res.json({error: err.message});
+            }
+            winston.info("✅  Removed the datasource description : " + doc.id);
+            res.json({success: 'ok'});
+        });
     });
 };

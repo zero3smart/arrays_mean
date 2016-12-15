@@ -5,7 +5,6 @@ var winston = require('winston');
 var Promise = require('q').Promise;
 var _ = require("lodash");
 var async = require('async');
-var findOrCreate = require('mongoose-findorcreate');
 
 var mongoose_client = require('./mongoose_client');
 var imported_data_preparation = require('../libs/datasources/imported_data_preparation');
@@ -91,9 +90,7 @@ var DatasourceDescription_scheme = Schema({
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);
 DatasourceDescription_scheme.plugin(integerValidator);
-DatasourceDescription_scheme.plugin(findOrCreate);
-
-DatasourceDescription_scheme.plugin(deepPopulate, {whitelist: ['_otherSources', '_otherSources._team', 'schema_id', '_team']})
+DatasourceDescription_scheme.plugin(deepPopulate, {whitelist: ['_otherSources', '_otherSources._team', 'schema_id', '_team', 'schema_id._team']});
 
 var datasource_description = mongoose.model('DatasourceDescription', DatasourceDescription_scheme);
 

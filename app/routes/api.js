@@ -44,6 +44,7 @@ router.get('/dataset/get/:id', ctrlDataset.get);
 router.get('/dataset/getSources/:id', ctrlDataset.getSourcesWithSchemaID);
 router.post('/dataset/update', ctrlDataset.update);
 router.put('/dataset/publish/', ctrlDataset.publish);
+router.post('/dataset/removeSubdataset', ctrlDataset.removeSubdataset);
 
 router.get('/dataset/getAssetUploadSignedUrl/:id', ctrlDataset.signedUrlForAssetsUpload);
 
@@ -72,7 +73,6 @@ router.post('/user/:id', ctrlUsers.save);
 router.delete('/user/:id', ctrlUsers.delete);
 router.get('/user/getAll/:teamId',ctrlUsers.getAll);
 router.put('/user/defaultLoginTeam/:teamId',ctrlUsers.defaultLoginTeam);
-
 
 
 //views
