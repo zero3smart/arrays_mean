@@ -85,8 +85,8 @@
                             <md-input-container flex="40" >                  
                               <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="item.key">
                                  
-                                  <md-option  ng-repeat="col in colsAvailable | filter: checkDuplicateKey(data[setting.name],$index) &&
-                                  keyExcludeBy(setting.keyExcludeBy)" ng-value="col">
+                                  <md-option  ng-repeat="col in colsAvailable | filter: checkDuplicateKey(data[setting.name],$index) | filter: 
+                                  excludeBy(data[setting.keyExcludeBy])" ng-value="col">
                                       {{col}}
                                   </md-option>
                               </md-select>
@@ -126,7 +126,7 @@
                                 {{col}}
                             </md-option>
 
-                            <md-option  ng-if="setting.selectFrom=='duration'" ng-repeat="dur in availableForDuration | filter:'!_all' && DataTypeMatch(setting.restrictColumnDataType)" ng-value="dur">
+                            <md-option  ng-if="setting.selectFrom=='duration'" ng-repeat="dur in availableForDuration | filter:'!_all' | fitler: DataTypeMatch(setting.restrictColumnDataType)" ng-value="dur">
                                 {{dur}}
                             </md-option>
 
@@ -141,7 +141,8 @@
 
                          <md-select ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
                           <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
-                          <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
+                          <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType) | filter:
+                                  excludeBy(data[setting.selectExcludeBy])" ng-value="col">
                                 {{col}}
                             </md-option>
 
@@ -175,7 +176,8 @@
                   <label>{{setting.displayAs}}</label>
                      <md-input-container class="md-block" flex-gt-sm>  
                         <md-select multiple aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name]">
-                            <md-option  ng-if="setting.selectFrom=='column'  && !setting.restrictColumnDataType " ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
+                            <md-option  ng-if="setting.selectFrom=='column'  && !setting.restrictColumnDataType " ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)
+                             | filter: excludeBy(data[setting.selectExcludeBy])" ng-value="col">
                                 {{col}}
                             </md-option>
 
