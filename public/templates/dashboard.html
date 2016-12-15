@@ -2,12 +2,12 @@
 <ng-include src="'templates/blocks/header.html'"></ng-include>
 <!-- /header -->
 
-<div ng-class="{'sidebar-menu-in': showSideMenu}" >
-	<div class="sidebar-menu">
+<div ng-class="{'sidebar-menu-in': showSideMenu}" layout="row" class="dashboard-container">
+	<div flex="30" class="sidebar-menu">
 		<ng-include src="'templates/blocks/sidebar-menu.html'"></ng-include>
 	</div>
 
-	<div class="dashboard-content">
+	<div flex="70" class="dashboard-content">
 		<div ui-view></div>
     </div>
 

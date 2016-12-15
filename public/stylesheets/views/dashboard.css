@@ -1,9 +1,30 @@
 /* @override 
 	http://localhost:9080/stylesheets/views/dashboard.css */
 
+.dashboard-container {
+    padding: 2em 1em;
+}
+
+@media (min-width: 768px) {
+    .dashboard-container {
+        padding: 4em 3em;
+    }
+}
+
+@media (min-width: 1200px) {
+    .dashboard-container {
+        padding: 4em 10em;
+    }
+}
+
 .dashboard-content {
     padding-top: var(--navbar-height-tablet);
 }
+
+.dashboard-content .array-header {
+    background-color: #fff;
+}
+
 .formInput{
     padding-top:20px;
 }

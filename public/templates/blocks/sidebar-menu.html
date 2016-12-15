@@ -1,7 +1,7 @@
 <ul class="nav">
 
     <li ui-sref-active="active">
-        <a ui-sref="dashboard.account" role="button"> Account</a>
+        <a ui-sref="dashboard.account" role="button"> Account Settings</a>
     </li>
 
     <li ng-if="user.role=='admin' || user.role=='superAdmin'" ui-sref-active="active">
@@ -12,14 +12,24 @@
         <a ui-sref="dashboard.dataset.list" role="button"> Dataset Settings</a>
     </li>
 
+    <li ng-if="user.role=='admin' || user.role=='superAdmin' || user._team.length > 1" ui-sref-active="active">
+        <a ui-sref="dashboard.teams" role="button"> Manage Teams </a>
+    </li>
+
+    <hr>
+
+    <li ng-if="user.role=='admin' || user.role=='superAdmin'" class="sidebar-label">
+        <a class="sidebar-label">Admin</a>
+    </li>
+
     <li ng-if="user.role=='admin' || user.role=='superAdmin'" ng-class="{'active': $state.includes('dashboard.user')}">
         <a ui-sref="dashboard.user.list" role="button"> Manage Users</a>
     </li>
 
+    <hr>
 
-     <li ng-if="user.role=='admin' || user.role=='superAdmin' || user._team.length > 1" ui-sref-active="active">
-        <a ui-sref="dashboard.teams" role="button"> Manage Teams </a>
-    </li>
+
+
 
 </ul>
 
