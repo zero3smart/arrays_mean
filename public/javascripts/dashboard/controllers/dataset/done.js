@@ -48,6 +48,7 @@ angular.module('arraysApp')
 
                         $scope.inProgress = false;
                         $scope.$parent.$parent.dataset = dataset;
+                        console.log(dataset);
 
                     }, function(error) {
                         $scope.importLogger.push("❌ Finalization failed due to " + error);
