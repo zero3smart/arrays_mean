@@ -15,7 +15,7 @@ var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 //
 var DatasourceDescription_scheme = Schema({
-    uid: String, // It is not changeable once it's generated automaticlly when creating a descrpition
+    uid: {type: String,unique: true},
     importRevision: {type: Number, integer: true, default: 1},
     schema_id: {type: Schema.Types.ObjectId, ref: 'DatasourceDescription'},
     banner: String,

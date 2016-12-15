@@ -51,7 +51,6 @@ module.exports.get = function (req, res) {
 
     var id = req.params.id;
     if (id == 'currentUser') {
-        console.log(req.user);
         
         if (!req.user) {
             res.status(401).send({error: 'unauthorized'});
@@ -251,12 +250,8 @@ module.exports.update = function (req, res) {
 module.exports.save = function(req, res) {
 
 
-    console.log(req.body);
-
 
     if (!req.params.id) { return res.send(new Error('No Id given'))};
-
-    console.log(req.params.id, req.body.active);
 
     User.findById(req.params.id, function(err, user) {
         if (err) return res.send(err);
