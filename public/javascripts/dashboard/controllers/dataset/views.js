@@ -28,6 +28,10 @@ angular.module('arraysApp')
 
 
 
+            $scope.data = {};
+            console.log(dataset);
+            $scope.data.default_view = dataset.fe_views.default_view;
+
             $scope.openViewDialog = function (evt, id) {
 
             	viewResource.get({id:id},function(data) {
@@ -64,16 +68,18 @@ angular.module('arraysApp')
 
 
             $scope.reset = function () {
+                $scope.data.default_view = $scope.$parent.$parent.dataset.fe_views.default_view;
                 $scope.$parent.$parent.dataset = angular.copy(dataset);
                 $scope.vm.viewsForm.$setPristine();
             };
 
 
             $scope.submitForm = function (isValid) {
-
+                $scope.$parent.$parent.dataset.fe_views.default_view = $scope.data.default_view;
 
                 if (isValid) {
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
+                    console.log(finalizedDataset.fe_views.default_view);
                     delete finalizedDataset.columns;
 
                     DatasetService.save(finalizedDataset)
@@ -229,7 +235,8 @@ angular.module('arraysApp')
 
                 $scope.reset();
 
-             
+                $scope.data.default_view = dataset.fe_views.default_view;
+                console.log($scope.data.default_view);
 
                 $scope.addMore = function (field,pushType) {
                     if (pushType == 'object') {
