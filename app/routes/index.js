@@ -10,9 +10,11 @@ var shouldEnsureWWW = isDev == false || __DEBUG_enableEnsureWWWForDev;
 var fs = require('fs');
 var async = require('async');
 
+
 var rootDomain = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
     rootDomain += process.env.HOST ? process.env.HOST : 'localhost:9080';
 
+var View = require('../models/views');
 
 
 
@@ -47,41 +49,70 @@ function isNotRootDomain (subdomains) {
         
     if (subdomains.length == 1 && subdomains[0] !== 'www') { // pattern: subdomain.arrays.co
         return true;
-    } else if (subdomains.length == 2 && subdomains[0] == 'www') { //pattern: subdomain.www.arrays.co
-        return true;
-    } else {
+    }  else {
         return false;
     }
 }
 
-var _mountRoutes_subdomainRedirect = function(app) {
 
-//toDO: render all the view for the view name 
-    var urlRegexForDataset = /(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24}|gallery|bar-chart|chart|choropleth|timeline|word-cloud|scatterplot|line-graph|pie-set|rhodium)/g;
-      app.all('*',function(req,res,next) {
-        urlRegexForDataset.lastIndex = 0;
-        var isRouteForDataset = urlRegexForDataset.test(req.url);
-        if (isNotRootDomain(req.subdomains)) { 
-            if (isRouteForDataset) { 
-                return next();
-            } else {
-                if (req.url == '/') {
-                    return next();
-                } else {
-                    return res.redirect(rootDomain+req.url);
-                }
-            }
-        } else {
 
-            if (isRouteForDataset) {
-                return res.redirect(rootDomain+'/');
-            } else {
-                return next();
-            }
+var _defaultViewRoutes = new Promise(function(resolve,reject) {
+    View.getAllBuiltInViews(function(err,data) {
+        if (err) { reject(err); }
+        else {
+            var string = "";
+            data.map(function(view) {
+                string += "|" + view.name;
+            })
+            resolve(string);
         }
     })
+});
 
 
+var _customViewRoutes = new Promise(function(resolve,reject) {
+    View.getAllCustomViews(function(err,data) {
+        if (err) {reject(err);}
+        else {
+            var string = "";
+            data.map(function(view) {
+                string += "|" + view.name;
+            })
+            resolve(string);
+
+        }
+    })
+})
+
+
+var _mountRoutes_subdomainRedirect = function(app) {
+
+    Promise.all([_defaultViewRoutes,_customViewRoutes])
+    .then(function(values) {
+        var urlRegexForDataset = new RegExp("(\\/[a-z_d-]+)(-r\\d)\/ (getData|[0-9a-f]{24}" + values[0] + values[1] + ")",'g');
+
+        app.all("*", function(req,res,next) {
+            urlRegexForDataset.lastIndex = 0;
+            var isRouteForDataset = urlRegexForDataset.test(req.url);
+            if (isNotRootDomain(req.subdomains)) {
+                if (isRouteForDataset) {   
+                    return next();
+                } else {
+                    if (req.url == '/') {
+                        return next();
+                    } else {
+                        return res.redirect(rootDomain + req.url);
+                    }
+                }
+            } else {
+                if (isRouteForDataset) {
+                    return res.redirect(rootDomain + '/');
+                } else {
+                    return next();
+                }
+            }
+        })
+    })
 }
 
 var _mountRoutes_errorHandling = function (app) {

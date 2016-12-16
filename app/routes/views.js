@@ -4,84 +4,82 @@ var express = require('express');
 var router = express.Router();
 var ensureAuthorized = require('../libs/middleware/ensure-authorized').ensureAuthorized;
 
-var gallery_controller = require('../controllers/client/data_preparation/gallery');
-var chart_controller = require('../controllers/client/data_preparation/chart');
-var line_graph_controller = require('../controllers/client/data_preparation/line_graph');
-var scatterplot_controller = require('../controllers/client/data_preparation/scatterplot');
-var choropleth_controller = require('../controllers/client/data_preparation/choropleth');
-var timeline_controller = require('../controllers/client/data_preparation/timeline');
-var word_cloud_controller = require('../controllers/client/data_preparation/word_cloud');
-var bar_chart_controller = require('../controllers/client/data_preparation/bar_chart');
-var pie_set_controller = require('../controllers/client/data_preparation/pie_set');
+var View = require('../models/views');
 
-var controllers = {
-    gallery: gallery_controller,
-    chart: chart_controller,
-    timeline: timeline_controller,
-    choropleth: choropleth_controller,
-    scatterplot: scatterplot_controller,
-    line_graph: line_graph_controller,
-    word_cloud: word_cloud_controller,
-    bar_chart: bar_chart_controller,
-    pie_set: pie_set_controller
-};
+View.getAllBuiltInViews(function(err,defaultViews) {
+    if (err) {
+         winston.error("❌  Error getting default views to bind for routes: ", err);
+         return;
+    } else {
+        defaultViews.map(function(view) {
+            router.get('/:source_key/' + view.name, ensureAuthorized, function(req,res,next) {
+                var source_key = req.params.source_key;
+                if (source_key == null || typeof source_key == 'undefined' || source_key == "") {
+                    return res.status(403).send("Bad Request - source_key missing");
+                }
 
-
-//toDo: get view from api
-var defaultViewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
-
-defaultViewTypes.forEach(function (viewType) {
-
-    router.get('/:source_key/' + viewType, ensureAuthorized, function (req, res, next) {
-        var source_key = req.params.source_key;
-        if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
-            return res.status(403).send("Bad Request - source_key missing");
-        }
-
-        var query = queryString.parse(req.url.replace(/^.*\?/, ''));
-        query.source_key = source_key;
-        var camelCaseViewType = viewType.replace('-', '_');
-
-        controllers[camelCaseViewType].BindData(req, query, function (err, bindData) {
-
-            if (err) {
-                winston.error("❌  Error getting bind data for Array gallery: ", err);
-                return res.status(500).send(err.response || 'Internal Server Error');
-            }
-            bindData.embedded = req.query.embed;
-            res.render('array/' + viewType, bindData);
-        });
-    });
-});
-
-var customViewTypes = ['rhodium'];
-
-customViewTypes.forEach(function(viewType) {
-    router.get('/:source_key/' + viewType,ensureAuthorized,function(req,res,next) {
-        var team = req.subdomains[0];
-        var controller = require('../../user/'+ team+'/src/'+viewType);
-        controller.BindData(req,function(err,bindData) {
-            if (err) {
-                 winston.error("❌  Error getting bind data for Array gallery: ", err);
-                return res.status(500).send(err.response || 'Internal Server Error');
-            }
-            res.render(viewType);
+                var query = queryString.parse(req.url.replace(/^.*\?/,''));
+                query.source_key = source_key;
+                var camelCaseViewType = view.name.replace('-','_');
+                require('../controllers/client/data_preparation/' + camelCaseViewType).BindData(req,query,function(err,bindData) {
+                    if (err) {
+                        winston.error("❌  Error getting bind data for built in view %s , err: %s" , view.name,err);
+                        return res.status(500).send(err.response || 'Internal Server Error');
+                    }
+                    bindData.embedded = req.query.embed;
+                    res.render('array/' + view.name,bindData);
+                })
+            })
         })
+    }
+})
 
-    })
+
+View.getAllCustomViews(function(err,customViews) {
+    if (err) {
+         winston.error("❌  Error getting default views to bind for routes: ", err);
+         return;
+    } else {
+        customViews.forEach(function(view) {
+
+            router.get('/:source_key/' + view.name,ensureAuthorized,function(req,res,next) {
+                var source_key = req.params.source_key;
+                if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
+                    res.status(403).send("Bad Request - source_key missing")
+                    return;
+                }
+                res.render(view.name);
+            })
+
+
+            router.get('/:source_key/getData', ensureAuthorized,function(req,res,next) {
+                console.log(req.subdomains);
+                var team = req.subdomains[0];
+                var controller = require('../../user/' + team + '/src/' + view.name);
+
+                console.log("inside getData");
+
+                // controller.BindData(req,function(err,bindData) {
+                //     if (err) {
+                //          winston.error("❌  Error getting bind data for custom view %s , err: %s" , view.name,err);
+                //         return res.status(500).send(err.response || 'Internal Server Error');
+                //     }
+                //     res.json(bindData);
+                // })
+            })
+        })
+    }
 
 })
 
 var object_details_controller = require('../controllers/client/data_preparation/object_details');
 
-
-
-router.get('/:source_key/:object_id', ensureAuthorized, function (req, res, next) {
-    var source_key = req.params.source_key;
+router.get(/(\/[a-z_d-]+)(-r\d)\/ ([0-9a-f]{24})/g, ensureAuthorized, function (req, res, next) {
+    var source_key = req.params[0];
     if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
         return res.status(403).send("Bad Request - source_key missing");
     }
-    var object_id = req.params.object_id;
+    var object_id = req.params[1];
     if (object_id == null || typeof object_id === 'undefined' || object_id == "") {
         return res.status(403).send("Bad Request - object_id missing");
     }

@@ -62,8 +62,8 @@ fs.readdir(userFolderPath, function (err, files) {
                 if (stat.isDirectory() && files) {
                     var view_path = path.join(userFolderPath, file + "/views");
                     viewsToSet.push(view_path);
-                    app.use('/static', express.static(path.join(userFolderPath, team_name + "/static")));
-                    // app.use('/' + team_name, require(userFolderPath + '/' + team_name + '/routes'));
+                    app.use('/static',express.static(path.join(userFolderPath, team_name + "/static")));
+
                 }
                 eachCb();
             }
@@ -80,9 +80,6 @@ fs.readdir(userFolderPath, function (err, files) {
 })
 
 app.use(cors());
-
-
-app.use(express.static(path.join(userFolderPath, '/ngdev' + "/static")));
 
 app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
 app.use(express.static(path.join(__dirname, '/public')));

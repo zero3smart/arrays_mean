@@ -15,7 +15,8 @@ var team_scheme = Schema({
     logo: String,
     logo_header: String,
     admin: {type: Schema.Types.ObjectId, ref: 'User'},
-    datasourceDescriptions: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}]
+    datasourceDescriptions: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
+    customViews: [{type: Schema.Types.ObjectId, ref:'View'}]
 },{timestamps:true});
 
 
