@@ -16,6 +16,7 @@ angular.module('arraysApp')
             $scope.data = {};
 
             $scope.$parent.$parent.currentNavItem = 'Data';
+
             $scope.availableTypeCoercions = availableTypeCoercions;
 
             $scope.toggleExclude = function (exclude) {
@@ -52,7 +53,7 @@ angular.module('arraysApp')
 
                         $scope.vm.dataForm.$setDirty();
 
-                        console.log($scope.data);
+                        
                     }, function () {
                         console.log('You cancelled the field dialog.');
                     });
@@ -957,8 +958,10 @@ angular.module('arraysApp')
             };
 
             $scope.saveRequiredFields = function() {
+
                 $scope.$parent.$parent.dataset.fn_new_rowPrimaryKeyFromRowObject = $scope.data.fn_new_rowPrimaryKeyFromRowObject;
                 $scope.$parent.$parent.dataset.fe_designatedFields = $scope.data.fe_designatedFields;
+
             };
 
             $scope.reset = function () {

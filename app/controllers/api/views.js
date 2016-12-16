@@ -1,4 +1,5 @@
 var View = require('../../models/views');
+var User = require('../../models/users');
 
 
 
@@ -12,8 +13,8 @@ module.exports.getAll = function (req, res) {
 			res.json(views);
 		}
 	})
-    
 };
+
 
 module.exports.getAllBuiltInViews = function(req,res) {
 	View.find({_team: {$exists: false}},function(err,builtInViews) {
@@ -23,6 +24,7 @@ module.exports.getAllBuiltInViews = function(req,res) {
 			res.json(builtInViews);
 		}
 	})
+
 }
 
 module.exports.get = function(req,res) {

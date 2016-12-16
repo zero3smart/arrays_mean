@@ -113,7 +113,6 @@ angular.module('arraysApp')
                             }],
                             viewResource: 'View',
                             views: ['View', function (View) {
-
                                 return View.query();
                             }]
                         }
