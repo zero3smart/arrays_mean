@@ -2,7 +2,10 @@ angular.module('arraysApp')
     .controller('DatasetViewsCtrl', ['$scope', 'dataset','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state','$filter', 'AssetService',
         function($scope, dataset,views,viewResource,$mdDialog,DatasetService,$mdToast,$state,$filter,AssetService) {
             $scope.$parent.$parent.dataset = dataset;
+
             $scope.$parent.$parent.views = views;
+            console.log(views);
+            console.log(viewResource);
             $scope.$parent.$parent.currentNavItem = 'Views';
 
             if (!$scope.$parent.$parent.dataset.fe_views) {

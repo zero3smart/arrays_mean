@@ -716,13 +716,9 @@ angular.module('arraysApp')
                 }
             };
 
-            //may not need these functions
-            $scope.changePrimaryKey = function(key) {               
-                $scope.data.fn_new_rowPrimaryKeyFromRowObject = key;
-                console.log($scope.data.fn_new_rowPrimaryKeyFromRowObject);
-            }
-            $scope.savePrimaryKey = function() {
+            $scope.saveRequiredFields = function() {
                 $scope.$parent.$parent.dataset.fn_new_rowPrimaryKeyFromRowObject = $scope.data.fn_new_rowPrimaryKeyFromRowObject;
+                $scope.$parent.$parent.dataset.fe_designatedFields = $scope.data.fe_designatedFields;
             }
 
             $scope.reset = function () {
@@ -755,12 +751,13 @@ angular.module('arraysApp')
 
             $scope.reset();
 
+            $scope.data.fe_designatedFields = dataset.fe_designatedFields;
             $scope.data.fn_new_rowPrimaryKeyFromRowObject = dataset.fn_new_rowPrimaryKeyFromRowObject;
 
 
             $scope.submitForm = function (isValid) {
                 //Save Primary Key UI setting iof the primary key
-                $scope.savePrimaryKey();
+                $scope.saveRequiredFields();
 
                 if (isValid) {
 
