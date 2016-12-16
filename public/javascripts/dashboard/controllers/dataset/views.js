@@ -4,8 +4,7 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
 
             $scope.$parent.$parent.views = views;
-            console.log(views);
-            console.log(viewResource);
+
             $scope.$parent.$parent.currentNavItem = 'Views';
 
             if (!$scope.$parent.$parent.dataset.fe_views) {
@@ -39,6 +38,7 @@ angular.module('arraysApp')
 
             	viewResource.get({id:id},function(data) {
 
+
             		$mdDialog.show({
 	                    controller: ViewDialogController,
 	                    templateUrl: 'templates/dataset/views.view.html',
@@ -52,17 +52,21 @@ angular.module('arraysApp')
 	                        dataset: $scope.$parent.$parent.dataset,
 	                        viewSetting: data.settings,
                             colsAvailable: colsAvailable,
-                            team: $scope.$parent.$parent.team
+                            team: $scope.$parent.$parent.team,
+                            default_view: $scope.data.default_view
 	                    }
 	                })
 	                    .then(function (savedDataset) {
-	                       $scope.$parent.$parent.dataset = savedDataset;
+	                        $scope.$parent.$parent.dataset = savedDataset;
+
+                      
+                            $scope.data.default_view = savedDataset.fe_views.default_view;
+
+
                             $scope.vm.viewsForm.$setDirty();
 	                    }, function () {
 	                        console.log('You cancelled the dialog.');
 	                    });
-
-
 
             	})
             };
@@ -109,7 +113,7 @@ angular.module('arraysApp')
 
 
             function ViewDialogController($scope, $mdDialog, $filter, viewName,viewDisplayName,dataset,viewSetting,colsAvailable,AssetService,
-                DatasetService,team) {
+                DatasetService,team,default_view) {
 
                 $scope.viewName = viewName;
                 $scope.viewDisplayName = viewDisplayName;
@@ -120,7 +124,8 @@ angular.module('arraysApp')
                 $scope.otherDatasetsloaded = false;
                 $scope.otherDatasetCols = {};
 
-                // $scope.availableForDuration = [ "Decade", "Year", "Month", "Day"];
+
+                $scope.availableForDuration = [ "Decade", "Year", "Month", "Day"];
 
                 $scope.loadIcons = function() {
 
@@ -220,7 +225,7 @@ angular.module('arraysApp')
                     if (!$scope.dataset.fe_views.views[viewName]) {
                         $scope.dataset.fe_views.views[viewName] = {};
                     }
-                    if ($scope.dataset.fe_views.default_view == viewName) {
+                    if (default_view == viewName) {
                         $scope.isDefault = true;
                     } else {
                         $scope.isDefault = false;
@@ -240,7 +245,7 @@ angular.module('arraysApp')
 
                 $scope.reset();
 
-                $scope.data.default_view = dataset.fe_views.default_view;
+                $scope.data.default_view = default_view;
     
 
                 $scope.addMore = function (field,pushType) {
@@ -312,8 +317,6 @@ angular.module('arraysApp')
                 };
 
                 $scope.save = function () {
-
-        
 
                     if ($scope.isDefault == true) {
                         $scope.dataset.fe_views.default_view = viewName;

@@ -3,9 +3,11 @@ angular.module('arraysApp')
     .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast',
         function($scope, $state, dataset, DatasetService, $mdToast) {
 
-
+            if (!dataset.fe_listed) {dataset.fe_listed = false;}
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
+
+
 
 
     

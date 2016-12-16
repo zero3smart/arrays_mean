@@ -233,9 +233,12 @@ angular.module('arraysApp')
 
                 $scope.save = function () {
                     // General
+
+
                     if ($scope.data.designatedField != undefined)
                         $scope.dataset.fe_designatedFields[$scope.data.designatedField] = $scope.fieldName;
                     else {
+
                         for (var key in $scope.dataset.fe_designatedFields) {
                             if ($scope.dataset.fe_designatedFields[key] == $scope.fieldName) {
                                 delete $scope.dataset[key];

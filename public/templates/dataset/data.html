@@ -17,7 +17,7 @@
         <md-input-container class="md-block" flex-gt-sm>
             <label>ObjectTitle</label>
             <md-select required name="ObjectTitle" aria-label="primaryKey"
-                       ng-model="data.fe_designatedFields.objectTitle"
+                       ng-model="dataset.fe_designatedFields.objectTitle"
                        >
                 <md-option ng-repeat="column in dataset.columns track by column.name" value="{{column.name}}">
                     {{column.name}}
