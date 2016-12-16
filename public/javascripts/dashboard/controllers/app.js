@@ -17,9 +17,9 @@ angular
                 AuthService.logout();
             };
 
-            $scope.toggleSideMenu = function(evt) {
-                $scope.showSideMenu = !$scope.showSideMenu;
-            };
+            // $scope.toggleSideMenu = function(evt) {
+            //     $scope.showSideMenu = !$scope.showSideMenu;
+            // };
 
             function isSmartDevice( $window )
             {
