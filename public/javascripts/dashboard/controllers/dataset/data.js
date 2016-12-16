@@ -994,7 +994,7 @@ angular.module('arraysApp')
 
 
             $scope.submitForm = function (isValid) {
-                //Save Primary Key UI setting iof the primary key
+                //Save settings primary key and object title as set in the ui
                 $scope.saveRequiredFields();
 
                 if (isValid) {
