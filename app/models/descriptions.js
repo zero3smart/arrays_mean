@@ -53,7 +53,7 @@ var DatasourceDescription_scheme = Schema({
 
     _otherSources: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
     customFieldsToProcess: [],
-    relationshipFields: Object,
+    relationshipFields: [],
 
     fe_views: {
         default_view: String,
@@ -87,7 +87,7 @@ var DatasourceDescription_scheme = Schema({
     dirty: {type: Number, integer: true, default: 0}
     // 1: Only post cache,
     // 2: Need to Import data without sraping & post cache as well,
-    // 4: Full import as well as image scraping
+    // 3: Full import as well as image scraping
 });
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);

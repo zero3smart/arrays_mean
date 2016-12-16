@@ -30,7 +30,6 @@ module.exports.GeneratePostImportCaches = function (dataSourceDescriptions, fn) 
 var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDescription, callback) {
     var dataSource_title = dataSourceDescription.title;
     var fe_visible = dataSourceDescription.fe_visible;
-    // var isCustom = dataSourceDescription.isCustom;
     if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
         winston.warn("⚠️  The data source \"" + dataSource_title + "\" had fe_visible=false, so not going to generate its unique filter value cache.");
         return callback(null);

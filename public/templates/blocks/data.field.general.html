@@ -2,20 +2,20 @@
     <md-input-container class="md-block">
         <label>Name</label>
         <input type="text" required ng-model="fieldName" name="fieldName"
-               ng-change="verifyUniqueFieldName(fieldName)" ng-readonly="!isCustom">
+               ng-change="verifyUniqueFieldName(fieldName)" ng-readonly="customFieldIndex == undefined">
         <div ng-messages="dialog.fieldForm.fieldName.$error">
             <div ng-message="required">This is required.</div>
             <div ng-message="unique">Must be unique.</div>
         </div>
     </md-input-container>
 
-    <md-input-container class="md-block" ng-if="!isCustom && !nested">
+    <md-input-container class="md-block" ng-if="!custom">
         <label>First Record</label>
         <input type="text" value="{{ firstRecord | limitTo: 200 }}{{firstRecord.length > 200 ? '...' : ''}}"
                readonly="readonly">
     </md-input-container>
 
-    <md-input-container class="md-block" ng-if="isCustom && !nested">
+    <md-input-container class="md-block" ng-if="customFieldIndex != undefined">
         <label>Fields To Merge</label>
         <md-select required name="fields" ng-model="customField.fieldsToMergeIntoArray" multiple
                    aria-label="fieldToMerge">
@@ -31,7 +31,7 @@
         </div>
     </md-input-container>
 
-    <md-input-container class="md-block" ng-if="isCustom && !nested">
+    <md-input-container class="md-block" ng-if="customFieldIndex != undefined">
         <label>Delimiter</label>
         <md-chips ng-model="customField.delimiterOnFields"
                   name="delimiters"
@@ -42,7 +42,7 @@
 
     <md-input-container class="md-block" flex-gt-sm>
         <label>Data Type</label>
-        <md-select ng-if="!isCustom && !nested"
+        <md-select ng-if="!custom"
                    name="dataType"
                    ng-model="coercionScheme[fieldName]"
                    ng-model-options="{trackBy: '$value | typeCoercionToString'}"
@@ -52,12 +52,12 @@
                 {{coercion | typeCoercionToString}}
             </md-option>
         </md-select>
-        <input type="text" value="Array" readonly="readonly" ng-if="isCustom">
-        <input type="text" value="Nested" readonly="readonly" ng-if="nested">
+        <input type="text" value="Array" readonly="readonly" ng-if="custom && customFieldIndex != undefined">
+        <input type="text" value="Custom" readonly="readonly" ng-if="custom && customFieldIndex == undefined">
         <div class="md-errors-spacer"></div>
     </md-input-container>
 
-    <md-input-container ng-if="!isCustom && !nested"
+    <md-input-container ng-if="!custom"
                         class="md-block" flex-gt-sm
                         ng-show="(dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
         <label>Format</label>
@@ -66,21 +66,21 @@
     </md-input-container>
 
     <md-input-container class="md-block" flex-gt-sm
-                        ng-if="!isCustom && !nested"
+                        ng-if="!custom"
                         ng-show="(dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
         <label>Output Format</label>
         <input type="text" name="dataType_outputFormat"
                ng-model="dataset.raw_rowObjects_coercionScheme[fieldName].outputFormat">
     </md-input-container>
 
-    <md-input-container class="md-block" flex-gt-sm ng-if="!isCustom">
+    <md-input-container class="md-block" flex-gt-sm>
         <md-checkbox name="exclude" ng-model="dataset.fe_excludeFields[fieldName]"
                      aria-label="Field Exclude {{fieldName}}">
             Exclude
         </md-checkbox>
     </md-input-container>
 
-    <md-input-container class="md-block" flex-gt-sm ng-if="!isCustom">
+    <md-input-container class="md-block" flex-gt-sm>
         <label>Title Override</label>
         <input type="text" name="titleOverride"
                ng-model="dataset.fe_displayTitleOverrides[fieldName]">
@@ -92,7 +92,7 @@
                ng-model="data.displayOrder">
     </md-input-container>
 
-    <md-input-container class="md-block" flex-gt-sm ng-if="!isCustom">
+    <md-input-container class="md-block" flex-gt-sm>
         <label>Designated Field</label>
         <md-select name="designatedField"
                    ng-model="data.designatedField"
