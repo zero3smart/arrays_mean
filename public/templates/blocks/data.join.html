@@ -1,0 +1,28 @@
+<md-dialog aria-label="Datset Join : ({{ dataset.title }})" class="field-dialog">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Dataset Join : ({{ dataset.title }})</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <span class="icon-close-big" aria-label="Close dialog"></span>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <form name="dialog.form">
+            <md-content layout-padding>
+            </md-content>
+
+            <md-dialog-actions layout="row" layout-align="end center">
+                <md-button class="md-raised" ng-click="reset()" ng-disabled="!dialog.form.$dirty">
+                    Reset
+                </md-button>
+                <md-button class="md-raised" ng-click="save()"
+                           ng-disabled="!dialog.form.$dirty || dialog.form.$invalid">
+                    Save
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog-content>
+</md-dialog>

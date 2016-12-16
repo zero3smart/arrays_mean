@@ -24,7 +24,7 @@ angular.module('arraysApp')
                 }
             };
 
-            $scope.openFieldDialog = function (evt, fieldName, firstRecord, customFieldIndex, nested) {
+            $scope.openFieldDialog = function (evt, fieldName, firstRecord, custom, customFieldIndex) {
 
                 $mdDialog.show({
                     controller: FieldDialogController,
@@ -40,13 +40,11 @@ angular.module('arraysApp')
                         dataset: $scope.$parent.$parent.dataset,
                         availableTypeCoercions: availableTypeCoercions,
                         availableDesignatedFields: availableDesignatedFields,
-                        customFieldIndex: customFieldIndex,
-                        nested: nested
+                        custom: custom,
+                        customFieldIndex: customFieldIndex
                     }
                 })
                     .then(function (savedDataset) {
-
-
                         $scope.$parent.$parent.dataset = savedDataset;
                         $scope.data.fe_designatedFields = savedDataset.fe_designatedFields;
                         $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
@@ -60,13 +58,13 @@ angular.module('arraysApp')
                     });
             };
 
-            function FieldDialogController($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields, customFieldIndex, nested) {
+            function FieldDialogController($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields, custom, customFieldIndex) {
 
                 $scope.firstRecord = firstRecord;
                 $scope.availableTypeCoercions = availableTypeCoercions;
                 $scope.availableDesignatedFields = availableDesignatedFields;
-                $scope.isCustom = customFieldIndex != undefined;
-                $scope.nested = nested;
+                $scope.custom = custom;
+                $scope.customFieldIndex = customFieldIndex;
 
                 function refreshFieldByName(name) {
                     // General
@@ -117,7 +115,7 @@ angular.module('arraysApp')
                     $scope.dataset = angular.copy(dataset);
                     $scope.fieldName = fieldName;
 
-                    if ($scope.isCustom && !$scope.nested) {
+                    if ($scope.customFieldIndex != undefined) {
                         if (!dataset.customFieldsToProcess)
                             $scope.dataset.customFieldsToProcess = [];
                         $scope.customField = $scope.dataset.customFieldsToProcess[customFieldIndex];
@@ -142,13 +140,9 @@ angular.module('arraysApp')
                     $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
 
                     if ($scope.dialog.fieldForm) $scope.dialog.fieldForm.$setPristine();
-
-
                 };
 
                 $scope.reset();
-
-
 
                 $scope.removeOneToOneOverride = function (valueByOverride) {
                     var index = $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName].indexOf(valueByOverride);
@@ -298,7 +292,7 @@ angular.module('arraysApp')
                     });
                     if ($scope.data.keywords.choices.length > 0) $scope.dataset.fe_filters.keywords = $scope.dataset.fe_filters.keywords.concat($scope.data.keywords);
 
-                    if ($scope.isCustom && !$scope.nested) {
+                    if ($scope.customFieldIndex != undefined) {
                         $scope.dataset.customFieldsToProcess.splice(customFieldIndex, 1, $scope.customField);
                     }
 
@@ -656,6 +650,7 @@ angular.module('arraysApp')
                 })
                     .then(function (savedDataset) {
                         $scope.$parent.$parent.dataset = savedDataset;
+                        sortColumnsByDisplayOrder();
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
                         console.log('You cancelled the image scraping dialog.');
@@ -757,12 +752,51 @@ angular.module('arraysApp')
                 };
             }
 
+            $scope.openJoinDialog = function(evt) {
+                $mdDialog.show({
+                    controller: JoinDialogController,
+                    controllerAs: 'dialog',
+                    templateUrl: 'templates/blocks/data.join.html',
+                    parent: angular.element(document.body),
+                    targetEvent: evt,
+                    clickOutsideToClose: true,
+                    fullscreen: true, // Only for -xs, -sm breakpoints.
+                    locals: {
+                        dataset: $scope.$parent.$parent.dataset
+                    }
+                })
+                    .then(function (savedDataset) {
+                        $scope.$parent.$parent.dataset = savedDataset;
+                        $scope.vm.dataForm.$setDirty();
+                    }, function () {
+                        console.log('You cancelled the image scraping dialog.');
+                    });
+            };
+
+            function JoinDialogController($scope, $mdDialog, dataset) {
+                $scope.reset = function() {
+                    $scope.dataset = angular.copy(dataset);
+                    if ($scope.dialog.form) $scope.dialog.form.$setPristine();
+                };
+
+                $scope.reset();
+
+                $scope.cancel = function () {
+                    $mdDialog.cancel();
+                };
+
+                $scope.save = function () {
+                    $mdDialog.hide($scope.dataset);
+                };
+            }
+
             function sortColumnsByDisplayOrder() {
                 $scope.data.fields = $scope.$parent.$parent.dataset.columns.concat(
                     $scope.$parent.$parent.dataset.customFieldsToProcess.map(function(customField, index) {
                         return {
                             name: customField.fieldName,
                             sample: null,
+                            custom: true,
                             customField: customField,
                             customFieldIndex: index
                         };
@@ -772,10 +806,30 @@ angular.module('arraysApp')
                         return {
                             name: $scope.$parent.$parent.dataset.fe_nestedObject.prefix + field,
                             sample: null,
-                            nested: true
+                            custom: true
                         };
                     })
+                ).concat(
+                    $scope.$parent.$parent.dataset.imageScraping.reduce(function(imageScraping1, imageScraping2) {
+                        var setFields1 = imageScraping1.setFields || [],
+                            setFields2 = imageScraping2.setFields || [];
+
+                        return setFields1.map(function(field) {
+                            return {
+                                name: field.newFieldName,
+                                sample: null,
+                                custom: true
+                            }
+                        }).concat(setFields2.map(function(field) {
+                            return {
+                                name: field.newFieldName,
+                                sample: null,
+                                custom: true
+                            }
+                        }))
+                    }, [])
                 );
+
                 $scope.data.fields.sort(function (column1, column2) {
                     if ($scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column1.name) == -1 &&
                         $scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column2.name) != -1)
@@ -803,7 +857,7 @@ angular.module('arraysApp')
             $scope.saveRequiredFields = function() {
                 $scope.$parent.$parent.dataset.fn_new_rowPrimaryKeyFromRowObject = $scope.data.fn_new_rowPrimaryKeyFromRowObject;
                 $scope.$parent.$parent.dataset.fe_designatedFields = $scope.data.fe_designatedFields;
-            }
+            };
 
             $scope.reset = function () {
                 $scope.$parent.$parent.dataset = angular.copy(dataset);
