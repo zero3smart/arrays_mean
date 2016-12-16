@@ -28,9 +28,9 @@ var controllers = {
 
 
 //toDo: get view from api
-var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
+var defaultViewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
 
-viewTypes.forEach(function (viewType) {
+defaultViewTypes.forEach(function (viewType) {
 
     router.get('/:source_key/' + viewType, ensureAuthorized, function (req, res, next) {
         var source_key = req.params.source_key;
@@ -53,6 +53,24 @@ viewTypes.forEach(function (viewType) {
         });
     });
 });
+
+var customViewTypes = ['rhodium'];
+
+customViewTypes.forEach(function(viewType) {
+    router.get('/:source_key/' + viewType,ensureAuthorized,function(req,res,next) {
+        var team = req.subdomains[0];
+        var controller = require('../../user/'+ team+'/src/'+viewType);
+        controller.BindData(req,function(err,bindData) {
+            if (err) {
+                 winston.error("❌  Error getting bind data for Array gallery: ", err);
+                return res.status(500).send(err.response || 'Internal Server Error');
+            }
+            res.render(viewType);
+        })
+
+    })
+
+})
 
 var object_details_controller = require('../controllers/client/data_preparation/object_details');
 

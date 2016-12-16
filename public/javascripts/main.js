@@ -32,12 +32,9 @@ $(document).ready(function () {
         var sourceKey = $parent.find("[name='source_key']").val();
         var baseUrl = $parent.find("[name='subdomainUrl']").val();
 
-        console.log(baseUrl);
-        
         if (typeof baseUrl == 'undefined') {
             baseUrl = ""; 
         }
-
 
         //toDo: get view from api
         
@@ -50,10 +47,10 @@ $(document).ready(function () {
 
          var href; 
 
-        if (viewTypes.indexOf(default_view_url) < 0) { //custom view
-            var team = $parent.find("[name='team']").val();
 
-            href = '/' + team + '/' + sourceKey + '/' + default_view_url;
+        if (viewTypes.indexOf(default_view_url) < 0) { //custom view
+        
+            href = baseUrl + '/' +  sourceKey + '/' + default_view_url;
 
             window.location.href = href;
 

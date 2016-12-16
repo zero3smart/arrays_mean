@@ -150,6 +150,6 @@ module.exports = function (grunt) {
     // Default task.
     grunt.registerTask('default', ['jshint']);
     // Disabled subgrunt to avoid aborting issue.
-    grunt.registerTask('build', ['copy', 'sass', 'postcss'/*, 'subgrunt'*/]);
+    grunt.registerTask('build', ['copy', 'sass', 'postcss', 'subgrunt']);
 
 };

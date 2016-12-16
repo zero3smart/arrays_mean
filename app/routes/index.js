@@ -7,6 +7,13 @@ var isDev = !process.env.NODE_ENV || process.env.NODE_ENV == 'development';
 var __DEBUG_enableEnsureWWWForDev = false; // for debug
 var shouldEnsureWWW = isDev == false || __DEBUG_enableEnsureWWWForDev;
 
+var fs = require('fs');
+var async = require('async');
+
+var rootDomain = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+    rootDomain += process.env.HOST ? process.env.HOST : 'localhost:9080';
+
+
 
 
 //
@@ -35,6 +42,48 @@ var _mountRoutes_ensureWWW = function (app) {
     });
 };
 //
+
+function isNotRootDomain (subdomains) {
+        
+    if (subdomains.length == 1 && subdomains[0] !== 'www') { // pattern: subdomain.arrays.co
+        return true;
+    } else if (subdomains.length == 2 && subdomains[0] == 'www') { //pattern: subdomain.www.arrays.co
+        return true;
+    } else {
+        return false;
+    }
+}
+
+var _mountRoutes_subdomainRedirect = function(app) {
+
+//toDO: render all the view for the view name 
+    var urlRegexForDataset = /(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24}|gallery|bar-chart|chart|choropleth|timeline|word-cloud|scatterplot|line-graph|pie-set|rhodium)/g;
+      app.all('*',function(req,res,next) {
+        urlRegexForDataset.lastIndex = 0;
+        var isRouteForDataset = urlRegexForDataset.test(req.url);
+        if (isNotRootDomain(req.subdomains)) { 
+            if (isRouteForDataset) { 
+                return next();
+            } else {
+                if (req.url == '/') {
+                    return next();
+                } else {
+                    return res.redirect(rootDomain+req.url);
+                }
+            }
+        } else {
+
+            if (isRouteForDataset) {
+                return res.redirect(rootDomain+'/');
+            } else {
+                return next();
+            }
+        }
+    })
+
+
+}
+
 var _mountRoutes_errorHandling = function (app) {
     //
     // Add the error logger after all middleware and routes so that
@@ -63,59 +112,12 @@ var _mountRoutes_errorHandling = function (app) {
 //
 
 
-var isNotRootDomain = function(subdomains) {
-    
-    if (subdomains.length == 1 && subdomains[0] !== 'www') { // pattern: subdomain.arrays.co
-        return true;
-    } else if (subdomains.length == 2 && subdomains[0] == 'www') { //pattern: subdomain.www.arrays.co
-        return true;
-    } else {
-        return false;
-    }
 
-}
-
-var rootDomain = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-    rootDomain += process.env.HOST ? process.env.HOST : 'localhost:9080';
-
-
-var urlRegexForDataset = /(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24}|gallery|bar-chart|chart|choropleth|timeline|word-cloud|scatterplot|line-graph|pie-set)/g;
 
 var _mountRoutes_endPoints = function (app) {
     // View endpoints
 
-    app.all('*',function(req,res,next) {
-
-
-
-        urlRegexForDataset.lastIndex = 0;
-        
-        var isRouteForDataset = urlRegexForDataset.test(req.url);
-
-        if (isNotRootDomain(req.subdomains)) { 
-            if (isRouteForDataset) { 
-                return next();
-            } else {
-                if (req.url == '/') {
-                    return next();
-                } else {
-                    return res.redirect(rootDomain+req.url);
-                }
-            }
-        } else {
-
-            if (isRouteForDataset) {
-                return res.redirect(rootDomain+'/');
-            } else {
-                return next();
-            }
-            
-        }
-
-    })
-
-    app.use('/', require('./homepage'));
-    
+    app.use('/', require('./homepage'));  
     app.use('/explore', require('./array'));
     app.use('/s', require('./shared_pages'));
     var apiVersion = 'v1';
@@ -137,6 +139,7 @@ var _mountRoutes_endPoints = function (app) {
 module.exports.MountRoutes = function (app) {
     _mountRoutes_monitoring(app);
     //_mountRoutes_ensureWWW(app);
+    _mountRoutes_subdomainRedirect(app);
     _mountRoutes_endPoints(app);
     _mountRoutes_errorHandling(app);
 };
