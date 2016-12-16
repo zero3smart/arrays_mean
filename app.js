@@ -62,8 +62,8 @@ fs.readdir(userFolderPath, function (err, files) {
                 if (stat.isDirectory() && files) {
                     var view_path = path.join(userFolderPath, file + "/views");
                     viewsToSet.push(view_path);
+                    //serving static files for custom views
                     app.use('/static', express.static(path.join(userFolderPath, team_name + "/static")));
-                    // app.use('/' + team_name, require(userFolderPath + '/' + team_name + '/routes'));
                 }
                 eachCb();
             }

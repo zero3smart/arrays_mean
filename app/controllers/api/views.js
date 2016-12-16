@@ -1,4 +1,5 @@
 var View = require('../../models/views');
+var User = require('../../models/users');
 
 
 
@@ -12,8 +13,15 @@ module.exports.getAll = function (req, res) {
 			res.json(views);
 		}
 	})
-    
 };
+
+module.export.getCustomViews = function(req,res) {
+
+}
+
+module.exports.getDefaultViews = function(req,res) {
+	
+}
 
 module.exports.get = function(req,res) {
 	View.findById(req.params.id)
