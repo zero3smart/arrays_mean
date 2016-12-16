@@ -53,7 +53,7 @@ var DatasourceDescription_scheme = Schema({
 
     _otherSources: [{type: Schema.Types.ObjectId, ref: 'DatasourceDescription'}],
     customFieldsToProcess: [],
-    relationshipFields: Object,
+    relationshipFields: [],
 
     fe_views: {
         default_view: String,

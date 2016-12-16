@@ -56,6 +56,7 @@ router.get('/dataset/download/:id', ctrlDataset.download);
 // dataset format data
 router.get('/dataset/getAvailableTypeCoercions', ctrlDataset.getAvailableTypeCoercions);
 router.get('/dataset/getAvailableDesignatedFields', ctrlDataset.getAvailableDesignatedFields);
+router.get('/dataset/getAvailableMatchFns', ctrlDataset.getAvailableMatchFns);
 
 // dataset import
 router.post('/dataset/initializeToImport', ctrlDataset.initializeToImport);

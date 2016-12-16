@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetDataCtrl', ['$scope', '$state', '$q', 'DatasetService', '$mdToast', '$mdDialog', '$filter', 'dataset', 'additionalDatasources', 'availableTypeCoercions', 'availableDesignatedFields',
-        function ($scope, $state, $q, DatasetService, $mdToast, $mdDialog, $filter, dataset, additionalDatasources, availableTypeCoercions, availableDesignatedFields) {
+    .controller('DatasetDataCtrl', ['$scope', '$state', '$q', 'DatasetService', 'AuthService', '$mdToast', '$mdDialog', '$filter', 'dataset', 'additionalDatasources', 'availableTypeCoercions', 'availableDesignatedFields',
+        function ($scope, $state, $q, DatasetService, AuthService, $mdToast, $mdDialog, $filter, dataset, additionalDatasources, availableTypeCoercions, availableDesignatedFields) {
             $scope.$parent.$parent.currentNavItem = 'Data';
             $scope.availableTypeCoercions = availableTypeCoercions;
 
@@ -644,8 +644,7 @@ angular.module('arraysApp')
                     clickOutsideToClose: true,
                     fullscreen: true, // Only for -xs, -sm breakpoints.
                     locals: {
-                        dataset: $scope.$parent.$parent.dataset,
-                        availableDesignatedFields: availableDesignatedFields,
+                        dataset: $scope.$parent.$parent.dataset
                     }
                 })
                     .then(function (savedDataset) {
@@ -657,7 +656,7 @@ angular.module('arraysApp')
                     });
             };
 
-            function ImageScrapingDialogController($scope, $mdDialog, $filter, dataset, availableDesignatedFields) {
+            function ImageScrapingDialogController($scope, $mdDialog, $filter, dataset) {
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
                     $scope.data = {};
@@ -740,10 +739,6 @@ angular.module('arraysApp')
                 };
 
                 $scope.save = function () {
-                    $scope.dataset.imageScraping.forEach(function (imageScraping) {
-                        imageScraping.htmlSourceAtURLInField = $filter('dotless')(imageScraping.htmlSourceAtURLInField);
-                    });
-
                     for (var fieldName in $scope.data.designatedFields) {
                         $scope.dataset.fe_designatedFields[$scope.data.designatedFields[fieldName]] = fieldName;
                     }
@@ -762,30 +757,137 @@ angular.module('arraysApp')
                     clickOutsideToClose: true,
                     fullscreen: true, // Only for -xs, -sm breakpoints.
                     locals: {
-                        dataset: $scope.$parent.$parent.dataset
+                        dataset: $scope.$parent.$parent.dataset,
+                        fields: $scope.data.fields
                     }
                 })
                     .then(function (savedDataset) {
+                        console.log(savedDataset);
                         $scope.$parent.$parent.dataset = savedDataset;
+                        sortColumnsByDisplayOrder();
+
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
-                        console.log('You cancelled the image scraping dialog.');
+                        console.log('You cancelled the dataset join dialog.');
                     });
             };
 
-            function JoinDialogController($scope, $mdDialog, dataset) {
+            function JoinDialogController($scope, $mdDialog, DatasetService, AuthService, dataset, fields) {
+                $scope.data = {};
+                $scope.data.columns = [];
+                $scope.dataset = angular.copy(dataset);
+                if (!$scope.dataset.relationshipFields) $scope.dataset.relationshipFields = [];
+
+                DatasetService.getAvailableMatchFns()
+                    .then(function(availableMatchFns) {
+                        $scope.availableMatchFns = availableMatchFns
+                    })
+                    .catch(function(error) {
+                        console.error(error);
+                    });
+
+                var user = AuthService.currentUser();
+                if (user.role == 'superAdmin' || user.role == 'admin') {
+                    DatasetService.getDatasetsWithQuery({_team: user.defaultLoginTeam._id})
+                        .then(initializeDatasets)
+                        .catch(function(error) {
+                            console.error(error);
+                        });
+                } else if (user.role == 'editor') {
+                    DatasetService.getDatasetsWithQuery({_id: {$in: user._editors}, _team: user.defaultLoginTeam._id})
+                        .then(initializeDatasets)
+                        .catch(function(error) {
+                            console.error(error);
+                        });
+                } else {
+                    $scope.datasets = [];
+                    $scope.data.foreignDataset = [];
+                }
+
+                function initializeDatasets(datasets) {
+                    if (!datasets) return;
+                    $scope.datasets = datasets.filter(function(source) { return source._id != dataset._id });
+
+                    $scope.data.foreignDataset = $scope.dataset.relationshipFields.map(function(relationshipField) {
+                        return $scope.datasets.find(function(source) {
+                            return source.uid == relationshipField.by.ofOtherRawSrcUID && source.importRevision == relationshipField.by.andOtherRawSrcImportRevision;
+                        });
+                    });
+
+                    $scope.dataset.relationshipFields.forEach(function(relationshipField, index) {
+                        var pKey = relationshipField.by.ofOtherRawSrcUID + '-v' + relationshipField.by.andOtherRawSrcImportRevision;
+                        DatasetService.getMappingDatasourceCols(pKey)
+                            .then(function(columns) {
+                                $scope.data.columns[index] = columns;
+                            });
+                    });
+                }
+
                 $scope.reset = function() {
                     $scope.dataset = angular.copy(dataset);
+                    initializeDatasets();
+
                     if ($scope.dialog.form) $scope.dialog.form.$setPristine();
                 };
 
-                $scope.reset();
+                $scope.verifyValidFieldName = function(fieldName, index) {
+                    var unique = true, valid = true;
+                    var i = 0;
+                    $scope.dataset.relationshipFields.forEach(function(relationshipField) {
+                        if (fieldName == relationshipField.field && i != index) unique = false;
+                        i ++;
+                    });
+                    if (unique) {
+                        // fields.forEach(function (field) {
+                        //     if (fieldName == field.name) {
+                        //
+                        //     }
+                        // });
+                    }
+
+                    if ($filter('dotless')(fieldName) != fieldName) valid = false;
+
+                    $scope.dialog.form['field_' + index].$setValidity('unique', unique);
+                    $scope.dialog.form['field_' + index].$setValidity('valid', valid);
+                };
+
+                $scope.removeJoin = function(index) {
+                    $scope.dataset.relationshipFields.splice(index, 1);
+                    $scope.dialog.form.$setDirty();
+                };
+
+                $scope.loadColumnsForDataset = function(index) {
+                    var source = $scope.data.foreignDataset[index];
+                    var pKey = source.uid + '-v' + source.importRevision;
+
+                    DatasetService.getMappingDatasourceCols(pKey)
+                        .then(function(columns) {
+                            $scope.data.columns[index] = columns;
+                        });
+                };
+
+                $scope.addJoin = function() {
+                    $scope.dataset.relationshipFields.push({
+                        field: '',
+                        singular: true,
+                        relationship: false,
+                        by: {
+                            operation: "Join",
+                            findingMatchOnFields: []
+                        }
+                    });
+                    $scope.dialog.form.$setDirty();
+                };
 
                 $scope.cancel = function () {
                     $mdDialog.cancel();
                 };
 
                 $scope.save = function () {
+                    $scope.data.foreignDataset.forEach(function(source, index) {
+                        $scope.dataset.relationshipFields[index].by.ofOtherRawSrcUID = source.uid;
+                        $scope.dataset.relationshipFields[index].by.andOtherRawSrcImportRevision = source.importRevision;
+                    });
                     $mdDialog.hide($scope.dataset);
                 };
             }
