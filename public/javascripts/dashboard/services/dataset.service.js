@@ -50,13 +50,11 @@
         };
 
         var publish = function(id,isPublished) {
-
-
             var deferred = $q.defer();
             var body = {
                 id: id,
                 isPublished: isPublished
-            }
+            };
             $http.put('api/dataset/publish',body)
                 .success(function(data) {
                     console.log(data);
@@ -71,11 +69,11 @@
                     console.log(err);
                 });
             return deferred.promise;
-        }
+        };
 
-        var getSources = function(id) {
+        var getAdditionalSources = function(id) {
             var deferred = $q.defer();
-            $http.get('api/dataset/getSources/' + id)
+            $http.get('api/dataset/getAdditionalSources/' + id)
                 .success(function(data) {
                     if (!data.error && data.sources) {
                         return deferred.resolve(data.sources);
@@ -181,15 +179,27 @@
                 })
                 .error(deferred.reject);
             return deferred.promise;
+        };
 
-        }
-
-       
+       var removeSubdataset = function(id) {
+           var deferred = $q.defer();
+           $http.post('api/dataset/removeSubdataset', {id: id})
+               .success(function(data) {
+                   if (!data.error && data.success) {
+                       return deferred.resolve(true);
+                   } else {
+                       return deferred.reject(data.error);
+                   }
+               })
+               .error(deferred.reject);
+           return deferred.promise;
+       };
 
         return {
+            removeSubdataset: removeSubdataset,
             remove: remove,
             get: get,
-            getSources: getSources,
+            getAdditionalSources: getAdditionalSources,
             save: save,
             publish: publish,
             getAvailableTypeCoercions: getAvailableTypeCoercions,

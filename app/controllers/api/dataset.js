@@ -33,12 +33,10 @@ function getAllDatasetsWithQuery(query, res) {
 
 }
 
-
 module.exports.getDatasetsWithQuery = function(req,res) {
     var query = req.body;
     getAllDatasetsWithQuery(query,res);
-}
-
+};
 
 module.exports.signedUrlForAssetsUpload = function (req, res) {
     datasource_description.findById(req.params.id)
@@ -54,8 +52,7 @@ module.exports.signedUrlForAssetsUpload = function (req, res) {
             })
         })
 
-}
-
+};
 
 module.exports.remove = function (req, res) {
     if (!req.body.id)
@@ -66,7 +63,6 @@ module.exports.remove = function (req, res) {
 
     var description;
     var srcDocPKey;
-
 
     batch.push(function (done) {
         datasource_description.findById(req.body.id, function (err, data) {
@@ -79,8 +75,6 @@ module.exports.remove = function (req, res) {
             done();
         });
     });
-
-
 
     // Remove processed row object
     batch.push(function (done) {
@@ -120,19 +114,15 @@ module.exports.remove = function (req, res) {
         });
     });
 
-    //Remove cache filter 
+    //Remove cache filter
     batch.push(function(done) {
         cached_values.findOne({srcDocPKey: srcDocPKey},function(err,document) {
             if (err) return done(err);
             if (!document) return done();
              winston.info("✅  Removed cached unique values : " + srcDocPKey + ", error: " + err);
              document.remove(done);
-
         })
-
-
-
-    })
+    });
 
     // Remove datasource description
     batch.push(function (done) {
@@ -163,10 +153,9 @@ module.exports.remove = function (req, res) {
         });
     });
 
-
     batch.push(function(done) {
         User.update({$or: [{_editors:req.body.id},{_viewers: req.body.id}]},{$pull: {_editors: req.body.id,_viewers:req.body.id}},done);
-    })
+    });
 
     batch.end(function (err) {
         if (err) {
@@ -176,7 +165,7 @@ module.exports.remove = function (req, res) {
         winston.info("✅  Removed dataset : " + description.title);
         res.json({success: 'ok'});
     });
-}
+};
 
 module.exports.get = function (req, res) {
 
@@ -185,7 +174,7 @@ module.exports.get = function (req, res) {
 
     datasource_description.findById(req.params.id)
         .lean()
-        .deepPopulate('_otherSources schema_id _team _otherSources._team')
+        .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, description) {
 
             if (err) return res.json({error: err.message});
@@ -215,7 +204,6 @@ module.exports.get = function (req, res) {
             }
         });
 };
-
 
 module.exports.loadDatasourceColumnsForMapping = function (req, res) {
     if (!req.params.pKey) return res.json({error: 'No Primary Key given'});
@@ -253,14 +241,14 @@ module.exports.loadDatasourceColumnsForMapping = function (req, res) {
         });
 };
 
-module.exports.getSourcesWithSchemaID = function (req, res) {
+module.exports.getAdditionalSourcesWithSchemaID = function (req, res) {
     if (!req.params.id) return res.json({error: 'No SchemaID given'});
 
     datasource_description.find({schema_id: req.params.id})
         .lean()
-        .deepPopulate('_otherSources schema_id _team _otherSources._team')
+        .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, sources) {
-            if (err) return res.json({error: "Error getting the sources with schema id : " + req.params.id});
+            if (err) return res.json({error: "Error getting the addiontal datasources with schema id : " + req.params.id});
 
             return res.json({
                 sources: sources.map(function (source) {
@@ -268,7 +256,7 @@ module.exports.getSourcesWithSchemaID = function (req, res) {
                 })
             });
         });
-}
+};
 
 module.exports.publish = function (req, res) {
     datasource_description.findByIdAndUpdate(req.body.id, {$set: {isPublished: req.body.isPublished}}, function (err, savedDesc) {
@@ -278,7 +266,7 @@ module.exports.publish = function (req, res) {
             res.status(200).send('ok');
         }
     })
-}
+};
 
 module.exports.update = function (req, res) {
 
@@ -309,60 +297,93 @@ module.exports.update = function (req, res) {
     } else {
 
         // Update of Existing Dataset
-        datasource_description.findById(req.body._id, function (err, doc) {
+        datasource_description.findById(req.body._id)
+            .populate('schema_id')
+            .exec(function (err, doc) {
 
-            if (err) return res.json({error: err.message});
-            if (!doc) return res.json({error: 'Invalid Operation'});
-
-            winston.info("🔁  Updating the dataset " + doc.title);
-
-            _.forOwn(req.body, function (value, key) {
-                if (key != '_id' && !_.isEqual(value, doc._doc[key])) {
-                    winston.info('✅ Updated ' + doc.title + ' with - ' + key + ' with ' + JSON.stringify(value));
-
-                    if (key == 'dirty') return;
-
-                    doc[key] = value;
-                    if (typeof value === 'object')
-                        doc.markModified(key);
-
-                    // detect whether you need to re-import dataset to the system or not, and inform that the client
-
-                    // Only post-import cache
-                    var keysForNeedToImport = [
-                        'fe_filters'
-                    ];
-                    if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 1)
-                        doc.dirty = 1;
-
-                    // Import without image scrapping
-                    keysForNeedToImport = [
-                        'importRevision',
-                        'fn_new_rowPrimaryKeyFromRowObject',
-                        'raw_rowObjects_coercionScheme',
-                        'relationshipFields',
-                        'customFieldsToProcess',
-                        'fe_nestedObject',
-                    ];
-                    if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 2)
-                        doc.dirty = 2;
-
-                    // Full Import
-                    keysForNeedToImport = [
-                        'imageScraping',
-                    ];
-                    if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 3)
-                        doc.dirty = 3;
-                }
-            });
-
-            doc.save(function (err, updatedDoc) {
                 if (err) return res.json({error: err.message});
-                if (!updatedDoc) return res.json({error: 'Invalid Operation'});
+                if (!doc) return res.json({error: 'Invalid Operation'});
 
-                return res.json({id: updatedDoc.id});
+                var description = doc, description_title = doc.title;
+                if (doc.schema_id) {
+                    description = datasource_description.Consolidate_descriptions_hasSchema(doc);
+                    description_title = description.title + ' (' + doc.dataset_uid + ')';
+                }
+                winston.info("🔁  Updating the dataset " + description_title + "...");
+
+                _.forOwn(req.body, function (value, key) {
+                    if (key != '_id' && ((!doc.schema_id && !_.isEqual(value, doc._doc[key]))
+                        || (doc.schema_id && !_.isEqual(value, description[key])))) {
+
+                        winston.info('  ✅ ' + key + ' with ' + JSON.stringify(value));
+
+                        if (key == 'dirty') return;
+
+                        doc[key] = value;
+                        if (typeof value === 'object')
+                            doc.markModified(key);
+
+                        // detect whether you need to re-import dataset to the system or not, and inform that the client
+
+                        // Only post-import cache
+                        var keysForNeedToImport = [
+                            'fe_filters',
+                            'fe_excludeFields'
+                        ];
+                        if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 1)
+                            doc.dirty = 1;
+
+                        // Import without image scrapping
+                        keysForNeedToImport = [
+                            'importRevision',
+                            'fn_new_rowPrimaryKeyFromRowObject',
+                            'raw_rowObjects_coercionScheme',
+                            'relationshipFields',
+                            'customFieldsToProcess',
+                            'fe_nestedObject'
+                        ];
+                        if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 2)
+                            doc.dirty = 2;
+
+                        // Full Import
+                        keysForNeedToImport = [
+                            'imageScraping',
+                        ];
+                        if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 3)
+                            doc.dirty = 3;
+                    }
+                });
+
+                doc.save(function (err, updatedDoc) {
+                    if (err) return res.json({error: err.message});
+                    if (!updatedDoc) return res.json({error: 'Invalid Operation'});
+
+                    if (!doc.schema_id) {
+                        return res.json({id: updatedDoc.id});
+                    } else {
+                        var findQuery = {_id: doc.id};
+                        // Inherited fields from the schema should be undefined
+                        // TODO: Is there anyway to update the selected fields only?
+                        var updateQuery = { $unset: {
+                            imageScraping: 1,
+                            isPublished: 1,
+                            customFieldsToProcess: 1,
+                            _otherSources: 1,
+                            fe_filters: 1,
+                            fe_fieldDisplayOrder: 1,
+                            urls: 1,
+                            importRevision: 1
+                        } };
+                        datasource_description.findOneAndUpdate(findQuery, updateQuery, {upsert: true, new: true},
+                            function(err, updatedDoc) {
+                                if (err) return res.json({error: err.message});
+                                if (!updatedDoc) return res.json({error: 'Invalid Operation'});
+
+                                return res.json({id: updatedDoc.id});
+                            });
+                    }
+                });
             });
-        });
 
     }
 };
@@ -426,15 +447,15 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 }
 
 module.exports.upload = function (req, res) {
-    if (!req.body.id)
-        return res.json({error: 'No ID given'});
+    if (!req.body.id) return res.json({error: 'No ID given'});
+    var child = req.body.child;
 
     var batch = new Batch;
     batch.concurrency(1);
-    var description;
+    var description, schema_description, description_title;
 
     res.writeHead(200, {'Content-Type': 'application/json'});
-    res.connection.setTimeout(0); // this could take a while
+    res.connection.setTimeout(0);
 
     batch.push(function (done) {
         datasource_description.findById(req.body.id)
@@ -443,9 +464,45 @@ module.exports.upload = function (req, res) {
                 if (err) return done(err);
 
                 description = doc;
+                description_title = description.title;
                 done();
             })
     });
+
+    if (child) {
+        batch.push(function (done) {
+            schema_description = description;
+
+            var findQuery = {dataset_uid: req.body.dataset_uid, schema_id: req.body.id};
+            // Inherited fields from the schema should be undefined
+            // TODO: Is there anyway to update the selected fields only?
+            var insertQuery = {
+                dataset_uid: req.body.dataset_uid,
+                schema_id: req.body.id,
+                fe_listed: false,
+                fe_visible: false,
+                $unset: {
+                    fe_nestedObject: 1,
+                    imageScraping: 1,
+                    isPublished: 1,
+                    customFieldsToProcess: 1,
+                    _otherSources: 1,
+                    fe_filters: 1,
+                    fe_fieldDisplayOrder: 1,
+                    urls: 1,
+                    importRevision: 1
+                }
+            };
+            datasource_description.findOneAndUpdate(findQuery, insertQuery, {upsert: true, new: true}, function(err, doc) {
+                if (err) return done(err);
+                doc.schema_id = schema_description;
+                description = datasource_description.Consolidate_descriptions_hasSchema(doc);
+
+                description_title = description.title + "(" + description.dataset_uid + ")";
+                done();
+            });
+        });
+    }
 
     _.forEach(req.files, function (file) {
         batch.push(function (done) {
@@ -468,13 +525,15 @@ module.exports.upload = function (req, res) {
             // Verify that the file is readable & in the valid format.
             _readDatasourceColumnsAndSampleRecords(description, fs.createReadStream(file.path), function (err, columns) {
                 if (err) {
-                    winston.error("❌  Error validating datasource : " + description.title + " : error " + err.message);
+                    winston.error("❌  Error validating datasource : " + description_title + " : error " + err.message);
                     return done(err);
                 }
-                winston.info("✅  File validation okay : " + description.title);
+                winston.info("✅  File validation okay : " + description_title);
 
                 // Store columnNames and firstRecords for latter call on dashboard pages
                 if (!req.session.columns) req.session.columns = {};
+                // TODO: Do we need to save the columns for the additional datasource,
+                // since it should be same as the master datasource???
                 req.session.columns[description.id] = columns;
 
                 // Upload datasource to AWS S3
@@ -482,7 +541,7 @@ module.exports.upload = function (req, res) {
                 var newFileName = datasource_file_service.fileNameToUpload(description);
                 datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, description._team.subdomain, description.uid, function (err) {
                     if (err) {
-                        winston.error("❌  Error during uploading the dataset into AWS : " + description.title + " (" + err.message + ")");
+                        winston.error("❌  Error during uploading the dataset into AWS : " + description_title + " (" + err.message + ")");
                     }
                     done(err);
                 });
@@ -490,17 +549,41 @@ module.exports.upload = function (req, res) {
         });
 
         batch.push(function (done) {
-            winston.info("✅  Uploaded datasource : " + description.title + ", " + description.uid);
+            winston.info("✅  Uploaded datasource : " + description_title);
 
-            description.dirty = 3; // Full Import with image scraping
+            if (!child) {
+                description.dirty = 3; // Full Import with image scraping
 
-            description.save(function (err, updatedDescription) {
-                if (err) {
-                    winston.error("❌  Error saving the dataset into the database : " + description.title + " (" + err.message + ")");
-                    return done(err);
-                }
-                done();
-            });
+                description.save(function (err, updatedDescription) {
+                    if (err)
+                        winston.error("❌  Error saving the dataset into the database : " + description_title + " (" + err.message + ")");
+                    done(err);
+                });
+            } else {
+                var findQuery = {_id: description.id};
+                // TODO: Need to update the selected fields only!
+                var updateQuery = {
+                    format: description.format,
+                    dirty: 3,
+                    imported: false,
+                    $unset: {
+                        fe_nestedObject: 1,
+                        imageScraping: 1,
+                        isPublished: 1,
+                        customFieldsToProcess: 1,
+                        _otherSources: 1,
+                        fe_filters: 1,
+                        fe_fieldDisplayOrder: 1,
+                        urls: 1,
+                        importRevision: 1
+                    }
+                };
+                datasource_description.findOneAndUpdate(findQuery, updateQuery, function(err, doc) {
+                    if (err)
+                        winston.error("❌  Error saving the dataset into the database : " + description_title + " (" + err.message + ")");
+                    done(err);
+                });
+            }
         });
     });
 
@@ -511,11 +594,11 @@ module.exports.upload = function (req, res) {
 
         return res.end(JSON.stringify({id: description.id}));
     });
-}
+};
 
 module.exports.getAvailableTypeCoercions = function (req, res) {
     return res.json({availableTypeCoercions: datatypes.available_forFieldDataType_coercions()});
-}
+};
 
 module.exports.getAvailableDesignatedFields = function (req, res) {
     return res.json({
@@ -525,14 +608,13 @@ module.exports.getAvailableDesignatedFields = function (req, res) {
     });
 };
 
-
 module.exports.download = function (req, res) {
     if (!req.params.id)
         return res.json({error: 'No ID given'});
 
     datasource_description.findById(req.params.id)
         .lean()
-        .deepPopulate('_otherSources schema_id _team _otherSources._team')
+        .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, description) {
 
             if (err) return res.json({error: err.message});
@@ -552,9 +634,7 @@ module.exports.download = function (req, res) {
 }
 
 module.exports.initializeToImport = function (req, res) {
-    if (!req.body.uid) {
-        return res.json({error: 'No UID given'});
-    }
+    if (!req.body.uid) return res.json({error: 'No UID given'});
 
     var uid = req.body.uid;
 
@@ -565,12 +645,12 @@ module.exports.initializeToImport = function (req, res) {
     var description;
     var srcDocPKey;
     batch.push(function (done) {
-        datasource_description.findOne({$or: [{uid: uid}, {dataset_uid: uid}]},
-            function (err, data) {
+        datasource_description.findOne({uid: uid}, function (err, data) {
                 if (err) return done(err);
                 if (!data) return done(new Error('No datasource exists : ' + uid));
 
                 description = data;
+
                 srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
                 done();
             });
@@ -622,9 +702,7 @@ module.exports.initializeToImport = function (req, res) {
 }
 
 module.exports.preImport = function (req, res) {
-    if (!req.body.uid) {
-        return res.json({error: 'No UID given'});
-    }
+    if (!req.body.uid) return res.json({error: 'No UID given'});
 
     var uid = req.body.uid;
 
@@ -685,5 +763,27 @@ module.exports.postImport = function (req, res) {
         };
 
         postimport_caching_controller.GeneratePostImportCaches(descriptions, fn);
+    });
+};
+
+module.exports.removeSubdataset = function(req, res) {
+    if (!req.body.id)
+        return res.json({error: 'No ID given'});
+
+    datasource_description.findById(req.body.id, function (err, doc) {
+        if (err) {
+            winston.error("❌  Error encountered during find description : ", err);
+            return res.json({error: err.message});
+        }
+        if (!doc) return res.json({success: 'Not available'});
+
+        doc.remove(function(err) {
+            if (err) {
+                winston.error("❌  Error encountered during remove description : ", err);
+                return res.json({error: err.message});
+            }
+            winston.info("✅  Removed the datasource description : " + doc.id);
+            res.json({success: 'ok'});
+        });
     });
 };

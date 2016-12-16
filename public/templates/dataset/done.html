@@ -1,6 +1,6 @@
 <md-content layout-padding ng-if="dataset.fe_views.default_view">
     <div>
-        <h2 ng-if="dataset.dirty">You're almost done!<br/>The data must be imported to take effect some of your changes </h2>
+        <h2 ng-if="dirty">You're almost done!<br/>The data must be imported to take effect some of your changes </h2>
 
         <md-content class="md-block md-padding" ng-show="inProgress">
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>
@@ -10,14 +10,14 @@
             <p ng-repeat="message in importLogger">{{message}}</p>
         </md-content>
 
-        <div layout="row" layout-align="end center" class="panel-footer" ng-if="dataset.dirty">
+        <div layout="row" layout-align="end center" class="panel-footer" ng-if="dirty">
             <md-button class="md-raised pull-right" ng-click="importData()" ng-disabled="inProgress"><span
                     class="glyphicon glyphicon-import"></span>{{ inProgress ? 'Importing' : 'Import' }}
             </md-button>
         </div>
     </div>
 
-    <div ng-if="!dataset.dirty && dataset.imported">
+    <div ng-if="!dirty && imported">
         <h2>Congratulations! You're all done!</h2>
         <h2>View your <strong><a href="{{subdomain}}/{{dataset.uid}}-r{{dataset.importRevision}}/{{dataset.fe_views.default_view | viewToName }}" >array</a></strong></h2>
 

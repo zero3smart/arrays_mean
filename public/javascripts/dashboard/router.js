@@ -75,9 +75,9 @@ angular.module('arraysApp')
                             dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
                             }],
-                            sources: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
+                            additionalDatasources: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
                                 if ($stateParams.id)
-                                    return DatasetService.getSources($stateParams.id);
+                                    return DatasetService.getAdditionalSources($stateParams.id);
                                 else
                                     return [];
                             }]
@@ -90,6 +90,9 @@ angular.module('arraysApp')
                         resolve: {
                             dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
+                            }],
+                            additionalDatasources: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
+                                return DatasetService.getAdditionalSources($stateParams.id);
                             }],
                             availableTypeCoercions: ['DatasetService', function (DatasetService) {
                                 return DatasetService.getAvailableTypeCoercions();
@@ -122,6 +125,9 @@ angular.module('arraysApp')
                         resolve: {
                             dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
+                            }],
+                            additionalDatasources: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
+                                return DatasetService.getAdditionalSources($stateParams.id);
                             }]
                         }
                     })
