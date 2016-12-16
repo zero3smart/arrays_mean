@@ -37,21 +37,3 @@ module.exports.MatchFns =
         return false;
     }
 };
-//
-module.exports.MatchRegexs =
-{
-
-    RegexLocalEqualsForeignString: function (localFieldValue) {
-
-        return {
-            $regex: "^" + localFieldValue + "$",
-            $options: 'i'
-        };
-    },
-    RegexLocalContainsForeignString: function (localFieldValue) {
-        return {
-            $regex: localFieldValue,
-            $options: 'i'
-        }
-    }
-}

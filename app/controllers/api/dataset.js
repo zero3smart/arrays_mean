@@ -17,11 +17,13 @@ var datatypes = require('../../libs/datasources/datatypes');
 var import_controller = require('../../libs/import/data_ingest/controller');
 var postimport_caching_controller = require('../../libs/import/cache/controller');
 var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
+var processing = require('../../libs/datasources/processing');
 
 
 function getAllDatasetsWithQuery(query, res) {
     datasource_description.find({$and: [{schema_id: {$exists: false}}, query]}, {
         _id: 1,
+        uid: 1,
         title: 1,
         importRevision: 1
     }, function (err, datasets) {
@@ -218,21 +220,23 @@ module.exports.loadDatasourceColumnsForMapping = function (req, res) {
             if (err) return res.json({error: err.message});
 
             if (!req.session.columns) req.session.columns = {};
-            if (description.uid && !req.session.columns[description.id]) {
+
+            if (description.uid && !req.session.columns[description._id]) {
                 _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
                     if (err) return res.json({error: err.message});
 
+                    req.session.columns[description._id] = columns;
                     res.json({
                         cols: columns.filter(function (e) {
-                            return !description.fe_excludeFields[e.name];
+                            return !description.fe_excludeFields || !description.fe_excludeFields[e.name];
                         })
                     });
                 });
             } else {
-                if (req.session.columns[description.id])
+                if (req.session.columns[description._id])
                     return res.json({
-                        cols: req.session.columns[description.id].filter(function (e) {
-                            return !description.fe_excludeFields[e.name];
+                        cols: req.session.columns[description._id].filter(function (e) {
+                            return !description.fe_excludeFields || !description.fe_excludeFields[e.name];
                         })
                     });
                 else
@@ -605,6 +609,12 @@ module.exports.getAvailableDesignatedFields = function (req, res) {
         availableDesignatedFields: [
             "objectTitle", "originalImageURL", "medThumbImageURL"
         ]
+    });
+};
+
+module.exports.getAvailableMatchFns = function (req, res) {
+    return res.json({
+        availableMatchFns: Object.keys(processing.MatchFns)
     });
 };
 

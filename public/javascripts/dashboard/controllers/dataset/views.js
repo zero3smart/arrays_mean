@@ -151,23 +151,22 @@ angular.module('arraysApp')
 
                     if ($scope.otherAvailableDatasets.length == 0 && $scope.otherDatasetsloaded==false) {
 
-                             DatasetService.getDatasetsWithQuery({_team:team._id})
-                                .then(function(all) {     
-                                    $scope.otherDatasetsloaded = true;
-                                    for (var i = 0; i < all.length; i++) {
-                                        if (all[i].title !== dataset.title) {
-                                            var mappingPkey = getPkeyFromDatasource(all[i].title,
-                                                all[i].importRevision);
-                                            $scope.otherAvailableDatasets.push({displayAs:all[i].title,mappingPkey:
-                                            mappingPkey});
-                                        }
+                        DatasetService.getDatasetsWithQuery({_team: team._id})
+                            .then(function (all) {
+                                $scope.otherDatasetsloaded = true;
+                                for (var i = 0; i < all.length; i++) {
+                                    if (all[i].title !== dataset.title) {
+                                        var mappingPkey = getPkeyFromDatasource(all[i].title,
+                                            all[i].importRevision);
+                                        $scope.otherAvailableDatasets.push({
+                                            displayAs: all[i].title, mappingPkey: mappingPkey
+                                        });
                                     }
-                                })
+                                }
+                            })
 
                     }
-                
-
-                }
+                };
 
                 $scope.loadDatasetColumnsByPkey = function(pKey) {
 

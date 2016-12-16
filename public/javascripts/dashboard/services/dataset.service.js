@@ -168,6 +168,19 @@
             return deferred.promise;
         };
 
+        var getAvailableMatchFns = function() {
+            var deferred = $q.defer();
+            $http.get('api/dataset/getAvailableMatchFns')
+                .success(function(data) {
+                    if (!data.error && data.availableMatchFns)
+                        return deferred.resolve(data.availableMatchFns);
+                    else
+                        return deferred.reject(data.error);
+                })
+                .error(deferred.reject);
+            return deferred.promise;
+        };
+
         var getDatasetsWithQuery = function(query) {
             var deferred = $q.defer();
             $http.post('api/dataset/getDatasetsWithQuery',query)
@@ -204,6 +217,7 @@
             publish: publish,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
             getAvailableDesignatedFields: getAvailableDesignatedFields,
+            getAvailableMatchFns: getAvailableMatchFns,
             getDatasetsWithQuery: getDatasetsWithQuery,
             getMappingDatasourceCols: getMappingDatasourceCols,
             initializeToImport: initializeToImport,
