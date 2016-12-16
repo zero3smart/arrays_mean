@@ -71,6 +71,8 @@ module.exports.get = function (req, res) {
                             return res.status(401).send({error: 'unauthorized'});
                         }
 
+                        // console.log(user);
+
                         if (user.isSuperAdmin()) {
                             role = 'superAdmin';
                         } else if (user.defaultLoginTeam.admin && user.defaultLoginTeam.admin == userId) {
@@ -82,7 +84,6 @@ module.exports.get = function (req, res) {
                             } else {
                                 role = 'viewer';
                             }
-
                         }
                         done();
 
@@ -271,6 +272,9 @@ module.exports.save = function(req, res) {
         user._editors = req.body._editors;
         user._viewers = req.body._viewers;
         user._team = req.body._team;
+        if (req.body.defaultLoginTeam) {
+            user.defaultLoginTeam = req.body.defaultLoginTeam;
+        }
         user.save(function (err, savedUser) {
             if (err)
                 res.send(err);

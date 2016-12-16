@@ -24,24 +24,23 @@
 
                     var userData = result.data;
                     if (userData) {
+
                         isLoggedIn = true;  
                         $window.sessionStorage.setItem('user', JSON.stringify(userData));
                         $window.sessionStorage.setItem('team', JSON.stringify(userData.defaultLoginTeam));
             
-
                         if (userData.role == "superAdmin") {
                             Team.query()
                             .$promise.then(function(allTeams) {
-
                                  $window.sessionStorage.setItem('teams', JSON.stringify(allTeams));
                                  cb({success:true})
                             })
-                        } else if (userData.role == 'editor' || userData.role == 'admin') {
+                        } else {
+
+    
                             $window.sessionStorage.setItem('teams', JSON.stringify(userData._team));
                             cb({success:true})
-                        } else {
-                            cb({success:true})
-                        }
+                        } 
                         
                     } else {
                         cb({success:false})
@@ -58,7 +57,6 @@
         var ensureLogin = function () {
 
             var deferred = $q.defer();
-
             if (isLoggedIn && currentUser() != null) {
                 deferred.resolve();
             } else {
@@ -114,6 +112,36 @@
                         .then(function(response) {
                             var cu = currentUser();
                             cu.defaultLoginTeam = teams[0];
+                            if (cu.role !== 'superAdmin') {
+                                if (cu.defaultLoginTeam.admin == cu._id) {
+                                    cu.role = 'admin';
+                                } else {
+                                    if (cu.role == 'admin' || cu.role == 'viewer') {
+                                        for (var i = 0 ; i < cu._editors.length; i++) {
+                                            if (cu.defaultLoginTeam.datasourceDescriptions.indexOf(cu._editors[i])>=0) {
+                                                cu.role = 'editor';
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (cu.role=='admin' || cu.role == 'editor') {
+
+                                        for (var i = 0 ; i < cu._editors.length; i++) {
+
+                                            if (cu.defaultLoginTeam.datasourceDescriptions.indexOf(cu._editors[i])>=0) {
+                                                break;
+                                            }
+                                        }
+                                        if (i >= cu._editors.length) {
+                                            cu.role = 'viewer';
+                                        }
+
+                                    }
+
+                                }
+                            }
+
+                            // console.log(cu);
                             $window.sessionStorage.setItem('user', JSON.stringify(cu));
                             deferred.resolve();
                         },function() {
@@ -157,14 +185,12 @@
         var logout = function () {
             $http.get('/auth/logout')
                 .then(function (response) {
-                    console.log(response);
                     if (response.status == 200) {
                         isLoggedIn = false;
                         $window.sessionStorage.removeItem('user');
                         $window.sessionStorage.removeItem('team');
                         $window.sessionStorage.removeItem('teams');
                         $window.location.href = '/';
-
                     }
 
                 })

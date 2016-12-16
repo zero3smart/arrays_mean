@@ -21,6 +21,7 @@ angular.module('arraysApp')
                     dataset.updatedBy = $scope.user._id;
 
 
+
                     DatasetService.save(dataset).then(function (id) {
                         $mdToast.show(
                             $mdToast.simple()
@@ -36,6 +37,9 @@ angular.module('arraysApp')
                         });
                         $scope.submitting = false;
                     }, function (error) {
+
+                        console.log(error);
+
                         $mdToast.show(
                             $mdToast.simple()
                                 .textContent(error)

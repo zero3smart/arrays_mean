@@ -59,6 +59,7 @@ angular
               AuthService.switchTeam(changeToTeam)
               .then(function() {
                   $scope.$parent.team = AuthService.currentTeam();
+                  $scope.$parent.user = AuthService.currentUser();
                  
 
 

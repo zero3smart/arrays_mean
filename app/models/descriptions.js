@@ -15,7 +15,7 @@ var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 //
 var DatasourceDescription_scheme = Schema({
-    uid: {type: String,unique: true},
+    uid: String,
     importRevision: {type: Number, integer: true, default: 1},
     schema_id: {type: Schema.Types.ObjectId, ref: 'DatasourceDescription'},
     banner: String,

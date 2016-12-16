@@ -6,6 +6,7 @@ angular
             $scope.users = users;
 
 
+
             $scope.selectedUser = null;
 
             $scope.select = function(currentUser, user) {

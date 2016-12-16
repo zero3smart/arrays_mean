@@ -52,7 +52,7 @@ angular
 
                 var confirm = $mdDialog.confirm()
                         .title("Are you sure to make this user the team's admin ?")
-                        .textContent('Admin role would be transfered and the admin user will be deleted.')
+                        .textContent('Admin role would be transfered and the admin user will no longer be on the team.')
                         .targetEvent(event)
                         .ok('Yes')
                         .cancel('No');
@@ -63,12 +63,17 @@ angular
                             if (!res.error) {
                                 AuthService.reload(function(data) {
                                     if (data.success) {
+                                        $scope.$parent.team = AuthService.currentTeam();
+
+                                        $scope.$parent.users = User.getAll({teamId: $scope.$parent.team._id});
+
                                         $mdToast.show(
                                             $mdToast.simple()
                                                 .textContent("Admin transfer successfully!")
                                                 .position('top right')
                                                 .hideDelay(3000)
                                         );
+
 
                                     } else {
                                          $mdToast.show(
@@ -125,9 +130,11 @@ angular
 
                 User.search(queryParams)
                     .$promise.then(function(data) {
+
+
                     if (data.length > 0) {
 
-                        if (data[0]._team.indexOf($scope.team) >= 0 ) {
+                        if (data[0]._team.indexOf($scope.team._id) >= 0 ) {
                             $scope.vm.userForm["email"].$setValidity("unique",false) 
                         } else {
 
@@ -140,17 +147,15 @@ angular
                                 .cancel('No');
                             $mdDialog.show(confirm).then(function () {
                                 $scope.selectedUser = data[0];
-
-                                
                                 bindUserRolesToSelectedUser();
+
+                                  if (!$scope.selectedUser.defaultLoginTeam) {
+                                    $scope.selectedUser.defaultLoginTeam = $scope.team._id;
+                                 }
 
 
                                 $scope.selectedUser.$save(function(savedUser) {
-
-                                    console.log(savedUser);
-
                                     if (savedUser) {
-
                                          $mdToast.show(
                                             $mdToast.simple()
                                                 .textContent("User Role saved successfully!")
@@ -194,15 +199,13 @@ angular
             var bindUserRolesToSelectedUser = function() {
                 
 
-                if (TeamIdExist) {
+                if (TeamIdExist()) {
                     $scope.selectedUser._editors = [];
                     $scope.selectedUser._viewers = [];
 
                 } else {
                      $scope.selectedUser._team.push($scope.team._id);
                 }
-
-
 
                 for (var datasetId in $scope.userRoles) {
                     var role = $scope.userRoles[datasetId];
@@ -218,13 +221,17 @@ angular
             }
 
             var TeamIdExist  = function() {
+
+
                 for (var i = 0; i < $scope.selectedUser._team.length; i++) {
                     if (typeof $scope.selectedUser._team[i] == 'string') {
                         if ($scope.selectedUser._team[i] == $scope.team._id) {
+
                             return true;
                         }
                     } else if (typeof $scope.selectedUser._team[i] == 'object') {
                         if ($scope.selectedUser._team[i]._id == $scope.team._id) {
+             
                             return true;
                         }
                     }

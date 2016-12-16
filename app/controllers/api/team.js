@@ -123,7 +123,7 @@ module.exports.switchAdmin = function(req,res) {
         var team;
         var oldAdmin;
 
-        //find the newAdmin
+        //find the oldAdmin
         batch.push(function(done) {
             User.findById(req.user)
             .populate('defaultLoginTeam')
@@ -135,16 +135,61 @@ module.exports.switchAdmin = function(req,res) {
             })
         })
 
+        //pull new Admin's editor and viewer related to the team
+        batch.push(function(done) {
+            User.findById(newAdminId)
+            .populate([{path:'_editors',select:'_team'}, {path:'_viewers',select: '_team'}])
+            .exec(function(err,newAdmin) {
+                if (err) done(err);
+                else {
+                    newAdmin._editors = newAdmin._editors.filter(function(value) {
+                        return value._team == team._id;
+                    })
+                    newAdmin._viewers = newAdmin._viewers.filter(function(value) {
+                        return value._team == team._id;
+                    })
+                    newAdmin.markModified('_editors');
+                    newAdmin.markModified('_viewers');
+                    newAdmin.save(done);
+                }
+            })
+        })
+
+
+        //pull old Admin's editor and viewer role related to the team
+        batch.push(function(done) {
+             User.findById(oldAdmin)
+            .populate([{path:'_editors',select:'_team'}, {path:'_viewers',select: '_team'}])
+            .exec(function(err,oldAdmin) {
+                if (err) done(err);
+                else {
+                    oldAdmin._editors = oldAdmin._editors.filter(function(value) {
+                        return value._team == team._id;
+                    })
+                    oldAdmin._viewers = oldAdmin._viewers.filter(function(value) {
+                        return value._team == team._id;
+                    })
+                    oldAdmin.markModified('_editors');
+                    oldAdmin.markModified('_viewers');
+                    var index = oldAdmin._team.indexOf(team._id);
+                    oldAdmin._team.splice(index,1);
+                    if (oldAdmin.defaultLoginTeam == team._id) {
+                        oldAdmin.defaultLoginTeam = undefined;
+                    }
+                    oldAdmin.markModified('_team');
+                    oldAdmin.markModified('defaultLoginTeam');
+                    oldAdmin.save(done);
+
+                }
+            })
+        })
+
+
         //set this newAdmin to the team
         batch.push(function(done) {
             Team.findOneAndUpdate({_id:team._id},{admin:newAdminId},done);
         })
-
-        //set old admin team to null
-        batch.push(function(done) {
-            User.findOneAndUpdate({_id:oldAdmin},{ $pull: {_team: team._id}, $unset: {defaultLoginTeam:1}},done);
-        })
-
+      
         batch.end(function(err) {
             if (err) {
                 res.status(500).send({error:err.message});

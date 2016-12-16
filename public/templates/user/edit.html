@@ -33,7 +33,7 @@
                     </td>
                     <td>
                         <md-select ng-hide="team.admin==selectedUser._id" aria-label="userRoles" name="role" required ng-model="userRoles[dataset._id]">
-                            <md-option ng-repeat="role in availableUserRoles " value="{{role.value}}" ">
+                            <md-option ng-repeat="role in availableUserRoles " value="{{role.value}}">
                                 {{role.name}}
                             </md-option>
                         </md-select>
@@ -51,7 +51,7 @@
 
     <div layout="row" layout-align="end center">
 
-        <md-button ng-if="selectedUser._id !== team.admin && userId" class="md-raised" type="button" ng-click="makeTeamAdmin()">
+        <md-button ng-if="selectedUser._id !== team.admin && userId && selectedUser.activated==true" class="md-raised" type="button" ng-click="makeTeamAdmin()">
             <span class="fa fa-user"></span><span class="btn-label">Make Team Admin</span>
         </md-button>
 

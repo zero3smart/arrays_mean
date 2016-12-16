@@ -59,7 +59,7 @@ function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
         .exec(function (err, teams) {
             if (err) fn(err);
 
-            console.log(teams);
+            // console.log(teams);
             fn(null, teams);
         })
 }
