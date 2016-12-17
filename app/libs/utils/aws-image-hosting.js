@@ -156,7 +156,7 @@ module.exports.hostImageLocatedAtRemoteURL = function(folder,resize,remoteImageS
     var dotPlusExtname = _dotPlusExtnameSansQueryParamsFrom(remoteImageSourceURL);
     var finalizedFilenameWithExt = destinationFilenameSansExt + dotPlusExtname; // construct after extracting ext from image src url
     //
-    var hostedFilePublicUrl = _hostedPublicUrlFrom(folder,finalizedFilenameWithExt);
+    var hostedFilePublicUrl = _appendKeyToBucket(folder,finalizedFilenameWithExt);
     //
     hostingOpts = hostingOpts || {};
     if (typeof hostingOpts.overwrite === 'undefined') {
