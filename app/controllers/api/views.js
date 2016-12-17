@@ -4,15 +4,39 @@ var User = require('../../models/users');
 
 
 module.exports.getAll = function (req, res) {
-	View.find({})
-	.select('_id name displayAs icon')
-	.exec(function(err,views) {
-		if (err) {
-			res.status(500).send({error: err.message});
-		} else {
-			res.json(views);
-		}
-	})
+	if (!req.user) {
+		res.status(401).send('unauthorized');
+	} else {
+		User.findById(req.user)
+		.populate('defaultLoginTeam')
+		.exec(function(err,user) {
+			if (err) {
+				res.status(500).send({error: err.message});
+			} else {
+				if (user.defaultLoginTeam.customViews && user.defaultLoginTeam.customViews.length > 0) {
+					View.find({_id: {$in: user.defaultLoginTeam.customViews}})
+					.select('_id name displayAs')
+					.exec(function(err,views) {
+						if (err) {
+							res.status(500).send({error: err.message});
+						} else {
+							res.json(views);
+						}
+					})
+				} else {
+					View.find({})
+						.select('_id name displayAs icon')
+						.exec(function(err,views) {
+							if (err) {
+								res.status(500).send({error: err.message});
+							} else {
+								res.json(views);
+							}
+						})
+				}
+			}
+		})
+	}
 };
 
 

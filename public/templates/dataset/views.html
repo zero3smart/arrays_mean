@@ -1,5 +1,5 @@
 <md-content layout-padding ng-if="dataset.uid">
-    <form name="vm.viewsForm" ng-submit="submitForm(!vm.viewsForm.$invalid && vm.viewsForm.$dirty)">
+    <form name="vm.viewsForm" ng-submit="submitForm(!vm.viewsForm.$invalid)">
         <md-input-container class="md-block" flex-gt-sm>
             <label>Default View</label>
             <md-select required name="default"
@@ -40,8 +40,8 @@
                 <i class="glyphicon glyphicon-refresh"></i> Reset
             </md-button>
 
-            <md-button class="md-raised" type="submit" ng-disabled="vm.viewsForm.$invalid || !vm.viewsForm.$dirty">
-                <i class="glyphicon glyphicon-ok"></i> Save
+            <md-button class="md-raised" type="submit" ng-disabled="vm.viewsForm.$invalid">
+                <i class="glyphicon glyphicon-ok"></i> Next
             </md-button>
         </div>
     </form>

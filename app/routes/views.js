@@ -53,19 +53,17 @@ View.getAllCustomViews(function(err,customViews) {
 
 
             router.get('/:source_key/getData', ensureAuthorized,function(req,res,next) {
-                console.log(req.subdomains);
+
                 var team = req.subdomains[0];
                 var controller = require('../../user/' + team + '/src/' + view.name);
 
-                console.log("inside getData");
-
-                // controller.BindData(req,function(err,bindData) {
-                //     if (err) {
-                //          winston.error("❌  Error getting bind data for custom view %s , err: %s" , view.name,err);
-                //         return res.status(500).send(err.response || 'Internal Server Error');
-                //     }
-                //     res.json(bindData);
-                // })
+                controller.BindData(req,function(err,bindData) {
+                    if (err) {
+                         winston.error("❌  Error getting bind data for custom view %s , err: %s" , view.name,err);
+                        return res.status(500).send(err.response || 'Internal Server Error');
+                    }
+                    res.json(bindData);
+                })
             })
         })
     }

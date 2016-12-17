@@ -100,7 +100,7 @@ angular.module('arraysApp')
                     if (!$scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName) $scope.dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName = {};
 
                     if (!$scope.dataset.fe_filters.valuesToExcludeByOriginalKey) $scope.dataset.fe_filters.valuesToExcludeByOriginalKey = {};
-                    if (!$scope.dataset.fe_filters.valuesToExcludeByOriginalKey[name])
+                    if (!$scope.dataset.fe_filters.valuesToExcludeByOriginalKey[name] && $scope.customFieldIndex == undefined)
                         $scope.dataset.fe_filters.valuesToExcludeByOriginalKey[name] = [];
                     if (!$scope.dataset.fe_filters.valuesToExcludeByOriginalKey._all)
                         $scope.dataset.fe_filters.valuesToExcludeByOriginalKey._all = [];
@@ -1029,6 +1029,8 @@ angular.module('arraysApp')
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
                     console.log(finalizedDataset);
                     delete finalizedDataset.columns;
+
+                    // console.log(finalizedDataset)
 
                     queue.push(DatasetService.save(finalizedDataset));
 

@@ -63,7 +63,8 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
     var filepath;
 
     var readFromlocal = false;
- 
+    
+    //To BE modified to match the new version
     if (process.env.READ_FILE_FROM && process.env.READ_FILE_FROM == 'local') {
          var path_prefix = __dirname + "/../../user/"  + description._team.subdomain + '/data';
          filepath = CSV_resources_path_prefix + "/" + importUID;
@@ -91,9 +92,9 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
         // column names
         if (lineNr == 1) {
             for (var i = 0; i < columnNamesAndThenRowObject.length; i++) {
-                 // if (typeof csvDescription.customFieldNameOperation == 'undefined' || csvDescription.customFieldNameOperation == null) {
+                 if (description._team.customViews.length == 0) {
                     columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g, "_");
-                // }
+                }
             }
 
             columnNames = columnNamesAndThenRowObject;
@@ -111,15 +112,21 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
                 return;
             }
             var rowObject = {};
+           
 
 
             for (var columnIndex = 0; columnIndex < columnNames.length; columnIndex++) {
                 var columnName = "" + columnNames[columnIndex];
+                 var originalColumnName = columnName;
 
-                /* if (typeof csvDescription.customFieldNameOperation != 'undefined') { // custom convert field name to store
-                    var custom_import = require( __dirname + "/../../user/" + csvDescription._team.tid + "/import-utils");
-                    columnName = custom_import[csvDescription.customFieldNameOperation](columnName);
-                } */
+                 if (description._team.customViews.length > 0) { // custom convert field name to store
+                    
+                    columnName = datatypes.stripName(columnName);
+
+                    if(description.fn_new_rowPrimaryKeyFromRowObject == columnName) {
+                        description.fn_new_rowPrimaryKeyFromRowObject = columnName;
+                    }
+                } 
 
                 columnName = columnName.replace(/\./g, "_");
 
@@ -150,7 +157,11 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
 
 
                 if (raw_rowObjects_coercionScheme != null && typeof raw_rowObjects_coercionScheme !== 'undefined') {
-                    var coercionSchemeForKey = raw_rowObjects_coercionScheme[columnName];
+
+
+                    var coercionSchemeForKey = raw_rowObjects_coercionScheme[originalColumnName];
+
+                    
                     if (coercionSchemeForKey != null && typeof coercionSchemeForKey !== 'undefined') {
 
                         if (coercionSchemeForKey.operation) {

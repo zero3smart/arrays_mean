@@ -36,7 +36,6 @@ var DatasourceDescription_scheme = Schema({
     fe_displayTitleOverrides: Object,
     fe_designatedFields: Object,
     fe_fieldDisplayOrder: Array,
-
     fe_filters: {
         excludeFields: Array,
         fieldsSortableByInteger: Array,

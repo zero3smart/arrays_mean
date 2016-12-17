@@ -5,10 +5,11 @@ angular.module('arraysApp')
 
             $scope.$parent.$parent.views = views;
 
+  
             $scope.$parent.$parent.currentNavItem = 'Views';
 
             if (!$scope.$parent.$parent.dataset.fe_views) {
-                $scope.$parent.$parent.dataset.fe_views = {};
+                 $scope.$parent.$parent.dataset.fe_views = {};
                  $scope.$parent.$parent.dataset.fe_views.views = {};
             }
 
@@ -27,9 +28,6 @@ angular.module('arraysApp')
 
 
 
-
-
-
             $scope.data = {};
 
             $scope.data.default_view = dataset.fe_views.default_view;
@@ -38,36 +36,39 @@ angular.module('arraysApp')
 
             	viewResource.get({id:id},function(data) {
 
+                    if ($scope.team.customViews.length <= 0) {
 
-            		$mdDialog.show({
-	                    controller: ViewDialogController,
-	                    templateUrl: 'templates/dataset/views.view.html',
-	                    parent: angular.element(document.body),
-	                    targetEvent: evt,
-	                    clickOutsideToClose: true,
-	                    fullscreen: true, // Only for -xs, -sm breakpoints.
-	                    locals: {
-	                        viewName: data.name,
-	                        viewDisplayName: data.displayAs,
-	                        dataset: $scope.$parent.$parent.dataset,
-	                        viewSetting: data.settings,
-                            colsAvailable: colsAvailable,
-                            team: $scope.$parent.$parent.team,
-                            default_view: $scope.data.default_view
-	                    }
-	                })
-	                    .then(function (savedDataset) {
-	                        $scope.$parent.$parent.dataset = savedDataset;
+                        $mdDialog.show({
+                            controller: ViewDialogController,
+                            templateUrl: 'templates/dataset/views.view.html',
+                            parent: angular.element(document.body),
+                            targetEvent: evt,
+                            clickOutsideToClose: true,
+                            fullscreen: true, // Only for -xs, -sm breakpoints.
+                            locals: {
+                                viewName: data.name,
+                                viewDisplayName: data.displayAs,
+                                dataset: $scope.$parent.$parent.dataset,
+                                viewSetting: data.settings,
+                                colsAvailable: colsAvailable,
+                                team: $scope.$parent.$parent.team,
+                                default_view: $scope.data.default_view
+                            }
+                        })
+                            .then(function (savedDataset) {
+                                $scope.$parent.$parent.dataset = savedDataset;
 
-                      
-                            $scope.data.default_view = savedDataset.fe_views.default_view;
+                          
+                                $scope.data.default_view = savedDataset.fe_views.default_view;
 
 
-                            $scope.vm.viewsForm.$setDirty();
-	                    }, function () {
-	                        console.log('You cancelled the dialog.');
-	                    });
+                                $scope.vm.viewsForm.$setDirty();
+                            }, function () {
+                                console.log('You cancelled the dialog.');
+                            });
 
+
+                        }
             	})
             };
 

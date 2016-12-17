@@ -126,6 +126,11 @@ module.exports.remove = function (req, res) {
         })
     });
 
+    //Pull from team's datasourceDescriptions
+    batch.push(function(done) {
+        Team.update({_id:description._team},{$pull:{datasourceDescriptions:description._id}},done);
+    })
+
     // Remove datasource description
     batch.push(function (done) {
         description.remove(done);
@@ -154,6 +159,8 @@ module.exports.remove = function (req, res) {
 
         });
     });
+    
+    //ToDo: delete this dataset folder in s3
 
     batch.push(function(done) {
         User.update({$or: [{_editors:req.body.id},{_viewers: req.body.id}]},{$pull: {_editors: req.body.id,_viewers:req.body.id}},done);

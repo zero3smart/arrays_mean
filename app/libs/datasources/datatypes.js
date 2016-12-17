@@ -17,7 +17,14 @@ module.exports.DataSource_formats =
 
 //
 //
+module.exports.stripName = function(cell) {
+     
+     return (cell || '').toLowerCase()
+        .replace(/[^a-z0-9_ ]/g, '')
+        .trim()
+        .replace(/ /g, '_');
 
+}
 
 module.exports.displayNumberWithComma = function(number) {
     if (typeof number !== 'object') {

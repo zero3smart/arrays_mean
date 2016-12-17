@@ -9,6 +9,8 @@
     <md-button ng-click="navigate('dashboard.dataset.data')" name="Data" aria-disabled="true" ng-disabled="!dataset.uid" ng-class="{active:currentStep == 'dashboard.dataset.data'}">
         <span class="glyphicon glyphicon-edit" ng-class="{'ready':(dataset.raw_rowObjects_coercionScheme)}"></span><span class="nav-item-label btn-label">3. Format Data</span>
     </md-button>
+
+
     <md-button ng-click="navigate('dashboard.dataset.views')" name="Views" aria-disabled="true" ng-disabled="!dataset.fn_new_rowPrimaryKeyFromRowObject" ng-class="{active:currentStep == 'dashboard.dataset.views'}">
         <span class="glyphicon glyphicon-equalizer" ng-class="{'ready':dataset.fe_views.views}"></span><span class="nav-item-label btn-label">4. Format Views</span>
     </md-button>
