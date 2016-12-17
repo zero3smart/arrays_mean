@@ -17,6 +17,8 @@
         <md-input-container ng-if="team.customViews.length<=0" class="md-block" flex-gt-sm>
             <label>ObjectTitle</label>
             <md-select ng-if="team.customViews.length<=0" required name="ObjectTitle" aria-label="primaryKey"
+
+
                        ng-model="data.fe_designatedFields.objectTitle"
                        >
                 <md-option ng-repeat="column in dataset.columns track by column.name" value="{{column.name}}">

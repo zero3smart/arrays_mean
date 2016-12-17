@@ -1,21 +1,25 @@
 <md-nav-bar class="dataset-breadcrumb" md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links" ng-if="$state.is('dashboard.dataset') == false">
-    <md-button ng-click="navigate('dashboard.dataset.settings')" name="Settings" ng-class="{active:currentStep == 'dashboard.dataset.settings'}">
-        <span class="glyphicon glyphicon-cog" ng-class="{'ready':dataset.title}"></span><span class="nav-item-label btn-label">1. General Settings</span>
+    <md-button ng-click="navigate('dashboard.dataset.settings')" name="Settings" ng-class="{active:currentStep == 'dashboard.dataset.settings'}" md-no-ink>
+        <md-icon ng-class="{'ready': dataset.title}">&#xE835;</md-icon>
+        <span class="nav-item-label btn-label">1. General Settings</span>
     </md-button>
 
-    <md-button name="Upload" aria-disabled="true" ng-click="navigate('dashboard.dataset.upload')" ng-disabled="!dataset._id" ng-class="{active:currentStep == 'dashboard.dataset.upload'}">
-        <span class="glyphicon glyphicon-cloud-upload" ng-class="{'ready':dataset.uid}"></span><span class="nav-item-label btn-label">2. Upload Data</span>
+    <md-button name="Upload" aria-disabled="true" ng-click="navigate('dashboard.dataset.upload')" ng-disabled="!dataset._id" ng-class="{active:currentStep == 'dashboard.dataset.upload'}" md-no-ink>
+        <md-icon ng-class="{'ready': dataset.uid}">&#xE835;</md-icon>
+        <span class="nav-item-label btn-label">2. Upload Data</span>
     </md-button>
-    <md-button ng-click="navigate('dashboard.dataset.data')" name="Data" aria-disabled="true" ng-disabled="!dataset.uid" ng-class="{active:currentStep == 'dashboard.dataset.data'}">
-        <span class="glyphicon glyphicon-edit" ng-class="{'ready':(dataset.raw_rowObjects_coercionScheme)}"></span><span class="nav-item-label btn-label">3. Format Data</span>
+    <md-button ng-click="navigate('dashboard.dataset.data')" name="Data" aria-disabled="true" ng-disabled="!dataset.uid" ng-class="{active:currentStep == 'dashboard.dataset.data'}" md-no-ink>
+        <md-icon ng-class="{'ready': dataset.raw_rowObjects_coercionScheme}">&#xE835;</md-icon>
+        <span class="nav-item-label btn-label">3. Format Data</span>
     </md-button>
 
+    <md-button ng-click="navigate('dashboard.dataset.views')" name="Views" aria-disabled="true" ng-disabled="!dataset.fn_new_rowPrimaryKeyFromRowObject" ng-class="{active:currentStep == 'dashboard.dataset.views'}" md-no-ink>
+        <md-icon ng-class="{'ready': dataset.fe_views.views}">&#xE835;</md-icon>
+        <span class="nav-item-label btn-label">4. Format Views</span>
 
-    <md-button ng-click="navigate('dashboard.dataset.views')" name="Views" aria-disabled="true" ng-disabled="!dataset.fn_new_rowPrimaryKeyFromRowObject" ng-class="{active:currentStep == 'dashboard.dataset.views'}">
-        <span class="glyphicon glyphicon-equalizer" ng-class="{'ready':dataset.fe_views.views}"></span><span class="nav-item-label btn-label">4. Format Views</span>
     </md-button>
-    <md-button ng-click="navigate('dashboard.dataset.done')" name="Done" aria-disabled="true" ng-disabled="!dataset.fe_views.default_view" ng-class="{active:currentStep == 'dashboard.dataset.done'}">
-        <span class="glyphicon" ng-class="(dataset.fe_views.views && dataset.imported) ? 'glyphicon-check ready' : 'glyphicon-unchecked'"></span><span class="nav-item-label btn-label">5. Done!</span>
+    <md-button ng-click="navigate('dashboard.dataset.done')" name="Done" aria-disabled="true" ng-disabled="!dataset.fe_views.default_view" ng-class="{active:currentStep == 'dashboard.dataset.done'}" md-no-ink>
+        <md-icon ng-class="{'ready': (dataset.fe_views.views && dataset.imported)}">&#xE835;</md-icon>
+        <span class="nav-item-label btn-label">5. Done!</span>
     </md-button>
 </md-nav-bar>
-

@@ -28,6 +28,13 @@
 
     <hr>
 
+    <li ng-if="user.role=='admin' || user.role=='superAdmin'">
+        <!-- {{user}}<br> -->
+        {{team.subdomain}}<br>
+        <a href="{{subdomain}}" role="button"> View My Website</a>
+        <!-- <a ui-sref="dashboard.user.list" role="button"> View My Website</a> -->
+    </li>
+
 
 
 

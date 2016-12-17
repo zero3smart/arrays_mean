@@ -885,10 +885,15 @@ angular.module('arraysApp')
                 };
 
                 $scope.save = function () {
+                    $scope.dataset._otherSources = [];
                     $scope.data.foreignDataset.forEach(function(source, index) {
                         $scope.dataset.relationshipFields[index].by.ofOtherRawSrcUID = source.uid;
                         $scope.dataset.relationshipFields[index].by.andOtherRawSrcImportRevision = source.importRevision;
+                        if ($scope.dataset._otherSources.indexOf(source._id) == -1)
+                            $scope.dataset._otherSources.push(source._id);
                     });
+                    console.log($scope.dataset._otherSources);
+
                     $mdDialog.hide($scope.dataset);
                 };
             }
@@ -997,7 +1002,7 @@ angular.module('arraysApp')
 
 
             $scope.submitForm = function (isValid) {
-                //Save Primary Key UI setting iof the primary key
+                //Save settings primary key and object title as set in the ui
                 $scope.saveRequiredFields();
 
                 if (isValid) {
