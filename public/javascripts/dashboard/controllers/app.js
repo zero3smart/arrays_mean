@@ -1,12 +1,15 @@
 angular
     .module('arraysApp')
-    .controller('AdminCtrl', ['$scope', '$state', 'AuthService', '$window',
-        function ($scope, $state, AuthService, $window) {
+    .controller('AdminCtrl', ['$scope', '$state', 'AuthService', '$window', '$location',
+        function ($scope, $state, AuthService, $window, $location) {
 
             $scope.user = AuthService.currentUser();
             $scope.team = AuthService.currentTeam();
+            console.log($scope.team);
 
             $scope.teams = AuthService.allTeams();
+
+            $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $location.host() + ":" + $location.port();
 
     
             if (!isSmartDevice($window)) {
