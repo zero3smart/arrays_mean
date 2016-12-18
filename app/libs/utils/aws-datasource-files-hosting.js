@@ -28,7 +28,7 @@ module.exports.uploadDataSource = _uploadDataSource;
 
 
 function _fileNameToUpload(datasourceDescription) {
-
+    
     var fileName = datasourceDescription.uid;
     if (datasourceDescription.dataset_uid)
         fileName += '__' + datasourceDescription.dataset_uid;

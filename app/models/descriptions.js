@@ -30,6 +30,8 @@ var DatasourceDescription_scheme = Schema({
     fe_visible: {type: Boolean, default: true},
     fe_listed: {type: Boolean, default: true},
 
+    useCustomView: {type: Boolean, default: false},
+    
     fn_new_rowPrimaryKeyFromRowObject: String,
     raw_rowObjects_coercionScheme: Object,
     fe_excludeFields: Object,
@@ -125,6 +127,7 @@ var _consolidate_descriptions_hasSchema = function (description) {
             desc[attrname] = schemaDesc[attrname]
         }
     }
+
     return desc;
 };
 

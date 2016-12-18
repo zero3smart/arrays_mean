@@ -11,7 +11,7 @@ View.getAllBuiltInViews(function(err,defaultViews) {
          winston.error("❌  Error getting default views to bind for routes: ", err);
          return;
     } else {
-        defaultViews.map(function(view) {
+        defaultViews.forEach(function(view) {
             router.get('/:source_key/' + view.name, ensureAuthorized, function(req,res,next) {
                 var source_key = req.params.source_key;
                 if (source_key == null || typeof source_key == 'undefined' || source_key == "") {

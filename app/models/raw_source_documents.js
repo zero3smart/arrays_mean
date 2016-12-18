@@ -50,7 +50,7 @@ module.exports.NewCustomPrimaryKeyStringWithComponents = function (dataSource_ui
     return dataSource_uid + "-r" + dataSource_importRevisionNumber;
 };
 
-module.exports.UpsertWithOnePersistableObjectTemplate = function (persistableObjectTemplate, fn) {
+module.exports.UpsertWithOnePersistableObjectTemplate = function (append,persistableObjectTemplate, fn) {
     winston.log("📡  [" + (new Date()).toString() + "] Going to save source document.");
 
     var updatedDocument = {};
@@ -59,8 +59,10 @@ module.exports.UpsertWithOnePersistableObjectTemplate = function (persistableObj
     if (persistableObjectTemplate.revisionNumber) updatedDocument['revisionNumber'] = persistableObjectTemplate.revisionNumber;
     if (persistableObjectTemplate.importUID) updatedDocument['importUID'] = persistableObjectTemplate.importUID;
     var numberOfRowsUpdateQuery = {};
-    if (persistableObjectTemplate.numberOfRows)  {
-        numberOfRowsUpdateQuery = {numberOfRows: persistableObjectTemplate.numberOfRows}
+    if (persistableObjectTemplate.numberOfRows && !append )  {
+        updatedDocument["numberOfRows"] =  persistableObjectTemplate.numberOfRows
+    } else if (persistableObjectTemplate.numberOfRows && append) {
+         numberOfRowsUpdateQuery = {numberOfRows: persistableObjectTemplate.numberOfRows}
     }
     updatedDocument['dateOfLastImport'] = new Date();
 
@@ -68,9 +70,19 @@ module.exports.UpsertWithOnePersistableObjectTemplate = function (persistableObj
     {
         primaryKey: persistableObjectTemplate.primaryKey
     };
-    RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {
-        $set: updatedDocument, $inc: numberOfRowsUpdateQuery
-    }, {
+
+    var query = {
+        $set: updatedDocument
+    } 
+
+
+    if (append) {
+        query = {
+             $set: updatedDocument, $inc: numberOfRowsUpdateQuery
+        }
+    }
+
+    RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, query, {
         upsert: true
     }, function (err, doc) {
         if (err) {

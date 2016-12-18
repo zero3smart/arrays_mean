@@ -5,7 +5,6 @@ angular
 
             $scope.user = AuthService.currentUser();
             $scope.team = AuthService.currentTeam();
-            console.log($scope.team);
 
             $scope.teams = AuthService.allTeams();
 
@@ -19,10 +18,6 @@ angular
             $scope.logout = function() {
                 AuthService.logout();
             };
-
-            // $scope.toggleSideMenu = function(evt) {
-            //     $scope.showSideMenu = !$scope.showSideMenu;
-            // };
 
             function isSmartDevice( $window )
             {

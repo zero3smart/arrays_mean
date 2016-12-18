@@ -721,10 +721,10 @@ module.exports.EnumerateProcessedDataset = function (dataSource_uid,
         var numberOfDocumentsFoundButNotYetProcessed = 0;
         var numDocs = 0;
         //
+
         var query = {};
         if (dataset_uid && typeof dataset_uid === 'string' && dataset_uid != '') {
             query = {pKey: {$regex: "^" + dataset_uid + "-"}};
-            query = {};
         }
         if (query_optl == null || typeof query_optl === 'undefined') {
             query = {};
@@ -732,8 +732,9 @@ module.exports.EnumerateProcessedDataset = function (dataSource_uid,
             for (var opt in query_optl) {
                 query[opt] = query_optl[opt];
             }
-            ;
         }
+
+        // console.log(query);
 
         nativeCollection_ofTheseProcessedRowObjects.find(query, {sort: {_id: 1}}, function (err, cursor) {
             if (err) { // No cursor yet so we do not call closeCursorAndReturnWithErr(err)
@@ -753,6 +754,7 @@ module.exports.EnumerateProcessedDataset = function (dataSource_uid,
             }
 
             cursor.each(function (err, doc) {
+                // console.log(doc);
                 if (hasErroredAndReturned == true) {
                     winston.warn("⚠️  Each called after hasErroredAndReturned.");
 

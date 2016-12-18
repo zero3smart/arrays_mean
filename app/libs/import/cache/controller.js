@@ -5,6 +5,7 @@ var winston = require('winston');
 
 
 var imported_data_preparation = require('../../datasources/imported_data_preparation')
+var data_types = require('../../datasources/datatypes');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var cache_keywords_controller = require('../cache/keywords_controller');
@@ -67,26 +68,39 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
             return;
         }
         var limitToNTopValues = 100;
+
+
      
         var filterKeys = Object.keys(sampleDoc.rowParams);
 
-        for (var key in dataSourceDescription.fe_excludeFields) {
-            if (dataSourceDescription.fe_excludeFields[key]) {
-                var index = filterKeys.indexOf(key);
+        if (dataSourceDescription.useCustomView) {
+
+            filterKeys = require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').filterKeys();
+
+        } else {
+            for (var key in dataSourceDescription.fe_excludeFields) {
+                if (dataSourceDescription.fe_excludeFields[key]) {
+
+                    var index = filterKeys.indexOf(key);
+                    if (index != -1) {
+                        filterKeys.splice(index, 1);
+                    }
+                }
+            }
+
+            for (var i = 0; i < dataSourceDescription.fe_filters.fieldsNotAvailable.length; i++) {
+                var field = dataSourceDescription.fe_filters.fieldsNotAvailable[i];
+                
+                var index = filterKeys.indexOf(field);
                 if (index != -1) {
                     filterKeys.splice(index, 1);
                 }
+                
             }
+
         }
 
-        for (var i = 0; i < dataSourceDescription.fe_filters.fieldsNotAvailable.length; i++) {
-            
-            var index = filterKeys.indexOf(dataSourceDescription.fe_filters.fieldsNotAvailable[i]);
-            if (index != -1) {
-                filterKeys.splice(index, 1);
-            }
-            
-        }
+        
 
 
         // var feVisible_filter_keys_length = feVisible_filter_keys.length;

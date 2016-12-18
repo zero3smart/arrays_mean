@@ -13,6 +13,8 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = angular.copy(dataset);
             $scope.additionalDatasources = angular.copy(additionalDatasources);
 
+    
+
             $scope.data = {};
 
             $scope.$parent.$parent.currentNavItem = 'Data';

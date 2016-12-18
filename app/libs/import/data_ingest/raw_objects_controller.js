@@ -65,14 +65,12 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
     var readFromlocal = false;
     
     //To BE modified to match the new version
-    if (process.env.READ_FILE_FROM && process.env.READ_FILE_FROM == 'local') {
-         var path_prefix = __dirname + "/../../user/"  + description._team.subdomain + '/data';
-         filepath = CSV_resources_path_prefix + "/" + importUID;
-         readFromlocal = true;
-    }
+    // if (process.env.READ_FILE_FROM && process.env.READ_FILE_FROM == 'local') {
+    //      var path_prefix = __dirname + "/../../user/"  + description._team.subdomain + '/data';
+    //      filepath = CSV_resources_path_prefix + "/" + importUID;
+    //      readFromlocal = true;
+    // }
 
-
-    //
     var raw_rowObjects_coercionScheme = description.raw_rowObjects_coercionScheme; // look up data type scheme here
     // var raw_rowObjects_mismatchScheme = description.raw_rowObjects_mismatchScheme;
 
@@ -91,10 +89,10 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
         // replace any dotted fields with underscores, e.g. comics.items to comics_items
         // column names
         if (lineNr == 1) {
+
             for (var i = 0; i < columnNamesAndThenRowObject.length; i++) {
-                 if (description._team.customViews.length == 0) {
-                    columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g, "_");
-                }
+                columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g, "_");
+                
             }
 
             columnNames = columnNamesAndThenRowObject;
@@ -117,16 +115,6 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
 
             for (var columnIndex = 0; columnIndex < columnNames.length; columnIndex++) {
                 var columnName = "" + columnNames[columnIndex];
-                 var originalColumnName = columnName;
-
-                 if (description._team.customViews.length > 0) { // custom convert field name to store
-                    
-                    columnName = datatypes.stripName(columnName);
-
-                    if(description.fn_new_rowPrimaryKeyFromRowObject == columnName) {
-                        description.fn_new_rowPrimaryKeyFromRowObject = columnName;
-                    }
-                } 
 
                 columnName = columnName.replace(/\./g, "_");
 
@@ -159,9 +147,9 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
                 if (raw_rowObjects_coercionScheme != null && typeof raw_rowObjects_coercionScheme !== 'undefined') {
 
 
-                    var coercionSchemeForKey = raw_rowObjects_coercionScheme[originalColumnName];
+                    var coercionSchemeForKey = raw_rowObjects_coercionScheme[columnName];
 
-                    
+        
                     if (coercionSchemeForKey != null && typeof coercionSchemeForKey !== 'undefined') {
 
                         if (coercionSchemeForKey.operation) {
@@ -185,8 +173,6 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
                 return;
             }
 
-    
-
             var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, lineNr - 2, rowObject);
             // winston.info("parsedObject " , parsedObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
@@ -202,21 +188,12 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
         }
     };
 
-    // Now read
-
-
-    var readStream;
-    if (readFromlocal == true) {
-        readStream = fs.createReadStream(filepath,{encoding:fileEncoding})
-    } else {
-        readStream = datasource_file_service.getDatasource(description).createReadStream();
-    }
+    var readStream = datasource_file_service.getDatasource(description).createReadStream();
 
     readStream = readStream.pipe(es.split())
         .pipe(es.mapSync(function (line) {
                 // pause the readstream
                 readStream.pause();
-         
 
                 lineNr += 1;
 
@@ -232,13 +209,11 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
 
                     parser(output[0]);
 
-
-
                     // process line here and call s.resume() when rdy
                     if (lineNr % 1000 == 0) {
                         winston.info("🔁  Parsing " + lineNr + " rows in \"" + title + "\"");
-
                         // Bulk for performance at volume
+
                         raw_row_objects.InsertManyPersistableObjectTemplates
                         (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function (err, record) {
                             if (err) {
@@ -272,12 +247,10 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
 
                     winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
                     var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
-
+                    var append = description.dataset_uid? true: false;
                     raw_source_documents.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
 
                 } else {
-
-
 
                     raw_row_objects.InsertManyPersistableObjectTemplates
                     (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function (err) {
@@ -291,7 +264,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
                         numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
 
                         var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
-
+                        var append = description.dataset_uid? true: false;
                         raw_source_documents.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
                     });
                 }

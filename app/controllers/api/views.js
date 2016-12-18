@@ -8,32 +8,19 @@ module.exports.getAll = function (req, res) {
 		res.status(401).send('unauthorized');
 	} else {
 		User.findById(req.user)
-		.populate('defaultLoginTeam')
 		.exec(function(err,user) {
 			if (err) {
 				res.status(500).send({error: err.message});
 			} else {
-				if (user.defaultLoginTeam.customViews && user.defaultLoginTeam.customViews.length > 0) {
-					View.find({_id: {$in: user.defaultLoginTeam.customViews}})
-					.select('_id name displayAs')
-					.exec(function(err,views) {
-						if (err) {
-							res.status(500).send({error: err.message});
-						} else {
-							res.json(views);
-						}
-					})
-				} else {
-					View.find({})
-						.select('_id name displayAs icon')
-						.exec(function(err,views) {
-							if (err) {
-								res.status(500).send({error: err.message});
-							} else {
-								res.json(views);
-							}
-						})
-				}
+				View.find({$or:[{_team:{$exists:false}}, {_team:user.defaultLoginTeam}]})
+				.select('_id name displayAs icon _team')
+				.exec(function(err,views) {
+					if (err) {
+						res.status(500).send({error: err.message});
+					} else {
+						res.json(views);
+					}
+				})
 			}
 		})
 	}
@@ -53,11 +40,11 @@ module.exports.getAllBuiltInViews = function(req,res) {
 
 module.exports.get = function(req,res) {
 	View.findById(req.params.id)
-	.exec(function(err,views) {
+	.exec(function(err,view) {
 		if (err) {
 			res.send(err);
 		} else {
-			res.json(views);
+			res.json(view);
 		}
 	})
 }

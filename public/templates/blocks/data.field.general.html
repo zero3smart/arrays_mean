@@ -73,26 +73,26 @@
                ng-model="dataset.raw_rowObjects_coercionScheme[fieldName].outputFormat">
     </md-input-container>
 
-    <md-input-container ng-if="team.customViews.length<=0" class="md-block" flex-gt-sm>
+    <md-input-container class="md-block" flex-gt-sm>
         <md-checkbox name="exclude" ng-model="dataset.fe_excludeFields[fieldName]"
                      aria-label="Field Exclude {{fieldName}}">
             Exclude
         </md-checkbox>
     </md-input-container>
 
-    <md-input-container ng-if="team.customViews.length<=0" class="md-block" flex-gt-sm>
+    <md-input-container class="md-block" flex-gt-sm>
         <label>Title Override</label>
         <input type="text" name="titleOverride"
                ng-model="dataset.fe_displayTitleOverrides[fieldName]">
     </md-input-container>
 
-    <md-input-container ng-if="team.customViews.length<=0" class="md-block" flex-gt-sm>
+    <md-input-container class="md-block" flex-gt-sm>
         <label>Display Order</label>
         <input type="number" min="0" name="displayOrder"
                ng-model="data.displayOrder">
     </md-input-container>
 
-    <md-input-container ng-if="team.customViews.length<=0" class="md-block" flex-gt-sm>
+    <md-input-container class="md-block" flex-gt-sm>
         <label>Designated Field</label>
         <md-select name="designatedField"
                    ng-model="data.designatedField"

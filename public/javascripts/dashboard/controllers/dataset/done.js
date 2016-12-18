@@ -12,6 +12,7 @@ angular.module('arraysApp')
 
             refreshForm();
 
+
             function refreshForm() {
                 $scope.dirty = $scope.$parent.$parent.dataset.dirty;
                 $scope.imported = $scope.$parent.$parent.dataset.imported;
@@ -95,6 +96,8 @@ angular.module('arraysApp')
             }
 
             function importDatasource(datasource) {
+
+
                 var uid = datasource.dataset_uid ? datasource.dataset_uid : datasource.uid;
                 if ($scope.additionalDatasources.length == 0) {
                     if (datasource.dirty == 1)

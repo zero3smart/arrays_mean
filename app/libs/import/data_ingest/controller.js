@@ -9,6 +9,7 @@ var postimport_caching_controller = require('../cache/controller');
 var processing = require('../../datasources/processing');
 var import_raw_objects_controller = require('./raw_objects_controller');
 
+
 //
 // ---------- Multiple DataSource Operation ----------
 //
@@ -18,7 +19,14 @@ module.exports.Import_dataSourceDescriptions = function (dataSourceDescriptions,
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
-            import_raw_objects_controller.ParseAndImportRaw(i, dataSourceDescription, eachCb);
+
+            if (dataSourceDescription.useCustomView) {
+                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').ParseAndImportRaw(i,dataSourceDescription,eachCb);
+                
+            } else {
+                 import_raw_objects_controller.ParseAndImportRaw(i, dataSourceDescription, eachCb);
+            }
+           
             i++;
         },
         function (err) {
@@ -64,7 +72,8 @@ var _PostProcessRawObjects = function (dataSourceDescriptions, fn) {
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
-            _postProcess(i, dataSourceDescription, eachCb);
+            
+             _postProcess(i, dataSourceDescription, eachCb);
             if (dataSourceDescription.dirty >= 3) omitImageScraping = false;
             i++;
         },
@@ -77,7 +86,6 @@ var _PostProcessRawObjects = function (dataSourceDescriptions, fn) {
 
                 if (!omitImageScraping) {
                     _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
-                    
                 } else {
                     _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
                 }
@@ -127,7 +135,13 @@ var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDesc
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
-            _afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription, eachCb);
+    
+            if (dataSourceDescription.useCustomView) {
+                    require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(i,dataSourceDescription,eachCb);
+            } else {
+                 _afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription, eachCb);
+            }
+
             i++;
         },
         function (err) {

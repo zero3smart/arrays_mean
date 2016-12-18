@@ -32,43 +32,41 @@ angular.module('arraysApp')
 
             $scope.data.default_view = dataset.fe_views.default_view;
 
+
+
             $scope.openViewDialog = function (evt, id) {
 
             	viewResource.get({id:id},function(data) {
 
-                    if ($scope.team.customViews.length <= 0) {
 
-                        $mdDialog.show({
-                            controller: ViewDialogController,
-                            templateUrl: 'templates/dataset/views.view.html',
-                            parent: angular.element(document.body),
-                            targetEvent: evt,
-                            clickOutsideToClose: true,
-                            fullscreen: true, // Only for -xs, -sm breakpoints.
-                            locals: {
-                                viewName: data.name,
-                                viewDisplayName: data.displayAs,
-                                dataset: $scope.$parent.$parent.dataset,
-                                viewSetting: data.settings,
-                                colsAvailable: colsAvailable,
-                                team: $scope.$parent.$parent.team,
-                                default_view: $scope.data.default_view
-                            }
-                        })
-                            .then(function (savedDataset) {
-                                $scope.$parent.$parent.dataset = savedDataset;
-
-                          
-                                $scope.data.default_view = savedDataset.fe_views.default_view;
-
-
-                                $scope.vm.viewsForm.$setDirty();
-                            }, function () {
-                                console.log('You cancelled the dialog.');
-                            });
-
-
+                    $mdDialog.show({
+                        controller: ViewDialogController,
+                        templateUrl: 'templates/dataset/views.view.html',
+                        parent: angular.element(document.body),
+                        targetEvent: evt,
+                        clickOutsideToClose: true,
+                        fullscreen: true, // Only for -xs, -sm breakpoints.
+                        locals: {
+                            viewName: data.name,
+                            belongsToTeam : data._team,
+                            viewDisplayName: data.displayAs,
+                            dataset: $scope.$parent.$parent.dataset,
+                            viewSetting: data.settings,
+                            colsAvailable: colsAvailable,
+                            team: $scope.$parent.$parent.team,
+                            default_view: $scope.data.default_view
                         }
+                    })
+                        .then(function (savedDataset) {
+                            $scope.$parent.$parent.dataset = savedDataset;              
+                            $scope.data.default_view = savedDataset.fe_views.default_view;
+                            $scope.vm.viewsForm.$setDirty();
+                        }, function () {
+                            console.log('You cancelled the dialog.');
+                        });
+
+
+                        
             	})
             };
 
@@ -113,7 +111,7 @@ angular.module('arraysApp')
             };
 
 
-            function ViewDialogController($scope, $mdDialog, $filter, viewName,viewDisplayName,dataset,viewSetting,colsAvailable,AssetService,
+            function ViewDialogController($scope, $mdDialog, $filter, viewName,belongsToTeam,viewDisplayName,dataset,viewSetting,colsAvailable,AssetService,
                 DatasetService,team,default_view) {
 
                 $scope.viewName = viewName;
@@ -124,6 +122,7 @@ angular.module('arraysApp')
                 $scope.otherAvailableDatasets = [];
                 $scope.otherDatasetsloaded = false;
                 $scope.otherDatasetCols = {};
+                $scope.isCustomView = belongsToTeam? true: false;
 
 
                 $scope.availableForDuration = [ "Decade", "Year", "Month", "Day"];
@@ -318,10 +317,26 @@ angular.module('arraysApp')
 
                 $scope.save = function () {
 
+
+
                     if ($scope.isDefault == true) {
                         $scope.dataset.fe_views.default_view = viewName;
                     } 
+                    if ($scope.isCustomView) {
+                        if ($scope.dataset.useCustomView) {
+                            if (!$scope.data.visible) {
+                                $scope.dataset.useCustomView = false;
+                            } 
+                        } else {
+                            if ($scope.data.visible || $scope.isDefault) {
+                                $scope.dataset.useCustomView = true;
+                            }
+                        }
+                    }
+
                     $scope.dataset.fe_views.views[viewName] = $scope.data;
+
+
                     $mdDialog.hide($scope.dataset);
                 };
             }
