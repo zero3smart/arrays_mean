@@ -1,0 +1,3 @@
+[submodule "user/rhodium-group"]
+	path = user/rhodium-group
+	url = https://github.com/schemadesign/rhodium_arrays.git
