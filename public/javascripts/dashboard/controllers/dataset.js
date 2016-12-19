@@ -21,7 +21,8 @@ angular.module('arraysApp')
         			}
         			break;
         			case 'dashboard.dataset.data':
-        			if ($scope.dataset.format) {
+        			if ($scope.dataset.uid) {
+
 	        			$location.path('/dashboard/dataset/data/' + $scope.dataset._id);
 	        		}
         			break;

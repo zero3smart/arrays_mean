@@ -607,7 +607,7 @@ module.exports.upload = function (req, res) {
             return res.end(JSON.stringify({error: err.message}));
         }
 
-        return res.end(JSON.stringify({id: description.id}));
+        return res.end(JSON.stringify({id: description.id,uid:description.uid}));
     });
 };
 

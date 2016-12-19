@@ -248,7 +248,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
                     winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
                     var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
                     var append = description.dataset_uid? true: false;
-                    raw_source_documents.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
+                    raw_source_documents.UpsertWithOnePersistableObjectTemplate(append,stringDocumentObject, fn);
 
                 } else {
 
@@ -265,7 +265,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
 
                         var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
                         var append = description.dataset_uid? true: false;
-                        raw_source_documents.UpsertWithOnePersistableObjectTemplate(stringDocumentObject, fn);
+                        raw_source_documents.UpsertWithOnePersistableObjectTemplate(append,stringDocumentObject, fn);
                     });
                 }
             })

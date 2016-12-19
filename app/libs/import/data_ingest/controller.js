@@ -84,6 +84,7 @@ var _PostProcessRawObjects = function (dataSourceDescriptions, fn) {
             } else {
                 winston.info("✅  Import post-processing done.");
 
+
                 if (!omitImageScraping) {
                     _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
                 } else {
@@ -121,6 +122,7 @@ var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDe
                 winston.info("✅  Image-scrapping done.");
                 winston.info("✅  All done for importing data");
                 winston.info("📡 now ready to do post import caching");
+
                 postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions, fn);
             }
         }
@@ -135,9 +137,8 @@ var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDesc
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
-    
             if (dataSourceDescription.useCustomView) {
-                    require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(i,dataSourceDescription,eachCb);
+                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(i,dataSourceDescription,eachCb);
             } else {
                  _afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription, eachCb);
             }
@@ -254,7 +255,12 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
             //
             // Now execute user-defined generalized post-processing pipeline
             //
-            _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription, callback);
+             if (dataSourceDescription.useCustomView) {
+                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,callback);
+            } else {
+                _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription, callback);
+            }   
+            
         }
     );
 }

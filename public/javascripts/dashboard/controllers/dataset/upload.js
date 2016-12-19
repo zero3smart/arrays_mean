@@ -165,6 +165,7 @@ angular.module('arraysApp')
                 if (status != 200 || response == '') return;
 
                 if (!response.error && response.id) {
+                    dataset.uid = response.uid;
                     $mdToast.show(
                         $mdToast.simple()
                             .textContent('Dataset uploaded successfully!')
@@ -172,11 +173,11 @@ angular.module('arraysApp')
                             .hideDelay(3000)
                     );
 
-                    $state.transitionTo('dashboard.dataset.data', {id: response.id}, {
-                        reload: true,
-                        inherit: false,
-                        notify: true
-                    });
+                    // $state.transitionTo('dashboard.dataset.data', {id: response.id}, {
+                    //     reload: true,
+                    //     inherit: false,
+                    //     notify: true
+                    // });
                 } else {
                     // Error
                     $mdToast.show(
