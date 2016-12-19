@@ -29,19 +29,19 @@
                                      aria-label="Exclude {{view.name}}"></md-checkbox>
                     </td>
                     <td><span class="{{ view.icon }}"></span>{{ view.displayAs}}</td>
-        
+
                 </tr>
                 </tbody>
             </table>
         </div>
 
-        <div layout="row" layout-align="end center" class="panel-footer">
-            <md-button class="md-raised" ng-click="reset()" ng-disabled="!vm.viewsForm.$dirty">
-                <i class="glyphicon glyphicon-refresh"></i> Reset
+        <div layout="row" layout-align="space-between center" class="panel-footer">
+            <md-button class="md-raised md-light" ng-click="reset()" ng-disabled="!vm.viewsForm.$dirty">
+                <span class="btn-label">Reset</span>
             </md-button>
 
-            <md-button class="md-raised" type="submit" ng-disabled="vm.viewsForm.$invalid">
-                <i class="glyphicon glyphicon-ok"></i> Next
+            <md-button class="md-raised md-dark" type="submit" ng-disabled="vm.viewsForm.$invalid">
+                <span class="btn-label">Next</span>
             </md-button>
         </div>
     </form>
