@@ -89,50 +89,6 @@
             </div>
         </fieldset>
 
-
-
-        <fieldset class="standard">
-            <legend>Fields</legend>
-            <div class="fields-container">
-                <div class="field-row-header field">
-                    <div class="name">Column Name</div>
-                    <div class="type">Type</div>
-                    <div class="sample">Sample</div>
-                </div>
-                <ul ng-model="data.fields" class="fields">
-                    <li ng-repeat="field in data.fields" class="field"
-                        ng-class="{'custom': field.custom}"
-                        ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex)">
-                        <div class="name">{{ field.name }}</div>
-                        <div class="type">
-                            <md-select ng-if="!field.custom"
-                                       name="raw_rowObjects_coercionScheme"
-                                       ng-model="coercionScheme[field.name]"
-                                       ng-model-options="{trackBy: '$value | typeCoercionToString'}"
-                                       ng-click="$event.stopPropagation()"
-                                       ng-change="changeCoercionSchemeByOperation(field.name)"
-                                       aria-label="Type - {{field.name}}" placeholder="String">
-                                <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="{{coercion}}">
-                                    {{coercion | typeCoercionToString}}
-                                </md-option>
-                            </md-select>
-                            <b ng-if="field.customField">
-                                {{ (field.customField.fieldType | capitalize) }}
-                            </b>
-                            <b ng-if="field.custom">Custom</b>
-                        </div>
-                        <div class="sample">
-                            <span ng-if="!field.custom">{{ field.sample | limitTo: 200 }}{{ field.sample.length > 200 ? '...' : '' }}</span>
-                            <span ng-if="field.customField" ng-repeat="mergeField in field.customField.fieldsToMergeIntoArray" >{{mergeField}} <span
-                            ng-if="!$last">,</span> </span>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </fieldset>
-
-
-
         <div layout="column">
             <md-button class="md-raised"
                        ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
