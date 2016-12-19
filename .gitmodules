@@ -1,3 +1,3 @@
 [submodule "user/rhodium-group"]
 	path = user/rhodium-group
-	url = https://dbbd3a96b22f528f04b5bd63dca242cb13f61580:x-oauth-basic@github.com/schemadesign/rhodium_arrays.git
+	url = https://7bc4a4d6d00b389f42add1b529a03969439d2eff:x-oauth-basic@github.com/schemadesign/rhodium_arrays.git
