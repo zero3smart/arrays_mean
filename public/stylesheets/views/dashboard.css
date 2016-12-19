@@ -295,27 +295,32 @@ md-dialog fieldset legend,
     background: initial;
 }
 
-.panel-footer .md-button {
+.md-button.md-dashboard {
     height: 48px;
     width: 200px;
     margin: 0;
     border: 1px solid white;
 }
 
-.panel-footer .md-button.md-light {
+.md-button.md-dashboard.md-light {
     background: #CDCDCD;
 }
-.panel-footer .md-button.md-light:hover {
+.md-button.md-dashboard.md-light:hover {
     background: #333338;
 }
-.panel-footer .md-button.md-dark {
+.md-button.md-dashboard.md-dark:not([disabled]) {
     background: #333338;
 }
-.panel-footer .md-button.md-dark:not([disabled]):hover {
+.md-button.md-dashboard.md-dark:not([disabled]):hover {
     background: #CDCDCD;
 }
 
-.panel-footer .md-button .btn-label {
+md-icon.btn-icon {
+    color: white !important;
+    line-height: 18px;
+}
+
+.md-button.md-dashboard .btn-label {
     font-family: var(--font-family-calibre);
     text-transform: uppercase;
     color: white;
@@ -324,7 +329,7 @@ md-dialog fieldset legend,
     letter-spacing: 2px;
 }
 
-.panel-footer .md-button.md-light .btn-label {
+.md-button.md-dashboard.md-light .btn-label {
     line-height: 46px; /* height - 2px for border*/
 }
 
