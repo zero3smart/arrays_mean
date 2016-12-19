@@ -14,7 +14,7 @@
             </div>
         </md-input-container>
 
-        <md-input-container ng-if="team.customViews.length<=0" class="md-block" flex-gt-sm>
+        <md-input-container class="md-block" flex-gt-sm>
             <label>ObjectTitle</label>
             <md-select ng-if="team.customViews.length<=0" required name="ObjectTitle" aria-label="primaryKey"
 
@@ -30,7 +30,7 @@
             </div>
     </md-input-container>
 
-        <fieldset ng-if="team.customViews.length<=0" class="standard">
+        <fieldset class="standard">
             <legend>Fields</legend>
             <div class="fields-container">
                 <div class="field-row-header field">
@@ -91,7 +91,7 @@
 
 
 
-        <fieldset ng-if="team.customViews.length>0" class="standard">
+        <fieldset class="standard">
             <legend>Fields</legend>
             <div class="fields-container">
                 <div class="field-row-header field">
@@ -146,13 +146,13 @@
             </md-button>
         </div>
 
-        <div ng-if="team.customViews.length<=0" layout="column">
+        <div layout="column">
             <md-button class="md-raised" ng-click="openFabricatedFilterDialog()">
                 Click Here to Edit Fabricated And Default Filter
             </md-button>
         </div>
 
-        <div ng-if="team.customViews.length<=0" layout="column">
+        <div layout="column">
             <md-button class="md-raised" ng-click="openImageScrapingDialog()">
                 Click Here if you need to generate a Image URL Field by Scraping
             </md-button>

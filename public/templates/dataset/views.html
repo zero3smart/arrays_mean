@@ -26,7 +26,7 @@
                     ng-click="openViewDialog($event, view._id)">
                     <td>
                         <md-checkbox ng-model="dataset.fe_views.views[view.name].visible"
-                                     aria-label="Exclude {{colName}}" ng-click="checkIfCustomViews"></md-checkbox>
+                                     aria-label="Exclude {{view.name}}"></md-checkbox>
                     </td>
                     <td><span class="{{ view.icon }}"></span>{{ view.displayAs}}</td>
         
