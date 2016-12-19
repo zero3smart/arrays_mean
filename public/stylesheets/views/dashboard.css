@@ -82,10 +82,6 @@ img.iconMap {
     color: black;
 }
 
-.panel-footer .md-button {
-    font-size: 20px;
-}
-
 .dashboard section.md-container {
     box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);
     border-radius: 4px;
@@ -290,6 +286,46 @@ md-dialog fieldset legend,
 
 .no-padding {
     padding: 0 !important;
+}
+
+/* Panel Footer and Buttons */
+
+.panel-footer {
+    padding: 0;
+    background: initial;
+}
+
+.panel-footer .md-button {
+    height: 48px;
+    width: 200px;
+    margin: 0;
+    border: 1px solid white;
+}
+
+.panel-footer .md-button.md-light {
+    background: #CDCDCD;
+}
+.panel-footer .md-button.md-light:hover {
+    background: #333338;
+}
+.panel-footer .md-button.md-dark {
+    background: #333338;
+}
+.panel-footer .md-button.md-dark:not([disabled]):hover {
+    background: #CDCDCD;
+}
+
+.panel-footer .md-button .btn-label {
+    font-family: var(--font-family-calibre);
+    text-transform: uppercase;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+.panel-footer .md-button.md-light .btn-label {
+    line-height: 46px; /* height - 2px for border*/
 }
 
 

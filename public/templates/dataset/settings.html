@@ -30,7 +30,6 @@
             <div md-color-picker ng-model="dataset.brandColor"></div>
         </md-input-container>
 
- 
 
         <md-input-container class="md-block">
             <label>URLs</label>
@@ -46,13 +45,13 @@
             <md-checkbox name="visible" ng-model="dataset.fe_visible">Visible</md-checkbox>
         </md-input-container>
 
-        <div layout="row" layout-align="end center" class="panel-footer">
-            <md-button ui-sref="dashboard.dataset.list" class="md-raised" target="_self"><span
-                    class="glyphicon glyphicon-hand-left"></span><span class="btn-label">Back</span></md-button>
-
-            <md-button class="md-raised" type="submit"
-                       ng-disabled="settingsForm.$invalid || !settingsForm.$dirty || submitting"><span
-                    class="glyphicon glyphicon-ok"></span><span class="btn-label">Next</span></md-button>
+        <div layout="row" layout-align="space-between center" class="panel-footer">
+            <md-button ui-sref="dashboard.dataset.list" class="md-raised md-light" target="_self" md-no-ink>
+                <span class="btn-label">Back</span>
+            </md-button>
+            <md-button class="md-raised md-dark" type="submit" ng-disabled="settingsForm.$invalid || !settingsForm.$dirty || submitting" md-no-ink>
+                <span class="btn-label">Next</span>
+            </md-button>
         </div>
     </form>
 </md-content>
