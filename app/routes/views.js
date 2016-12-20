@@ -44,6 +44,8 @@ View.getAllCustomViews(function(err,customViews) {
 
             router.get('/:source_key/' + view.name,ensureAuthorized,function(req,res,next) {
                 var source_key = req.params.source_key;
+
+
                 if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
                     res.status(403).send("Bad Request - source_key missing")
                     return;
@@ -72,12 +74,18 @@ View.getAllCustomViews(function(err,customViews) {
 
 var object_details_controller = require('../controllers/client/data_preparation/object_details');
 
-router.get(/(\/[a-z_\d-]+)(-r\d) ([0-9a-f]{24})/g, ensureAuthorized, function (req, res, next) {
-    var source_key = req.params[0];
+router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/g, ensureAuthorized, function (req, res, next) {
+
+    console.log("object detail controller");
+
+
+    var source_key = req.params[0] + req.params[1];
+    source_key = source_key.substring(1);
+
     if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
         return res.status(403).send("Bad Request - source_key missing");
     }
-    var object_id = req.params[1];
+    var object_id = req.params[2];
     if (object_id == null || typeof object_id === 'undefined' || object_id == "") {
         return res.status(403).send("Bad Request - object_id missing");
     }

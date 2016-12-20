@@ -48,8 +48,13 @@ angular.module('arraysApp')
                     }
                 })
                     .then(function (savedDataset) {
+                    
                         $scope.$parent.$parent.dataset = savedDataset;
-                        $scope.data.fe_designatedFields = savedDataset.fe_designatedFields;
+
+                        if (Object.keys(savedDataset.fe_designatedFields).length > 0) {
+                             $scope.data.fe_designatedFields = savedDataset.fe_designatedFields;
+                        }
+
                         $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
                         sortColumnsByDisplayOrder();
 
@@ -115,6 +120,7 @@ angular.module('arraysApp')
                 }
 
                 $scope.reset = function () {
+
                     $scope.dataset = angular.copy(dataset);
                     $scope.fieldName = fieldName;
 
@@ -232,17 +238,9 @@ angular.module('arraysApp')
                     // General
 
 
-                    if ($scope.data.designatedField != undefined)
-                        $scope.dataset.fe_designatedFields[$scope.data.designatedField] = $scope.fieldName;
-                    else {
-
-                        for (var key in $scope.dataset.fe_designatedFields) {
-                            if ($scope.dataset.fe_designatedFields[key] == $scope.fieldName) {
-                                delete $scope.dataset[key];
-                                break;
-                            }
-                        }
-                    }
+                    if (typeof $scope.data.designatedField !== 'undefined') {
+                         $scope.dataset.fe_designatedFields[$scope.data.designatedField] = $scope.fieldName;
+                    } 
 
                     var index = $scope.dataset.fe_fieldDisplayOrder.indexOf($scope.fieldName);
                     if (index != -1) $scope.dataset.fe_fieldDisplayOrder.splice(index, 1);
