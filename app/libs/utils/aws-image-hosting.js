@@ -78,7 +78,6 @@ module.exports.getAllIconsForTeam = _getAllIconsForTeam;
 
 function _proceedToStreamToHost(resize,remoteImageSourceURL, bucketKey, callback)
 {
-    
         var options = {
             url :remoteImageSourceURL,
             encoding:null
@@ -163,7 +162,7 @@ module.exports.hostImageLocatedAtRemoteURL = function(folder,resize,remoteImageS
         hostingOpts.overwrite = false;
     }
     if (hostingOpts.overwrite == true) { // overwrite if exists
-        _proceedToStreamToHost(folder,resize,remoteImageSourceURL, finalizedFilenameWithExt, callback);
+        _proceedToStreamToHost(resize,remoteImageSourceURL, folder + finalizedFilenameWithExt, callback);
     } else {
         var params = {
             Bucket: bucket,
@@ -176,17 +175,16 @@ module.exports.hostImageLocatedAtRemoteURL = function(folder,resize,remoteImageS
                     return callback(null, hostedFilePublicUrl);
                 }
                 // if (err.code == 'NotFound')
-
-
-                    _proceedToStreamToHost(resize,remoteImageSourceURL, folder + finalizedFilenameWithExt, callback);
+                _proceedToStreamToHost(resize,remoteImageSourceURL, folder + finalizedFilenameWithExt, callback);
             });
         } catch (err) {
 
             (err);
 
     
-            if (err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT')
+            if (err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
                 _proceedToStreamToHost(resize,remoteImageSourceURL, folder + finalizedFilenameWithExt, callback);
+            }
         }
     }
 }
