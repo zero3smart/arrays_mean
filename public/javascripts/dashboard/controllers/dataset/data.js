@@ -1058,7 +1058,7 @@ angular.module('arraysApp')
                         delete finalizedDatasource.fe_displayTitleOverrides;
                         delete finalizedDatasource.fe_fieldDisplayOrder;
                         delete finalizedDatasource.imageScraping;
-                        delete finalizedDatasource.isPublished;
+                        delete finalizedDatasource.isPublic;
                         delete finalizedDatasource.fe_views;
                         delete finalizedDatasource.fe_filters;
                         queue.push(DatasetService.save(finalizedDatasource));
