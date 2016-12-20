@@ -26,7 +26,6 @@ router.get('/', function (req, res) {
 
 
         if (!teamDescriptions || teamDescriptions.length == 0
-            || teamDescriptions[0].datasourceDescriptions.length == 0
             || (err && err.message == 'No SubDomain Asked!')) {
             var bindData =
             {

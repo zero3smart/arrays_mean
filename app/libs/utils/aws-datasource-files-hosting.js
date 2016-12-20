@@ -54,3 +54,38 @@ function _getDatasource(description) {
 
 }
 module.exports.getDatasource = _getDatasource;
+
+
+function _deleteDataset(description,cb) {
+    var team_subdomain = description._team.subdomain;
+    var param = {
+        Bucket: bucket,
+        Prefix: team_subdomain + '/datasets/' +  description.uid + "/"
+    }
+    s3.listObjects(param,function(err,data) {
+        if (err) {
+            return cb(err);
+        }
+
+        if (!data.Contents) {
+            return cb();
+        }
+
+        if (data.Contents.length == 0) return cb();
+        param = {Bucket: bucket};
+        param.Delete = {Objects:[]};
+        data.Contents.forEach(function(content) {
+            param.Delete.Objects.push({Key: content.Key});
+        })
+        s3.deleteObjects(param,function(err,data) {
+            if (err) return cb(err);
+            if (!data.Contents) return cb();
+            if (data.Contents.length == 1000) return _deleteDataset(description,cb);
+            else {
+                return cb();
+            }
+        })
+    })
+}
+
+module.exports.deleteDataset = _deleteDataset;

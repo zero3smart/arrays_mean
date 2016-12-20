@@ -63,7 +63,7 @@ var DatasourceDescription_scheme = Schema({
 
     _team: {type: Schema.Types.ObjectId, ref: 'Team'},
 
-    isPublished: {type: Boolean, default: false},
+    isPublic: {type: Boolean, default: false},
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
 
@@ -270,11 +270,13 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
                 .deepPopulate('_otherSources schema_id _team _otherSources._team schema_id._team')
                 .exec(function (err, description) {
 
+           
+
                     if (err) {
                         winston.error("❌ Error occurred when finding datasource description: ", err);
                     } else {
 
-                        if (description._otherSources) {
+                        if (description._otherSources && description._otherSources.length > 0) {
                             var omitted = _.omit(description, ["_otherSources"]);
                             descriptions.push(omitted);
                             _.map(description._otherSources, function (src) {
@@ -387,7 +389,7 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
         .then(function (datasourceDescription) {
 
             if (!datasourceDescription.fe_visible || !datasourceDescription.imported) return fn();
-            if (datasourceDescription.isPublished) return fn(null, datasourceDescription);
+            if (datasourceDescription.isPublic) return fn(null, datasourceDescription);
 
             if (userId) {
                 User.findById(userId)

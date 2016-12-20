@@ -18,18 +18,19 @@
                 <thead>
                 <tr>
                     <th>Visibility</th>
-                    <th>ViewName</th>
+                    <th>View Name</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="view in views"
-                    ng-click="openViewDialog($event, view._id)">
+                <tr ng-repeat="view in views">
                     <td>
                         <md-checkbox ng-model="dataset.fe_views.views[view.name].visible"
-                                     aria-label="Exclude {{view.name}}"></md-checkbox>
+                                     aria-label="Exclude {{view.name}}" md-no-ink></md-checkbox>
                     </td>
-                    <td><span class="{{ view.icon }}"></span>{{ view.displayAs}}</td>
-
+                    <td ng-click="openViewDialog($event, view._id)" class="view-name" ng-class="{default_view: data.default_view === view.name}" >
+                        <span class="{{ view.icon }}"></span>
+                        {{ view.displayAs}}
+                    </td>
                 </tr>
                 </tbody>
             </table>
