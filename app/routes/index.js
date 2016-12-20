@@ -89,7 +89,7 @@ var _mountRoutes_subdomainRedirect = function(app) {
 
     Promise.all([_defaultViewRoutes,_customViewRoutes])
     .then(function(values) {
-        var urlRegexForDataset = new RegExp("(\\/[a-z_d-]+)(-r\\d)\/ (getData|[0-9a-f]{24}" + values[0] + values[1] + ")",'g');
+        var urlRegexForDataset = new RegExp("(\\/[a-z_\\d-]+)(-r\\d)\/ (getData|[0-9a-f]{24}" + values[0] + values[1] + ")",'g');
 
         app.all("*", function(req,res,next) {
             urlRegexForDataset.lastIndex = 0;

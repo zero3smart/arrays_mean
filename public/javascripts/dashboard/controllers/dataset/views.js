@@ -5,7 +5,16 @@ angular.module('arraysApp')
 
             $scope.$parent.$parent.views = views;
 
-  
+            $scope.customViews = [];
+
+            for (var i = 0; i < views.length; i++) {
+                if (views[i]._team) {
+                    $scope.customViews.push(views[i].name);
+                }
+            }
+
+
+
             $scope.$parent.$parent.currentNavItem = 'Views';
 
             if (!$scope.$parent.$parent.dataset.fe_views) {
@@ -36,9 +45,10 @@ angular.module('arraysApp')
 
             $scope.openViewDialog = function (evt, id) {
 
+
+
             	viewResource.get({id:id},function(data) {
-
-
+                    
                     $mdDialog.show({
                         controller: ViewDialogController,
                         templateUrl: 'templates/dataset/views.view.html',
@@ -58,7 +68,8 @@ angular.module('arraysApp')
                         }
                     })
                         .then(function (savedDataset) {
-                            $scope.$parent.$parent.dataset = savedDataset;              
+                            $scope.$parent.$parent.dataset = savedDataset; 
+
                             $scope.data.default_view = savedDataset.fe_views.default_view;
                             $scope.vm.viewsForm.$setDirty();
                         }, function () {
@@ -84,6 +95,18 @@ angular.module('arraysApp')
                 if (isValid) {
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
                     delete finalizedDataset.columns;
+
+                    var useCustomView = false;
+
+
+                    for (var key in finalizedDataset.fe_views.views) {
+                        if ($scope.customViews.indexOf(key) >= 0 && finalizedDataset.fe_views.views[key].visible==true) {
+                            useCustomView = true;
+                        }
+
+                    }
+
+                    finalizedDataset.useCustomView = useCustomView;
 
                     DatasetService.save(finalizedDataset)
                         .then(function (id) {
@@ -244,7 +267,7 @@ angular.module('arraysApp')
 
                 $scope.reset();
 
-                $scope.data.default_view = default_view;
+                // $scope.data.default_view = default_view;
     
 
                 $scope.addMore = function (field,pushType) {
@@ -322,6 +345,19 @@ angular.module('arraysApp')
                     if ($scope.isDefault == true) {
                         $scope.dataset.fe_views.default_view = viewName;
                     } 
+
+                    if ($scope.isDefault) {
+                        if ($scope.isCustomView) {
+                            $scope.dataset.useCustomView = true;
+                        }
+
+                    } else {
+                        if ($scope.isCustomView && $scope.data.visible) {
+                            $scope.dataset.useCustomView = true;
+                        }
+
+                    }
+
                     if ($scope.isCustomView) {
                         if ($scope.dataset.useCustomView) {
                             if (!$scope.data.visible) {

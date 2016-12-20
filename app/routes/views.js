@@ -72,7 +72,7 @@ View.getAllCustomViews(function(err,customViews) {
 
 var object_details_controller = require('../controllers/client/data_preparation/object_details');
 
-router.get(/(\/[a-z_d-]+)(-r\d)\/ ([0-9a-f]{24})/g, ensureAuthorized, function (req, res, next) {
+router.get(/(\/[a-z_\d-]+)(-r\d) ([0-9a-f]{24})/g, ensureAuthorized, function (req, res, next) {
     var source_key = req.params[0];
     if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
         return res.status(403).send("Bad Request - source_key missing");

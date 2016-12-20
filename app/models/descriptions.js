@@ -270,11 +270,13 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
                 .deepPopulate('_otherSources schema_id _team _otherSources._team schema_id._team')
                 .exec(function (err, description) {
 
+           
+
                     if (err) {
                         winston.error("❌ Error occurred when finding datasource description: ", err);
                     } else {
 
-                        if (description._otherSources) {
+                        if (description._otherSources && description._otherSources.length > 0) {
                             var omitted = _.omit(description, ["_otherSources"]);
                             descriptions.push(omitted);
                             _.map(description._otherSources, function (src) {

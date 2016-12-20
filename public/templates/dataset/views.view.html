@@ -365,7 +365,7 @@
         <md-button ng-click="reset()" ng-disabled="!viewForm.$dirty">
             Reset
         </md-button>
-        <md-button ng-click="save()" ng-disabled="!viewForm.$dirty || viewForm.$invalid">
+        <md-button ng-click="save()" ng-disabled="viewForm.$invalid">
             Save
         </md-button>
     </md-dialog-actions>

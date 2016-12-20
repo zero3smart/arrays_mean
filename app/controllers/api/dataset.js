@@ -67,7 +67,9 @@ module.exports.remove = function (req, res) {
     var srcDocPKey;
 
     batch.push(function (done) {
-        datasource_description.findById(req.body.id, function (err, data) {
+        datasource_description.findById(req.body.id)
+        .populate('_team')
+        .exec(function(err,data){
             if (err) return done(err);
 
             if (!data) return done(new Error('No datasource exists : ' + req.body.id));
@@ -131,10 +133,18 @@ module.exports.remove = function (req, res) {
         Team.update({_id:description._team},{$pull:{datasourceDescriptions:description._id}},done);
     })
 
+
+
+    batch.push(function(done) {
+        datasource_file_service.deleteDataset(description,done);
+    })
+
+
     // Remove datasource description
     batch.push(function (done) {
         description.remove(done);
     });
+
 
     // Remove datasource description with schema_id
     batch.push(function (done) {
@@ -159,8 +169,7 @@ module.exports.remove = function (req, res) {
 
         });
     });
-    
-    //ToDo: delete this dataset folder in s3
+
 
     batch.push(function(done) {
         User.update({$or: [{_editors:req.body.id},{_viewers: req.body.id}]},{$pull: {_editors: req.body.id,_viewers:req.body.id}},done);
@@ -731,7 +740,6 @@ module.exports.preImport = function (req, res) {
     res.connection.setTimeout(0); // this could take a while
 
     datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
-
         var fn = function (err) {
             if (err) {
                 if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
@@ -759,14 +767,17 @@ module.exports.postImport = function (req, res) {
 
     var uid = req.body.uid;
 
+
+
     datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
+
 
         var fn = function (err) {
             if (err) {
                 res.json({error: err.message}); // error code
             } else {
-                datasource_description.findOne({$or: [{uid: uid}, {dataset_uid: uid}]},
-                    function (err, dataset) {
+
+                datasource_description.findOne({$or: [{uid: uid}, {dataset_uid: uid}]},function (err, dataset) {
                         if (err) return done(err);
                         if (!dataset) return done(new Error('No datasource exists : ' + uid));
 
