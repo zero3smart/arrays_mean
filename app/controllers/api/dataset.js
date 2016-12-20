@@ -270,7 +270,7 @@ module.exports.getAdditionalSourcesWithSchemaID = function (req, res) {
 };
 
 module.exports.publish = function (req, res) {
-    datasource_description.findByIdAndUpdate(req.body.id, {$set: {isPublished: req.body.isPublished}}, function (err, savedDesc) {
+    datasource_description.findByIdAndUpdate(req.body.id, {$set: {isPublic: req.body.isPublic}}, function (err, savedDesc) {
         if (err) {
             res.status(500).send({error: err.message});
         } else {
@@ -381,7 +381,7 @@ module.exports.update = function (req, res) {
                         // TODO: Is there anyway to update the selected fields only?
                         var updateQuery = { $unset: {
                             imageScraping: 1,
-                            isPublished: 1,
+                            isPublic: 1,
                             customFieldsToProcess: 1,
                             _otherSources: 1,
                             fe_filters: 1,
@@ -499,7 +499,7 @@ module.exports.upload = function (req, res) {
                 $unset: {
                     fe_nestedObject: 1,
                     imageScraping: 1,
-                    isPublished: 1,
+                    isPublic: 1,
                     customFieldsToProcess: 1,
                     _otherSources: 1,
                     fe_filters: 1,
@@ -584,7 +584,7 @@ module.exports.upload = function (req, res) {
                     $unset: {
                         fe_nestedObject: 1,
                         imageScraping: 1,
-                        isPublished: 1,
+                        isPublic: 1,
                         customFieldsToProcess: 1,
                         _otherSources: 1,
                         fe_filters: 1,

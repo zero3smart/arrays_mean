@@ -63,7 +63,7 @@ var DatasourceDescription_scheme = Schema({
 
     _team: {type: Schema.Types.ObjectId, ref: 'Team'},
 
-    isPublished: {type: Boolean, default: false},
+    isPublic: {type: Boolean, default: false},
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
 
@@ -387,7 +387,7 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
         .then(function (datasourceDescription) {
 
             if (!datasourceDescription.fe_visible || !datasourceDescription.imported) return fn();
-            if (datasourceDescription.isPublished) return fn(null, datasourceDescription);
+            if (datasourceDescription.isPublic) return fn(null, datasourceDescription);
 
             if (userId) {
                 User.findById(userId)

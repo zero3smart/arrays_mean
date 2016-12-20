@@ -25,8 +25,8 @@ angular.module('arraysApp')
             var datasourceIndex = -1;
 
             $scope.togglePublish = function() {
-                var isPublised = $scope.$parent.$parent.dataset.isPublished;
-                DatasetService.publish($scope.$parent.$parent.dataset._id, isPublised)
+                var isPublic = $scope.$parent.$parent.dataset.isPublic;
+                DatasetService.publish($scope.$parent.$parent.dataset._id, isPublic)
             };
 
             function errorHandler(error) {

@@ -49,11 +49,11 @@
             return deferred.promise;
         };
 
-        var publish = function(id,isPublished) {
+        var publish = function(id,isPublic) {
             var deferred = $q.defer();
             var body = {
                 id: id,
-                isPublished: isPublished
+                isPublic: isPublic
             };
             $http.put('api/dataset/publish',body)
                 .success(function(data) {
