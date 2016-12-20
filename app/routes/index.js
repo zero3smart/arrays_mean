@@ -84,34 +84,11 @@ var _customViewRoutes = new Promise(function(resolve,reject) {
     })
 })
 
-
+var urlRegexForDataset;
 var _mountRoutes_subdomainRedirect = function(app) {
-
     Promise.all([_defaultViewRoutes,_customViewRoutes])
     .then(function(values) {
-        var urlRegexForDataset = new RegExp("(\\/[a-z_d-]+)(-r\\d)\/ (getData|[0-9a-f]{24}" + values[0] + values[1] + ")",'g');
-
-        app.all("*", function(req,res,next) {
-            urlRegexForDataset.lastIndex = 0;
-            var isRouteForDataset = urlRegexForDataset.test(req.url);
-            if (isNotRootDomain(req.subdomains)) {
-                if (isRouteForDataset) {   
-                    return next();
-                } else {
-                    if (req.url == '/') {
-                        return next();
-                    } else {
-                        return res.redirect(rootDomain + req.url);
-                    }
-                }
-            } else {
-                if (isRouteForDataset) {
-                    return res.redirect(rootDomain + '/');
-                } else {
-                    return next();
-                }
-            }
-        })
+        urlRegexForDataset = new RegExp("(\\/[a-z_d-]+)(-r\\d)\/ (getData|[0-9a-f]{24}" + values[0] + values[1] + ")",'g');      
     })
 }
 
@@ -146,8 +123,29 @@ var _mountRoutes_errorHandling = function (app) {
 
 
 var _mountRoutes_endPoints = function (app) {
-    // View endpoints
+    app.all("*", function(req,res,next) {
+            urlRegexForDataset.lastIndex = 0;
+            var isRouteForDataset = urlRegexForDataset.test(req.url);
+            if (isNotRootDomain(req.subdomains)) {
+                if (isRouteForDataset) {  
+                    return next();
+                } else {
+                    if (req.url == '/') {
+                        return next();
+                    } else {
+                        return res.redirect(rootDomain + req.url);
+                    }
+                }
+            } else {
+                if (isRouteForDataset) {
+                    return res.redirect(rootDomain + '/');
+                } else {
+                    return next();
+                }
+            }
+        });
 
+    // View endpoints
     app.use('/', require('./homepage'));  
     app.use('/explore', require('./array'));
     app.use('/s', require('./shared_pages'));
