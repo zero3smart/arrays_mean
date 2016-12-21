@@ -734,11 +734,11 @@ module.exports.preImport = function (req, res) {
 
     var uid = req.body.uid;
 
-    res.writeHead(200, {'Content-Type': 'application/json'});
+    // res.writeHead(200, {'Content-Type': 'application/json'});
     res.connection.setTimeout(0); // this could take a while
 
     datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
-        var fn = function (err) {
+        var fn = function (err) {;
             if (err) {
                 if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
                     winston.info("🔁  Waiting 3 seconds to restart...");
@@ -746,10 +746,12 @@ module.exports.preImport = function (req, res) {
                         import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(descriptions, fn);
                     }, 3000);
                 } else {
-                    res.end(JSON.stringify({error: err.message})); // error code
+
+                    return res.status(500).send(err.message);
                 }
             } else {
-                res.end(JSON.stringify({uid: uid})); // all good
+
+                return res.json({uid:uid}); // all good
             }
         };
 

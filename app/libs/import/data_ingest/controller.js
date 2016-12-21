@@ -79,16 +79,17 @@ var _PostProcessRawObjects = function (dataSourceDescriptions, fn) {
         },
         function (err) {
             if (err) {
-                winston.info("❌  Error encountered during import post-processing:", err);
+                winston.info("❌  Error encountered during import post-processing:", err.message);
                 fn(err);
             } else {
                 winston.info("✅  Import post-processing done.");
-
+           
 
                 if (!omitImageScraping) {
                     _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
                 } else {
-                    _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
+                    fn();
+                    // _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
                 }
             }
         }
@@ -121,9 +122,10 @@ var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDe
             } else {
                 winston.info("✅  Image-scrapping done.");
                 winston.info("✅  All done for importing data");
-                winston.info("📡 now ready to do post import caching");
+                // winston.info("📡 now ready to do post import caching");
+                fn();
 
-                postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions, fn);
+                // postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions, fn);
             }
         }
     );

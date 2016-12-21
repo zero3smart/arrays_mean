@@ -104,7 +104,7 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (dataSource_ui
 
         mongooseModel_ofRawRowObjectsBeingProcessed.find(datasetQuery, function (err, rowObjects) {
             if (err) {
-                winston.error("❌ [" + (new Date()).toString() + "] Error while saving processed row objects: ", err);
+                winston.error("❌ [" + (new Date()).toString() + "] Error while saving processed row objects: ", err.message);
                 return callback(err);
             }
 
