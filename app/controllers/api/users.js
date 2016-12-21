@@ -70,8 +70,6 @@ module.exports.get = function (req, res) {
                             return res.status(401).send({error: 'unauthorized'});
                         }
 
-                        // console.log(user);
-
                         if (user.isSuperAdmin()) {
                             role = 'superAdmin';
                         } else if (user.defaultLoginTeam.admin && user.defaultLoginTeam.admin == userId) {
@@ -103,6 +101,7 @@ module.exports.get = function (req, res) {
                                 _editors : user._editors,
                                 _viewers: user._viewers,
                                 authToken: token,
+                                invited: user.invited,
                                 role: role,
                                 defaultLoginTeam: user.defaultLoginTeam
                             }
@@ -155,6 +154,9 @@ module.exports.create = function (req, res) {
 
 module.exports.resend = function (req, res) {
     var userId = req.params.id;
+    if (!userId) {
+        return res.status(401).send('unauthorized');
+    }
     if (req.query.emailType == 'activation') {
         User.findById(userId, function (err, user) {
             if (err) {
@@ -165,7 +167,7 @@ module.exports.resend = function (req, res) {
             } else {
                 mailer.sendActivationEmail(user, function (err) {
                     if (err) {
-                        res.status(500).send('Cannot send activation email');
+                        res.status(500).send('Cannot resend activation email');
                     } else {
                         return res.redirect('/signup/success/' + userId);
                     }
@@ -174,9 +176,47 @@ module.exports.resend = function (req, res) {
         })
 
     } else { //resend invitation user
+        var inviteeId = req.query.Invitee;
 
+
+        if (!inviteeId) {
+            return res.status(500).send('invalid parameter');
+        }
+        User.findById(userId)
+        .populate('defaultLoginTeam')
+        .exec(function(err,foundUser) {
+            if (err) {
+                return res.status(500).send(err);
+            } else if (!foundUser) {
+                return res.status(401).send("No user found");
+            } else {
+                for (var id in foundUser.invited) {
+                    if (id == inviteeId) {
+                        User.findById(inviteeId,function(err,invitee) {
+                            if (err) {
+                                return res.status(500).send(err);
+                            } else if (!invitee) {
+                                return res.status(401).send("No user found");
+                            }
+                            mailer.sendInvitationEmail(foundUser.defaultLoginTeam,foundUser,
+                                invitee,foundUser.invited[id]._editors, foundUser.invited[id]._viewers,function(err){
+                                    if (err) {
+                                        res.status(500).send('Cannot resend invitation email');
+                                    } else {
+                                        res.status(200).send('ok');
+                                    }
+                                })
+                        })
+                    }
+                }
+            }
+        })
     }
 }
+
+
+
+
 
 
 module.exports.update = function (req, res) {

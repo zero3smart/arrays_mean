@@ -39,7 +39,9 @@ angular.module('arraysApp')
                 $scope.importLogger.push("🔁 [" + uid + "] Importing ...");
 
                 DatasetService.preImport(uid)
-                    .then(function (uid) {
+                    .then(function (response) {
+
+                        var uid = response.data.uid;
                         $scope.importLogger.push("📡 [" + uid + "] Successfully pre-imported!");
 
                         postImport(uid);
@@ -51,7 +53,8 @@ angular.module('arraysApp')
                 $scope.importLogger.push("🔁 [" + uid + "] Finalizing to import ...");
 
                 DatasetService.postImport(uid)
-                    .then(function (dataset) {
+                    .then(function (response) {
+                        var dataset = response.data.dataset;
                         $scope.importLogger.push("📡 [" + uid + "] Successfully finalized!");
 
                         if (datasourceIndex == -1) {
@@ -73,11 +76,12 @@ angular.module('arraysApp')
                 $scope.importLogger.push("🔁 [" + uid + "] Initializing to import ...");
 
                 DatasetService.initializeToImport(uid)
-                    .then(function (uid) {
-                        $scope.importLogger.push("📡 [" + uid + "] Successfully initialized to import!");
-
-                        preImport(uid);
-
+                    .then(function (response) {
+                       if (response.status == 200) {
+                            var uid = response.data.uid;
+                            $scope.importLogger.push("📡 [" + uid + "] Successfully initialized to import!");
+                            preImport(uid);
+                       }
                     }, errorHandler);
             }
 

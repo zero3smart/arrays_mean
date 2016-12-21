@@ -109,19 +109,24 @@ angular.module('arraysApp')
                     finalizedDataset.useCustomView = useCustomView;
 
                     DatasetService.save(finalizedDataset)
-                        .then(function (id) {
-                            $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent('Dataset updated successfully!')
-                                    .position('top right')
-                                    .hideDelay(3000)
-                            );
+                        .then(function (response) {
+                            if (response.status == 200) {
+                                var id = response.data.id;
+                                $mdToast.show(
+                                    $mdToast.simple()
+                                        .textContent('Dataset updated successfully!')
+                                        .position('top right')
+                                        .hideDelay(3000)
+                                );
 
-                            $state.transitionTo('dashboard.dataset.done', {id: id}, {
-                                reload: true,
-                                inherit: false,
-                                notify: true
-                            });
+                                $state.transitionTo('dashboard.dataset.done', {id: id}, {
+                                    reload: true,
+                                    inherit: false,
+                                    notify: true
+                                });
+
+                            }
+                         
                         }, function (error) {
                             $mdToast.show(
                                 $mdToast.simple()
