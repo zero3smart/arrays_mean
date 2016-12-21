@@ -268,7 +268,7 @@ module.exports.getAdditionalSourcesWithSchemaID = function (req, res) {
         .lean()
         .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, sources) {
-            if (err) return res.status(500).send( "Error getting the addiontal datasources with schema id : " + req.params.id);
+            if (err) return res.status(500).send( "Error getting the additional datasources with schema id : " + req.params.id);
             return res.json({
                 sources: sources.map(function (source) {
                     return datasource_description.Consolidate_descriptions_hasSchema(source);
@@ -662,7 +662,7 @@ module.exports.download = function (req, res) {
 }
 
 module.exports.initializeToImport = function (req, res) {
-    if (!req.body.uid) return res.status(500).send('Invalid Paramter');
+    if (!req.body.uid) return res.status(500).send('Invalid Parameter');
 
     var uid = req.body.uid;
 
@@ -760,7 +760,7 @@ module.exports.preImport = function (req, res) {
 
 module.exports.postImport = function (req, res) {
     if (!req.body.uid) {
-        return res.status(500).send('Invalid Paramter');
+        return res.status(500).send('Invalid Parameter');
     }
 
     var uid = req.body.uid;
@@ -797,7 +797,7 @@ module.exports.postImport = function (req, res) {
 };
 
 module.exports.removeSubdataset = function(req, res) {
-    if (!req.body.id) return res.status(500).send('Invalid paramter');
+    if (!req.body.id) return res.status(500).send('Invalid parameter');
 
     datasource_description.findById(req.body.id, function (err, doc) {
         if (err) {
