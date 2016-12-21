@@ -1,16 +1,17 @@
 <md-button class="md-raised md-dashboard md-dark" ng-click="add()" md-no-ink>
-    <md-icon class="btn-icon">add</md-icon>
+    <span class="icon-expand"></span>
     <span class="btn-label">Add Dataset</span>
 </md-button>
 
-<md-toolbar layout="row" class="md-hue-3">
-    <div class="md-toolbar-tools">Select a dataset to edit</div>
-</md-toolbar>
+<div>Select a dataset to edit</div>
 
-<md-list ng-cloak>
-    <md-list-item ng-repeat="dataset in datasets" ng-click="select(dataset._id)" class="noright">
-        <p>{{ $index+1 }}.  {{ dataset.title }} ({{ dataset.importRevision }})</p>
-        <i class="md-secondary glyphicon glyphicon-trash" ng-click="remove(dataset._id)" aria-label="Delete"></i>
-        <md-divider ng-if="!$last"></md-divider>
-    </md-list-item>
-</md-list>
+<ul class="dataset-list" ng-cloak>
+    <li ng-repeat="dataset in datasets">
+        <span class="dataset-list-order">{{ $index+1 }}</span>
+        <span class="dataset-list-name" ng-click="select(dataset._id)">{{ dataset.title }}</span>
+        <span class="dataset-list-revision">({{ dataset.importRevision }})</span>
+        <span class="dataset-list-delete" ng-click="remove(dataset._id)" aria-hidden="true" aria-label="Delete">×</span>
+        <!-- <span class="dataset-list-delete icon-close-big" ng-click="remove(dataset._id)" aria-hidden="true" aria-label="Delete"></span> -->
+        <!-- <span class="dataset-list-delete icon-close-filterpill" ng-click="remove(dataset._id)" aria-hidden="true" aria-label="Delete"></span> -->
+    </li>
+</ul>
