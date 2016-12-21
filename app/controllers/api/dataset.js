@@ -195,7 +195,7 @@ module.exports.get = function (req, res) {
         .exec(function (err, description) {
 
             if (err) return res.status(500).send(err);
-            if (!description) return res.status(404).send('Dataset noot found');
+            if (!description) return res.status(404).send('Dataset not found');
 
             if (description.schema_id) {
                 description = datasource_description.Consolidate_descriptions_hasSchema(description);
@@ -255,7 +255,7 @@ module.exports.loadDatasourceColumnsForMapping = function (req, res) {
                         })
                     });
                 else
-                    return res.status(500).send('Invalid paramter');
+                    return res.status(500).send('Invalid parameter');
             }
         });
 };
@@ -638,7 +638,7 @@ module.exports.getAvailableMatchFns = function (req, res) {
 };
 
 module.exports.download = function (req, res) {
-    if (!req.params.id) return res.status(500).send('Invalid paramter');
+    if (!req.params.id) return res.status(500).send('Invalid parameter');
 
     datasource_description.findById(req.params.id)
         .lean()
