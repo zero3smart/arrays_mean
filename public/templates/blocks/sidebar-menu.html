@@ -1,25 +1,25 @@
 <ul class="nav">
 
-    <li ui-sref-active="active">
-        <a ui-sref="dashboard.account" role="button"> Account Settings</a>
+    <li ng-if="user.role=='admin' || user.role=='superAdmin'">
+        <a href="{{subdomain}}" target="_blank" class="sidebar-link">View My Website</a>
+    </li>
+
+    <li ng-if="user.role=='admin' || user.role=='superAdmin'" class="sidebar-label">
+        <a class="sidebar-label">Admin</a>
     </li>
 
     <li ng-if="user.role=='admin' || user.role=='superAdmin'" ui-sref-active="active">
-        <a ui-sref="dashboard.website" role="button">Website Settings</a>
+        <a ui-sref="dashboard.website" role="button">My Website Settings</a>
     </li>
 
     <li ng-if="user.role=='admin' || user.role=='superAdmin' || user.role=='editor'" ng-class="{'active': $state.includes('dashboard.dataset')}">
         <a ui-sref="dashboard.dataset.list" role="button"> Dataset Settings</a>
     </li>
 
-    <li ng-if="user.role=='admin' || user.role=='superAdmin' || user._team.length > 1" ui-sref-active="active">
-        <a ui-sref="dashboard.teams" role="button"> Manage Teams </a>
-    </li>
-
     <hr>
 
-    <li ng-if="user.role=='admin' || user.role=='superAdmin'" class="sidebar-label">
-        <a class="sidebar-label">Admin</a>
+    <li ng-if="user.role=='admin' || user.role=='superAdmin' || user._team.length > 1" ui-sref-active="active">
+        <a ui-sref="dashboard.teams" role="button"> Manage Teams </a>
     </li>
 
     <li ng-if="user.role=='admin' || user.role=='superAdmin'" ng-class="{'active': $state.includes('dashboard.user')}">
@@ -28,16 +28,8 @@
 
     <hr>
 
-    <li ng-if="user.role=='admin' || user.role=='superAdmin'">
-        <!-- {{user}}<br> -->
-        {{team.subdomain}}<br>
-        <a href="{{subdomain}}" role="button"  target="_blank"> View My Website</a>
-        <!-- <a ui-sref="dashboard.user.list" role="button"> View My Website</a> -->
+    <li ui-sref-active="active">
+        <a ui-sref="dashboard.account" role="button"> Account Settings</a>
     </li>
 
-
-
-
 </ul>
-
-
