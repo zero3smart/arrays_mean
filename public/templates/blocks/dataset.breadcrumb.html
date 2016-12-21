@@ -14,13 +14,13 @@
 
     <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.data')" ng-disabled="!dataset.uid"
         ng-class="{active: currentStep == 'dashboard.dataset.data'}">
-        <span class="nav-item-icon" ng-class="null ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
+        <span class="nav-item-icon" ng-class="(dataset.fn_new_rowPrimaryKeyFromRowObject !== undefined) ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
         <span class="nav-item-label">3. Format Data</span>
     </button>
 
     <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.views')" ng-disabled="!dataset.fn_new_rowPrimaryKeyFromRowObject"
         ng-class="{active: currentStep == 'dashboard.dataset.views'}">
-        <span class="nav-item-icon" ng-class="null ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
+        <span class="nav-item-icon" ng-class="(dataset.fe_views.default_view) ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
         <span class="nav-item-label">4. Format Views</span>
     </button>
 
