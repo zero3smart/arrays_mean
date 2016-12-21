@@ -683,7 +683,7 @@ angular.module('arraysApp')
                             {
                                 newFieldName: '',
                                 prependToImageURLs: '',
-                                resize: 600
+                                resize: 200
                             }
                         ]
                     });
@@ -698,7 +698,7 @@ angular.module('arraysApp')
                     setFields.push({
                         newFieldName: '',
                         prependToImageURLs: '',
-                        resize: 600
+                        resize: 200
                     });
                 };
 
@@ -763,7 +763,6 @@ angular.module('arraysApp')
                     }
                 })
                     .then(function (savedDataset) {
-                        console.log(savedDataset);
                         $scope.$parent.$parent.dataset = savedDataset;
                         sortColumnsByDisplayOrder();
 
@@ -965,7 +964,11 @@ angular.module('arraysApp')
             $scope.saveRequiredFields = function() {
 
                 $scope.$parent.$parent.dataset.fn_new_rowPrimaryKeyFromRowObject = $scope.data.fn_new_rowPrimaryKeyFromRowObject;
-                $scope.$parent.$parent.dataset.fe_designatedFields = $scope.data.fe_designatedFields;
+                // if there's designated field in data but not in the parent dataset,
+                // $scope.data needs to be added to the parent dataset so we'll just loop through all the designated fields in the data object and set them on the dataset object
+                for(designatedField in $scope.data.fe_designatedFields) {
+                    $scope.$parent.$parent.dataset.fe_designatedFields[designatedField] = $scope.data.fe_designatedFields[designatedField]
+                }
 
             };
 
