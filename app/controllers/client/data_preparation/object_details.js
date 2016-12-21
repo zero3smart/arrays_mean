@@ -32,6 +32,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     _id: rowObject_id,
                     srcDocPKey: source_pKey
                 };
+
+
                 processedRowObjects_mongooseModel.findOne(query, function (err, _rowObject) {
                     if (err) return done(err);
 
@@ -123,11 +125,14 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                     var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName[field].showField;
                                     fieldToAcquire["rowParams."+wantedfield] = 1;
                                 }
+
+                                // console.log(rowObjectsOfRelationship_mongooseModel);
+
+
                                 rowObjectsOfRelationship_mongooseModel.find(findQuery)
                                 .select(fieldToAcquire)
                                 .exec(function (err, hydrationFetchResults) {
                                     if (err) return done(err);
-
                                     var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
                                     rowObject.rowParams[field] = hydrationValue; // a doc or list of docs
                                     //

@@ -176,7 +176,8 @@ var _postProcess = function (indexInList, dataSourceDescription, callback) {
     // Firstly, generate the whole processed objects dataset
     //
     //processed_row_objects.GenerateProcessedDatasetFromRawRowObjects
-    processed_row_objects.InsertProcessedDatasetFromRawRowObjects(
+    processed_row_objects.InsertProcessedDatasetFromRawRowObjects
+    (
         dataSource_uid,
         dataSource_importRevision,
         dataSource_title,

@@ -8,6 +8,13 @@ angular.module('arraysApp')
             $scope.importLogger = [];
             $scope.inProgress = false;
 
+            $scope.usedInMerging = [];
+            DatasetService.getDatasetsWithQuery({_otherSources: dataset._id})
+            .then(function(datasets) {
+                $scope.additionalDatasources = datasets;
+            })
+
+
             $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $location.host() + ":" + $location.port();
 
             refreshForm();

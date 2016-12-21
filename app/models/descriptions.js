@@ -264,14 +264,17 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
     mongoose_client.WhenMongoDBConnected(function () {
 
         function asyncFunction(file, cb) {
-
             self.findOne({$or: [{uid: file}, {dataset_uid: file}]})
                 .lean()
-                .deepPopulate('_otherSources schema_id _team _otherSources._team schema_id._team')
+                .deepPopulate('_otherSources schema_id _team _otherSources._team schema_id._team', {
+                    populate: {
+                        '_otherSources' : {
+                            match: {'imported': false}
+                        }
+                    }
+                })
                 .exec(function (err, description) {
-
-           
-
+                    // console.log(JSON.stringify(description));
                     if (err) {
                         winston.error("❌ Error occurred when finding datasource description: ", err);
                     } else {
