@@ -124,29 +124,18 @@ See this Doc for information on the data import framework capabilities.
 
 ---------------------
 
-### Contributing
-1. Contributors should check out the 'develop' branch with `git checkout develop` and push only non-breaking changes to this branch. 
+### Contributing Workflow
+1. Contributors should check out the 'develop' branch with `git checkout develop`.
 
-2. Commits that might include breaking changes, i.e. API modifications, large refactors, cross-module works-in–progress, etc., should go on a separate branch. To create a new branch, execute `git checkout -b [your branch name]`. 
+2. Anytime you work on a new feature/bug fix etc, create a new branch. From the develop branch, run `git checkout -b [a branch name]`. If you execute `git branch` you can see that you've created and navigated to your new branch.
 
-3. When you're ready to merge your branch back into 'develop':
+3. When you're done working on that branch, navigate to the repo and you should see a green button above the files that says "Compare & pull request". Click that button.
 
-	3a. `git pull` to get the latest changes to 'develop' from origin,
+    3a. Towards the top of the page, there will be a bar with two buttons. Click the one that says "base: master" and change it to "develop". Then click the "compare" button and make sure it's on your current branch.
 
-	3b. checkout your branch, 
-	
-	3c. execute `git rebase -i develop`, 
-	
-	3d. resolve any conflicts during the interactive rebase, 
-	
-	3e. checkout 'develop',
-	
-	3f. finally, execute `git merge [your branch name]`. 
+    3b. Add in any comments for clarity and click "Create pull request".
 
-	If everything went well it's also a good idea to prune your old branches, especially if you have pushed them up to origin (github). (Note: This same interactive-rebase-and-merge procedure is applied when merging 'develop' into 'master' for a release. The rebase is included in case hotfixes are added to 
-	'master' which need to be backwards-integrated into 'develop' - which should be avoided whenever possible.) 
-
-4. Production releases should generally be tagged on 'master', and this should probably be automated later by using a continuous integration system.
+4. Once you're ready to start a new branch, go back to step 1. Note: It's important to start the new branch off 'develop' as each time you create one, it inherits from the branch you're currently on.
 
 
 ---------------------

@@ -195,7 +195,7 @@ module.exports.get = function (req, res) {
         .exec(function (err, description) {
 
             if (err) return res.status(500).send(err);
-            if (!description) return res.status(404).send('Dataset noot found');
+            if (!description) return res.status(404).send('Dataset not found');
 
             if (description.schema_id) {
                 description = datasource_description.Consolidate_descriptions_hasSchema(description);
@@ -255,7 +255,7 @@ module.exports.loadDatasourceColumnsForMapping = function (req, res) {
                         })
                     });
                 else
-                    return res.status(500).send('Invalid paramter');
+                    return res.status(500).send('Invalid parameter');
             }
         });
 };
@@ -268,7 +268,7 @@ module.exports.getAdditionalSourcesWithSchemaID = function (req, res) {
         .lean()
         .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, sources) {
-            if (err) return res.status(500).send( "Error getting the addiontal datasources with schema id : " + req.params.id);
+            if (err) return res.status(500).send( "Error getting the additional datasources with schema id : " + req.params.id);
             return res.json({
                 sources: sources.map(function (source) {
                     return datasource_description.Consolidate_descriptions_hasSchema(source);
@@ -638,7 +638,7 @@ module.exports.getAvailableMatchFns = function (req, res) {
 };
 
 module.exports.download = function (req, res) {
-    if (!req.params.id) return res.status(500).send('Invalid paramter');
+    if (!req.params.id) return res.status(500).send('Invalid parameter');
 
     datasource_description.findById(req.params.id)
         .lean()
@@ -662,7 +662,7 @@ module.exports.download = function (req, res) {
 }
 
 module.exports.initializeToImport = function (req, res) {
-    if (!req.body.uid) return res.status(500).send('Invalid Paramter');
+    if (!req.body.uid) return res.status(500).send('Invalid Parameter');
 
     var uid = req.body.uid;
 
@@ -762,7 +762,7 @@ module.exports.preImport = function (req, res) {
 
 module.exports.postImport = function (req, res) {
     if (!req.body.uid) {
-        return res.status(500).send('Invalid Paramter');
+        return res.status(500).send('Invalid Parameter');
     }
 
     var uid = req.body.uid;
@@ -799,7 +799,7 @@ module.exports.postImport = function (req, res) {
 };
 
 module.exports.removeSubdataset = function(req, res) {
-    if (!req.body.id) return res.status(500).send('Invalid paramter');
+    if (!req.body.id) return res.status(500).send('Invalid parameter');
 
     datasource_description.findById(req.body.id, function (err, doc) {
         if (err) {

@@ -1166,7 +1166,6 @@ module.exports.GenerateImageURLFieldsByScraping
                     });
 
                 } else {
-
                     async.waterfall(
                         [async.apply(scrapeImages, folder,mongooseModel, doc, htmlSourceAtURLInField, setFields, selectors),
                             updateDocWithImageUrl

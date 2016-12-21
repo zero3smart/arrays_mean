@@ -93,39 +93,34 @@ img.iconMap {
 
 /* Dataset Breadcrumb */
 
-.dashboard .dataset .md-button {
-    min-width: 40px;
-}
-
-.btn-label {
-    text-transform: none;
-}
-
-.md-nav-bar {
-    height: auto;
-}
-
-.md-nav-bar .md-button {
+.dataset-breadcrumb button {
+    float: left;
     width: 20%;
-    line-height: 2em;
+    margin: 0;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    outline: none;
+    color: #333338;
+}
+.dataset-breadcrumb button:disabled {
+    color: #9B9B9B;
 }
 
-.nav-item-label {
+.dataset-breadcrumb span {
+    font-family: var(--font-family-calibre);
     display: block;
+    text-align: center;
 }
-/*@media (max-width: 1300px) {
-    .nav-item-label {
-        display: none;
-    }
-}*/
-
-.md-nav-bar .md-button.active {
+.dataset-breadcrumb .active span {
     font-weight: bold;
 }
 
-.md-nav-bar .md-button:focus, /* add outline later? */
-.md-nav-bar .md-button:hover {
-    background-color: transparent;
+.dataset-breadcrumb .nav-item-icon {
+    font-size: 24px;
+}
+.dataset-breadcrumb .nav-item-label {
+    font-size: 14px;
 }
 
 /* Dataset List */
