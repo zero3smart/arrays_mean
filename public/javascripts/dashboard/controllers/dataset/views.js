@@ -14,7 +14,7 @@ angular.module('arraysApp')
             }
 
 
-
+            $scope.$parent.$parent.uploadStepFinished = true;
             $scope.$parent.$parent.currentNavItem = 'Views';
 
             if (!$scope.$parent.$parent.dataset.fe_views) {
@@ -48,7 +48,7 @@ angular.module('arraysApp')
 
 
             	viewResource.get({id:id},function(data) {
-                    
+
                     $mdDialog.show({
                         controller: ViewDialogController,
                         templateUrl: 'templates/dataset/views.view.html',
@@ -68,7 +68,7 @@ angular.module('arraysApp')
                         }
                     })
                         .then(function (savedDataset) {
-                            $scope.$parent.$parent.dataset = savedDataset; 
+                            $scope.$parent.$parent.dataset = savedDataset;
 
                             $scope.data.default_view = savedDataset.fe_views.default_view;
                             $scope.vm.viewsForm.$setDirty();
@@ -77,7 +77,7 @@ angular.module('arraysApp')
                         });
 
 
-                        
+
             	})
             };
 
@@ -169,7 +169,7 @@ angular.module('arraysApp')
 
                 $scope.loadDatasetsForMapping = function() {
 
-          
+
 
 
                     if ($scope.otherAvailableDatasets.length == 0 && $scope.otherDatasetsloaded==false) {
@@ -198,7 +198,7 @@ angular.module('arraysApp')
                         DatasetService.getMappingDatasourceCols(pKey)
                         .then(function(cols) {
                             $scope.otherDatasetCols[pKey] = cols;
-                            $scope.loading = false;                         
+                            $scope.loading = false;
                         })
                     }
                 }
@@ -214,8 +214,8 @@ angular.module('arraysApp')
                         $scope.data[settingName].conditions.push({});
 
                     }
-                  
-                  
+
+
                     $scope.loadIcons();
                 }
 
@@ -268,7 +268,7 @@ angular.module('arraysApp')
                 $scope.reset();
 
                 // $scope.data.default_view = default_view;
-    
+
 
                 $scope.addMore = function (field,pushType) {
                     if (pushType == 'object') {
@@ -287,11 +287,11 @@ angular.module('arraysApp')
                                 $scope.dataset.raw_rowObjects_coercionScheme[col].operation) {
 
                                 var lowercase = $scope.dataset.raw_rowObjects_coercionScheme[col].operation.toLowerCase();
-    
+
                                 return lowercase.indexOf(requireType.toLowerCase()) >= 0
                             }
 
-                            return false;                       
+                            return false;
                         }
 
                         return true;
@@ -328,7 +328,7 @@ angular.module('arraysApp')
 
                 $scope.checkDuplicateKey = function(list,$index) {
                     return function(col) {
-                    
+
                        return $scope.notChosen(list,col,$index);
                     }
                 }
@@ -344,7 +344,7 @@ angular.module('arraysApp')
 
                     if ($scope.isDefault == true) {
                         $scope.dataset.fe_views.default_view = viewName;
-                    } 
+                    }
 
                     if ($scope.isDefault) {
                         if ($scope.isCustomView) {
@@ -362,7 +362,7 @@ angular.module('arraysApp')
                         if ($scope.dataset.useCustomView) {
                             if (!$scope.data.visible) {
                                 $scope.dataset.useCustomView = false;
-                            } 
+                            }
                         } else {
                             if ($scope.data.visible || $scope.isDefault) {
                                 $scope.dataset.useCustomView = true;

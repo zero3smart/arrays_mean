@@ -13,10 +13,11 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = angular.copy(dataset);
             $scope.additionalDatasources = angular.copy(additionalDatasources);
 
-    
+
 
             $scope.data = {};
 
+            $scope.$parent.$parent.uploadStepFinished = true;
             $scope.$parent.$parent.currentNavItem = 'Data';
 
             $scope.availableTypeCoercions = availableTypeCoercions;
@@ -48,7 +49,7 @@ angular.module('arraysApp')
                     }
                 })
                     .then(function (savedDataset) {
-                    
+
                         $scope.$parent.$parent.dataset = savedDataset;
 
                         if (Object.keys(savedDataset.fe_designatedFields).length > 0) {
@@ -60,7 +61,7 @@ angular.module('arraysApp')
 
                         $scope.vm.dataForm.$setDirty();
 
-                        
+
                     }, function () {
                         console.log('You cancelled the field dialog.');
                     });
@@ -240,7 +241,7 @@ angular.module('arraysApp')
 
                     if (typeof $scope.data.designatedField !== 'undefined') {
                          $scope.dataset.fe_designatedFields[$scope.data.designatedField] = $scope.fieldName;
-                    } 
+                    }
 
                     var index = $scope.dataset.fe_fieldDisplayOrder.indexOf($scope.fieldName);
                     if (index != -1) $scope.dataset.fe_fieldDisplayOrder.splice(index, 1);

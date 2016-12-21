@@ -4,6 +4,7 @@ angular.module('arraysApp')
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.additionalDatasources = additionalDatasources;
+            $scope.$parent.$parent.uploadStepFinished = true;
             $scope.$parent.$parent.currentNavItem = 'Done';
             $scope.importLogger = [];
             $scope.inProgress = false;
