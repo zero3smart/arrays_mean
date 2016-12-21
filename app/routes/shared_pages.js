@@ -33,7 +33,6 @@ router.get('/:shared_page_id', function (req, res) {
     var shared_page_id = req.params.shared_page_id;
     if (!shared_page_id || shared_page_id == "") {
         res.status(403).send("Bad Request - shared_page_id missing")
-
         return;
     }
     shared_pages_controller.FindOneWithId(shared_page_id, function (err, doc) {

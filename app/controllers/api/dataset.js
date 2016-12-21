@@ -28,7 +28,7 @@ function getAllDatasetsWithQuery(query, res) {
         importRevision: 1
     }, function (err, datasets) {
         if (err) {
-            return res.json({error: err.message});
+             return res.status(500).send(err);
         }
         return res.json({datasets: datasets});
     })
@@ -57,8 +57,7 @@ module.exports.signedUrlForAssetsUpload = function (req, res) {
 };
 
 module.exports.remove = function (req, res) {
-    if (!req.body.id)
-        return res.json({error: 'No ID given'});
+    if (!req.body.id) return res.status(500).send('No ID given');
 
     var batch = new Batch();
     batch.concurrency(1);
@@ -178,25 +177,25 @@ module.exports.remove = function (req, res) {
     batch.end(function (err) {
         if (err) {
             winston.error("❌  Error encountered during raw objects remove : ", err);
-            return res.json({error: err.message});
+            return res.status(500).send(err);
         }
         winston.info("✅  Removed dataset : " + description.title);
-        res.json({success: 'ok'});
+        return res.status(200).send('ok');
     });
 };
 
 module.exports.get = function (req, res) {
 
     if (!req.params.id)
-        return res.json({error: 'No ID given'});
+        return res.status(500).send('No ID given');
 
     datasource_description.findById(req.params.id)
         .lean()
         .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, description) {
 
-            if (err) return res.json({error: err.message});
-            if (!description) return res.json({error: 'Invalid ID'});
+            if (err) return res.status(500).send(err);
+            if (!description) return res.status(404).send('Dataset not found');
 
             if (description.schema_id) {
                 description = datasource_description.Consolidate_descriptions_hasSchema(description);
@@ -207,7 +206,7 @@ module.exports.get = function (req, res) {
             if (description.uid && !req.session.columns[req.params.id]) {
 
                 _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
-                    if (err) return res.json({error: err.message});
+                    if (err) return res.status(500).send(err);
 
                     req.session.columns[req.params.id] = columns;
                     description.columns = columns;
@@ -224,7 +223,7 @@ module.exports.get = function (req, res) {
 };
 
 module.exports.loadDatasourceColumnsForMapping = function (req, res) {
-    if (!req.params.pKey) return res.json({error: 'No Primary Key given'});
+    if (!req.params.pKey) return res.status(500).send('Invalid parameter.');
 
     var split = req.params.pKey.split("-");
     var query = {uid: split[0], importRevision: parseInt(split[1].substring(1))};
@@ -233,13 +232,13 @@ module.exports.loadDatasourceColumnsForMapping = function (req, res) {
         .populate('_team')
         .lean()
         .exec(function (err, description) {
-            if (err) return res.json({error: err.message});
+            if (err) return res.status(500).send(err);
 
             if (!req.session.columns) req.session.columns = {};
 
             if (description.uid && !req.session.columns[description._id]) {
                 _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
-                    if (err) return res.json({error: err.message});
+                    if (err) return res.status(500).send(err);
 
                     req.session.columns[description._id] = columns;
                     res.json({
@@ -256,20 +255,20 @@ module.exports.loadDatasourceColumnsForMapping = function (req, res) {
                         })
                     });
                 else
-                    return res.json({error: 'No datasource uploaded!'});
+                    return res.status(500).send('Invalid parameter');
             }
         });
 };
 
 module.exports.getAdditionalSourcesWithSchemaID = function (req, res) {
-    if (!req.params.id) return res.json({error: 'No SchemaID given'});
+    if (!req.params.id) return res.status(500).send('No SchemaID given');
+
 
     datasource_description.find({schema_id: req.params.id})
         .lean()
         .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, sources) {
-            if (err) return res.json({error: "Error getting the addiontal datasources with schema id : " + req.params.id});
-
+            if (err) return res.status(500).send( "Error getting the additional datasources with schema id : " + req.params.id);
             return res.json({
                 sources: sources.map(function (source) {
                     return datasource_description.Consolidate_descriptions_hasSchema(source);
@@ -294,18 +293,17 @@ module.exports.update = function (req, res) {
 
         // Creating of New Dataset
         datasource_description.create(req.body, function (err, doc) {
-
             if (err) {
-                return res.json({error: err.message});
+                return res.status(500).send(err);
             } else {
 
                 Team.findById(req.body._team, function (err, team) {
                     if (err) {
-                        return res.json({error: err.message});
+                        return res.status(500).send(err);
                     } else {
                         team.datasourceDescriptions.push(doc.id);
                         team.save(function (err, saved) {
-                            if (err) return res.json({error: err.message});
+                            if (err) return res.status(500).send(err);
                             return res.json({id: doc.id});
                         });
                     }
@@ -321,8 +319,8 @@ module.exports.update = function (req, res) {
             .populate('schema_id')
             .exec(function (err, doc) {
 
-                if (err) return res.json({error: err.message});
-                if (!doc) return res.json({error: 'Invalid Operation'});
+                if (err) return res.status(500).send(err);
+                if (!doc) return res.status(500).send('Invalid Operation');
 
                 var description = doc, description_title = doc.title;
                 if (doc.schema_id) {
@@ -379,8 +377,8 @@ module.exports.update = function (req, res) {
                 });
 
                 doc.save(function (err, updatedDoc) {
-                    if (err) return res.json({error: err.message});
-                    if (!updatedDoc) return res.json({error: 'Invalid Operation'});
+                    if (err) return res.status(500).send(err);
+                    if (!updatedDoc) return res.status(500).send('Invalid Operation');
 
                     if (!doc.schema_id) {
                         return res.json({id: updatedDoc.id});
@@ -400,8 +398,8 @@ module.exports.update = function (req, res) {
                         } };
                         datasource_description.findOneAndUpdate(findQuery, updateQuery, {upsert: true, new: true},
                             function(err, updatedDoc) {
-                                if (err) return res.json({error: err.message});
-                                if (!updatedDoc) return res.json({error: 'Invalid Operation'});
+                                if (err) return res.status(500).send(err);
+                                if (!updatedDoc) return res.status(500).send('Invalid Operation');
 
                                 return res.json({id: updatedDoc.id});
                             });
@@ -471,7 +469,8 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 }
 
 module.exports.upload = function (req, res) {
-    if (!req.body.id) return res.json({error: 'No ID given'});
+    if (!req.body.id) return res.status(500).send('No ID given');
+
     var child = req.body.child;
 
     var batch = new Batch;
@@ -639,16 +638,15 @@ module.exports.getAvailableMatchFns = function (req, res) {
 };
 
 module.exports.download = function (req, res) {
-    if (!req.params.id)
-        return res.json({error: 'No ID given'});
+    if (!req.params.id) return res.status(500).send('Invalid parameter');
 
     datasource_description.findById(req.params.id)
         .lean()
         .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, description) {
 
-            if (err) return res.json({error: err.message});
-            if (!description) return res.json({error: 'Invalid ID'});
+            if (err) return res.status(500).send(err);
+            if (!description) return res.status(404).send('Dataset not found');
 
             if (description.schema_id) {
                 description = datasource_description.Consolidate_descriptions_hasSchema(description);
@@ -664,7 +662,7 @@ module.exports.download = function (req, res) {
 }
 
 module.exports.initializeToImport = function (req, res) {
-    if (!req.body.uid) return res.json({error: 'No UID given'});
+    if (!req.body.uid) return res.status(500).send('Invalid Parameter');
 
     var uid = req.body.uid;
 
@@ -725,14 +723,14 @@ module.exports.initializeToImport = function (req, res) {
     });
 
     batch.end(function (err) {
-        if (err) return res.json({error: err.message});
+        if (err) return res.status(500).send(err);
 
         res.json({uid: uid});
     });
 };
 
 module.exports.preImport = function (req, res) {
-    if (!req.body.uid) return res.json({error: 'No UID given'});
+    if (!req.body.uid) return res.status(500).send('Invalid parameter');
 
     var uid = req.body.uid;
 
@@ -762,7 +760,7 @@ module.exports.preImport = function (req, res) {
 
 module.exports.postImport = function (req, res) {
     if (!req.body.uid) {
-        return res.json({error: 'No UID given'});
+        return res.status(500).send('Invalid Parameter');
     }
 
     var uid = req.body.uid;
@@ -774,7 +772,7 @@ module.exports.postImport = function (req, res) {
 
         var fn = function (err) {
             if (err) {
-                res.json({error: err.message}); // error code
+                return res.status(500).send(err);// error code
             } else {
 
                 datasource_description.findOne({$or: [{uid: uid}, {dataset_uid: uid}]},function (err, dataset) {
@@ -785,8 +783,8 @@ module.exports.postImport = function (req, res) {
                         dataset.imported = true;
 
                         dataset.save(function (err, updatedDataset) {
-                            if (err) return res.json({error: err.message});
-                            if (!updatedDataset) return res.json({error: 'Invalid Operation'});
+                            if (err) return res.status(500).send(err);
+                            if (!updatedDataset)  return res.status(500).send('Invalid Operation');
 
                             return res.json({dataset: dataset});
                         });
@@ -799,23 +797,22 @@ module.exports.postImport = function (req, res) {
 };
 
 module.exports.removeSubdataset = function(req, res) {
-    if (!req.body.id)
-        return res.json({error: 'No ID given'});
+    if (!req.body.id) return res.status(500).send('Invalid parameter');
 
     datasource_description.findById(req.body.id, function (err, doc) {
         if (err) {
             winston.error("❌  Error encountered during find description : ", err);
-            return res.json({error: err.message});
+           return res.status(500).send(err);
         }
-        if (!doc) return res.json({success: 'Not available'});
+        if (!doc) return res.status(200).send('ok');
 
         doc.remove(function(err) {
             if (err) {
                 winston.error("❌  Error encountered during remove description : ", err);
-                return res.json({error: err.message});
+                return res.status(500).send(err);
             }
             winston.info("✅  Removed the datasource description : " + doc.id);
-            res.json({success: 'ok'});
+            return res.status(200).send('ok');
         });
     });
 };

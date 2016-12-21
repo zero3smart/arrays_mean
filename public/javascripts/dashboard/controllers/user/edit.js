@@ -121,9 +121,36 @@ angular
                 });
             };
 
+
+            $scope.resendInvite = function() {
+
+  
+
+                AuthService.resendInvite($scope.selectedUser._id)
+                .then(function(response) {
+                    if (response.status == 200) {
+                         $mdToast.show(
+                            $mdToast.simple()
+                                .textContent("Invitation resent successfully!")
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+
+                    }
+ 
+                },function(err) {
+                     console.log(err);
+                     $mdToast.show(
+                            $mdToast.simple()
+                                .textContent(err)
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                })
+            }
+
             $scope.inviteUser = function() {
              
-
                 var queryParams = {
                     email: $scope.selectedUser.email
                 };
@@ -131,7 +158,7 @@ angular
                 User.search(queryParams)
                     .$promise.then(function(data) {
 
-
+        
                     if (data.length > 0) {
 
                         if (data[0]._team.indexOf($scope.team._id) >= 0 ) {
@@ -244,18 +271,22 @@ angular
             var inviteAndSentEmail = function () {
 
                 AuthService.inviteUser($scope.selectedUser)
-                    .then(function(data) {
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent(data)
-                                .position('top right')
-                                .hideDelay(3000)
-                        );
+                    .then(function(response) {
+                        if (response.status == 200) {
+                            var user = response.data.user;
 
-                        $scope.selectedUser = null;
-                        $scope.vm.userForm.$setPristine();
-                        $scope.vm.userForm.$setUntouched();
+                            $scope.$parent.$parent.user.invited = user.invited;
+                            $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent('Invitation email sent!')
+                                    .position('top right')
+                                    .hideDelay(3000)
+                            );
 
+                            $scope.selectedUser = null;
+                            $scope.vm.userForm.$setPristine();
+                            $scope.vm.userForm.$setUntouched();
+                        }
                     },function(err) {
                         $mdToast.show(
                             $mdToast.simple()

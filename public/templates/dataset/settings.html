@@ -1,5 +1,5 @@
 <md-content layout-padding>
-    <form name="settingsForm" ng-submit="submitForm(settingsForm.$valid && settingsForm.$dirty)" novalidate>
+    <form name="settingsForm" ng-submit="submitForm(settingsForm.$valid)" novalidate>
         <md-input-container class="md-block">
             <label>Title</label>
             <input required name="title" ng-model="dataset.title">
@@ -49,7 +49,7 @@
             <md-button ui-sref="dashboard.dataset.list" class="md-raised md-dashboard md-light" target="_self" md-no-ink>
                 <span class="btn-label">Back</span>
             </md-button>
-            <md-button class="md-raised md-dashboard md-dark" type="submit" ng-disabled="settingsForm.$invalid || !settingsForm.$dirty || submitting" md-no-ink>
+            <md-button class="md-raised md-dashboard md-dark" type="submit" ng-disabled="settingsForm.$invalid || submitting" md-no-ink>
                 <span class="btn-label">Next</span>
             </md-button>
         </div>

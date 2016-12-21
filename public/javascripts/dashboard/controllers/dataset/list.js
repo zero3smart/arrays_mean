@@ -13,8 +13,8 @@ angular.module('arraysApp')
                     .ok('Yes')
                     .cancel('No');
                 $mdDialog.show(confirm).then(function () {
-                    DatasetService.remove(id).then(function(result) {
-                        if (result === true) {
+                    DatasetService.remove(id).then(function(response) {
+                        if (response.status === 200) {
                             $scope.datasets = $scope.datasets.filter(function(a) {
                                 return a._id !== id;
                             });
@@ -26,6 +26,7 @@ angular.module('arraysApp')
                             );
                         }
                     }, function(error) {
+
                         $mdToast.show(
                             $mdToast.simple()
                                 .textContent(error)

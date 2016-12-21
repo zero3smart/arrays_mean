@@ -14,12 +14,13 @@
         </p>
 
         <md-checkbox class="md-secondary" ng-model="person.active" ng-change="toggleActive(person)"
-                 ng-if="user._id != person._id && person.activated==true">{{ person.active ? 'Active' : 'Inactive' }}
+                 ng-if="user._id != person._id && !user.invited[person._id] ">{{ person.active ? 'Active' : 'Inactive' }}
         </md-checkbox>
 
         <i class="md-secondary glyphicon glyphicon-trash" ng-click="remove($index)" aria-label="Delete"
-           ng-if="user._id != person._id && person.activated==true"></i>
-        <div ng-if="person.activated==false && person._team.length > 0">
+           ng-if="user._id != person._id && !user.invited[person._id]"></i>
+           
+        <div ng-if="user.invited[person._id]">
             <span>Pending Invitation</span>
         </div>
          <md-divider ng-if="!$last"></md-divider>
