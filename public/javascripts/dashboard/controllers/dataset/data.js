@@ -763,7 +763,7 @@ angular.module('arraysApp')
                     }
                 })
                     .then(function (savedDataset) {
-                        console.log(savedDataset);
+
                         $scope.$parent.$parent.dataset = savedDataset;
                         sortColumnsByDisplayOrder();
 
@@ -818,8 +818,11 @@ angular.module('arraysApp')
                     $scope.dataset.relationshipFields.forEach(function(relationshipField, index) {
                         var pKey = relationshipField.by.ofOtherRawSrcUID + '-v' + relationshipField.by.andOtherRawSrcImportRevision;
                         DatasetService.getMappingDatasourceCols(pKey)
-                            .then(function(columns) {
-                                $scope.data.columns[index] = columns;
+                            .then(function(response) {
+                               if (response.status == 200) {
+                                    $scope.data.columns[index] = response.data.cols;
+
+                                }
                             });
                     });
                 }
@@ -862,8 +865,11 @@ angular.module('arraysApp')
                     var pKey = source.uid + '-v' + source.importRevision;
 
                     DatasetService.getMappingDatasourceCols(pKey)
-                        .then(function(columns) {
-                            $scope.data.columns[index] = columns;
+                        .then(function(response) {
+                            if (response.status == 200) {
+                                $scope.data.columns[index] = response.data.cols;
+
+                            }
                         });
                 };
 
@@ -892,8 +898,6 @@ angular.module('arraysApp')
                         if ($scope.dataset._otherSources.indexOf(source._id) == -1)
                             $scope.dataset._otherSources.push(source._id);
                     });
-                    console.log($scope.dataset._otherSources);
-
                     $mdDialog.hide($scope.dataset);
                 };
             }
@@ -1032,7 +1036,6 @@ angular.module('arraysApp')
                     var queue = [];
 
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
-                    console.log(finalizedDataset);
                     delete finalizedDataset.columns;
 
                     // console.log(finalizedDataset)

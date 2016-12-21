@@ -29,7 +29,9 @@ angular.module('arraysApp')
                 DatasetService.publish($scope.$parent.$parent.dataset._id, isPublic)
             };
 
-            function errorHandler(error) {
+            function errorHandler(response) {
+
+                var error = response.data;
                 $scope.importLogger.push("❌ Import failed due to " + error);
 
                 $scope.inProgress = false;
@@ -40,12 +42,14 @@ angular.module('arraysApp')
 
                 DatasetService.preImport(uid)
                     .then(function (response) {
+                        if (response.status == 200) {
+                            var uid = response.data.uid;
+                            $scope.importLogger.push("📡 [" + uid + "] Successfully pre-imported!");
+                            postImport(uid);
 
-                        var uid = response.data.uid;
-                        $scope.importLogger.push("📡 [" + uid + "] Successfully pre-imported!");
-
-                        postImport(uid);
-
+                        } else {
+                            errorHandler(response);
+                        }
                     }, errorHandler);
             }
 
@@ -54,19 +58,25 @@ angular.module('arraysApp')
 
                 DatasetService.postImport(uid)
                     .then(function (response) {
-                        var dataset = response.data.dataset;
-                        $scope.importLogger.push("📡 [" + uid + "] Successfully finalized!");
+                       
+                        if (response.status == 200) {
+                            var dataset = response.data.dataset;
+                            $scope.importLogger.push("📡 [" + uid + "] Successfully finalized!");
 
-                        if (datasourceIndex == -1) {
-                            $scope.$parent.$parent.dataset = dataset;
+                            if (datasourceIndex == -1) {
+                                $scope.$parent.$parent.dataset = dataset;
+                            } else {
+                                $scope.additionalDatasources[datasourceIndex] = dataset;
+                            }
+                            datasourceIndex ++;
+                            if (datasourceIndex < $scope.additionalDatasources.length) {
+                                importDatasource($scope.additionalDatasources[datasourceIndex]);
+                            } else {
+                                allDone();
+                            }
+
                         } else {
-                            $scope.additionalDatasources[datasourceIndex] = dataset;
-                        }
-                        datasourceIndex ++;
-                        if (datasourceIndex < $scope.additionalDatasources.length) {
-                            importDatasource($scope.additionalDatasources[datasourceIndex]);
-                        } else {
-                            allDone();
+                            errorHandler(response);
                         }
 
                     }, errorHandler);
@@ -77,11 +87,17 @@ angular.module('arraysApp')
 
                 DatasetService.initializeToImport(uid)
                     .then(function (response) {
-                       if (response.status == 200) {
+
+
+                        if (response.status == 200) {
                             var uid = response.data.uid;
                             $scope.importLogger.push("📡 [" + uid + "] Successfully initialized to import!");
                             preImport(uid);
-                       }
+
+                        } else {
+                            errorHandler(response);
+                        }
+
                     }, errorHandler);
             }
 
