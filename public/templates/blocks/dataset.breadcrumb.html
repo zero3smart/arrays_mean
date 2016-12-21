@@ -2,7 +2,7 @@
 
     <button ng-click="navigate('dashboard.dataset.settings')"
         ng-class="{active: currentStep == 'dashboard.dataset.settings'}">
-        <span class="nav-item-icon" ng-class="(dataset.title && dataset.description && dataset.importRevision)? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
+        <span class="nav-item-icon" ng-class="dataset._id ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
         <span class="nav-item-label">1. General Settings</span>
     </button>
 
