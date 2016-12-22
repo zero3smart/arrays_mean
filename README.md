@@ -101,9 +101,10 @@ Anytime you add a new account in arrays, you will have a new subdomain. If you w
 6. Go to Google Docs, click the folder icon -> Shared With Me -> Arrays Beta -> MongoDB Files -> JSON -> views
 7. Copy each of the view files and paste into the Insert Document window. (by the end, you should have 9 objects in your views collection)
 
-##### VII. Flush your cache.
+##### VIII. Running the front-end server locally
 
-Flush your cache by running `dscacheutil -flushcache` in the terminal and you're all set for running Arrays locally!. 
+1. Flush your cache by running `dscacheutil -flushcache` in the terminal and you're all set for running Arrays locally!. 
+2. Execute [`bin/start_dev_app`](bin/start_dev_app)
 
 #### iii. Signing into Heroku
 
@@ -112,40 +113,6 @@ Flush your cache by running `dscacheutil -flushcache` in the terminal and you're
 $ heroku login
 3. Add a remote using the git URL so that you can deploy the current source to Heroku.
 $ heroku git:remote -a arrays
-
-
-#### iv. Seeding the local database
-
-1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
-2. Configure datasets to batch import in [`app/datasources/descriptions/default.js`](app/datasources/descriptions/default.js)
-3. Execute [`bin/_dev_DB_seed`](bin/_dev_DB_seed) to import all datasets configured in `default.js`
-4. Execute [`bin/_dev_postImportCaching`](bin/_dev_postImportCaching) -- Needed for generating the sidebar filters cache
-
-##### Importing one dataset at a time
-
-1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
-2. Execute [`bin/_dev_DB_seed marvel_character_database`](bin/_dev_DB_seed) where `marvel_character_database` is the file name to import from the `app/datasources/descriptions/` directory. `marvel_character_database.js` is also acceptable.
-3. These parameters can be applied to all the binary commands in the `/bin` directory
-  * bin/_start_dev_postImportCaching
-  * bin/_dev_postImportCaching
-  * bin/_dev_DB_seed__enterImageScrapingDirectly
-  * Etc.
-4. Except for:
-  * _runUntilSuccess_DEVELOPMENT_DB_seed__enterImageScrapingDirectly
-  * _runUntilSuccess_PRODUCTION_DB_seed__enterImageScrapingDirectly
-  * Start_dev_app
-5. Execute [`bin/_dev_postImportCaching`](bin/_dev_postImportCaching) to re-generate sidebar filters cache, re-cache the keywords
-6. Optional, Excute [`bin/_dev_DB_cache_keywords`] to update only the keywords caches if they were changed after installed.
-
-##### Caching the keywords directly
-1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
-2. Execute [`bin/_dev_DB_cache_keywords transcript_data`](bin/_dev_DB_cache_keywords)
-
-#### v. Running the front-end web server locally
-
-1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
-2. Execute [`bin/start_dev_app`](bin/start_dev_app)
-
 
 ---------------------
 
