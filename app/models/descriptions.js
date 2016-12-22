@@ -32,7 +32,6 @@ var DatasourceDescription_scheme = Schema({
 
     useCustomView: {type: Boolean, default: false},
     
-    fn_new_rowPrimaryKeyFromRowObject: String,
     raw_rowObjects_coercionScheme: Object,
     fe_excludeFields: Object,
     fe_displayTitleOverrides: Object,

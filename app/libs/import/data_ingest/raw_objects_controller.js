@@ -164,16 +164,10 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
             }
 
 
-            var rowObject_primaryKey = description.dataset_uid ? description.dataset_uid + "-" + (lineNr - 1) + "-" + rowObject[description.fn_new_rowPrimaryKeyFromRowObject] : "" + (lineNr - 1) + "-" + rowObject[description.fn_new_rowPrimaryKeyFromRowObject];
+            var rowObject_primaryKey = description.dataset_uid ? description.dataset_uid + "-" + (lineNr - 1) : "" + (lineNr - 1) ;
 
 
-            if (typeof rowObject_primaryKey === 'undefined' || rowObject_primaryKey == null || rowObject_primaryKey == "") {
-                winston.error("❌  Error: missing pkey on row", rowObject, "with factory accessor", description.fn_new_rowPrimaryKeyFromRowObject);
-
-                return;
-            }
-
-            var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, lineNr - 2, rowObject);
+            var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, rowObject);
             // winston.info("parsedObject " , parsedObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
                 winston.info("⚠️  Warning: An object with the same primary key, \""

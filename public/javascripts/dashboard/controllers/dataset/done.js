@@ -11,7 +11,7 @@ angular.module('arraysApp')
             $scope.usedInMerging = [];
             DatasetService.getDatasetsWithQuery({_otherSources: dataset._id})
             .then(function(datasets) {
-                $scope.additionalDatasources = datasets;
+                $scope.additionalDatasources = $scope.additionalDatasources.concat(datasets);
             })
 
 
@@ -71,6 +71,10 @@ angular.module('arraysApp')
                             $scope.importLogger.push("📡 [" + uid + "] Successfully finalized!");
 
                             if (datasourceIndex == -1) {
+                                if (!dataset.fe_designatedFields) {
+                                    dataset.fe_designatedFields = {};
+                                }
+
                                 $scope.$parent.$parent.dataset = dataset;
                             } else {
                                 $scope.additionalDatasources[datasourceIndex] = dataset;

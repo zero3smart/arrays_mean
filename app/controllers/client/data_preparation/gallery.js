@@ -219,7 +219,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         _id: 1,
                         pKey: 1,
                         srcDocPKey: 1,
-                        rowIdxInDoc: 1,
                         size: {
                             $cond: {
                                 if: {$isArray: "$" + sortBy_realColumnName_path},

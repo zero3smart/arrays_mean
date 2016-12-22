@@ -73,7 +73,7 @@ var _PostProcessRawObjects = function (dataSourceDescriptions, fn) {
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
             
-             _postProcess(i, dataSourceDescription, eachCb);
+             _postProcess(i, dataSourceDescription,eachCb);
             if (dataSourceDescription.dirty >= 3) omitImageScraping = false;
             i++;
         },
@@ -83,13 +83,13 @@ var _PostProcessRawObjects = function (dataSourceDescriptions, fn) {
                 fn(err);
             } else {
                 winston.info("✅  Import post-processing done.");
-           
+                
 
                 if (!omitImageScraping) {
                     _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
                 } else {
-                    fn();
-                    // _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
+
+                    _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
                 }
             }
         }
@@ -123,9 +123,8 @@ var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDe
                 winston.info("✅  Image-scrapping done.");
                 winston.info("✅  All done for importing data");
                 // winston.info("📡 now ready to do post import caching");
-                fn();
-
                 // postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions, fn);
+                fn();
             }
         }
     );
@@ -139,12 +138,12 @@ var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDesc
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
+
             if (dataSourceDescription.useCustomView) {
                 require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(i,dataSourceDescription,eachCb);
             } else {
                  _afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription, eachCb);
-            }
-
+             }
             i++;
         },
         function (err) {
@@ -153,8 +152,9 @@ var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDesc
                 fn(err);
             } else {
                 winston.info("✅  All done for importing data");
-                winston.info(" 📡 now ready to do post import caching");
-                postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions, fn);
+                // winston.info(" 📡 now ready to do post import caching");
+                // postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions, fn);
+                fn();
             }
         }
     );
@@ -254,16 +254,13 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
                 winston.error("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
                 return callback(err);
             }
-            //
-            //
-            // Now execute user-defined generalized post-processing pipeline
-            //
-             if (dataSourceDescription.useCustomView) {
-                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,callback);
+
+            if (dataSourceDescription.useCustomView) {
+                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,eachCb);
             } else {
-                _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription, callback);
-            }   
-            
+                 _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription, eachCb);
+             }
+        
         }
     );
 }

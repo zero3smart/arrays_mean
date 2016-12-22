@@ -362,7 +362,6 @@ module.exports.update = function (req, res) {
                         // Import without image scrapping
                         keysForNeedToImport = [
                             'importRevision',
-                            'fn_new_rowPrimaryKeyFromRowObject',
                             'raw_rowObjects_coercionScheme',
                             'relationshipFields',
                             'customFieldsToProcess',
@@ -809,9 +808,10 @@ module.exports.postImport = function (req, res) {
                             if (err) return res.status(500).send("cannot update related sources");
                             else {
                                 dataset.save(function (err, updatedDataset) {
+
                                     if (err) return res.status(500).send(err);
                                     if (!updatedDataset)  return res.status(500).send('Invalid Operation');
-
+                        
                                     return res.json({dataset: dataset});
                                 });
 

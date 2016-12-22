@@ -279,7 +279,6 @@ var _activeFilterRange_matchCondition_orErrDescription = function (dataSourceDes
             _id: 1,
             pKey: 1,
             srcDocPKey: 1,
-            rowIdxInDoc: 1,
             rowParams: 1,
             matchingField: {
                 $cond: {
@@ -485,7 +484,6 @@ var _activeSearch_matchOp_orErrDescription = function (dataSourceDescription, se
             _id: '$_id',
             pKey: {'$first': '$pKey'},
             srcDocPKey: {'$first': '$srcDocPKey'},
-            rowIdxInDoc: {'$first': '$rowIdxInDoc'},
             rowParams: {'$first': '$rowParams'},
             wordExistence: {'$first': '$wordExistence'}
         }
