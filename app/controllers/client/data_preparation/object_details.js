@@ -289,7 +289,9 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     //
                     fe_objectShow_customHTMLOverrideFnsByColumnName: fe_objectShow_customHTMLOverrideFnsByColumnName,
 
-                    fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage
+                    fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
+                    aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
+                    folder: "/assets/images/"
                 };
                 callback(null, data);
             });
