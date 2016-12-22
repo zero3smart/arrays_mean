@@ -260,55 +260,55 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
     var descriptions = [];
     var self = this;
 
-    mongoose_client.WhenMongoDBConnected(function () {
+ 
 
-        function asyncFunction(file, cb) {
-            self.findOne({$or: [{uid: file}, {dataset_uid: file}]})
-                .lean()
-                .deepPopulate('_otherSources schema_id _team _otherSources._team schema_id._team', {
-                    populate: {
-                        '_otherSources' : {
-                            match: {'imported': false}
-                        }
+    function asyncFunction(file, cb) {
+        self.findOne({$or: [{uid: file}, {dataset_uid: file}]})
+            .lean()
+            .deepPopulate('_otherSources schema_id _team _otherSources._team schema_id._team', {
+                populate: {
+                    '_otherSources' : {
+                        match: {'imported': false}
                     }
-                })
-                .exec(function (err, description) {
-                    // console.log(JSON.stringify(description));
-                    if (err) {
-                        winston.error("❌ Error occurred when finding datasource description: ", err);
+                }
+            })
+            .exec(function (err, description) {
+                // console.log(JSON.stringify(description));
+                if (err) {
+                    winston.error("❌ Error occurred when finding datasource description: ", err);
+                } else {
+
+                    if (description._otherSources && description._otherSources.length > 0) {
+                        var omitted = _.omit(description, ["_otherSources"]);
+                        descriptions.push(omitted);
+                        _.map(description._otherSources, function (src) {
+                            var excludeOtherSource = _.omit(src, ["_otherSources"])
+                            descriptions.push(excludeOtherSource);
+                        });
+                        cb();
+
+                    } else if (!description.schema_id) {
+                        descriptions.push(description);
+                        cb();
+
                     } else {
-
-                        if (description._otherSources && description._otherSources.length > 0) {
-                            var omitted = _.omit(description, ["_otherSources"]);
-                            descriptions.push(omitted);
-                            _.map(description._otherSources, function (src) {
-                                var excludeOtherSource = _.omit(src, ["_otherSources"])
-                                descriptions.push(excludeOtherSource);
-                            });
-                            cb();
-
-                        } else if (!description.schema_id) {
-                            descriptions.push(description);
-                            cb();
-
-                        } else {
-                            descriptions.push(_consolidate_descriptions_hasSchema(description));
-                            cb();
-                        }
+                        descriptions.push(_consolidate_descriptions_hasSchema(description));
+                        cb();
                     }
-                })
-        }
+                }
+            })
+    }
 
-        var requests = files.map(function (file) {
-            return new Promise(function (resolve) {
-                asyncFunction(file, resolve);
-            });
+    var requests = files.map(function (file) {
+        return new Promise(function (resolve) {
+            asyncFunction(file, resolve);
         });
+    });
 
-        Promise.all(requests).then(function () {
-            fn(descriptions);
-        });
-    })
+    Promise.all(requests).then(function () {
+        fn(descriptions);
+    });
+
 }
 
 datasource_description.GetDescriptionsToSetup = _GetDescriptionsToSetupByFilenames;
