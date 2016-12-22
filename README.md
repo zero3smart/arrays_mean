@@ -71,6 +71,40 @@ In order to add them (and to support both local development and production deplo
 * [Arrays - Server - .env.production](https://docs.google.com/document/d/1d1IoAHgGPB4bwWGaYprtBFSVoLEcoEuw4WdruUt-v9k/)
 * [Arrays - Server - .env.development](https://docs.google.com/document/d/15-SkjQHqznSMOWevEH6yZvshdNqMzN4RErMhOPFz3jc/)
 
+##### VI. Changing your localhost settings on your computer and creating a local arrays account
+
+1. Add local.arrays.co:
+  * Run `sudo nano /etc/hosts` - You should see some numbers including your local ip address on the left column and host names on the right.
+  * Add a new log `[your local ip address]    local.arrays.co`
+  * Save the write changes with "control" + "o"
+  * Hit "enter"
+  * Exit with "control" + "x"
+
+2. Navigate to local.arrays.co:9080 and create a new account.
+
+3. Add your subdomain to hosts
+  * Run `sudo nano /etc/hosts` again.
+  * Add a new log `[your local ip address]    [your arrays subdomain].local.arrays.co` 
+  * Save the write changes with control + "o"
+  * Hit "enter"
+  * Exit with "control" + "x"
+Anytime you add a new account in arrays, you will have a new subdomain. If you want that subdomain to work locally, you have to add it to your hosts file.
+
+##### VII. Adding views to the database.
+
+
+1. Download [Robomongo](https://robomongo.org/download), if you don't already have it.
+2. Open Robomongo, go to File -> Connection and click create
+3. Address will be localhost:27017. Save and Connect.
+4. Expand arraysdb and right click Collections then click create collection and name it "views".
+5. Right click the views collection you just created and select Insert Document.
+6. Go to Google Docs, click the folder icon -> Shared With Me -> Arrays Beta -> MongoDB Files -> JSON -> views
+7. Copy each of the view files and paste into the Insert Document window. (by the end, you should have 9 objects in your views collection)
+
+##### VII. Flush your cache.
+
+Flush your cache by running `dscacheutil -flushcache` in the terminal and you're all set for running Arrays locally!. 
+
 #### iii. Signing into Heroku
 
 1. Download/Install the heroku toolbelt: https://devcenter.heroku.com/articles/heroku-command-line
