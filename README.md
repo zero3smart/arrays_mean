@@ -2,9 +2,9 @@
 
 ---------------------
 
-### Getting Started
+## Installations
 
-#### i. Installations
+---------------------
 
 1. Install brew
 
@@ -26,36 +26,36 @@
 
 ---------------------
 
-#### ii. Installing the Arrays server locally
+##Installing the Arrays server locally
 
-##### I. Download repo
+---------------------
+
+### I. Download repo
 
 1. First, clone this repository to your computer with `git clone git@github.com:schemadesign/arrays.git`
 
-##### II. Getting onto the 'develop' branch
+### II. Getting onto the 'develop' branch
 
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
 2. Execute `git checkout develop`
 
-##### III. Installing `node_modules` in the 'develop' package.json
+### III. Installing `node_modules` in the 'develop' package.json
 
 1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
 2. Execute `npm install`
 
-##### IV. Building the front-end CSS files
+### IV. Building the front-end CSS files
 
-###### 1. Install `bower_components` in the 'develop' bower.json
+1. Install `bower_components` in the 'develop' bower.json
+  * Change directory (`cd [the path to]/arrays`) into your local clone of this repository
+  * Execute `bower install`
 
-1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
-2. Execute `bower install`
+2. Run the Grunt tasks
+  * Change directory (`cd [the path to]/arrays`) into your local clone of this repository
+  * Execute `grunt build` to rebuild the main CSS file, style.min.css
+  * Execute `grunt watch` to start LiveReload which will rebuild the css and reload the page whenever a CSS, HTML, or JS file is saved
 
-###### 2. Run the Grunt tasks
-
-1. Change directory (`cd [the path to]/arrays`) into your local clone of this repository
-2. Execute `grunt build` to rebuild the main CSS file, style.min.css
-3. Execute `grunt watch` to start LiveReload which will rebuild the css and reload the page whenever a CSS, HTML, or JS file is saved
-
-##### V. Creating your `.env.development` and `.env.production` files
+### V. Creating your `.env.development` and `.env.production` files
 
 Environment-related secrets such as the production password database are not committed to this repository as a security-related best practice.
 
@@ -64,7 +64,7 @@ In order to add them (and to support both local development and production deplo
 * [Arrays - Server - .env.production](https://docs.google.com/document/d/1d1IoAHgGPB4bwWGaYprtBFSVoLEcoEuw4WdruUt-v9k/)
 * [Arrays - Server - .env.development](https://docs.google.com/document/d/15-SkjQHqznSMOWevEH6yZvshdNqMzN4RErMhOPFz3jc/)
 
-##### VI. Changing your localhost settings on your computer and creating a local arrays account
+### VI. Changing your localhost settings on your computer and creating a local arrays account
 
 1. Add local.arrays.co:
   * Run `sudo nano /etc/hosts` - You should see some numbers including your local ip address on the left column and host names on the right.
@@ -83,7 +83,7 @@ In order to add them (and to support both local development and production deplo
   * Exit with "control" + "x"
 Anytime you add a new account in arrays, you will have a new subdomain. If you want that subdomain to work locally, you have to add it to your hosts file.
 
-##### VII. Adding views to the database.
+### VII. Adding views to the database.
 
 1. Download [Robomongo](https://robomongo.org/download), if you don't already have it.
 2. Open Robomongo, go to File -> Connection and click create
@@ -93,14 +93,16 @@ Anytime you add a new account in arrays, you will have a new subdomain. If you w
 6. Go to Google Docs, click the folder icon -> Shared With Me -> Arrays Beta -> MongoDB Files -> JSON -> views
 7. Copy each of the view files and paste into the Insert Document window. (by the end, you should have 9 objects in your views collection)
 
-##### VIII. Running the front-end server locally
+### VIII. Running the front-end server locally
 
 1. Flush your cache by running `dscacheutil -flushcache` in the terminal and you're all set for running Arrays locally!. 
 2. Execute [`bin/start_dev_app`](bin/start_dev_app)
 
 ---------------------
 
-#### iii. Signing into Heroku
+##Signing into Heroku
+
+---------------------
 
 1. Download/Install the heroku toolbelt: https://devcenter.heroku.com/articles/heroku-command-line
 2. Login to the heroku account.
@@ -110,16 +112,18 @@ $ heroku git:remote -a arrays
 
 ---------------------
 
-### Contributing Workflow
+## Contributing Workflow
+
+---------------------
+
 1. Contributors should check out the 'develop' branch with `git checkout develop`.
 
 2. Anytime you work on a new feature/bug fix etc, create a new branch. From the develop branch, run `git checkout -b [a branch name]`. If you execute `git branch` you can see that you've created and navigated to your new branch.
 
 3. When you're done working on that branch, navigate to the repo and you should see a green button above the files that says "Compare & pull request". Click that button.
 
-    3a. Towards the top of the page, there will be a bar with two buttons. Click the one that says "base: master" and change it to "develop". Then click the "compare" button and make sure it's on your current branch.
+  * Towards the top of the page, there will be a bar with two buttons. Click the one that says "base: master" and change it to "develop". Then click the "compare" button and make sure it's on your current branch.
 
-    3b. Add in any comments for clarity and click "Create pull request".
+  * Add in any comments for clarity and click "Create pull request".
 
 4. Once you're ready to start a new branch, go back to step 1. Note: It's important to start the new branch off 'develop' as each time you create one, it inherits from the branch you're currently on.
-
