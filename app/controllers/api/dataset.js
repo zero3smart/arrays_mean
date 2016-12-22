@@ -745,8 +745,8 @@ module.exports.preImport = function (req, res) {
 
     var uid = req.body.uid;
 
-    // res.writeHead(200, {'Content-Type': 'application/json'});
-    req.setTimeout(0); // this could take a while
+    res.writeHead('Content-Type', 'application/json');
+    res.setTimeout(0); // this could take a while
 
     datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
         var fn = function (err) {;
