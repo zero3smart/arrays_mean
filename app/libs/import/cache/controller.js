@@ -92,7 +92,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
             }
 
             filterKeys = filterKeys.filter(function(key) {
-                return !dataSourceDescription.fe_excludeFields[key] && dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key)==-1 && isRelationshipField(key)==-1 ;
+                return !dataSourceDescription.fe_excludeFields[key] && dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key)==-1 && isRelationshipField(key)==-1;
 
             })
         }
