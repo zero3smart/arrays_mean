@@ -38,12 +38,10 @@ var _new_byPathUpdateDoc_fromPureDocUpdates = function (doc) {
 
 module.exports.New_templateForPersistableObject = function (rowObject_primaryKey,
                                                             sourceDocumentRevisionKey,
-                                                            rowIndex,
                                                             rowParams) {
     return {
         pKey: rowObject_primaryKey, // Queries to find this unique row will have to happen
         srcDocPKey: sourceDocumentRevisionKey, // by pKey && srcDocPKey
-        rowIdxInDoc: rowIndex,
         rowParams: rowParams
     };
 };
@@ -58,7 +56,6 @@ var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (srcDocPKey) {
     var Scheme = Schema({
         pKey: String,
         srcDocPKey: String,
-        rowIdxInDoc: Number,
         rowParams: Schema.Types.Mixed // be sure to call .markModified(path) on the model before saving if you update this Mixed property via Mongoose
     });
     Scheme.index({pKey: 1, srcDocPKey: 1}, {unique: true});

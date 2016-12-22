@@ -968,7 +968,6 @@ angular.module('arraysApp')
 
             $scope.saveRequiredFields = function() {
 
-                $scope.$parent.$parent.dataset.fn_new_rowPrimaryKeyFromRowObject = $scope.data.fn_new_rowPrimaryKeyFromRowObject;
                 $scope.$parent.$parent.dataset.fe_designatedFields = $scope.data.fe_designatedFields;
 
             };
@@ -980,7 +979,6 @@ angular.module('arraysApp')
 
                 $scope.data = {};
                 $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
-                $scope.data.fn_new_rowPrimaryKeyFromRowObject = dataset.fn_new_rowPrimaryKeyFromRowObject;
                 $scope.data.fe_designatedFields = dataset.fe_designatedFields;
                 sortColumnsByDisplayOrder();
 
@@ -1002,8 +1000,6 @@ angular.module('arraysApp')
             $scope.reset();
 
             $scope.data.fe_designatedFields = dataset.fe_designatedFields;
-            $scope.data.fn_new_rowPrimaryKeyFromRowObject = dataset.fn_new_rowPrimaryKeyFromRowObject;
-
 
             $scope.submitForm = function (isValid) {
                 //Save settings primary key and object title as set in the ui

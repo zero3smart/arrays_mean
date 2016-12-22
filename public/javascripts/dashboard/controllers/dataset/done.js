@@ -11,7 +11,7 @@ angular.module('arraysApp')
             $scope.usedInMerging = [];
             DatasetService.getDatasetsWithQuery({_otherSources: dataset._id})
             .then(function(datasets) {
-                $scope.additionalDatasources = datasets;
+                $scope.additionalDatasources = $scope.additionalDatasources.concat(datasets);
             })
 
 
@@ -38,7 +38,7 @@ angular.module('arraysApp')
 
             function errorHandler(response) {
 
-                var error = response.data;
+                var error = response.data.error
                 $scope.importLogger.push("❌ Import failed due to " + error);
 
                 $scope.inProgress = false;
@@ -49,7 +49,7 @@ angular.module('arraysApp')
 
                 DatasetService.preImport(uid)
                     .then(function (response) {
-                        if (response.status == 200) {
+                        if (response.status == 200 && !response.data.error) {
                             $scope.importLogger.push("📡 [" + uid + "] Successfully pre-imported!");
                             postImport(uid);
 
@@ -71,6 +71,10 @@ angular.module('arraysApp')
                             $scope.importLogger.push("📡 [" + uid + "] Successfully finalized!");
 
                             if (datasourceIndex == -1) {
+                                if (!dataset.fe_designatedFields) {
+                                    dataset.fe_designatedFields = {};
+                                }
+
                                 $scope.$parent.$parent.dataset = dataset;
                             } else {
                                 $scope.additionalDatasources[datasourceIndex] = dataset;

@@ -362,7 +362,6 @@ module.exports.update = function (req, res) {
                         // Import without image scrapping
                         keysForNeedToImport = [
                             'importRevision',
-                            'fn_new_rowPrimaryKeyFromRowObject',
                             'raw_rowObjects_coercionScheme',
                             'relationshipFields',
                             'customFieldsToProcess',
@@ -735,7 +734,7 @@ module.exports.initializeToImport = function (req, res) {
     var uid = req.body.uid;
 
     _initializeToImport(uid,function(err) {
-        if (err) return res.status(500).send(err);
+        if (err) return res.status(500).send({error:err.message});
         return res.json({uid: uid});
     })
 
@@ -746,7 +745,7 @@ module.exports.preImport = function (req, res) {
 
     var uid = req.body.uid;
 
-    // res.writeHead(200, {'Content-Type': 'application/json'});
+    res.writeHead(200, {'Content-Type': 'application/json'});
     res.connection.setTimeout(0); // this could take a while
 
     datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
@@ -758,12 +757,13 @@ module.exports.preImport = function (req, res) {
                         import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(descriptions, fn);
                     }, 3000);
                 } else {
-
-                    return res.status(500).send(err.message);
+                    res.write(JSON.stringify({error:err.messsage}));
+                    return res.end();
                 }
             } else {
+                res.write(JSON.stringify({uid:uid}));
+                return res.end();
 
-                return res.json({uid:uid}); // all good
             }
         };
 
@@ -809,9 +809,10 @@ module.exports.postImport = function (req, res) {
                             if (err) return res.status(500).send("cannot update related sources");
                             else {
                                 dataset.save(function (err, updatedDataset) {
-                                    if (err) return res.status(500).send(err);
-                                    if (!updatedDataset)  return res.status(500).send('Invalid Operation');
 
+                                    if (err) return res.status(500).send({error:err});
+                                    if (!updatedDataset)  return res.status(500).send('Invalid Operation');
+                        
                                     return res.json({dataset: dataset});
                                 });
 

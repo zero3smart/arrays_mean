@@ -230,8 +230,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     $project: {
                         _id: 1,
                         pKey: 1,
-                        srcDocPKey: 1,
-                        rowIdxInDoc: 1
+                        srcDocPKey: 1
                     }
                 };
 
