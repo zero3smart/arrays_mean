@@ -683,7 +683,7 @@ angular.module('arraysApp')
                             {
                                 newFieldName: '',
                                 prependToImageURLs: '',
-                                resize: 600
+                                resize: 200
                             }
                         ]
                     });
@@ -698,7 +698,7 @@ angular.module('arraysApp')
                     setFields.push({
                         newFieldName: '',
                         prependToImageURLs: '',
-                        resize: 600
+                        resize: 200
                     });
                 };
 
