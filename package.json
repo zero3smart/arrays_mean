@@ -12,7 +12,8 @@
   },
   "scripts": {
     "start": "node app.js",
-    "monitor": "nodemon app.js"
+    "monitor": "nodemon app.js",
+    "postinstall": "grunt subgrunt"
   },
   "dependencies": {
     "async": "^1.5.2",
