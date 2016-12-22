@@ -953,15 +953,12 @@ function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFiel
             if (scrapedString == null || typeof scrapedString == "undefined" || scrapedString == '') {
                 winston.info("💬  No images available for " + doc.srcDocPKey + " row with pKey " + doc.pKey + ". Saving nulls in image field:" + newField + ".");
                 returnObj[newField] = null;
-
-
                 innerCallback(null);
             } else {
                 var rawUrlBySize = extractRawUrl(scrapedString);
                 if (rawUrlBySize == null) {
                     innerCallback(new Error("❌ cannot extract url by size"));
                 } else {
-
                     returnObj[newField] = rawUrlBySize;
                     innerCallback(null);
 
@@ -987,9 +984,10 @@ function proceedToPersistHostedImageURLOrNull_forKey(err, mongooseModel, docQuer
     if (lastFieldKey == true) {
         docUpdate["rowParams.imageScraped"] = true
     }
-    docUpdate["rowParams." + fieldKey] = hostedURLOrNull; // note it's a path rather than an object, so we don't overwrite the whole top-level key of 'rowParams'      
+    var relativeURLPortion = docQuery.srcDocPKey + "/" + docQuery.pKey + "__images.png"
+    docUpdate["rowParams." + fieldKey] = relativeURLPortion; // save the relative path
     mongooseModel.update(docQuery, {$set: docUpdate}, function (err, result) {
-        winston.info("📝  Saved " + hostedURLOrNull + " at " + fieldKey);
+        winston.info("📝  Saved " + hostedURLOrNull + "as" + relativeURLPortion + " at " + fieldKey);
         persistedCb(err);
     });
 }

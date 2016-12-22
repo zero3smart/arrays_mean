@@ -281,9 +281,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             batch.end(function (err) {
 
-                if (err) return callback(err);
-
-          
+                if (err) return callback(err);          
 
                 var data =
                 {
@@ -337,8 +335,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     //
                     routePath_base: routePath_base,
                     // multiselectable filter fields
-                    multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable
+                    multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
+                    //image url
+                    aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
+                    folder: "/assets/images/"
                 };
+
                 callback(null, data);
             });
 
