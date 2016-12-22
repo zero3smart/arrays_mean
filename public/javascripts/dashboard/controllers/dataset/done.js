@@ -38,7 +38,7 @@ angular.module('arraysApp')
 
             function errorHandler(response) {
 
-                var error = response.data;
+                var error = response.data.error
                 $scope.importLogger.push("❌ Import failed due to " + error);
 
                 $scope.inProgress = false;
@@ -49,7 +49,7 @@ angular.module('arraysApp')
 
                 DatasetService.preImport(uid)
                     .then(function (response) {
-                        if (response.status == 200) {
+                        if (response.status == 200 && !response.data.error) {
                             $scope.importLogger.push("📡 [" + uid + "] Successfully pre-imported!");
                             postImport(uid);
 

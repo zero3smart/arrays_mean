@@ -734,7 +734,7 @@ module.exports.initializeToImport = function (req, res) {
     var uid = req.body.uid;
 
     _initializeToImport(uid,function(err) {
-        if (err) return res.status(500).send(err);
+        if (err) return res.status(500).send({error:err.message});
         return res.json({uid: uid});
     })
 
@@ -745,8 +745,8 @@ module.exports.preImport = function (req, res) {
 
     var uid = req.body.uid;
 
-    res.writeHead('Content-Type', 'application/json');
-    res.setTimeout(0); // this could take a while
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    res.connection.setTimeout(0); // this could take a while
 
     datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
         var fn = function (err) {;
@@ -758,11 +758,11 @@ module.exports.preImport = function (req, res) {
                     }, 3000);
                 } else {
 
-                    return res.status(500).send(err.message);
+                    return res.end({error: err.message});
                 }
             } else {
 
-                return res.json({uid:uid}); // all good
+                return res.end({uid:uid}); // all good
             }
         };
 
@@ -809,7 +809,7 @@ module.exports.postImport = function (req, res) {
                             else {
                                 dataset.save(function (err, updatedDataset) {
 
-                                    if (err) return res.status(500).send(err);
+                                    if (err) return res.status(500).send({error:err});
                                     if (!updatedDataset)  return res.status(500).send('Invalid Operation');
                         
                                     return res.json({dataset: dataset});
