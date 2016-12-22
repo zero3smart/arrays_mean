@@ -757,12 +757,13 @@ module.exports.preImport = function (req, res) {
                         import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(descriptions, fn);
                     }, 3000);
                 } else {
-
-                    return res.end({error: err.message});
+                    res.write(JSON.stringify({error:err.messsage}));
+                    return res.end();
                 }
             } else {
+                res.write(JSON.stringify({uid:uid}));
+                return res.end();
 
-                return res.end({uid:uid}); // all good
             }
         };
 
