@@ -749,7 +749,7 @@ module.exports.preImport = function (req, res) {
     res.connection.setTimeout(0); // this could take a while
 
     datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
-        var fn = function (err) {;
+        var fn = function (err) {
             if (err) {
                 if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
                     winston.info("🔁  Waiting 3 seconds to restart...");
