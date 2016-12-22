@@ -38,37 +38,52 @@ angular.module('arraysApp')
 
             function errorHandler(response) {
 
-                var error = response.data.error
+                var error = response.data.error;
                 $scope.importLogger.push("❌ Import failed due to " + error);
 
                 $scope.inProgress = false;
             }
 
-            function preImport(uid) {
-                $scope.importLogger.push("🔁 [" + uid + "] Importing ...");
+            function preImport(id,uid) {
+                $scope.importLogger.push("🔁 [" + uid + "] Importing raw objects ...");
 
-                DatasetService.preImport(uid)
+                DatasetService.preImport(id)
                     .then(function (response) {
                         if (response.status == 200 && !response.data.error) {
-                            $scope.importLogger.push("📡 [" + uid + "] Successfully pre-imported!");
-                            postImport(uid);
-
+                            $scope.importLogger.push("📡 [" + uid + "] Successfully imported raw objects!");
+                            importProcess(id,uid);
                         } else {
                             errorHandler(response);
                         }
                     }, errorHandler);
             }
 
-            function postImport(uid) {
+            function importProcess(id,uid) {
+                $scope.importLogger.push("🔁 [" + uid + "] Importing processed row objects ...");
+                DatasetService.importProcessed(id)
+                    .then(function (response) {
+                        if (response.status == 200 && !response.data.error) {
+                            $scope.importLogger.push("📡 [" + uid + "] Successfully imported processed objects!");
+                            postImport(id,uid);
+                        } else {
+                            errorHandler(response);
+                        }
+                    }, errorHandler);
+
+            }
+
+            function postImport(id,uid) {
                 $scope.importLogger.push("🔁 [" + uid + "] Generating post import filter caching....");
 
-                DatasetService.postImport(uid)
+                DatasetService.postImport(id)
                     .then(function (response) {
 
-            
                         if (response.status == 200) {
+
+
                             var dataset = response.data.dataset;
-                            $scope.importLogger.push("📡 [" + uid + "] Successfully finalized!");
+            
+                            $scope.importLogger.push("📡 [" + uid + "] Successfully cached all the filters!");
 
                             if (datasourceIndex == -1) {
                                 if (!dataset.fe_designatedFields) {
@@ -93,15 +108,15 @@ angular.module('arraysApp')
                     }, errorHandler);
             }
 
-            function initializeToImport(uid) {
+            function initializeToImport(id,uid) {
                 $scope.importLogger.push("🔁 [" + uid + "] Initializing to import ...");
 
-                DatasetService.initializeToImport(uid)
+                DatasetService.initializeToImport(id)
                     .then(function (response) {
 
                         if (response.status == 200) {
                             $scope.importLogger.push("📡 [" + uid + "] Successfully initialized to import!");
-                            preImport(uid);
+                            preImport(id,uid);
 
                         } else {
                             errorHandler(response);
@@ -128,18 +143,19 @@ angular.module('arraysApp')
 
 
                 var uid = datasource.dataset_uid ? datasource.dataset_uid : datasource.uid;
+                var id = datasource._id;
                 if ($scope.additionalDatasources.length == 0) {
                     if (datasource.dirty == 1)
-                        postImport(uid);
+                        postImport(id,uid);
                     else if (datasource.dirty > 1)
-                        initializeToImport(uid);
+                        initializeToImport(id,uid);
                 } else {
                     // Re-import all the datasets!
                     // TODO: For additional datasource, we need to remove only the responding results, not the whole set.
                     if (!datasource.dataset_uid)
-                        initializeToImport(uid);
+                        initializeToImport(id,uid);
                     else
-                        preImport(uid);
+                        preImport(id,uid);
 
                     /*
                      datasourceIndex++;

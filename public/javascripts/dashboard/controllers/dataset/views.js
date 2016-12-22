@@ -5,15 +5,16 @@ angular.module('arraysApp')
 
             $scope.$parent.$parent.views = views;
 
+
+
             $scope.customViews = [];
 
             for (var i = 0; i < views.length; i++) {
+
                 if (views[i]._team) {
                     $scope.customViews.push(views[i].name);
                 }
             }
-
-
 
             $scope.$parent.$parent.currentNavItem = 'Views';
 
@@ -97,17 +98,22 @@ angular.module('arraysApp')
                     delete finalizedDataset.columns;
 
                     var useCustomView = false;
+                    
 
+            
 
                     for (var key in finalizedDataset.fe_views.views) {
+
                         if ($scope.customViews.indexOf(key) >= 0 && finalizedDataset.fe_views.views[key].visible==true) {
                             useCustomView = true;
+                            break;
                         }
-
                     }
 
-                    finalizedDataset.useCustomView = useCustomView;
+        
 
+                    finalizedDataset.useCustomView = useCustomView;
+         
                     DatasetService.save(finalizedDataset)
                         .then(function (response) {
                             if (response.status == 200) {
@@ -173,9 +179,6 @@ angular.module('arraysApp')
 
 
                 $scope.loadDatasetsForMapping = function() {
-
-          
-
 
                     if ($scope.otherAvailableDatasets.length == 0 && $scope.otherDatasetsloaded==false) {
 

@@ -13,7 +13,7 @@ var import_raw_objects_controller = require('./raw_objects_controller');
 //
 // ---------- Multiple DataSource Operation ----------
 //
-module.exports.Import_dataSourceDescriptions = function (dataSourceDescriptions, fn) {
+module.exports.Import_rawObjects = function (dataSourceDescriptions, fn) {
     var i = 1;
 
     async.eachSeries(
@@ -34,12 +34,16 @@ module.exports.Import_dataSourceDescriptions = function (dataSourceDescriptions,
                 winston.info("❌  Error encountered during raw objects import:", err);
                 fn(err);
             } else {
-                winston.info("✅  Raw objects import done. Proceeding to post-processing.");
-                _PostProcessRawObjects(dataSourceDescriptions, fn);
+                winston.info("✅  Raw objects import done.");
+                // _PostProcessRawObjects(dataSourceDescriptions, fn);
+                fn();
             }
         }
     );
 };
+
+
+
 
 var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (dataSourceDescriptions, fn) {
     var self = this;
@@ -65,7 +69,7 @@ var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (da
 
 module.exports.Import_dataSourceDescriptions__enteringImageScrapingDirectly = _Import_dataSourceDescriptions__enteringImageScrapingDirectly;
 
-var _PostProcessRawObjects = function (dataSourceDescriptions, fn) {
+module.exports.PostProcessRawObjects = function (dataSourceDescriptions, fn) {
     var i = 1;
     var omitImageScraping = true;
 
@@ -96,7 +100,6 @@ var _PostProcessRawObjects = function (dataSourceDescriptions, fn) {
     );
 };
 
-module.exports.PostProcessRawObjects = _PostProcessRawObjects;
 
 var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDescriptions,fn) {
     var i = 1;

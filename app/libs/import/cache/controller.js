@@ -90,6 +90,13 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 }
                 return -1;
             }
+            if (!dataSourceDescription.fe_excludeFields) {
+                dataSourceDescription.fe_excludeFields = {};
+            }
+            if (!dataSourceDescription.fe_filters) {
+                dataSourceDescription.fe_filters = {};
+                dataSourceDescription.fe_filters.fieldsNotAvailable = [];
+            }
 
             filterKeys = filterKeys.filter(function(key) {
                 return !dataSourceDescription.fe_excludeFields[key] && dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key)==-1 && isRelationshipField(key)==-1;

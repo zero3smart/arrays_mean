@@ -664,7 +664,7 @@ module.exports.download = function (req, res) {
         });
 }
 
-function _initializeToImport (uid,callback) {
+function _initializeToImport (id,callback) {
 
     var batch = new Batch();
     batch.concurrency(1);
@@ -672,7 +672,7 @@ function _initializeToImport (uid,callback) {
     var description;
     var srcDocPKey;
     batch.push(function (done) {
-        datasource_description.findOne({uid: uid}, function (err, data) {
+        datasource_description.findById(id, function (err, data) {
                 if (err) return done(err);
                 if (!data) return done(new Error('No datasource exists : ' + uid));
 
@@ -729,26 +729,44 @@ function _initializeToImport (uid,callback) {
 
 
 module.exports.initializeToImport = function (req, res) {
-    if (!req.body.uid) return res.status(500).send('Invalid Parameter');
+    var id = req.params.id;
 
-    var uid = req.body.uid;
-
-    _initializeToImport(uid,function(err) {
+    _initializeToImport(id,function(err) {
         if (err) return res.status(500).send({error:err.message});
-        return res.json({uid: uid});
+        return res.status(200).send('ok');
     })
 
 };
 
 module.exports.preImport = function (req, res) {
-    if (!req.body.uid) return res.status(500).send('Invalid parameter');
 
-    var uid = req.body.uid;
+    var id = req.params.id;
 
+    req.connection.setTimeout(0); // this could take a while
     res.writeHead(200, {'Content-Type': 'application/json'});
-    res.connection.setTimeout(0); // this could take a while
 
-    datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
+    datasource_description.GetDescriptionsToSetup([id], function (descriptions) {
+        var fn = function (err) {
+            if (err) {
+                res.write(JSON.stringify({error:err.messsage}));
+                return res.end();
+            } else {
+                return res.end();
+            }
+        };
+
+        import_controller.Import_rawObjects(descriptions, fn);
+    });
+}
+
+module.exports.importProcessed = function(req,res) {
+
+    var id = req.params.id;
+
+    req.connection.setTimeout(0); // this could take a while
+    res.writeHead(200, {'Content-Type': 'application/json'});
+
+    datasource_description.GetDescriptionsToSetup([id], function (descriptions) {
         var fn = function (err) {
             if (err) {
                 if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
@@ -761,64 +779,38 @@ module.exports.preImport = function (req, res) {
                     return res.end();
                 }
             } else {
-                res.write(JSON.stringify({uid:uid}));
                 return res.end();
 
             }
         };
 
-        import_controller.Import_dataSourceDescriptions(descriptions, fn);
-
+        import_controller.PostProcessRawObjects(descriptions, fn);
     });
+
+
 }
 
+
 module.exports.postImport = function (req, res) {
-    if (!req.body.uid) {
-        return res.status(500).send('Invalid Parameter');
-    }
+   var id = req.params.id;
 
-    var uid = req.body.uid;
-
-
-
-    datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
-
+    datasource_description.GetDescriptionsToSetup([id], function (descriptions) {
 
         var fn = function (err) {
             if (err) {
                 return res.status(500).send(err);// error code
             } else {
+                descriptions[0].dirty = 0;
+                descriptions[0].imported = true;
+                datasource_description.update({$or:[{_id:id}, {schema_id: id}, {_otherSources:id}]}, {$set: {dirty:0,imported:true}})
+                .exec(function(err) {
+                    if (err) {
+                        return res.status(500).send('cannot update datasets');
+                    } else {
+                        return res.status(200).send({dataset: descriptions[0]});
+                    }
 
-                datasource_description.findOne({$or: [{uid: uid}, {dataset_uid: uid}]},function (err, dataset) {
-                        if (err) return done(err);
-                        if (!dataset) return done(new Error('No datasource exists : ' + uid));
-
-                        dataset.dirty = 0;
-                        dataset.imported = true;
-
-                        var batch = new Batch();
-                        batch.concurrency(5);
-
-                        dataset._otherSources.forEach(function(id) {
-                            batch.push(function(done) {
-                                datasource_description.findByIdAndUpdate(id,{$set:{imported:true}},done);
-                            })
-                        })
-
-                        batch.end(function(err) {
-                            if (err) return res.status(500).send("cannot update related sources");
-                            else {
-                                dataset.save(function (err, updatedDataset) {
-
-                                    if (err) return res.status(500).send({error:err});
-                                    if (!updatedDataset)  return res.status(500).send('Invalid Operation');
-                        
-                                    return res.json({dataset: dataset});
-                                });
-
-                            }
-                        })
-                    });
+                })
             }
         };
 
