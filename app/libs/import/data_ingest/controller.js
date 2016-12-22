@@ -256,9 +256,9 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
             }
 
             if (dataSourceDescription.useCustomView) {
-                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,eachCb);
+                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,callback);
             } else {
-                 _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription, eachCb);
+                 _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription, callback);
              }
         
         }
