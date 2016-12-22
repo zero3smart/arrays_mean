@@ -20,7 +20,6 @@ var _Lazy_Shared_RawRowObject_MongooseContext = function (srcDocPKey) {
     var forThisDataSource_RawRowObject_scheme = Schema({
         pKey: String,
         srcDocPKey: String,
-        rowIdxInDoc: Number,
         rowParams: Schema.Types.Mixed // be sure to call .markModified(path) on the model before saving if you update this Mixed property
     });
     forThisDataSource_RawRowObject_scheme.index({pKey: 1, srcDocPKey: 1}, {unique: false});
@@ -41,11 +40,10 @@ var _Lazy_Shared_RawRowObject_MongooseContext = function (srcDocPKey) {
 };
 module.exports.Lazy_Shared_RawRowObject_MongooseContext = _Lazy_Shared_RawRowObject_MongooseContext;
 
-module.exports.New_templateForPersistableObject = function (rowObject_primaryKey, sourceDocumentRevisionKey, rowIndex, rowParams) {
+module.exports.New_templateForPersistableObject = function (rowObject_primaryKey, sourceDocumentRevisionKey, rowParams) {
     return {
         pKey: rowObject_primaryKey, // Queries to find this unique row will have to happen
         srcDocPKey: sourceDocumentRevisionKey, // by pKey && srcDocPKey
-        rowIdxInDoc: rowIndex,
         rowParams: rowParams
     };
 };

@@ -7,13 +7,7 @@
     function DatasetService($http, $q) {
 
         var getMappingDatasourceCols = function(pKey) {
-            $http.get('api/dataset/getMappingDatasourceCols/'+pKey)
-            .then(function(data){
-                return data.cols
-            }).catch(function(err) {
-                console.log(err);
-                return [];
-            })
+            return $http.get('api/dataset/getMappingDatasourceCols/'+pKey)
         };
 
         var remove = function(id) {
@@ -95,7 +89,7 @@
         var getAvailableMatchFns = function() {
             return $http.get('api/dataset/getAvailableMatchFns')
             .then(function(response) {
-               return data.availableMatchFns;
+               return response.data.availableMatchFns;
             }).catch(function(err) {
                 console.log(err);
                 return [];

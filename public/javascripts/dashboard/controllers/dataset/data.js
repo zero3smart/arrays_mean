@@ -763,6 +763,7 @@ angular.module('arraysApp')
                     }
                 })
                     .then(function (savedDataset) {
+
                         $scope.$parent.$parent.dataset = savedDataset;
                         sortColumnsByDisplayOrder();
 
@@ -817,8 +818,11 @@ angular.module('arraysApp')
                     $scope.dataset.relationshipFields.forEach(function(relationshipField, index) {
                         var pKey = relationshipField.by.ofOtherRawSrcUID + '-v' + relationshipField.by.andOtherRawSrcImportRevision;
                         DatasetService.getMappingDatasourceCols(pKey)
-                            .then(function(columns) {
-                                $scope.data.columns[index] = columns;
+                            .then(function(response) {
+                               if (response.status == 200) {
+                                    $scope.data.columns[index] = response.data.cols;
+
+                                }
                             });
                     });
                 }
@@ -861,8 +865,11 @@ angular.module('arraysApp')
                     var pKey = source.uid + '-v' + source.importRevision;
 
                     DatasetService.getMappingDatasourceCols(pKey)
-                        .then(function(columns) {
-                            $scope.data.columns[index] = columns;
+                        .then(function(response) {
+                            if (response.status == 200) {
+                                $scope.data.columns[index] = response.data.cols;
+
+                            }
                         });
                 };
 
@@ -891,8 +898,6 @@ angular.module('arraysApp')
                         if ($scope.dataset._otherSources.indexOf(source._id) == -1)
                             $scope.dataset._otherSources.push(source._id);
                     });
-                    console.log($scope.dataset._otherSources);
-
                     $mdDialog.hide($scope.dataset);
                 };
             }
@@ -963,12 +968,7 @@ angular.module('arraysApp')
 
             $scope.saveRequiredFields = function() {
 
-                $scope.$parent.$parent.dataset.fn_new_rowPrimaryKeyFromRowObject = $scope.data.fn_new_rowPrimaryKeyFromRowObject;
-                // if there's designated field in data but not in the parent dataset,
-                // $scope.data needs to be added to the parent dataset so we'll just loop through all the designated fields in the data object and set them on the dataset object
-                for(designatedField in $scope.data.fe_designatedFields) {
-                    $scope.$parent.$parent.dataset.fe_designatedFields[designatedField] = $scope.data.fe_designatedFields[designatedField]
-                }
+                $scope.$parent.$parent.dataset.fe_designatedFields = $scope.data.fe_designatedFields;
 
             };
 
@@ -979,7 +979,6 @@ angular.module('arraysApp')
 
                 $scope.data = {};
                 $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
-                $scope.data.fn_new_rowPrimaryKeyFromRowObject = dataset.fn_new_rowPrimaryKeyFromRowObject;
                 $scope.data.fe_designatedFields = dataset.fe_designatedFields;
                 sortColumnsByDisplayOrder();
 
@@ -1001,8 +1000,6 @@ angular.module('arraysApp')
             $scope.reset();
 
             $scope.data.fe_designatedFields = dataset.fe_designatedFields;
-            $scope.data.fn_new_rowPrimaryKeyFromRowObject = dataset.fn_new_rowPrimaryKeyFromRowObject;
-
 
             $scope.submitForm = function (isValid) {
                 //Save settings primary key and object title as set in the ui
@@ -1035,7 +1032,6 @@ angular.module('arraysApp')
                     var queue = [];
 
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
-                    console.log(finalizedDataset);
                     delete finalizedDataset.columns;
 
                     // console.log(finalizedDataset)
