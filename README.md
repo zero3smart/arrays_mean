@@ -1,19 +1,10 @@
 # Arrays
 
-## Server & Front-end Code Repository
-
-### Basic repository contents:
-
-1. Front-end web server application at [`app`](app), including front-end publicly hosted assets at [`app/public`](app/public)
-
-2. Database seeding and post-import caching via CSV import at [`app/controllers/pre_process`](app/controllers/pre_process)
-
-
 ---------------------
 
 ### Getting Started
 
-#### i. Setting up your local development environment
+#### i. Installations
 
 1. Install brew
 
@@ -32,6 +23,8 @@
     Note: If you already have Mongo installed, be sure you have >= v3.2 with `brew update && brew upgrade mongodb`
     
 5. Run the MongoDB daemon by executing `monogod` in a Terminal window
+
+---------------------
 
 #### ii. Installing the Arrays server locally
 
@@ -92,7 +85,6 @@ Anytime you add a new account in arrays, you will have a new subdomain. If you w
 
 ##### VII. Adding views to the database.
 
-
 1. Download [Robomongo](https://robomongo.org/download), if you don't already have it.
 2. Open Robomongo, go to File -> Connection and click create
 3. Address will be localhost:27017. Save and Connect.
@@ -106,6 +98,8 @@ Anytime you add a new account in arrays, you will have a new subdomain. If you w
 1. Flush your cache by running `dscacheutil -flushcache` in the terminal and you're all set for running Arrays locally!. 
 2. Execute [`bin/start_dev_app`](bin/start_dev_app)
 
+---------------------
+
 #### iii. Signing into Heroku
 
 1. Download/Install the heroku toolbelt: https://devcenter.heroku.com/articles/heroku-command-line
@@ -113,15 +107,6 @@ Anytime you add a new account in arrays, you will have a new subdomain. If you w
 $ heroku login
 3. Add a remote using the git URL so that you can deploy the current source to Heroku.
 $ heroku git:remote -a arrays
-
----------------------
-
-### Customizing the database-seeding import
-
-See this Doc for information on the data import framework capabilities.
-
-[Arrays Server - Data Source Import documentation](https://docs.google.com/document/d/1v4L14gCiEI1_z5sqOVC2RFNZVgtGC--pvEf8yN9y-rU/edit#heading=h.qi2u6fyf9xdo)
-
 
 ---------------------
 
@@ -138,19 +123,3 @@ See this Doc for information on the data import framework capabilities.
 
 4. Once you're ready to start a new branch, go back to step 1. Note: It's important to start the new branch off 'develop' as each time you create one, it inherits from the branch you're currently on.
 
-
----------------------
-
-### Deploying to production 
-
-#### Deploying HEAD to Heroku
-
-1. Execute [git push heroku master](git push heroku develop:master)
-
-#### Seeding the production database
-
-1. Execute [`bin/_PRODUCTION_DB_seed`](bin/_PRODUCTION_DB_seed)
-
-If you find that image scraping during the seed is failing after you're sure the initial pre-scraping import work has completed, you can run [`bin/_runUntilSuccess_PRODUCTION_DB_seed__enterImageScrapingDirectly`](_runUntilSuccess_PRODUCTION_DB_seed__enterImageScrapingDirectly) to continuously retry running the image scraping stage and all subsequent stages until it completes successfully.
-
-2. Execute [`bin/_PRODUCTION_postImportCaching`](bin/_PRODUCTION_postImportCaching)
