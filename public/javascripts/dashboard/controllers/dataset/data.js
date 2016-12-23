@@ -967,9 +967,9 @@ angular.module('arraysApp')
             };
 
             $scope.saveRequiredFields = function() {
-
-                $scope.$parent.$parent.dataset.fe_designatedFields = $scope.data.fe_designatedFields;
-
+                for(designatedField in $scope.data.fe_designatedFields) {
+                    $scope.$parent.$parent.dataset.fe_designatedFields[designatedField] = $scope.data.fe_designatedFields[designatedField]
+                }
             };
 
             $scope.reset = function () {
