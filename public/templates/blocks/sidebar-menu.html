@@ -28,10 +28,10 @@
 
     <hr>
 
-    <li ng-if="user.role=='admin' || user.role=='superAdmin'">
+    <li>
         <!-- {{user}}<br> -->
         {{team.subdomain}}<br>
-        <a href="{{subdomain}}" role="button"  target="_blank"> View My Website</a>
+        <a href="{{subdomain}}" role="button"  target="_blank" ng-click="updateSubdomain()"> View My Website</a>
         <!-- <a ui-sref="dashboard.user.list" role="button"> View My Website</a> -->
     </li>
 
