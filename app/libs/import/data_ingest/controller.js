@@ -76,8 +76,13 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions, fn) {
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
+
+            if (dataSourceDescription.useCustomView) {
+                 require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').postProcess(i,dataSourceDescription,eachCb);
+            } else {
+                 _postProcess(i, dataSourceDescription,eachCb);
+            }
             
-             _postProcess(i, dataSourceDescription,eachCb);
             if (dataSourceDescription.dirty >= 3) omitImageScraping = false;
             i++;
         },
@@ -141,12 +146,8 @@ var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDesc
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
-
-            if (dataSourceDescription.useCustomView) {
-                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(i,dataSourceDescription,eachCb);
-            } else {
-                 _afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription, eachCb);
-             }
+            
+            _afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription, eachCb);
             i++;
         },
         function (err) {
@@ -258,12 +259,9 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
                 return callback(err);
             }
 
-            if (dataSourceDescription.useCustomView) {
-                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,callback);
-            } else {
-                 _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription, callback);
-             }
-        
+          
+            _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription, callback);
+             
         }
     );
 }

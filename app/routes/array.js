@@ -16,7 +16,6 @@ router.get('/', function (req, res, next) {
             winston.error("❌  Error getting bind data for Array index: ", err);
             return res.status(500).send(err.response || 'Internal Server Error');
         }
-
         res.render('array/index', bindData);
     });
 
