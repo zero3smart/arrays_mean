@@ -5,6 +5,10 @@
     padding: 2em 1em;
 }
 
+md-content.md-default-theme, md-content {
+    background-color: #ffffff !important;
+}
+
 @media (min-width: 768px) {
     .dashboard-container {
         padding: 4em 3em;
