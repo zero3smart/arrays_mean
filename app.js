@@ -1,6 +1,6 @@
 var path = require('path');
-var express = require('express');
 var kue = require('kue');
+var express = require('express');
 var ui = require('kue-ui');
 var winston = require('winston');
 var expressWinston = require('express-winston');
@@ -21,6 +21,8 @@ dotenv.config({
     path: dotenv_path,
     silent: true
 });
+
+
 
 
 ui.setup({

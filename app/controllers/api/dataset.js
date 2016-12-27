@@ -37,7 +37,8 @@ queue.on('job enqueue',function(id,type) {
             console.log('removed completed job #%d', job.id);
         })
     })
-}).process('preImport',function(job,done) {
+})
+queue.process('preImport',function(job,done) {
     var id = job.data.id;
     datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
         import_controller.Import_rawObjects(descriptions,function(err) {
@@ -51,24 +52,39 @@ queue.on('job enqueue',function(id,type) {
     })
 
 })
+queue.process('importProcessed',function(job,done) {
+    var id = job.data.id;
+    datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
+        import_controller.PostProcessRawObjects(descriptions,function(err) {
+            if (err) {
+                console.log('err in queue processing import processed job : %s',err);
+                return done(err);
+            }
+            done();
+        })
+    })
 
+})
+queue.process('postImport',function(job,done) {
+    var id = job.data.id;
+    datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
+        postimport_caching_controller.GeneratePostImportCaches(descriptions,function(err) {
+            if (err) {  
+                console.log('err in queue processing post import caches : %s',err);
+                return done(err);
 
- // datasource_description.GetDescriptionsToSetup([id], function (descriptions) {
-    //     var fn = function (err) {
-    //         if (err) {
-    //             res.write(JSON.stringify({error:err.messsage}));
-    //             return res.end();
-    //         } else {
-    //             return res.end();
-    //         }
-    //     };
-
-    //     import_controller.Import_rawObjects(descriptions, fn);
-    // });
-
-
-
-
+            }
+            datasource_description.update({$or:[{_id:id}, {schema_id: id}, {_otherSources:id}]}, {$set: {dirty:0,imported:true}})
+            .exec(function(err) {
+                if (err) {
+                    console.log('err in queue updating post import caches : %s',err);
+                    return done(err);
+                }
+                done();
+            })
+        })
+    })
+})
 
 /* end queue functions */
 
@@ -796,59 +812,19 @@ module.exports.preImport = function (req, res) {
     var job = queue.create('preImport', {
         id: req.params.id
     }).save(function(err) {
-
+        if (err) res.status(500).send(err);
+        res.json({jobId: job.id});
     })
-
-    // var id = req.params.id;
-
-    // req.connection.setTimeout(0); // this could take a while
-    // res.writeHead(200, {'Content-Type': 'application/json'});
-
-    
-
-    // datasource_description.GetDescriptionsToSetup([id], function (descriptions) {
-    //     var fn = function (err) {
-    //         if (err) {
-    //             res.write(JSON.stringify({error:err.messsage}));
-    //             return res.end();
-    //         } else {
-    //             return res.end();
-    //         }
-    //     };
-
-    //     import_controller.Import_rawObjects(descriptions, fn);
-    // });
 }
 
 module.exports.importProcessed = function(req,res) {
 
-    var id = req.params.id;
-
-    req.connection.setTimeout(0); // this could take a while
-    res.writeHead(200, {'Content-Type': 'application/json'});
-
-    datasource_description.GetDescriptionsToSetup([id], function (descriptions) {
-        var fn = function (err) {
-            if (err) {
-                if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
-                    winston.info("🔁  Waiting 3 seconds to restart...");
-                    setTimeout(function () {
-                        import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(descriptions, fn);
-                    }, 3000);
-                } else {
-                    res.write(JSON.stringify({error:err.messsage}));
-                    return res.end();
-                }
-            } else {
-                return res.end();
-
-            }
-        };
-
-        import_controller.PostProcessRawObjects(descriptions, fn);
-    });
-
-
+    var job = queue.create('importProcessed', {
+        id: req.params.id
+    }).save(function(err) {
+        if (err) res.status(500).send(err);
+        res.json({jobId: job.id});
+    })
 }
 
 
