@@ -47,8 +47,8 @@ md-content.md-default-theme, md-content {
     padding: 15px 0;
 }
 
-.dashboard-content .md-toolbar-tools {
-    background-color: var(--color-primary);
+.instructions {
+    margin-top: 32px;
 }
 
 .dataset .md-content {

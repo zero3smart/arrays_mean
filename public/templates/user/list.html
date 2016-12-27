@@ -3,9 +3,7 @@
     <span class="btn-label">Invite New User</span>
 </md-button>
 
-<md-toolbar layout="row" class="md-hue-3">
-    <div class="md-toolbar-tools">Select a user to edit</div>
-</md-toolbar>
+<p class="instructions">Select a user to edit</p>
 
 <md-list ng-cloak>
     <md-list-item ng-repeat="person in users track by $index"  ng-click="select(person, user)" class="noright">
