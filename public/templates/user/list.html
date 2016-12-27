@@ -1,6 +1,7 @@
-<a class="md-raised md-button" ui-sref="dashboard.user.edit" role="button"><span class="glyphicon glyphicon-plus"
-                                                                                 aria-hidden="true"></span><span
-        class="btn-label">Invite New User</span></a>
+<md-button class="md-raised md-dashboard md-dashboard-icon md-dark" ui-sref="dashboard.user.edit" md-no-ink>
+    <md-icon class="btn-icon">add</md-icon>
+    <span class="btn-label">Invite New User</span>
+</md-button>
 
 <md-toolbar layout="row" class="md-hue-3">
     <div class="md-toolbar-tools">Select a user to edit</div>
@@ -19,12 +20,12 @@
 
         <i class="md-secondary glyphicon glyphicon-trash" ng-click="remove($index)" aria-label="Delete"
            ng-if="user._id != person._id && !user.invited[person._id]"></i>
-           
+
         <div ng-if="user.invited[person._id]">
             <span>Pending Invitation</span>
         </div>
          <md-divider ng-if="!$last"></md-divider>
 
-      
+
     </md-list-item>
 </md-list>
