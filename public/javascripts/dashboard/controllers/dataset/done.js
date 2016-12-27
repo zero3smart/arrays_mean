@@ -8,6 +8,13 @@ angular.module('arraysApp')
             $scope.importLogger = [];
             $scope.inProgress = false;
 
+            $scope.usedInMerging = [];
+            DatasetService.getDatasetsWithQuery({_otherSources: dataset._id})
+            .then(function(datasets) {
+                $scope.additionalDatasources = $scope.additionalDatasources.concat(datasets);
+            })
+
+
             $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $location.host() + ":" + $location.port();
 
             refreshForm();
@@ -29,7 +36,9 @@ angular.module('arraysApp')
                 DatasetService.publish($scope.$parent.$parent.dataset._id, isPublic)
             };
 
-            function errorHandler(error) {
+            function errorHandler(response) {
+
+                var error = response.data.error
                 $scope.importLogger.push("❌ Import failed due to " + error);
 
                 $scope.inProgress = false;
@@ -39,31 +48,46 @@ angular.module('arraysApp')
                 $scope.importLogger.push("🔁 [" + uid + "] Importing ...");
 
                 DatasetService.preImport(uid)
-                    .then(function (uid) {
-                        $scope.importLogger.push("📡 [" + uid + "] Successfully pre-imported!");
+                    .then(function (response) {
+                        if (response.status == 200 && !response.data.error) {
+                            $scope.importLogger.push("📡 [" + uid + "] Successfully pre-imported!");
+                            postImport(uid);
 
-                        postImport(uid);
-
+                        } else {
+                            errorHandler(response);
+                        }
                     }, errorHandler);
             }
 
             function postImport(uid) {
-                $scope.importLogger.push("🔁 [" + uid + "] Finalizing to import ...");
+                $scope.importLogger.push("🔁 [" + uid + "] Generating post import filter caching....");
 
                 DatasetService.postImport(uid)
-                    .then(function (dataset) {
-                        $scope.importLogger.push("📡 [" + uid + "] Successfully finalized!");
+                    .then(function (response) {
 
-                        if (datasourceIndex == -1) {
-                            $scope.$parent.$parent.dataset = dataset;
+            
+                        if (response.status == 200) {
+                            var dataset = response.data.dataset;
+                            $scope.importLogger.push("📡 [" + uid + "] Successfully finalized!");
+
+                            if (datasourceIndex == -1) {
+                                if (!dataset.fe_designatedFields) {
+                                    dataset.fe_designatedFields = {};
+                                }
+
+                                $scope.$parent.$parent.dataset = dataset;
+                            } else {
+                                $scope.additionalDatasources[datasourceIndex] = dataset;
+                            }
+                            datasourceIndex ++;
+                            if (datasourceIndex < $scope.additionalDatasources.length) {
+                                importDatasource($scope.additionalDatasources[datasourceIndex]);
+                            } else {
+                                allDone();
+                            }
+
                         } else {
-                            $scope.additionalDatasources[datasourceIndex] = dataset;
-                        }
-                        datasourceIndex ++;
-                        if (datasourceIndex < $scope.additionalDatasources.length) {
-                            importDatasource($scope.additionalDatasources[datasourceIndex]);
-                        } else {
-                            allDone();
+                            errorHandler(response);
                         }
 
                     }, errorHandler);
@@ -73,10 +97,15 @@ angular.module('arraysApp')
                 $scope.importLogger.push("🔁 [" + uid + "] Initializing to import ...");
 
                 DatasetService.initializeToImport(uid)
-                    .then(function (uid) {
-                        $scope.importLogger.push("📡 [" + uid + "] Successfully initialized to import!");
+                    .then(function (response) {
 
-                        preImport(uid);
+                        if (response.status == 200) {
+                            $scope.importLogger.push("📡 [" + uid + "] Successfully initialized to import!");
+                            preImport(uid);
+
+                        } else {
+                            errorHandler(response);
+                        }
 
                     }, errorHandler);
             }

@@ -5,7 +5,7 @@ var raw_source_documents = require('../../../models/raw_source_documents');
 //
 //
 var _cacheKeywords_fromDataSourceDescription = function (dataSourceDescription, callback) {
-    if (dataSourceDescription.fe_views.views == null || typeof dataSourceDescription.fe_views.views.wordCloud == 'undefined' || !dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName ||
+    if (!dataSourceDescription.fe_views || dataSourceDescription.fe_views.views == null || typeof dataSourceDescription.fe_views.views.wordCloud == 'undefined' || !dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName ||
         dataSourceDescription.fe_views.views.wordCloud.visible == false ) return callback();
 
     mongoose_client.WhenMongoDBConnected(function () {

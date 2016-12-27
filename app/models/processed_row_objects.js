@@ -38,12 +38,10 @@ var _new_byPathUpdateDoc_fromPureDocUpdates = function (doc) {
 
 module.exports.New_templateForPersistableObject = function (rowObject_primaryKey,
                                                             sourceDocumentRevisionKey,
-                                                            rowIndex,
                                                             rowParams) {
     return {
         pKey: rowObject_primaryKey, // Queries to find this unique row will have to happen
         srcDocPKey: sourceDocumentRevisionKey, // by pKey && srcDocPKey
-        rowIdxInDoc: rowIndex,
         rowParams: rowParams
     };
 };
@@ -58,7 +56,6 @@ var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (srcDocPKey) {
     var Scheme = Schema({
         pKey: String,
         srcDocPKey: String,
-        rowIdxInDoc: Number,
         rowParams: Schema.Types.Mixed // be sure to call .markModified(path) on the model before saving if you update this Mixed property via Mongoose
     });
     Scheme.index({pKey: 1, srcDocPKey: 1}, {unique: true});
@@ -101,10 +98,13 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (dataSource_ui
 
         var datasetQuery = dataset_uid ? {pKey: {$regex: "^" + dataset_uid + "-"}} : {};
 
+        // console.log(datasetQuery);
+
 
         mongooseModel_ofRawRowObjectsBeingProcessed.find(datasetQuery, function (err, rowObjects) {
             if (err) {
-                winston.error("❌ [" + (new Date()).toString() + "] Error while saving processed row objects: ", err);
+
+                winston.error("❌ [" + (new Date()).toString() + "] Error from line 168 while saving processed row objects: ", err.message);
                 return callback(err);
             }
 
@@ -115,9 +115,11 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (dataSource_ui
 
             winston.info("📡  [" + (new Date()).toString() + "] Inserting " + rowObjects.length + " processed rows for \"" + dataSource_title + "\".");
 
+            // console.log(JSON.stringify(updateDocs));
+
             nativeCollection_ofTheseProcessedRowObjects.bulkWrite(updateDocs, {ordered: false}, function (err) {
                 if (err) {
-                    winston.error("❌ [" + (new Date()).toString() + "] Error while saving processed row objects: ", err);
+                    winston.error("❌ [" + (new Date()).toString() + "] Error from line 121 while saving processed row objects: ", err);
                 } else {
                     winston.info("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.");
                 }
@@ -207,6 +209,8 @@ module.exports.GenerateProcessedDatasetFromRawRowObjects = function (dataSource_
                 numDocs += 1;
                 //
                 function _finishedWithDoc() {
+
+
                     numberOfDocumentsFoundButNotYetProcessed -= 1; // finished with this doc - decrement
                     //
                     if (hasReachedEndOfCursor == true) {
@@ -274,6 +278,8 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSour
         var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();
         var findingMatchOnFields_length = findingMatchOnFields.length;
         var getIdInsteadOfValueFromField = typeof obtainingValueFromField_orUndefined === 'undefined';
+
+
         //
         mongooseModel_ofRawRowObjectsBeingProcessed.find({}, function (err, ofTheseProcessedRowObjectDocs) {
             if (err) {
@@ -282,6 +288,8 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSour
 
                 return;
             }
+
+
 
             mongooseModel_ofFromRawRowObjects.find({}, function (err, fromProcessedRowObjectDocs) {
                 if (err) {
@@ -314,13 +322,21 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSour
                     var matchingForeignValues = [];
                     for (var j = 0; j < findingMatchOnFields_length; j++) {
                         var matchOnField = findingMatchOnFields[j];
+                    
                         for (var k = 0; k < fromProcessedRowObjectDocs_length; k++) {
                             // if (k != 0 && k % 10000 == 0) {
                             //     console.log("- Foreign: " + pKey_ofFromDataSourceDoc + ": " + k + " / " + fromProcessedRowObjectDocs_length);
                             // }
                             var fromProcessedRowObjectDoc = fromProcessedRowObjectDocs[k];
                             var foreignFieldValue = fromProcessedRowObjectDoc.rowParams[matchOnField];
+
+                 
+
+
                             var doesFieldMatch = processing.MatchFns[doesFieldMatch_fn](localFieldValue, foreignFieldValue);
+
+                        
+
                             if (doesFieldMatch == true) {
                                 wasFound = true;
                                 if (typeof obtainingValueFromField_orUndefined === 'undefined') {
@@ -395,6 +411,7 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSour
                     updateFragment["$set"] = {};
                     updateFragment["$set"]["rowParams." + generateFieldNamed] = persistableValue;
                     // ^ Note that we're only updating a specific path, not the whole rowParams value
+
                     bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update(updateFragment);
                 }
                 //
@@ -953,15 +970,12 @@ function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFiel
             if (scrapedString == null || typeof scrapedString == "undefined" || scrapedString == '') {
                 winston.info("💬  No images available for " + doc.srcDocPKey + " row with pKey " + doc.pKey + ". Saving nulls in image field:" + newField + ".");
                 returnObj[newField] = null;
-
-
                 innerCallback(null);
             } else {
                 var rawUrlBySize = extractRawUrl(scrapedString);
                 if (rawUrlBySize == null) {
                     innerCallback(new Error("❌ cannot extract url by size"));
                 } else {
-
                     returnObj[newField] = rawUrlBySize;
                     innerCallback(null);
 
@@ -987,9 +1001,10 @@ function proceedToPersistHostedImageURLOrNull_forKey(err, mongooseModel, docQuer
     if (lastFieldKey == true) {
         docUpdate["rowParams.imageScraped"] = true
     }
-    docUpdate["rowParams." + fieldKey] = hostedURLOrNull; // note it's a path rather than an object, so we don't overwrite the whole top-level key of 'rowParams'      
+    var relativeURLPortion = docQuery.srcDocPKey + "/" + docQuery.pKey + "__images.png"
+    docUpdate["rowParams." + fieldKey] = relativeURLPortion; // save the relative path
     mongooseModel.update(docQuery, {$set: docUpdate}, function (err, result) {
-        winston.info("📝  Saved " + hostedURLOrNull + " at " + fieldKey);
+        winston.info("📝  Saved " + hostedURLOrNull + "as" + relativeURLPortion + " at " + fieldKey);
         persistedCb(err);
     });
 }

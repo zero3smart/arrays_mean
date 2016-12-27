@@ -1,32 +1,16 @@
 <md-content layout-padding ng-if="dataset.uid">
     <form name="vm.dataForm" ng-submit="submitForm(!vm.dataForm.$invalid )">
-        <md-input-container class="md-block" flex-gt-sm>
-            <label>Primary Key</label>
-            <md-select required name="primaryKey" aria-label="primaryKey"
-                       ng-model="data.fn_new_rowPrimaryKeyFromRowObject"
-                       >
-                <md-option ng-repeat="column in dataset.columns track by column.name" value="{{column.name}}">
-                    {{column.name}}
-                </md-option>
-            </md-select>
-            <div ng-messages="vm.dataForm.fn_new_rowPrimaryKeyFromRowObject.$error">
-                <div ng-message="required">This is required.</div>
-            </div>
-        </md-input-container>
+        
 
         <md-input-container class="md-block" flex-gt-sm>
             <label>ObjectTitle</label>
-            <md-select required name="ObjectTitle" aria-label="primaryKey"
-
+            <md-select name="ObjectTitle"
                        ng-model="data.fe_designatedFields.objectTitle"
                        >
                 <md-option ng-repeat="column in dataset.columns track by column.name" value="{{column.name}}">
                     {{column.name}}
                 </md-option>
             </md-select>
-            <div ng-messages="vm.dataForm.fe_designatedFields.$error">
-                <div ng-message="required">This is required.</div>
-            </div>
     </md-input-container>
 
         <fieldset class="standard">

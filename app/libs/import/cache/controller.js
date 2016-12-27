@@ -78,32 +78,26 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
             filterKeys = require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').filterKeys();
 
         } else {
-            for (var key in dataSourceDescription.fe_excludeFields) {
-                if (dataSourceDescription.fe_excludeFields[key]) {
 
-                    var index = filterKeys.indexOf(key);
-                    if (index != -1) {
-                        filterKeys.splice(index, 1);
-                    }
+            var isRelationshipField = function(key) {
+                for (var i = 0; i < dataSourceDescription.relationshipFields.length; i++) {
+                    var field = dataSourceDescription.relationshipFields[i].field;
+                    
+                   if (field == key) {
+                        return 0;
+                   }
+                    
                 }
+                return -1;
             }
 
-            for (var i = 0; i < dataSourceDescription.fe_filters.fieldsNotAvailable.length; i++) {
-                var field = dataSourceDescription.fe_filters.fieldsNotAvailable[i];
-                
-                var index = filterKeys.indexOf(field);
-                if (index != -1) {
-                    filterKeys.splice(index, 1);
-                }
-                
-            }
+            filterKeys = filterKeys.filter(function(key) {
+                return !dataSourceDescription.fe_excludeFields[key] && dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key)==-1 && isRelationshipField(key)==-1 ;
 
+            })
         }
 
         
-
-
-        // var feVisible_filter_keys_length = feVisible_filter_keys.length;
         var uniqueFieldValuesByFieldName = {};
 
         for (i = 0; i < filterKeys.length ; i++) {

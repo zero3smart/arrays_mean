@@ -9,7 +9,6 @@ module.exports.ensureAuthorized = function(req, res, next) {
     	sourceKey = sourceKey.substring(1);
     }
 
-    console.log(sourceKey);
 
     datasourceDescriptions.GetDatasourceByUserAndKey(req.user, sourceKey, function(err, datasource) {
         if (err) {

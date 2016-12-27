@@ -227,17 +227,12 @@
 
 
         var inviteUser = function (newUser) {
-            var deferred = $q.defer();
-            $http.post('/api/admin/invite', newUser)
-                .then(function (response) {
-                    if (response.status == 200) {
-                        return deferred.resolve(response.data.message);
-                    } else {
+            return $http.post('/api/admin/invite', newUser)
+        }
 
-                    }
-
-                })
-            return deferred.promise;
+        var resendInvite = function(id) {
+            var currentUserId = currentUser()._id;
+            return $http.get('/api/user/' + currentUserId + '/resend?Invitee=' + id) 
         }
 
 
@@ -249,6 +244,7 @@
             ensureLogIn: ensureLogin,
             allTeams: allTeams,
             // updateProfile: updateProfile,
+            resendInvite:  resendInvite,
             reload: reload,
             updateTeam: updateTeam,
             inviteUser: inviteUser,

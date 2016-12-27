@@ -279,7 +279,6 @@ var _activeFilterRange_matchCondition_orErrDescription = function (dataSourceDes
             _id: 1,
             pKey: 1,
             srcDocPKey: 1,
-            rowIdxInDoc: 1,
             rowParams: 1,
             matchingField: {
                 $cond: {
@@ -485,7 +484,6 @@ var _activeSearch_matchOp_orErrDescription = function (dataSourceDescription, se
             _id: '$_id',
             pKey: {'$first': '$pKey'},
             srcDocPKey: {'$first': '$srcDocPKey'},
-            rowIdxInDoc: {'$first': '$rowIdxInDoc'},
             rowParams: {'$first': '$rowParams'},
             wordExistence: {'$first': '$wordExistence'}
         }
@@ -638,9 +636,11 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                 } else {
                     if (!revertType) row.splice(index,1);
                 }
-            })
+            });
 
-            if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+            // Sort by integer
+            if (dataSourceDescription.fe_filters.fieldsSortableByInteger &&
+                dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) {
 
                 row.sort(function (a, b) {
                     a = a.replace(/\D/g, '');
@@ -650,44 +650,45 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                     return a - b;
                 });
 
-            } else {
+            } else if (raw_rowObjects_coercionSchema[columnName] &&
+                raw_rowObjects_coercionSchema[columnName].operation == 'ToDate') {
 
-                if ( (raw_rowObjects_coercionSchema[columnName] &&
-                    raw_rowObjects_coercionSchema[columnName].operation !== 'ToFloat' && 
-                    raw_rowObjects_coercionSchema[columnName].operation !== 'ToInteger') || 
-                    !raw_rowObjects_coercionSchema[columnName]) {
+                row.sort(function(a, b) {
+                    var dateA = new Date(a);
+                    var dateB = new Date(b);
+                    return dateA > dateB ? 1 : -1;
+                });
 
-                    row.sort(function(a, b) {
-                        if (a !== null && b !== null) {
-                            var A = a.toString().toUpperCase();
-                            var B = b.toString().toUpperCase();
+            } else if ( (raw_rowObjects_coercionSchema[columnName] &&
+                raw_rowObjects_coercionSchema[columnName].operation !== 'ToFloat' &&
+                raw_rowObjects_coercionSchema[columnName].operation !== 'ToInteger') ||
+                !raw_rowObjects_coercionSchema[columnName]) {
 
-                            if (A < B) {
-                                return -1;
-                            }
-                            if (A > B) {
-                                return 1;
-                            }
+                row.sort(function (a, b) {
+                    if (a !== null && b !== null) {
+                        var A = a.toString().toUpperCase();
+                        var B = b.toString().toUpperCase();
 
+                        if (A < B) {
+                            return -1;
                         }
-                       
+                        if (A > B) {
+                            return 1;
+                        }
+                    }
 
-                        // names must be equal
-                        return 0;
-                    });
-                } else {
-                    row.sort(function(a,b) {
-                        return a - b;
-                    })
-
-
-                }
-
-              
-
+                    // names must be equal
+                    return 0;
+                });
+            } else {
+                row.sort(function(a,b) {
+                    return a - b;
+                })
             }
 
-            if (dataSourceDescription.fe_filters.fieldsSortableInReverseOrder && dataSourceDescription.fe_filters.fieldsSortableInReverseOrder.indexOf(columnName) != -1) { // Sort in reverse order
+            // Sort in reverse order
+            if (dataSourceDescription.fe_filters.fieldsSortableInReverseOrder &&
+                dataSourceDescription.fe_filters.fieldsSortableInReverseOrder.indexOf(columnName) != -1) {
                 row.reverse();
             }
 
@@ -695,9 +696,6 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                 name: columnName,
                 values: row
             });
-
-
-
         });
 
         finalizedUniqueFieldValuesByFieldName.sort(function(a, b) {

@@ -41,8 +41,6 @@
 				$scope.invitedUser = true;
 				$scope.user._team = $scope.user._team[0];
 			}
-
-			console.log($scope.user)
 		});
 
 		$scope.registerUser = function() {

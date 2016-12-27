@@ -76,8 +76,6 @@ var object_details_controller = require('../controllers/client/data_preparation/
 
 router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/g, ensureAuthorized, function (req, res, next) {
 
-    console.log("object detail controller");
-
 
     var source_key = req.params[0] + req.params[1];
     source_key = source_key.substring(1);

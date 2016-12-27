@@ -7,27 +7,11 @@
     function DatasetService($http, $q) {
 
         var getMappingDatasourceCols = function(pKey) {
-            var deferred = $q.defer();
-            $http.get('api/dataset/getMappingDatasourceCols/'+pKey)
-                .success(function(data) {
-                    return deferred.resolve(data.cols);
-                })
-                .error(deferred.reject);
-            return deferred.promise;
+            return $http.get('api/dataset/getMappingDatasourceCols/'+pKey)
         };
 
         var remove = function(id) {
-            var deferred = $q.defer();
-            $http.post('api/dataset/remove', {id: id})
-                .success(function(data) {
-                    if (!data.error && data.success == 'ok') {
-                        return deferred.resolve(true);
-                    } else {
-                        return deferred.reject(data.error);
-                    }
-                })
-                .error(deferred.reject);
-            return deferred.promise;
+            return $http.post('api/dataset/remove', {id: id});         
         };
 
         var get = function(id) {
@@ -35,177 +19,98 @@
             if (!id) return {
                 urls: []
             };
-
-            var deferred = $q.defer();
-            $http.get('api/dataset/get/' + id)
-                .success(function(data) {
-                    if (!data.error && data.dataset) {
-                        return deferred.resolve(data.dataset);
-                    } else {
-                        return deferred.reject(data.error);
-                    }
-                })
-                .error(deferred.reject);
-            return deferred.promise;
+           
+            return $http.get('api/dataset/get/' + id)
+            .then(function(response) {
+                return response.data.dataset;
+            });
         };
 
         var publish = function(id,isPublic) {
-            var deferred = $q.defer();
             var body = {
                 id: id,
                 isPublic: isPublic
             };
-            $http.put('api/dataset/publish',body)
-                .success(function(data) {
-                    console.log(data);
-
-                     if (!data.error && data.dataset) {
-                        return deferred.resolve(data.dataset);
-                    } else {
-                        return deferred.reject(data.error);
-                    }
-                })
-                .error(function(err) {
-                    console.log(err);
-                });
-            return deferred.promise;
+            return $http.put('api/dataset/publish',body)
         };
 
         var getAdditionalSources = function(id) {
-            var deferred = $q.defer();
-            $http.get('api/dataset/getAdditionalSources/' + id)
-                .success(function(data) {
-                    if (!data.error && data.sources) {
-                        return deferred.resolve(data.sources);
-                    } else {
-                        return deferred.reject(data.error);
-                    }
-                })
-                .error(deferred.reject);
-            return deferred.promise;
+
+            return $http.get('api/dataset/getAdditionalSources/' + id)
+            .then(function(response) {
+                return response.data.sources;
+            }).catch(function(err) {
+                console.log(err);
+                return [];
+            })
         };
 
         var save = function(dataset) {
-            var deferred = $q.defer();
-            $http.post('api/dataset/update', dataset)
-                .success(function(data) {
-                    if (!data.error && data.id) {
-                        return deferred.resolve(data.id);
-                    } else {
-                        return deferred.reject(data.error);
-                    }
-                })
-                .error(deferred.reject);
-            return deferred.promise;
+            return $http.post('api/dataset/update', dataset)
         };
 
 
         var initializeToImport = function(uid) {
-            var deferred = $q.defer();
-            $http.post('api/dataset/initializeToImport', {uid: uid})
-                .success(function(data) {
-                    if (!data.error && data.uid) {
-                        return deferred.resolve(data.uid);
-                    } else {
-                        return deferred.reject(data.error);
-                    }
-                })
-                .error(deferred.reject);
-            return deferred.promise;
+            return $http.post('api/dataset/initializeToImport', {uid: uid})
+           
         };
 
         var preImport = function(uid) {
-            var deferred = $q.defer();
-            $http.post('api/dataset/preImport', {uid: uid})
-                .success(function(data) {
-                    if (!data.error && data.uid) {
-                        return deferred.resolve(data.uid);
-                    } else {
-                        return deferred.reject(data.error);
-                    }
-                })
-                .error(deferred.reject);
-            return deferred.promise;
+            return $http.post('api/dataset/preImport', {uid: uid})
         };
 
         var postImport = function(uid) {
-            var deferred = $q.defer();
-            $http.post('api/dataset/postImport', {uid: uid})
-                .success(function(data) {
-                    if (!data.error && data.dataset) {
-                        return deferred.resolve(data.dataset);
-                    } else {
-                        return deferred.reject(data.error);
-                    }
-                })
-                .error(deferred.reject);
-            return deferred.promise;
+            return $http.post('api/dataset/postImport', {uid: uid})
+           
         };
 
         var getAvailableTypeCoercions = function() {
-            var deferred = $q.defer();
-            $http.get('api/dataset/getAvailableTypeCoercions')
-                .success(function(data) {
-                    if (!data.error && data.availableTypeCoercions)
-                        return deferred.resolve(data.availableTypeCoercions);
-                    else
-                        return deferred.reject(data.error);
-                })
-                .error(deferred.reject);
-            return deferred.promise;
+            return $http.get('api/dataset/getAvailableTypeCoercions')
+            .then(function(response) {
+                var data = response.data;
+                return data.availableTypeCoercions;
+            }).catch(function(err) {
+                console.log(err);
+                return [];
+            })
         };
 
         var getAvailableDesignatedFields = function() {
-            var deferred = $q.defer();
-            $http.get('api/dataset/getAvailableDesignatedFields')
-                .success(function(data) {
-                    if (!data.error && data.availableDesignatedFields)
-                        return deferred.resolve(data.availableDesignatedFields);
-                    else
-                        return deferred.reject(data.error);
-                })
-                .error(deferred.reject);
-            return deferred.promise;
+            return $http.get('api/dataset/getAvailableDesignatedFields')
+            .then(function(response) {
+                var data = response.data;
+                return data.availableDesignatedFields;
+            }).catch(function(err) {
+                console.log(err);
+                return [];
+            })
         };
 
         var getAvailableMatchFns = function() {
-            var deferred = $q.defer();
-            $http.get('api/dataset/getAvailableMatchFns')
-                .success(function(data) {
-                    if (!data.error && data.availableMatchFns)
-                        return deferred.resolve(data.availableMatchFns);
-                    else
-                        return deferred.reject(data.error);
-                })
-                .error(deferred.reject);
-            return deferred.promise;
+            return $http.get('api/dataset/getAvailableMatchFns')
+            .then(function(response) {
+               return response.data.availableMatchFns;
+            }).catch(function(err) {
+                console.log(err);
+                return [];
+            })
+
         };
 
         var getDatasetsWithQuery = function(query) {
-            var deferred = $q.defer();
-            $http.post('api/dataset/getDatasetsWithQuery',query)
-                .success(function(data) {
-                    if (!data.error && data.datasets)
-                        return deferred.resolve(data.datasets);
-                    else
-                        return deferred.reject(data.error);
-                })
-                .error(deferred.reject);
-            return deferred.promise;
+            return $http.post('api/dataset/getDatasetsWithQuery',query)
+            .then(function(response) {
+                var data = response.data;
+                 return data.datasets;
+            }).catch(function(err) {
+                console.log(err);
+                return [];
+            })
         };
 
        var removeSubdataset = function(id) {
-           var deferred = $q.defer();
-           $http.post('api/dataset/removeSubdataset', {id: id})
-               .success(function(data) {
-                   if (!data.error && data.success) {
-                       return deferred.resolve(true);
-                   } else {
-                       return deferred.reject(data.error);
-                   }
-               })
-               .error(deferred.reject);
-           return deferred.promise;
+
+           return $http.post('api/dataset/removeSubdataset', {id: id})
        };
 
         return {
