@@ -1,5 +1,7 @@
 var path = require('path');
 var express = require('express');
+var kue = require('kue');
+var ui = require('kue-ui');
 var winston = require('winston');
 var expressWinston = require('express-winston');
 var cookieParser = require('cookie-parser');
@@ -21,9 +23,21 @@ dotenv.config({
 });
 
 
+ui.setup({
+    apiURL: '/api',
+    baseURL: '/kue',
+    updateInterval: 5000
+})
+
+
+
 require('./config/setup-passport');
 
 var app = express();
+
+app.use('/api',kue.app);
+app.use('/kui',ui.app);
+
 
 var userFolderPath = __dirname + "/user";
 

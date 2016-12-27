@@ -77,12 +77,9 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions, fn) {
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
 
-            if (dataSourceDescription.useCustomView) {
-                 require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').postProcess(i,dataSourceDescription,eachCb);
-            } else {
-                 _postProcess(i, dataSourceDescription,eachCb);
-            }
-            
+          
+            _postProcess(i, dataSourceDescription,eachCb);
+          
             if (dataSourceDescription.dirty >= 3) omitImageScraping = false;
             i++;
         },
@@ -186,6 +183,8 @@ var _postProcess = function (indexInList, dataSourceDescription, callback) {
         dataSource_importRevision,
         dataSource_title,
         dataset_uid,
+        dataSourceDescription.useCustomView,
+        dataSourceDescription._team.subdomain,
         function (err) {
             if (err) {
                 winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");

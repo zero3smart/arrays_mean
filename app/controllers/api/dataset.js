@@ -19,10 +19,61 @@ var postimport_caching_controller = require('../../libs/import/cache/controller'
 var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
 var processing = require('../../libs/datasources/processing');
 
+var kue = require('kue');
+var queue = kue.createQueue();
+
+/*  start queue functions */
+queue.on('job enqueue',function(id,type) {
+    console.log('Job %s got queued of type %s',id,type);
+
+}).on('job complete',function(id,result) {
+    kue.Job.get(id,function(err,job) {
+        if (err) {
+            console.log('err in getting job: %s',err);
+            return;
+        }
+        job.remove(function(err) {
+            if (err) throw err;
+            console.log('removed completed job #%d', job.id);
+        })
+    })
+}).process('preImport',function(job,done) {
+    var id = job.data.id;
+    datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
+        import_controller.Import_rawObjects(descriptions,function(err) {
+            if (err) {
+                console.log('err in queue processing preImport job: %s',err);
+                return done(err);
+            }
+            done();
+        })
+
+    })
+
+})
+
+
+ // datasource_description.GetDescriptionsToSetup([id], function (descriptions) {
+    //     var fn = function (err) {
+    //         if (err) {
+    //             res.write(JSON.stringify({error:err.messsage}));
+    //             return res.end();
+    //         } else {
+    //             return res.end();
+    //         }
+    //     };
+
+    //     import_controller.Import_rawObjects(descriptions, fn);
+    // });
+
+
+
+
+
+/* end queue functions */
 
 function getAllDatasetsWithQuery(query, res) {
 
-    
     datasource_description.find({$and: [{schema_id: {$exists: false}}, query]}, {
         _id: 1,
         uid: 1,
@@ -740,23 +791,33 @@ module.exports.initializeToImport = function (req, res) {
 
 module.exports.preImport = function (req, res) {
 
-    var id = req.params.id;
+    
 
-    req.connection.setTimeout(0); // this could take a while
-    res.writeHead(200, {'Content-Type': 'application/json'});
+    var job = queue.create('preImport', {
+        id: req.params.id
+    }).save(function(err) {
 
-    datasource_description.GetDescriptionsToSetup([id], function (descriptions) {
-        var fn = function (err) {
-            if (err) {
-                res.write(JSON.stringify({error:err.messsage}));
-                return res.end();
-            } else {
-                return res.end();
-            }
-        };
+    })
 
-        import_controller.Import_rawObjects(descriptions, fn);
-    });
+    // var id = req.params.id;
+
+    // req.connection.setTimeout(0); // this could take a while
+    // res.writeHead(200, {'Content-Type': 'application/json'});
+
+    
+
+    // datasource_description.GetDescriptionsToSetup([id], function (descriptions) {
+    //     var fn = function (err) {
+    //         if (err) {
+    //             res.write(JSON.stringify({error:err.messsage}));
+    //             return res.end();
+    //         } else {
+    //             return res.end();
+    //         }
+    //     };
+
+    //     import_controller.Import_rawObjects(descriptions, fn);
+    // });
 }
 
 module.exports.importProcessed = function(req,res) {
