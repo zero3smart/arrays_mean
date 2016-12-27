@@ -5,6 +5,10 @@
     padding: 2em 1em;
 }
 
+md-content.md-default-theme, md-content {
+    background-color: #ffffff !important;
+}
+
 @media (min-width: 768px) {
     .dashboard-container {
         padding: 4em 3em;
@@ -330,15 +334,21 @@ md-dialog fieldset legend,
 
 .md-button.md-dashboard {
     height: 48px;
-    width: 200px;
+    min-width: 200px;
     margin: 0;
     border: 1px solid white;
+    border-radius: 4px;
 }
 
-.md-button.md-dashboard.md-light {
+.md-button.md-dashboard-icon {
+    padding-right: 12px;
+}
+
+/* treat .md-light as default */
+.md-button.md-dashboard:not([disabled]) {
     background: #CDCDCD;
 }
-.md-button.md-dashboard.md-light:hover {
+.md-button.md-dashboard:not([disabled]):hover {
     background: #333338;
 }
 .md-button.md-dashboard.md-dark:not([disabled]) {
@@ -362,7 +372,7 @@ md-icon.btn-icon {
     letter-spacing: 2px;
 }
 
-.md-button.md-dashboard.md-light .btn-label {
+.md-button.md-dashboard .btn-label {
     line-height: 46px; /* height - 2px for border*/
 }
 

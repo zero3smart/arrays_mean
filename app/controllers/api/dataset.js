@@ -21,6 +21,8 @@ var processing = require('../../libs/datasources/processing');
 
 
 function getAllDatasetsWithQuery(query, res) {
+
+    
     datasource_description.find({$and: [{schema_id: {$exists: false}}, query]}, {
         _id: 1,
         uid: 1,
@@ -168,6 +170,8 @@ module.exports.remove = function (req, res) {
 
         });
     });
+
+    //TODO: remove merged dataset references and settings
 
 
     batch.push(function(done) {
@@ -358,7 +362,6 @@ module.exports.update = function (req, res) {
                         // Import without image scrapping
                         keysForNeedToImport = [
                             'importRevision',
-                            'fn_new_rowPrimaryKeyFromRowObject',
                             'raw_rowObjects_coercionScheme',
                             'relationshipFields',
                             'customFieldsToProcess',
@@ -661,12 +664,8 @@ module.exports.download = function (req, res) {
         });
 }
 
-module.exports.initializeToImport = function (req, res) {
-    if (!req.body.uid) return res.status(500).send('Invalid Parameter');
+function _initializeToImport (uid,callback) {
 
-    var uid = req.body.uid;
-
-    // Remove the previous results
     var batch = new Batch();
     batch.concurrency(1);
 
@@ -723,10 +722,22 @@ module.exports.initializeToImport = function (req, res) {
     });
 
     batch.end(function (err) {
-        if (err) return res.status(500).send(err);
-
-        res.json({uid: uid});
+        callback(err);
     });
+}
+
+
+
+module.exports.initializeToImport = function (req, res) {
+    if (!req.body.uid) return res.status(500).send('Invalid Parameter');
+
+    var uid = req.body.uid;
+
+    _initializeToImport(uid,function(err) {
+        if (err) return res.status(500).send({error:err.message});
+        return res.json({uid: uid});
+    })
+
 };
 
 module.exports.preImport = function (req, res) {
@@ -746,10 +757,13 @@ module.exports.preImport = function (req, res) {
                         import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(descriptions, fn);
                     }, 3000);
                 } else {
-                    res.end(JSON.stringify({error: err.message})); // error code
+                    res.write(JSON.stringify({error:err.messsage}));
+                    return res.end();
                 }
             } else {
-                res.end(JSON.stringify({uid: uid})); // all good
+                res.write(JSON.stringify({uid:uid}));
+                return res.end();
+
             }
         };
 
@@ -782,12 +796,28 @@ module.exports.postImport = function (req, res) {
                         dataset.dirty = 0;
                         dataset.imported = true;
 
-                        dataset.save(function (err, updatedDataset) {
-                            if (err) return res.status(500).send(err);
-                            if (!updatedDataset)  return res.status(500).send('Invalid Operation');
+                        var batch = new Batch();
+                        batch.concurrency(5);
 
-                            return res.json({dataset: dataset});
-                        });
+                        dataset._otherSources.forEach(function(id) {
+                            batch.push(function(done) {
+                                datasource_description.findByIdAndUpdate(id,{$set:{imported:true}},done);
+                            })
+                        })
+
+                        batch.end(function(err) {
+                            if (err) return res.status(500).send("cannot update related sources");
+                            else {
+                                dataset.save(function (err, updatedDataset) {
+
+                                    if (err) return res.status(500).send({error:err});
+                                    if (!updatedDataset)  return res.status(500).send('Invalid Operation');
+                        
+                                    return res.json({dataset: dataset});
+                                });
+
+                            }
+                        })
                     });
             }
         };

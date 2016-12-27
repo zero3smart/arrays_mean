@@ -45,20 +45,18 @@
 
 .sidebar-menu .nav > li > a {
     position: relative;
-    /*border-top: 1px solid #4a4a4a;*/
-    /*background-color: #272727;*/
-    /*box-shadow: 0 2px 4px rgba(0,0,0,.2);*/
-    /*text-transform: uppercase;*/
     /*letter-spacing: 2px;*/
-    font-size: 1.1em;
+    /*font-size: 1.1em;*/
+    font-size: 16px;
     line-height: 1em;
 
     display: inline-block;
-    padding: 17px 15px;
+    margin-bottom: 1px;
+    padding: 12px;
     width: 100%;
     /*color: #fff;*/
     color: var(--color-text-dark);
-    border-radius: 5px;
+    border-radius: 4px;
 }
 
 .sidebar-menu .nav > li > a:hover,
@@ -69,8 +67,19 @@
 }
 
 .sidebar-menu .nav .sidebar-label {
+    /* style as if disabled, for now */
     color: var(--color-text-med);
     pointer-events: none;
+}
+
+.sidebar-menu .nav .sidebar-link {
+    background-color: transparent;
+    color: var(--color-primary);
+}
+
+hr {
+    margin: 12px;
+    width: 165px;
 }
 
 /* Menu Nav Bar */

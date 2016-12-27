@@ -12,7 +12,10 @@
                             <article id="object-id" class="object">
                                 <header class="object-header">
                                     {% if hasOriginalImage %}
-                                    <img src="{{ rowObject.rowParams[fieldKey_originalImageURL] }}" class="object-featured img-responsive" />
+                                    {% set title = team.title | lower %}
+                                    {% set array_title = arrayTitle | lower %}
+                                    {% set url = "https://" + aws_bucket_for_url + title + "/" + array_title + folder + rowObject.rowParams[fieldKey_originalImageURL] %}
+                                    <img src="{{ url }}" class="object-featured img-responsive" />
                                     {% endif %}
 
                                     {% if not rowObject.rowParams[fieldKey_originalImageURL] and fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}

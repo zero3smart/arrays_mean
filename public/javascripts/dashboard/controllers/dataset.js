@@ -27,9 +27,7 @@ angular.module('arraysApp')
 	        		}
         			break;
         			case 'dashboard.dataset.views':
-        			if ($scope.dataset.fn_new_rowPrimaryKeyFromRowObject) {
         				$location.path('/dashboard/dataset/views/' + $scope.dataset._id);
-	        		}
         			break;
         			case 'dashboard.dataset.done':
         			if ($scope.dataset.fe_views.default_view) {

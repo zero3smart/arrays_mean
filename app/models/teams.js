@@ -59,7 +59,6 @@ function getTeamsAndPopulateDatasetWithQuery(teamQuery, datasetQuery, fn) {
         .exec(function (err, teams) {
             if (err) fn(err);
 
-            // console.log(teams);
             fn(null, teams);
         })
 }
@@ -101,7 +100,6 @@ team.GetTeamBySubdomain = function (req, fn) {
 
     var subdomains = req.subdomains;
 
-
     var team_key = subdomains[0];
 
 
@@ -128,8 +126,11 @@ team.GetTeamBySubdomain = function (req, fn) {
                     getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {$and: [ myTeam, {imported: true, fe_listed:true,fe_visible: true}]}, fn);
 
                 } else { //get published and unpublished dataset if currentUser is one of the viewers
+
                     var myTeamId = foundUser.defaultLoginTeam._id;
-                    var myTeam = {_team: foundUser.defaultLoginTeam._id, _id: {$or:[ {$in:foundUser._editors}, {$in: foundUser._viewers}  ] } };
+
+                    var myTeam = {$or: [{_id: {$in:foundUser._editors}}, {_id: {$in: foundUser._viewers}}]};
+
                     getTeamsAndPopulateDatasetWithQuery({subdomain: team_key}, {$and: [myTeam, {imported: true, fe_listed:true,fe_visible: true}]}, fn);
                 }
             })

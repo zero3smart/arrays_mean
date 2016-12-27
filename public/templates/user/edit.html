@@ -4,20 +4,19 @@
             <label>Email</label>
             <input ng-readonly="selectedUser._id" aria-label="email" required name="email" ng-model="selectedUser.email">
             <div ng-messages="vm.userForm.email.$error">
-                <div ng-message="unique">This user is an existing user. </div>
+                <div ng-message="unique">This user is an existing user.</div>
             </div>
         </md-input-container>
-
-      
-
     </div>
 
-     <md-button ng-if="user.invited[selectedUser._id]" class="md-raised" ng-click="resendInvite()"><span
-            class="fa fa-share"></span> Resend Invitation
-    </md-button>
+    <div layout="row" layout-align="end center">
+        <md-button md-no-ink ng-if="user.invited[selectedUser._id]" class="md-raised md-dashboard" ng-click="resendInvite()">
+            <span class="btn-label">Resend Invitation</span>
+        </md-button>
+    </div>
 
     <form>
-       
+
         <div class="table-container">
             <table ng-hide="user.invited[person._id]|| datasets.length == 0" class="table data">
                 <thead>
@@ -41,30 +40,26 @@
 
 
                     </td>
-        
+
                 </tr>
                 </tbody>
             </table>
         </div>
     </form>
 
-
     <div layout="row" layout-align="end center">
 
-        <md-button ng-if="selectedUser._id !== team.admin && userId && selectedUser.activated==true" class="md-raised" type="button" ng-click="makeTeamAdmin()">
-            <span class="fa fa-user"></span><span class="btn-label">Make Team Admin</span>
+        <md-button md-no-ink ng-if="selectedUser._id !== team.admin && userId && selectedUser.activated==true" class="md-raised md-dashboard" type="button" ng-click="makeTeamAdmin()">
+            <span class="btn-label">Make Team Admin</span>
         </md-button>
 
-        <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-raised" type="button" ng-hide="userId || selectedUser._team.indexOf(team._id) >= 0">
-            <span class="fa fa-plus"></span><span class="btn-label">Invite User</span>
+        <md-button md-no-ink ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-raised md-dashboard" type="button" ng-hide="userId || selectedUser._team.indexOf(team._id) >= 0">
+            <span class="btn-label">Invite</span>
         </md-button>
 
-        <md-button ng-if="!user.invited[person._id]" ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="saveUser()" class="md-raised" type="button" ng-if="userId">
-            <span class="fa fa-check"></span><span class="btn-label">Save User</span>
+        <md-button md-no-ink ng-if="!(user.invited[person._id] || user.invited[selectedUser._id])" ng-hide="!userId" ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="saveUser()" class="md-raised md-dashboard" type="button" ng-if="userId">
+            <span class="btn-label">Save</span>
         </md-button>
-
-
-       
 
     </div>
 </form>
