@@ -967,6 +967,7 @@ angular.module('arraysApp')
             };
 
             $scope.saveRequiredFields = function() {
+                $scope.$parent.$parent.dataset.fn_new_rowPrimaryKeyFromRowObject = $scope.data.fn_new_rowPrimaryKeyFromRowObject;
                 for(designatedField in $scope.data.fe_designatedFields) {
                     $scope.$parent.$parent.dataset.fe_designatedFields[designatedField] = $scope.data.fe_designatedFields[designatedField]
                 }
