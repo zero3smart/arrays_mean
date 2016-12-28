@@ -337,7 +337,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
                     //image url
                     aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
-                    folder: "/assets/images/"
+                    folder: "/assets/images/",
+                    uid: dataSourceDescription.uid
                 };
 
                 callback(null, data);
