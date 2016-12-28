@@ -49,6 +49,7 @@ md-content.md-default-theme, md-content {
 
 .instructions {
     margin-top: 32px;
+    margin-bottom: 4px;
 }
 
 .dataset .md-content {
