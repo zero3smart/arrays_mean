@@ -5,13 +5,13 @@
 
 <p class="instructions">Select a user to edit</p>
 
-<ul class="dataset-list" ng-cloak>
+<ul class="dashboard-list user-list" ng-cloak>
     <li ng-repeat="person in users track by $index">
 
-        <span class="dataset-list-order">{{ $index+1 }}</span>
-        <span class="dataset-list-name" ng-click="select(person, user)">{{person.firstName}} {{person.lastName}}</span>
-        <span class="dataset-list-revision">({{ person.email }})</span>
-        <span class="dataset-list-delete" ng-click="remove($index)" aria-hidden="true" aria-label="Delete"
+        <span class="dashboard-list-order">{{ $index+1 }}</span>
+        <span class="dashboard-list-name" ng-click="select(person, user)">{{person.firstName}} {{person.lastName}}</span>
+        <span class="dashboard-list-revision">({{ person.email }})</span>
+        <span class="dashboard-list-delete" ng-click="remove($index)" aria-hidden="true" aria-label="Delete"
             ng-if="user._id != person._id && !user.invited[person._id]">×</span>
         <span ng-if="user.invited[person._id]">Pending Invitation</span>
 

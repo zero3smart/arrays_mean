@@ -96,6 +96,44 @@ img.iconMap {
     padding: 8px 0;
 }
 
+/* Lists */
+
+.dashboard-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.dashboard-list-order {
+    display: inline-block;
+    width: 20px;
+    vertical-align: text-bottom;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-primary);
+}
+.dashboard-list-name {
+    font-size: 20px;
+    line-height: 30px;
+    font-weight: 600;
+}
+.dashboard-list-name:hover {
+    color: var(--color-primary);
+}
+.dashboard-list-revision {
+    font-size: 20px;
+    /*font-weight: 100;*/
+}
+.dashboard-list-delete {
+    /* temp × symbol */
+    font-size: 20px;
+    line-height: 20px;
+    font-weight: bold;
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    color: var(--color-primary);
+}
+
 /* Dataset Breadcrumb */
 
 .dataset-breadcrumb button {
@@ -134,43 +172,6 @@ img.iconMap {
     margin-right: 0;
 }
 
-.dataset-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-.dataset-list .dataset-list-order {
-    display: inline-block;
-    width: 20px;
-    vertical-align: text-bottom;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-primary);
-}
-.dataset-list .dataset-list-name {
-    font-size: 20px;
-    line-height: 30px;
-    font-weight: 600;
-}
-.dataset-list .dataset-list-name:hover {
-    color: var(--color-primary);
-}
-.dataset-list .dataset-list-revision {
-    font-size: 20px;
-    /*font-weight: 100;*/
-}
-.dataset-list .dataset-list-delete {
-    /* temp × symbol */
-    font-size: 20px;
-    line-height: 20px;
-    /*font-weight: bold;*/
-    display: inline-block;
-    width: 20px;
-    text-align: center;
-    /*margin-left: 0.2em;*/
-
-    color: var(--color-primary);
-}
 
 /* Dataset Settings */
 .dataset .md-chips {

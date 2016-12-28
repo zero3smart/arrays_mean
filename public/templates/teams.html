@@ -28,23 +28,14 @@
        </div>
  </form>
 
-
-
-  <div ng-repeat="tm in teams track by $index">
-      <div layout="row">
-          <md-button ng-disabled="team._id == tm._id" ng-click="signInWithTeam($index)" class="md-raised" ng-disabled="" type="submit">
-           <span class="fa fa-sign-in"></span><span class="btn-label">{{tm.title}} ({{tm.subdomain}}.arrays.co)</span></md-button>
-      </div>
-
-  </div>
-
-
-
-
-
-
-
-
+    <ul class="dashboard-list team-list" ng-cloak>
+        <li ng-repeat="tm in teams track by $index">
+            <md-button ng-disabled="team._id == tm._id" ng-click="signInWithTeam($index)" type="submit">
+                <span class="dashboard-list-name">{{tm.title}}</span>
+                <span class="dashboard-list-revision">({{tm.subdomain}}.arrays.co)</span>
+            </md-button>
+        </li>
+    </ul>
 
 
 
