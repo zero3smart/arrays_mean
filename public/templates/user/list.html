@@ -1,6 +1,6 @@
 <md-button class="md-raised md-dashboard md-dashboard-icon md-dark" ui-sref="dashboard.user.edit" md-no-ink>
     <md-icon class="btn-icon">add</md-icon>
-    <span class="btn-label">Invite New User</span>
+    <span class="btn-label">Invite User</span>
 </md-button>
 
 <p class="instructions">Select a user to edit</p>
@@ -9,8 +9,10 @@
     <li ng-repeat="person in users track by $index">
 
         <span class="dashboard-list-order">{{ $index+1 }}</span>
-        <span class="dashboard-list-name" ng-click="select(person, user)">{{person.firstName}} {{person.lastName}}</span>
-        <span class="dashboard-list-revision">({{ person.email }})</span>
+        <span class="dashboard-list-hover" ng-click="select(person, user)">
+            <span class="dashboard-list-name">{{person.firstName}} {{person.lastName}}</span>
+            <span class="dashboard-list-revision">({{ person.email }})</span>
+        </span>
         <span class="dashboard-list-delete" ng-click="remove($index)" aria-hidden="true" aria-label="Delete"
             ng-if="user._id != person._id && !user.invited[person._id]">×</span>
         <span ng-if="user.invited[person._id]">Pending Invitation</span>

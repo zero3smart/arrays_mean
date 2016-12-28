@@ -8,8 +8,10 @@
 <ul class="dashboard-list dataset-list" ng-cloak>
     <li ng-repeat="dataset in datasets">
         <span class="dashboard-list-order">{{ $index+1 }}</span>
-        <span class="dashboard-list-name" ng-click="select(dataset._id)">{{ dataset.title }}</span>
-        <span class="dashboard-list-revision">({{ dataset.importRevision }})</span>
+        <span class="dashboard-list-hover" ng-click="select(dataset._id)">
+            <span class="dashboard-list-name">{{ dataset.title }}</span>
+            <span class="dashboard-list-revision">({{ dataset.importRevision }})</span>
+        </span>
         <span class="dashboard-list-delete" ng-click="remove(dataset._id)" aria-hidden="true" aria-label="Delete">×</span>
         <!-- <span class="dataset-list-delete icon-close-big" ng-click="remove(dataset._id)" aria-hidden="true" aria-label="Delete"></span> -->
         <!-- <span class="dataset-list-delete icon-close-filterpill" ng-click="remove(dataset._id)" aria-hidden="true" aria-label="Delete"></span> -->

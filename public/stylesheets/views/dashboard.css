@@ -134,6 +134,21 @@ img.iconMap {
     color: var(--color-primary);
 }
 
+.team-list .md-button {
+    margin: 0;
+    padding: 0;
+    min-height: auto;
+    line-height: normal;
+    text-transform: none;
+}
+.team-list .md-button:hover {
+    background-color: transparent;
+}
+
+.dashboard-list .dashboard-list-hover:hover:not([disabled]) .dashboard-list-name {
+    color: var(--color-primary);
+}
+
 /* Dataset Breadcrumb */
 
 .dataset-breadcrumb button {
