@@ -442,7 +442,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
 
-                    tooltipDateFormat: dataSourceDescription.fe_views.views.timeline.tooltipDateFormat || null
+                    tooltipDateFormat: dataSourceDescription.fe_views.views.timeline.tooltipDateFormat || null,
+
+                    aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
+                    folder: "/assets/images/",
+                    uid: dataSourceDescription.uid
+
                 };
 
 
