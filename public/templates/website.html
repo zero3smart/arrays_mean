@@ -32,7 +32,7 @@
             <label>Logo</label>
             <div ng-if="!team.logo">
                 No team logo uploaded.
-                
+
             </div>
 
             <div flex="50">
@@ -41,13 +41,13 @@
     </div>
 
 
-      
+
 
     <div class="formInput">
         <label>Logo Header</label>
          <div ng-if="!team.logo_header">
                 No team logo header uploaded.
-                
+
             </div>
 
         <div flex="50">
@@ -57,7 +57,7 @@
     </div>
 
 
-     
+
 
 
 
@@ -75,18 +75,18 @@
             <th ng-show="assetsUploader.isHTML5">Progress</th>
             <th>Status</th>
             <th>Actions</th>
-            
+
         </tr>
         </thead>
         <tbody>
 
 
 
-        
-        <tr ng-repeat="item in assetsUploader.queue track by $index"> 
+
+        <tr ng-repeat="item in assetsUploader.queue track by $index">
 
 
-            <td><strong>{{ item.file.name }}</strong></td> 
+            <td><strong>{{ item.file.name }}</strong></td>
 
              <td>
                   <md-select ng-change="getUploadUrl($index,item)" required ng-model="item.assetType"
@@ -94,7 +94,7 @@
                         <md-option value="logo">Logo</md-option>
                         <md-option value="icon">Icon</md-option>
                         <md-option value="logo_header">Logo Header</md-option>
-                    </md-select>                
+                    </md-select>
             </td>
 
 
@@ -121,31 +121,19 @@
                     Remove
                 </md-button>
             </td>
-           
+
         </tr>
         </tbody>
 
     </table>
 
 
-      <div layout="row" layout-align="end center" class="panel-footer">
-            <md-button class="md-raised" type="submit"
-                       ng-disabled="vm.websiteForm.$invalid || !vm.websiteForm.$dirty"><span
-                    class="glyphicon glyphicon-ok"></span><span class="btn-label">Save</span></md-button>
+        <div layout="row" layout-align="end center" class="panel-footer">
+            <md-button md-no-ink class="md-raised md-dashboard md-light" type="submit"
+            ng-disabled="vm.websiteForm.$invalid || !vm.websiteForm.$dirty">
+                       <span class="btn-label">Save</span></md-button>
         </div>
 
-
-
-
-
     </form>
-
-
-
-
-
-
-
-
 
 </div>

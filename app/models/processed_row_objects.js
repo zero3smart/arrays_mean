@@ -998,15 +998,19 @@ function proceedToPersistHostedImageURLOrNull_forKey(err, mongooseModel, docQuer
         persistedCb(err);
         return;
     }
+    if (hostedURLOrNull != null) {
+        var hostedURLChunks = hostedURLOrNull.split('.')
+        var hostedFileExtension = hostedURLChunks[hostedURLChunks.length - 1];    
+    }
 
     var docUpdate = {};
     if (lastFieldKey == true) {
         docUpdate["rowParams.imageScraped"] = true
     }
-    var relativeURLPortion = docQuery.srcDocPKey + "/" + docQuery.pKey + "__images.png"
+    var relativeURLPortion = docQuery.srcDocPKey + "/" + docQuery.pKey + '__' + fieldKey + "." + hostedFileExtension;
     docUpdate["rowParams." + fieldKey] = relativeURLPortion; // save the relative path
     mongooseModel.update(docQuery, {$set: docUpdate}, function (err, result) {
-        winston.info("📝  Saved " + hostedURLOrNull + "as" + relativeURLPortion + " at " + fieldKey);
+        winston.info("📝  Saved " + hostedURLOrNull + " as " + relativeURLPortion + " at " + fieldKey);
         persistedCb(err);
     });
 }

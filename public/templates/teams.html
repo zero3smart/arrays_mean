@@ -1,8 +1,24 @@
 <header>
-    <h1>Team Management</h1>
+    <h1>Manage Teams</h1>
 </header>
 
 <div class="array-content">
+
+    <!-- <md-button class="md-raised md-dashboard md-dashboard-icon md-dark" disabled md-no-ink>
+        <md-icon class="btn-icon">add</md-icon>
+        <span class="btn-label">Create Team</span>
+    </md-button> -->
+
+    <p class="instructions">Select a team to edit</p>
+
+    <ul class="dashboard-list team-list" ng-cloak>
+        <li ng-repeat="tm in teams track by $index">
+            <md-button class="dashboard-list-hover" ng-disabled="team._id == tm._id" ng-click="signInWithTeam($index)" md-no-ink>
+                <span class="dashboard-list-name">{{tm.title}}</span>
+                <span class="dashboard-list-revision">({{tm.subdomain}}.arrays.co)</span>
+            </md-button>
+        </li>
+    </ul>
 
     <form ng-if="user.role=='superAdmin'" name="vm.teamForm" ng-submit="createTeam()" autocomplete="off">
       <div layout-gt-xs="row">
@@ -20,32 +36,12 @@
 
             </md-input-container>
        </div>
-      
+
 
        <div layout="row" layout-align="end center">
-          <md-button  ng-disabled="vm.teamForm.$invalid || !vm.teamForm.$dirty" class="md-raised" type="submit">
-           <span class="fa fa-plus"></span><span class="btn-label">Create Team</span></md-button>
-      </div>
+           <md-button md-no-ink ng-disabled="vm.teamForm.$invalid || !vm.teamForm.$dirty" class="md-raised md-dashboard md-light" type="submit">
+           <span class="btn-label">Create Team</span></md-button>
+       </div>
  </form>
-
-
-
-  <div ng-repeat="tm in teams track by $index">
-      <div layout="row">
-          <md-button ng-disabled="team._id == tm._id" ng-click="signInWithTeam($index)" class="md-raised" ng-disabled="" type="submit">
-           <span class="fa fa-sign-in"></span><span class="btn-label">{{tm.title}} ({{tm.subdomain}}.arrays.co)</span></md-button>
-      </div>
-
-  </div>
-
-
-
-
-
-   
-
-
-    
-
 
 </div>
