@@ -776,6 +776,7 @@ angular.module('arraysApp')
             function JoinDialogController($scope, $mdDialog, DatasetService, AuthService, dataset, fields) {
                 $scope.data = {};
                 $scope.data.columns = [];
+                $scope.selectedColumns = [];
                 $scope.dataset = angular.copy(dataset);
                 if (!$scope.dataset.relationshipFields) $scope.dataset.relationshipFields = [];
 
@@ -808,7 +809,6 @@ angular.module('arraysApp')
                 function initializeDatasets(datasets) {
                     if (!datasets) return;
                     $scope.datasets = datasets.filter(function(source) { return source._id != dataset._id });
-
                     $scope.data.foreignDataset = $scope.dataset.relationshipFields.map(function(relationshipField) {
                         return $scope.datasets.find(function(source) {
                             return source.uid == relationshipField.by.ofOtherRawSrcUID && source.importRevision == relationshipField.by.andOtherRawSrcImportRevision;
@@ -886,6 +886,38 @@ angular.module('arraysApp')
                     $scope.dialog.form.$setDirty();
                 };
 
+                //begin checkbox logic for showFields
+                $scope.toggle = function(item, selectedColumnList) {
+                    var i = selectedColumnList.indexOf(item);
+                    if(i > -1) {
+                        selectedColumnList.splice(i, 1);
+                    } else {
+                        selectedColumnList.push(item);
+                    }
+                };
+
+                $scope.exists = function(item, selectedColumnList) {
+                    return selectedColumnList.indexOf(item) > -1;
+                };
+
+                $scope.isChecked = function() {
+                    if($scope.data.columns.length > 0) {
+                        return $scope.selectedColumns.length == $scope.data.columns[0].length   
+                    }
+                };
+
+                $scope.toggleAll = function() {
+                    if ($scope.selectedColumns.length == $scope.data.columns[0].length) {
+                        $scope.selectedColumns = [];
+                    } else if ($scope.selectedColumns.length == 0 || $scope.selectedColumns.length > 0) {
+                        $scope.selectedColumns = [];
+                        for(var i =0; i < $scope.data.columns[0].length; i++) {
+                            $scope.selectedColumns.push($scope.data.columns[0][i].name)
+                        }
+                    }
+                };
+                //end checkbox logic
+
                 $scope.cancel = function () {
                     $mdDialog.cancel();
                 };
@@ -894,6 +926,11 @@ angular.module('arraysApp')
                     $scope.dataset._otherSources = [];
                     $scope.data.foreignDataset.forEach(function(source, index) {
                         $scope.dataset.relationshipFields[index].by.ofOtherRawSrcUID = source.uid;
+
+                        var field_name = $scope.dataset.relationshipFields[index].field;
+                        //set the showfields to be an array of all the fields they want to see taken from the checkbox 
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {}
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[field_name] = {"showField": $scope.selectedColumns}
                         $scope.dataset.relationshipFields[index].by.andOtherRawSrcImportRevision = source.importRevision;
                         if ($scope.dataset._otherSources.indexOf(source._id) == -1)
                             $scope.dataset._otherSources.push(source._id);
@@ -1060,6 +1097,7 @@ angular.module('arraysApp')
                         delete finalizedDatasource.isPublic;
                         delete finalizedDatasource.fe_views;
                         delete finalizedDatasource.fe_filters;
+                        delete finalizedDatasource.fe_objectShow_customHTMLOverrideFnsByColumnNames;
                         queue.push(DatasetService.save(finalizedDatasource));
                     });
 
