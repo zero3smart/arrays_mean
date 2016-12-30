@@ -149,6 +149,20 @@ img.iconMap {
     color: var(--color-primary);
 }
 
+/* Angular Material tabs and nav bars */
+
+.md-tab {
+    font-size: 16px;
+    text-transform: none;
+}
+.dashboard .tab-content {
+    padding-top: 2em;
+}
+.tab-content img.profile {
+    padding: 0 2em 2em 0;
+    width: 100%;
+}
+
 /* Dataset Breadcrumb */
 
 .dataset-breadcrumb button {

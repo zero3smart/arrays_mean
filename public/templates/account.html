@@ -4,11 +4,11 @@
 
 <div ng-cloak>
     <md-content>
-        <md-tabs md-dynamic-height md-border-bottom md-no-ink>
-            <md-tab label="Profile">
-                <md-content layout="column" layout-gt-xs="row">
+        <md-tabs md-dynamic-height md-border-bottom md-no-ink md-no-pagination>
+            <md-tab label="Profile" class="md-accent">
+                <md-content layout="column" layout-gt-xs="row" class="tab-content">
 
-                    <div flex="66">
+                    <div flex="75">
                         <md-input-container class="md-block">
                             <label>First Name</label>
                             <input required name="givenName" ng-model="user.firstName" disabled>
@@ -23,16 +23,18 @@
                             <label>Email</label>
                             <input required name="email" ng-model="user.email" disabled>
                         </md-input-container>
+                        <!-- Update Settings -->
                     </div>
 
-                    <div flex="33" flex-order-gt-xs="-1">
-                        <img width="100%" src="/images/image-not-found-sm.png" class="profile" />
+                    <div flex="25" flex-order-gt-xs="-1">
+                        <img src="/images/image-not-found-sm.png" class="profile" />
+                        <!-- Upload/Update -->
                     </div>
 
                 </md-content>
             </md-tab>
 
-            <md-tab label="Billing" ng-disabled="1">
+            <md-tab label="Billing">
             </md-tab>
         </md-tabs>
     </md-content>
