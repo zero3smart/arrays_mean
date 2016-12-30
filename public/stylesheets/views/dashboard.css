@@ -1,6 +1,13 @@
 /* @override
 	http://localhost:9080/stylesheets/views/dashboard.css */
 
+h2 {
+    font-size: 24px;
+}
+h3 {
+    font-size: 18px;
+}
+
 .dashboard-container {
     padding: 2em 1em;
 }
@@ -55,9 +62,9 @@ md-content.md-default-theme, md-content {
 .dataset .md-content {
     overflow: hidden;
 }
-.dataset a._md-nav-button {
+/*.dataset a._md-nav-button {
     font-size: 18px;
-}
+}*/
 
 md-toolbar:not(.md-menu-toolbar) {
     background-color: var(--color-primary);
@@ -151,7 +158,9 @@ img.iconMap {
 
 /* Angular Material tabs and nav bars */
 
+.md-nav-bar .md-button,
 .md-tab {
+    color: var(--color-text-dark);
     font-size: 16px;
     text-transform: none;
 }
@@ -398,7 +407,7 @@ md-icon.btn-icon {
     font-family: var(--font-family-calibre);
     text-transform: uppercase;
     color: white;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     letter-spacing: 2px;
 }

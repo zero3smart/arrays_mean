@@ -2,10 +2,10 @@
     <h1>Account Settings</h1>
 </header>
 
-<div ng-cloak>
+<div class="array-content account" ng-cloak>
     <md-content>
         <md-tabs md-dynamic-height md-border-bottom md-no-ink md-no-pagination>
-            <md-tab label="Profile" class="md-accent">
+            <md-tab label="Profile" md-no-ink>
                 <md-content layout="column" layout-gt-xs="row" class="tab-content">
 
                     <div flex="75">
@@ -34,7 +34,45 @@
                 </md-content>
             </md-tab>
 
-            <md-tab label="Billing">
+            <md-tab label="Billing" md-no-ink>
+                <md-content>
+                    <h2>Plan Summary</h2>
+                    <p>
+                        Arrays Pro (Monthly): 2 Datasets<br />
+                        Cost per Dataset: $99<br />
+                        <strong>Total per month:</strong> $298.00
+                    </p>
+
+                    <p>Credit Card (Visa)&emsp;<a href="#">Edit Payment Info</a></p>
+                    <hr>
+                    <md-input-container>
+                        <label>Datasets</label>
+                        <input name="datasets" required type="number" value="2" />
+                    </md-input-container>
+
+                    <div layout="row" layout-align="space-between center">
+                        <md-button class="md-dashboard">
+                            <span class="btn-label">Save and Update Monthly Billing Amount</span>
+                        </md-button>
+
+                        <md-button class="md-dashboard">
+                            <span class="btn-label">Pay Yearly ($198 / mo)</span>
+                        </md-button>
+                    </div>
+
+                    <hr>
+
+                    <h3>Upgrade to Arrays Enterprise</h3>
+
+                    <md-button class="md-dashboard">
+                        <span class="btn-label">Learn More</span>
+                    </md-button>
+
+                    <hr>
+
+                    <a href="#">Close Account</a>
+
+                </md-content>
             </md-tab>
         </md-tabs>
     </md-content>
