@@ -1,4 +1,4 @@
-<md-content layout="column" layout-gt-xs="row" class="tab-content">
+<md-content layout="column" layout-gt-xs="row" class="tab-content" md-no-ink>
 
     <div flex="75">
         <md-input-container class="md-block">
@@ -15,13 +15,18 @@
             <label>Email</label>
             <input required name="email" ng-model="user.email" disabled>
         </md-input-container>
-        <!-- Update Settings -->
+
+        <div layout="row" layout-align="end center">
+            <md-button class="md-dashboard" ng-disabled="1">
+                <span class="btn-label">Update Settings</span>
+            </md-button>
+        </div>
     </div>
 
     <div flex="25" flex-order-gt-xs="-1">
         <img src="/images/image-not-found-sm.png" class="profile" />
-        <md-button class="md-dashboard">
-            <span class="btn-label">Update<!--Upload if none --></span>
+        <md-button class="md-dashboard" ng-disabled="1">
+            <span class="btn-label">Upload<!--Update if img exists --></span>
         </md-button>
     </div>
 </md-content>
