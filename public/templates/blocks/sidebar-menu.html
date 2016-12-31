@@ -4,7 +4,7 @@
         <a class="sidebar-label">{{user.firstName}} {{user.lastName}}</a>
     </li>
 
-    <li ui-sref-active="active">
+    <li ui-sref-active="active" ng-class="{'active': $state.includes('dashboard.account')}">
         <a ui-sref="dashboard.account.profile" role="button"> Account Settings</a>
     </li>
 
