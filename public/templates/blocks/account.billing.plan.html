@@ -1,5 +1,5 @@
 <p>
     Arrays {{testUser.plan.name}} ({{testUser.billingCycle}}): {{testUser.paidDatasets}} Datasets<br />
-    Cost per Dataset: {{testUser.plan.cost | currency}}<br />
-    <strong>Total per month:</strong> {{ testUser.plan.cost * testUser.paidDatasets | currency }}
+    Cost per Dataset: {{testUser.plan.cost[testUser.billingCycle] | currency}}<br />
+    <strong>Total per month:</strong> {{ testUser.plan.cost[testUser.billingCycle] * testUser.paidDatasets | currency }}
 </p>

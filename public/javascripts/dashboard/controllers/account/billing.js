@@ -1,28 +1,45 @@
 angular.module('arraysApp')
     .controller('BillingCtrl', ['$scope', '$mdDialog', function($scope, $mdDialog) {
 
+        //
         // for testing
-        // name, cost per dataset
+        //
+        // display name, cost per dataset
         $scope.testPlans = {
             trial: {
-                name: 'Trial',
-                cost: 0
+                name: 'Pro',
+                cost: { // per month
+                    trial: 0,
+                    month: 0,
+                    year: 0
+                }
             },
             pro: {
                 name: 'Pro',
-                cost: 149
+                cost: { // per month
+                    month: 149,
+                    year: 99
+                }
             },
             // enterprise: {
             //     name: 'Enterprise',
-            //     cost: 0
             // }
         };
         // for testing, to attach to user
         $scope.testUser = {};
-        $scope.testUser.plan = $scope.testPlans.pro;
-        $scope.testUser.billingCycle = 'Monthly';
+
+        $scope.testUser.p = 'pro';
+        $scope.testUser.plan = $scope.testPlans[$scope.testUser.p];
         $scope.testUser.paidDatasets = 2; // not the current number but the allowed, paid number
+        $scope.testUser.billingCycle = 'month';
+
+        // $scope.testUser.p = 'trial';
+        // $scope.testUser.plan = $scope.testPlans[$scope.testUser.p];
+        // $scope.testUser.paidDatasets = 1;
+        // $scope.testUser.billingCycle = 'trial';
+        //
         // for testing
+        //
 
         $scope.openBillingDialog = function(ev, template) {
             $mdDialog.show({

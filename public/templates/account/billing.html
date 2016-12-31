@@ -2,29 +2,34 @@
     <h2>Plan Summary</h2>
 
     <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
+    <p ng-if="testUser.p === 'trial'">Your free trial expires in <strong>6</strong> days.&emsp;<a ui-sref="dashboard.account.payment">Upgrade Now</a></p>
 
     <p>Credit Card (Visa)&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
+
+    <div ng-if="testUser.p !== 'trial'">
     <hr>
 
-    <form name="billingForm">
-        <md-input-container>
-            <label>Datasets</label>
-            <input name="datasets" required type="number" min="1" step="1" ng-model="testUser.paidDatasets" ng-pattern="/^[0-9]{1,7}$/"/>
-            <div ng-messages="billingForm.datasets.$error">
-                <div ng-message="pattern">Please enter an integer greater than 0.</div>
+        <form name="billingForm">
+            <md-input-container>
+                <label>Datasets</label>
+                <input name="datasets" required type="number" min="1" step="1" ng-model="testUser.paidDatasets" ng-pattern="/^[0-9]{1,7}$/"/>
+                <div ng-messages="billingForm.datasets.$error">
+                    <div ng-message="pattern">Please enter an integer greater than 0.</div>
+                </div>
+            </md-input-container>
+
+            <div layout="row" layout-align="space-between center">
+                <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'monthly')" ng-disabled="!billingForm.$dirty">
+                    <span class="btn-label">Save and Update Monthly Billing Amount</span>
+                </md-button>
+
+                <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'annual')">
+                    <span class="btn-label">Pay Yearly (${{testUser.paidDatasets * 99}} / mo)</span>
+                </md-button>
             </div>
-        </md-input-container>
+        </form>
 
-        <div layout="row" layout-align="space-between center">
-            <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'monthly')">
-                <span class="btn-label">Save and Update Monthly Billing Amount</span>
-            </md-button>
-
-            <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'annual')">
-                <span class="btn-label">Pay Yearly ($198 / mo)</span>
-            </md-button>
-        </div>
-    </form>
+    </div>
 
     <hr>
 
