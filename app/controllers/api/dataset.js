@@ -19,8 +19,14 @@ var postimport_caching_controller = require('../../libs/import/cache/controller'
 var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
 var processing = require('../../libs/datasources/processing');
 
+
 var kue = require('kue');
-var queue = kue.createQueue();
+
+var queue = kue.createQueue({
+    redis: REDIS_URL
+});
+
+
 
 /*  start queue functions */
 queue.on('job enqueue',function(id,type) {
