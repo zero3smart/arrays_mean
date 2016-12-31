@@ -49,6 +49,11 @@ angular.module('arraysApp')
                         // controller: 'AccountCtrl',
                         templateUrl: 'templates/account/payment.html'
                     })
+                    .state('dashboard.account.upgrade', {
+                        url: '/upgrade',
+                        // controller: 'AccountCtrl',
+                        templateUrl: 'templates/account/upgrade.html'
+                    })
                     .state('dashboard.account.close', {
                         url: '/close',
                         // controller: 'AccountCtrl',
