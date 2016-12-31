@@ -1,4 +1,4 @@
-<md-content>
+<md-content md-no-ink>
     <h2>Plan Summary</h2>
     <p>
         Arrays Pro (Monthly): 2 Datasets<br />
@@ -14,11 +14,11 @@
     </md-input-container>
 
     <div layout="row" layout-align="space-between center">
-        <md-button class="md-dashboard" ng-disabled="1">
+        <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'monthly')">
             <span class="btn-label">Save and Update Monthly Billing Amount</span>
         </md-button>
 
-        <md-button class="md-dashboard" ng-disabled="1">
+        <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'annual')">
             <span class="btn-label">Pay Yearly ($198 / mo)</span>
         </md-button>
     </div>

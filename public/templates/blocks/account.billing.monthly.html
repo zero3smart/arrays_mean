@@ -1,0 +1,36 @@
+<md-dialog md-no-ink aria-label="Monthly Billing">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Monthly Billing</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <span class="icon-close-big" aria-label="Close dialog"></span>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <md-content layout-padding>
+            <p>
+                Are you sure you want to increase your plan to <strong>3 datasets</strong>?
+                Your account will be charged during the next billing cycle.
+            </p>
+            <!-- dup from billing.html -->
+            <p>
+                Arrays Pro (Monthly): 3 Datasets<br />
+                Cost per Dataset: $149<br />
+                <strong>Total per month:</strong> $447.00
+            </p>
+        </md-content>
+
+        <md-dialog-actions layout="row" layout-align="end center">
+            <md-button class="md-dashboard" ng-click="">
+                Update Plan
+            </md-button>
+            <md-button class="md-dashboard" ng-click="cancel()">
+                Cancel
+            </md-button>
+        </md-dialog-actions>
+
+    </md-dialog-content>
+</md-dialog>

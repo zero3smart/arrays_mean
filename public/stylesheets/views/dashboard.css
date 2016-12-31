@@ -399,6 +399,7 @@ md-icon.btn-icon {
     line-height: 18px;
 }
 
+.md-button.md-dashboard,
 .md-button.md-dashboard .btn-label {
     font-family: var(--font-family-calibre);
     text-transform: uppercase;
