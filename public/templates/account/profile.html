@@ -16,11 +16,15 @@
             <input required name="email" ng-model="user.email" disabled>
         </md-input-container>
 
-        <div layout="row" layout-align="end center">
+        <div layout="row" layout-align="end center" ng-if="user.provider !== 'Google'">
             <md-button class="md-dashboard" ng-disabled="1">
                 <span class="btn-label">Update Settings</span>
             </md-button>
         </div>
+        <div ng-if="user.provider === 'Google'">
+            Signed in via Google
+        </div>
+
     </div>
 
     <div flex="25" flex-order-gt-xs="-1">
