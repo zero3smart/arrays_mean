@@ -23,7 +23,7 @@ var processing = require('../../libs/datasources/processing');
 var kue = require('kue');
 
 var queue = kue.createQueue({
-    redis: REDIS_URL
+    redis: process.env.REDIS_URL
 });
 
 

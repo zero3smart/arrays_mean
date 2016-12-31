@@ -22,6 +22,9 @@ dotenv.config({
     silent: true
 });
 
+kue.createQueue({
+    redis: process.env.REDIS_URL
+})
 
 
 

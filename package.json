@@ -56,6 +56,7 @@
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "q": "^1.4.1",
+    "redis": "^2.6.3",
     "request": "^2.75.0",
     "serve-favicon": "^2.3.0",
     "sharp": "^0.16.2",
