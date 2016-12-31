@@ -1,0 +1,82 @@
+<md-content md-no-ink>
+    <h2>Billing Information</h2>
+
+    TABS<br>
+    Credit Card | Bank Account<br>
+    <br>
+
+    <div layout="row">
+        <md-input-container>
+            <label>Card Number</label>
+            <input required value="•••••••••••••••••"/>
+        </md-input-container>
+
+        <md-input-container>
+            <label>CVV</label>
+            <input required value="••••"/>
+        </md-input-container>
+    </div>
+
+    <h3>Cards Accepted</h3>
+    <i class="fa fa-credit-card" aria-hidden="true" ng-repeat="i in [1, 2, 3, 4]">&emsp;</i>
+
+    <h3>Expires</h3>
+
+    <div layout="row">
+        <md-select ng-model="month" required aria-label="Card Expiration Month">
+            <md-option ng-repeat="month in ['12 - December']" value="{{month}}">{{month}}</md-option>
+        </md-select>
+        <md-select ng-model="year" required aria-label="Card Expiration Year">
+            <md-option ng-repeat="year in [2016, 2017, 2018, 2019, 2020]" value="{{year}}">{{year}}</md-option>
+        </md-select>
+    </div>
+
+    <h3>Billing Address</h3>
+
+    <md-input-container class="md-block">
+        <label>Country</label>
+        <md-select ng-model="country" required>
+            <md-option ng-repeat="country in ['United States']" value="{{country}}">{{country}}</md-option>
+        </md-select>
+    </md-input-container>
+
+    <md-input-container class="md-block">
+        <label>Address</label>
+        <input required value="1517 12th Ave">
+    </md-input-container>
+
+    <md-input-container class="md-block">
+        <label>Address 2</label>
+        <!-- tooltip: Suite, Apt no -->
+        <input required value="Suite 304">
+    </md-input-container>
+
+    <md-input-container class="md-block">
+        <label>City</label>
+        <input required value="Seattle">
+    </md-input-container>
+
+    <div layout="row">
+        <md-input-container>
+            <label>State</label>
+            <md-select ng-model="state" required>
+                <md-option ng-repeat="state in ['WA', 'OR']" value="{{state}}">{{state}}</md-option>
+            </md-select>
+        </md-input-container>
+        <md-input-container>
+            <label>Zip Code</label>
+            <input name="cardCVV" required value="98122"/>
+        </md-input-container>
+    </div>
+
+    <div layout="row" layout-align="space-between center">
+        <md-button class="md-dashboard" ng-disabled="1">
+            <span class="btn-label">Update Billing Information</span>
+        </md-button>
+
+        <md-button class="md-dashboard" ui-sref="dashboard.account.billing">
+            <span class="btn-label">Cancel</span>
+        </md-button>
+    </div>
+
+</md-content>

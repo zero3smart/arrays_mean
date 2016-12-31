@@ -44,6 +44,11 @@ angular.module('arraysApp')
                         // controller: 'AccountCtrl',
                         templateUrl: 'templates/account/billing.html'
                     })
+                    .state('dashboard.account.payment', {
+                        url: '/payment',
+                        // controller: 'AccountCtrl',
+                        templateUrl: 'templates/account/payment.html'
+                    })
                     .state('dashboard.account.close', {
                         url: '/close',
                         // controller: 'AccountCtrl',
