@@ -1,34 +1,20 @@
 <md-content md-no-ink>
     <h2>Billing Information</h2>
 
-    TABS<br>
-    Credit Card | Bank Account<br>
-    <br>
-
-    <div layout="row">
-        <md-input-container>
-            <label>Card Number</label>
-            <input required value="•••••••••••••••••"/>
-        </md-input-container>
-
-        <md-input-container>
-            <label>CVV</label>
-            <input required value="••••"/>
-        </md-input-container>
-    </div>
-
-    <h3>Cards Accepted</h3>
-    <i class="fa fa-credit-card" aria-hidden="true" ng-repeat="i in [1, 2, 3, 4]">&emsp;</i>
-
-    <h3>Expires</h3>
-
-    <div layout="row">
-        <md-select ng-model="month" required aria-label="Card Expiration Month">
-            <md-option ng-repeat="month in ['12 - December']" value="{{month}}">{{month}}</md-option>
-        </md-select>
-        <md-select ng-model="year" required aria-label="Card Expiration Year">
-            <md-option ng-repeat="year in [2016, 2017, 2018, 2019, 2020]" value="{{year}}">{{year}}</md-option>
-        </md-select>
+    <div ng-cloak>
+        <md-content>
+            <md-tabs md-dynamic-height md-no-padding>
+                <md-tab label="Credit Card">
+                    <md-content>
+                        <ng-include src="'templates/account/payment.card.html'"></ng-include>
+                    </md-content>
+                </md-tab>
+                <md-tab label="Bank Account">
+                    <md-content>
+                        <ng-include src="'templates/account/payment.bank.html'"></ng-include>
+                    </md-content>
+                </md-tab>
+        </md-content>
     </div>
 
     <h3>Billing Address</h3>

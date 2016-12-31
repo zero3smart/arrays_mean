@@ -7,6 +7,9 @@ h2 {
 h3 {
     font-size: 18px;
 }
+h4 {
+    font-size: 16px;
+}
 
 .dashboard-container {
     padding: 2em 1em;
@@ -160,6 +163,14 @@ img.iconMap {
 .tab-content img.profile {
     padding: 0 2em 2em 0;
     width: 100%;
+}
+
+/* Account */
+/* Payment */
+
+.payment-bank-type md-radio-button {
+    display: inline-block;
+    margin-right: 30px;
 }
 
 /* Dataset Breadcrumb */
