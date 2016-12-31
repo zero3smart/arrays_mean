@@ -4,12 +4,14 @@ angular
         function ($scope, $state, AuthService, $window, $location) {
 
             $scope.user = AuthService.currentUser();
-            $scope.team = AuthService.currentTeam();
-
             $scope.teams = AuthService.allTeams();
 
-            $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $location.host() + ":" + $location.port();
+            $scope.updateSubdomain = function() {
+                $scope.team = AuthService.currentTeam();
+                $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $location.host() + ":" + $location.port();
+            }
 
+            $scope.updateSubdomain();
     
             if (!isSmartDevice($window)) {
                 $scope.showSideMenu = true;

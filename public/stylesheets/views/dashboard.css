@@ -5,6 +5,10 @@
     padding: 2em 1em;
 }
 
+md-content.md-default-theme, md-content {
+    background-color: #ffffff !important;
+}
+
 @media (min-width: 768px) {
     .dashboard-container {
         padding: 4em 3em;
@@ -40,11 +44,12 @@
 
 
 .dashboard-content .array-content {
-    padding: 15px;
+    padding: 15px 0;
 }
 
-.dashboard-content .md-toolbar-tools {
-    background-color: var(--color-primary);
+.instructions {
+    margin-top: 32px;
+    margin-bottom: 4px;
 }
 
 .dataset .md-content {
@@ -91,6 +96,59 @@ img.iconMap {
     padding: 8px 0;
 }
 
+/* Lists */
+
+.dashboard-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.dashboard-list-order {
+    display: inline-block;
+    width: 20px;
+    vertical-align: text-bottom;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-primary);
+}
+.dashboard-list-name {
+    font-size: 20px;
+    line-height: 30px;
+    font-weight: 600;
+}
+.dashboard-list-name:hover {
+    color: var(--color-primary);
+}
+.dashboard-list-revision {
+    font-size: 20px;
+    /*font-weight: 100;*/
+}
+.dashboard-list-delete {
+    /* temp × symbol */
+    font-size: 20px;
+    line-height: 20px;
+    font-weight: bold;
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    color: var(--color-primary);
+}
+
+.team-list .md-button {
+    margin: 0;
+    padding: 0;
+    min-height: auto;
+    line-height: normal;
+    text-transform: none;
+}
+.team-list .md-button:hover {
+    background-color: transparent;
+}
+
+.dashboard-list .dashboard-list-hover:hover:not([disabled]) .dashboard-list-name {
+    color: var(--color-primary);
+}
+
 /* Dataset Breadcrumb */
 
 .dataset-breadcrumb button {
@@ -128,6 +186,7 @@ img.iconMap {
     margin-left: 0;
     margin-right: 0;
 }
+
 
 /* Dataset Settings */
 .dataset .md-chips {
@@ -292,15 +351,21 @@ md-dialog fieldset legend,
 
 .md-button.md-dashboard {
     height: 48px;
-    width: 200px;
+    min-width: 200px;
     margin: 0;
     border: 1px solid white;
+    border-radius: 4px;
 }
 
-.md-button.md-dashboard.md-light {
+.md-button.md-dashboard-icon {
+    padding-right: 12px;
+}
+
+/* treat .md-light as default */
+.md-button.md-dashboard:not([disabled]) {
     background: #CDCDCD;
 }
-.md-button.md-dashboard.md-light:hover {
+.md-button.md-dashboard:not([disabled]):hover {
     background: #333338;
 }
 .md-button.md-dashboard.md-dark:not([disabled]) {
@@ -324,7 +389,7 @@ md-icon.btn-icon {
     letter-spacing: 2px;
 }
 
-.md-button.md-dashboard.md-light .btn-label {
+.md-button.md-dashboard .btn-label {
     line-height: 46px; /* height - 2px for border*/
 }
 
