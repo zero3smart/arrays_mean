@@ -27,21 +27,12 @@ queue.on('job enqueue',function(id,type) {
     console.log('Job %s got queued of type %s',id,type);
 
 }).on('job complete',function(id,result) {
-    kue.Job.get(id,function(err,job) {
-        if (err) {
-            console.log('err in getting job: %s',err);
-            return;
-        }
-        job.remove(function(err) {
-            if (err) throw err;
-            console.log('removed completed job #%d', job.id);
-        })
-    })
+    console.log('Job %s completed with result %s', id, result);
 })
 queue.process('preImport',function(job,done) {
     var id = job.data.id;
     datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
-        import_controller.Import_rawObjects(descriptions,function(err) {
+        import_controller.Import_rawObjects(descriptions,job,function(err) {
             if (err) {
                 console.log('err in queue processing preImport job: %s',err);
                 return done(err);
@@ -55,7 +46,7 @@ queue.process('preImport',function(job,done) {
 queue.process('importProcessed',function(job,done) {
     var id = job.data.id;
     datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
-        import_controller.PostProcessRawObjects(descriptions,function(err) {
+        import_controller.PostProcessRawObjects(descriptions,job,function(err) {
             if (err) {
                 console.log('err in queue processing import processed job : %s',err);
                 return done(err);
@@ -68,7 +59,7 @@ queue.process('importProcessed',function(job,done) {
 queue.process('postImport',function(job,done) {
     var id = job.data.id;
     datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
-        postimport_caching_controller.GeneratePostImportCaches(descriptions,function(err) {
+        postimport_caching_controller.GeneratePostImportCaches(descriptions,job,function(err) {
             if (err) {  
                 console.log('err in queue processing post import caches : %s',err);
                 return done(err);
@@ -811,7 +802,8 @@ module.exports.preImport = function (req, res) {
 
     var job = queue.create('preImport', {
         id: req.params.id
-    }).save(function(err) {
+    }).ttl(3600000)
+    .save(function(err) {
         if (err) res.status(500).send(err);
         res.json({jobId: job.id});
     })
@@ -829,30 +821,30 @@ module.exports.importProcessed = function(req,res) {
 
 
 module.exports.postImport = function (req, res) {
-   var id = req.params.id;
+   // var id = req.params.id;
 
-    datasource_description.GetDescriptionsToSetup([id], function (descriptions) {
+   //  datasource_description.GetDescriptionsToSetup([id], function (descriptions) {
 
-        var fn = function (err) {
-            if (err) {
-                return res.status(500).send(err);// error code
-            } else {
-                descriptions[0].dirty = 0;
-                descriptions[0].imported = true;
-                datasource_description.update({$or:[{_id:id}, {schema_id: id}, {_otherSources:id}]}, {$set: {dirty:0,imported:true}})
-                .exec(function(err) {
-                    if (err) {
-                        return res.status(500).send('cannot update datasets');
-                    } else {
-                        return res.status(200).send({dataset: descriptions[0]});
-                    }
+   //      var fn = function (err) {
+   //          if (err) {
+   //              return res.status(500).send(err);// error code
+   //          } else {
+   //              descriptions[0].dirty = 0;
+   //              descriptions[0].imported = true;
+   //              datasource_description.update({$or:[{_id:id}, {schema_id: id}, {_otherSources:id}]}, {$set: {dirty:0,imported:true}})
+   //              .exec(function(err) {
+   //                  if (err) {
+   //                      return res.status(500).send('cannot update datasets');
+   //                  } else {
+   //                      return res.status(200).send({dataset: descriptions[0]});
+   //                  }
 
-                })
-            }
-        };
+   //              })
+   //          }
+   //      };
 
-        postimport_caching_controller.GeneratePostImportCaches(descriptions, fn);
-    });
+   //      postimport_caching_controller.GeneratePostImportCaches(descriptions, fn);
+   //  });
 };
 
 module.exports.removeSubdataset = function(req, res) {

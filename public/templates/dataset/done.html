@@ -7,7 +7,13 @@
         </md-content>
 
         <md-content class="md-block" md-colors="{background: 'grey'}">
-            <p ng-repeat="message in importLogger">{{message}}</p>
+            <p ng-repeat="logger in importLogger">{{logger}}
+                <div ng-if="jobs[currentJobId].state!=='complete'">
+                    <p ng-if="jobs[currentJobId].log" > {{jobs[currentJobId].log}} ..... </p>
+                </div>
+            </p>
+
+
         </md-content>
 
         <div layout="row" layout-align="end center" class="panel-footer" ng-if="dirty">
@@ -20,8 +26,6 @@
     <div ng-if="!dirty && imported">
         <h2>Congratulations! You're all done!</h2>
         <h2>View your <strong><a href="{{subdomain}}/{{dataset.uid}}-r{{dataset.importRevision}}/{{dataset.fe_views.default_view | viewToName }}" target="_blank">array</a></strong></h2>
-
-        <!-- <button class="btn btn-primary">List on arrays.co</button> -->
 
          <md-switch md-invert ng-model="dataset.isPublic" ng-change="togglePublish()" aria-label="Switch 1">
               <label>Private/Public</label>

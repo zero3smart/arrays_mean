@@ -79,7 +79,7 @@ var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (srcDocPKey) {
 
 module.exports.Lazy_Shared_ProcessedRowObject_MongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext;
 
-module.exports.InsertProcessedDatasetFromRawRowObjects = function (dataSource_uid,
+module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSource_uid,
                                                                    dataSource_importRevision,
                                                                    dataSource_title,
                                                                    dataset_uid,
@@ -117,13 +117,14 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (dataSource_ui
 
             winston.info("📡  [" + (new Date()).toString() + "] Inserting " + rowObjects.length + " processed rows for \"" + dataSource_title + "\".");
 
-            // console.log(JSON.stringify(updateDocs));
+            job.log("📡  [" + (new Date()).toString() + "] Inserting " + rowObjects.length + " processed rows for \"" + dataSource_title + "\".")
 
             nativeCollection_ofTheseProcessedRowObjects.bulkWrite(updateDocs, {ordered: false}, function (err) {
                 if (err) {
                     winston.error("❌ [" + (new Date()).toString() + "] Error from line 121 while saving processed row objects: ", err);
                 } else {
                     winston.info("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.");
+                     job.log("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.")
                 }
                 return callback(err);
             });

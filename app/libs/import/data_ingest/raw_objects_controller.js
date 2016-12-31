@@ -11,7 +11,7 @@ var raw_source_documents = require('../../../models/raw_source_documents');
 var datasource_file_service = require('../../utils/aws-datasource-files-hosting');
 //
 //
-module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription, callback) {
+module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,job, callback) {
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.title;
@@ -23,7 +23,7 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
     switch (format) {
         case "CSV":
         {
-            _new_parsed_StringDocumentObject_fromDataSourceDescription(indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, 'CSV', function (err) {
+            _new_parsed_StringDocumentObject_fromDataSourceDescription(job,indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, 'CSV', function (err) {
                 if (err) return callback(err);
                 winston.info("✅  Saved document: ", dataSource_title);
                 return callback(null);
@@ -32,7 +32,7 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
         }
         case "TSV" :
         {
-            _new_parsed_StringDocumentObject_fromDataSourceDescription(indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, 'TSV', function (err) {
+            _new_parsed_StringDocumentObject_fromDataSourceDescription(job,indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, 'TSV', function (err) {
                 if (err) return callback(err);
                 winston.info("✅  Saved document: ", dataSource_title);
                 return callback(null);
@@ -48,7 +48,7 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
     };
 };
 
-var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataSourceIsIndexInList, description, sourceDocumentTitle, sourceDocumentRevisionKey, fileType, fn) {
+var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,dataSourceIsIndexInList, description, sourceDocumentTitle, sourceDocumentRevisionKey, fileType, fn) {
     //
 
     var revisionNumber = description.importRevision;
@@ -215,6 +215,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
                                 return fn(err);
                             }
                             winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
+                            job.log("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
 
                             numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
                             parsed_rowObjectsById = {};
@@ -240,6 +241,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
                 if (lineNr % 1000 == 0) {
 
                     winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
+                    job.log("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
                     var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
                     var append = description.dataset_uid? true: false;
                     raw_source_documents.UpsertWithOnePersistableObjectTemplate(append,stringDocumentObject, fn);
@@ -254,6 +256,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (dataS
                         }
                         ;
                         winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
+                        job.log("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
 
                         numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
 

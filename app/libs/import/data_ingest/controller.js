@@ -13,7 +13,7 @@ var import_raw_objects_controller = require('./raw_objects_controller');
 //
 // ---------- Multiple DataSource Operation ----------
 //
-module.exports.Import_rawObjects = function (dataSourceDescriptions, fn) {
+module.exports.Import_rawObjects = function (dataSourceDescriptions,job, fn) {
     var i = 1;
 
     async.eachSeries(
@@ -21,21 +21,22 @@ module.exports.Import_rawObjects = function (dataSourceDescriptions, fn) {
         function (dataSourceDescription, eachCb) {
 
             if (dataSourceDescription.useCustomView) {
-                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').ParseAndImportRaw(i,dataSourceDescription,eachCb);
+                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').ParseAndImportRaw(i,dataSourceDescription,job,eachCb);
                 
             } else {
-                 import_raw_objects_controller.ParseAndImportRaw(i, dataSourceDescription, eachCb);
+                 import_raw_objects_controller.ParseAndImportRaw(i, dataSourceDescription,job, eachCb);
             }
            
             i++;
         },
         function (err) {
+
+
             if (err) {
                 winston.info("❌  Error encountered during raw objects import:", err);
                 fn(err);
             } else {
                 winston.info("✅  Raw objects import done.");
-                // _PostProcessRawObjects(dataSourceDescriptions, fn);
                 fn();
             }
         }
@@ -69,7 +70,7 @@ var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (da
 
 module.exports.Import_dataSourceDescriptions__enteringImageScrapingDirectly = _Import_dataSourceDescriptions__enteringImageScrapingDirectly;
 
-module.exports.PostProcessRawObjects = function (dataSourceDescriptions, fn) {
+module.exports.PostProcessRawObjects = function (dataSourceDescriptions,job, fn) {
     var i = 1;
     var omitImageScraping = true;
 
@@ -78,7 +79,7 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions, fn) {
         function (dataSourceDescription, eachCb) {
 
           
-            _postProcess(i, dataSourceDescription,eachCb);
+            _postProcess(i, dataSourceDescription,job,eachCb);
           
             if (dataSourceDescription.dirty >= 3) omitImageScraping = false;
             i++;
@@ -90,12 +91,11 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions, fn) {
             } else {
                 winston.info("✅  Import post-processing done.");
                 
-
                 if (!omitImageScraping) {
-                    _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
+                    _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions,job, fn)
                 } else {
 
-                    _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions, fn)
+                    _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions,job, fn)
                 }
             }
         }
@@ -103,8 +103,9 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions, fn) {
 };
 
 
-var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDescriptions,fn) {
+var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDescriptions,job,fn) {
     var i = 1;
+    job.log('💬 doing image scraping for dataset'); 
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
@@ -126,6 +127,8 @@ var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDe
                 }
             } else {
                 winston.info("✅  Image-scrapping done.");
+                job.log('✅  Image-scrapping done.'); 
+
                 winston.info("✅  All done for importing data");
                 // winston.info("📡 now ready to do post import caching");
                 // postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions, fn);
@@ -135,7 +138,7 @@ var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDe
     );
 }
 //
-var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDescriptions, fn) {
+var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDescriptions,job, fn) {
     //
     // Execute user-defined generalized post-processing pipeline since the image scrapping is omitted
     //
@@ -144,7 +147,7 @@ var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDesc
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
             
-            _afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription, eachCb);
+            _afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription,job, eachCb);
             i++;
         },
         function (err) {
@@ -165,7 +168,7 @@ module.exports.AfterGeneratingProcessing_dataSourceDescriptions = _AfterGenerati
 
 // ---------- Single DataSource Operation ----------
 //
-var _postProcess = function (indexInList, dataSourceDescription, callback) {
+var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.title;
@@ -179,12 +182,11 @@ var _postProcess = function (indexInList, dataSourceDescription, callback) {
     //processed_row_objects.GenerateProcessedDatasetFromRawRowObjects
     processed_row_objects.InsertProcessedDatasetFromRawRowObjects
     (
+        job,
         dataSource_uid,
         dataSource_importRevision,
         dataSource_title,
         dataset_uid,
-        dataSourceDescription.useCustomView,
-        dataSourceDescription._team.subdomain,
         function (err) {
             if (err) {
                 winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
@@ -194,6 +196,7 @@ var _postProcess = function (indexInList, dataSourceDescription, callback) {
             //
             // Now generate fields by joins, etc.
             //
+            job.log("🔁  Now generating fields by joining datasets ");
             async.eachSeries(
                 dataSourceDescription.relationshipFields,
                 function (description, cb) {
@@ -267,7 +270,7 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
 //
 
 
-var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexInList, dataSourceDescription, callback) {
+var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexInList, dataSourceDescription,job, callback) {
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.title;
@@ -284,6 +287,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     //
     winston.info("🔁  Performing each-row operation for \"" + dataSource_title + "\"");
+
+    job.log("🔁  Performing each-row operation and creating custom fields for \"" + dataSource_title + "\"");
 
     var eachCtx;
     var eachCtx = dataSourceDescription.customFieldsToProcess;
