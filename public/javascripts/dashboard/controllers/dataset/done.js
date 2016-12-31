@@ -58,7 +58,7 @@ angular.module('arraysApp')
                             $scope.importLogger.push("🔁  [" + uid + "] Importing raw objects ...");
                             $scope.currentJobId = jobId;
                             $scope.jobs[jobId] = {};
-                            $scope.currentStep++;
+                            $scope.currentStep = 1;
 
                             $timeout(function() {
                                 getJobStatus(id,uid)
@@ -93,7 +93,28 @@ angular.module('arraysApp')
 
                         } else if ($scope.currentStep == 2) {
                             $scope.importLogger.push("📡  [" + uid + "] Successfully imported processed objects!");
-                            // postImport(id,uid);
+                            postImport(id,uid);
+
+                        } else if ($scope.currentStep == 3) {
+                            $scope.importLogger.push("📡  [" + uid + "] Successfully cached all the filters!");
+
+                            if (datasourceIndex == -1) {
+                                if (!dataset.fe_designatedFields) {
+                                    dataset.fe_designatedFields = {};
+                                }
+
+                                $scope.$parent.$parent.dataset = dataset;
+                            } else {
+                                $scope.additionalDatasources[datasourceIndex] = dataset;
+                            }
+
+                            datasourceIndex ++;
+
+                            if (datasourceIndex < $scope.additionalDatasources.length) {
+                                importDatasource($scope.additionalDatasources[datasourceIndex]);
+                            } else {
+                                allDone();
+                            }
 
                         }
 
@@ -133,44 +154,34 @@ angular.module('arraysApp')
                             errorHandler(response);
                         }
                     }, errorHandler);
-
             }
 
-            // function postImport(id,uid) {
-            //     $scope.importLogger.push("🔁  [" + uid + "] Generating post import filter caching....");
+            function postImport(id,uid) {
+               
 
-            //     DatasetService.postImport(id)
-            //         .then(function (response) {
-
-            //             if (response.status == 200) {
+                DatasetService.postImport(id)
+                    .then(function (response) {
 
 
-            //                 var dataset = response.data.dataset;
-            
-            //                 $scope.importLogger.push("📡  [" + uid + "] Successfully cached all the filters!");
+                        if (response.status == 200 && !response.data.error) {
 
-            //                 if (datasourceIndex == -1) {
-            //                     if (!dataset.fe_designatedFields) {
-            //                         dataset.fe_designatedFields = {};
-            //                     }
+                            var jobId = response.data.jobId;
 
-            //                     $scope.$parent.$parent.dataset = dataset;
-            //                 } else {
-            //                     $scope.additionalDatasources[datasourceIndex] = dataset;
-            //                 }
-            //                 datasourceIndex ++;
-            //                 if (datasourceIndex < $scope.additionalDatasources.length) {
-            //                     importDatasource($scope.additionalDatasources[datasourceIndex]);
-            //                 } else {
-            //                     allDone();
-            //                 }
+                            $scope.importLogger.push("🔁  [" + uid + "] Generating post import filter caching....");
+                            $scope.currentJobId = jobId;
+                            $scope.jobs[jobId] = {};
+                            $scope.currentStep++;
 
-            //             } else {
-            //                 errorHandler(response);
-            //             }
+                            $timeout(function() {
+                                getJobStatus(id,uid)
+                            },2000);
+                            
+                        } else {
+                            errorHandler(response);
+                        }
 
-            //         }, errorHandler);
-            // }
+                    }, errorHandler);
+            }
 
             function initializeToImport(id,uid) {
                 $scope.importLogger.push("🔁  [" + uid + "] Initializing to import ...");
@@ -189,19 +200,19 @@ angular.module('arraysApp')
                     }, errorHandler);
             }
 
-            // function allDone() {
-            //     $scope.importLogger.push("📡  All done!");
-            //     $scope.inProgress = false;
+            function allDone() {
+                $scope.importLogger.push("📡  All done!");
+                $scope.inProgress = false;
 
-            //     refreshForm();
+                refreshForm();
 
-            //     $mdToast.show(
-            //         $mdToast.simple()
-            //             .textContent('Dataset imported successfully!')
-            //             .position('top right')
-            //             .hideDelay(3000)
-            //     );
-            // }
+                $mdToast.show(
+                    $mdToast.simple()
+                        .textContent('Dataset imported successfully!')
+                        .position('top right')
+                        .hideDelay(3000)
+                );
+            }
 
             function importDatasource(datasource) {
 

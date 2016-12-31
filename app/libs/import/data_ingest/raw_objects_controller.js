@@ -59,6 +59,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
     var fileEncoding = description.fileEncoding || 'utf8';
 
     winston.info("🔁  " + dataSourceIsIndexInList + ": Importing " + fileType + " \"" + title + "\"");
+    job.log("🔁  Importing " + fileType + " \"" + title + "\"");
 
     var filepath;
 
@@ -106,6 +107,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
 
 
                 winston.error("❌  Error: Row has different number of values than number of " + fileType + "'s number of columns.");
+                job.log("❌  Error: Row has different number of values than number of " + fileType + "'s number of columns.");
 
                 return;
             }
@@ -206,6 +208,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
                     // process line here and call s.resume() when rdy
                     if (lineNr % 1000 == 0) {
                         winston.info("🔁  Parsing " + lineNr + " rows in \"" + title + "\"");
+                        job.log("🔁  Parsing " + lineNr + " rows in \"" + title + "\"");
                         // Bulk for performance at volume
 
                         raw_row_objects.InsertManyPersistableObjectTemplates

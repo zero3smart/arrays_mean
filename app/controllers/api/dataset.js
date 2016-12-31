@@ -813,7 +813,8 @@ module.exports.importProcessed = function(req,res) {
 
     var job = queue.create('importProcessed', {
         id: req.params.id
-    }).save(function(err) {
+    }).ttl(3600000)
+    .save(function(err) {
         if (err) res.status(500).send(err);
         res.json({jobId: job.id});
     })
@@ -821,30 +822,15 @@ module.exports.importProcessed = function(req,res) {
 
 
 module.exports.postImport = function (req, res) {
-   // var id = req.params.id;
 
-   //  datasource_description.GetDescriptionsToSetup([id], function (descriptions) {
 
-   //      var fn = function (err) {
-   //          if (err) {
-   //              return res.status(500).send(err);// error code
-   //          } else {
-   //              descriptions[0].dirty = 0;
-   //              descriptions[0].imported = true;
-   //              datasource_description.update({$or:[{_id:id}, {schema_id: id}, {_otherSources:id}]}, {$set: {dirty:0,imported:true}})
-   //              .exec(function(err) {
-   //                  if (err) {
-   //                      return res.status(500).send('cannot update datasets');
-   //                  } else {
-   //                      return res.status(200).send({dataset: descriptions[0]});
-   //                  }
-
-   //              })
-   //          }
-   //      };
-
-   //      postimport_caching_controller.GeneratePostImportCaches(descriptions, fn);
-   //  });
+    var job = queue.create('postImport', {
+        id: req.params.id
+    }).ttl(3600000)
+    .save(function(err) {
+        if (err) res.status(500).send(err);
+        res.json({jobId: job.id});
+    })
 };
 
 module.exports.removeSubdataset = function(req, res) {

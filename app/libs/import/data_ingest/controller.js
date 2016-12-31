@@ -34,9 +34,11 @@ module.exports.Import_rawObjects = function (dataSourceDescriptions,job, fn) {
 
             if (err) {
                 winston.info("❌  Error encountered during raw objects import:", err);
+                job.log("❌  Error encountered during raw objects import:", err);
                 fn(err);
             } else {
                 winston.info("✅  Raw objects import done.");
+                job.log("✅  Raw objects import done.");
                 fn();
             }
         }
@@ -46,22 +48,26 @@ module.exports.Import_rawObjects = function (dataSourceDescriptions,job, fn) {
 
 
 
-var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (dataSourceDescriptions, fn) {
+var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (dataSourceDescriptions,job, fn) {
     var self = this;
     var i = 1;
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
             winston.info("💬  " + i + ": Proceeding directly to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
-            _proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, eachCb);
+            job.log("💬 Proceeding directly to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
+
+            _proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, job,eachCb);
             i++;
         },
         function (err) {
             if (err) {
                 winston.info("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
+                job.log("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
                 fn(err);
             } else {
                 winston.info("✅  Import image-scrapping done.");
+                job.log("✅  Import image-scrapping done.");
                 fn();
             }
         }
@@ -87,9 +93,11 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions,job, fn)
         function (err) {
             if (err) {
                 winston.info("❌  Error encountered during import post-processing:", err.message);
+                job.log("❌  Error encountered during import post-processing:", err.message);
                 fn(err);
             } else {
                 winston.info("✅  Import post-processing done.");
+                job.log("✅  Import post-processing done.")
                 
                 if (!omitImageScraping) {
                     _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions,job, fn)
@@ -105,11 +113,11 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions,job, fn)
 
 var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDescriptions,job,fn) {
     var i = 1;
-    job.log('💬 doing image scraping for dataset'); 
+    job.log('💬 proceed to image scraping for dataset'); 
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
-            _proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, eachCb);
+            _proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription,job, eachCb);
             i++;
         },
         function (err) {
@@ -120,18 +128,15 @@ var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDe
                     winston.info("💬  Waiting 3 seconds to restart...");
 
                     setTimeout(function () {
-                        _Import_dataSourceDescriptions__enteringImageScrapingDirectly(dataSourceDescriptions);
+                        _Import_dataSourceDescriptions__enteringImageScrapingDirectly(job,dataSourceDescriptions);
                     }, 3000);
                 } else {
                     fn(err);
                 }
             } else {
-                winston.info("✅  Image-scrapping done.");
-                job.log('✅  Image-scrapping done.'); 
-
+                winston.info("✅  Image-scraping done.");
                 winston.info("✅  All done for importing data");
-                // winston.info("📡 now ready to do post import caching");
-                // postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions, fn);
+                job.log("✅  Image-scraping and importing data all done.");
                 fn();
             }
         }
@@ -152,12 +157,12 @@ var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDesc
         },
         function (err) {
             if (err) {
-                winston.info("❌  Error encountered during performming each-row operations:(" + err.code + ')', err);
+                winston.info("❌  Error encountered during performing each-row operations:(" + err.code + ')', err);
+                job.log("❌  Error encountered during performing each-row operations:(" + err.code + ')', err);
                 fn(err);
             } else {
                 winston.info("✅  All done for importing data");
-                // winston.info(" 📡 now ready to do post import caching");
-                // postimport_caching_controller.GeneratePostImportCaches(dataSourceDescriptions, fn);
+                job.log("✅  All done for importing data");
                 fn();
             }
         }
@@ -175,6 +180,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
     var dataset_uid = dataSourceDescription.dataset_uid;
 
     winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
+    job.log("🔁  Post-processing \"" + dataSource_title + "\"");
     //
     //
     // Firstly, generate the whole processed objects dataset
@@ -242,7 +248,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
         });
 };
 
-var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, dataSourceDescription, callback) {
+var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, dataSourceDescription,job, callback) {
 
     async.eachSeries(
         dataSourceDescription.imageScraping,
@@ -258,11 +264,12 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
         function (err) {
             if (err) {
                 winston.error("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
+                job.log("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
                 return callback(err);
             }
 
           
-            _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription, callback);
+            _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription,job, callback);
              
         }
     );
@@ -322,6 +329,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                 },
                 function (err) {
                     winston.error("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");
+                    job.log("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");
                     callback(err); // bail early
                 },
                 function () {
@@ -485,10 +493,10 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         };
         eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(writeConcern, function (err, result) {
             if (err) {
-                winston.error("❌ [" + (new Date()).toString() + "] Error while saving raw row objects: ", err);
+                winston.error("❌ [" + (new Date()).toString() + "] Error while saving custom fields  : ", err);
             } else {
 
-                winston.info("✅  [" + (new Date()).toString() + "] Saved raw row objects.");
+                winston.info("✅  [" + (new Date()).toString() + "] Saved custom fields.");
 
                 if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
 
