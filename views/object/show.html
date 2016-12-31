@@ -50,10 +50,9 @@
                                                     {% for column, fieldValueArray in collatedJoinData%}
                                                         <dt> {{column}} </dt>
                                                         {% for value in fieldValueArray %}
-                                                            {% set filterObjForThisFilterColVal = {} | constructedFilterObj(column, value, false)%}
                                                             <dd>
                                                                 <ul class="object-list">
-                                                                    <li class="object-list-item"><a href="{{ ('/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">{{ value }}</a></li>
+                                                                    <li class="object-list-item"><a href="{{ buildObjectLink(columnName, value) }}" class="color-brand">{{ value }}</a></li>
                                                                 </ul>
                                                             </dd>
                                                         {% endfor %}

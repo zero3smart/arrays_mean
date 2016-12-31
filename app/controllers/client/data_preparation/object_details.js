@@ -23,6 +23,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
             var rowObject;
             var relationshipField;
+            var relationshipSource_uid;
 
             var batch = new Batch()
             batch.concurrency(1);
@@ -105,12 +106,12 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                             if (afterImportingAllSources_generate_description.relationship == true) {
 
                                 var by = afterImportingAllSources_generate_description.by;
-                                var relationshipSource_uid = by.ofOtherRawSrcUID;
+                                //this is the field we'll use to link to the other dataset
+                                relationshipSource_uid = by.ofOtherRawSrcUID;
                                 var relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
                                 var relationshipSource_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(relationshipSource_uid, relationshipSource_importRevision);
                                 var rowObjectsOfRelationship_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(relationshipSource_pKey);
                                 var rowObjectsOfRelationship_mongooseModel = rowObjectsOfRelationship_mongooseContext.Model;
-                                //
                                 var field = afterImportingAllSources_generate_description.field;
                                 var isSingular = afterImportingAllSources_generate_description.singular;
                                 var valueInDocAtField = rowObject.rowParams[field];
@@ -278,6 +279,10 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     return collatedJoinData
                 }
 
+                var buildObjectLink = function(columnName, value) {
+                    return relationshipSource_uid + "-r1/" + rowObject.rowParams[columnName][0]._id;
+                }
+
                 //
                 var default_filterJSON = undefined;
                 if (typeof dataSourceDescription.fe_filters.default !== 'undefined') {
@@ -318,7 +323,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
                     folder: "/assets/images/",
                     collateJoinData: collateJoinData,
-                    relationshipField: relationshipField
+                    relationshipField: relationshipField,
+                    buildObjectLink: buildObjectLink
                 };
                 callback(null, data);
             });
