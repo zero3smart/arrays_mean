@@ -1,0 +1,27 @@
+<md-content layout="column" layout-gt-xs="row" class="tab-content">
+
+    <div flex="75">
+        <md-input-container class="md-block">
+            <label>First Name</label>
+            <input required name="givenName" ng-model="user.firstName" disabled>
+        </md-input-container>
+
+        <md-input-container class="md-block">
+            <label>Last Name</label>
+            <input required name="familyName" ng-model="user.lastName" disabled>
+        </md-input-container>
+
+        <md-input-container class="md-block">
+            <label>Email</label>
+            <input required name="email" ng-model="user.email" disabled>
+        </md-input-container>
+        <!-- Update Settings -->
+    </div>
+
+    <div flex="25" flex-order-gt-xs="-1">
+        <img src="/images/image-not-found-sm.png" class="profile" />
+        <md-button class="md-dashboard">
+            <span class="btn-label">Update<!--Upload if none --></span>
+        </md-button>
+    </div>
+</md-content>

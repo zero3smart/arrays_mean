@@ -29,10 +29,20 @@ angular.module('arraysApp')
                         }
                     })
                     .state('dashboard.account', {
+                        // abstract: true,
                         url: '/account',
                         controller: 'AccountCtrl',
-                        templateUrl: 'templates/account.html',
-
+                        templateUrl: 'templates/account.html'
+                    })
+                    .state('dashboard.account.profile', {
+                        url: '/profile',
+                        controller: 'AccountCtrl',
+                        templateUrl: 'templates/account/profile.html'
+                    })
+                    .state('dashboard.account.billing', {
+                        url: '/billing',
+                        controller: 'AccountCtrl',
+                        templateUrl: 'templates/account/billing.html'
                     })
                     .state('dashboard.dataset', {
                         abstract: true,
