@@ -1,6 +1,15 @@
 /* @override
 	http://localhost:9080/stylesheets/views/dashboard.css */
 
+/*to add to variables and global styles*/
+:root {
+	--color-warn: #fb4400;
+}
+.warn {
+    color: var(--color-warn);
+}
+/**/
+
 h2 {
     font-size: 24px;
 }
@@ -408,6 +417,10 @@ md-icon.btn-icon {
     font-weight: 600;
     letter-spacing: 1.5px;
     padding: 0 1em;
+}
+
+.md-button.md-dashboard.md-warn {
+    background-color: var(--color-warn);
 }
 
 /* ----------- Manager Users -------------- */
