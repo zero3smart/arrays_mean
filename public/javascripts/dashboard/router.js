@@ -46,17 +46,23 @@ angular.module('arraysApp')
                     })
                     .state('dashboard.account.payment', {
                         url: '/payment',
-                        // controller: 'AccountCtrl',
                         templateUrl: 'templates/account/payment.html'
                     })
                     .state('dashboard.account.upgrade', {
+                        abstract: true,
                         url: '/upgrade',
-                        // controller: 'AccountCtrl',
-                        templateUrl: 'templates/account/upgrade.html'
+                        templateUrl: 'templates/account.html'
+                    })
+                    .state('dashboard.account.upgrade.enterprise', {
+                        url: '/enterprise',
+                        templateUrl: 'templates/account/upgrade.enterprise.html'
+                    })
+                    .state('dashboard.account.upgrade.pro', {
+                        url: '/pro',
+                        templateUrl: 'templates/account/upgrade.pro.html'
                     })
                     .state('dashboard.account.close', {
                         url: '/close',
-                        // controller: 'AccountCtrl',
                         templateUrl: 'templates/account/close.html'
                     })
                     .state('dashboard.dataset', {
