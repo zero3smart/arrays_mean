@@ -1,6 +1,10 @@
 /* @override
 	http://localhost:9080/stylesheets/views/dashboard.css */
 
+html, body {
+	background-color: #ffffff;
+}
+
 /*to add to variables and global styles*/
 :root {
 	--color-warn: #fb4400;
