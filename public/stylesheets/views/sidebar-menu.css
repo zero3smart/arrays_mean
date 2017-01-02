@@ -77,9 +77,8 @@
     color: var(--color-primary);
 }
 
-hr {
+.sidebar-menu hr {
     margin: 12px;
-    /*width: 165px;*/
 }
 
 /* Menu Nav Bar */
