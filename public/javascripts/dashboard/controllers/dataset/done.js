@@ -19,17 +19,26 @@ angular.module('arraysApp')
             })
 
 
+            $scope.dirty = $scope.$parent.$parent.dataset.dirty;
+            $scope.imported = $scope.$parent.$parent.dataset.imported;
+            $scope.additionalDatasources.forEach(function(datasource) {
+                $scope.dirty = $scope.dirty || datasource.dirty;
+                $scope.imported = $scope.imported && datasource.imported;
+            });
+
+
+
             $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $location.host() + ":" + $location.port();
 
-            refreshForm();
+            
 
 
             function refreshForm() {
-                $scope.dirty = $scope.$parent.$parent.dataset.dirty;
-                $scope.imported = $scope.$parent.$parent.dataset.imported;
+                $scope.dirty = 0;
+                $scope.imported = true;
                 $scope.additionalDatasources.forEach(function(datasource) {
-                    $scope.dirty = $scope.dirty || datasource.dirty;
-                    $scope.imported = $scope.imported && datasource.imported;
+                    $scope.dirty = 0;
+                    $scope.imported = true;
                 });
             }
 
@@ -110,9 +119,12 @@ angular.module('arraysApp')
 
                             datasourceIndex ++;
 
+
+
                             if (datasourceIndex < $scope.additionalDatasources.length) {
                                 importDatasource($scope.additionalDatasources[datasourceIndex]);
                             } else {
+
                                 allDone();
                             }
 

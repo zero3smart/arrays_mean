@@ -1,7 +1,5 @@
 var path = require('path');
-var kue = require('kue');
 var express = require('express');
-var ui = require('kue-ui');
 var winston = require('winston');
 var expressWinston = require('express-winston');
 var cookieParser = require('cookie-parser');
@@ -22,26 +20,33 @@ dotenv.config({
     silent: true
 });
 
-kue.createQueue({
-    redis: process.env.REDIS_URL
-})
 
 
+var app = express();
 
-ui.setup({
-    apiURL: '/api',
-    baseURL: '/kue',
-    updateInterval: 5000
-})
+
+//job queue user interface
+if (process.env.NODE_ENV !== 'production') {
+    var kue = require('kue');
+    var ui = require('kue-ui');
+        kue.createQueue({
+        redis: process.env.REDIS_URL
+    })
+    ui.setup({
+        apiURL: '/api',
+        baseURL: '/kue',
+        updateInterval: 5000
+    })
+
+    app.use('/api',kue.app);
+    app.use('/kui',ui.app);
+
+}
+
 
 
 
 require('./config/setup-passport');
-
-var app = express();
-
-app.use('/api',kue.app);
-app.use('/kui',ui.app);
 
 
 var userFolderPath = __dirname + "/user";

@@ -151,8 +151,14 @@ var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDesc
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
+
+            if (dataSourceDescription.useCustomView) {
+                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(i,dataSourceDescription,job,eachCb);
+            } else {
+                 _afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription,job, eachCb);
+            }
             
-            _afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription,job, eachCb);
+           
             i++;
         },
         function (err) {
