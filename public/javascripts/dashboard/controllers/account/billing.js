@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state',
-        function($scope, $mdDialog, $state) {
+    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http',
+        function($scope, $mdDialog, $state, $http) {
 
             $scope.$parent.currentNavItem = 'billing';
 
@@ -40,9 +40,21 @@ angular.module('arraysApp')
             // $scope.testUser.plan = $scope.testPlans[$scope.testUser.p];
             // $scope.testUser.paidDatasets = 1;
             // $scope.testUser.billingCycle = 'trial';
+
+
             //
-            // for testing
+            // also for testing only--does Schema or Recurly have its own JSON data for countries/states?
             //
+            $http.get('https://raw.githubusercontent.com/astockwell/countries-and-provinces-states-regions/master/countries.json')
+            .then(function(res){
+                $scope.countries = res.data;
+            });
+
+            $http.get('https://gist.githubusercontent.com/mshafrir/2646763/raw/8b0dbb93521f5d6889502305335104218454c2bf/states_titlecase.json')
+             .then(function(res){
+                 $scope.availableStates = res.data;
+            });
+
 
             $scope.openBillingDialog = function(ev, template) {
                 $mdDialog.show({
