@@ -2,7 +2,7 @@
     <h2>Plan Summary</h2>
 
     <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
-    <p ng-if="testUser.p === 'trial'">Your free trial expires in <strong>6</strong> days.&emsp;<a ui-sref="dashboard.account.upgrade.pro">Upgrade Now</a></p>
+    <p ng-if="testUser.p === 'trial'">Your free trial expires in <strong>6</strong> days.&emsp;<a ui-sref="dashboard.account.upgradePro">Upgrade Now</a></p>
 
     <p>Credit Card (Visa)&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
 
@@ -31,13 +31,23 @@
 
     </div>
 
-    <hr>
+    <div ng-if="testUser.p !== 'enterprise'">
+        <hr>
 
-    <h3>Upgrade to Arrays Enterprise</h3>
+        <div ng-if="testUser.p === 'trial'">
+            <h3>Upgrade to Arrays Pro</h3>
 
-    <md-button ui-sref="dashboard.account.upgrade.enterprise" class="md-dashboard">
-        <span class="btn-label">Learn More</span>
-    </md-button>
+            <md-button ui-sref="dashboard.account.upgradePro" class="md-dashboard">
+                <span class="btn-label">Learn More</span>
+            </md-button>
+        </div>
+
+        <h3>Upgrade to Arrays Enterprise</h3>
+
+        <md-button ui-sref="dashboard.account.upgradeEnterprise" class="md-dashboard">
+            <span class="btn-label">Learn More</span>
+        </md-button>
+    </div>
 
     <hr>
 

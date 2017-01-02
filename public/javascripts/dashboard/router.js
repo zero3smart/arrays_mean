@@ -28,8 +28,9 @@ angular.module('arraysApp')
                             }
                         }
                     })
+                    //
                     .state('dashboard.account', {
-                        // abstract: true,
+                        abstract: true,
                         url: '/account',
                         controller: 'AccountCtrl',
                         templateUrl: 'templates/account.html'
@@ -48,23 +49,19 @@ angular.module('arraysApp')
                         url: '/payment',
                         templateUrl: 'templates/account/payment.html'
                     })
-                    .state('dashboard.account.upgrade', {
-                        abstract: true,
-                        url: '/upgrade',
-                        templateUrl: 'templates/account.html'
-                    })
-                    .state('dashboard.account.upgrade.enterprise', {
-                        url: '/enterprise',
+                    .state('dashboard.account.upgradeEnterprise', {
+                        url: '/upgrade/enterprise',
                         templateUrl: 'templates/account/upgrade.enterprise.html'
                     })
-                    .state('dashboard.account.upgrade.pro', {
-                        url: '/pro',
+                    .state('dashboard.account.upgradePro', {
+                        url: '/upgrade/pro',
                         templateUrl: 'templates/account/upgrade.pro.html'
                     })
                     .state('dashboard.account.close', {
                         url: '/close',
                         templateUrl: 'templates/account/close.html'
                     })
+                    //
                     .state('dashboard.dataset', {
                         abstract: true,
                         url: '/dataset',
