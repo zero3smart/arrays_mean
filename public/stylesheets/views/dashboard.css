@@ -24,6 +24,13 @@ h4 {
     font-size: 16px;
 }
 
+a[href^="mailto"] {
+	/*md-default-theme*/
+	color: rgba(0,0,0,0.87);
+	/*var(--color-text-dark);*/
+	text-decoration: underline;
+}
+
 .dashboard-container {
     padding: 2em 1em;
 }
