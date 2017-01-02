@@ -28,15 +28,15 @@ angular.module('arraysApp')
         // for testing, to attach to user
         $scope.testUser = {};
 
-        // $scope.testUser.p = 'pro';
-        // $scope.testUser.plan = $scope.testPlans[$scope.testUser.p];
-        // $scope.testUser.paidDatasets = 2; // not the current number but the allowed, paid number
-        // $scope.testUser.billingCycle = 'month';
-
-        $scope.testUser.p = 'trial';
+        $scope.testUser.p = 'pro';
         $scope.testUser.plan = $scope.testPlans[$scope.testUser.p];
-        $scope.testUser.paidDatasets = 1;
-        $scope.testUser.billingCycle = 'trial';
+        $scope.testUser.paidDatasets = 2; // not the current number but the allowed, paid number
+        $scope.testUser.billingCycle = 'month';
+
+        // $scope.testUser.p = 'trial';
+        // $scope.testUser.plan = $scope.testPlans[$scope.testUser.p];
+        // $scope.testUser.paidDatasets = 1;
+        // $scope.testUser.billingCycle = 'trial';
         //
         // for testing
         //
