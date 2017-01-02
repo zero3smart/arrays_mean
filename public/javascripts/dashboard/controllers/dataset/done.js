@@ -129,11 +129,6 @@ angular.module('arraysApp')
                             }
 
                         }
-
-
-                      
-                     
-
                     }
 
 
