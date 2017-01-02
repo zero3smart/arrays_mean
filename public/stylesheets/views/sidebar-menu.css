@@ -20,7 +20,7 @@
 
 .sidebar-menu {
     position: fixed;
-    /*top: var(--navbar-height-tablet);*/
+    top: var(--navbar-height-tablet);
     /*left: var(--sidebar-width-negative);*/
     padding-top: 9em;
     padding-right: 2em;
@@ -29,7 +29,6 @@
     -webkit-overflow-scrolling: touch;
     width: var(--sidebar-width);
     height: calc(100vh - var(--navbar-height-tablet));
-    /*background-color: var(--color-sidebar-bg);*/
 }
 
 .sidebar-menu-in .dashboard-content {
