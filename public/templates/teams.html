@@ -9,7 +9,7 @@
         <span class="btn-label">Add Team</span>
     </md-button>
 
-    <p class="instructions">Select a team to edit</p>
+    <p class="instructions" ng-if="teams.length > 1">Switch teams</p>
 
     <ul class="dashboard-list team-list" ng-cloak>
         <li ng-repeat="tm in teams track by $index">
