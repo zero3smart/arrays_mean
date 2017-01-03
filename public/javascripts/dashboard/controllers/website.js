@@ -21,7 +21,7 @@ angular.module('arraysApp')
 
             $scope.assetsUploader.onAfterAddingFile = function(fileItem) {
                 fileItem.uploadUrls = {};
-            }   
+            }
 
             $scope.getUploadUrl = function(index,fileItem) {
                 if (!fileItem.uploadUrls[fileItem.assetType]) {
@@ -43,7 +43,7 @@ angular.module('arraysApp')
 
                 if (status == 200) {
                     var asset = fileItem.assetType;
-                
+
                     $scope.team[asset] = fileItem.uploadUrls[asset].publicUrl + '?' + new Date().getTime();
 
                     if ($scope.vm.websiteForm.$pristine) {
@@ -85,11 +85,10 @@ angular.module('arraysApp')
 
 
                 }
-               
+
             }
 
 
-   
 
 
 
@@ -99,9 +98,10 @@ angular.module('arraysApp')
 
 
 
-          
 
 
-            
+
+
+
         }
     ]);

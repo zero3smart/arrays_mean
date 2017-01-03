@@ -169,12 +169,16 @@ angular.module('arraysApp')
                     })
                     .state('dashboard.team.settings', {
                         url: '/settings',
-                        // controller: 'WebsiteCtrl as vm',
+                        controller: function($scope) {
+                            $scope.$parent.currentNavItem = 'settings';
+                        },
                         templateUrl: 'templates/team/settings.html'
                     })
                     .state('dashboard.team.icons', {
                         url: '/icons',
-                        // controller: 'WebsiteCtrl as vm',
+                        controller: function($scope) {
+                            $scope.$parent.currentNavItem = 'icons';
+                        },
                         templateUrl: 'templates/team/icons.html'
                     })
                     .state('dashboard.user', {

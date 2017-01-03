@@ -1,4 +1,4 @@
-<md-content md-no-ink>
+<md-content md-no-ink class="array-content">
 <form name="vm.websiteForm" ng-submit="submitForm(vm.websiteForm.$valid && vm.websiteForm.$dirty)" novalidate>
    <md-input-container class="md-block" flex="50">
        <label>Title</label>
@@ -42,12 +42,12 @@
     </div>
 
     <div layout="row" layout-align="end center">
-        <md-button class="md-raised md-dashboard" type="submit" ng-disabled="vm.websiteForm.$invalid || !vm.websiteForm.$dirty">
+        <md-button class="md-dashboard" type="submit" ng-disabled="vm.websiteForm.$invalid || !vm.websiteForm.$dirty">
             <span class="btn-label">Update Settings</span>
         </md-button>
     </div>
 
-    <a href="" ng-if="user.role=='superAdmin'">Delete Team</a>
+    <a href="" class="warn" ng-if="user.role=='superAdmin'">Delete Team</a>
 
 </form>
 <md-content>
