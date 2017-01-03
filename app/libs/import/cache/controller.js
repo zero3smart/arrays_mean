@@ -12,11 +12,11 @@ var cache_keywords_controller = require('../cache/keywords_controller');
 
 //
 //
-module.exports.GeneratePostImportCaches = function (dataSourceDescriptions, fn) {
+module.exports.GeneratePostImportCaches = function (dataSourceDescriptions,job, fn) {
     var i = 1;
 
     async.eachSeries(dataSourceDescriptions, function (dataSourceDescription, callback) {
-        _dataSourcePostImportCachingFunction(i, dataSourceDescription, callback);
+        _dataSourcePostImportCachingFunction(i, dataSourceDescription,job, callback);
         i++;
     }, function (err) {
         if (err) {
@@ -28,7 +28,7 @@ module.exports.GeneratePostImportCaches = function (dataSourceDescriptions, fn) 
     });
 };
 //
-var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDescription, callback) {
+var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDescription,job, callback) {
     var dataSource_title = dataSourceDescription.title;
     var fe_visible = dataSourceDescription.fe_visible;
     if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
@@ -37,19 +37,19 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
     }
     winston.info("🔁  " + indexInList + ": Generated post-import caches for \"" + dataSource_title + "\"");
 
-    _generateUniqueFilterValueCacheCollection(dataSourceDescription, function (err) {
+    _generateUniqueFilterValueCacheCollection(job,dataSourceDescription, function (err) {
         if (err) {
             winston.error("❌  Error encountered while post-processing \"" + dataSource_title + "\".");
             return callback(err);
         }
 
         // Cachcing Keyword for the word cloud
-        cache_keywords_controller.cacheKeywords_fromDataSourceDescription(dataSourceDescription, callback);
+        cache_keywords_controller.cacheKeywords_fromDataSourceDescription(job,dataSourceDescription, callback);
     });
 };
 
 
-var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription, callback) {
+var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescription, callback) {
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_title = dataSourceDescription.title;
     var dataSource_importRevision = dataSourceDescription.importRevision;
@@ -90,9 +90,16 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                 }
                 return -1;
             }
+            if (!dataSourceDescription.fe_excludeFields) {
+                dataSourceDescription.fe_excludeFields = {};
+            }
+            if (!dataSourceDescription.fe_filters) {
+                dataSourceDescription.fe_filters = {};
+                dataSourceDescription.fe_filters.fieldsNotAvailable = [];
+            }
 
             filterKeys = filterKeys.filter(function(key) {
-                return !dataSourceDescription.fe_excludeFields[key] && dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key)==-1 && isRelationshipField(key)==-1 ;
+                return !dataSourceDescription.fe_excludeFields[key] && dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key)==-1 && isRelationshipField(key)==-1;
 
             })
         }
@@ -170,6 +177,7 @@ var _generateUniqueFilterValueCacheCollection = function (dataSourceDescription,
                     return callback(err, null);
                 }
                 winston.info("✅  Inserted cachedUniqValsByKey for \"" + dataSource_title + "\".");
+                job.log("✅  Inserted cachedUniqValsByKey for \"" + dataSource_title + "\".");
                 callback(null, null);
             });
 

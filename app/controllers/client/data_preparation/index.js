@@ -59,6 +59,7 @@ module.exports.BindData = function (req, callback) {
             return cb(null);
         }
 
+
         var err = null;
         subdomain = teamDescription.subdomain;
 
@@ -109,7 +110,7 @@ module.exports.BindData = function (req, callback) {
                     baseUrl += teamDescription.subdomain + "." + rootDomain
 
 
-
+                
                     var s = {
                         key: source_pKey,
                         sourceDoc: doc,
@@ -123,10 +124,10 @@ module.exports.BindData = function (req, callback) {
 
                     };
 
-                    if (!teamsObj[subdomain].dataSourceDescriptions) {
-                        teamsObj[subdomain].dataSourceDescriptions = [];
+                    if (!teamsObj[teamDescription.subdomain].dataSourceDescriptions) {
+                        teamsObj[teamDescription.subdomain].dataSourceDescriptions = [];
                     }
-                    teamsObj[subdomain].dataSourceDescriptions.push(s);
+                    teamsObj[teamDescription.subdomain].dataSourceDescriptions.push(s);
 
                     innerCallback(null);
                 }

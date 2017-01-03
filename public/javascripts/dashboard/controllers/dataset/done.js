@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetDoneCtrl', ['$scope', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q',
-        function($scope, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q) {
+    .controller('DatasetDoneCtrl', ['$scope', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q','Job','$timeout',
+        function($scope, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q,Job,$timeout) {
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.additionalDatasources = additionalDatasources;
@@ -8,24 +8,37 @@ angular.module('arraysApp')
             $scope.importLogger = [];
             $scope.inProgress = false;
 
-            $scope.usedInMerging = [];
+            $scope.jobs = {};
+            $scope.currentStep = 0;
+
+            $scope.currentJobId = undefined;
+
             DatasetService.getDatasetsWithQuery({_otherSources: dataset._id})
             .then(function(datasets) {
                 $scope.additionalDatasources = $scope.additionalDatasources.concat(datasets);
             })
 
 
+            $scope.dirty = $scope.$parent.$parent.dataset.dirty;
+            $scope.imported = $scope.$parent.$parent.dataset.imported;
+            $scope.additionalDatasources.forEach(function(datasource) {
+                $scope.dirty = $scope.dirty || datasource.dirty;
+                $scope.imported = $scope.imported && datasource.imported;
+            });
+
+
+
             $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $location.host() + ":" + $location.port();
 
-            refreshForm();
+            
 
 
             function refreshForm() {
-                $scope.dirty = $scope.$parent.$parent.dataset.dirty;
-                $scope.imported = $scope.$parent.$parent.dataset.imported;
+                $scope.dirty = 0;
+                $scope.imported = true;
                 $scope.additionalDatasources.forEach(function(datasource) {
-                    $scope.dirty = $scope.dirty || datasource.dirty;
-                    $scope.imported = $scope.imported && datasource.imported;
+                    $scope.dirty = 0;
+                    $scope.imported = true;
                 });
             }
 
@@ -38,37 +51,61 @@ angular.module('arraysApp')
 
             function errorHandler(response) {
 
-                var error = response.data.error
+                var error = response.data.error;
                 $scope.importLogger.push("❌ Import failed due to " + error);
 
                 $scope.inProgress = false;
             }
 
-            function preImport(uid) {
-                $scope.importLogger.push("🔁 [" + uid + "] Importing ...");
-
-                DatasetService.preImport(uid)
+            function preImport(id,uid) {
+                DatasetService.preImport(id)
                     .then(function (response) {
-                        if (response.status == 200 && !response.data.error) {
-                            $scope.importLogger.push("📡 [" + uid + "] Successfully pre-imported!");
-                            postImport(uid);
 
+                        if (response.status == 200 && !response.data.error) {
+                           
+                            var jobId = response.data.jobId;
+                            $scope.importLogger.push("🔁  [" + uid + "] Importing raw objects ...");
+                            $scope.currentJobId = jobId;
+                            $scope.jobs[jobId] = {};
+                            $scope.currentStep = 1;
+
+                            $timeout(function() {
+                                getJobStatus(id,uid)
+                            }, 2000);
                         } else {
                             errorHandler(response);
                         }
                     }, errorHandler);
             }
 
-            function postImport(uid) {
-                $scope.importLogger.push("🔁 [" + uid + "] Generating post import filter caching....");
+            var getJobStatus = function (id,uid) {
 
-                DatasetService.postImport(uid)
-                    .then(function (response) {
+                Job.get({id:$scope.currentJobId}).$promise
+                .then(function(job) {
 
-            
-                        if (response.status == 200) {
-                            var dataset = response.data.dataset;
-                            $scope.importLogger.push("📡 [" + uid + "] Successfully finalized!");
+                    $scope.jobs[$scope.currentJobId].state = job.state;
+
+                    if (job.state !== 'complete') {
+                        Job.getLog({id:$scope.currentJobId}).$promise
+                        .then(function(logs) {
+                            $scope.jobs[$scope.currentJobId].log = logs[logs.length-1];
+                        })
+
+                         $timeout(function() {
+                            getJobStatus(id,uid)
+                        }, 4000);
+
+                    } else {
+                        if ($scope.currentStep == 1) {
+                            $scope.importLogger.push("📡 [" + uid + "] Successfully imported raw objects!");
+                            importProcess(id,uid);
+
+                        } else if ($scope.currentStep == 2) {
+                            $scope.importLogger.push("📡  [" + uid + "] Successfully imported processed objects!");
+                            postImport(id,uid);
+
+                        } else if ($scope.currentStep == 3) {
+                            $scope.importLogger.push("📡  [" + uid + "] Successfully cached all the filters!");
 
                             if (datasourceIndex == -1) {
                                 if (!dataset.fe_designatedFields) {
@@ -79,13 +116,73 @@ angular.module('arraysApp')
                             } else {
                                 $scope.additionalDatasources[datasourceIndex] = dataset;
                             }
+
                             datasourceIndex ++;
+
+
+
                             if (datasourceIndex < $scope.additionalDatasources.length) {
                                 importDatasource($scope.additionalDatasources[datasourceIndex]);
                             } else {
+
                                 allDone();
                             }
 
+                        }
+                    }
+
+
+                })
+            }
+
+         
+
+
+
+
+            function importProcess(id,uid) {
+
+                DatasetService.importProcessed(id)
+                    .then(function (response) {
+                        if (response.status == 200 && !response.data.error) {
+
+                            var jobId = response.data.jobId;
+
+                            $scope.importLogger.push("🔁  [" + uid + "] Importing processed row objects ...");
+                            $scope.currentJobId = jobId;
+                            $scope.jobs[jobId] = {};
+                            $scope.currentStep++;
+
+                            $timeout(function() {
+                                getJobStatus(id,uid)
+                            },2000);
+
+                        } else {
+                            errorHandler(response);
+                        }
+                    }, errorHandler);
+            }
+
+            function postImport(id,uid) {
+               
+
+                DatasetService.postImport(id)
+                    .then(function (response) {
+
+
+                        if (response.status == 200 && !response.data.error) {
+
+                            var jobId = response.data.jobId;
+
+                            $scope.importLogger.push("🔁  [" + uid + "] Generating post import filter caching....");
+                            $scope.currentJobId = jobId;
+                            $scope.jobs[jobId] = {};
+                            $scope.currentStep++;
+
+                            $timeout(function() {
+                                getJobStatus(id,uid)
+                            },2000);
+                            
                         } else {
                             errorHandler(response);
                         }
@@ -93,15 +190,15 @@ angular.module('arraysApp')
                     }, errorHandler);
             }
 
-            function initializeToImport(uid) {
-                $scope.importLogger.push("🔁 [" + uid + "] Initializing to import ...");
+            function initializeToImport(id,uid) {
+                $scope.importLogger.push("🔁  [" + uid + "] Initializing to import ...");
 
-                DatasetService.initializeToImport(uid)
+                DatasetService.initializeToImport(id)
                     .then(function (response) {
 
                         if (response.status == 200) {
-                            $scope.importLogger.push("📡 [" + uid + "] Successfully initialized to import!");
-                            preImport(uid);
+                            $scope.importLogger.push("📡  [" + uid + "] Successfully initialized to import!");
+                            preImport(id,uid);
 
                         } else {
                             errorHandler(response);
@@ -111,7 +208,7 @@ angular.module('arraysApp')
             }
 
             function allDone() {
-                $scope.importLogger.push("📡 All done!");
+                $scope.importLogger.push("📡  All done!");
                 $scope.inProgress = false;
 
                 refreshForm();
@@ -128,18 +225,19 @@ angular.module('arraysApp')
 
 
                 var uid = datasource.dataset_uid ? datasource.dataset_uid : datasource.uid;
+                var id = datasource._id;
                 if ($scope.additionalDatasources.length == 0) {
                     if (datasource.dirty == 1)
-                        postImport(uid);
+                        postImport(id,uid);
                     else if (datasource.dirty > 1)
-                        initializeToImport(uid);
+                        initializeToImport(id,uid);
                 } else {
                     // Re-import all the datasets!
                     // TODO: For additional datasource, we need to remove only the responding results, not the whole set.
                     if (!datasource.dataset_uid)
-                        initializeToImport(uid);
+                        initializeToImport(id,uid);
                     else
-                        preImport(uid);
+                        preImport(id,uid);
 
                     /*
                      datasourceIndex++;

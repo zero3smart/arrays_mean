@@ -4,7 +4,7 @@ var processed_row_objects = require('../../../models/processed_row_objects');
 var raw_source_documents = require('../../../models/raw_source_documents');
 //
 //
-var _cacheKeywords_fromDataSourceDescription = function (dataSourceDescription, callback) {
+var _cacheKeywords_fromDataSourceDescription = function (job,dataSourceDescription, callback) {
     if (!dataSourceDescription.fe_views || dataSourceDescription.fe_views.views == null || typeof dataSourceDescription.fe_views.views.wordCloud == 'undefined' || !dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName ||
         dataSourceDescription.fe_views.views.wordCloud.visible == false ) return callback();
 
@@ -15,6 +15,7 @@ var _cacheKeywords_fromDataSourceDescription = function (dataSourceDescription, 
         var dataset_uid = dataSourceDescription.dataset_uid;
         //
         winston.info("🔁  Caching keywords operation for \"" + dataSource_title + "\"");
+        job.log("🔁  Caching keywords operation for \"" + dataSource_title + "\"");
 
         var realFieldName = dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName;
 
@@ -84,6 +85,7 @@ var _cacheKeywords_fromDataSourceDescription = function (dataSourceDescription, 
                             winston.error("❌  Error while caching keywords: ", err);
                         } else {
                             winston.info("✅  Cached keywords.");
+                            job.log("✅  Cached keywords.")
                         }
                         callback(err);
                     });

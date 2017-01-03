@@ -255,15 +255,14 @@ var _GetDescriptions = function (fn) {
 datasource_description.GetDescriptions = _GetDescriptions;
 
 
-var _GetDescriptionsToSetupByFilenames = function (files, fn) {
+var _GetDescriptionsToSetupByIds = function (Ids, fn) {
 
     var descriptions = [];
     var self = this;
 
- 
 
-    function asyncFunction(file, cb) {
-        self.findOne({$or: [{uid: file}, {dataset_uid: file}]})
+    function asyncFunction(id, cb) {
+        self.findOne({$or: [{_id: id}, {schema_id: id}]})
             .lean()
             .deepPopulate('_otherSources schema_id _team _otherSources._team schema_id._team', {
                 populate: {
@@ -299,9 +298,9 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
             })
     }
 
-    var requests = files.map(function (file) {
+    var requests = Ids.map(function (Id) {
         return new Promise(function (resolve) {
-            asyncFunction(file, resolve);
+            asyncFunction(Id, resolve);
         });
     });
 
@@ -311,63 +310,7 @@ var _GetDescriptionsToSetupByFilenames = function (files, fn) {
 
 }
 
-datasource_description.GetDescriptionsToSetup = _GetDescriptionsToSetupByFilenames;
-
-
-var _findAllDescriptionAndSetup = function (fn) {
-
-    this.find({imported: 3})
-        .lean()
-        .deepPopulate('schema_id _team schema_id._team')
-        .exec(function (err, descriptions) {
-
-            /* avoid write operation lock for datasource depend on others */
-            var dependentOnSchemaToBeLoaded = {};
-            async.each(descriptions, function (desc, eachCb) {
-                if (typeof desc.schema_id !== 'undefined') {
-
-                    desc = _consolidate_descriptions_hasSchema(desc);
-                    keyname = imported_data_preparation.DataSourcePKeyFromDataSourceDescription(desc).toLowerCase();
-                    dependentOnSchemaToBeLoaded[keyname] = [];
-                    dependentOnSchemaToBeLoaded[keyname].push(desc);
-
-                    eachCb(null);
-                } else {
-                    _checkCollection(desc, null, eachCb);
-
-                }
-
-            }, function (err) {
-
-
-                if (Object.keys(dependentOnSchemaToBeLoaded).length !== 0) {
-
-                    async.forEachOf(dependentOnSchemaToBeLoaded, function (value, key, eachCbForEachOf) {
-
-
-                        async.eachSeries(value, function (single_desc, eachCb) {
-
-                            _checkCollection(single_desc, key, eachCb);
-
-                        }, function (err) {
-
-                            eachCbForEachOf(err);
-
-                        })
-
-                    }, function (err) {
-                        fn(err);
-                    })
-
-                } else {
-                    fn(err);
-                }
-
-            })
-        })
-}
-
-datasource_description.findAllDescriptionAndSetup = _findAllDescriptionAndSetup;
+datasource_description.GetDescriptionsToSetup = _GetDescriptionsToSetupByIds;
 
 
 var _GetDescriptionsWith_uid_importRevision = function (uid, revision, fn) {

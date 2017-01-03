@@ -20,9 +20,73 @@ var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
 var processing = require('../../libs/datasources/processing');
 
 
+var kue = require('kue');
+
+var queue = kue.createQueue({
+    redis: process.env.REDIS_URL
+});
+
+
+
+/*  start queue functions */
+queue.on('job enqueue',function(id,type) {
+    console.log('Job %s got queued of type %s',id,type);
+
+}).on('job complete',function(id,result) {
+    console.log('Job %s completed with result %s', id, result);
+})
+queue.process('preImport',function(job,done) {
+    var id = job.data.id;
+    datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
+        import_controller.Import_rawObjects(descriptions,job,function(err) {
+            if (err) {
+                console.log('err in queue processing preImport job: %s',err);
+                return done(err);
+            }
+            done();
+        })
+
+    })
+
+})
+queue.process('importProcessed',function(job,done) {
+    var id = job.data.id;
+    datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
+        import_controller.PostProcessRawObjects(descriptions,job,function(err) {
+            if (err) {
+                console.log('err in queue processing import processed job : %s',err);
+                return done(err);
+            }
+            done();
+        })
+    })
+
+})
+queue.process('postImport',function(job,done) {
+    var id = job.data.id;
+    datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
+        postimport_caching_controller.GeneratePostImportCaches(descriptions,job,function(err) {
+            if (err) {  
+                console.log('err in queue processing post import caches : %s',err);
+                return done(err);
+
+            }
+            datasource_description.update({$or:[{_id:id}, {schema_id: id}, {_otherSources:id}]}, {$set: {dirty:0,imported:true}})
+            .exec(function(err) {
+                if (err) {
+                    console.log('err in queue updating post import caches : %s',err);
+                    return done(err);
+                }
+                done();
+            })
+        })
+    })
+})
+
+/* end queue functions */
+
 function getAllDatasetsWithQuery(query, res) {
 
-    
     datasource_description.find({$and: [{schema_id: {$exists: false}}, query]}, {
         _id: 1,
         uid: 1,
@@ -665,7 +729,7 @@ module.exports.download = function (req, res) {
         });
 }
 
-function _initializeToImport (uid,callback) {
+function _initializeToImport (id,callback) {
 
     var batch = new Batch();
     batch.concurrency(1);
@@ -673,7 +737,7 @@ function _initializeToImport (uid,callback) {
     var description;
     var srcDocPKey;
     batch.push(function (done) {
-        datasource_description.findOne({uid: uid}, function (err, data) {
+        datasource_description.findById(id, function (err, data) {
                 if (err) return done(err);
                 if (!data) return done(new Error('No datasource exists : ' + uid));
 
@@ -730,101 +794,50 @@ function _initializeToImport (uid,callback) {
 
 
 module.exports.initializeToImport = function (req, res) {
-    if (!req.body.uid) return res.status(500).send('Invalid Parameter');
+    var id = req.params.id;
 
-    var uid = req.body.uid;
-
-    _initializeToImport(uid,function(err) {
+    _initializeToImport(id,function(err) {
         if (err) return res.status(500).send({error:err.message});
-        return res.json({uid: uid});
+        return res.status(200).send('ok');
     })
 
 };
 
 module.exports.preImport = function (req, res) {
-    if (!req.body.uid) return res.status(500).send('Invalid parameter');
 
-    var uid = req.body.uid;
+    
 
-    res.writeHead(200, {'Content-Type': 'application/json'});
-    res.connection.setTimeout(0); // this could take a while
-
-    datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
-        var fn = function (err) {
-            if (err) {
-                if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
-                    winston.info("🔁  Waiting 3 seconds to restart...");
-                    setTimeout(function () {
-                        import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(descriptions, fn);
-                    }, 3000);
-                } else {
-                    res.write(JSON.stringify({error:err.messsage}));
-                    return res.end();
-                }
-            } else {
-                res.write(JSON.stringify({uid:uid}));
-                return res.end();
-
-            }
-        };
-
-        import_controller.Import_dataSourceDescriptions(descriptions, fn);
-
-    });
+    var job = queue.create('preImport', {
+        id: req.params.id
+    }).ttl(3600000)
+    .save(function(err) {
+        if (err) res.status(500).send(err);
+        res.json({jobId: job.id});
+    })
 }
 
+module.exports.importProcessed = function(req,res) {
+
+    var job = queue.create('importProcessed', {
+        id: req.params.id
+    }).ttl(3600000)
+    .save(function(err) {
+        if (err) res.status(500).send(err);
+        res.json({jobId: job.id});
+    })
+}
+
+
 module.exports.postImport = function (req, res) {
-    if (!req.body.uid) {
-        return res.status(500).send('Invalid Parameter');
-    }
-
-    var uid = req.body.uid;
 
 
-
-    datasource_description.GetDescriptionsToSetup([uid], function (descriptions) {
-
-
-        var fn = function (err) {
-            if (err) {
-                return res.status(500).send(err);// error code
-            } else {
-
-                datasource_description.findOne({$or: [{uid: uid}, {dataset_uid: uid}]},function (err, dataset) {
-                        if (err) return done(err);
-                        if (!dataset) return done(new Error('No datasource exists : ' + uid));
-
-                        dataset.dirty = 0;
-                        dataset.imported = true;
-
-                        var batch = new Batch();
-                        batch.concurrency(5);
-
-                        dataset._otherSources.forEach(function(id) {
-                            batch.push(function(done) {
-                                datasource_description.findByIdAndUpdate(id,{$set:{imported:true}},done);
-                            })
-                        })
-
-                        batch.end(function(err) {
-                            if (err) return res.status(500).send("cannot update related sources");
-                            else {
-                                dataset.save(function (err, updatedDataset) {
-
-                                    if (err) return res.status(500).send({error:err});
-                                    if (!updatedDataset)  return res.status(500).send('Invalid Operation');
-                        
-                                    return res.json({dataset: dataset});
-                                });
-
-                            }
-                        })
-                    });
-            }
-        };
-
-        postimport_caching_controller.GeneratePostImportCaches(descriptions, fn);
-    });
+    var job = queue.create('postImport', {
+        id: req.params.id
+    }).ttl(3600000)
+    .save(function(err) {
+        if (err) res.status(500).send(err);
+        res.json({jobId: job.id});
+    })
 };
 
 module.exports.removeSubdataset = function(req, res) {
