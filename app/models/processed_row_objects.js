@@ -929,7 +929,6 @@ function extractRawUrl(scrapedString) {
 }
 
 function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFields, selectors, outterCallback) {
-
     var htmlSourceAtURL = doc["rowParams"][htmlSourceAtURLInField];
 
     winston.info("📡  Scraping image URL from \"" + htmlSourceAtURL + "\"…");
@@ -960,7 +959,7 @@ function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFiel
                 for (var attr in selectors) {
                     returnObj[attr] = null;
                 }
-                outterCallback(err, folder,mongoosemodel,doc, returnObj,setFields);
+                outterCallback(err, folder,mongooseModel,doc, returnObj,setFields);
             } else {
                 winston.error("❌  Error while scraping " + htmlSourceAtURL + ": ", err);
                 outterCallback(err, null,null,null,null,null);
