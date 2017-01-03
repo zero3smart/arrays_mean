@@ -18,7 +18,7 @@
         <a class="sidebar-label">{{team.subdomain}}.arrays.co</a>
     </li>
     <li ng-if="user.role=='admin' || user.role=='superAdmin'" ui-sref-active="active">
-        <a ui-sref="dashboard.website" role="button">My Website Settings</a>
+        <a ui-sref="dashboard.team.settings" role="button">Team Settings</a>
     </li>
     <li ng-if="user.role=='admin' || user.role=='superAdmin' || user.role=='editor'" ng-class="{'active': $state.includes('dashboard.dataset')}">
         <a ui-sref="dashboard.dataset.list" role="button">Dataset Settings</a>

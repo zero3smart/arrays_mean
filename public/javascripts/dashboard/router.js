@@ -130,10 +130,20 @@ angular.module('arraysApp')
                             }]
                         }
                     })
-                    .state('dashboard.website', {
-                        url: '/website',
+                    .state('dashboard.team', {
+                        url: '/team',
                         controller: 'WebsiteCtrl as vm',
-                        templateUrl: 'templates/website.html'
+                        templateUrl: 'templates/team.html'
+                    })
+                    .state('dashboard.team.settings', {
+                        url: '/settings',
+                        // controller: 'WebsiteCtrl as vm',
+                        templateUrl: 'templates/team/settings.html'
+                    })
+                    .state('dashboard.team.icons', {
+                        url: '/icons',
+                        // controller: 'WebsiteCtrl as vm',
+                        templateUrl: 'templates/team/icons.html'
                     })
                     .state('dashboard.user', {
                         url: '/user',
