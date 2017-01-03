@@ -12,13 +12,12 @@
     <!-- ng-if="user.role=='superAdmin'" -->
     <form name="vm.teamForm" ng-submit="createTeam()" autocomplete="off">
     <md-dialog-content layout-padding>
-        <md-content>
-            <md-input-container class="md-block" flex="40">
+        <md-content layout="column" layout-gt-sm="row">
+            <md-input-container flex>
                 <label>Title</label>
                 <input required name="title" ng-model="newTeam.title">
             </md-input-container>
-
-            <md-input-container class="md-block" flex-gt-xs>
+            <md-input-container flex>
                 <label>Subdomain</label>
                 <input ng-model-options="{updateOn:'blur'}" ng-change="checkSubdomain()" required name="subdomain" ng-model="newTeam.subdomain">
                 <div ng-messages="vm.teamForm.subdomain.$error">
