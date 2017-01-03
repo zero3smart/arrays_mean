@@ -74,7 +74,7 @@ View.getAllCustomViews(function(err,customViews) {
 
 var object_details_controller = require('../controllers/client/data_preparation/object_details');
 
-router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/, ensureAuthorized, function (req, res, next) {
+router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/g, ensureAuthorized, function (req, res, next) {
 
 
     var source_key = req.params[0] + req.params[1];
