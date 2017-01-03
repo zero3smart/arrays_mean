@@ -21,15 +21,16 @@ angular.module('arraysApp')
 
             $scope.assetsUploader.onAfterAddingFile = function(fileItem) {
                 fileItem.uploadUrls = {};
+                $scope.getUploadUrl(fileItem);
             }
 
-            $scope.getUploadUrl = function(index,fileItem) {
+            $scope.getUploadUrl = function(fileItem) {
+                fileItem.assetType = "logo";
                 if (!fileItem.uploadUrls[fileItem.assetType]) {
                     AssetService.getPutUrlForTeamAssets($scope.team._id,fileItem.file.type,fileItem.assetType,fileItem.file.name)
                         .then(function(urlInfo) {
                             fileItem.uploadUrls[fileItem.assetType] = {url:urlInfo.putUrl,publicUrl: urlInfo.publicUrl};
                         })
-
                 }
             }
 
@@ -46,8 +47,8 @@ angular.module('arraysApp')
 
                     $scope.team[asset] = fileItem.uploadUrls[asset].publicUrl + '?' + new Date().getTime();
 
-                    if ($scope.vm.websiteForm.$pristine) {
-                        $scope.vm.websiteForm.$setDirty();
+                    if ($scope.vm.teamIconsForm.$pristine) {
+                        $scope.vm.teamIconsForm.$setDirty();
                     }
 
                      $mdToast.show(
@@ -60,14 +61,14 @@ angular.module('arraysApp')
                 }
             }
 
-            $scope.submitForm = function(isValid) {
+            $scope.submitForm = function(formName, isValid) {
                 // console.log($scope.user._team);
                 if (isValid) {
                     AuthService.updateTeam($scope.team)
                     .then(function(teams) {
                         $scope.$parent.teams = AuthService.allTeams();
                         $scope.$parent.team = AuthService.currentTeam();
-                        $scope.vm.websiteForm.$setPristine();
+                        $scope.vm[formName].$setPristine();
 
                          $mdToast.show(
                             $mdToast.simple()

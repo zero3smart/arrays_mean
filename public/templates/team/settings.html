@@ -1,5 +1,5 @@
 <md-content md-no-ink class="array-content">
-<form name="vm.websiteForm" ng-submit="submitForm(vm.websiteForm.$valid && vm.websiteForm.$dirty)" novalidate>
+<form name="vm.websiteForm" ng-submit="submitForm('websiteForm', vm.websiteForm.$valid && vm.websiteForm.$dirty)" novalidate>
    <md-input-container class="md-block" flex="50">
        <label>Title</label>
        <input required name="title" ng-model="team.title" maxlength="48">
