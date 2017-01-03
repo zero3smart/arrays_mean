@@ -22,6 +22,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
 
             var rowObject;
+            var relationshipField;
+            var relationshipSource_uid;
 
             var batch = new Batch()
             batch.concurrency(1);
@@ -104,12 +106,12 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                             if (afterImportingAllSources_generate_description.relationship == true) {
 
                                 var by = afterImportingAllSources_generate_description.by;
-                                var relationshipSource_uid = by.ofOtherRawSrcUID;
+                                //this is the field we'll use to link to the other dataset
+                                relationshipSource_uid = by.ofOtherRawSrcUID;
                                 var relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
                                 var relationshipSource_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(relationshipSource_uid, relationshipSource_importRevision);
                                 var rowObjectsOfRelationship_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(relationshipSource_pKey);
                                 var rowObjectsOfRelationship_mongooseModel = rowObjectsOfRelationship_mongooseContext.Model;
-                                //
                                 var field = afterImportingAllSources_generate_description.field;
                                 var isSingular = afterImportingAllSources_generate_description.singular;
                                 var valueInDocAtField = rowObject.rowParams[field];
@@ -119,11 +121,14 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 } else {
                                     findQuery._id = {$in: valueInDocAtField};
                                 }
-                                var fieldToAcquire = {};
-                                if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName !== 'undefined') {
+                                var fieldToAcquire = "";
+                                relationshipField = field;
+                                if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined') {
                                     fieldToAcquire ={ srcDocPKey:1,_id:1};
-                                    var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName[field].showField;
-                                    fieldToAcquire["rowParams."+wantedfield] = 1;
+                                    var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField;
+                                    for(var i=0; i<wantedfield.length; i++) {
+                                        fieldToAcquire = fieldToAcquire + "rowParams." + wantedfield[i] + " ";
+                                    }
                                 }
 
                                 // console.log(rowObjectsOfRelationship_mongooseModel);
@@ -234,29 +239,49 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     }
                 }
 
-                var fe_objectShow_customHTMLOverrideFnsByColumnName = {};
+                // var fe_objectShow_customHTMLOverrideFnsByColumnNames = {};
 
-                if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName !== 'undefined') {
+                // if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined') {
+                    // console.log("fe_objectShow_customHTMLOverrideFnsByColumnNames")
+                    // console.log("line 250")
+                    // for (var relationshipFieldName in dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames) {
+                        // var joinFields = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName].showField;
+                        //this doesn't get called
+                        // fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName] = function (rowObject, eachValue, strParams) {
+                        //     var relationshipObjectShowLink = "/" + eachValue.srcDocPKey + "/" + eachValue._id;
+                        //     if (strParams && strParams != '') relationshipObjectShowLink += '?' + strParams;
 
-                    for (var relationshipFieldName in dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName) {
-                        
-                        fe_objectShow_customHTMLOverrideFnsByColumnName[relationshipFieldName] = function (rowObject, eachValue, strParams) {
-                            var relationshipObjectShowLink = "/" + eachValue.srcDocPKey + "/" + eachValue._id;
-                            if (strParams && strParams != '') relationshipObjectShowLink += '?' + strParams;
+                        //     var classes = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName].classes.toString().replace(",", " ");
 
-                            var classes = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName[relationshipFieldName].classes.toString().replace(",", " ");
+                        //     var openingTag = '<a href="' + relationshipObjectShowLink + '" class=' + classes + '">';
+                        //     var tagContent = eachValue.rowParams[dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName].showField];
+                        //     var closingTag = '</a>';
+                        //     return openingTag + tagContent + closingTag;
 
-                            var openingTag = '<a href="' + relationshipObjectShowLink + '" class=' + classes + '">';
-                            var tagContent = eachValue.rowParams[dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnName[relationshipFieldName].showField];
-                            var closingTag = '</a>';
-                            return openingTag + tagContent + closingTag;
+                        // }
 
+                    // }
+
+                // }
+
+                var collatedJoinData = {}
+                var collateJoinData = function(columnName) {
+                    var relationshipData = rowObject.rowParams[columnName]
+                    for(var i = 0; i < relationshipData.length; i++) {
+                        for(var fieldName in relationshipData[i].rowParams) {
+                            var fieldData = relationshipData[i].rowParams[fieldName]
+                            if(!collatedJoinData.hasOwnProperty(fieldName)) {
+                                collatedJoinData[fieldName] = []
+                            }
+                            collatedJoinData[fieldName].push(fieldData)
                         }
-
                     }
-
+                    return collatedJoinData
                 }
 
+                var buildObjectLink = function(columnName, value) {
+                    return relationshipSource_uid + "-r1/" + rowObject.rowParams[columnName][0]._id;
+                }
 
                 //
                 var default_filterJSON = undefined;
@@ -292,12 +317,16 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     //
                     fieldsNotToLinkAsGalleryFilter_byColName: fieldsNotToLinkAsGalleryFilter_byColName,
                     //
-                    fe_objectShow_customHTMLOverrideFnsByColumnName: fe_objectShow_customHTMLOverrideFnsByColumnName,
+                    fe_objectShow_customHTMLOverrideFnsByColumnNames: dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames,
 
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
                     aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
                     folder: "/assets/images/",
-                    uid: dataSourceDescription.uid
+
+                    collateJoinData: collateJoinData,
+                    relationshipField: relationshipField,
+                    buildObjectLink: buildObjectLink,
+                    uid: dataSourceDescription.uid,
                 };
                 callback(null, data);
             });
