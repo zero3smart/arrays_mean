@@ -336,6 +336,7 @@ module.exports.update = function (req, res) {
                 if (doc.relationshipFields && doc.relationshipFields.length > 0) doc.dirty = 3;
                 if (doc.customFieldsToProcess && doc.customFieldsToProcess.length > 0) doc.dirty = 3;
                 if (doc.fe_nestedObject && doc.fe_nestedObject.fields.length > 0) doc.dirty = 3;
+                if (doc.imageScraping && doc.imageScraping.length > 0) doc.dirty = 3
 
                 _.forOwn(req.body, function (value, key) {
                     if (key != '_id' && ((!doc.schema_id && !_.isEqual(value, doc._doc[key]))
