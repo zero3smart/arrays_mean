@@ -16,6 +16,23 @@ app.filter('capitalize', function () {
     }
 });
 
+app.filter('pluralize', function () {
+    return function (input, singular, plural) {
+        if (input === undefined) {
+            return;
+        }
+        else if (input === 0) {
+            return 'No ' + input + ' ' + plural;
+        }
+        else if (input === 1) {
+            return input + ' ' + singular;
+        }
+        else {
+            return input + ' ' + plural;
+        }
+    }
+});
+
 app.filter('typeCoercionToString', function () {
     return function (input) {
         if (!input) return 'String';
@@ -51,4 +68,3 @@ app.filter('omit',function() {
         return copy;
     }
 })
-
