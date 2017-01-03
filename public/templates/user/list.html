@@ -1,21 +1,29 @@
-<md-button class="md-raised md-dashboard md-dashboard-icon md-dark" ui-sref="dashboard.user.edit" md-no-ink>
+<md-button class="md-dashboard md-dashboard-icon md-dark" ui-sref="dashboard.user.edit" md-no-ink>
     <md-icon class="btn-icon">add</md-icon>
     <span class="btn-label">Invite User</span>
 </md-button>
 
-<p class="instructions">Select a user to edit</p>
+<p class="instructions">Users</p>
 
 <ul class="dashboard-list user-list" ng-cloak>
-    <li ng-repeat="person in users track by $index">
+    <li ng-repeat="person in users track by $index" layout="row" layout-align="none center">
 
-        <span class="dashboard-list-order">{{ $index+1 }}</span>
-        <span class="dashboard-list-hover" ng-click="select(person, user)">
+        <div flex="10">
+            <img src="/images/image-not-found-sm.png" />
+        </div>
+
+        <span ng-click="select(person, user)" flex>
             <span class="dashboard-list-name">{{person.firstName}} {{person.lastName}}</span>
-            <span class="dashboard-list-revision">({{ person.email }})</span>
+            <span class="dashboard-list-revision" ng-if="!(person.firstName || person.lastName)">{{ person.email }}</span>
+            <span ng-if="user.invited[person._id]">(Pending Invitation)</span>
         </span>
+
+        <span ng-if="user._id != person._id && !user.invited[person._id]" flex="10">[EDIT]</span>
+        <span ng-if="user.invited[person._id]" flex="10">[RESEND]</span>
+
         <span class="dashboard-list-delete" ng-click="remove($index)" aria-hidden="true" aria-label="Delete"
-            ng-if="user._id != person._id && !user.invited[person._id]">×</span>
-        <span ng-if="user.invited[person._id]">Pending Invitation</span>
+            ng-if="user._id != person._id && !user.invited[person._id]" flex="10">×</span>
+        <span ng-if="user.invited[person._id]" flex="10">[X]</span>
 
         <!-- <md-checkbox class="md-secondary" ng-model="person.active" ng-change="toggleActive(person)"
                  ng-if="user._id != person._id && !user.invited[person._id] ">{{ person.active ? 'Active' : 'Inactive' }}
