@@ -8,6 +8,7 @@
 
 
 
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
 {% if env.FE_UNPROCESSEDCSS == "true" %}
@@ -16,11 +17,7 @@
 <link href="/stylesheets/style.min.css" rel="stylesheet">
 {% endif %}
 
-{% if env.USE_SSL == 'true' %}
-{% set explore_url = 'https://explore.' + env.HOST %}
-{% else %}
-{% set explore_url = 'http://explore.' + env.HOST %}
-{% endif %}
+
 
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->

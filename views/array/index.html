@@ -6,6 +6,7 @@
     <title>Arrays - Create</title>
 {% endblock %}
 
+
 {% block content %}
     <div class="container-fluid">
         <div class="row">
@@ -28,9 +29,9 @@
 
                         <!---   Hiding team for now -->
 
-                       <!--      <div class="radio">
+                     <!--        <div class="radio">
                                 <label>
-                                    <input type="radio" name="subdomain" value="{{ env | siteBaseURL | addSubdomain(key) }}" class="hidden">
+                                    <input type="radio" name="subdomain" value="{{ addSubdomain(key) }}" class="hidden">
                                     <div class="panel panel-default panel-source team-{{ key }} js-panel-team">
     
                                         <div class="panel-body border-top-color-brand">
@@ -46,8 +47,8 @@
                                         </div>
                                     </div>
                                 </label>
-                            </div>
- -->
+                            </div> -->
+
 
                                 {% for teamDesc in value.dataSourceDescriptions %}
                                 
