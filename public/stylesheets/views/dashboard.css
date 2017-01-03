@@ -116,9 +116,6 @@ img.iconMap {
     line-height: 30px;
     font-weight: 600;
 }
-.dashboard-list-name:hover {
-    color: var(--color-primary);
-}
 .dashboard-list-revision {
     font-size: 20px;
     /*font-weight: 100;*/
@@ -134,19 +131,36 @@ img.iconMap {
     color: var(--color-primary);
 }
 
+.team-list .md-button .dashboard-list-name,
+.team-list .md-button .dashboard-list-revision  {
+    font-size: 16px;
+    line-height: 1em;
+}
+/* mimic .sidebar-menu .nav > li > a */
 .team-list .md-button {
+    font-size: 16px;
+    line-height: 1em;
     margin: 0;
-    padding: 0;
-    min-height: auto;
-    line-height: normal;
+    margin-bottom: 1px;
+    padding: 12px;
+    /*width: 100%;*/
+    color: var(--color-text-dark);
+    border-radius: 4px;
     text-transform: none;
 }
-.team-list .md-button:hover {
+.team-list .md-button:hover,
+.team-list .md-button:focus {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+/* current team */
+.team-list .md-button:disabled {
+    color: var(--color-primary);
     background-color: transparent;
 }
-
-.dashboard-list .dashboard-list-hover:hover:not([disabled]) .dashboard-list-name {
-    color: var(--color-primary);
+.team-list .md-button:disabled:hover {
+    padding: 11px;
+    border: 1px solid var(--color-primary);
 }
 
 /* Dataset Breadcrumb */
