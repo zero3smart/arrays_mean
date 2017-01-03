@@ -129,7 +129,7 @@ var _mountRoutes_endPoints = function (app) {
             urlRegexForDataset.lastIndex = 0;
             var isRouteForDataset = urlRegexForDataset.test(req.url);
             if (isNotRootDomain(req.subdomains)) {
-                if (isRouteForDataset) {  
+                if (isRouteForDataset) {
                     return next();
                 } else {
                     if (req.url == '/') {
