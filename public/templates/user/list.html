@@ -12,18 +12,26 @@
             <img src="/images/image-not-found-sm.png" />
         </div>
 
-        <span ng-click="select(person, user)" flex>
+        <span ng-click="select(person, user)" ng-class="{'pending': user.invited[person._id]}" flex>
             <span class="dashboard-list-name">{{person.firstName}} {{person.lastName}}</span>
-            <span class="dashboard-list-revision" ng-if="!(person.firstName || person.lastName)">{{ person.email }}</span>
+            <span class="dashboard-list-name" ng-if="!(person.firstName || person.lastName)">{{ person.email }}</span>
             <span ng-if="user.invited[person._id]">(Pending Invitation)</span>
         </span>
 
-        <span ng-if="user._id != person._id && !user.invited[person._id]" flex="10">[EDIT]</span>
-        <span ng-if="user.invited[person._id]" flex="10">[RESEND]</span>
+        <span class="dashboard-list-icon" ng-click="select(person, user)" ng-if="user._id != person._id && !user.invited[person._id]">
+            <i class="fa fa-pencil" aria-hidden="true" flex="10"></i>
+        </span>
+        <span class="dashboard-list-icon" ng-if="user.invited[person._id]">
+            <i class="fa fa-refresh" aria-hidden="true" flex="10"></i>
+        </span>
 
-        <span class="dashboard-list-delete" ng-click="remove($index)" aria-hidden="true" aria-label="Delete"
-            ng-if="user._id != person._id && !user.invited[person._id]" flex="10">×</span>
-        <span ng-if="user.invited[person._id]" flex="10">[X]</span>
+        <span class="dashboard-list-icon warn" ng-click="remove($index)" aria-hidden="true" aria-label="Delete"
+            ng-if="user._id != person._id && !user.invited[person._id]" flex="10">
+            <i class="fa fa-remove" aria-hidden="true"></i>
+        </span>
+        <span class="dashboard-list-icon warn" ng-if="user.invited[person._id]" flex="10">
+            <i class="fa fa-remove" aria-hidden="true"></i>
+        </span>
 
         <!-- <md-checkbox class="md-secondary" ng-model="person.active" ng-change="toggleActive(person)"
                  ng-if="user._id != person._id && !user.invited[person._id] ">{{ person.active ? 'Active' : 'Inactive' }}

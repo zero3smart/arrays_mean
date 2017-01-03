@@ -148,19 +148,14 @@ body.md-toast-animating {
     line-height: 30px;
     font-weight: 600;
 }
+.user-list .pending {
+	color: var(--color-text-light);
+}
 .dashboard-list-revision {
     font-size: 16px;
-    /*font-weight: 100;*/
 }
-.dashboard-list-delete {
-    /* temp × symbol */
-    font-size: 20px;
-    line-height: 20px;
-    font-weight: bold;
-    display: inline-block;
-    width: 20px;
+.dashboard-list-icon {
     text-align: center;
-    color: var(--color-primary);
 }
 
 .team-list .md-button .dashboard-list-name,
