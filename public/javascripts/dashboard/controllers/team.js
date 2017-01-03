@@ -69,12 +69,19 @@ angular
 
 
             $scope.signInWithTeam = function($index) {
-              var changeToTeam = $scope.teams[$index]._id;
-              AuthService.switchTeam(changeToTeam)
-              .then(function() {
-                  $scope.$parent.team = AuthService.currentTeam();
-                  $scope.$parent.user = AuthService.currentUser();
-              })
+                var changeToTeam = $scope.teams[$index];
+                AuthService.switchTeam(changeToTeam._id)
+                .then(function() {
+                    $scope.$parent.team = AuthService.currentTeam();
+                    $scope.$parent.user = AuthService.currentUser();
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent('Switched to ' + changeToTeam.title)
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+
+                })
             }
 
     }]);

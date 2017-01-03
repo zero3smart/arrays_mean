@@ -77,6 +77,11 @@ img.iconMap {
     top: 64px;
     z-index: 1000;
 }
+/*prevent scrollbar pop-in*/
+body.md-toast-animating {
+    overflow: auto !important;
+}
+
 
 .dashboard .glyphicon {
     color: grey;
