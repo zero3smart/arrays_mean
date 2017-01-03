@@ -28,39 +28,26 @@
 
 
 
-     <div class="formInput">
-            <label>Logo</label>
-            <div ng-if="!team.logo">
-                No team logo uploaded.
-
-            </div>
-
-            <div flex="50">
-                 <img class="img-responsive" ng-if="team.logo" ng-src="{{team.logo}}">
-            </div>
+    <div class="formInput">
+        <label>Team Logo</label>
+        <div flex="50">
+             <img class="img-responsive" ng-if="team.logo" ng-src="{{team.logo}}">
+        </div>
+        <button class="" disabled>
+            <span class="btn-label">{{team.logo ? 'Update' : 'Upload'}}</span>
+        </button>
     </div>
-
-
 
 
     <div class="formInput">
-        <label>Logo Header</label>
-         <div ng-if="!team.logo_header">
-                No team logo header uploaded.
-
-            </div>
-
+        <label>Team Masthead</label>
         <div flex="50">
              <img class="img-responsive" ng-if="team.logo_header" ng-src="{{team.logo_header}}">
         </div>
-
+        <button class="" disabled>
+            <span class="btn-label">{{team.logo_header ? 'Update' : 'Upload'}}</span>
+        </button>
     </div>
-
-
-
-
-
-
 
 
     <label class="formInput">Choose images</label>
