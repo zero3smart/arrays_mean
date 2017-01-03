@@ -1168,7 +1168,7 @@ module.exports.GenerateImageURLFieldsByScraping
         datasetQuery["rowParams." + htmlSourceAtURLInField] = {$exists: true};
         datasetQuery["rowParams." + htmlSourceAtURLInField] = {$ne: ""};
 
-        var folder = dataSource_team_subdomain + '/' + dataSource_uid + '/assets/images/';
+        var folder = 'datasets/' + dataSource_team_subdomain + '/' + dataSource_uid + '/assets/images/';
 
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously
             var concurrencyLimit = 15; // at a time

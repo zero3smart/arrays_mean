@@ -79,21 +79,25 @@
 					var params = {subdomain: value};
 					var deferred = $q.defer();
 
-					if (scope.invitedUser) {
-						deferred.resolve(true);
+					if (value == 'blog' || value == 'explore') {
+						deferred.reject(false);
 					} else {
-						Team.search(params)
-						.$promise.then(function(data) {
-							if (data.length == 0) {
-								deferred.resolve(true);
-							} else {
+						if (scope.invitedUser) {
+							deferred.resolve(true);
+						} else {
+							Team.search(params)
+							.$promise.then(function(data) {
+								if (data.length == 0) {
+									deferred.resolve(true);
+								} else {
+									deferred.reject(false);
+								}
+								
+							},function() {
 								deferred.reject(false);
-							}
-							
-						},function() {
-							deferred.reject(false);
-						})
+							})
 
+						}
 					}
 					return deferred.promise;
 				}
