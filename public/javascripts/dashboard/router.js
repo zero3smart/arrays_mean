@@ -14,7 +14,7 @@ angular.module('arraysApp')
             function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
                 $urlRouterProvider
-                    .otherwise('/dashboard/account');
+                    .otherwise('/dashboard/account/profile');
 
                 $stateProvider
                     .state('dashboard', {
@@ -28,12 +28,44 @@ angular.module('arraysApp')
                             }
                         }
                     })
+                    //
                     .state('dashboard.account', {
+                        abstract: true,
                         url: '/account',
                         controller: 'AccountCtrl',
-                        templateUrl: 'templates/account.html',
-
+                        templateUrl: 'templates/account.html'
                     })
+                    .state('dashboard.account.profile', {
+                        url: '/profile',
+                        controller: 'AccountCtrl',
+                        templateUrl: 'templates/account/profile.html'
+                    })
+                    .state('dashboard.account.billing', {
+                        url: '/billing',
+                        controller: 'BillingCtrl',
+                        templateUrl: 'templates/account/billing.html'
+                    })
+                    .state('dashboard.account.payment', {
+                        url: '/payment',
+                        controller: 'BillingCtrl',
+                        templateUrl: 'templates/account/payment.html'
+                    })
+                    .state('dashboard.account.upgradeEnterprise', {
+                        url: '/upgrade/enterprise',
+                        controller: 'BillingCtrl',
+                        templateUrl: 'templates/account/upgrade.enterprise.html'
+                    })
+                    .state('dashboard.account.upgradePro', {
+                        url: '/upgrade/pro',
+                        controller: 'BillingCtrl',
+                        templateUrl: 'templates/account/upgrade.pro.html'
+                    })
+                    .state('dashboard.account.close', {
+                        url: '/close',
+                        controller: 'BillingCtrl',
+                        templateUrl: 'templates/account/close.html'
+                    })
+                    //
                     .state('dashboard.dataset', {
                         abstract: true,
                         url: '/dataset',

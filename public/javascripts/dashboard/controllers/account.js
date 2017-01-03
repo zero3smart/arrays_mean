@@ -2,9 +2,7 @@ angular.module('arraysApp')
     .controller('AccountCtrl', ['$scope', 'AuthService',
         function($scope, AuthService) {
 
-
-          
-
+            $scope.currentNavItem = 'profile';
 
             $scope.updateProfile = function() {
                 $('.butterbar').removeClass('hide').addClass('active');
