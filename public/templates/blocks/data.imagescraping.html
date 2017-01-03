@@ -83,7 +83,13 @@
                             </md-select>
                             <div class="md-errors-spacer"></div>
                         </md-input-container>
+
+                        <md-input-container class="md-block">
+                            <label>Selector</label>
+                            <input type="text" name="selector_{{$index}}" ng-model="field.selector"/>
+                        </md-input-container> 
                     </fieldset>
+
 
                     <div layout="row" layout-align="end center" >
                         <md-button class="md-raised"
