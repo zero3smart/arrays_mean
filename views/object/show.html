@@ -42,7 +42,24 @@
                                         
                                         {% if columnValue %}
                                             {% if columnValue | isArray %}
-                                                {% if columnValue.length > 0 %}
+
+                                            <!-- This bit is for listing the relationship fields -->
+                                                {% if columnName == relationshipField %}
+                                                    {% set collatedJoinData = collateJoinData(columnName) %}
+                                                    {% for column, fieldValueArray in collatedJoinData%}
+                                                        <dt> {{column}} </dt>
+                                                        {% for value in fieldValueArray %}
+                                                            <dd>
+                                                                <ul class="object-list">
+                                                                    <li class="object-list-item"><a href="{{ buildObjectLink(columnName, value) }}" class="color-brand">{{ value }}</a></li>
+                                                                </ul>
+                                                            </dd>
+                                                        {% endfor %}
+                                                        </dt>
+                                                    {% endfor %}
+                                                <!-- end relationship field list -->
+
+                                                {% elif columnValue.length > 0 %}
                                                     <dt>{{ columnName }}</dt>
                                                     <dd>
                                                     {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
@@ -51,9 +68,10 @@
                                                         {% set sortedArray = columnValue | alphaSortedArray %}
                                                         {% for arrayMember in sortedArray %}
                                                             {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, arrayMember, false) %}
-                                                            {% set arrayMemberText = htmlOverrideFn(rowObject, arrayMember, strParams) | safe if htmlOverrideFn else arrayMember %}
+                                                            {% set arrayMemberText = arrayMember %}
                                                             {% if shouldLink %}
-                                                                <li class="object-list-item"><a href="{{ ('/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">{{ arrayMemberText }}</a></li>
+                                                                <li class="object-list-item"><a href="{{ ('/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">{{ arrayMemberText }} 
+                                                                </a></li>
                                                             {% else %}
                                                                 <li class="object-list-item">{{ arrayMemberText | substitutePlainURLs | safe }}</li>
                                                             {% endif %}

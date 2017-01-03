@@ -1,6 +1,36 @@
 /* @override
 	http://localhost:9080/stylesheets/views/dashboard.css */
 
+html, body {
+	background-color: #ffffff;
+}
+
+/*to add to variables and global styles*/
+:root {
+	--color-warn: #fb4400;
+}
+.warn {
+    color: var(--color-warn);
+}
+/**/
+
+h2 {
+    font-size: 24px;
+}
+h3 {
+    font-size: 18px;
+}
+h4 {
+    font-size: 16px;
+}
+
+a[href^="mailto"] {
+	/*md-default-theme*/
+	color: rgba(0,0,0,0.87);
+	/*var(--color-text-dark);*/
+	text-decoration: underline;
+}
+
 .dashboard-container {
     padding: 2em 1em;
 }
@@ -55,9 +85,6 @@ md-content.md-default-theme, md-content {
 .dataset .md-content {
     overflow: hidden;
 }
-.dataset a._md-nav-button {
-    font-size: 18px;
-}
 
 md-toolbar:not(.md-menu-toolbar) {
     background-color: var(--color-primary);
@@ -77,6 +104,11 @@ img.iconMap {
     top: 64px;
     z-index: 1000;
 }
+/*prevent scrollbar pop-in*/
+body.md-toast-animating {
+    overflow: auto !important;
+}
+
 
 .dashboard .glyphicon {
     color: grey;
@@ -116,9 +148,6 @@ img.iconMap {
     line-height: 30px;
     font-weight: 600;
 }
-.dashboard-list-name:hover {
-    color: var(--color-primary);
-}
 .dashboard-list-revision {
     font-size: 20px;
     /*font-weight: 100;*/
@@ -134,19 +163,66 @@ img.iconMap {
     color: var(--color-primary);
 }
 
+.team-list .md-button .dashboard-list-name,
+.team-list .md-button .dashboard-list-revision  {
+    font-size: 16px;
+    line-height: 1em;
+}
+/* mimic .sidebar-menu .nav > li > a */
 .team-list .md-button {
+    font-size: 16px;
+    line-height: 1em;
     margin: 0;
-    padding: 0;
-    min-height: auto;
-    line-height: normal;
+    margin-bottom: 1px;
+    padding: 12px;
+    /*width: 100%;*/
+    color: var(--color-text-dark);
+    border-radius: 4px;
     text-transform: none;
 }
-.team-list .md-button:hover {
+.team-list .md-button:hover,
+.team-list .md-button:focus {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+/* current team */
+.team-list .md-button:disabled {
+    color: var(--color-primary);
     background-color: transparent;
 }
+.team-list .md-button:disabled:hover {
+    padding: 11px;
+    border: 1px solid var(--color-primary);
+}
 
-.dashboard-list .dashboard-list-hover:hover:not([disabled]) .dashboard-list-name {
-    color: var(--color-primary);
+/* Angular Material tabs and nav bars */
+
+.md-nav-bar .md-button,
+.md-tab {
+    color: var(--color-text-dark);
+    font-size: 16px;
+    text-transform: none;
+}
+.dashboard .tab-content {
+    padding-top: 2em;
+}
+.tab-content img.profile {
+    padding: 0 2em 2em 0;
+    width: 100%;
+}
+
+md-nav-ink-bar,
+md-ink-bar {
+    color: var(--color-primary) !important;
+    background-color: var(--color-primary) !important;
+}
+
+/* Account */
+/* Payment */
+
+.payment-bank-type md-radio-button {
+    display: inline-block;
+    margin-right: 30px;
 }
 
 /* Dataset Breadcrumb */
@@ -350,8 +426,7 @@ md-dialog fieldset legend,
 }
 
 .md-button.md-dashboard {
-    height: 48px;
-    min-width: 200px;
+    height: 40px;
     margin: 0;
     border: 1px solid white;
     border-radius: 4px;
@@ -361,18 +436,14 @@ md-dialog fieldset legend,
     padding-right: 12px;
 }
 
-/* treat .md-light as default */
+.md-button.md-dashboard:disabled {
+    background: var(--color-text-light);
+}
 .md-button.md-dashboard:not([disabled]) {
-    background: #CDCDCD;
+    background: var(--color-text-dark);
 }
 .md-button.md-dashboard:not([disabled]):hover {
-    background: #333338;
-}
-.md-button.md-dashboard.md-dark:not([disabled]) {
-    background: #333338;
-}
-.md-button.md-dashboard.md-dark:not([disabled]):hover {
-    background: #CDCDCD;
+    background: var(--color-primary);
 }
 
 md-icon.btn-icon {
@@ -380,19 +451,20 @@ md-icon.btn-icon {
     line-height: 18px;
 }
 
+.md-button.md-dashboard,
 .md-button.md-dashboard .btn-label {
     font-family: var(--font-family-calibre);
     text-transform: uppercase;
     color: white;
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 600;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
+    padding: 0 1em;
 }
 
-.md-button.md-dashboard .btn-label {
-    line-height: 46px; /* height - 2px for border*/
+.md-button.md-dashboard.md-warn {
+    background-color: var(--color-warn);
 }
-
 
 /* ----------- Manager Users -------------- */
 
