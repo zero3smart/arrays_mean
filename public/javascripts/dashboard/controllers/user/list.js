@@ -1,12 +1,14 @@
 angular
     .module('arraysApp')
-    .controller('UserListCtrl', ['$scope', '$state', 'AuthService', 'User', '$mdToast', 'users','$mdDialog',
-        function ($scope, $state, AuthService, User, $mdToast, users,$mdDialog) {
+    .controller('UserListCtrl', ['$scope', '$state', 'AuthService', 'User', '$mdToast', 'users', '$mdDialog', 'datasets', 'Team',
+        function ($scope, $state, AuthService, User, $mdToast, users, $mdDialog, datasets, Team) {
 
             $scope.users = users;
+            $scope.datasets = datasets;
 
-            $scope.selectedUser = null;
+            $scope.selectedUser = null; // to remove?
 
+            // to remove?
             $scope.select = function(currentUser, user) {
                 if (currentUser._id != user._id) {
                       $state.go('dashboard.user.edit', {id: currentUser._id});
@@ -70,23 +72,113 @@ angular
 
             };
 
-            $scope.openInviteUserDialog = function(ev) {
-                $mdDialog.show({
-                    controller: InviteUserDialogController,
-                    templateUrl: 'templates/blocks/user.invite.html',
-                    parent: angular.element(document.body),
-                    targetEvent: ev,
-                    clickOutsideToClose: true,
-                    fullscreen: true,
-                    // locals: {
-                    //     user: $scope.user
-                    // }
-                })
-                // .then(function(team) {
-                //     $scope.teams.push(team);
-                // });
+            $scope.openUserDialog = function(ev, selectedUser, user) {
+                // if (selectedUser._id != user._id) {
+                    $mdDialog.show({
+                        controller: UserDialogController,
+                        templateUrl: 'templates/blocks/user.edit.html',
+                        parent: angular.element(document.body),
+                        targetEvent: ev,
+                        clickOutsideToClose: true,
+                        fullscreen: true,
+                        locals: {
+                            selectedUser: selectedUser,
+                            team: $scope.team,
+                            datasets: $scope.datasets
+                        }
+                    })
+                    // .then(function(team) {
+                    //     $scope.teams.push(team);
+                    // });
+                // }
             };
-            function InviteUserDialogController($scope, $mdDialog) {
+            function UserDialogController($scope, $mdDialog, selectedUser, team, datasets) {
+                $scope.selectedUser = selectedUser;
+                $scope.team = team;
+                $scope.datasets = datasets;
+
+                $scope.userRoles = {};
+
+                if (!$scope.selectedUser._editors) {
+                    $scope.selectedUser._editors = [];
+                }
+                if (!$scope.selectedUser._viewers) {
+                    $scope.selectedUser._viewers = [];
+                }
+
+                for (var i  = 0; i < datasets.length ; i++) {
+                    var Id = datasets[i]._id;
+
+                    if ($scope.selectedUser._editors.indexOf(Id) >= 0) {
+                        $scope.userRoles[Id] = "editor"
+                    } else if ($scope.selectedUser._viewers.indexOf(Id) >= 0 ) {
+                        $scope.userRoles[Id] = "viewer";
+                    } else {
+                        $scope.userRoles[Id] = "";
+                    }
+                }
+
+                $scope.availableUserRoles = [
+                    {name: "Editor", value: 'editor'},
+                    {name: "Viewer", value: 'viewer'},
+                    {name: "None", value: ''}
+
+                ];
+
+                $scope.saveUser = function() {
+                   bindUserRolesToSelectedUser();
+
+                    $scope.selectedUser.$save(function(savedUser) {
+                        if (savedUser) {
+
+                             $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent("User Role saved successfully!")
+                                    .position('top right')
+                                    .hideDelay(3000)
+                            );
+
+                            $scope.vm.userForm.$setPristine();
+                            $scope.vm.userForm.$setUntouched();
+                        }
+                    },function(err) {
+
+                    });
+                };
+
+                var bindUserRolesToSelectedUser = function() {
+                    if (TeamIdExist()) {
+                        $scope.selectedUser._editors = [];
+                        $scope.selectedUser._viewers = [];
+                    } else {
+                         $scope.selectedUser._team.push($scope.team._id);
+                    }
+                    for (var datasetId in $scope.userRoles) {
+                        var role = $scope.userRoles[datasetId];
+                        if (role == 'editor') {
+                            $scope.selectedUser._editors.push(datasetId);
+                        } else if (role == 'viewer') {
+                            $scope.selectedUser._viewers.push(datasetId);
+
+                        }
+                    }
+                }
+
+                var TeamIdExist = function() {
+                    for (var i = 0; i < $scope.selectedUser._team.length; i++) {
+                        if (typeof $scope.selectedUser._team[i] == 'string') {
+                            if ($scope.selectedUser._team[i] == $scope.team._id) {
+                                return true;
+                            }
+                        } else if (typeof $scope.selectedUser._team[i] == 'object') {
+                            if ($scope.selectedUser._team[i]._id == $scope.team._id) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+
                 $scope.hide = function() {
                     $mdDialog.hide();
                 };

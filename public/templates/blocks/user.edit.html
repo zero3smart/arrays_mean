@@ -1,0 +1,69 @@
+<md-dialog md-no-ink aria-label="Invite User">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Edit/Invite User</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <span class="icon-close-big" aria-label="Close dialog"></span>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <form name="vm.userForm" autocomplete="off">
+        <md-dialog-content layout-padding>
+            <md-content layout="column">
+                <md-input-container class="md-block" flex-gt-xs>
+                    <label>Email</label>
+                    <input ng-readonly="selectedUser._id" ng-disabled="selectedUser._id" aria-label="email" required name="email" ng-model="selectedUser.email">
+                    <div ng-messages="vm.userForm.email.$error">
+                        <div ng-message="unique">This user is an existing user.</div>
+                    </div>
+                </md-input-container>
+
+
+                <div class="table-container">
+                    <table ng-hide="user.invited[person._id]|| datasets.length == 0" class="table data">
+                        <thead>
+                        <tr>
+                            <th>Dataset Title</th>
+                            <th>User Permission</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="dataset in datasets">
+                            <td>
+                               {{dataset.title}}
+                            </td>
+                            <td>
+                                <md-select ng-hide="team.admin==selectedUser._id" aria-label="userRoles" name="role" required ng-model="userRoles[dataset._id]">
+                                    <md-option ng-repeat="role in availableUserRoles " value="{{role.value}}">
+                                        {{role.name}}
+                                    </md-option>
+                                </md-select>
+                                <p ng-if="team.admin==selectedUser._id">Admin</p>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <a class="warn" ng-if="selectedUser._id !== team.admin && userId && selectedUser.activated==true" ng-click="makeTeamAdmin()">Make Team Admin</a>
+
+            </md-content>
+            <md-dialog-actions layout="row" layout-align="end center">
+                <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-dashboard" type="button" ng-hide="selectedUser._id || selectedUser._team.indexOf(team._id) >= 0">
+                    <span class="btn-label">Invite User</span>
+                </md-button>
+
+                <md-button ng-if="!(user.invited[person._id] || user.invited[selectedUser._id])" ng-hide="!selectedUser._id" ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="saveUser()" class="md-dashboard" type="button" ng-if="selectedUser._id">
+                    <span class="btn-label">Save Settings</span>
+                </md-button>
+
+                <md-button class="md-dashboard" ng-click="cancel()">
+                    Cancel
+                </md-button>
+            </md-dialog-actions>
+        </md-dialog-content>
+    </form>
+
+</md-dialog>

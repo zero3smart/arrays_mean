@@ -180,7 +180,15 @@ angular.module('arraysApp')
                             users: ['User', 'AuthService', function (User, AuthService) { //all users in this team, except myself
                                 var currentTeam = AuthService.currentTeam();
                                 return User.getAll({teamId: currentTeam._id});
-                            }]
+                            }],
+                            datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
+                                var user = AuthService.currentUser();
+                                if (user.role == 'superAdmin' || user.role == 'admin') {
+                                    return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id})
+                                } else {
+                                    return [];
+                                }
+                            }],
                         }
                     })
                     .state('dashboard.user.edit', {
