@@ -21,7 +21,7 @@
         <span class="dashboard-list-icon" ng-click="openUserDialog($event, person, user)" ng-if="user._id != person._id && !user.invited[person._id]" flex="10">
             <i class="fa fa-pencil" aria-hidden="true"></i>
         </span>
-        <span class="dashboard-list-icon" ng-click="resendInvite(person)" ng-if="user.invited[person._id]" flex="10">
+        <span class="dashboard-list-icon" ng-click="resendInvite(person, $event)" ng-if="user.invited[person._id]" flex="10">
             <i class="fa fa-refresh" aria-hidden="true"></i>
         </span>
 

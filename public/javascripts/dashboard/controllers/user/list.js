@@ -301,27 +301,51 @@ angular
 
 
 
-            $scope.resendInvite = function(invitedUser) {
+            $scope.resendInvite = function(invitedUser, ev) {
 
-                AuthService.resendInvite(invitedUser._id)
-                .then(function(response) {
-                    if (response.status == 200) {
+                $mdDialog.show({
+                    templateUrl: 'templates/blocks/user.resend.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    locals: {
+                        person: invitedUser,
+                    },
+                    controller: function($scope, $mdDialog, person) {
+                        $scope.person = person;
+                        $scope.hide = function() {
+                            $mdDialog.hide();
+                        };
+                        $scope.cancel = function() {
+                            $mdDialog.cancel();
+                        };
+                    }
+                })
+                .then(function () {
+
+                    AuthService.resendInvite(invitedUser._id)
+                    .then(function(response) {
+                        if (response.status == 200) {
+                            $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent("Invitation resent successfully!")
+                                    .position('top right')
+                                    .hideDelay(3000)
+                            );
+                        }
+                    },function(err) {
+                        console.log(err);
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent("Invitation resent successfully!")
+                                .textContent(err)
                                 .position('top right')
                                 .hideDelay(3000)
                         );
-                    }
-                },function(err) {
-                    console.log(err);
-                    $mdToast.show(
-                        $mdToast.simple()
-                            .textContent(err)
-                            .position('top right')
-                            .hideDelay(3000)
-                    );
-                })
+                    })
+
+                });
+
             }
 
     }]);
