@@ -33,10 +33,21 @@ angular
 
                 $scope.checkSubdomain = function() {
                     var params = {subdomain: $scope.newTeam.subdomain};
+                    if ($scope.newTeam.subdomain == 'blog' || $scope.newTeam.subdomain == 'explore') {
+                         $scope.vm.teamForm.subdomain.$setValidity('unique', false);
+                         return; 
+                    }
                     Team.search(params)
-                    .$promise.then(function(data) {
+                    .$promise.then(function(data) { 
+
                         if (data.length == 0) {
-                            $scope.vm.teamForm.subdomain.$setValidity('unique', true);
+                            if (/^[a-z0-9\-]*$/.test($scope.newTeam.subdomain)) {
+                                $scope.vm.teamForm.subdomain.$setValidity('unique', true);
+                            } else {
+                                $scope.vm.teamForm.subdomain.$setValidity('unique', true);
+                                $scope.vm.teamForm.subdomain.$setValidity('pattern', false);
+                            }
+    
                         } else {
                             $scope.vm.teamForm.subdomain.$setValidity('unique', false);
                         }

@@ -330,8 +330,10 @@ var _GetDescriptionsWith_uid_importRevision = function (uid, revision, fn) {
 datasource_description.GetDescriptionsWith_uid_importRevision = _GetDescriptionsWith_uid_importRevision;
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
+
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
         .then(function (datasourceDescription) {
+
 
             if (!datasourceDescription.fe_visible || !datasourceDescription.imported) return fn();
             if (datasourceDescription.isPublic) return fn(null, datasourceDescription);

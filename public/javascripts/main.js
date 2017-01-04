@@ -19,7 +19,9 @@ $(document).ready(function () {
      */
     $('.js-panel-array').on('click', function (e) {
         e.preventDefault();
-        console.log("here");
+
+
+
         var $parent = $(this).parent();
        
         var default_view = $parent.find("[name='default_view']").val();
@@ -51,10 +53,7 @@ $(document).ready(function () {
         if (viewTypes.indexOf(default_view_url) < 0) { //custom view
         
             href = baseUrl + '/' +  sourceKey + '/' + default_view_url;
-
             window.location.href = href;
-
-
         } else {
             href = '/' + sourceKey + '/' + default_view_url;
             if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
@@ -68,10 +67,13 @@ $(document).ready(function () {
      * Select team on click
      */
     $('.js-panel-team').on('click', function (e) {
+
+
         e.preventDefault();
         var $parent = $(this).parent();
         var subdomain = $parent.find("[name='subdomain']").val();
         window.location.href = subdomain;
+
     });
 
     /**

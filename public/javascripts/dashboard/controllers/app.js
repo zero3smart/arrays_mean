@@ -12,6 +12,8 @@ angular
             }
 
             $scope.updateSubdomain();
+
+            $scope.explore_url = $location.protocol() +  "://explore." +  $location.host() + ":" + $location.port();
     
             if (!isSmartDevice($window)) {
                 $scope.showSideMenu = true;

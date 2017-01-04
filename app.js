@@ -63,12 +63,16 @@ if (isDev) {
 }
 
 fs.readdir(userFolderPath, function (err, files) {
+
+
     if (!files) {
         app.set('views', viewsToSet)
         nunjucks.setup({
             watch: isDev,
             noCache: isDev,
-        }, app).then(require('./nunjucks/filters'));
+        }, app).then(function(nunjucks_env) {
+            require('./nunjucks/filters')(nunjucks_env,process.env)
+        });
         return;
     }
 
@@ -100,7 +104,9 @@ fs.readdir(userFolderPath, function (err, files) {
         nunjucks.setup({
             watch: isDev,
             noCache: isDev,
-        }, app).then(require('./nunjucks/filters'));
+        }, app).then(function(nunjucks_env) {
+            require('./nunjucks/filters')(nunjucks_env,process.env)
+        });
 
     })
 })
