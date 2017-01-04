@@ -6,48 +6,33 @@ angular
             $scope.users = users;
             $scope.datasets = datasets;
 
-            $scope.selectedUser = null; // to remove?
+            $scope.remove = function(person, ev) {
 
-            // to remove?
-            $scope.select = function(currentUser, user) {
-                if (currentUser._id != user._id) {
-                      $state.go('dashboard.user.edit', {id: currentUser._id});
-                }
-            };
-
-            $scope.toggleActive = function(user) {
-                user.$save(function(savedUser, res) {
-                    if (res.error) {
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent(res.error)
-                                .position('top right')
-                                .hideDelay(5000)
-                        );
-                    } else if (res.success == 'ok') {
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Updated successfully')
-                                .position('top right')
-                                .hideDelay(5000)
-                        );
+                $mdDialog.show({
+                    templateUrl: 'templates/blocks/user.delete.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    locals: {
+                        person: person,
+                        team: $scope.team
+                    },
+                    controller: function($scope, $mdDialog, person, team) {
+                        $scope.person = person;
+                        $scope.team = team;
+                        $scope.hide = function() {
+                            $mdDialog.hide();
+                        };
+                        $scope.cancel = function() {
+                            $mdDialog.cancel();
+                        };
                     }
-                });
-            };
-
-            $scope.remove = function($index) {
-
-                var confirm = $mdDialog.confirm()
-                    .title('Are you sure to delete this user? ')
-                    .textContent('This user will be deleted permanently.')
-                    .targetEvent(event)
-                    .ok('Yes')
-                    .cancel('No');
-                $mdDialog.show(confirm).then(function () {
-                    var user = $scope.users[$index];
-                    user.$remove(function(res) {
+                })
+                .then(function () {
+                    person.$remove(function(res) {
                         if (res.success == 'ok') {
-                            $scope.users.splice($index,1);
+                            $scope.users.splice($scope.users.indexOf(person),1);
 
                              $mdToast.show(
                                 $mdToast.simple()

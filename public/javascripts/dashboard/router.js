@@ -191,27 +191,6 @@ angular.module('arraysApp')
                             }],
                         }
                     })
-                    .state('dashboard.user.edit', {
-                        url: '/edit/:id',
-                        controller: 'UserEditCtrl as vm',
-                        templateUrl: 'templates/user/edit.html',
-                        resolve: {
-                            datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
-                                var user = AuthService.currentUser();
-                                if (user.role == 'superAdmin' || user.role == 'admin') {
-                                    return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id})
-                                } else {
-                                    return [];
-                                }
-                            }],
-                            selectedUser: ['User', '$stateParams', function (User, $stateParams) {
-                                if ($stateParams.id)
-                                    return User.get({id: $stateParams.id}).$promise;
-                                else
-                                    return {};
-                            }]
-                        }
-                    })
                     .state('dashboard.teams', {
                         url: '/teams',
                         controller: 'TeamCtrl as vm',
