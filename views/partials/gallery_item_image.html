@@ -1,7 +1,7 @@
 <li class="gallery-item gallery-item-image">
 	<a href="/{{ doc.srcDocPKey }}/{{ doc._id }}{{ '?embed=true' if embedded }}">
         {% set title = team.title | lower %}
-        {% set url = "https://" + aws_bucket_for_url + title + "/" + uid + folder + doc.rowParams[fieldKey_medThumbImageURL] %}
+        {% set url = "https://" + aws_bucket_for_url + title + "/datasets/" + uid + folder + doc.rowParams[fieldKey_medThumbImageURL] %}
 		<img src="{{ url }}" class="gallery-image" />
 		<div class="gallery-tooltip border-top-color-brand">
 			<h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</h2>
