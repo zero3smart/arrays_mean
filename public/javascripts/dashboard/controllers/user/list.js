@@ -210,8 +210,6 @@ angular
                                                     .position('top right')
                                                     .hideDelay(3000)
                                             );
-                                            $scope.vm.userForm.$setPristine();
-                                            $scope.vm.userForm.$setUntouched();
                                          }
                                     },function(err) {
                                         $mdToast.show(
@@ -262,6 +260,50 @@ angular
                                     .hideDelay(3000)
                             );
                         })
+                }
+
+                $scope.makeTeamAdmin = function() {
+
+                    var confirm = $mdDialog.confirm()
+                            .title("Are you sure to make this user the team's admin ?")
+                            .textContent('Admin role would be transfered and the admin user will no longer be on the team.')
+                            .targetEvent(event)
+                            .ok('Yes')
+                            .cancel('No');
+                        $mdDialog.show(confirm).then(function () {
+
+                            Team.switchAdmin({_id:$scope.selectedUser._id})
+                            .$promise.then(function(res) {
+                                if (!res.error) {
+                                    AuthService.reload(function(data) {
+                                        if (data.success) {
+                                            $scope.$parent.team = AuthService.currentTeam();
+                                            $scope.$parent.users = User.getAll({teamId: $scope.$parent.team._id});
+
+                                            $mdToast.show(
+                                                $mdToast.simple()
+                                                    .textContent("Admin transfer successfully!")
+                                                    .position('top right')
+                                                    .hideDelay(3000)
+                                            );
+
+                                        } else {
+                                            $mdToast.show(
+                                                $mdToast.simple()
+                                                    .textContent("Opps! Admin did not get transfer!")
+                                                    .position('top right')
+                                                    .hideDelay(3000)
+                                                );
+                                        }
+                                    })
+                                }
+                            },function(err) {
+                                console.log("err");
+                                console.log(err);
+                            })
+                        }, function () {
+                            console.log("User decided not to transfer admin");
+                        });
                 }
 
                 $scope.hide = function() {

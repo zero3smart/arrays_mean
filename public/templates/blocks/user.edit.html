@@ -45,7 +45,7 @@
                     </li>
                 </ul>
 
-                <a class="warn" ng-if="selectedUser._id !== team.admin && userId && selectedUser.activated==true" ng-click="makeTeamAdmin()">Make Team Admin</a>
+                <a class="warn" ng-if="selectedUser._id !== team.admin && selectedUser._id && selectedUser.activated==true" ng-click="makeTeamAdmin()">Make Team Admin</a>
 
             </md-content>
             <md-dialog-actions layout="row" layout-align="end center">
