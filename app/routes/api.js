@@ -61,6 +61,7 @@ router.get('/dataset/getAvailableMatchFns', ctrlDataset.getAvailableMatchFns);
 // dataset import
 router.get('/dataset/initializeToImport/:id', ctrlDataset.initializeToImport);
 router.get('/dataset/preImport/:id', ctrlDataset.preImport);
+router.get('/dataset/scrapeImages/:id', ctrlDataset.scrapeImages);
 router.get('/dataset/importProcessed/:id',ctrlDataset.importProcessed);
 router.get('/dataset/postImport/:id', ctrlDataset.postImport);
 

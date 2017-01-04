@@ -87,7 +87,7 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions,job, fn)
           
             _postProcess(i, dataSourceDescription,job,eachCb);
           
-            if (dataSourceDescription.dirty >= 3) omitImageScraping = false;
+            // if (dataSourceDescription.dirty >= 3) omitImageScraping = false;
             i++;
         },
         function (err) {
@@ -99,49 +99,49 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions,job, fn)
                 winston.info("✅  Import post-processing done.");
                 job.log("✅  Import post-processing done.")
                 
-                if (!omitImageScraping) {
-                    _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions,job, fn)
-                } else {
+                // if (!omitImageScraping) {
+                //     _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions,job, fn)
+                // } else {
 
                     _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions,job, fn)
-                }
+                // }
             }
         }
     );
 };
 
 
-var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDescriptions,job,fn) {
-    var i = 1;
-    job.log('💬 proceed to image scraping for dataset'); 
-    async.eachSeries(
-        dataSourceDescriptions,
-        function (dataSourceDescription, eachCb) {
-            _proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription,job, eachCb);
-            i++;
-        },
-        function (err) {
-            if (err) {
-                winston.info("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
+// var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDescriptions,job,fn) {
+//     var i = 1;
+//     job.log('💬 proceed to image scraping for dataset'); 
+//     async.eachSeries(
+//         dataSourceDescriptions,
+//         function (dataSourceDescription, eachCb) {
+//             _proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription,job, eachCb);
+//             i++;
+//         },
+//         function (err) {
+//             if (err) {
+//                 winston.info("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
 
-                if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
-                    winston.info("💬  Waiting 3 seconds to restart...");
+//                 if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
+//                     winston.info("💬  Waiting 3 seconds to restart...");
 
-                    setTimeout(function () {
-                        _Import_dataSourceDescriptions__enteringImageScrapingDirectly(job,dataSourceDescriptions);
-                    }, 3000);
-                } else {
-                    fn(err);
-                }
-            } else {
-                winston.info("✅  Image-scraping done.");
-                winston.info("✅  All done for importing data");
-                job.log("✅  Image-scraping and importing data all done.");
-                fn();
-            }
-        }
-    );
-}
+//                     setTimeout(function () {
+//                         _Import_dataSourceDescriptions__enteringImageScrapingDirectly(job,dataSourceDescriptions);
+//                     }, 3000);
+//                 } else {
+//                     fn(err);
+//                 }
+//             } else {
+//                 winston.info("✅  Image-scraping done.");
+//                 winston.info("✅  All done for importing data");
+//                 job.log("✅  Image-scraping and importing data all done.");
+//                 fn();
+//             }
+//         }
+//     );
+// }
 //
 var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDescriptions,job, fn) {
     //
