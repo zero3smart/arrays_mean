@@ -60,10 +60,10 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
                         if (value == conditions[i].value) {
                             if (multiple) {
-                                return "<img class='icon-tile category-icon-2' src='" + conditions[i].applyIconFromUrl +"'>"
+                                return "<img class='icon-tile category-icon-2' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
                             }
 
-                            return "<img class='icon-tile' src='" + conditions[i].applyIconFromUrl +"'>"
+                            return "<img class='icon-tile' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
                         }
                     }
                     return null;
