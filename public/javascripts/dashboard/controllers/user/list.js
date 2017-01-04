@@ -314,4 +314,29 @@ angular
                 };
             }
 
+
+
+            $scope.resendInvite = function(invitedUser) {
+
+                AuthService.resendInvite(invitedUser._id)
+                .then(function(response) {
+                    if (response.status == 200) {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent("Invitation resent successfully!")
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    }
+                },function(err) {
+                    console.log(err);
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent(err)
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+                })
+            }
+
     }]);

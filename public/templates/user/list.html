@@ -2,7 +2,6 @@
     <md-icon class="btn-icon">add</md-icon>
     <span class="btn-label">Invite User</span>
 </md-button>
-<!-- <a ui-sref="dashboard.user.edit">old invite</a> -->
 
 <p class="instructions">Users</p>
 
@@ -18,23 +17,17 @@
             <span class="dashboard-list-name" ng-if="!(person.firstName || person.lastName)">{{ person.email }}</span>
             <span ng-if="user.invited[person._id]">(Pending Invitation)</span>
         </span>
-        <!-- <span ng-click="select(person, user)">old edit</span> -->
 
-        <!-- edit/resend -->
         <span class="dashboard-list-icon" ng-click="openUserDialog($event, person, user)" ng-if="user._id != person._id && !user.invited[person._id]" flex="10">
             <i class="fa fa-pencil" aria-hidden="true"></i>
         </span>
-        <span class="dashboard-list-icon" ng-if="user.invited[person._id]" flex="10">
+        <span class="dashboard-list-icon" ng-click="resendInvite(person)" ng-if="user.invited[person._id]" flex="10">
             <i class="fa fa-refresh" aria-hidden="true"></i>
         </span>
 
-        <!-- delete -->
         <span class="dashboard-list-icon warn" ng-click="remove($index)" aria-hidden="true" aria-label="Delete" flex="5">
             <i class="fa fa-remove" aria-hidden="true"></i>
         </span>
 
-        <!-- <md-checkbox class="md-secondary" ng-model="person.active" ng-change="toggleActive(person)"
-                 ng-if="user._id != person._id && !user.invited[person._id] ">{{ person.active ? 'Active' : 'Inactive' }}
-        </md-checkbox> -->
     </li>
 </ul>
