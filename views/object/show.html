@@ -13,7 +13,7 @@
                                 <header class="object-header">
                                     {% if hasOriginalImage %}
                                     {% set title = team.title | lower %}
-                                    {% set url = "https://" + aws_bucket_for_url + title + "/" + uid + folder + rowObject.rowParams[fieldKey_originalImageURL] %}
+                                    {% set url = "https://" + aws_bucket_for_url + title + "/datasets/" + uid + folder + rowObject.rowParams[fieldKey_originalImageURL] %}
                                     <img src="{{ url }}" class="object-featured img-responsive" />
                                     {% endif %}
 
