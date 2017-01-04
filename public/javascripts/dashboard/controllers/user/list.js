@@ -173,6 +173,97 @@ angular
                     return false;
                 }
 
+
+                $scope.inviteUser = function() {
+
+                    var queryParams = {email: $scope.selectedUser.email};
+
+                    User.search(queryParams)
+                        .$promise.then(function(data) {
+
+                        if (data.length > 0) {
+
+                            if (data[0]._team.indexOf($scope.team._id) >= 0 ) {
+                                $scope.vm.userForm["email"].$setValidity("unique",false)
+                            } else {
+
+                                var confirm = $mdDialog.confirm()
+                                    .title('Are you sure to grant permission to this user ?')
+                                    .textContent('This user does not belong to your team, giving this user permission to edit/view datasets will add' +
+                                        ' this user to your team.')
+                                    .targetEvent(event)
+                                    .ok('Yes')
+                                    .cancel('No');
+                                $mdDialog.show(confirm).then(function () {
+                                    $scope.selectedUser = data[0];
+                                    bindUserRolesToSelectedUser();
+
+                                    if (!$scope.selectedUser.defaultLoginTeam) {
+                                        $scope.selectedUser.defaultLoginTeam = $scope.team._id;
+                                    }
+
+                                    $scope.selectedUser.$save(function(savedUser) {
+                                        if (savedUser) {
+                                             $mdToast.show(
+                                                $mdToast.simple()
+                                                    .textContent("User Role saved successfully!")
+                                                    .position('top right')
+                                                    .hideDelay(3000)
+                                            );
+                                            $scope.vm.userForm.$setPristine();
+                                            $scope.vm.userForm.$setUntouched();
+                                         }
+                                    },function(err) {
+                                        $mdToast.show(
+                                            $mdToast.simple()
+                                                .textContent(err)
+                                                .position('top right')
+                                                .hideDelay(3000)
+                                        );
+                                    })
+
+                                }, function () {
+                                    console.log('You decided to not to give permission this user to your datasets');
+                                });
+
+                            }
+
+                        } else {
+                            $scope.selectedUser._team = [$scope.team._id];
+                            $scope.selectedUser.defaultLoginTeam = $scope.team._id;
+
+                            bindUserRolesToSelectedUser();
+                            inviteAndSentEmail();
+                        }
+                    })
+                };
+
+                var inviteAndSentEmail = function () {
+                    AuthService.inviteUser($scope.selectedUser)
+                        .then(function(response) {
+                            if (response.status == 200) {
+                                var user = response.data.user;
+                                // $scope.$parent.$parent.user.invited = user.invited; // todo
+                                $mdToast.show(
+                                    $mdToast.simple()
+                                        .textContent('Invitation email sent!')
+                                        .position('top right')
+                                        .hideDelay(3000)
+                                );
+
+                                $scope.selectedUser = null;
+                                $scope.hide();
+                            }
+                        },function(err) {
+                            $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent(err)
+                                    .position('top right')
+                                    .hideDelay(3000)
+                            );
+                        })
+                }
+
                 $scope.hide = function() {
                     $mdDialog.hide();
                 };
