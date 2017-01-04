@@ -87,9 +87,6 @@ angular
                             datasets: $scope.datasets
                         }
                     })
-                    // .then(function(team) {
-                    //     $scope.teams.push(team);
-                    // });
                 // }
             };
             function UserDialogController($scope, $mdDialog, selectedUser, team, datasets) {
@@ -126,20 +123,17 @@ angular
                 ];
 
                 $scope.saveUser = function() {
-                   bindUserRolesToSelectedUser();
+                    bindUserRolesToSelectedUser();
 
                     $scope.selectedUser.$save(function(savedUser) {
                         if (savedUser) {
-
-                             $mdToast.show(
+                            $mdToast.show(
                                 $mdToast.simple()
                                     .textContent("User Role saved successfully!")
                                     .position('top right')
                                     .hideDelay(3000)
                             );
-
-                            $scope.vm.userForm.$setPristine();
-                            $scope.vm.userForm.$setUntouched();
+                            $scope.hide();
                         }
                     },function(err) {
 
