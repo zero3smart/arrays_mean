@@ -49,6 +49,19 @@ queue.process('preImport',function(job,done) {
     })
 
 })
+queue.process('scrapeImages', function(job,done) {
+    var id = job.data.id;
+    datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
+        import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(descriptions,job,function(err) {
+            if (err) {
+                console.log('err in queue processing scrape images job : %s',err);
+                return done(err);
+            }
+            done();
+        })
+    })
+
+})
 queue.process('importProcessed',function(job,done) {
     var id = job.data.id;
     datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
@@ -816,11 +829,21 @@ module.exports.preImport = function (req, res) {
     })
 }
 
-module.exports.importProcessed = function(req,res) {
+module.exports.importProcessed = function(req, res) {
 
     var job = queue.create('importProcessed', {
         id: req.params.id
     }).ttl(3600000)
+    .save(function(err) {
+        if (err) res.status(500).send(err);
+        res.json({jobId: job.id});
+    })
+}
+
+module.exports.scrapeImages = function(req, res) {
+    var job = queue.create('scrapeImages', {
+        id: req.params.id
+    }).ttl(9000000)
     .save(function(err) {
         if (err) res.status(500).send(err);
         res.json({jobId: job.id});

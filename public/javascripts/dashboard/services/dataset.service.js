@@ -59,6 +59,10 @@
             return $http.get('api/dataset/preImport/' + id);
         };
 
+        var scrapeImages = function(id) {
+            return $http.get('api/dataset/scrapeImages/' + id);
+        }
+
         var importProcessed = function(id) {
             return $http.get('api/dataset/importProcessed/' + id);
         }
@@ -131,6 +135,7 @@
             initializeToImport: initializeToImport,
             preImport: preImport,
             postImport: postImport,
+            scrapeImages: scrapeImages,
             importProcessed: importProcessed
         }
     }
