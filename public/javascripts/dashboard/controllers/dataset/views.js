@@ -205,7 +205,7 @@ angular.module('arraysApp')
                     if (pKey && !$scope.otherDatasetCols[pKey]) {
                         DatasetService.getMappingDatasourceCols(pKey)
                         .then(function(cols) {
-                            $scope.otherDatasetCols[pKey] = cols;
+                            $scope.otherDatasetCols[pKey] = cols.data;
                             $scope.loading = false;                         
                         })
                     }
