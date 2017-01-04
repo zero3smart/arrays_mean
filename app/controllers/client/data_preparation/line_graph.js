@@ -86,16 +86,17 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             //
             // DataSource Relationship
-
+            var mapping_source_pKey = undefined;
             var datasourceMapping = dataSourceDescription.fe_views.views.lineGraph.datasourceMappings;
-            var mapping_source_pKey = datasourceMapping.pKey;
+            if(datasourceMapping != undefined){
+                mapping_source_pKey = datasourceMapping.pKey;
+            } 
             //var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
             var mapping_default_filterObj = {};
             var mapping_default_view = "gallery";
             var mapping_groupByObj = {};
 
             if (mapping_source_pKey) {
-
 
                 var mappingDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(mapping_source_pKey).then(function (mappingDataSourceDescription) {
 
@@ -117,7 +118,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 }
                             }
                             
-
                         if (urlQuery.embed == 'true') mapping_groupByObj.embed = 'true';
                         mapping_groupByObj[mapping_groupBy] = '';
 
