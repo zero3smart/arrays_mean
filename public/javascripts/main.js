@@ -375,7 +375,7 @@ function _POST_toGetURLForSharingCurrentPage(callback) { // callback: (err:Error
         url: window.location.href
     };
 
-    $.post("/v1/share", parameters, function (data) {
+    $.post(window.location.origin + "/v1/share", parameters, function (data) {
         var share_url = data.share_url;
         var err = null;
         if (!share_url) {

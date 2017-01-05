@@ -125,6 +125,7 @@ var _mountRoutes_errorHandling = function (app) {
 
 
 var _mountRoutes_endPoints = function (app) {
+    var apiVersion = 'v1';
     app.all("*", function(req,res,next) {
         urlRegexForDataset.lastIndex = 0;
         var isRouteForDataset = urlRegexForDataset.test(req.url);
@@ -133,11 +134,14 @@ var _mountRoutes_endPoints = function (app) {
 
         if (isNotRootDomain(req.subdomains)) {
             if (isRouteForDataset) {
+                console.log("route for database")
                 return next();
             } else {
 
                 if (req.url == '/') {
                     return next();
+                } else if (req.url == '/' + apiVersion + '/share') {
+                    return next()
                 } else {
                     return res.redirect(rootDomain + req.url);
                 }
@@ -155,7 +159,6 @@ var _mountRoutes_endPoints = function (app) {
     // View endpoints
     app.use('/', require('./homepage'));  
     app.use('/s', require('./shared_pages'));
-    var apiVersion = 'v1';
     app.use('/' + apiVersion, require('./jsonAPI_share'));
     app.use('/auth', require('./auth'));
     app.use('/login', function(req, res) {
