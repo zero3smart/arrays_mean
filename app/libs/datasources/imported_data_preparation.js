@@ -76,6 +76,17 @@ function _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, 
         feVisible_rowParams_keys.push(key);
     }
 
+    if (dataSourceDescription.imageScraping) {
+        for (var i = 0; i < dataSourceDescription.imageScraping.length; i++) {
+           for (var j = 0; j < dataSourceDescription.imageScraping[i].setFields.length; j++) {
+                var index = feVisible_rowParams_keys.indexOf(dataSourceDescription.imageScraping[i].setFields[j].newFieldName)
+                if (index >= 0) {
+                     feVisible_rowParams_keys.splice(index,1);
+                }
+            }
+        }
+    }
+
     return feVisible_rowParams_keys;
 };
 
@@ -116,6 +127,8 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, 
 
         rowParams_keys = rowParams_keys_customSorted.concat(rowParams_keys);
     }
+
+
 
     return rowParams_keys;
 }

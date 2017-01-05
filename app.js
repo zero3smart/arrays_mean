@@ -197,7 +197,7 @@ mongoose_client.FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed(modelNam
 mongoose_client.WhenMongoDBConnected(function () {
     mongoose_client.WhenIndexesHaveBeenBuilt(function () {
 
-        winston.info("💬  Proceeding to boot app.");
+        winston.info("💬  Proceeding to boot app. ");
         //
         routes.MountRoutes(app);
         //

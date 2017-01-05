@@ -39,6 +39,9 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 processedRowObjects_mongooseModel.findOne(query, function (err, _rowObject) {
                     if (err) return done(err);
 
+
+
+
                     rowObject = _rowObject;
                     done();
                 });
@@ -288,7 +291,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 if (typeof dataSourceDescription.fe_filters.default !== 'undefined') {
                     default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default || {}); // "|| {}" for safety
                 }
-
               
                 //
                 var data =

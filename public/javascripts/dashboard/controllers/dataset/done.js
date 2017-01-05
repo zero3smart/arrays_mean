@@ -105,7 +105,7 @@ angular.module('arraysApp')
                             scrapeImages(id,uid);
 
                         } else if ($scope.currentStep == 3) {
-                            $scope.importLogger.push("📡  [" + uid + "] Successfully completed image scraping!");
+                            $scope.importLogger.push("📡  [" + uid + "] Successfully completed custom field processing and image scraping!");
                             postImport(id,uid);
 
                         } else if ($scope.currentStep == 4) {
@@ -139,10 +139,7 @@ angular.module('arraysApp')
                 })
             }
 
-         
-
-
-
+        
 
             function importProcess(id,uid) {
 
@@ -167,28 +164,30 @@ angular.module('arraysApp')
                     }, errorHandler);
             }
 
-            function scrapeImages(id,uid) {
+            function scrapeImages(id,uid) { //and do custom field 
+
+                
                 if ($scope.dirty >= 3) {
                     DatasetService.scrapeImages(id)
                     .then(function (response) {
                         if (response.status == 200 && !response.data.error) {
                             var jobId = response.data.jobId;
 
-                            $scope.importLogger.push("🔁  [" + uid + "] Initiating image scraping ...");
+                            $scope.importLogger.push("🔁  [" + uid + "] Initiating image scraping and custom field processing  ...");
                             $scope.currentJobId = jobId;
                             $scope.jobs[jobId] = {};
 
-
-                            $timeout(function() {
-                                getJobStatus(id,uid)
-                            },2000);
 
                         } else {
                             errorHandler(response);
                         }
                     }, errorHandler);
                 }
+
                 $scope.currentStep++;
+                $timeout(function() {
+                    getJobStatus(id,uid)
+                },2000);
             }
 
             function postImport(id,uid) {

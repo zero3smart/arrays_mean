@@ -9,6 +9,8 @@
                     <div class="row">
                         <div class="col-sm-8 col-sm-offset-2">
 
+
+
                             <article id="object-id" class="object">
                                 <header class="object-header">
                                     {% if hasOriginalImage %}
@@ -35,7 +37,10 @@
 
                                 <div class="object-content">
                                     <dl>
+
+
                                     {% for columnName in ordered_colNames_sansObjectTitleAndImages %}
+
                                         {% set htmlOverrideFn = fe_objectShow_customHTMLOverrideFnsByColumnName[columnName] %}
                                         {% set columnValue = rowObject.rowParams[columnName] %}
 

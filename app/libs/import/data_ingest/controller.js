@@ -54,8 +54,8 @@ var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (da
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
-            winston.info("💬  " + i + ": Proceeding directly to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
-            job.log("💬 Proceeding directly to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
+            winston.info("💬  " + i + ": Proceeding to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
+            job.log("💬 Proceeding to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
 
             _proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, job,eachCb);
             i++;
@@ -66,8 +66,8 @@ var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (da
                 job.log("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
                 fn(err);
             } else {
-                winston.info("✅  Import image-scrapping done.");
-                job.log("✅  Import image-scrapping done.");
+                winston.info("✅  Import completed.");
+                job.log("✅  Import completed.");
                 fn();
             }
         }
@@ -83,11 +83,7 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions,job, fn)
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
-
-          
             _postProcess(i, dataSourceDescription,job,eachCb);
-          
-            // if (dataSourceDescription.dirty >= 3) omitImageScraping = false;
             i++;
         },
         function (err) {
@@ -98,84 +94,11 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions,job, fn)
             } else {
                 winston.info("✅  Import post-processing done.");
                 job.log("✅  Import post-processing done.")
-                
-                // if (!omitImageScraping) {
-                //     _ScrapImagesOfPostProcessing_dataSourceDescriptions(dataSourceDescriptions,job, fn)
-                // } else {
-
-                    _AfterGeneratingProcessing_dataSourceDescriptions(dataSourceDescriptions,job, fn)
-                // }
-            }
-        }
-    );
-};
-
-
-// var _ScrapImagesOfPostProcessing_dataSourceDescriptions = function (dataSourceDescriptions,job,fn) {
-//     var i = 1;
-//     job.log('💬 proceed to image scraping for dataset'); 
-//     async.eachSeries(
-//         dataSourceDescriptions,
-//         function (dataSourceDescription, eachCb) {
-//             _proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription,job, eachCb);
-//             i++;
-//         },
-//         function (err) {
-//             if (err) {
-//                 winston.info("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
-
-//                 if (err.code == 'ECONNRESET' || err.code == 'ENOTFOUND' || err.code == 'ETIMEDOUT') {
-//                     winston.info("💬  Waiting 3 seconds to restart...");
-
-//                     setTimeout(function () {
-//                         _Import_dataSourceDescriptions__enteringImageScrapingDirectly(job,dataSourceDescriptions);
-//                     }, 3000);
-//                 } else {
-//                     fn(err);
-//                 }
-//             } else {
-//                 winston.info("✅  Image-scraping done.");
-//                 winston.info("✅  All done for importing data");
-//                 job.log("✅  Image-scraping and importing data all done.");
-//                 fn();
-//             }
-//         }
-//     );
-// }
-//
-var _AfterGeneratingProcessing_dataSourceDescriptions = function (dataSourceDescriptions,job, fn) {
-    //
-    // Execute user-defined generalized post-processing pipeline since the image scrapping is omitted
-    //
-    var i = 1;
-    async.eachSeries(
-        dataSourceDescriptions,
-        function (dataSourceDescription, eachCb) {
-
-            if (dataSourceDescription.useCustomView) {
-                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(i,dataSourceDescription,job,eachCb);
-            } else {
-                 _afterGeneratingProcessedDataSet_performEachRowOperations(i, dataSourceDescription,job, eachCb);
-            }
-            
-           
-            i++;
-        },
-        function (err) {
-            if (err) {
-                winston.info("❌  Error encountered during performing each-row operations:(" + err.code + ')', err);
-                job.log("❌  Error encountered during performing each-row operations:(" + err.code + ')', err);
-                fn(err);
-            } else {
-                winston.info("✅  All done for importing data");
-                job.log("✅  All done for importing data");
                 fn();
             }
         }
     );
-}
-
-module.exports.AfterGeneratingProcessing_dataSourceDescriptions = _AfterGeneratingProcessing_dataSourceDescriptions;
+};
 
 // ---------- Single DataSource Operation ----------
 //
@@ -256,29 +179,54 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
 
 var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, dataSourceDescription,job, callback) {
 
-    async.eachSeries(
-        dataSourceDescription.imageScraping,
-        function (description, cb) {
-            processed_row_objects.GenerateImageURLFieldsByScraping(dataSourceDescription._team.subdomain,dataSourceDescription.uid,
-                dataSourceDescription.importRevision,
-                dataSourceDescription.title,
-                dataSourceDescription.dataset_uid,
-                description.htmlSourceAtURLInField,
-                description.setFields,
-                cb);
-        },
-        function (err) {
-            if (err) {
-                winston.error("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
-                job.log("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
-                return callback(err);
-            }
-
-          
-            _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription,job, callback);
-             
+    var finalCallback = function() {
+        if (dataSourceDescription.useCustomView) {
+            require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,job,callback);
+        } else {
+             _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription,job, callback);
         }
-    );
+    }
+
+
+     if (dataSourceDescription.dirty >= 0) { // dont omit scraping
+
+        winston.info(" 🔁  start image scraping");
+        job.log("🔁  start image scraping");
+        async.eachSeries(
+            dataSourceDescription.imageScraping,
+            function (description, cb) {
+
+                  // if (dataSourceDescription.dirty >= 3) omitImageScraping = false;
+                processed_row_objects.GenerateImageURLFieldsByScraping(dataSourceDescription._team.subdomain,dataSourceDescription.uid,
+                    dataSourceDescription.importRevision,
+                    dataSourceDescription.title,
+                    dataSourceDescription.dataset_uid,
+                    description.htmlSourceAtURLInField,
+                    description.setFields,
+                    cb);
+            },
+            function (err) {
+
+                console.log("callback here......");
+
+                if (err) {
+                    winston.error("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
+                    job.log("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
+                    return callback(err);
+                }
+
+                finalCallback();
+                
+
+                 
+            }
+        );
+
+     } else { //omit scraping
+        winston.info(" ⚠️  skipping image scraping");
+        job.log("⚠️  skipping image scraping"); 
+        finalCallback();
+     }
 }
 //
 
@@ -533,14 +481,16 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     if (err) {
                         winston.error("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");
                     } else {
-                        winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
+                        winston.info("✅  " + indexInList + ": Finished with importing data --  \"" + dataSource_title + "\".");
+                        job.log("✅  " + indexInList + ": Finished with importing data --  generated custom fields/nested fields for \"" + dataSource_title + "\".");
                     }
                     //
                     callback(err);
                 }
             );
         } else {
-            winston.info("✅  " + indexInList + ": Done processing \"" + dataSource_title + "\".");
+            winston.info("✅  " + indexInList + ": Finished with importing data --  \"" + dataSource_title + "\".");
+            job.log("✅  " + indexInList + ": Finished with importing data -- (no custom fields/nested fields set up) \"" + dataSource_title + "\".");
             callback(); // all done
         }
     }
