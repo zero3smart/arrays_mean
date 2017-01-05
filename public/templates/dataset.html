@@ -1,0 +1,12 @@
+<header>
+    <h1>Dataset Settings{{ dataset.title ? ' : ' + dataset.title : '' }}</h1>
+</header>
+
+<div class="array-content dataset">
+
+    <ng-include src="'templates/blocks/dataset.breadcrumb.html'"
+                ng-if="$state.is('dashboard.dataset.list') == false"></ng-include>
+
+    <div ui-view class="ext-content"></div>
+
+</div>

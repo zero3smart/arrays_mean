@@ -2,12 +2,13 @@ var winston = require('winston');
 var Batch = require('batch');
 var _ = require('lodash');
 
-var importedDataPreparation = require('../../../lib/datasources/imported_data_preparation');
-var datatypes = require('../../../lib/datasources/datatypes');
+var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
+var datatypes = require('../../../libs/datasources/datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+var User = require('../../../models/users');
 
 module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
@@ -53,7 +54,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             //
-            var routePath_base = "/array/" + source_pKey + "/chart";
+            var routePath_base = "/" + source_pKey + "/chart";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
@@ -85,9 +86,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 var colValue = raw_rowObjects_coercionSchema[colName];
                 if (colValue.operation == "ToInteger") {
 
-                    
-                   var index = typeof dataSourceDescription.fe_excludeFields == 'undefined' || (dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields.length == 0) ? -1 : dataSourceDescription.fe_excludeFields.indexOf(colName);
-                    if (index == -1 ) {
+
+                    var isExcluded = dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[colName];
+                    if (!isExcluded) {
                         var humanReadableColumnName = colName;
                         if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
                             humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
@@ -300,17 +301,30 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            });
+
             batch.end(function (err) {
                 if (err) return callback(err);
 
-
+             
 
                 //
                 var data =
                 {
                     env: process.env,
 
-                    user: req.user,
+                    user: user,
 
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,

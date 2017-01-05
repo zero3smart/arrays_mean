@@ -3,26 +3,15 @@ var queryString = require('querystring');
 var _ = require("lodash");
 
 var dataSourceDescriptions = require('../../../../models/descriptions');
-var teamDescriptions = require('../../../../models/teams')
-var importedDataPreparation = require('../../../../lib/datasources/imported_data_preparation');
+var teamDescriptions = require('../../../../models/teams');
+var importedDataPreparation = require('../../../../libs/datasources/imported_data_preparation');
 var raw_source_documents = require('../../../../models/raw_source_documents');
+var User = require('../../../../models/users');
 
-module.exports.BindData = function (req, urlQuery, callback) {
-    var self = this;
+module.exports.BindData = function (req, teamDescription, callback) {
+    var team = _.omit(teamDescription, 'datasourceDescriptions');
+    var team_dataSourceDescriptions = teamDescription.datasourceDescriptions;
 
-
-    var team;
-    var team_dataSourceDescriptions;
-
-
-    teamDescriptions.findOneByTidAndPopulateDatasourceDescription(urlQuery.team_key, function (err, objReturned) {
-
-
-        team = objReturned.team;
-        team_dataSourceDescriptions = objReturned.team_dataSourceDescriptions;
-
-        async.map(team_dataSourceDescriptions, iterateeFn, completionFn);
-    })
 
 
     var iterateeFn = async.ensureAsync(function (dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
@@ -30,7 +19,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
         var err = null;
         var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription);
-
 
         raw_source_documents.Model.findOne({
             primaryKey: source_pKey
@@ -54,6 +42,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (typeof dataSourceDescription.fe_views.default_view !== 'undefined') {
                 default_view = dataSourceDescription.fe_views.default_view;
             }
+            var updatedByDisplayName = dataSourceDescription.updatedBy.firstName + " " + dataSourceDescription.updatedBy.lastName
+            var authorDisplayName = dataSourceDescription.author.firstName + " " + dataSourceDescription.author.lastName;
+
             var sourceDescription = {
                 key: source_pKey,
                 sourceDoc: doc,
@@ -61,11 +52,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 brandColor: dataSourceDescription.brandColor,
                 description: dataSourceDescription.description,
                 urls: dataSourceDescription.urls,
+                lastUpdatedBy: updatedByDisplayName,
+                author: authorDisplayName,
                 arrayListed: default_listed,
 
                 default_filterJSON: default_filterJSON,
                 default_view: default_view,
-                logo: dataSourceDescription.logo
+                banner: dataSourceDescription.banner
             };
 
             cb(err, sourceDescription);
@@ -73,15 +66,36 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
     });
 
+
     var completionFn = function (err, sourceDescriptions) {
+
+
+        var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
+        var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+
+        baseUrl += teamDescription.subdomain + "." + rootDomain
+
+
+
         var data = {
             env: process.env,
-
-            user: req.user,
             sources: sourceDescriptions,
-            team: team
+            team: team,
+            baseUrl: baseUrl
+
         };
-        callback(err, data);
+
+        if (req.user) {
+            User.findById(req.user, function(err, user) {
+                if (err) return callback(err);
+                data.user = user;
+                callback(err, data);
+            })
+        } else {
+            callback(err, data);
+        }
     };
+
+    async.map(team_dataSourceDescriptions, iterateeFn, completionFn);
 
 };

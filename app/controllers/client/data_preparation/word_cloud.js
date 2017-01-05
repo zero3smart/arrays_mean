@@ -2,12 +2,13 @@ var winston = require('winston');
 var Batch = require('batch');
 var _ = require('lodash');
 //
-var importedDataPreparation = require('../../../lib/datasources/imported_data_preparation');
-var datatypes = require('../../../lib/datasources/datatypes');
+var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
+var datatypes = require('../../../libs/datasources/datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+var User = require('../../../models/users');
 
 module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
@@ -45,7 +46,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var keywords = dataSourceDescription.fe_views.views.wordCloud.keywords;
             //
-            var routePath_base = "/array/" + source_pKey + "/word-cloud";
+            var routePath_base = "/" + source_pKey + "/word-cloud";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
@@ -157,6 +158,19 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            });
+
             batch.end(function (err) {
                 if (err) return callback(err);
 
@@ -169,12 +183,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }));
                 //
 
+              
+
                 var data =
                 {
                     env: process.env,
 
-                    user: req.user,
-
+                    user: user,
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,

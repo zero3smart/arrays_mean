@@ -1,0 +1,33 @@
+<ul class="nav">
+
+    <li class="sidebar-label">
+        <a class="sidebar-label">{{user.firstName}} {{user.lastName}}</a>
+    </li>
+
+    <li ng-class="{'active': $state.includes('dashboard.account')}" ui-sref-active="active">
+        <a ui-sref="dashboard.account.profile" role="button"> Account Settings</a>
+    </li>
+
+    <li ng-if="user.role=='admin' || user.role=='superAdmin' || user._team.length > 1" ui-sref-active="active">
+        <a ui-sref="dashboard.teams" role="button">Manage Teams</a>
+    </li>
+
+    <hr>
+
+    <li class="sidebar-label">
+        <a class="sidebar-label">{{team.subdomain}}.arrays.co</a>
+    </li>
+    <li ng-if="user.role=='admin' || user.role=='superAdmin'" ui-sref-active="active">
+        <a ui-sref="dashboard.website" role="button">Team Settings</a>
+    </li>
+    <li ng-if="user.role=='admin' || user.role=='superAdmin' || user.role=='editor'" ng-class="{'active': $state.includes('dashboard.dataset')}">
+        <a ui-sref="dashboard.dataset.list" role="button">Dataset Settings</a>
+    </li>
+    <li ng-if="user.role=='admin' || user.role=='superAdmin'" ng-class="{'active': $state.includes('dashboard.user')}">
+        <a ui-sref="dashboard.user.list" role="button"> Manage Users</a>
+    </li>
+    <li>
+        <a href="{{subdomain}}" role="button" class="sidebar-link" target="_blank" ng-click="updateSubdomain()"> View Website</a>
+    </li>
+
+</ul>

@@ -1,0 +1,115 @@
+<md-dialog aria-label="Image Scraping : ({{ dataset.title }})" class="field-dialog">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Image Scraping : ({{ dataset.title }})</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <span class="icon-close-big" aria-label="Close dialog"></span>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <form name="dialog.form">
+            <md-content layout-padding>
+                <div ng-repeat="imageScraping in dataset.imageScraping">
+                    <div layout="row">
+                        <md-input-container flex>
+                            <label>Html Source URL Field</label>
+                            <md-select required name="imageScrapingField_{{$index}}"
+                                       ng-model="imageScraping.htmlSourceAtURLInField"
+                                       ng-change="verifyUniqueHtmlSource(imageScraping, $index)">
+                                <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
+                                    {{column.name}}
+                                </md-option>
+                            </md-select>
+                            <div ng-messages="dialog.form.imageScrapingField.$error">
+                                <div ng-message="required">This is required.</div>
+                                <div ng-message="unique">Must be unique.</div>
+                            </div>
+                        </md-input-container>
+
+                        <div layout-align="end center">
+                            <md-button class="md-raised" ng-click="removeImageToScrap($index);"
+                                       aria-label="Remove Image To Scrap"><span
+                                    class="glyphicon glyphicon-remove"></span></md-button>
+                        </div>
+                    </div>
+
+                    <fieldset ng-repeat="field in imageScraping.setFields" class="md-padding">
+                        <div layout="row">
+                            <md-input-container class="md-block" flex>
+                                <label>New Field Name</label>
+                                <input type="text" required name="newField_{{$index}}"
+                                       ng-model="field.newFieldName"
+                                       ng-change="verifyValidNewFieldName(field.newFieldName, $index)"/>
+                                <div ng-messages="dialog.form.newField.$error">
+                                    <div ng-message="required">This is required.</div>
+                                    <div ng-message="unique">Must be unique.</div>
+                                    <div ng-message="valid">Name is invalid</div>
+                                </div>
+                            </md-input-container>
+
+                            <md-button layout-align="end center" class="md-raised"
+                                       ng-click="removeField(imageScraping.setFields, $index)"
+                                       aria-label="Remove Field" ng-disabled="imageScraping.setFields.length <= 1"><span
+                                    class="glyphicon glyphicon-remove"></span>
+                            </md-button>
+                        </div>
+
+                        <div layout="row">
+                            <md-input-container class="md-block" flex="50">
+                                <label>Prepend To Image URL</label>
+                                <input type="text" name="prepend_{{$index}}" ng-model="field.prependToImageURLs"/>
+                            </md-input-container>
+
+                            <md-input-container class="md-block" flex="50">
+                                <label>Resize</label>
+                                <input type="number" min="1" name="resize_{{$index}}" ng-model="field.resize" />
+                            </md-input-container>
+                        </div>
+
+                        <md-input-container class="md-block">
+                            <label>Designated Field</label>
+                            <md-select name="designatedField_{{$index}}"
+                                       ng-model="data.designatedFields[field.newFieldName]"
+                                       aria-label="Designated Field - {{fieldName}}">
+                                <md-option ng-repeat="designatedField in availableDesignatedFields" ng-value="designatedField">
+                                    {{designatedField}}
+                                </md-option>
+                            </md-select>
+                            <div class="md-errors-spacer"></div>
+                        </md-input-container>
+
+                        <md-input-container class="md-block">
+                            <label>Selector</label>
+                            <input type="text" name="selector_{{$index}}" ng-model="field.selector"/>
+                        </md-input-container> 
+                    </fieldset>
+
+
+                    <div layout="row" layout-align="end center" >
+                        <md-button class="md-raised"
+                                   ng-click="addField(imageScraping.setFields)"><span
+                                class="glyphicon glyphicon-plus"></span>Add another field
+                        </md-button>
+                    </div>
+                </div>
+
+                <md-button class="md-raised" ng-click="addImageToScrap()"><span
+                        class="glyphicon glyphicon-plus"></span>Add more images to scrape
+                </md-button>
+            </md-content>
+
+            <md-dialog-actions layout="row" layout-align="end center">
+                <md-button class="md-raised" ng-click="reset()" ng-disabled="!dialog.form.$dirty">
+                    Reset
+                </md-button>
+                <md-button class="md-raised" ng-click="save()"
+                           ng-disabled="!dialog.form.$dirty || dialog.form.$invalid">
+                    Save
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog-content>
+</md-dialog>

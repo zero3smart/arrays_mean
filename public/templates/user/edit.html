@@ -1,0 +1,65 @@
+<form name="vm.userForm" autocomplete="off">
+    <div layout-gt-xs="row">
+        <md-input-container class="md-block" flex-gt-xs>
+            <label>Email</label>
+            <input ng-readonly="selectedUser._id" aria-label="email" required name="email" ng-model="selectedUser.email">
+            <div ng-messages="vm.userForm.email.$error">
+                <div ng-message="unique">This user is an existing user.</div>
+            </div>
+        </md-input-container>
+    </div>
+
+    <div layout="row" layout-align="end center">
+        <md-button md-no-ink ng-if="user.invited[selectedUser._id]" class="md-raised md-dashboard" ng-click="resendInvite()">
+            <span class="btn-label">Resend Invitation</span>
+        </md-button>
+    </div>
+
+    <form>
+
+        <div class="table-container">
+            <table ng-hide="user.invited[person._id]|| datasets.length == 0" class="table data">
+                <thead>
+                <tr>
+                    <th>Dataset Title</th>
+                    <th>User Permission</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="dataset in datasets">
+                    <td>
+                       {{dataset.title}}
+                    </td>
+                    <td>
+                        <md-select ng-hide="team.admin==selectedUser._id" aria-label="userRoles" name="role" required ng-model="userRoles[dataset._id]">
+                            <md-option ng-repeat="role in availableUserRoles " value="{{role.value}}">
+                                {{role.name}}
+                            </md-option>
+                        </md-select>
+                        <p ng-if="team.admin==selectedUser._id">Admin</p>
+
+
+                    </td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </form>
+
+    <div layout="row" layout-align="end center">
+
+        <md-button md-no-ink ng-if="selectedUser._id !== team.admin && userId && selectedUser.activated==true" class="md-raised md-dashboard" type="button" ng-click="makeTeamAdmin()">
+            <span class="btn-label">Make Team Admin</span>
+        </md-button>
+
+        <md-button md-no-ink ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-raised md-dashboard" type="button" ng-hide="userId || selectedUser._team.indexOf(team._id) >= 0">
+            <span class="btn-label">Invite</span>
+        </md-button>
+
+        <md-button md-no-ink ng-if="!(user.invited[person._id] || user.invited[selectedUser._id])" ng-hide="!userId" ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="saveUser()" class="md-raised md-dashboard" type="button" ng-if="userId">
+            <span class="btn-label">Save</span>
+        </md-button>
+
+    </div>
+</form>

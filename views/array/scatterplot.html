@@ -24,10 +24,10 @@
 
         {% if view_description %}
             <div class="array-description-wrapper">
-                <p class="array-description">{{ view_description | truncate(80) }}</p>
-                <a href="#expanded"><p class="array-description-expand">Read more</p></a>
-                <p class="array-description-full">{{ view_description }}
-                <a href="#"><p class="array-description-collapse">less</p></a>
+                <p class="array-description">{{ view_description| truncate(80) }}</p>
+               <a href="javascript:;" onclick="document.location.hash='expanded';"><p class='array-description-expand'>Read more</p></a>
+                <p class="array-description-full">{{ view_description}}
+                <a href="javascript:;" onclick="document.location.hash='';"><p class="array-description-collapse">less</p></a>
             </div>
         {% endif %}
 
@@ -125,17 +125,17 @@
 {% block inlineScript %}
     {{ super() }}
 
-    <script type="text/javascript" src="/javascripts/vendors/uri/uri.js"></script>
-    <script type="text/javascript" src="/javascripts/vendors/d3/d3.js"></script>
+    <script type="text/javascript" src="/vendors/urijs/src/URI.min.js"></script>
+    <script type="text/javascript" src="/vendors/d3/d3.js"></script>
 
     <script type="text/javascript" src="/javascripts/tooltip.js"></script>
-    <script type="text/javascript" src="/javascripts/module/scatterplot/main.js"></script>
-    <script type="text/javascript" src="/javascripts/module/scatterplot/view.js"></script>
-    <script type="text/javascript" src="/javascripts/module/scatterplot/standardView.js"></script>
-    <script type="text/javascript" src="/javascripts/module/scatterplot/groupingAlgorithm.js"></script>
-    <script type="text/javascript" src="/javascripts/module/scatterplot/groupedView.js"></script>
-    <script type="text/javascript" src="/javascripts/module/scatterplot/factory.js"></script>
-    <script type="text/javascript" src="/javascripts/module/scatterplot/chart.js"></script>
+    <script type="text/javascript" src="/javascripts/scatterplot/main.js"></script>
+    <script type="text/javascript" src="/javascripts/scatterplot/view.js"></script>
+    <script type="text/javascript" src="/javascripts/scatterplot/standardView.js"></script>
+    <script type="text/javascript" src="/javascripts/scatterplot/groupingAlgorithm.js"></script>
+    <script type="text/javascript" src="/javascripts/scatterplot/groupedView.js"></script>
+    <script type="text/javascript" src="/javascripts/scatterplot/factory.js"></script>
+    <script type="text/javascript" src="/javascripts/scatterplot/chart.js"></script>
     <script>
         var metaData = {{ metaData | dump | safe }};
         // Define input data set.

@@ -14,41 +14,66 @@ $(window).load(function () {
 });
 
 $(document).ready(function () {
-
-    console.log('app loaded');
-
     /**
      * Select source dataset on click
      */
     $('.js-panel-array').on('click', function (e) {
         e.preventDefault();
+
+
+
         var $parent = $(this).parent();
-        var sourceKey = $parent.find("[name='source_key']").val();
-        var default_filterJSON = $parent.find("[name='default_filterJSON']").val();
+       
         var default_view = $parent.find("[name='default_view']").val();
         if (default_view === undefined || default_view == 'undefined' || default_view == '') {
             default_view = 'gallery';
         }
+
+        var default_filterJSON = $parent.find("[name='default_filterJSON']").val();
+
+        var sourceKey = $parent.find("[name='source_key']").val();
+        var baseUrl = $parent.find("[name='subdomainUrl']").val();
+
+        if (typeof baseUrl == 'undefined') {
+            baseUrl = ""; 
+        }
+
+        //toDo: get view from api
+        
+        var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
+
         var words = default_view.split(/(?=[A-Z])/);
         var default_view_url = words.map(function (word) {
             return word.toLowerCase();
         }).join('-');
-        var href = '/array/' + sourceKey + '/' + default_view_url;
-        if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
-            href += "?" + default_filterJSON;
-        }
-        window.location.href = href;
+
+         var href; 
+
+
+        if (viewTypes.indexOf(default_view_url) < 0) { //custom view
+        
+            href = baseUrl + '/' +  sourceKey + '/' + default_view_url;
+            window.location.href = href;
+        } else {
+            href = '/' + sourceKey + '/' + default_view_url;
+            if (default_filterJSON !== '' && default_filterJSON !== null && typeof default_filterJSON !== 'undefined') {
+                href += "?" + default_filterJSON;
+            }
+            window.location.href = baseUrl + href;
+         }
     });
 
     /**
      * Select team on click
      */
     $('.js-panel-team').on('click', function (e) {
+
+
         e.preventDefault();
         var $parent = $(this).parent();
-        var sourceKey = $parent.find("[name='team_key']").val();
-        var href = '/team/' + sourceKey;
-        window.location.href = href;
+        var subdomain = $parent.find("[name='subdomain']").val();
+        window.location.href = subdomain;
+
     });
 
     /**
@@ -217,6 +242,7 @@ $(document).ready(function () {
      * Array description expand/collapse text
      */
     $('.array-description-expand').on('click', function (e) {
+      
         $('.array-description').css("display", "none");
         $('.array-description-full').css("display", "inline");
         $('.array-description-expand').css("display", "none");
@@ -230,9 +256,38 @@ $(document).ready(function () {
         $('.array-description-expand').css("display", "inline-block");
     });
 
-    $('#signup').on('click', function (e) {
-        if (lock) lock.show();
+    $('#login').on('click', function (e) {
+        e.preventDefault();
+        window.location.href = '/auth/login';
+        
     });
+
+    $('#logout').on('click',function(e) {
+        e.preventDefault();
+        $.get('/auth/logout')
+        .then(function(response) {
+
+            if (response == 'ok') {
+                window.sessionStorage.removeItem('user');
+                window.sessionStorage.removeItem('team');
+                window.sessionStorage.removeItem('teams');
+                window.location.href='/';
+            }
+
+        })
+    })
+
+
+              
+
+    $('#revealPassword').change(function(e) {
+        if($(this).is(":checked")) {
+            $('#passwordInput').attr('type','text');
+        } else {
+            $('#passwordInput').attr('type','password');
+
+        }
+    })
 
     /**
      * Toggle legend
@@ -251,6 +306,9 @@ $(document).ready(function () {
     });
 
 });
+
+
+
 
 /**
  * Construct filter object
@@ -317,7 +375,7 @@ function _POST_toGetURLForSharingCurrentPage(callback) { // callback: (err:Error
         url: window.location.href
     };
 
-    $.post("/v1/share", parameters, function (data) {
+    $.post(window.location.origin + "/v1/share", parameters, function (data) {
         var share_url = data.share_url;
         var err = null;
         if (!share_url) {
@@ -334,14 +392,4 @@ function trackEvent(eventName, eventPayload) {
     var basePayload = {source: "client"}; // this lets us identify the source vs the server
     eventPayload = $.extend(basePayload, eventPayload);
     mixpanel.track(eventName, eventPayload);
-}
-
-
-function doesExistFormat_fieldDataType_coercion_toString(field) {
-    if (!field) return false;
-
-    if (field.operation == 'ToDate')
-        return true;
-
-    return false;
 }

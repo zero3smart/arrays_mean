@@ -1,0 +1,32 @@
+<h3>Credit Card Information</h3>
+
+<md-input-container class="md-block">
+    <label>Name on Card</label>
+    <input required />
+</md-input-container>
+
+<div layout="row">
+    <md-input-container>
+        <label>Card Number</label>
+        <input required value="•••••••••••••••••"/>
+    </md-input-container>
+
+    <md-input-container>
+        <label>CVV</label>
+        <input required value="••••"/>
+    </md-input-container>
+</div>
+
+<h3>Cards Accepted</h3>
+<i class="fa fa-credit-card" aria-hidden="true" ng-repeat="i in [1, 2, 3, 4]">&emsp;</i>
+
+<h3>Expires</h3>
+
+<div layout="row">
+    <md-select ng-model="month" required aria-label="Card Expiration Month">
+        <md-option ng-repeat="month in ['12 - December']" value="{{month}}">{{month}}</md-option>
+    </md-select>
+    <md-select ng-model="year" required aria-label="Card Expiration Year">
+        <md-option ng-repeat="year in [2016, 2017, 2018, 2019, 2020]" value="{{year}}">{{year}}</md-option>
+    </md-select>
+</div>

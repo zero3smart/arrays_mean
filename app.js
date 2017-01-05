@@ -11,7 +11,7 @@ var passport = require('passport');
 var dotenv = require('dotenv');
 var fs = require('fs');
 var cors = require('cors');
-var routes = require('./routes');
+var async = require('async');
 
 var isDev = process.env.NODE_ENV == 'production' ? false : true;
 var dotenv_path = __dirname + "/config/env/.env." + (process.env.NODE_ENV ? process.env.NODE_ENV : "development");
@@ -20,19 +20,101 @@ dotenv.config({
     silent: true
 });
 
-var strategy = require('./config/setup-passport');
+
 
 var app = express();
 
-// Configure app
-app.set('view engine', 'html');
-app.set('views', __dirname + '/views');
+
+//job queue user interface
+if (process.env.NODE_ENV !== 'production') {
+    var kue = require('kue');
+    var ui = require('kue-ui');
+        kue.createQueue({
+        redis: process.env.REDIS_URL
+    })
+    ui.setup({
+        apiURL: '/api',
+        baseURL: '/kue',
+        updateInterval: 5000
+    })
+
+    app.use('/api',kue.app);
+    app.use('/kui',ui.app);
+
+}
+
+
+
+
+require('./config/setup-passport');
+
+
+var userFolderPath = __dirname + "/user";
+
+var viewsToSet = [];
+
+viewsToSet.push(__dirname + '/views');
 
 var nunjucks = require('express-nunjucks');
-nunjucks.setup({
-    watch: isDev,
-    noCache: isDev,
-}, app).then(require('./nunjucks/filters'))
+app.set('view engine', 'html');
+
+if (isDev) {
+    app.set('subdomain offset',3);
+}
+
+fs.readdir(userFolderPath, function (err, files) {
+
+
+    if (!files) {
+        app.set('views', viewsToSet)
+        nunjucks.setup({
+            watch: isDev,
+            noCache: isDev,
+        }, app).then(function(nunjucks_env) {
+            require('./nunjucks/filters')(nunjucks_env,process.env)
+        });
+        return;
+    }
+
+    files = files.filter(function (item) {
+        return !(/(^|\/)\.[^\/\.]/g).test(item);
+    })
+
+    async.each(files, function (file, eachCb) {
+        var full_path = path.join(userFolderPath, file);
+        var team_name = file;
+        fs.stat(full_path, function (err, stat) {
+            if (err) {
+                eachCb(err)
+            } else {
+                if (stat.isDirectory() && files) {
+                    var view_path = path.join(userFolderPath, file + "/views");
+                    viewsToSet.push(view_path);
+
+                    //serving static files for custom views
+                    app.use('/static', express.static(path.join(userFolderPath, team_name + "/static")));
+
+                }
+                eachCb();
+            }
+        })
+    }, function (err) {
+        if (err)  return winston.error("❌ cannot sync the user folder files :", err);
+        app.set('views', viewsToSet)
+        nunjucks.setup({
+            watch: isDev,
+            noCache: isDev,
+        }, app).then(function(nunjucks_env) {
+            require('./nunjucks/filters')(nunjucks_env,process.env)
+        });
+
+    })
+})
+
+app.use(cors());
+
+app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
+app.use(express.static(path.join(__dirname, '/public')));
 
 
 // Redirect https
@@ -40,29 +122,43 @@ app.use(function (req, res, next) {
     if (process.env.USE_SSL === 'true' && 'https' !== req.header('x-forwarded-proto')) {
         return res.redirect('https://' + req.header('host') + req.url);
     }
-
     next();
 });
 
-//
-app.use(require('serve-favicon')(__dirname + '/public/images/favicon.ico'));
-app.use(express.static(path.join(__dirname, '/public')));
+
+var routes = require('./app/routes');
+
+
 app.use(bodyParser.urlencoded({extended: false})); // application/x-www-form-urlencoded
 app.use(bodyParser.json()); // application/JSON
 app.use(require('compression')());
 app.set('trust proxy', true);
 app.use(cookieParser());
-app.use(cors());
 
+
+var domain = 'localhost';
+
+
+
+if (process.env.HOST) {
+    var urlParts = process.env.HOST.split('.');
+    urlParts.splice(0, urlParts.length-2);
+    // Remove port
+    urlParts[urlParts.length-1] = urlParts[urlParts.length-1].split(':')[0];
+    domain = '.' + urlParts.join('.');
+
+
+
+}
 // Mongo Store to prevent a warnning.
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
-    cookie: {maxAge: 100 * 60 * 60},
+    cookie: {domain: domain},
     store: new MongoSessionStore({
         url: process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost/arraysdb',
-        touchAfter: 24 * 3600 // time period in seconds
+        // touchAfter: 240 * 3600 // time period in seconds
     })
 }));
 
@@ -101,28 +197,18 @@ mongoose_client.FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed(modelNam
 mongoose_client.WhenMongoDBConnected(function () {
     mongoose_client.WhenIndexesHaveBeenBuilt(function () {
 
-        winston.info("💬  ready to find all source descriptions and seed the DB");
-
-        datasource_descriptions.findAllDescriptionAndSetup(function (err) {
-            if (err) {
-                winston.error("❌ cannot find descriptions in db and set them up");
-            } else {
-                winston.info("✅  all datasources descriptions in db has been set up");
-            }
-
-            winston.info("💬  Proceeding to boot app.");
-            //
-            routes.MountRoutes(app);
-            //
-            // Run actual server
-            if (module === require.main) {
-                var server = app.listen(process.env.PORT || 9080, function () {
-                    var host = isDev ? 'localhost' : server.address().address;
-                    var port = server.address().port;
-                    winston.info('📡  App listening at %s:%s', host, port);
-                });
-            }
-        })
+        winston.info("💬  Proceeding to boot app. ");
+        //
+        routes.MountRoutes(app);
+        //
+        // Run actual server
+        if (module === require.main) {
+            var server = app.listen(process.env.PORT || 9080, function () {
+                var host = isDev ? 'localhost' : server.address().address;
+                var port = server.address().port;
+                winston.info('📡  App listening at %s:%s', host, port);
+            });
+        }
     });
 });
 

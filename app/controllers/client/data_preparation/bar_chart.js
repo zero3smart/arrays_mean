@@ -3,12 +3,13 @@ var Batch = require('batch');
 var express = require('express');
 var _ = require('lodash');
 //
-var importedDataPreparation = require('../../../lib/datasources/imported_data_preparation');
-var datatypes = require('../../../lib/datasources/datatypes');
+var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
+var datatypes = require('../../../libs/datasources/datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+var User = require('../../../models/users');
 
 /**
  * @param {Object} urlQuery - URL params
@@ -60,8 +61,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
             raw_rowObjects_coercionSchema[groupBy_realColumnName].operation == "ToDate");
             var groupBy_outputInFormat = '';
-            if (dataSourceDescription.fe_views.views.barChart.outputInFormat && dataSourceDescription.fe_views.views.barChart.outputInFormat[groupBy_realColumnName] && dataSourceDescription.fe_views.views.barChart.outputInFormat[groupBy_realColumnName].format) {
-                groupBy_outputInFormat = dataSourceDescription.fe_views.views.barChart.outputInFormat[groupBy_realColumnName].format;
+
+            var findOutputFormatObj = func.findItemInArrayOfObject(dataSourceDescription.fe_views.views.barChart.outputInFormat,groupBy_realColumnName);
+
+
+            if (findOutputFormatObj != null) {
+                groupBy_outputInFormat = findOutputFormatObj.value;
             } else if (dataSourceDescription.raw_rowObjects_coercionScheme && dataSourceDescription.raw_rowObjects_coercionScheme[groupBy_realColumnName] &&
                 dataSourceDescription.raw_rowObjects_coercionScheme[groupBy_realColumnName].outputFormat) {
                 groupBy_outputInFormat = dataSourceDescription.raw_rowObjects_coercionScheme[groupBy_realColumnName].outputFormat;
@@ -78,7 +83,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
 
-            var routePath_base = "/array/" + source_pKey + "/bar-chart";
+            var routePath_base = "/" + source_pKey + "/bar-chart";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
@@ -108,8 +113,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 var colValue = raw_rowObjects_coercionSchema[colName];
                 if (colValue.operation == "ToInteger") {
                     
-                    var index = typeof dataSourceDescription.fe_excludeFields == 'undefined' || (dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields.length == 0) ? -1 : dataSourceDescription.fe_excludeFields.indexOf(colName);
-                    if (index == -1 ) {
+                    var isExcluded = dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[colName];
+                    if (!isExcluded) {
                         var humanReadableColumnName = colName;
                         if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
                             humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
@@ -414,7 +419,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     });
 
-                    var barColors = dataSourceDescription.fe_views.views.barChart.stackedBarColors ? dataSourceDescription.fe_views.views.barChart.stackedBarColors : {};
+                    var barColors = dataSourceDescription.fe_views.views.barChart.stackedBarColors ? dataSourceDescription.fe_views.views.barChart.stackedBarColors : [];
 
                     graphData = {categories: [], data: [], colors: barColors};
                     var i = 0;
@@ -441,6 +446,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.end(function (err) {
                 if (err) return callback(err);
 
+              
                 //
                 var data =
                 {

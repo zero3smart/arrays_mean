@@ -8,8 +8,12 @@ if (!dbURI) dbURI = 'mongodb://localhost/arraysdb';
 winston.info("💬  MongoDB URI: ", dbURI);
 mongoose.Promise = require('q').Promise;
 
+var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } }, 
+                replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } }; 
 
-mongoose.connect(dbURI);
+
+mongoose.connect(dbURI,options);
+
 exports.mongoose = mongoose;
 //
 var isConnected = false;
@@ -78,15 +82,14 @@ function FromModel_IndexHasBeenBuiltForSchemeWithModelNamed(modelName) {
 exports.FromModel_IndexHasBeenBuiltForSchemeWithModelNamed = FromModel_IndexHasBeenBuiltForSchemeWithModelNamed;
 
 
-function _dropColletion(collection,cb) {
+function _dropColletion(collection, cb) {
 
     if (!collection || collection == '') cb(new Error('Must provide collection name to drop.'));
-    connection.db.dropCollection(collection,cb);
+    connection.db.dropCollection(collection, cb);
 
 }
 
-exports.dropCollection = _dropColletion
-
+exports.dropCollection = _dropColletion;
 
 
 function checkIfCollectionExists(collectionName, fn) {

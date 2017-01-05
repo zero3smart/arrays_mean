@@ -2,12 +2,13 @@ var winston = require('winston');
 var Batch = require('batch');
 var _ = require('lodash');
 //
-var importedDataPreparation = require('../../../lib/datasources/imported_data_preparation');
-var datatypes = require('../../../lib/datasources/datatypes');
+var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
+var datatypes = require('../../../libs/datasources/datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+var User = require('../../../models/users');
 
 /**
  * @param {Object} urlQuery - URL params
@@ -45,9 +46,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName] ||
             dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName
 
-            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
-            (dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName,dataSourceDescription) :
-             dataSourceDescription.fe_views.views.lineGraph.defaultGroupByColumnName
+            var groupBy_realColumnName = importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy ? groupBy : defaultGroupByColumnName_humanReadable ,
+                    dataSourceDescription);
 
 
 
@@ -56,8 +56,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
             raw_rowObjects_coercionSchema[groupBy_realColumnName].operation == "ToDate");
             var groupBy_outputInFormat = '';
-            if (dataSourceDescription.fe_views.views.lineGraph.outputInFormat && dataSourceDescription.fe_views.views.lineGraph.outputInFormat[groupBy_realColumnName] && dataSourceDescription.fe_views.views.lineGraph.outputInFormat[groupBy_realColumnName].format) {
-                groupBy_outputInFormat = dataSourceDescription.fe_views.views.lineGraph.outputInFormat[groupBy_realColumnName].format;
+
+            var findOutputFormatObj = func.findItemInArrayOfObject(dataSourceDescription.fe_views.views.lineGraph.outputInFormat,groupBy_realColumnName);
+
+          
+
+            if (findOutputFormatObj != null) {
+                groupBy_outputInFormat = findOutputFormatObj.value;
             } else if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
                 raw_rowObjects_coercionSchema[groupBy_realColumnName].outputFormat) {
                 groupBy_outputInFormat = raw_rowObjects_coercionSchema[groupBy_realColumnName].outputFormat;
@@ -65,7 +70,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var stackBy = dataSourceDescription.fe_views.views.lineGraph.defaultStackByColumnName;
             //
-            var routePath_base = "/array/" + source_pKey + "/line-graph";
+            var routePath_base = "/" + source_pKey + "/line-graph";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
@@ -81,14 +86,17 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             //
             // DataSource Relationship
-            var mapping_source_pKey = dataSourceDescription.fe_views.views.lineGraph.mapping_dataSource_pKey;
+            var mapping_source_pKey = undefined;
+            var datasourceMapping = dataSourceDescription.fe_views.views.lineGraph.datasourceMappings;
+            if(datasourceMapping != undefined){
+                mapping_source_pKey = datasourceMapping.pKey;
+            } 
             //var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
             var mapping_default_filterObj = {};
             var mapping_default_view = "gallery";
             var mapping_groupByObj = {};
 
             if (mapping_source_pKey) {
-
 
                 var mappingDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(mapping_source_pKey).then(function (mappingDataSourceDescription) {
 
@@ -101,9 +109,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         mapping_default_view = mappingDataSourceDescription.fe_views.default_view;
 
                         var mapping_groupBy = groupBy_realColumnName;
-                        if (dataSourceDescription.fe_views.views.lineGraph.mapping_dataSource_fields)
-                            mapping_groupBy = dataSourceDescription.fe_views.views.lineGraph.mapping_dataSource_fields[groupBy_realColumnName];
-
+                        var mappingField = datasourceMapping.mappings;
+                        if (mappingField && mappingField.length > 0)
+                            for (var i = 0 ; i < mappingField.length; i++) {
+                                if (mappingField[i].key == groupBy_realColumnName) {
+                                    mapping_groupBy = mappingField[i].value;
+                                    break;
+                                }
+                            }
+                            
                         if (urlQuery.embed == 'true') mapping_groupByObj.embed = 'true';
                         mapping_groupByObj[mapping_groupBy] = '';
 
@@ -115,7 +129,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Aggregate By
             var aggregateBy = urlQuery.aggregateBy;
-            var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName_humanReadable;
+            var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName] ||
+            dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName;
+
+
+             // dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName_humanReadable;
             var numberOfRecords_notAvailable = dataSourceDescription.fe_views.views.lineGraph.aggregateByColumnName_numberOfRecords_notAvailable;
             if (!defaultAggregateByColumnName_humanReadable && !numberOfRecords_notAvailable)
                 defaultAggregateByColumnName_humanReadable = config.aggregateByDefaultColumnName;
@@ -124,8 +142,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var aggregateBy_humanReadable_available = undefined;
             _.forOwn(raw_rowObjects_coercionSchema, function (colValue, colName) {
                 if (colValue.operation == "ToInteger") {
-                    var index = typeof dataSourceDescription.fe_excludeFields == 'undefined' || (dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields.length == 0) ? -1 : dataSourceDescription.fe_excludeFields.indexOf(colName);
-                    if (index == -1 ) {
+                    var isExcluded = dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[colName];
+                    if (!isExcluded) {
                         var humanReadableColumnName = colName;
                         if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
                             humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
@@ -152,6 +170,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
             (typeof dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
             dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName;
+
+
 
             //
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, stackedResultsByGroup = {};
@@ -193,6 +213,19 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 });
             });
 
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            });
+
             // Obtain Grouped ResultSet
             batch.push(function (done) {
                 //
@@ -210,10 +243,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
                 }
 
+
+
                 if (typeof aggregateBy_realColumnName !== 'undefined' && aggregateBy_realColumnName !== null && aggregateBy_realColumnName !== "" && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
 
                     if (typeof stackBy !== 'undefined' && stackBy !== null && stackBy !== "") {
                         var stackBy_realColumnName = stackBy;
+
+
 
                         aggregationOperators = aggregationOperators.concat(
                             [
@@ -240,6 +277,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     $sort: {label: -1} // priotize by group
                                 }
                             ]);
+
+
+
 
                     } else {
 
@@ -417,7 +457,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     });
 
-                    var lineColors = dataSourceDescription.fe_views.views.lineGraph.stackedLineColors ? dataSourceDescription.fe_views.views.lineGraph.stackedLineColors : {};
+                    var lineColors = func.convertArrayObjectToObject(dataSourceDescription.fe_views.views.lineGraph.stackedLineColors);
+
 
                     if (Array.isArray(stackedResultsByGroup)) {
 
@@ -437,6 +478,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     } else {
 
                         graphData = {labels: [], data: []};
+
                         _.forOwn(stackedResultsByGroup, function (results, category) {
                             graphData.labels.push(category);
 
@@ -467,13 +509,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.end(function (err) {
                 if (err) return callback(err);
 
+             
                 //
                 var data =
                 {
                     env: process.env,
 
                     user: req.user,
-
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
@@ -517,6 +559,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // graphData contains all the data rows; used by the template to create the linechart
                     graphData: graphData
                 };
+
                 callback(err, data);
             });
         })

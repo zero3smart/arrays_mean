@@ -26,10 +26,10 @@
 
         {% if view_description %}
             <div class="array-description-wrapper">
-                <p class="array-description">{{ view_description | truncate(80) }}</p>
-                <a href="#expanded"><p class="array-description-expand">Read more</p></a>
-                <p class="array-description-full">{{ view_description }}
-                <a href="#"><p class="array-description-collapse">less</p></a>
+                <p class="array-description">{{ view_description| truncate(80) }}</p>
+               <a href="javascript:;" onclick="document.location.hash='expanded';"><p class='array-description-expand'>Read more</p></a>
+                <p class="array-description-full">{{ view_description}}
+                <a href="javascript:;" onclick="document.location.hash='';"><p class="array-description-collapse">less</p></a>
             </div>
         {% endif %}
 
@@ -115,7 +115,6 @@
 {% block inlineScript %}
     {{ super() }}
 
-    {# <script type="text/javascript" src="/javascripts/vendors/mapbox-gl-js/mapbox-gl.js"></script> #}
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.js'></script>
-    <script type="text/javascript" src="/javascripts/module/choropleth.js"></script>
+    <script type="text/javascript" src="/javascripts/choropleth.js"></script>
 {% endblock %}

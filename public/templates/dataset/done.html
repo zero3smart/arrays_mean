@@ -1,0 +1,40 @@
+<md-content layout-padding ng-if=" (dataset.fe_listed && dataset.fe_visible && dataset.fe_views.default_view) || (!dataset.fe_listed&&!dataset.fe_visible) ">
+    <div>
+        <h2 ng-if="dirty">You're almost done!<br/>The data must be imported to take effect some of your changes </h2>
+
+        <md-content class="md-block md-padding" ng-show="inProgress">
+            <md-progress-linear md-mode="indeterminate"></md-progress-linear>
+        </md-content>
+
+        <md-content class="md-block" md-colors="{background: 'grey'}">
+            <p ng-repeat="logger in importLogger">{{logger}}
+                <div ng-if="jobs[currentJobId].state!=='complete'">
+                    <p ng-if="jobs[currentJobId].log" > {{jobs[currentJobId].log}} ..... </p>
+                </div>
+            </p>
+
+
+        </md-content>
+
+        <div layout="row" layout-align="end center" class="panel-footer" ng-if="dirty">
+            <md-button class="md-raised pull-right" ng-click="importData()" ng-disabled="inProgress"><span
+                    class="glyphicon glyphicon-import"></span>{{ inProgress ? 'Importing' : 'Import' }}
+            </md-button>
+        </div>
+    </div>
+
+    <div ng-if="!dirty && imported">
+        <h2>Congratulations! You're all done!</h2>
+
+        <div ng-if="dataset.fe_visible">
+            <h2>View your <strong><a href="{{subdomain}}/{{dataset.uid}}-r{{dataset.importRevision}}/{{dataset.fe_views.default_view | viewToName }}" target="_blank">array</a></strong></h2>
+
+            <md-switch md-invert ng-model="dataset.isPublic" ng-change="togglePublish()" aria-label="Switch 1">
+                <label>Private/Public</label>
+            </md-switch>
+
+        </div>
+        
+    </div>
+</md-content>
+<ng-include src="'/templates/blocks/dataset.empty.html'" ng-if=" (dataset.fe_listed && dataset.fe_visible && !dataset.fe_views.default_view) "></ng-include>

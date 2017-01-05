@@ -1,0 +1,656 @@
+/* @override
+	http://localhost:9080/stylesheets/views/dashboard.css */
+
+html, body {
+	background-color: #ffffff;
+}
+
+/*to add to variables and global styles*/
+:root {
+	--color-warn: #fb4400;
+}
+.warn {
+    color: var(--color-warn);
+}
+/**/
+
+h2 {
+    font-size: 24px;
+}
+h3 {
+    font-size: 18px;
+}
+h4 {
+    font-size: 16px;
+}
+
+a[href^="mailto"] {
+	/*md-default-theme*/
+	color: rgba(0,0,0,0.87);
+	/*var(--color-text-dark);*/
+	text-decoration: underline;
+}
+
+.dashboard-container {
+    padding: 2em 1em;
+}
+
+md-content.md-default-theme, md-content {
+    background-color: #ffffff !important;
+}
+
+@media (min-width: 768px) {
+    .dashboard-container {
+        padding: 4em 3em;
+    }
+}
+
+@media (min-width: 1200px) {
+    .dashboard-container {
+        padding: 4em 10em;
+    }
+}
+
+.dashboard-content {
+    padding-top: var(--navbar-height-tablet);
+}
+
+.dashboard-content .array-header {
+    background-color: #fff;
+}
+
+.formInput{
+    padding-top:20px;
+}
+@media (max-width: 767px) {
+    .dashboard-content {
+        padding-top: var(--navbar-height-mobile);
+    }
+}
+
+.table > thead > tr > th, .table > thead > tr > td, .table > tbody > tr > th, .table > tbody > tr > td, .table > tfoot > tr > th, .table > tfoot > tr > td {
+    vertical-align: inherit;
+}
+
+
+.dashboard-content .array-content {
+    padding: 15px 0;
+}
+
+.instructions {
+    margin-top: 32px;
+    margin-bottom: 4px;
+}
+
+.dataset .md-content {
+    overflow: hidden;
+}
+
+md-toolbar:not(.md-menu-toolbar) {
+    background-color: var(--color-primary);
+}
+
+md-tabs .md-tab.md-active {
+    color: var(--color-text-dark);
+}
+
+img.iconMap {
+    height:40px;
+}
+
+
+.dashboard md-toast {
+    position: fixed;
+    top: 64px;
+    z-index: 1000;
+}
+/*prevent scrollbar pop-in*/
+body.md-toast-animating {
+    overflow: auto !important;
+}
+
+
+.dashboard .glyphicon {
+    color: grey;
+}
+/*.dashboard .glyphicon.ready,*/
+.material-icons.ready,
+.material-icons.md-dark {
+    color: black;
+}
+
+.dashboard section.md-container {
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,.2),0 1px 1px 0 rgba(0,0,0,.14),0 2px 1px -1px rgba(0,0,0,.12);
+    border-radius: 4px;
+}
+
+.dataset .layout-padding, .dataset .layout-padding > * {
+    padding: 8px 0;
+}
+
+/* Lists */
+
+.dashboard-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.dashboard-list-order {
+    display: inline-block;
+    width: 20px;
+    vertical-align: text-bottom;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-primary);
+}
+.dashboard-list-name {
+    font-size: 20px;
+    line-height: 30px;
+    font-weight: 600;
+}
+.dashboard-list-revision {
+    font-size: 20px;
+    /*font-weight: 100;*/
+}
+.dashboard-list-delete {
+    /* temp × symbol */
+    font-size: 20px;
+    line-height: 20px;
+    font-weight: bold;
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    color: var(--color-primary);
+}
+
+.team-list .md-button .dashboard-list-name,
+.team-list .md-button .dashboard-list-revision  {
+    font-size: 16px;
+    line-height: 1em;
+}
+/* mimic .sidebar-menu .nav > li > a */
+.team-list .md-button {
+    font-size: 16px;
+    line-height: 1em;
+    margin: 0;
+    margin-bottom: 1px;
+    padding: 12px;
+    /*width: 100%;*/
+    color: var(--color-text-dark);
+    border-radius: 4px;
+    text-transform: none;
+}
+.team-list .md-button:hover,
+.team-list .md-button:focus {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+/* current team */
+.team-list .md-button:disabled {
+    color: var(--color-primary);
+    background-color: transparent;
+}
+.team-list .md-button:disabled:hover {
+    padding: 11px;
+    border: 1px solid var(--color-primary);
+}
+
+/* Angular Material tabs and nav bars */
+
+.md-nav-bar .md-button,
+.md-tab {
+    color: var(--color-text-dark);
+    font-size: 16px;
+    text-transform: none;
+}
+.dashboard .tab-content {
+    padding-top: 2em;
+}
+.tab-content img.profile {
+    padding: 0 2em 2em 0;
+    width: 100%;
+}
+
+md-nav-ink-bar,
+md-ink-bar {
+    color: var(--color-primary) !important;
+    background-color: var(--color-primary) !important;
+}
+
+/* Account */
+/* Payment */
+
+.payment-bank-type md-radio-button {
+    display: inline-block;
+    margin-right: 30px;
+}
+
+/* Dataset Breadcrumb */
+
+.dataset-breadcrumb button {
+    float: left;
+    width: 20%;
+    margin: 0;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    outline: none;
+    color: #333338;
+}
+.dataset-breadcrumb button:disabled {
+    color: #9B9B9B;
+}
+
+.dataset-breadcrumb span {
+    font-family: var(--font-family-calibre);
+    display: block;
+    text-align: center;
+}
+.dataset-breadcrumb .active span {
+    font-weight: bold;
+}
+
+.dataset-breadcrumb .nav-item-icon {
+    font-size: 24px;
+}
+.dataset-breadcrumb .nav-item-label {
+    font-size: 14px;
+}
+
+/* Dataset List */
+.dataset .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+
+/* Dataset Settings */
+.dataset .md-chips {
+    padding: 0;
+}
+
+.dataset md-input-container.md-color-picker {
+    margin-top: 0;
+}
+
+.dataset [md-color-picker] .md-color-picker-input-container .md-color-picker-clear {
+    right: -8px;
+}
+
+/* Dataset Upload */
+.dataset table.upload td {
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.dataset table.upload td.no-padding-vertical {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.dataset table.upload td.progress-container {
+    padding-top: 23px;
+}
+
+/* Dataset Format Data */
+.fields-container {
+    overflow-x: auto;
+}
+
+.dataset .field-row-header {
+}
+
+.dataset ul.fields {
+    list-style: none;
+    -webkit-padding-start: 0;
+}
+
+.dataset .field {
+    display: flex;
+    border-bottom: 1px solid #e5e5e5;
+}
+.dataset .field:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.dataset .field > * {
+    padding: 6px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+.dataset .field.custom {
+    font-weight: bold;
+}
+
+.dataset .field > .handler {
+    width: 4%;
+    min-width: 20px;
+}
+.dataset .field > .order {
+    width: 4%;
+    min-width: 50px;
+}
+.dataset .field > .exclude {
+    width: 6%;
+    min-width: 63px;
+}
+.dataset .field > .name {
+    width: 18%;
+    min-width: 100px;
+}
+.dataset .field > .override {
+    width: 18%;
+    min-width: 100px;
+}
+.dataset .field > .type {
+    width: 12%;
+    min-width: 80px;
+}
+.dataset .field > .sample {
+    min-width: 180px;
+    width: 38%;
+}
+
+
+.dataset .field .exclude > md-checkbox {
+    margin-bottom: 6px;
+}
+.dataset .field .exclude > md-switch {
+    margin: 0;
+}
+.dataset .field:not(.custom) .type {
+    padding-top: 4px;
+}
+.dataset .field > .type > md-select {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.dataset .field:not(.field-row-header) {
+    cursor: pointer;
+    /*To protect flash issue while object is being updated*/
+    /*-webkit-transition: box-shadow .4s cubic-bezier(.25,.8,.25,1),background-color .4s cubic-bezier(.25,.8,.25,1);*/
+    /*transition: box-shadow .4s cubic-bezier(.25,.8,.25,1),background-color .4s cubic-bezier(.25,.8,.25,1);*/
+}
+
+.dataset .field:not(.field-row-header):hover {
+    background-color: var(--color-item-hover);
+}
+
+.dataset .field:not(.field-row-header):focus {
+    background-color: var(--color-item-active);
+}
+
+
+.md-select-menu-container {
+    z-index: 1102;
+}
+md-backdrop.md-select-backdrop {
+    z-index: 1101;
+}
+
+
+md-dialog .md-button {
+    min-width: 25px;
+}
+
+/* Dataset Format Field */
+md-dialog.field-dialog .md-dialog-content {
+    padding-bottom: 10px;
+}
+md-dialog {
+    min-width: 80%;
+}
+
+md-dialog fieldset legend,
+.dataset fieldset legend {
+    font-size: 15px;
+    color: rgba(0,0,0,0.54);
+    margin-bottom: 4px;
+    padding-top: 20px;
+}
+
+.no-padding {
+    padding: 0 !important;
+}
+
+/* Panel Footer and Buttons */
+
+.panel-footer {
+    padding: 0;
+    background: initial;
+}
+
+.md-button.md-dashboard {
+    height: 40px;
+    margin: 0;
+    border: 1px solid white;
+    border-radius: 4px;
+}
+
+.md-button.md-dashboard-icon {
+    padding-right: 12px;
+}
+
+.md-button.md-dashboard:disabled {
+    background: var(--color-text-light);
+}
+.md-button.md-dashboard:not([disabled]) {
+    background: var(--color-text-dark);
+}
+.md-button.md-dashboard:not([disabled]):hover {
+    background: var(--color-primary);
+}
+
+md-icon.btn-icon {
+    color: white !important;
+    line-height: 18px;
+}
+
+.md-button.md-dashboard,
+.md-button.md-dashboard .btn-label {
+    font-family: var(--font-family-calibre);
+    text-transform: uppercase;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    padding: 0 1em;
+}
+
+.md-button.md-dashboard.md-warn {
+    background-color: var(--color-warn);
+}
+
+/* ----------- Manager Users -------------- */
+
+/* -----------   for toggle slider  ----------------  */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/*--------------------------------------------------------*/
+
+/* Butter Bar */
+
+.butterbar {
+    position: relative;
+    height: 3px;
+    margin-bottom: -3px;
+    z-index: 999;
+}
+
+.butterbar .bar {
+    position: absolute;
+    width: 100%;
+    height: 0;
+    text-indent: -9999px;
+    background-color: #23b7e5;
+}
+
+.butterbar .bar:before {
+    position: absolute;
+    right: 50%;
+    left: 50%;
+    height: 3px;
+    background-color: inherit;
+    content: "";
+}
+
+.butterbar.active {
+    -webkit-animation: changebar 2.25s infinite 0.75s;
+    -moz-animation: changebar 2.25s infinite 0.75s;
+    animation: changebar 2.25s infinite 0.75s;
+}
+
+.butterbar.active .bar {
+    -webkit-animation: changebar 2.25s infinite;
+    -moz-animation: changebar 2.25s infinite;
+    animation: changebar 2.25s infinite;
+}
+
+.butterbar.active .bar:before {
+    -webkit-animation: movingbar 0.75s infinite;
+    -moz-animation: movingbar 0.75s infinite;
+    animation: movingbar 0.75s infinite;
+}
+
+@-webkit-keyframes changebar {
+    0%, 33.3% {
+        background-color: #23b7e5
+    }
+    33.33%, 66.6% {
+        background-color: #fad733
+    }
+    66.66%, 99.9% {
+        background-color: #7266ba
+    }
+}
+
+@-moz-keyframes changebar {
+    0%, 33.3% {
+        background-color: #23b7e5
+    }
+    33.33%, 66.6% {
+        background-color: #fad733
+    }
+    66.66%, 99.9% {
+        background-color: #7266ba
+    }
+}
+
+@keyframes changebar {
+    0%, 33.3% {
+        background-color: #23b7e5
+    }
+    33.33%, 66.6% {
+        background-color: #fad733
+    }
+    66.66%, 99.9% {
+        background-color: #7266ba
+    }
+}
+
+@-webkit-keyframes movingbar {
+    0% {
+        right: 50%;
+        left: 50%
+    }
+    99.9% {
+        right: 0;
+        left: 0
+    }
+    100% {
+        right: 50%;
+        left: 50%
+    }
+}
+
+@-moz-keyframes movingbar {
+    0% {
+        right: 50%;
+        left: 50%
+    }
+    99.9% {
+        right: 0;
+        left: 0
+    }
+    100% {
+        right: 50%;
+        left: 50%
+    }
+}
+
+@keyframes movingbar {
+    0% {
+        right: 50%;
+        left: 50%
+    }
+    99.9% {
+        right: 0;
+        left: 0
+    }
+    100% {
+        right: 50%;
+        left: 50%
+    }
+}
+/* -/ Butter Bar */

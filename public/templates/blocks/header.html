@@ -1,0 +1,30 @@
+<header id="masthead" class="site-header hidden-print" role="banner">
+    <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand">
+        <div class="container-fluid container-full-width">
+            <div class="navbar-brand-container">
+                <a class="navbar-brand navbar-brand-arrays" href="{{explore_url}}" target="_self">Arrays</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown right">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">{{user.firstName}} {{ user.lastName}} </span></a>
+
+
+                        <ul class="dropdown-menu">
+                            <li class="background-color-brand-hover"><a ng-click="logout()" >Log Out</a>
+                            </li>
+                            <li class="background-color-brand-hover"><a href="mailto:Arrays Support<info@arrays.co>">Contact
+                                Support</a></li>
+
+
+                        </ul>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+        <div ui-butterbar></div>
+    </nav>
+</header>

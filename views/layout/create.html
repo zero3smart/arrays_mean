@@ -7,20 +7,22 @@
     </head>
 
     <body class="array array-{{ currentView }}">
+        {% include "../partials/login.modal.html" %}
+
         <div id="page" class="site">
             {% include "../partials/header_bar_blank.html" %}
 
             <div id="content" class="site-content">
-                {% block content %}}{% endblock %}
+                {% block content %}{% endblock %}
             </div><!-- #content -->
 
             {% include "../partials/footer.html" %}
         </div><!-- #page -->
 
-        <script type="text/javascript" src="/javascripts/vendors/bootstrap/bootstrap.js"></script>
-        <script type="text/javascript" src="/javascripts/main.js"></script>
-
         {% include "../partials/survicate.html" %}
+
+        <script type="text/javascript" src="/vendors/bootstrap/bootstrap.js"></script>
+        <script type="text/javascript" src="/javascripts/main.js"></script>
     </body>
 
     {% if env.FE_LIVERELOAD == "true" %}

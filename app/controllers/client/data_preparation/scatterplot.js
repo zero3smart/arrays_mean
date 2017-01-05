@@ -2,12 +2,13 @@ var winston = require('winston');
 var queryString = require('querystring');
 var _ = require('lodash');
 //
-var importedDataPreparation = require('../../../lib/datasources/imported_data_preparation');
-var datatypes = require('../../../lib/datasources/datatypes');
+var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
+var datatypes = require('../../../libs/datasources/datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+var User = require('../../../models/users');
 
 /**
  * Scatterplot view action controller.
@@ -113,39 +114,84 @@ module.exports.BindData = function (req, urlQuery, callback) {
                          numericFields.push(i);
                          }
                          }*/
-                        var routePath_base = '/array/' + sourceKey + '/scatterplot';
+                        var routePath_base = '/' + sourceKey + '/scatterplot';
                         if (urlQuery.embed == 'true') routePath_base += '?embed=true';
-                        /*
-                         * Run callback function to finish action.
-                         */
-                        callback(err, {
-                            env: process.env,
 
-                            user: req.user,
-                            
-                            displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
+                        if (req.user) {
+                            User.findById(req.user, function(err, user) {
+                                if (err) return done(err);
 
-                            documents: documents,
-                            metaData: dataSourceDescription,
-                            renderableFields: numericFields,
-                            array_source_key: sourceKey,
-                            team: dataSourceDescription._team ? dataSourceDescription._team : null,
-                            brandColor: dataSourceDescription.brandColor,
-                            uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
-                            sourceDoc: sourceDoc,
-                            view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                            view_description: dataSourceDescription.fe_views.views.scatterplot.description ? dataSourceDescription.fe_views.views.scatterplot.description : "",
-                            //
-                            routePath_base: routePath_base,
-                            filterObj: filterObj,
-                            isFilterActive: isFilterActive,
-                            urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
-                            searchCol: searchCol || '',
-                            searchQ: searchQ || '',
-                            colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
-                            // multiselectable filter fields
-                            multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable
-                        });
+                                /*
+                                 * Run callback function to finish action.
+                                 */
+                                callback(err, {
+                                    env: process.env,
+
+                                    user: user,
+
+                                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
+
+                                    documents: documents,
+                                    metaData: dataSourceDescription,
+                                    renderableFields: numericFields,
+                                    array_source_key: sourceKey,
+                                    team: dataSourceDescription._team ? dataSourceDescription._team : null,
+                                    brandColor: dataSourceDescription.brandColor,
+                                    uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+                                    sourceDoc: sourceDoc,
+                                    view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
+                                    view_description: dataSourceDescription.fe_views.views.scatterplot.description ? dataSourceDescription.fe_views.views.scatterplot.description : "",
+                                    //
+                                    routePath_base: routePath_base,
+                                    filterObj: filterObj,
+                                    isFilterActive: isFilterActive,
+                                    urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
+                                    searchCol: searchCol || '',
+                                    searchQ: searchQ || '',
+                                    colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                                    // multiselectable filter fields
+                                    multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable
+                                });
+                            })
+                        } else {
+                            /*
+                             * Run callback function to finish action.
+
+
+
+                             */
+
+
+                            callback(err, {
+                                env: process.env,
+
+                                user: user,
+
+                                displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
+
+                                documents: documents,
+                                metaData: dataSourceDescription,
+                                renderableFields: numericFields,
+                                array_source_key: sourceKey,
+                                team: dataSourceDescription._team ? dataSourceDescription._team : null,
+                                brandColor: dataSourceDescription.brandColor,
+                                uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
+                                sourceDoc: sourceDoc,
+                                view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
+                                view_description: dataSourceDescription.fe_views.views.scatterplot.description ? dataSourceDescription.fe_views.views.scatterplot.description : "",
+                                //
+                                routePath_base: routePath_base,
+                                filterObj: filterObj,
+                                isFilterActive: isFilterActive,
+                                urlQuery_forSwitchingViews: urlQuery_forSwitchingViews,
+                                searchCol: searchCol || '',
+                                searchQ: searchQ || '',
+                                colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                                // multiselectable filter fields
+                                multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable
+                            });
+                        }
+
 
 
                     });

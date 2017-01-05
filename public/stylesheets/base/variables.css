@@ -17,6 +17,9 @@
 	--color-sort-bar-label: #9b9b9b;
 	
 	--color-divider: #d8d8d8;
+
+	--color-item-hover: #DDDDDD;
+	--color-item-active: #9E9E9E;
 	
 	--font-family-calibre: Calibre, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	--font-family-georgia: Georgia, "Times New Roman", Times, serif;
