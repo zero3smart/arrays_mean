@@ -66,7 +66,7 @@
 
 
                   <md-input-container class="md-block">
-                      <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name].pKey">
+                      <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name].pKey" ng-change="loadDatasetColumnsByPkey(data[setting.name].pKey)">
                         <md-option ng-repeat="dataset in otherAvailableDatasets" ng-value="dataset.mappingPkey">
                             {{dataset.displayAs}}
                         </md-option>
@@ -76,34 +76,37 @@
                 </div>
 
                 <div ng-if="setting.inputType == 'datasetMapping' && setting.mappingType=='fields' && 
-                data[setting.name].pKey" ng-init="loadDatasetColumnsByPkey(data[setting.name].pKey);">
+                data[setting.name].pKey" ng-init="data[setting.name].mappings=[{key:'',value:''}]">
                  <label>{{setting.displayAs}}</label> 
-
-
+    
                       <div ng-repeat="item in data[setting.name].mappings">
-                        <div layout="row">  
-                            <md-input-container flex="40" >                  
-                              <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="item.key">
-                                 
-                                  <md-option  ng-repeat="col in colsAvailable | filter: checkDuplicateKey(data[setting.name],$index) | filter: 
-                                  excludeBy(data[setting.keyExcludeBy])" ng-value="col">
-                                      {{col}}
-                                  </md-option>
-                              </md-select>
 
-                          </md-input-container>
+                          <div layout="row">  
+                              <md-input-container flex="40" >                  
+                                <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="item.key">
+                                   
+                                    <md-option  ng-repeat="col in colsAvailable | filter: checkDuplicateKey(data[setting.name],$index) | filter: 
+                                    excludeBy(data[setting.keyExcludeBy])" ng-value="col">
+                                        {{col}}
+                                    </md-option>
+                                </md-select>
+
+                            </md-input-container>
 
 
-                           <md-input-container flex="50" >                  
-                              <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="item.value">
-                                  <md-option  ng-repeat="col in otherDatasetCols[data[setting.name].pKey]" ng-value="col">
-                                      {{col}}
-                                  </md-option>
-                              </md-select>
-                          </md-input-container>
-
-                        </div>
+                             <md-input-container flex="50" >                  
+                                <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="item.value">
+                                    <md-option  ng-repeat="col in otherDatasetCols[data[setting.name].pKey].cols" ng-value="col.name">
+                                        {{col.name}}
+                                    </md-option>
+                                </md-select>
+                            </md-input-container>
+                          </div>
                       </div>
+
+                       <md-button class="md-raised" ng-click="data[setting.name].mappings.push({key:'',value:''})"><span
+                        class="glyphicon glyphicon-plus"></span>Add more
+                      </md-button>
                 </div>
 
 
@@ -144,7 +147,7 @@
 
               
 
-                         <md-select ng-attr-required='{{setting.require}}' ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
+                         <md-select ng-required='setting.require' ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
                           <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
                           <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType) | filter:
                                   excludeBy(data[setting.selectExcludeBy])" ng-value="col">

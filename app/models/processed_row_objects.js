@@ -937,8 +937,12 @@ function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFiel
 
     var stillNeedScrape = false;
 
+
+
+
     for (var field in selectors) {
-        if (typeof selectors[field] == 'undefined') {
+
+        if (typeof selectors[field] == 'undefined' || selectors[field] == '') {
             returnObj[field] = {};
             returnObj[field]["OneSize"] = htmlSourceAtURL;
             continue;
@@ -966,6 +970,9 @@ function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFiel
             }
 
         }
+
+        console.log("here, scrapedObject is????");
+        console.log(scrapedObject);
 
         async.eachOf(scrapedObject, function (scrapedString, newField, innerCallback) {
 
@@ -1167,7 +1174,8 @@ module.exports.GenerateImageURLFieldsByScraping
         datasetQuery["rowParams." + htmlSourceAtURLInField] = {$exists: true};
         datasetQuery["rowParams." + htmlSourceAtURLInField] = {$ne: ""};
 
-        var folder = 'datasets/' + dataSource_team_subdomain + '/' + dataSource_uid + '/assets/images/';
+        var folder =  dataSource_team_subdomain + '/datasets/' + dataSource_uid + '/assets/images/';
+
 
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously
             var concurrencyLimit = 15; // at a time

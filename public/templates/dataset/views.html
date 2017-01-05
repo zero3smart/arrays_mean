@@ -2,7 +2,7 @@
     <form name="vm.viewsForm" ng-submit="submitForm(!vm.viewsForm.$invalid)">
         <md-input-container class="md-block" flex-gt-sm>
             <label>Default View</label>
-            <md-select required name="default"
+            <md-select ng-required="dataset.fe_visible&&dataset.fe_listed" name="default"
                        ng-model="data.default_view">
                 <md-option ng-repeat="view in views" value="{{view.name}}">
                     {{view.displayAs}}

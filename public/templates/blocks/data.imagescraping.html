@@ -65,10 +65,7 @@
 
                             <md-input-container class="md-block" flex="50">
                                 <label>Resize</label>
-                                <input type="number" min="1" name="resize_{{$index}}" ng-model="field.resize" required/>
-                                <div ng-messages="dialog.form.resize.$error">
-                                    <div ng-message="required">This is required.</div>
-                                </div>
+                                <input type="number" min="1" name="resize_{{$index}}" ng-model="field.resize" />
                             </md-input-container>
                         </div>
 
