@@ -134,7 +134,6 @@ var _mountRoutes_endPoints = function (app) {
 
         if (isNotRootDomain(req.subdomains)) {
             if (isRouteForDataset) {
-                console.log("route for database")
                 return next();
             } else {
 
