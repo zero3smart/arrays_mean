@@ -407,6 +407,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
                     humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
                     //
+                    scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
                     hasThumbs: hasThumbs,
                     fieldKey_medThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.medThumbImageURL : undefined,
                     //
