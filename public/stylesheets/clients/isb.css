@@ -71,21 +71,3 @@
 }
 
 /* @end Custom Navbar Color */
-
-/* @group Timeline Icons */
-
-.timeline-link img {
-    display: none;
-    margin-top: 10px;
-    margin-left: 10px;
-    min-width: 60px;
-    min-height: 60px;
-    width: 60px;
-    height: 60px;
-}
-
-.timeline-link img:first-child {
-    display: block;
-}
-
-/* @end Timeline Icons */
