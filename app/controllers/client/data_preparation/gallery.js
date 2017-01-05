@@ -49,6 +49,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 var checkConditionAndApplyClasses = function (conditions, value,multiple) {
 
+
                     if (typeof value == 'undefined' || value == "" || value == null) {
                         return '<span class="icon-tile-null"></span>';
                     }
@@ -56,11 +57,18 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
                         if (value == conditions[i].value) {
-                            if (multiple) {
-                                return "<img class='icon-tile category-icon-2' src='" + conditions[i].applyIconFromUrl +"'>"
-                            }
 
-                            return "<img class='icon-tile' src='" + conditions[i].applyIconFromUrl +"'>"
+                            if (conditions[i].applyIconFromUrl) {
+                                if (multiple) {
+                                    return "<img class='icon-tile category-icon-2' src='" + conditions[i].applyIconFromUrl +"'>"
+                                }
+
+                                return "<img class='icon-tile' src='" + conditions[i].applyIconFromUrl +"'>"
+                            } else if (conditions[i].applyClass) {
+                                // hard coded color-gender , as it is the only default icon category for now
+                                return "<span class='color-gender " + conditions[i].applyClass + "'></span>";
+                            }
+                           
                         }
                     }
                     return null;

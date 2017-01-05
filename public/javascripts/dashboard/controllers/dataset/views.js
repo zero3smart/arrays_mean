@@ -31,7 +31,10 @@ angular.module('arraysApp')
                 if (dataset.fe_nestedObject.prefix)
                     return dataset.fe_nestedObject.prefix + fieldName;
                 return fieldName;
-            }));
+            })).concat(dataset.relationshipFields.map(function(field) {
+                return field.field;
+
+            }))
             colsAvailable = colsAvailable.filter(function(fieldName){
                 return !$scope.dataset.fe_excludeFields[fieldName];
             });
