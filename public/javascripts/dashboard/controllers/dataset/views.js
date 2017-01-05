@@ -247,6 +247,12 @@ angular.module('arraysApp')
                 }
 
 
+                $scope.makeRelative = function(Url) {
+                    subdomainIndex = Url.indexOf($scope.dataset._team.subdomain)
+                    sliceIndex = subdomainIndex + $scope.dataset._team.subdomain.length
+                    relativeUrl = Url.slice(sliceIndex)
+                    return relativeUrl
+                }  
 
 
                 $scope.reset = function () {
