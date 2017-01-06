@@ -477,6 +477,15 @@ md-icon.btn-icon {
     background-color: var(--color-warn);
 }
 
+/* Team Settings */
+/*icon upload*/
+md-progress-linear .md-container {
+	background-color: #eeeeee;
+}
+md-progress-linear .md-bar {
+	background-color: var(--color-text-light);
+}
+
 /* ----------- Manager Users -------------- */
 
 /* -----------   for toggle slider  ----------------  */
