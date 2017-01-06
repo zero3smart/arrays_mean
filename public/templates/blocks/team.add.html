@@ -21,7 +21,8 @@
                 <label>Subdomain</label>
                 <input ng-model-options="{updateOn:'blur'}" ng-change="checkSubdomain()" required name="subdomain" ng-model="newTeam.subdomain">
                 <div ng-messages="vm.teamForm.subdomain.$error">
-                    <div ng-message="unique">This subdomain is already taken.</div>
+                    <div ng-message="unique">This subdomain is reserved.</div>
+                    <p ng-message="pattern">Must be lowercase and contains no whitespace or special character.</p>
                 </div>
             </md-input-container>
         </md-content>

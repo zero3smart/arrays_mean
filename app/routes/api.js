@@ -59,9 +59,11 @@ router.get('/dataset/getAvailableDesignatedFields', ctrlDataset.getAvailableDesi
 router.get('/dataset/getAvailableMatchFns', ctrlDataset.getAvailableMatchFns);
 
 // dataset import
-router.post('/dataset/initializeToImport', ctrlDataset.initializeToImport);
-router.post('/dataset/preImport', ctrlDataset.preImport);
-router.post('/dataset/postImport', ctrlDataset.postImport);
+router.get('/dataset/initializeToImport/:id', ctrlDataset.initializeToImport);
+router.get('/dataset/preImport/:id', ctrlDataset.preImport);
+router.get('/dataset/scrapeImages/:id', ctrlDataset.scrapeImages);
+router.get('/dataset/importProcessed/:id',ctrlDataset.importProcessed);
+router.get('/dataset/postImport/:id', ctrlDataset.postImport);
 
 
 //manage users

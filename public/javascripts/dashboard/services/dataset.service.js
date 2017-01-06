@@ -50,18 +50,25 @@
         };
 
 
-        var initializeToImport = function(uid) {
-            return $http.post('api/dataset/initializeToImport', {uid: uid})
+        var initializeToImport = function(id) {
+            return $http.get('api/dataset/initializeToImport/' + id);
            
         };
 
-        var preImport = function(uid) {
-            return $http.post('api/dataset/preImport', {uid: uid})
+        var preImport = function(id) {
+            return $http.get('api/dataset/preImport/' + id);
         };
 
-        var postImport = function(uid) {
-            return $http.post('api/dataset/postImport', {uid: uid})
-           
+        var scrapeImages = function(id) {
+            return $http.get('api/dataset/scrapeImages/' + id);
+        }
+
+        var importProcessed = function(id) {
+            return $http.get('api/dataset/importProcessed/' + id);
+        }
+
+        var postImport = function(id) {
+            return $http.get('api/dataset/postImport/' + id)
         };
 
         var getAvailableTypeCoercions = function() {
@@ -127,7 +134,9 @@
             getMappingDatasourceCols: getMappingDatasourceCols,
             initializeToImport: initializeToImport,
             preImport: preImport,
-            postImport: postImport
+            postImport: postImport,
+            scrapeImages: scrapeImages,
+            importProcessed: importProcessed
         }
     }
 })();

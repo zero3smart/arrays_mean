@@ -20,7 +20,7 @@
 
     <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.views')" ng-disabled="!dataset.fe_designatedFields"
         ng-class="{active: currentStep == 'dashboard.dataset.views'}">
-        <span class="nav-item-icon" ng-class="(dataset.fe_views.default_view) ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
+        <span class="nav-item-icon" ng-class="(dataset.fe_visible && dataset.fe_listed && dataset.fe_views.default_view) || (!dataset.fe_listed && !dataset.fe_visible) ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
         <span class="nav-item-label">4. Format Views</span>
     </button>
 

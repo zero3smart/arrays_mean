@@ -2,7 +2,10 @@ var moment = require('moment');
 var url = require('url');
 var datatypes = require('../app/libs/datasources/datatypes.js');
 
-module.exports = function (nunjucks_env) {
+module.exports = function (nunjucks_env,env) {
+
+
+
     nunjucks_env.addFilter('comma', require('nunjucks-comma-filter'));
     // General/shared
     nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function (date) {
@@ -293,15 +296,18 @@ module.exports = function (nunjucks_env) {
         return datatypes.fieldDataType_coercion_toString(field);
     });
 
-    nunjucks_env.addFilter('siteBaseURL', function(env) {
-        var baseURL = env.USE_SSL === 'true' ? 'https://' : 'http://';
-        baseURL += env.HOST ? env.HOST : 'localhost:9080';
-        return baseURL;
-    });
+    var protocol =  env.USE_SSL === 'true' ? 'https://' : 'http://';
+    var host = env.HOST? env.HOST: 'localhost:9080';
 
-    nunjucks_env.addFilter('addSubdomain', function(siteBaseUrl, strSubdomain) {
+    nunjucks_env.addGlobal('siteBaseURL',protocol + host);
+
+    nunjucks_env.addGlobal('explore_url', protocol + 'explore.' + host);
+
+
+    nunjucks_env.addGlobal('addSubdomain', function(strSubdomain) {
+        var siteBaseUrl = nunjucks_env.getGlobal('siteBaseURL');
+
         if (!siteBaseUrl) return '/team/' + strSubdomain;
-
         var result = url.parse(siteBaseUrl);
         var urlParts = result.host.replace('www.', '');
         urlParts = [strSubdomain].concat(urlParts);

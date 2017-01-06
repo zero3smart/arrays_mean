@@ -36,13 +36,18 @@ View.getAllBuiltInViews(function(err,defaultViews) {
 
 
 View.getAllCustomViews(function(err,customViews) {
+
     if (err) {
          winston.error("❌  Error getting default views to bind for routes: ", err);
          return;
     } else {
         customViews.forEach(function(view) {
 
+
+
             router.get('/:source_key/' + view.name,ensureAuthorized,function(req,res,next) {
+
+
                 var source_key = req.params.source_key;
 
 
@@ -55,6 +60,8 @@ View.getAllCustomViews(function(err,customViews) {
 
 
             router.get('/:source_key/getData', ensureAuthorized,function(req,res,next) {
+
+                console.log('get data here');
 
                 var team = req.subdomains[0];
                 var controller = require('../../user/' + team + '/src/' + view.name);
@@ -74,7 +81,7 @@ View.getAllCustomViews(function(err,customViews) {
 
 var object_details_controller = require('../controllers/client/data_preparation/object_details');
 
-router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/g, ensureAuthorized, function (req, res, next) {
+router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/, ensureAuthorized, function (req, res, next) {
 
 
     var source_key = req.params[0] + req.params[1];

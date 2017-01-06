@@ -48,6 +48,8 @@ module.exports.New_templateForPersistableObject = function (rowObject_primaryKey
 
 
 var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (srcDocPKey) {
+
+
     var mongooseContext = MongooseContextsBySrcDocPKey[srcDocPKey];
     if (mongooseContext && typeof mongooseContext !== 'undefined') { // lazy cache, to avoid mongoose model re-definition error
         return mongooseContext;
@@ -77,7 +79,7 @@ var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (srcDocPKey) {
 
 module.exports.Lazy_Shared_ProcessedRowObject_MongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext;
 
-module.exports.InsertProcessedDatasetFromRawRowObjects = function (dataSource_uid,
+module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSource_uid,
                                                                    dataSource_importRevision,
                                                                    dataSource_title,
                                                                    dataset_uid,
@@ -115,13 +117,14 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (dataSource_ui
 
             winston.info("📡  [" + (new Date()).toString() + "] Inserting " + rowObjects.length + " processed rows for \"" + dataSource_title + "\".");
 
-            // console.log(JSON.stringify(updateDocs));
+            job.log("📡  [" + (new Date()).toString() + "] Inserting " + rowObjects.length + " processed rows for \"" + dataSource_title + "\".")
 
             nativeCollection_ofTheseProcessedRowObjects.bulkWrite(updateDocs, {ordered: false}, function (err) {
                 if (err) {
                     winston.error("❌ [" + (new Date()).toString() + "] Error from line 121 while saving processed row objects: ", err);
                 } else {
                     winston.info("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.");
+                     job.log("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.")
                 }
                 return callback(err);
             });
@@ -926,7 +929,6 @@ function extractRawUrl(scrapedString) {
 }
 
 function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFields, selectors, outterCallback) {
-
     var htmlSourceAtURL = doc["rowParams"][htmlSourceAtURLInField];
 
     winston.info("📡  Scraping image URL from \"" + htmlSourceAtURL + "\"…");
@@ -935,8 +937,12 @@ function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFiel
 
     var stillNeedScrape = false;
 
+
+
+
     for (var field in selectors) {
-        if (typeof selectors[field] == 'undefined') {
+
+        if (typeof selectors[field] == 'undefined' || selectors[field] == '') {
             returnObj[field] = {};
             returnObj[field]["OneSize"] = htmlSourceAtURL;
             continue;
@@ -957,13 +963,16 @@ function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFiel
                 for (var attr in selectors) {
                     returnObj[attr] = null;
                 }
-                outterCallback(err, folder,mongoosemodel,doc, returnObj,setFields);
+                outterCallback(err, folder,mongooseModel,doc, returnObj,setFields);
             } else {
                 winston.error("❌  Error while scraping " + htmlSourceAtURL + ": ", err);
                 outterCallback(err, null,null,null,null,null);
             }
 
         }
+
+        console.log("here, scrapedObject is????");
+        console.log(scrapedObject);
 
         async.eachOf(scrapedObject, function (scrapedString, newField, innerCallback) {
 
@@ -1165,7 +1174,8 @@ module.exports.GenerateImageURLFieldsByScraping
         datasetQuery["rowParams." + htmlSourceAtURLInField] = {$exists: true};
         datasetQuery["rowParams." + htmlSourceAtURLInField] = {$ne: ""};
 
-        var folder = dataSource_team_subdomain + '/' + dataSource_uid + '/assets/images/';
+        var folder =  dataSource_team_subdomain + '/datasets/' + dataSource_uid + '/assets/images/';
+
 
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously
             var concurrencyLimit = 15; // at a time

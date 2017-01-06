@@ -21,9 +21,33 @@ dotenv.config({
 });
 
 
-require('./config/setup-passport');
 
 var app = express();
+
+
+//job queue user interface
+if (process.env.NODE_ENV !== 'production') {
+    var kue = require('kue');
+    var ui = require('kue-ui');
+        kue.createQueue({
+        redis: process.env.REDIS_URL
+    })
+    ui.setup({
+        apiURL: '/api',
+        baseURL: '/kue',
+        updateInterval: 5000
+    })
+
+    app.use('/api',kue.app);
+    app.use('/kui',ui.app);
+
+}
+
+
+
+
+require('./config/setup-passport');
+
 
 var userFolderPath = __dirname + "/user";
 
@@ -39,12 +63,16 @@ if (isDev) {
 }
 
 fs.readdir(userFolderPath, function (err, files) {
+
+
     if (!files) {
         app.set('views', viewsToSet)
         nunjucks.setup({
             watch: isDev,
             noCache: isDev,
-        }, app).then(require('./nunjucks/filters'));
+        }, app).then(function(nunjucks_env) {
+            require('./nunjucks/filters')(nunjucks_env,process.env)
+        });
         return;
     }
 
@@ -76,7 +104,9 @@ fs.readdir(userFolderPath, function (err, files) {
         nunjucks.setup({
             watch: isDev,
             noCache: isDev,
-        }, app).then(require('./nunjucks/filters'));
+        }, app).then(function(nunjucks_env) {
+            require('./nunjucks/filters')(nunjucks_env,process.env)
+        });
 
     })
 })
@@ -167,7 +197,7 @@ mongoose_client.FromApp_Init_IndexesMustBeBuiltForSchemaWithModelsNamed(modelNam
 mongoose_client.WhenMongoDBConnected(function () {
     mongoose_client.WhenIndexesHaveBeenBuilt(function () {
 
-        winston.info("💬  Proceeding to boot app.");
+        winston.info("💬  Proceeding to boot app. ");
         //
         routes.MountRoutes(app);
         //

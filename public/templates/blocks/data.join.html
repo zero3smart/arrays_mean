@@ -62,7 +62,7 @@
                                 <md-select required name="foreignDataset_{{$index}}"
                                            ng-model="data.foreignDataset[$index]"
                                            ng-change="loadColumnsForDataset($index)">
-                                    <md-option ng-repeat="source in datasets" ng-value="source">
+                                    <md-option ng-repeat="source in datasets" ng-if="source.uid" ng-value="source">
                                         {{source.title}} ({{source.importRevision}})
                                     </md-option>
                                 </md-select>
@@ -76,6 +76,17 @@
                                     </md-option>
                                 </md-select>
                             </md-input-container>
+                        </div>
+                    </div>
+
+                    <div layout="row">
+                        <md-checkbox aria-label="Select All" ng-click="toggleAll()" ng-checked="isChecked()">
+                            <span ng-if="isChecked()">Un-</span>Select All
+                        </md-checkbox>
+                    </div>
+                    <div layout="row" layout-wrap flex>
+                        <div flex="20" ng-repeat="column in data.columns[$index]" ng-model="relationshipField.by.findingMatchOnFields">
+                            <md-checkbox aria-label="{{column.name}}" ng-checked="exists(column.name, selectedColumns)" ng-click="toggle(column.name, selectedColumns)"> {{column.name}}</md-checkbox>
                         </div>
                     </div>
 

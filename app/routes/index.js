@@ -125,33 +125,39 @@ var _mountRoutes_errorHandling = function (app) {
 
 
 var _mountRoutes_endPoints = function (app) {
+    var apiVersion = 'v1';
     app.all("*", function(req,res,next) {
-            urlRegexForDataset.lastIndex = 0;
-            var isRouteForDataset = urlRegexForDataset.test(req.url);
-            if (isNotRootDomain(req.subdomains)) {
-                if (isRouteForDataset) {  
-                    return next();
-                } else {
-                    if (req.url == '/') {
-                        return next();
-                    } else {
-                        return res.redirect(rootDomain + req.url);
-                    }
-                }
+        urlRegexForDataset.lastIndex = 0;
+        var isRouteForDataset = urlRegexForDataset.test(req.url);
+
+
+
+        if (isNotRootDomain(req.subdomains)) {
+            if (isRouteForDataset) {
+                return next();
             } else {
-                if (isRouteForDataset) {
-                    return res.redirect(rootDomain + '/');
-                } else {
+
+                if (req.url == '/') {
                     return next();
+                } else if (req.url == '/' + apiVersion + '/share') {
+                    return next()
+                } else {
+                    return res.redirect(rootDomain + req.url);
                 }
             }
-        });
+
+        } else {
+            if (isRouteForDataset) {
+                return res.redirect(rootDomain + '/');
+            } else {
+                return next();
+            }
+        }
+    });
 
     // View endpoints
     app.use('/', require('./homepage'));  
-    app.use('/explore', require('./array'));
     app.use('/s', require('./shared_pages'));
-    var apiVersion = 'v1';
     app.use('/' + apiVersion, require('./jsonAPI_share'));
     app.use('/auth', require('./auth'));
     app.use('/login', function(req, res) {

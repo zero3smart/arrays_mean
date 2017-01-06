@@ -145,7 +145,7 @@ angular.module('arraysApp')
                             }],
                             viewResource: 'View',
                             views: ['View', function (View) {
-                                return View.query();
+                                return View.query().$promise;
                             }]
                         }
                     })
@@ -194,14 +194,7 @@ angular.module('arraysApp')
                             users: ['User', 'AuthService', function (User, AuthService) { //all users in this team, except myself
                                 var currentTeam = AuthService.currentTeam();
                                 return User.getAll({teamId: currentTeam._id});
-                            }]
-                        }
-                    })
-                    .state('dashboard.user.edit', {
-                        url: '/edit/:id',
-                        controller: 'UserEditCtrl as vm',
-                        templateUrl: 'templates/user/edit.html',
-                        resolve: {
+                            }],
                             datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
                                 var user = AuthService.currentUser();
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
@@ -210,12 +203,6 @@ angular.module('arraysApp')
                                     return [];
                                 }
                             }],
-                            selectedUser: ['User', '$stateParams', function (User, $stateParams) {
-                                if ($stateParams.id)
-                                    return User.get({id: $stateParams.id}).$promise;
-                                else
-                                    return {};
-                            }]
                         }
                     })
                     .state('dashboard.teams', {
