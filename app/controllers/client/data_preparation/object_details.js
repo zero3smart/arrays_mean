@@ -322,6 +322,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     fe_objectShow_customHTMLOverrideFnsByColumnNames: dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames,
 
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
+                    scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
                     aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
                     folder: "/assets/images/",
 
