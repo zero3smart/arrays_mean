@@ -185,10 +185,6 @@ body.md-toast-animating {
     color: var(--color-primary);
     background-color: transparent;
 }
-.team-list .md-button:disabled:hover {
-    padding: 11px;
-    border: 1px solid var(--color-primary);
-}
 
 .user-list li {
 	border-top: 1px solid #eeeeee; /*match <hr>*/
