@@ -5,8 +5,8 @@
     <!-- style like md-button -->
     <!-- <label for="icons" class="btn-choose-icons">Choose files</label> -->
 
-    <input type="file" id="icons" nv-file-select="" uploader="assetsUploader" multiple>
-    <!-- <input type="file" id="icons" nv-file-select="" uploader="assetsUploader" multiple style="display: none;"> -->
+    <input type="file" id="icons" nv-file-select="" uploader="iconsUploader" multiple>
+    <!-- <input type="file" id="icons" nv-file-select="" uploader="iconsUploader" multiple style="display: none;"> -->
 
     <ul class="dashboard-list user-list" ng-cloak>
         <li ng-repeat="icon in iconsUrl" layout="row" layout-align="none center">
@@ -27,9 +27,9 @@
     </ul>
 
     <ul class="dashboard-list user-list" ng-cloak>
-        <li ng-repeat="item in assetsUploader.queue track by $index" layout="row" layout-align="none center">
+        <li ng-repeat="item in iconsUploader.queue track by $index" layout="row" layout-align="none center">
 
-        <div flex="10" ng-show="assetsUploader.isHTML5" ng-thumb="{ file: item._file, height: '100' }"></div>
+        <div flex="10" ng-show="iconsUploader.isHTML5" ng-thumb="{ file: item._file, height: '100' }"></div>
 
             <!-- <div flex="10">
                 <img src="/images/image-not-found-sm.png" />
@@ -39,7 +39,7 @@
                 <span class="dashboard-list-name">{{ item.file.name }}</span>
             </span>
 
-            <div ng-show="assetsUploader.isHTML5" class="progress-container" flex="50">
+            <div ng-show="iconsUploader.isHTML5" class="progress-container" draggable=""flex="50">
                 <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
             </div>
 
@@ -54,7 +54,7 @@
     </ul>
 
     <div layout="row" layout-align="space-between center">
-        <md-button class="md-dashboard" ng-click="assetsUploader.uploadAll()" ng-disabled="!assetsUploader.getNotUploadedItems().length">
+        <md-button class="md-dashboard" ng-click="iconsUploader.uploadAll()" ng-disabled="!iconsUploader.getNotUploadedItems().length">
             Upload all
         </md-button>
         <md-button class="md-dashboard" type="submit" ng-disabled="vm.teamIconsForm.$invalid || !vm.teamIconsForm.$dirty">

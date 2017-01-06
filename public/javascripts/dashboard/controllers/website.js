@@ -4,28 +4,61 @@ angular.module('arraysApp')
 
             $scope.progressMode = "determinate";
 
-            $scope.assetsUploader = new FileUploader({
-                method: 'PUT',
-                disableMultipart: true,
-                filters:[
-                    {
+            function newUploader(assetType, formName) {
+                var _uploader = new FileUploader({
+                    method: 'PUT',
+                    disableMultipart: true,
+                    filters: [{
                         name: "imageFilter",
                         fn: function(item,options) {
                             var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
                             return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
                         }
+                    }]
+                });
+
+                _uploader.onAfterAddingFile = function(fileItem) {
+                    fileItem.uploadUrls = {};
+                    fileItem.assetType = this.assetType;
+                    $scope.getUploadUrl(fileItem);
+                }
+
+                _uploader.onBeforeUploadItem = function(fileItem) {
+                    fileItem.url = fileItem.uploadUrls[fileItem.assetType].url;
+                    fileItem.headers['Content-Type'] = fileItem.file.type;
+                }
+
+                _uploader.onCompleteItem = function(fileItem,response,status,header) {
+
+                    if (status == 200) {
+                        var asset = fileItem.assetType;
+
+                        $scope.team[asset] = fileItem.uploadUrls[asset].publicUrl + '?' + new Date().getTime();
+
+                        if ($scope.vm[formName].$pristine) {
+                            $scope.vm[formName].$setDirty();
+                        }
+
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Image uploaded successfully!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
                     }
-                ],
+                }
 
-            })
-
-            $scope.assetsUploader.onAfterAddingFile = function(fileItem) {
-                fileItem.uploadUrls = {};
-                $scope.getUploadUrl(fileItem);
+                _uploader.assetType = assetType;
+                return _uploader;
             }
 
-            $scope.getUploadUrl = function(fileItem) {
-                fileItem.assetType = "icon"; // "logo" // "icon" // "logo_header"
+            $scope.iconsUploader = newUploader('icon', 'teamIconsForm');
+
+            $scope.logoUploader = newUploader('logo', 'websiteForm');
+
+            $scope.logo_headerUploader = newUploader('logo_header', 'websiteForm');
+
+            $scope.getUploadUrl = function(fileItem, assetType) {
                 if (!fileItem.uploadUrls[fileItem.assetType]) {
                     AssetService.getPutUrlForTeamAssets($scope.team._id,fileItem.file.type,fileItem.assetType,fileItem.file.name)
                         .then(function(urlInfo) {
@@ -34,34 +67,7 @@ angular.module('arraysApp')
                 }
             }
 
-            $scope.assetsUploader.onBeforeUploadItem = function(fileItem) {
-                fileItem.url = fileItem.uploadUrls[fileItem.assetType].url;
-                fileItem.headers['Content-Type'] = fileItem.file.type;
-            }
-
-
-            $scope.assetsUploader.onCompleteItem = function(fileItem,response,status,header) {
-
-                if (status == 200) {
-                    var asset = fileItem.assetType;
-
-                    $scope.team[asset] = fileItem.uploadUrls[asset].publicUrl + '?' + new Date().getTime();
-
-                    if ($scope.vm.teamIconsForm.$pristine) {
-                        $scope.vm.teamIconsForm.$setDirty();
-                    }
-
-                    $mdToast.show(
-                        $mdToast.simple()
-                            .textContent('Image uploaded successfully!')
-                            .position('top right')
-                            .hideDelay(3000)
-                    );
-                }
-            }
-
             $scope.submitForm = function(formName, isValid) {
-                // console.log($scope.user._team);
                 if (isValid) {
                     AuthService.updateTeam($scope.team)
                     .then(function(teams) {

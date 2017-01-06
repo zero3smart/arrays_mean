@@ -26,9 +26,15 @@
         <div flex="50">
             <img class="img-responsive" ng-if="team.logo" ng-src="{{team.logo}}">
         </div>
+
+        <input type="file" id="team_logo" nv-file-select="" uploader="logoUploader">
+
         <button class="" disabled>
             <span class="btn-label">{{team.logo ? 'Update' : 'Upload'}}</span>
         </button>
+        <md-button class="md-dashboard" ng-click="logoUploader.uploadAll()" ng-disabled="!logoUploader.getNotUploadedItems().length">
+            <span class="btn-label">Upload</span>
+        </md-button>
     </div>
 
     <div class="formInput">
@@ -36,9 +42,15 @@
         <div flex="50">
             <img class="img-responsive" ng-if="team.logo_header" ng-src="{{team.logo_header}}">
         </div>
+
+        <input type="file" id="team_logo_header" nv-file-select="" uploader="logo_headerUploader">
+
         <button class="" disabled>
             <span class="btn-label">{{team.logo_header ? 'Update' : 'Upload'}}</span>
         </button>
+        <md-button class="md-dashboard" ng-click="logo_headerUploader.uploadAll()" ng-disabled="!logo_headerUploader.getNotUploadedItems().length">
+            <span class="btn-label">Upload</span>
+        </md-button>
     </div>
 
     <div layout="row" layout-align="end center">
