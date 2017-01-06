@@ -284,6 +284,8 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSour
 
 
         //
+
+
         mongooseModel_ofRawRowObjectsBeingProcessed.find({}, function (err, ofTheseProcessedRowObjectDocs) {
             if (err) {
                 winston.error("❌  Error while generating field by reverse-join:", err);
@@ -291,6 +293,8 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSour
 
                 return;
             }
+
+            console.log(ofTheseProcessedRowObjectDocs);
 
 
 
@@ -970,9 +974,6 @@ function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFiel
             }
 
         }
-
-        console.log("here, scrapedObject is????");
-        console.log(scrapedObject);
 
         async.eachOf(scrapedObject, function (scrapedString, newField, innerCallback) {
 

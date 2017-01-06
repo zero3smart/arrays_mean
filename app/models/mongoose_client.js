@@ -5,7 +5,7 @@ var dbURI = process.env.MONGODB_URI;
 
 if (!dbURI) dbURI = 'mongodb://localhost/arraysdb';
 //
-winston.info("💬  MongoDB URI: ", dbURI);
+// winston.info("💬  MongoDB URI: ", dbURI);
 mongoose.Promise = require('q').Promise;
 
 var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } }, 
@@ -26,7 +26,7 @@ connection.on('error', function (err) {
 });
 connection.once('open', function () {
     isConnected = true;
-    winston.info("📡  Connected to " + process.env.NODE_ENV + " MongoDB.");
+    // winston.info("📡  Connected to " + process.env.NODE_ENV + " MongoDB.");
 });
 exports.connection = connection;
 //
@@ -41,7 +41,7 @@ function WhenMongoDBConnected(fn) {
         return;
     }
     var period_ms = 100;
-    winston.info("💬  Waiting " + period_ms + "ms until MongoDB is connected….");
+    // winston.info("💬  Waiting " + period_ms + "ms until MongoDB is connected….");
     setTimeout(function () {
         WhenMongoDBConnected(fn);
     }, period_ms);
@@ -65,7 +65,7 @@ function _mustBuildIndexes_areAllFinishedBuilding() {
 }
 function WhenIndexesHaveBeenBuilt(fn) {
     if (_mustBuildIndexes_areAllFinishedBuilding() == true) {
-        winston.info("💬  All indexes finished building.");
+        // winston.info("💬  All indexes finished building.");
         fn();
 
         return;

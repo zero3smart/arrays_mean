@@ -562,9 +562,11 @@ module.exports.upload = function (req, res) {
     res.connection.setTimeout(0);
 
     batch.push(function (done) {
+
         datasource_description.findById(req.body.id)
             .populate('_team')
             .exec(function (err, doc) {
+                console.log('1')
                 if (err) return done(err);
 
                 description = doc;
@@ -610,6 +612,7 @@ module.exports.upload = function (req, res) {
 
     _.forEach(req.files, function (file) {
         batch.push(function (done) {
+            console.log('2');
 
             if (file.mimetype == 'text/csv' || file.mimetype == 'application/octet-stream'
                 || file.mimetype == 'text/tab-separated-values' || file.mimetype == 'application/vnd.ms-excel') {

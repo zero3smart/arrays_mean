@@ -22,7 +22,7 @@ for (var i = 0; i < numCountries; i++) {
     var geometry = countryFeature.geometry;
     cache_countryGeometryByLowerCasedCountryName[countryName.toLowerCase()] = geometry;
 }
-winston.info("💬  Cached " + Object.keys(cache_countryGeometryByLowerCasedCountryName).length + " geometries by country name.");
+// winston.info("💬  Cached " + Object.keys(cache_countryGeometryByLowerCasedCountryName).length + " geometries by country name.");
 
 __countries_geo_json_str = undefined; // free
 __countries_geo_json = undefined; // free
