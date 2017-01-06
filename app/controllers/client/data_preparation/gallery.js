@@ -49,6 +49,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 var checkConditionAndApplyClasses = function (conditions, value,multiple) {
 
+
                     if (typeof value == 'undefined' || value == "" || value == null) {
                         return '<span class="icon-tile-null"></span>';
                     }
