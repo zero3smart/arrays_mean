@@ -77,9 +77,12 @@ md-content.md-default-theme, md-content {
     padding: 15px 0;
 }
 
+.md-button.md-dashboard.primary-action {
+    margin-bottom: 30px;
+}
 .instructions {
-    margin-top: 32px;
-    margin-bottom: 4px;
+    margin-top: 30px;
+    margin-bottom: 5px;
 }
 
 .dataset .md-content {
