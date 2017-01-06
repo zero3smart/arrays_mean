@@ -25,7 +25,7 @@ angular.module('arraysApp')
             }
 
             $scope.getUploadUrl = function(fileItem) {
-                fileItem.assetType = "logo";
+                fileItem.assetType = "icon"; // "logo" // "icon" // "logo_header"
                 if (!fileItem.uploadUrls[fileItem.assetType]) {
                     AssetService.getPutUrlForTeamAssets($scope.team._id,fileItem.file.type,fileItem.assetType,fileItem.file.name)
                         .then(function(urlInfo) {
@@ -51,13 +51,12 @@ angular.module('arraysApp')
                         $scope.vm.teamIconsForm.$setDirty();
                     }
 
-                     $mdToast.show(
+                    $mdToast.show(
                         $mdToast.simple()
                             .textContent('Image uploaded successfully!')
                             .position('top right')
                             .hideDelay(3000)
                     );
-
                 }
             }
 
@@ -70,39 +69,23 @@ angular.module('arraysApp')
                         $scope.$parent.team = AuthService.currentTeam();
                         $scope.vm[formName].$setPristine();
 
-                         $mdToast.show(
+                        $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Team updated successfully!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
-
-
                     })
-
-
-
-
-
-
                 }
-
             }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            $scope.loadIcons = function() {
+                AssetService.loadIcons()
+                .then(function(data) {
+                    $scope.iconsUrl = data;
+                })
+            }
+            $scope.loadIcons();
 
         }
     ])
