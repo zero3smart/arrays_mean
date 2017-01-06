@@ -27,12 +27,12 @@
             <img class="img-responsive" ng-if="team.logo" ng-src="{{team.logo}}">
         </div>
 
-        <input type="file" id="team_logo" nv-file-select="" uploader="logoUploader">
+        <input type="file" id="team_logo" nv-file-select="" uploader="logoUploader" class="team-uploader">
 
-        <button class="" disabled>
-            <span class="btn-label">{{team.logo ? 'Update' : 'Upload'}}</span>
-        </button>
-        <md-button class="md-dashboard" ng-click="logoUploader.uploadAll()" ng-disabled="!logoUploader.getNotUploadedItems().length">
+        <label for="team_logo" class="md-button md-dashboard" ng-class="{'disabled': logoUploader.getNotUploadedItems().length}">
+            {{team.logo ? 'Update' : 'Add'}}
+        </label>
+        <md-button class="md-dashboard" ng-click="logoUploader.uploadAll()" ng-hide="!logoUploader.getNotUploadedItems().length">
             <span class="btn-label">Upload</span>
         </md-button>
     </div>
@@ -43,12 +43,12 @@
             <img class="img-responsive" ng-if="team.logo_header" ng-src="{{team.logo_header}}">
         </div>
 
-        <input type="file" id="team_logo_header" nv-file-select="" uploader="logo_headerUploader">
+        <input type="file" id="team_logo_header" nv-file-select="" uploader="logo_headerUploader" class="team-uploader">
 
-        <button class="" disabled>
-            <span class="btn-label">{{team.logo_header ? 'Update' : 'Upload'}}</span>
-        </button>
-        <md-button class="md-dashboard" ng-click="logo_headerUploader.uploadAll()" ng-disabled="!logo_headerUploader.getNotUploadedItems().length">
+        <label for="team_logo_header" class="md-button md-dashboard" ng-class="{'disabled': logo_headerUploader.getNotUploadedItems().length}">
+            {{team.logo_header ? 'Update' : 'Add'}}
+        </label>
+        <md-button class="md-dashboard" ng-click="logo_headerUploader.uploadAll()" ng-hide="!logo_headerUploader.getNotUploadedItems().length">
             <span class="btn-label">Upload</span>
         </md-button>
     </div>
