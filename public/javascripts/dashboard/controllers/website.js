@@ -79,13 +79,12 @@ angular.module('arraysApp')
                 }
             }
 
-            $scope.loadIcons = function() {
+            $scope.init = function() {
                 AssetService.loadIcons()
                 .then(function(data) {
                     $scope.iconsUrl = data;
                 })
             }
-            $scope.loadIcons();
 
         }
     ])
