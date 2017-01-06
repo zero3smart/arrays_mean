@@ -104,6 +104,9 @@ img.iconMap {
     top: 64px;
     z-index: 1000;
 }
+.dashboard md-toast .md-toast-content {
+	background-color: var(--color-text-dark);
+}
 /*prevent scrollbar pop-in*/
 body.md-toast-animating {
     overflow: auto !important;
