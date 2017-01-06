@@ -212,6 +212,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 if (idxOf_objTitle >= 0) {
                     colNames_sansObjectTitle.splice(idxOf_objTitle, 1);
                 }
+
+                
                 //
                 var alphaSorted_colNames_sansObjectTitle = colNames_sansObjectTitle;
                 //
