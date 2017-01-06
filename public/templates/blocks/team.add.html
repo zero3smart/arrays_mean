@@ -1,20 +1,11 @@
 <md-dialog md-no-ink aria-label="Add Team">
-    <md-toolbar>
-        <div class="md-toolbar-tools">
-            <h2>Add Team</h2>
-            <span flex></span>
-            <md-button class="md-icon-button" ng-click="cancel()">
-                <span class="icon-close-big" aria-label="Close dialog"></span>
-            </md-button>
-        </div>
-    </md-toolbar>
+    <aa-toolbar title="Add Team"></aa-toolbar>
 
-    <!-- ng-if="user.role=='superAdmin'" -->
     <form name="vm.teamForm" ng-submit="createTeam()" autocomplete="off">
     <md-dialog-content layout-padding>
         <md-content layout="column" layout-gt-sm="row">
             <md-input-container flex>
-                <label>Title</label>
+                <label>Team Name</label>
                 <input required name="title" ng-model="newTeam.title">
             </md-input-container>
             <md-input-container flex>
