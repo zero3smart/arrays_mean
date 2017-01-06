@@ -186,6 +186,13 @@ body.md-toast-animating {
     background-color: transparent;
 }
 
+.subdomain-append,
+md-input-invalid.subdomain-append {
+	display: inline;
+	font-size: 20px;
+	font-weight: normal;
+}
+
 .user-list li {
 	border-top: 1px solid #eeeeee; /*match <hr>*/
 }

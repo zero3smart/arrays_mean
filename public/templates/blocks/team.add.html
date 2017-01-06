@@ -10,7 +10,8 @@
             </md-input-container>
             <md-input-container flex>
                 <label>Subdomain</label>
-                <input ng-model-options="{updateOn:'blur'}" ng-change="checkSubdomain()" required name="subdomain" ng-model="newTeam.subdomain">
+                <input ng-model-options="{updateOn:'blur'}" ng-change="checkSubdomain()" required name="subdomain" ng-model="newTeam.subdomain" flex="50">
+                <span class="subdomain-append">.arrays.co</span>
                 <div ng-messages="vm.teamForm.subdomain.$error">
                     <div ng-message="unique">This subdomain is reserved.</div>
                     <p ng-message="pattern">Must be lowercase and contains no whitespace or special character.</p>
