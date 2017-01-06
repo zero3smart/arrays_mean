@@ -196,7 +196,8 @@ body.md-toast-animating {
 .user-list li:last-child {
 	border-bottom: 1px solid #eeeeee;
 }
-.user-list li img {
+.user-list li img,
+.user-list li canvas {
 	width: 100%;
 	padding: 15px 15px 15px 0;
 }
