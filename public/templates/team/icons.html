@@ -8,60 +8,35 @@
     <input type="file" id="icons" nv-file-select="" uploader="assetsUploader" multiple>
     <!-- <input type="file" id="icons" nv-file-select="" uploader="assetsUploader" multiple style="display: none;"> -->
 
-    <table class="table upload">
-        <!--  -->
-        <thead><tr>
-            <th>Thumbnail Preview</th>
-            <th>Asset Name</th>
-            <!-- <th>Type</th> -->
-            <!-- <th ng-show="assetsUploader.isHTML5">Size</th> -->
-            <th ng-show="assetsUploader.isHTML5">Progress</th>
-            <!-- <th>Status</th> -->
-            <th>Actions</th>
-        </tr></thead>
-        <!--  -->
-        <tbody>
-            <tr ng-repeat="item in assetsUploader.queue track by $index">
-                <td>[]</td>
-                <td><strong>{{ item.file.name }}</strong></td>
+    <ul class="dashboard-list user-list" ng-cloak>
+        <li ng-repeat="item in assetsUploader.queue track by $index" layout="row" layout-align="none center">
 
-                <!-- <td> -->
-                    <!-- <md-select ng-change="getUploadUrl(item)" required ng-model="item.assetType" aria-label="assetType">
-                        <md-option value="logo">Logo</md-option>
-                        <md-option value="icon">Icon</md-option>
-                        <md-option value="logo_header">Logo Header</md-option>
-                    </md-select> -->
-                <!-- </td> -->
+            <div flex="10">
+                <img src="/images/image-not-found-sm.png" />
+            </div>
 
-                <!-- <td ng-show="assetsUploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td> -->
+            <span ng-class="{'pending': user.invited[person._id]}" flex="50">
+                <span class="dashboard-list-name">{{ item.file.name }}</span>
+            </span>
 
-                <td ng-show="assetsUploader.isHTML5" class="progress-container">
-                    <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
-                </td>
+            <div ng-show="assetsUploader.isHTML5" class="progress-container" flex="50">
+                <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
+            </div>
 
-                <!-- <td class="text-center">
-                    <span ng-show="item.isSuccess" class="text-success"><i class="glyphicon glyphicon-ok"></i></span>
-                    <span ng-show="item.isCancel" class="text-warning"><i class="glyphicon glyphicon-ban-circle"></i></span>
-                    <span ng-show="item.isError" class="text-danger"><i class="glyphicon glyphicon-remove"></i></span>
-                </td> -->
+            <span class="dashboard-list-icon warn" ng-click="item.cancel()" ng-hide="!item.isUploading" aria-hidden="true" aria-label="Cancel Upload" flex="5">
+                <i class="fa fa-remove" aria-hidden="true"></i>
+            </span>
+            <span class="dashboard-list-icon warn" ng-click="item.remove()" ng-hide="item.isUploading" aria-hidden="true" aria-label="Delete" flex="5">
+                <i class="fa fa-remove" aria-hidden="true"></i>
+            </span>
 
-                <td nowrap class="no-padding-vertical">
-                    <md-button class="md-raised" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess || !item.assetType">
-                        Upload
-                    </md-button>
-                    <md-button class="md-raised" ng-click="item.cancel()" ng-disabled="!item.isUploading">
-                        Cancel
-                    </md-button>
-                    <md-button class="md-raised" ng-click="item.remove()">
-                        Remove
-                    </md-button>
-                </td>
+        </li>
+    </ul>
 
-            </tr>
-        </tbody>
-    </table>
-
-    <div layout="row" layout-align="end center">
+    <div layout="row" layout-align="space-between center">
+        <md-button class="md-dashboard" ng-click="assetsUploader.uploadAll()" ng-disabled="!assetsUploader.getNotUploadedItems().length">
+            Upload all
+        </md-button>
         <md-button class="md-dashboard" type="submit" ng-disabled="vm.teamIconsForm.$invalid || !vm.teamIconsForm.$dirty">
             <span class="btn-label">Save</span>
         </md-button>
