@@ -247,15 +247,30 @@ angular
                         })
                 }
 
-                $scope.makeTeamAdmin = function() {
+                $scope.makeTeamAdmin = function(ev, person) {
 
-                    var confirm = $mdDialog.confirm()
-                            .title("Are you sure to make this user the team's admin ?")
-                            .textContent('Admin role would be transfered and the admin user will no longer be on the team.')
-                            .targetEvent(event)
-                            .ok('Yes')
-                            .cancel('No');
-                        $mdDialog.show(confirm).then(function () {
+                        $mdDialog.show({
+                            templateUrl: 'templates/blocks/user.admin.html',
+                            parent: angular.element(document.body),
+                            targetEvent: ev,
+                            clickOutsideToClose: true,
+                            fullscreen: true,
+                            locals: {
+                                person: person,
+                                team: $scope.team
+                            },
+                            controller: function($scope, $mdDialog, person, team) {
+                                $scope.person = person;
+                                $scope.team = team;
+                                $scope.hide = function() {
+                                    $mdDialog.hide();
+                                };
+                                $scope.cancel = function() {
+                                    $mdDialog.cancel();
+                                };
+                            }
+                        })
+                        .then(function () {
 
                             Team.switchAdmin({_id:$scope.selectedUser._id})
                             .$promise.then(function(res) {
