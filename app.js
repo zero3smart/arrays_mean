@@ -12,6 +12,7 @@ if (cluster.isMaster) {
     })
 
 } else {
+    console.log("worker")
     var path = require('path');
     var express = require('express');
     var winston = require('winston');
