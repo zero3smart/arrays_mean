@@ -1,9 +1,9 @@
-<md-button class="md-dashboard md-dashboard-icon md-dark" ng-click="openUserDialog($event, {})" md-no-ink>
+<md-button class="md-dashboard md-dashboard-icon primary-action" ng-click="openUserDialog($event, {})" md-no-ink>
     <md-icon class="btn-icon">add</md-icon>
     <span class="btn-label">Invite User</span>
 </md-button>
 
-<p class="instructions">Users</p>
+<p class="instructions" ng-if="users.length > 0">Users</p>
 
 <ul class="dashboard-list user-list" ng-cloak>
     <li ng-repeat="person in users track by $index" layout="row" layout-align="none center">

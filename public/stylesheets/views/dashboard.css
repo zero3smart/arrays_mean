@@ -78,9 +78,13 @@ md-content.md-default-theme, md-content {
 }
 
 .instructions {
-    margin-top: 32px;
-    margin-bottom: 4px;
+	margin: 0;
+	line-height: 16px;
 }
+.teams .instructions {
+	padding: 12px;
+}
+
 
 .dataset .md-content {
     overflow: hidden;

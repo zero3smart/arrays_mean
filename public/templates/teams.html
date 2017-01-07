@@ -2,14 +2,14 @@
     <h1>Manage Teams</h1>
 </header>
 
-<div class="array-content">
+<div class="array-content teams">
 
-    <md-button class="md-dashboard" ng-if="user.role=='superAdmin'" ng-click="openAddTeamDialog($event)" md-no-ink>
+    <md-button class="md-dashboard primary-action" ng-if="user.role=='superAdmin'" ng-click="openAddTeamDialog($event)" md-no-ink>
         <md-icon class="btn-icon">add</md-icon>
         <span class="btn-label">Add Team</span>
     </md-button>
 
-    <p class="instructions" ng-if="teams.length > 1">Switch teams</p>
+    <p class="instructions"  ng-if="teams.length > 1">Switch teams</p>
 
     <ul class="dashboard-list team-list" ng-cloak>
         <li ng-repeat="tm in teams track by $index">

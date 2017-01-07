@@ -1,9 +1,9 @@
-<md-button class="md-raised md-dashboard md-dark" ng-click="add()" md-no-ink>
+<md-button class="md-raised md-dashboard primary-action" ng-click="add()" md-no-ink>
     <md-icon class="btn-icon">add</md-icon><!-- <span class="icon-expand"></span> -->
     <span class="btn-label">Add Dataset</span>
 </md-button>
 
-<p class="instructions">Select a dataset to edit</p>
+<p class="instructions" ng-if="users.length > 0">Select a dataset to edit</p>
 
 <ul class="dashboard-list dataset-list" ng-cloak>
     <li ng-repeat="dataset in datasets">
