@@ -93,6 +93,9 @@ md-content.md-default-theme, md-content {
 md-toolbar:not(.md-menu-toolbar) {
     background-color: var(--color-primary);
 }
+.warn md-toolbar:not(.md-menu-toolbar) {
+    background-color: var(--color-warn);
+}
 
 md-tabs .md-tab.md-active {
     color: var(--color-text-dark);
