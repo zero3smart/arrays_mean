@@ -6,7 +6,7 @@
             <md-content layout="column">
 
                 <div ng-if="!selectedUser._id">
-                    <p>Invite a new user to "{{team.title}}".</p>
+                    <p>Invite a new user to <strong>{{team.title}}</strong>.</p>
                     <md-input-container class="md-block" flex-gt-xs>
                         <label>Email</label>
                         <input aria-label="email" required name="email" ng-model="selectedUser.email">

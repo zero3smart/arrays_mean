@@ -5,9 +5,9 @@
         <md-content layout="column">
             <p>
                 Are you sure you want to remove user
-                <span ng-if="(person.firstName || person.lastName)">"{{person.firstName}} {{person.lastName}}"</span>
-                <span ng-if="!(person.firstName || person.lastName)">"{{ person.email }}"</span>
-                from "{{team.title}}"?
+                <span ng-if="(person.firstName || person.lastName)"><strong>{{person.firstName}} {{person.lastName}}</strong></span>
+                <span ng-if="!(person.firstName || person.lastName)"><strong>{{ person.email }}</strong></span>
+                from <strong>{{team.title}}</strong>?
                 They will no longer be able to access the team and any associated datasets.
             </p>
         </md-content>
