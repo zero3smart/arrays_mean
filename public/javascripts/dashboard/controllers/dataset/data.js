@@ -500,6 +500,28 @@ angular.module('arraysApp')
             }
 
             $scope.openFabricatedFilterDialog = function (evt) {
+
+                var dataset = $scope.$parent.$parent.dataset;
+
+                var colsAvailable = dataset.columns.map(function(column) {
+                    return column.name;
+                }).concat(dataset.customFieldsToProcess.map(function(customField) {
+                    return customField.fieldName;
+                })).concat(dataset.fe_nestedObject.fields.map(function(fieldName) {
+                    if (dataset.fe_nestedObject.prefix)
+                        return dataset.fe_nestedObject.prefix + fieldName;
+                    return fieldName;
+                })).concat(dataset.relationshipFields.map(function(field) {
+                    return field.field;
+
+                }))
+
+                dataset.imageScraping.map(function(sourceURL) {
+                   colsAvailable = colsAvailable.concat(sourceURL.setFields.map(function(field) {
+                        return field.newFieldName;
+                    }))
+                })
+
                 $mdDialog.show({
                     controller: FabricatedFilterDialogController,
                     controllerAs: 'dialog',
@@ -509,7 +531,8 @@ angular.module('arraysApp')
                     clickOutsideToClose: true,
                     fullscreen: true, // Only for -xs, -sm breakpoints.
                     locals: {
-                        dataset: $scope.$parent.$parent.dataset
+                        dataset: dataset,
+                        colsAvailable: colsAvailable
                     }
                 })
                     .then(function (savedDataset) {
@@ -520,7 +543,8 @@ angular.module('arraysApp')
                     });
             };
 
-            function FabricatedFilterDialogController($scope, $mdDialog, $filter, dataset) {
+            function FabricatedFilterDialogController($scope, $mdDialog, $filter, dataset,colsAvailable) {
+                $scope.colsAvailable = colsAvailable;
                 $scope.indexInFabricatedFilter = function (input) {
                     for (var i = 0; i < $scope.dataset.fe_filters.fabricated.length; i++) {
                         var currentFab = $scope.dataset.fe_filters.fabricated[i];
@@ -1058,7 +1082,7 @@ angular.module('arraysApp')
                         $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Dataset updated successfully!')
-                                .position('top right')
+                                .position('top right') 
                                 .hideDelay(3000)
                         );
 

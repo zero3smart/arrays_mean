@@ -28,6 +28,9 @@ connection.once('open', function () {
     isConnected = true;
     winston.info("📡  Connected to " + process.env.NODE_ENV + " MongoDB.");
 });
+connection.on('close',function() {
+    winston.error("❌  Connection to mongo is closed");
+})
 exports.connection = connection;
 //
 function WhenMongoDBConnected(fn) {

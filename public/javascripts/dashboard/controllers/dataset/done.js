@@ -83,9 +83,11 @@ angular.module('arraysApp')
                 Job.get({id:$scope.currentJobId}).$promise
                 .then(function(job) {
 
+                    // console.log(job);
+
                     $scope.jobs[$scope.currentJobId].state = job.state;
 
-                    if (job.state !== 'complete') {
+                    if (job.state == 'active') {
                         Job.getLog({id:$scope.currentJobId}).$promise
                         .then(function(logs) {
                             $scope.jobs[$scope.currentJobId].log = logs[logs.length-1];
@@ -94,6 +96,10 @@ angular.module('arraysApp')
                          $timeout(function() {
                             getJobStatus(id,uid)
                         }, 4000);
+
+                    } else if (job.state == 'failed') {
+                        $scope.importLogger.push(" ❌  [" + uid + "] Error: " + job.error);
+
 
                     } else {
                         if ($scope.currentStep == 1) {
@@ -254,6 +260,9 @@ angular.module('arraysApp')
                 var uid = datasource.dataset_uid ? datasource.dataset_uid : datasource.uid;
                 var id = datasource._id;
                 if ($scope.additionalDatasources.length == 0) {
+
+                    console.log(datasource.dirty);
+                    
                     if (datasource.dirty == 1)
                         postImport(id,uid);
                     else if (datasource.dirty > 1)

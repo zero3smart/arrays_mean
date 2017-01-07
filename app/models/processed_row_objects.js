@@ -100,9 +100,6 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
 
         var datasetQuery = dataset_uid ? {pKey: {$regex: "^" + dataset_uid + "-"}} : {};
 
-        // console.log(datasetQuery);
-
-
         mongooseModel_ofRawRowObjectsBeingProcessed.find(datasetQuery, function (err, rowObjects) {
             if (err) {
 
@@ -164,6 +161,7 @@ module.exports.GenerateProcessedDatasetFromRawRowObjects = function (dataSource_
             };
             bulkOperation_ofTheseProcessedRowObjects.execute(writeConcern, function (err, result) {
                 if (err) {
+
                     winston.error("❌ [" + (new Date()).toString() + "] Error while saving processed row objects: ", err);
                 } else {
                     winston.info("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.");
@@ -246,7 +244,7 @@ module.exports.GenerateProcessedDatasetFromRawRowObjects = function (dataSource_
     });
 }
 
-module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSource_uid,
+module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,dataSource_uid,
                                                                         dataSource_importRevision,
                                                                         dataSource_title,
                                                                         generateFieldNamed,
@@ -259,7 +257,7 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSour
                                                                         or_formingRelationship,
                                                                         doesFieldMatch_fn,
                                                                         callback) {
-    mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
+    // mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Generating field \"" + generateFieldNamed
             + "\" of \"" + dataSource_title
             + "\" by joining on \"" + findingMatchOnFields
@@ -284,6 +282,9 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSour
 
 
         //
+
+    
+
         mongooseModel_ofRawRowObjectsBeingProcessed.find({}, function (err, ofTheseProcessedRowObjectDocs) {
             if (err) {
                 winston.error("❌  Error while generating field by reverse-join:", err);
@@ -316,7 +317,8 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSour
                 //
                 for (var i = 0; i < ofTheseProcessedRowObjectDocs.length; i++) {
                     if (i != 0 && i % 1000 == 0) {
-                        console.log("" + i + " / " + ofTheseProcessedRowObjectDocs_length + " of local '" + pKey_ofDataSrcDocBeingProcessed + "'  *  " + fromProcessedRowObjectDocs_length + " of foreign '" + pKey_ofFromDataSourceDoc + "'");
+                        winston.info("" + i + " / " + ofTheseProcessedRowObjectDocs_length + " of local '" + pKey_ofDataSrcDocBeingProcessed + "'  *  " + fromProcessedRowObjectDocs_length + " of foreign '" + pKey_ofFromDataSourceDoc + "'");
+                        job.log("" + i + " / " + ofTheseProcessedRowObjectDocs_length + " of local '" + pKey_ofDataSrcDocBeingProcessed + "'  *  " + fromProcessedRowObjectDocs_length + " of foreign '" + pKey_ofFromDataSourceDoc + "'");
                     }
                     var ofTheseProcessedRowObjectDoc = ofTheseProcessedRowObjectDocs[i];
                     var localFieldValue = ofTheseProcessedRowObjectDoc.rowParams["" + withLocalField];
@@ -424,23 +426,28 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (dataSour
         //
         function proceedToPersist() {
             winston.info("📡  [" + (new Date()).toString() + "] Upserting processed rows for \"" + dataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
+            job.log("📡  [" + (new Date()).toString() + "] Upserting processed rows for \"" + dataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
             //
             var writeConcern =
             {
-                upsert: true
+                // upsert: true,
                 // note: we're turning this off as it's super slow for large datasets like Artworks
                 // j: true // 'requests acknowledgement from MongoDB that the write operation has been written to the journal'
             };
             bulkOperation_ofTheseProcessedRowObjects.execute(writeConcern, function (err, result) {
                 if (err) {
+                    console.log('time out here?');
+
                     winston.error("❌ [" + (new Date()).toString() + "] Error while saving generated fields of processed row objects: ", err);
+
                 } else {
                     winston.info("✅  [" + (new Date()).toString() + "] Saved generated fields on processed row objects.");
+                    job.log("✅  [" + (new Date()).toString() + "] Saved generated fields on processed row objects.");
                 }
                 callback(err);
             });
         }
-    });
+    // });
 };
 
 module.exports.GenerateFieldsByJoining = function (dataSource_uid,
@@ -835,13 +842,16 @@ var image_hosting = require('../libs/utils/aws-image-hosting');
 
 function _nextLargestImageSrcSetSizeAvailableInParsedRawURLsBySize(rawURLsBySize, afterSize) // -> (String?)
 {
+
     var sizes = Object.keys(rawURLsBySize);
     var sizes_length = sizes.length;
     if (sizes_length == 0) {
         throw new Error("Unexpected 0 length rawURLsBySize.");
         return null; // just in case
     }
-    var afterSizeString_asInt = __intSizeFromSrcSetSizeString(afterSize);
+    var afterSizeString_asInt = afterSize
+
+     // __intSizeFromSrcSetSizeString(afterSize);
     var latestBiggestSizeString = null;
     var latestBiggestSizeAsInt = -1;
     for (var i = 0; i < sizes_length; i++) {
@@ -928,17 +938,15 @@ function extractRawUrl(scrapedString) {
 
 }
 
-function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFields, selectors, outterCallback) {
+function scrapeImages(job,folder,mongooseModel, doc, htmlSourceAtURLInField, setFields, selectors, outterCallback) {
     var htmlSourceAtURL = doc["rowParams"][htmlSourceAtURLInField];
 
     winston.info("📡  Scraping image URL from \"" + htmlSourceAtURL + "\"…");
+    job.log("📡  Scraping image URL from \"" + htmlSourceAtURL + "\"…");
 
     var returnObj = {};
 
     var stillNeedScrape = false;
-
-
-
 
     for (var field in selectors) {
 
@@ -952,27 +960,28 @@ function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFiel
 
 
     if (stillNeedScrape == false) {
-        outterCallback(null, folder,mongooseModel, doc, returnObj, setFields);
+
+        outterCallback(null, job,folder,mongooseModel, doc, returnObj, setFields);
         return;
     }
 
 
     xray_instance(htmlSourceAtURL, selectors)(function (err, scrapedObject) {
-        if (err !== null || scrapedObject == null) {
-            if (err.code == "ENOTFOUND" || err.code == 'ETIMEDOUT') {
+        if (err !== null || scrapedObject == null || Object.keys(scrapedObject).length == 0) {
+
+            if ( (err && (err.code == "ENOTFOUND" || err.code == 'ETIMEDOUT' || err.code == 'ECONNRESET')) || scrapedObject == null || 
+                typeof scrapedObject == 'undefined' || (typeof scrapedObject == 'object' && Object.keys(scrapedObject).length == 0)) {
                 for (var attr in selectors) {
                     returnObj[attr] = null;
                 }
-                outterCallback(err, folder,mongooseModel,doc, returnObj,setFields);
+                return outterCallback(err,job,folder,mongooseModel,doc, returnObj,setFields);
             } else {
                 winston.error("❌  Error while scraping " + htmlSourceAtURL + ": ", err);
-                outterCallback(err, null,null,null,null,null);
+                return outterCallback(err, job,null,null,null,null,null);
             }
 
-        }
+        } 
 
-        console.log("here, scrapedObject is????");
-        console.log(scrapedObject);
 
         async.eachOf(scrapedObject, function (scrapedString, newField, innerCallback) {
 
@@ -994,13 +1003,16 @@ function scrapeImages(folder,mongooseModel, doc, htmlSourceAtURLInField, setFiel
             }
 
         }, function (err) {
-            outterCallback(err, folder,mongooseModel, doc, returnObj, setFields);
+
+
+
+            outterCallback(err, job,folder,mongooseModel, doc, returnObj, setFields);
         })
     })
 }
 
 
-function proceedToPersistHostedImageURLOrNull_forKey(err, mongooseModel, docQuery, hostedURLOrNull, fieldKey, lastFieldKey, persistedCb) {
+function proceedToPersistHostedImageURLOrNull_forKey(err, job,mongooseModel, docQuery, hostedURLOrNull, fieldKey, lastFieldKey, persistedCb) {
     if (err) {
         persistedCb(err);
         return;
@@ -1014,16 +1026,17 @@ function proceedToPersistHostedImageURLOrNull_forKey(err, mongooseModel, docQuer
     if (lastFieldKey == true) {
         docUpdate["rowParams.imageScraped"] = true
     }
-    var relativeURLPortion = docQuery.srcDocPKey + "/" + docQuery.pKey + '__' + fieldKey + "." + hostedFileExtension;
+    var relativeURLPortion = hostedURLOrNull == null? null : docQuery.srcDocPKey + "/" + docQuery.pKey + '__' + fieldKey + "." + hostedFileExtension;
     docUpdate["rowParams." + fieldKey] = relativeURLPortion; // save the relative path
     mongooseModel.update(docQuery, {$set: docUpdate}, function (err, result) {
         winston.info("📝  Saved " + hostedURLOrNull + " as " + relativeURLPortion + " at " + fieldKey);
+        job.log("📝  Saved " + hostedURLOrNull + " as " + relativeURLPortion + " at " + fieldKey);
         persistedCb(err);
     });
 }
 
 
-function updateDocWithImageUrl(folder,mongooseModel, doc, scrapedObject, setFields, outterCallback) {
+function updateDocWithImageUrl(job,folder,mongooseModel, doc, scrapedObject, setFields, outterCallback) {
 
 
     var docQuery = {
@@ -1035,22 +1048,22 @@ function updateDocWithImageUrl(folder,mongooseModel, doc, scrapedObject, setFiel
     var keyLength = Object.keys(scrapedObject).length;
     var index;
 
-
     async.eachOf(scrapedObject, function (value, key, eachCb) {
         counter++;
 
         index = _findFieldFromSetFieldsArray(setFields, key);
-        var sizeForFieldKey = setFields[index].size;
+        var sizeForFieldKey = setFields[index].size + 'w';
         var rawURLForSize;
 
         if (value == null) {
+
             var last = false;
             if (counter == keyLength) {
                 last = true;
             }
 
             winston.warn("⚠️  scraped object is undefined for this doc:" + JSON.stringify(docQuery) + "]");
-            proceedToPersistHostedImageURLOrNull_forKey(null, mongooseModel, docQuery, null, key, last, function (err) {
+            proceedToPersistHostedImageURLOrNull_forKey(null, job,mongooseModel, docQuery, null, key, last, function (err) {
                 eachCb(err);
             })
 
@@ -1086,7 +1099,7 @@ function updateDocWithImageUrl(folder,mongooseModel, doc, scrapedObject, setFiel
                     if (counter == keyLength) {
                         last = true;
                     }
-                    proceedToPersistHostedImageURLOrNull_forKey(null, mongooseModel, docQuery, hostedUrl, key, last, function (err) {
+                    proceedToPersistHostedImageURLOrNull_forKey(null, job,mongooseModel, docQuery, hostedUrl, key, last, function (err) {
                         eachCb(err);
                     })
                 }
@@ -1134,7 +1147,7 @@ function updateDocWithImageUrl(folder,mongooseModel, doc, scrapedObject, setFiel
                     if (counter == keyLength) {
                         last = true;
                     }
-                    proceedToPersistHostedImageURLOrNull_forKey(err, mongooseModel, docQuery, hostedUrl, key, last, function (err) {
+                    proceedToPersistHostedImageURLOrNull_forKey(err, job,mongooseModel, docQuery, hostedUrl, key, last, function (err) {
                         eachCb(err);
                     })
                 }
@@ -1148,7 +1161,7 @@ function updateDocWithImageUrl(folder,mongooseModel, doc, scrapedObject, setFiel
 
 
 module.exports.GenerateImageURLFieldsByScraping
-    = function (dataSource_team_subdomain,dataSource_uid,
+    = function (job,dataSource_team_subdomain,dataSource_uid,
                 dataSource_importRevision,
                 dataSource_title,
                 dataset_uid,
@@ -1174,15 +1187,18 @@ module.exports.GenerateImageURLFieldsByScraping
         datasetQuery["rowParams." + htmlSourceAtURLInField] = {$exists: true};
         datasetQuery["rowParams." + htmlSourceAtURLInField] = {$ne: ""};
 
+        // datasetQuery["rowParams.Artist"] = "Le Corbusier (Charles-Édouard Jeanneret), Pierre Jeanneret";
+
         var folder =  dataSource_team_subdomain + '/datasets/' + dataSource_uid + '/assets/images/';
 
 
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously
-            var concurrencyLimit = 15; // at a time
+            var concurrencyLimit = 500; // at a time
 
             var selectors = _constructorSelector(setFields);
 
-            async.eachLimit(docs, concurrencyLimit, function (doc, eachCb) {
+
+            async.eachLimit(docs, concurrencyLimit, function (doc, next) {
 
                 // The following allows us to skip scraping for this doc if we already have done so
 
@@ -1191,31 +1207,39 @@ module.exports.GenerateImageURLFieldsByScraping
                     winston.info("📡  already scraped this ,skipping");
 
                     async.setImmediate(function () { // ^ so as not to blow stack
-                        eachCb(); // already done
+                        next(); // already done
                     });
 
                 } else {
                     async.waterfall(
-                        [async.apply(scrapeImages, folder,mongooseModel, doc, htmlSourceAtURLInField, setFields, selectors),
+                        [async.apply(scrapeImages, job,folder,mongooseModel, doc, htmlSourceAtURLInField, setFields, selectors),
                             updateDocWithImageUrl
                         ], function (err) {
-                            eachCb(err);
+                            if (err && err.code !== 'ENOTFOUND'  &&  err.code !== 'ETIMEDOUT' && err.code !== 'ECONNRESET') {
+                                next(err);
+                            } else {
+                                next(null);
+                            }
                         })
 
                 }
 
 
             }, function (err) {
-                if (err) {
+
+
+                if (err && err.code !== 'ENOTFOUND' && err.code !== 'ETIMEDOUT' && err.code !== 'ECONNRESET') {
                     callback(err);
 
                 } else {
+                    console.log('finised scraping, and err is *********');
+                    console.log(err);
+
                     mongooseModel.update(datasetQuery, {$unset: {"rowParams.imageScraped": 1}}, {multi: true}, function (err) {
                         if (err) winston.error("❌ Error while deleting rowParams.imageScraped : ", err);
                         callback(err);
 
                     })
-
 
                 }
             });

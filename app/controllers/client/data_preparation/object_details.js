@@ -59,14 +59,21 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                         return '<span class="icon-tile-null"></span>';
                     }
                     for (var i = 0; i < conditions.length; i++) {
-                        value = value.trim();
+
 
                         if (value == conditions[i].value) {
-                            if (multiple) {
-                                return "<img class='icon-tile category-icon-2' src='" + conditions[i].applyIconFromUrl +"'>"
-                            }
 
-                            return "<img class='icon-tile' src='" + conditions[i].applyIconFromUrl +"'>"
+                            if (conditions[i].applyIconFromUrl) {
+                                if (multiple) {
+                                    return "<img class='icon-tile category-icon-2' src='" + conditions[i].applyIconFromUrl +"'>"
+                                }
+
+                                return "<img class='icon-tile' src='" + conditions[i].applyIconFromUrl +"'>"
+                            } else if (conditions[i].applyClass) {
+                                // hard coded color-gender , as it is the only default icon category for now
+                                return "<span class='" + conditions[i].applyClass + " color-gender'></span>";
+                            }
+                           
                         }
                     }
                     return null;

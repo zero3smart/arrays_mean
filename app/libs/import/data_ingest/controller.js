@@ -132,8 +132,10 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
             // Now generate fields by joins, etc.
             //
             job.log("🔁  Now generating fields by joining datasets ");
-            async.eachSeries(
-                dataSourceDescription.relationshipFields,
+
+            var field =  [dataSourceDescription.relationshipFields[0]];
+            async.each(
+                field,
                 function (description, cb) {
                     var by = description.by;
                     var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
@@ -145,6 +147,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
                                 matchFn = "LocalEqualsForeignString";
                             }
                             processed_row_objects.GenerateFieldsByJoining_comparingWithMatchFn(
+                                job,
                                 dataSource_uid,
                                 dataSource_importRevision,
                                 dataSource_title,
@@ -179,6 +182,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
 
 var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, dataSourceDescription,job, callback) {
 
+
     var finalCallback = function() {
         if (dataSourceDescription.useCustomView) {
             require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,job,callback);
@@ -196,8 +200,10 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
             dataSourceDescription.imageScraping,
             function (description, cb) {
 
+
+
                   // if (dataSourceDescription.dirty >= 3) omitImageScraping = false;
-                processed_row_objects.GenerateImageURLFieldsByScraping(dataSourceDescription._team.subdomain,dataSourceDescription.uid,
+                processed_row_objects.GenerateImageURLFieldsByScraping(job,dataSourceDescription._team.subdomain,dataSourceDescription.uid,
                     dataSourceDescription.importRevision,
                     dataSourceDescription.title,
                     dataSourceDescription.dataset_uid,
@@ -207,17 +213,15 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
             },
             function (err) {
 
-                console.log("callback here......");
+                winston.info("✅  finished image scraping")
+                job.log("✅  finished image scraping");
 
-                if (err) {
+                if (err) { 
                     winston.error("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
-                    job.log("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
                     return callback(err);
                 }
 
                 finalCallback();
-                
-
                  
             }
         );

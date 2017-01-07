@@ -139,16 +139,22 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
 
                         var reformQuery = {};
 
+                        var nin = [];
+
+                        choice["match"].nin.map(function(ninField) {
+                            if (ninField == 'null') {
+                                nin.push(null);
+                            } else {
+                                nin.push(ninField);
+                            }
+                        })
+
+
 
                         reformQuery[choice["match"].field] = {
                             $exists: choice["match"].exist,
-                            $nin: choice["match"].nin
-
+                            $nin: nin
                         }
-
-
-
-
 
                         matchConditions = [{$match: reformQuery}];
 

@@ -126,7 +126,10 @@
 
                         <div class="gallery">
                             <ul class="gallery-grid">
+
+                             
                                 {% for doc in docs %}
+
                                     {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}
                                         {% include "../partials/gallery_item_image.html" %}
                                     {% else %}
