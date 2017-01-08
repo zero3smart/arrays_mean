@@ -132,6 +132,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
             // Now generate fields by joins, etc.
             //
             job.log("🔁  Now generating fields by joining datasets ");
+            return callback();
 
             var field =  [dataSourceDescription.relationshipFields[0]];
             async.each(
@@ -182,55 +183,57 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
 
 var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, dataSourceDescription,job, callback) {
 
+     var finalCallback = function() {
+        
+        if (dataSourceDescription.dirty >= 0) { // dont omit scraping
 
-    var finalCallback = function() {
-        if (dataSourceDescription.useCustomView) {
-            require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,job,callback);
-        } else {
-             _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription,job, callback);
-        }
+            winston.info(" 🔁  start image scraping");
+            job.log("🔁  start image scraping");
+            async.eachSeries(
+                dataSourceDescription.imageScraping,
+                function (description, cb) {
+
+                    processed_row_objects.GenerateImageURLFieldsByScraping(job,dataSourceDescription._team.subdomain,dataSourceDescription.uid,
+                        dataSourceDescription.importRevision,
+                        dataSourceDescription.title,
+                        dataSourceDescription.dataset_uid,
+                        description.htmlSourceAtURLInField,
+                        description.setFields,
+                        cb);
+                },
+                function (err) {
+
+                    winston.info("✅  finished image scraping")
+                    job.log("✅  finished image scraping");
+
+                    if (err) { 
+                        winston.error("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
+                        return callback(err);
+                    }
+
+                    callback();
+                     
+                }
+            );
+
+         } else { //omit scraping
+            winston.info(" ⚠️  skipping image scraping");
+            job.log("⚠️  skipping image scraping"); 
+            callback();
+         }
     }
 
 
-     if (dataSourceDescription.dirty >= 0) { // dont omit scraping
 
-        winston.info(" 🔁  start image scraping");
-        job.log("🔁  start image scraping");
-        async.eachSeries(
-            dataSourceDescription.imageScraping,
-            function (description, cb) {
+    if (dataSourceDescription.useCustomView) {
+        require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,job,callback);
+    } else {
+         _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription,job, finalCallback);
+    }
 
+   
 
-
-                  // if (dataSourceDescription.dirty >= 3) omitImageScraping = false;
-                processed_row_objects.GenerateImageURLFieldsByScraping(job,dataSourceDescription._team.subdomain,dataSourceDescription.uid,
-                    dataSourceDescription.importRevision,
-                    dataSourceDescription.title,
-                    dataSourceDescription.dataset_uid,
-                    description.htmlSourceAtURLInField,
-                    description.setFields,
-                    cb);
-            },
-            function (err) {
-
-                winston.info("✅  finished image scraping")
-                job.log("✅  finished image scraping");
-
-                if (err) { 
-                    winston.error("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
-                    return callback(err);
-                }
-
-                finalCallback();
-                 
-            }
-        );
-
-     } else { //omit scraping
-        winston.info(" ⚠️  skipping image scraping");
-        job.log("⚠️  skipping image scraping"); 
-        finalCallback();
-     }
+     
 }
 //
 

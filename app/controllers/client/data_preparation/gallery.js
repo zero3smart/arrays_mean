@@ -247,7 +247,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
                 });
 
-                projects['$project']['rowParams.imgURL_gridThumb'] = 1
+                // projects['$project']['rowParams.imgURL_gridThumb'] = 1
 
                 var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
                     projects,
@@ -274,7 +274,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     done();
                 };
 
-                console.log(pagedDocs_aggregationOperators)
+                // console.log(pagedDocs_aggregationOperators)
 
                 // Next, get the full set of sorted results
                 processedRowObjects_mongooseModel

@@ -179,7 +179,7 @@ angular.module('arraysApp')
                         if (response.status == 200 && !response.data.error) {
                             var jobId = response.data.jobId;
 
-                            $scope.importLogger.push("🔁  [" + uid + "] Initiating image scraping and custom field processing  ...");
+                            $scope.importLogger.push("🔁  [" + uid + "] Initiating custom field processing and image scraping ...");
                             $scope.currentJobId = jobId;
                             $scope.jobs[jobId] = {};
 

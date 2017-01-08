@@ -4,7 +4,6 @@ var raw_source_documents = require('./raw_source_documents');
 var raw_row_objects = require('./raw_row_objects');
 var mongoose_client = require('./mongoose_client');
 var processing = require('../libs/datasources/processing');
-
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 var New_RowObjectsModelName = function (srcDocPKey) {
@@ -1006,7 +1005,7 @@ function scrapeImages(job,folder,mongooseModel, doc, htmlSourceAtURLInField, set
 
 
 
-            outterCallback(err, job,folder,mongooseModel, doc, returnObj, setFields);
+            return outterCallback(err, job,folder,mongooseModel, doc, returnObj, setFields);
         })
     })
 }
@@ -1045,6 +1044,7 @@ function updateDocWithImageUrl(job,folder,mongooseModel, doc, scrapedObject, set
     }
     var docUpdate = {};
     var counter = 0;
+
     var keyLength = Object.keys(scrapedObject).length;
     var index;
 
@@ -1052,7 +1052,13 @@ function updateDocWithImageUrl(job,folder,mongooseModel, doc, scrapedObject, set
         counter++;
 
         index = _findFieldFromSetFieldsArray(setFields, key);
-        var sizeForFieldKey = setFields[index].size + 'w';
+        var sizeForFieldKey;
+        if (setFields[index].size) {
+            sizeForFieldKey = setFields[index].size + 'w';
+        } else {
+            sizeForFieldKey = undefined;
+        }
+
         var rawURLForSize;
 
         if (value == null) {
@@ -1193,56 +1199,54 @@ module.exports.GenerateImageURLFieldsByScraping
 
 
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously
-            var concurrencyLimit = 500; // at a time
+            // var concurrencyLimit = 80; // at a time
 
             var selectors = _constructorSelector(setFields);
 
+            var N = 30; //concurrency limit
 
-            async.eachLimit(docs, concurrencyLimit, function (doc, next) {
+            var q = async.queue(function(task,callback) {
 
-                // The following allows us to skip scraping for this doc if we already have done so
-
+                var doc = task.doc;
                 if (typeof doc["rowParams"]["imageScraped"] !== 'undefined' && doc["rowParams"]["imageScraped"] == true) {
 
                     winston.info("📡  already scraped this ,skipping");
 
-                    async.setImmediate(function () { // ^ so as not to blow stack
-                        next(); // already done
-                    });
+                    callback();
 
                 } else {
+                   
                     async.waterfall(
                         [async.apply(scrapeImages, job,folder,mongooseModel, doc, htmlSourceAtURLInField, setFields, selectors),
                             updateDocWithImageUrl
                         ], function (err) {
                             if (err && err.code !== 'ENOTFOUND'  &&  err.code !== 'ETIMEDOUT' && err.code !== 'ECONNRESET') {
-                                next(err);
+                                callback(err);
                             } else {
-                                next(null);
+                                callback();
                             }
                         })
-
                 }
 
+            },N);
 
-            }, function (err) {
+
+            q.drain = function() {
+                winston.info("📡  all items are processed for scraping, successfully scraped all of the images ");
+                 mongooseModel.update(datasetQuery, {$unset: {"rowParams.imageScraped": 1}}, {multi: true}, function (err) {
+                    if (err) winston.error("❌ Error while deleting rowParams.imageScraped : ", err);
+                    return callback(err);
+                })
+            }
 
 
-                if (err && err.code !== 'ENOTFOUND' && err.code !== 'ETIMEDOUT' && err.code !== 'ECONNRESET') {
-                    callback(err);
-
-                } else {
-                    console.log('finised scraping, and err is *********');
-                    console.log(err);
-
-                    mongooseModel.update(datasetQuery, {$unset: {"rowParams.imageScraped": 1}}, {multi: true}, function (err) {
-                        if (err) winston.error("❌ Error while deleting rowParams.imageScraped : ", err);
-                        callback(err);
-
-                    })
-
-                }
-            });
+            for (var i = 0; i < docs.length; i++) {
+                q.push({doc: docs[i]},function(err) {
+                    if (err) {
+                        return callback(err);
+                    }
+                })
+            }
 
         });
     });
