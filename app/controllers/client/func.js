@@ -91,6 +91,8 @@ var _activeFilter_matchOp_orErrDescription_fromMultiFilter = function (dataSourc
                 filterVal = filterVals[j];
             }
 
+
+            
             if (typeof filterVal === 'string' || typeof filterVal === 'number') {
 
                 matchConditions = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
@@ -190,11 +192,12 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
     
 
             var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
+      
             if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
-                var valueByOverride = oneToOneOverrideWithValuesByTitle_forThisColumn.find(function(valueByOverride) {
-                    return valueByOverride.override = filterVal;
-                });
 
+                var valueByOverride = oneToOneOverrideWithValuesByTitle_forThisColumn.find(function(singleValue) {
+                    return singleValue.override == filterVal;
+                });
                 if (typeof valueByOverride === 'undefined') {
                     var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
                     winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
@@ -632,11 +635,12 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                     }
 
                     if (overwriteValue) {
-                  
-                        var valueByOverride = oneToOneOverrideWithValuesByTitleByFieldName.find(function(valueByOverride) {
-                            return valueByOverride.override == rowValue;
+                        var valueByOverride = oneToOneOverrideWithValuesByTitleByFieldName.find(function(item) {
+                            return item.value == rowValue;
                         });
-                        if (valueByOverride) row[index] = valueByOverride.value;
+
+                  
+                        if (valueByOverride) row[index] = valueByOverride.override;
                     }
 
                 } else {

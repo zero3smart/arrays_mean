@@ -127,6 +127,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
           
 
             var isFilterActive = Object.keys(filterObj).length != 0;
+
+
             //
             var searchCol = urlQuery.searchCol;
             var searchQ = urlQuery.searchQ;
@@ -141,6 +143,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     return;
                 }
+
                 wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
             }
             if (isFilterActive) {
@@ -299,7 +302,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             batch.end(function (err) {
 
-                if (err) return callback(err);          
+                if (err) return callback(err);        
+          
 
                 var data =
                 {
