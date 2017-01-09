@@ -12,7 +12,7 @@ var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 
                 replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } }; 
 
 
-mongoose.createConnection(dbURI,options);
+mongoose.connect(dbURI,options);
 
 exports.mongoose = mongoose;
 //
@@ -28,8 +28,9 @@ connection.once('open', function () {
     isConnected = true;
     winston.info("📡  Connected to " + process.env.NODE_ENV + " MongoDB.");
 });
-connection.on('close',function() {
-    winston.error("❌  Connection to mongo is closed");
+connection.on('disconnected',function() {
+    winston.error("❌  MongoDB disconnected");
+    mongoose.connect(dbURI,options);
 })
 exports.connection = connection;
 //
@@ -50,6 +51,8 @@ function WhenMongoDBConnected(fn) {
     }, period_ms);
 }
 exports.WhenMongoDBConnected = WhenMongoDBConnected;
+
+
 
 
 var _mustBuildIndexes_hasBeenInitialized = false;
