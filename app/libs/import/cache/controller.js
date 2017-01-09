@@ -79,17 +79,7 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
 
         } else {
 
-            var isRelationshipField = function(key) {
-                for (var i = 0; i < dataSourceDescription.relationshipFields.length; i++) {
-                    var field = dataSourceDescription.relationshipFields[i].field;
-                    
-                   if (field == key) {
-                        return 0;
-                   }
-                    
-                }
-                return -1;
-            }
+            
             if (!dataSourceDescription.fe_excludeFields) {
                 dataSourceDescription.fe_excludeFields = {};
             }
@@ -99,7 +89,7 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
             }
 
             filterKeys = filterKeys.filter(function(key) {
-                return !dataSourceDescription.fe_excludeFields[key] && dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key)==-1 && isRelationshipField(key)==-1;
+                return !dataSourceDescription.fe_excludeFields[key] && dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key)==-1;
 
             })
         }

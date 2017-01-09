@@ -143,7 +143,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
                     job.log("🔁  Now generating fields by joining datasets ");
            
                     async.each(
-                        dataSourceDescription.relationshipFields,
+                        [dataSourceDescription.relationshipFields[0]],
                         function (description, cb) {
                             var by = description.by;
                             var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
