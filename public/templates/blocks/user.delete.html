@@ -1,13 +1,15 @@
 <md-dialog md-no-ink aria-label="Delete User">
-    <aa-toolbar title="Delete User"></aa-toolbar>
+    <aa-toolbar title="Delete User" class="warn"></aa-toolbar>
 
     <md-dialog-content layout-padding>
         <md-content layout="column">
             <p>
                 Are you sure you want to remove user
-                <span ng-if="(person.firstName || person.lastName)">"{{person.firstName}} {{person.lastName}}"</span>
-                <span ng-if="!(person.firstName || person.lastName)">"{{ person.email }}"</span>
-                from "{{team.title}}"?
+                <span ng-if="(person.firstName || person.lastName)"><strong>{{person.firstName}} {{person.lastName}}</strong></span>
+                <span ng-if="!(person.firstName || person.lastName)"><strong>{{ person.email }}</strong></span>
+                from <strong>{{team.title}}</strong>?
+            </p>
+            <p>
                 They will no longer be able to access the team and any associated datasets.
             </p>
         </md-content>
