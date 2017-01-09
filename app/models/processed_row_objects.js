@@ -115,8 +115,7 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
 
         }).on('end', function () {
 
-            console.log("heap used: " + process.memoryUsage().heapUsed)
-            console.log("done")
+            console.log(" --------  finished streaming rows, heap used: " + process.memoryUsage().heapUsed + " ------------- ");
             var err = null
             nativeCollection_ofTheseProcessedRowObjects.bulkWrite(updateDocs, {ordered: false}, function (err) {
                 if (err) {
