@@ -16,7 +16,12 @@
                                     {% if hasOriginalImage %}
                                     {% set title = team.title | lower %}
                                     {% set url = "https://" + aws_bucket_for_url + title + "/datasets/" + uid + folder + rowObject.rowParams[fieldKey_originalImageURL] %}
-                                    <img src="{{ url }}" class="object-featured img-responsive" />
+                                        {% if scrapedImages %}
+                                            <img src="{{ url }}" class="object-featured img-responsive" />
+                                        {% else %}  
+                                            <img src="{{ rowObject.rowParams[fieldKey_originalImageURL] }}" class="img-responsive" />
+                                        {% endif %}
+                                    <!-- <img src="{{ url }}" class="object-featured img-responsive" /> -->
                                     {% endif %}
 
                                     {% if not rowObject.rowParams[fieldKey_originalImageURL] and fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}

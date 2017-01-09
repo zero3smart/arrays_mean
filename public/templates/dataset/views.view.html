@@ -328,18 +328,17 @@
                     <div ng-if="data[setting.name].field && iconsUrl.length > 0" ng-repeat="item in data[setting.name].conditions track by $index">
                       <div layout="row" >
 
-                          <md-input-container flex="50">                  
-                             <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
-                          </md-input-container>
-                          <md-input-container flex="50">
-                           <md-select aria-label="{{setting.name}} for {{viewName}}" data-ng-model="data[setting.name].conditions[$index].applyIconFromUrl" flex="50">
-                            <md-select-label><img class="iconMap" ng-if="data[setting.name].conditions[$index].applyIconFromUrl" 
-                            ng-src="{{data[setting.name].conditions[$index].applyIconFromUrl}}" ></md-select-label>
-                              <md-option  data-ng-repeat="icon_url in iconsUrl" data-ng-value="icon_url" >
-                                <img class="iconMap" ng-src="{{icon_url}}"></md-option>
-                              </md-select>
+                        <md-input-container flex="50">                  
+                          <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
+                        </md-input-container>
+                        <md-input-container flex="50">
+                          <md-select aria-label="{{setting.name}} for {{viewName}}" data-ng-model="data[setting.name].conditions[$index].applyIconFromUrl" flex="50">
+                            <md-option  data-ng-repeat="icon_url in iconsUrl" data-ng-value="makeRelative(icon_url)" >
+                              <img class="iconMap" ng-src="{{icon_url}}">
+                            </md-option>
+
                           </md-select>
-                          </md-input-container>
+                        </md-input-container>
                          
                       </div>
 

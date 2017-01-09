@@ -63,10 +63,10 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
                             if (conditions[i].applyIconFromUrl) {
                                 if (multiple) {
-                                    return "<img class='icon-tile category-icon-2' src='" + conditions[i].applyIconFromUrl +"'>"
+                                    return "<img class='icon-tile category-icon-2' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
                                 }
 
-                                return "<img class='icon-tile' src='" + conditions[i].applyIconFromUrl +"'>"
+                                return "<img class='icon-tile' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
                             } else if (conditions[i].applyClass) {
                                 // hard coded color-gender , as it is the only default icon category for now
                                 return "<span class='" + conditions[i].applyClass + " color-gender'></span>";
@@ -344,6 +344,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     fe_objectShow_customHTMLOverrideFnsByColumnNames: dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames,
 
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
+                    scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
                     aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
                     folder: "/assets/images/",
 
