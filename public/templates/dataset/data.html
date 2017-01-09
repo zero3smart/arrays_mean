@@ -37,8 +37,7 @@
                             }}
                         </div>
                         <div class="exclude">
-                            <md-checkbox ng-if="!field.customField"
-                                         name="fe_excludeFields_{{$index}}"
+                            <md-checkbox name="fe_excludeFields_{{$index}}"
                                          ng-model="dataset.fe_excludeFields[field.name]"
                                          aria-label="Exclude {{field.name}}"
                                          ng-click="$event.stopPropagation()"></md-checkbox>
