@@ -39,7 +39,7 @@
                             <label>Local Field</label>
                             <md-select required name="localField_{{$index}}"
                                        ng-model="relationshipField.by.withLocalField">
-                                <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
+                                <md-option ng-repeat="column in columnsAvailable" value="{{column.name}}">
                                     {{column.name}}
                                 </md-option>
                             </md-select>
