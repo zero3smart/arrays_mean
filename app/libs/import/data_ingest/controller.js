@@ -463,6 +463,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
 
                     raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
+                        console.log(err)
                         cb(err);
                     })
 

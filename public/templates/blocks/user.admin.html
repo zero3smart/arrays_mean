@@ -1,13 +1,13 @@
 <md-dialog md-no-ink aria-label="Make Team Admin">
-    <aa-toolbar title="Make Team Admin"></aa-toolbar>
+    <aa-toolbar title="Make Team Admin" class="warn"></aa-toolbar>
 
     <md-dialog-content layout-padding>
         <md-content layout="column">
             <p>
                 Are you sure you want to make
-                <span ng-if="(person.firstName || person.lastName)">"{{person.firstName}} {{person.lastName}}"</span>
-                <span ng-if="!(person.firstName || person.lastName)">"{{ person.email }}"</span>
-                the admin for "{{team.title}}"?
+                <span ng-if="(person.firstName || person.lastName)"><strong>{{person.firstName}} {{person.lastName}}</strong></span>
+                <span ng-if="!(person.firstName || person.lastName)"><strong>{{ person.email }}</strong></span>
+                the admin for <strong>{{team.title}}</strong>?
             </p>
             <p>
                 Accepting this change will transfer admin privileges to this user and remove your account from the team.
