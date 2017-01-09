@@ -1,0 +1,59 @@
+<md-content md-no-ink class="array-content" ng-init="init()">
+<form name="vm.teamIconsForm" ng-submit="submitForm('teamIconsForm', vm.teamIconsForm.$valid && vm.teamIconsForm.$dirty)" novalidate>
+
+    <input type="file" id="icons" nv-file-select="" uploader="iconsUploader" multiple class="team-uploader">
+
+    <label for="icons" class="md-button md-dashboard primary-action">
+        Add Icons
+    </label>
+
+    <ul class="dashboard-list user-list" ng-cloak>
+        <li ng-repeat="icon in iconsUrl" layout="row" layout-align="none center">
+            <div flex="10">
+                <img ng-src="{{icon}}" />
+            </div>
+
+            <span flex="50">
+                <span class="dashboard-list-name">{{icon.split('/').pop()}}</span>
+            </span>
+
+            <!-- <span class="dashboard-list-icon warn" ng-click="" aria-hidden="true" aria-label="Delete" flex="5">
+                <i class="fa fa-remove" aria-hidden="true"></i>
+            </span> -->
+        </li>
+    </ul>
+
+    <ul class="dashboard-list user-list" ng-cloak>
+        <li ng-repeat="item in iconsUploader.queue track by $index" layout="row" layout-align="none center">
+
+            <div flex="10" ng-show="iconsUploader.isHTML5" ng-thumb="{ file: item._file, height: '100' }"></div>
+
+            <span ng-class="{'pending': item.isUploading }" flex="50">
+                <span class="dashboard-list-name">{{ item.file.name }}</span>
+            </span>
+
+            <div ng-show="iconsUploader.isHTML5" class="progress-container" draggable=""flex="50">
+                <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
+            </div>
+
+            <span class="dashboard-list-icon warn" ng-click="item.cancel()" ng-hide="!item.isUploading" aria-hidden="true" aria-label="Cancel Upload" flex="5">
+                <i class="fa fa-remove" aria-hidden="true"></i>
+            </span>
+            <span class="dashboard-list-icon warn" ng-click="item.remove()" ng-hide="item.isUploading" aria-hidden="true" aria-label="Delete" flex="5">
+                <i class="fa fa-remove" aria-hidden="true"></i>
+            </span>
+
+        </li>
+    </ul>
+
+    <div layout="row" layout-align="space-between center">
+        <md-button class="md-dashboard" ng-click="iconsUploader.uploadAll()" ng-disabled="!iconsUploader.getNotUploadedItems().length">
+            Upload all
+        </md-button>
+        <md-button class="md-dashboard" type="submit" ng-disabled="vm.teamIconsForm.$invalid || !vm.teamIconsForm.$dirty">
+            <span class="btn-label">Save</span>
+        </md-button>
+    </div>
+
+</form>
+</md-content>
