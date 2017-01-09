@@ -12,6 +12,9 @@ html, body {
 .warn {
     color: var(--color-warn);
 }
+.confirm {
+    color: var(--color-primary);
+}
 /**/
 
 h2 {
@@ -490,6 +493,24 @@ md-icon.btn-icon {
 
 .md-button.md-dashboard.md-warn {
     background-color: var(--color-warn);
+}
+.md-button.md-dashboard.md-warn:not([disabled]):hover {
+	border-color: var(--color-warn);
+    background-color: transparent;
+}
+.md-button.md-dashboard.md-warn:not([disabled]):hover .btn-label {
+	color: var(--color-warn);
+}
+
+.md-button.md-dashboard.confirm:not([disabled]) {
+    background-color: var(--color-primary);
+}
+.md-button.md-dashboard.confirm:not([disabled]):hover {
+	border-color: var(--color-primary);
+    background-color: transparent;
+}
+.md-button.md-dashboard.confirm:not([disabled]):hover .btn-label {
+	color: var(--color-primary);
 }
 
 /* ----------- Manager Users -------------- */

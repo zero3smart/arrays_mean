@@ -44,11 +44,11 @@
                 <span flex><!-- force end align on invite--></span>
 
                 <div>
-                    <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-dashboard" type="button" ng-hide="selectedUser._id || selectedUser._team.indexOf(team._id) >= 0">
+                    <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-dashboard confirm" type="button" ng-hide="selectedUser._id || selectedUser._team.indexOf(team._id) >= 0">
                         <span class="btn-label">Invite User</span>
                     </md-button>
 
-                    <md-button ng-if="!(user.invited[person._id] || user.invited[selectedUser._id])" ng-hide="!selectedUser._id" ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="saveUser()" class="md-dashboard" type="button" ng-if="selectedUser._id">
+                    <md-button ng-if="!(user.invited[person._id] || user.invited[selectedUser._id])" ng-hide="!selectedUser._id" ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="saveUser()" class="md-dashboard confirm" type="button" ng-if="selectedUser._id">
                         <span class="btn-label">Save Settings</span>
                     </md-button>
 
