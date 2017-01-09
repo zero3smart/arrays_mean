@@ -26,31 +26,36 @@
                     </p>
                 </div>
 
-                <ul ng-hide="user.invited[person._id]|| datasets.length == 0" class="no-padding">
+                <ul ng-hide="user.invited[person._id]|| datasets.length == 0" class="dashboard-list user-list no-padding">
                     <li ng-repeat="dataset in datasets" layout="row" layout-align="center center">
                         <span flex><strong>{{dataset.title}}</strong></span>
+
                         <md-select flex ng-hide="team.admin==selectedUser._id" aria-label="userRoles" name="role" required ng-model="userRoles[dataset._id]">
                             <md-option ng-repeat="role in availableUserRoles" value="{{role.value}}">{{role.name}}</md-option>
                         </md-select>
+
                         <p ng-if="team.admin==selectedUser._id">Admin</p>
                     </li>
                 </ul>
 
-                <a class="warn" ng-if="selectedUser._id !== team.admin && selectedUser._id && selectedUser.activated==true" ng-click="makeTeamAdmin($event, selectedUser)">Make Team Admin</a>
-
             </md-content>
-            <md-dialog-actions layout="row" layout-align="end center">
-                <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-dashboard" type="button" ng-hide="selectedUser._id || selectedUser._team.indexOf(team._id) >= 0">
-                    <span class="btn-label">Invite User</span>
-                </md-button>
+            <md-dialog-actions layout="row" layout-align="space-between center">
+                <a class="warn" ng-if="selectedUser._id !== team.admin && selectedUser._id && selectedUser.activated==true" ng-click="makeTeamAdmin($event, selectedUser)">Make Team Admin</a>
+                <span flex><!-- force end align on invite--></span>
 
-                <md-button ng-if="!(user.invited[person._id] || user.invited[selectedUser._id])" ng-hide="!selectedUser._id" ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="saveUser()" class="md-dashboard" type="button" ng-if="selectedUser._id">
-                    <span class="btn-label">Save Settings</span>
-                </md-button>
+                <div>
+                    <md-button ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="inviteUser()" class="md-dashboard" type="button" ng-hide="selectedUser._id || selectedUser._team.indexOf(team._id) >= 0">
+                        <span class="btn-label">Invite User</span>
+                    </md-button>
 
-                <md-button class="md-dashboard" ng-click="cancel()">
-                    Cancel
-                </md-button>
+                    <md-button ng-if="!(user.invited[person._id] || user.invited[selectedUser._id])" ng-hide="!selectedUser._id" ng-disabled="vm.userForm.$invalid || !vm.userForm.$dirty" ng-click="saveUser()" class="md-dashboard" type="button" ng-if="selectedUser._id">
+                        <span class="btn-label">Save Settings</span>
+                    </md-button>
+
+                    <md-button class="md-dashboard" ng-click="cancel()">
+                        Cancel
+                    </md-button>
+                </div>
             </md-dialog-actions>
         </md-dialog-content>
     </form>
