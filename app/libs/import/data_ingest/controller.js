@@ -255,7 +255,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     var eachCtx = dataSourceDescription.customFieldsToProcess;
 
     if (typeof dataSourceDescription.fe_nestedObject != 'undefined' && dataSourceDescription.fe_nestedObject.prefix) {
-        console.log("nested object with prefix")
         eachCtx = dataSourceDescription.fe_nestedObject;
         eachCtx.nested = true;
         eachCtx.numberOfInsertedRows = 0;
