@@ -24,7 +24,7 @@ h4 {
     font-size: 16px;
 }
 
-a[href^="mailto"] {
+.dashboard-container a[href^="mailto"] {
 	/*md-default-theme*/
 	color: rgba(0,0,0,0.87);
 	/*var(--color-text-dark);*/
@@ -429,7 +429,7 @@ md-dialog.field-dialog .md-dialog-content {
     padding-bottom: 10px;
 }
 md-dialog {
-    min-width: 80%;
+    min-width: 66%;
 }
 
 md-dialog fieldset legend,
