@@ -3,15 +3,15 @@
 
     <form name="vm.teamForm" ng-submit="createTeam()" autocomplete="off">
     <md-dialog-content layout-padding>
-        <md-content layout="column" layout-gt-sm="row">
-            <md-input-container flex>
+        <md-content>
+            <md-input-container class="md-block" flex="100" flex-gt-sm="65">
                 <label>Team Name</label>
                 <input required name="title" ng-model="newTeam.title">
             </md-input-container>
-            <md-input-container flex>
+            <md-input-container class="md-block">
                 <label>Subdomain</label>
-                <input ng-model-options="{updateOn:'blur'}" ng-change="checkSubdomain()" required name="subdomain" ng-model="newTeam.subdomain" flex="50">
-                <span class="subdomain-append">.arrays.co</span>
+                <input ng-model-options="{updateOn:'blur'}" ng-change="checkSubdomain()" required name="subdomain" ng-model="newTeam.subdomain" flex="65">
+                <span class="subdomain-append" flex="35">.arrays.co</span>
                 <div ng-messages="vm.teamForm.subdomain.$error">
                     <div ng-message="unique">This subdomain is reserved.</div>
                     <p ng-message="pattern">Must be lowercase and contains no whitespace or special character.</p>

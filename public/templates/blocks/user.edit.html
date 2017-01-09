@@ -7,7 +7,7 @@
 
                 <div ng-if="!selectedUser._id">
                     <p>Invite a new user to <strong>{{team.title}}</strong>.</p>
-                    <md-input-container class="md-block" flex-gt-xs>
+                    <md-input-container class="md-block" flex="100" flex-gt-xs="65">
                         <label>Email</label>
                         <input aria-label="email" required name="email" ng-model="selectedUser.email">
                         <div ng-messages="vm.userForm.email.$error">
@@ -17,11 +17,11 @@
                 </div>
 
                 <div ng-if="selectedUser._id" layout="row">
-                    <div flex="10">
+                    <!-- <div flex="10">
                         <img src="/images/image-not-found-sm.png" class="profile-thumb" />
-                    </div>
-                    <p flex="50">
-                        Manage permissions for:<br />
+                    </div> -->
+                    <p>
+                        Manage permissions for<!-- br /-->
                         <strong>{{selectedUser.firstName}} {{selectedUser.lastName}}</strong> ({{selectedUser.email}})
                     </p>
                 </div>

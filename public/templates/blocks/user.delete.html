@@ -8,6 +8,8 @@
                 <span ng-if="(person.firstName || person.lastName)"><strong>{{person.firstName}} {{person.lastName}}</strong></span>
                 <span ng-if="!(person.firstName || person.lastName)"><strong>{{ person.email }}</strong></span>
                 from <strong>{{team.title}}</strong>?
+            </p>
+            <p>
                 They will no longer be able to access the team and any associated datasets.
             </p>
         </md-content>
