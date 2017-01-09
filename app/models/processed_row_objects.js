@@ -108,12 +108,15 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
 
                 winston.error("❌ [" + (new Date()).toString() + "] Error from line 168 while saving processed row objects: ", err.message);
                 return callback(err);
+            } else {
+                console.log("found rowObjects of dataset query")
             }
 
 
             rowObjects.forEach(function (doc) {
                 updateDocs.push({insertOne: {document: doc._doc}});
             });
+            console.log("after row Objects update docs")
 
             winston.info("📡  [" + (new Date()).toString() + "] Inserting " + rowObjects.length + " processed rows for \"" + dataSource_title + "\".");
 

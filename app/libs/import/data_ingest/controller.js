@@ -255,6 +255,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     var eachCtx = dataSourceDescription.customFieldsToProcess;
 
     if (typeof dataSourceDescription.fe_nestedObject != 'undefined' && dataSourceDescription.fe_nestedObject.prefix) {
+        console.log("nested object with prefix")
         eachCtx = dataSourceDescription.fe_nestedObject;
         eachCtx.nested = true;
         eachCtx.numberOfInsertedRows = 0;
@@ -445,6 +446,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         {
             upsert: true
         };
+        console.log(eachCtx)
         eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(writeConcern, function (err, result) {
             if (err) {
                 winston.error("❌ [" + (new Date()).toString() + "] Error while saving custom fields  : ", err);
@@ -457,6 +459,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
 
                     raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
+                        console.log(err)
                         cb(err);
                     })
 
