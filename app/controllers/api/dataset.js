@@ -198,8 +198,10 @@ module.exports.remove = function (req, res) {
 
     //Remove cache filter
     batch.push(function(done) {
+
         cached_values.findOne({srcDocPKey: srcDocPKey},function(err,document) {
             if (err) return done(err);
+            
             if (!document) return done();
              winston.info("✅  Removed cached unique values : " + srcDocPKey + ", error: " + err);
              document.remove(done);

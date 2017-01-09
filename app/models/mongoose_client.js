@@ -12,7 +12,7 @@ var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 
                 replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } }; 
 
 
-mongoose.connect(dbURI,options);
+mongoose.createConnection(dbURI,options);
 
 exports.mongoose = mongoose;
 //
@@ -50,6 +50,7 @@ function WhenMongoDBConnected(fn) {
     }, period_ms);
 }
 exports.WhenMongoDBConnected = WhenMongoDBConnected;
+
 
 var _mustBuildIndexes_hasBeenInitialized = false;
 var _mustBuildIndexes_forNRemaining = 0;

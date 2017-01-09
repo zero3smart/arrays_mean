@@ -587,7 +587,12 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
 
         var finalizedUniqueFieldValuesByFieldName = [];
 
+
+   
+
         _.forOwn(uniqueFieldValuesByFieldName, function (columnValue, columnName) {
+
+
             /* getting illegal values list */
             var illegalValues = [];
 
@@ -598,6 +603,7 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                     illegalValues = illegalValues.concat(dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all);
                 }
                 var illegalValuesForThisKey = dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey[columnName];
+
                 if (illegalValuesForThisKey) {
                     illegalValues = illegalValues.concat(illegalValuesForThisKey);
                 }
@@ -608,19 +614,26 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
             var revertType = false;
             var overwriteValue = false;
 
-            var row = columnValue;
+            var row = columnValue.slice();
             if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                 row = [];
                 revertType = true;
             }
+
+
 
             if (typeof dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName !== 'undefined' &&
                 dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName]) {
                 var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName];
                 overwriteValue = true;
             }
+         
+            var spliceCount = 0;
 
+ 
             columnValue.forEach(function(rowValue,index) {
+
+ 
 
                 if (rowValue == null || typeof rowValue == 'undefined' || rowValue == "") {
                     return;
@@ -643,10 +656,15 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                         if (valueByOverride) row[index] = valueByOverride.override;
                     }
 
-                } else {
-                    if (!revertType) row.splice(index,1);
+               }
+                else {
+                    if (!revertType)  {
+                        row.splice(index-spliceCount,1);
+                        spliceCount++;
+                    }
                 }
             });
+
 
             // Sort by integer
             if (dataSourceDescription.fe_filters.fieldsSortableByInteger &&

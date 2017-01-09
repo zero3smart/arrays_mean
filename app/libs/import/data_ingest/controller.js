@@ -137,55 +137,56 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
                         winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
                         return callback(err);
                     }
+                    callback();
 
 
-                    job.log("🔁  Now generating fields by joining datasets ");
+                    // job.log("🔁  Now generating fields by joining datasets ");
            
-                    async.each(
-                        dataSourceDescription.relationshipFields,
-                        function (description, cb) {
-                            var by = description.by;
-                            var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
-                            switch (by.operation) {
-                                case "Join":
-                                {
-                                    // var matchFn = by.matchFn;
+                    // async.each(
+                    //     dataSourceDescription.relationshipFields,
+                    //     function (description, cb) {
+                    //         var by = description.by;
+                    //         var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
+                    //         switch (by.operation) {
+                    //             case "Join":
+                    //             {
+                    //                 // var matchFn = by.matchFn;
 
-                                    // if (typeof matchFn === 'undefined' || matchFn == null) {
-                                    //     matchFn = "LocalEqualsForeignString";
-                                    // }
+                    //                 // if (typeof matchFn === 'undefined' || matchFn == null) {
+                    //                 //     matchFn = "LocalEqualsForeignString";
+                    //                 // }
 
-                                    processed_row_objects.GenerateFieldsByJoining_comparingWithMatchFn(
-                                        job,
-                                        dataSource_uid,
-                                        dataSource_importRevision,
-                                        dataSource_title,
-                                        description.field,
-                                        description.singular,
-                                        by.findingMatchOnField,
-                                        by.ofOtherRawSrcUID,
-                                        by.andOtherRawSrcImportRevision,
-                                        by.withLocalField,
-                                        by.obtainingValueFromField,
-                                        formingRelationship,
-                                        /*matchFn, */
-                                        cb
-                                    );
-                                    break;
-                                }
+                    //                 processed_row_objects.GenerateFieldsByJoining_comparingWithMatchFn(
+                    //                     job,
+                    //                     dataSource_uid,
+                    //                     dataSource_importRevision,
+                    //                     dataSource_title,
+                    //                     description.field,
+                    //                     description.singular,
+                    //                     by.findingMatchOnField,
+                    //                     by.ofOtherRawSrcUID,
+                    //                     by.andOtherRawSrcImportRevision,
+                    //                     by.withLocalField,
+                    //                     by.obtainingValueFromField,
+                    //                     formingRelationship,
+                    //                     /*matchFn, */
+                    //                     cb
+                    //                 );
+                    //                 break;
+                    //             }
 
-                                default:
-                                {
-                                    winston.error("❌  Unrecognized post-processing field generation operation \"" + byDoingOp + "\" in", description);
-                                    break;
-                                }
-                            }
-                        },
-                        function (err) {
-                            if (err) winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
-                            callback(err);
-                        }
-                    );
+                    //             default:
+                    //             {
+                    //                 winston.error("❌  Unrecognized post-processing field generation operation \"" + byDoingOp + "\" in", description);
+                    //                 break;
+                    //             }
+                    //         }
+                    //     },
+                    //     function (err) {
+                    //         if (err) winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
+                    //         callback(err);
+                    //     }
+                    // );
 
                  });
             }
