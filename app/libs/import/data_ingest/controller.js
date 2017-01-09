@@ -446,7 +446,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         {
             upsert: true
         };
-        console.log(eachCtx)
         eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(writeConcern, function (err, result) {
             if (err) {
                 winston.error("❌ [" + (new Date()).toString() + "] Error while saving custom fields  : ", err);
