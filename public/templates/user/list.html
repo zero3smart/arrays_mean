@@ -1,22 +1,27 @@
-<md-button class="md-dashboard md-dashboard-icon md-dark" ng-click="openUserDialog($event, {})" md-no-ink>
-    <md-icon class="btn-icon">add</md-icon>
+<md-button class="md-dashboard md-dashboard-icon primary-action" ng-click="openUserDialog($event, {})" md-no-ink>
+    <!-- <md-icon class="btn-icon">add</md-icon> -->
     <span class="btn-label">Invite User</span>
 </md-button>
 
-<p class="instructions">Users</p>
+<p class="instructions" ng-if="users.length > 0">Users</p>
 
 <ul class="dashboard-list user-list" ng-cloak>
     <li ng-repeat="person in users track by $index" layout="row" layout-align="none center">
 
-        <div flex="10">
+        <!-- <div flex="10">
             <img src="/images/image-not-found-sm.png" />
-        </div>
+        </div> -->
 
         <span ng-class="{'pending': user.invited[person._id]}" flex>
             <span class="dashboard-list-name">{{person.firstName}} {{person.lastName}}</span>
             <span class="dashboard-list-name" ng-if="!(person.firstName || person.lastName)">{{ person.email }}</span>
             <span ng-if="user.invited[person._id]">(Pending Invitation)</span>
         </span>
+
+        <!-- placeholder until ready -->
+        <div flex="10">
+            <img src="/images/image-not-found-sm.png" style="opacity: 0" />
+        </div>
 
         <span class="dashboard-list-icon" ng-click="openUserDialog($event, person, user)" ng-if="user._id != person._id && !user.invited[person._id]" flex="10">
             <i class="fa fa-pencil" aria-hidden="true"></i>
