@@ -1,4 +1,4 @@
-<md-content layout-padding>
+<md-content layout-padding md-no-ink>
     <form name="settingsForm" ng-submit="submitForm(settingsForm.$valid)" novalidate>
         <md-input-container class="md-block">
             <label>Title</label>
@@ -32,9 +32,9 @@
 
 
         <md-input-container class="md-block">
-            <label>URLs</label>
+            <label>Source URL</label>
             <md-chips ng-model="dataset.urls" name="url" md-enable-chip-edit="true"
-                      placeholder="Enter a URL" secondary-placeholder="+URL"></md-chips>
+                      placeholder="Enter a URL" secondary-placeholder="Add URL"></md-chips>
         </md-input-container>
 
         <md-input-container class="md-block">
@@ -46,10 +46,10 @@
         </md-input-container>
 
         <div layout="row" layout-align="space-between center" class="panel-footer">
-            <md-button ui-sref="dashboard.dataset.list" class="md-raised md-dashboard md-light" target="_self" md-no-ink>
+            <md-button ui-sref="dashboard.dataset.list" class="md-dashboard" target="_self" md-no-ink>
                 <span class="btn-label">Back</span>
             </md-button>
-            <md-button class="md-raised md-dashboard md-dark" type="submit" ng-disabled="settingsForm.$invalid || submitting" md-no-ink>
+            <md-button class="md-dashboard" type="submit" ng-disabled="settingsForm.$invalid || submitting" md-no-ink>
                 <span class="btn-label">Next</span>
             </md-button>
         </div>

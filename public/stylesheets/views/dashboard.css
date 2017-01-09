@@ -43,6 +43,15 @@ md-input-container label.md-required:after {
 	border-color: var(--color-warn) !important;
 }
 
+md-checkbox.md-checked .md-icon {
+	background-color: var(--color-primary);
+}
+md-checkbox .md-container:before {
+	/*remove the persistent ink on focus*/
+	content: none;
+}
+
+
 /**/
 
 h2 {
