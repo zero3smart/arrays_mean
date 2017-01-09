@@ -11,6 +11,8 @@ var ctrlDataset = require('../controllers/api/dataset');
 var ctrlUsers = require('../controllers/api/users');
 var ctrlTeam = require('../controllers/api/team');
 var ctrlView = require('../controllers/api/views');
+var ctrlBillingAccount = require('../controllers/api/billing/account');
+var ctrlSubscription = require('../controllers/api/billing/subscription');
 var ejwt = require('express-jwt');
 
 var auth = ejwt({
@@ -93,6 +95,10 @@ router.get('/team/loadIcons', ctrlTeam.loadIcons);
 router.get('/team/getAssetUploadSignedUrl/:id', ctrlTeam.signedUrlForAssetsUpload);
 router.put('/team/:id', ctrlTeam.update);
 router.put('/team/admin/:id',ctrlTeam.switchAdmin);
+
+// billing, account & subscriptions settings
+router.post('/billing/account/new', ctrlBillingAccount.new);
+router.post('/billing/subscription/new', ctrlSubscription.new);
 
 
 module.exports = router;
