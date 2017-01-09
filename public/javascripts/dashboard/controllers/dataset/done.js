@@ -108,14 +108,15 @@ angular.module('arraysApp')
 
                         } else if ($scope.currentStep == 2) {
                             $scope.importLogger.push("📡  [" + uid + "] Successfully imported processed objects!")
-                            scrapeImages(id,uid);
-
-                        } else if ($scope.currentStep == 3) {
-                            $scope.importLogger.push("📡  [" + uid + "] Successfully completed custom field processing and image scraping!");
                             postImport(id,uid);
 
+                        } else if ($scope.currentStep == 3) {
+                            $scope.importLogger.push("📡  [" + uid + "] Successfully cached all the filters for the views! ");
+                            scrapeImages(id,uid);
+
                         } else if ($scope.currentStep == 4) {
-                            $scope.importLogger.push("📡  [" + uid + "] Successfully cached all the filters!");
+
+                            $scope.importLogger.push("📡  [" + uid + "] Successfully scraped all the images! ");
 
                             if (datasourceIndex == -1) {
                                 if (!dataset.fe_designatedFields) {
@@ -128,8 +129,6 @@ angular.module('arraysApp')
                             }
 
                             datasourceIndex ++;
-
-
 
                             if (datasourceIndex < $scope.additionalDatasources.length) {
                                 importDatasource($scope.additionalDatasources[datasourceIndex]);
@@ -170,7 +169,7 @@ angular.module('arraysApp')
                     }, errorHandler);
             }
 
-            function scrapeImages(id,uid) { //and do custom field 
+            function scrapeImages(id,uid) { 
 
                 
                 if ($scope.dirty >= 3) {
@@ -179,7 +178,7 @@ angular.module('arraysApp')
                         if (response.status == 200 && !response.data.error) {
                             var jobId = response.data.jobId;
 
-                            $scope.importLogger.push("🔁  [" + uid + "] Initiating custom field processing and image scraping ...");
+                            $scope.importLogger.push("🔁  [" + uid + "] Initiating image scraping ...");
                             $scope.currentJobId = jobId;
                             $scope.jobs[jobId] = {};
 
@@ -261,8 +260,6 @@ angular.module('arraysApp')
                 var id = datasource._id;
                 if ($scope.additionalDatasources.length == 0) {
 
-                    console.log(datasource.dirty);
-                    
                     if (datasource.dirty == 1)
                         postImport(id,uid);
                     else if (datasource.dirty > 1)

@@ -48,13 +48,13 @@
                             </div>
                         </md-input-container>
 
-                        <md-input-container flex="20">
+                       <!--  <md-input-container flex="20">
                             <label>Match Function</label>
                             <md-select required name="matchFn_{{$index}}"
                                        ng-model="relationshipField.by.matchFn">
                                 <md-option ng-repeat="fn in availableMatchFns" value="{{fn}}">{{fn}}</md-option>
                             </md-select>
-                        </md-input-container>
+                        </md-input-container> -->
 
                         <div layout="row" flex="55">
                             <md-input-container flex="50">
@@ -71,7 +71,7 @@
                             <md-input-container flex="50">
                                 <label>Foreign Field</label>
                                 <md-select required name="foreignField_{{$index}}"
-                                           ng-model="relationshipField.by.findingMatchOnFields" multiple>
+                                           ng-model="relationshipField.by.findingMatchOnField">
                                     <md-option ng-repeat="column in data.columns[$index]" value="{{column.name}}">{{column.name}}
                                     </md-option>
                                 </md-select>

@@ -322,6 +322,10 @@ module.exports.loadDatasourceColumnsForMapping = function (req, res) {
                     if (err) return res.status(500).send(err);
 
                     req.session.columns[description._id] = columns;
+                    columns = columns.concat(description.customFieldsToProcess.map(function(customField) {
+                        return {name: customField.fieldName} ;
+                    }));
+
                     res.json({
                         cols: columns.filter(function (e) {
                             return !description.fe_excludeFields || !description.fe_excludeFields[e.name];
@@ -329,12 +333,19 @@ module.exports.loadDatasourceColumnsForMapping = function (req, res) {
                     });
                 });
             } else {
-                if (req.session.columns[description._id])
+                if (req.session.columns[description._id]) {
+                    var columns = req.session.columns[description._id];
+                    columns = columns.concat(description.customFieldsToProcess.map(function(customField) {
+                        return {name: customField.fieldName} ;
+                    }));
+
                     return res.json({
-                        cols: req.session.columns[description._id].filter(function (e) {
+                        cols: columns.filter(function (e) {
                             return !description.fe_excludeFields || !description.fe_excludeFields[e.name];
                         })
                     });
+
+                }
                 else
                     return res.status(500).send('Invalid parameter');
             }
