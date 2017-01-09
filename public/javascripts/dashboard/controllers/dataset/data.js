@@ -803,7 +803,11 @@ angular.module('arraysApp')
                 $scope.data = {};
                 $scope.data.columns = [];
                 $scope.selectedColumns = [];
-                $scope.dataset = angular.copy(dataset);
+                $scope.dataset = angular.copy(dataset)
+                $scope.dataset.columns = $scope.dataset.columns.concat(dataset.customFieldsToProcess.map(function(customField) {
+                    return {name: customField.fieldName};
+                }))
+
                 if (!$scope.dataset.relationshipFields) $scope.dataset.relationshipFields = [];
 
                 DatasetService.getAvailableMatchFns()
