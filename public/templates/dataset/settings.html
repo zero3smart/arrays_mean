@@ -25,11 +25,24 @@
                 <div ng-message="min">You should input at least 1.</div>
             </div>
         </md-input-container>
-        <md-input-container class="md-block md-color-picker">
+
+        <!-- <md-input-container class="md-block md-color-picker">
             <label>Brand Color</label>
             <div md-color-picker ng-model="dataset.brandColor"></div>
-        </md-input-container>
-
+        </md-input-container> -->
+        
+        <div style="margin-top: -18px;">
+            <label style="color: var(--color-text-light);">Brand Color</label>
+            <ul class="aa-color-picker" layout="row">
+                <li flex ng-repeat="color in colors" ng-class="{selected: (color===selected)}" ng-click="pickColor(color)" ng-style="{'background-color':color};"></li>
+            </ul>
+            <!-- <ul class="aa-color-picker" layout="row">
+                <li flex ng-repeat="color in colors | limitTo:11" ng-class="{selected: (color===selected)}" ng-click="pickColor(color)" ng-style="{'background-color':color};"></li>
+            </ul>
+            <ul class="aa-color-picker" layout="row">
+                <li flex ng-repeat="color in colors | limitTo:11:11" ng-class="{selected: (color===selected)}" ng-click="pickColor(color)" ng-style="{'background-color':color};"></li>
+            </ul> -->
+        </div>
 
         <md-input-container class="md-block">
             <label>URLs</label>

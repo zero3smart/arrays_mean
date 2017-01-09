@@ -7,10 +7,38 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
+            // from pieset/pieSetController.js
+            $scope.colors = [
+                '#FEAA00',
+                '#FEBC12',
+                '#FECC4B',
+                '#FFDE82',
+                '#008E8C',
+                '#26A4A2',
+                '#53BAB8',
+                '#87D0D0',
+                '#0036FF',
+                '#235EFF',
+                '#5284FF',
+                '#86ACFF',
+                '#6500F8',
+                '#8200FB',
+                '#9E3FFD',
+                '#BE7DFD',
+                '#FE00FF',
+                '#FE33FF',
+                '#FE66FF',
+                '#FE99FF',
+                '#FA2A00',
+                '#FB5533'
+            ];
+            $scope.selected = dataset.brandColor || $scope.colors[0];
+            console.log($scope.colors.length);
+            $scope.pickColor = function(color) {
+                $scope.selected = color;
+                dataset.brandColor = color;
+            }
 
-
-
-    
            $scope.submitForm = function(isValid) {
 
                 if (isValid) {
@@ -26,7 +54,7 @@ angular.module('arraysApp')
 
                     DatasetService.save(dataset).then(function (response) {
 
-                       if (response.status == 200) {           
+                       if (response.status == 200) {
                             $mdToast.show(
                                 $mdToast.simple()
                                     .textContent(dataset._id ? 'Dataset updated successfully!' : 'New Dataset was created successfully!')
