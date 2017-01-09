@@ -51,6 +51,15 @@ md-checkbox .md-container:before {
 	content: none;
 }
 
+md-option  {
+	color: var(--color-text-med) !important;
+}
+md-option[selected] {
+	color: var(--color-text-dark) !important;
+}
+md-select:not([disabled]):focus .md-select-value {
+	border-color: var(--color-primary) !important;
+}
 
 /**/
 
