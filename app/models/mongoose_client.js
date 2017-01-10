@@ -8,8 +8,8 @@ if (!dbURI) dbURI = 'mongodb://localhost/arraysdb';
 winston.info("💬  MongoDB URI: ", dbURI);
 mongoose.Promise = require('q').Promise;
 
-var options = { server: { socketOptions: { keepAlive: 1000, connectTimeoutMS: 30000 ,socketTimeoutMS: 100000} }, 
-                replset: { socketOptions: { keepAlive: 1000, connectTimeoutMS : 30000} } }; 
+var options = { server: { socketOptions: { keepAlive: 1000, connectTimeoutMS: 30000 ,socketTimeoutMS: 200000} }, 
+                replset: { socketOptions: { keepAlive: 1000, connectTimeoutMS : 30000, socketTimeoutMS: 200000} } }; 
 
 
 mongoose.connect(dbURI,options);
