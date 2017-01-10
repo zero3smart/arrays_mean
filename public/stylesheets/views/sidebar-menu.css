@@ -17,8 +17,11 @@
         margin-top: var(--navbar-height-tablet);
     }
 }
+/*not collapsed*/
 @media (min-width: 960px)  {
     .sidebar-menu {
+        /*h1 + 15px*/
+        padding-top: calc(78px + 15px);
         width: var(--sidebar-width);
     }
 }

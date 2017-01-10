@@ -240,6 +240,16 @@ md-input-invalid.subdomain-append {
     font-size: 16px;
     text-transform: none;
 }
+
+/*match sidebar button height*/
+.md-nav-bar {
+	height: 41px;
+}
+/*.md-tab,*/
+.md-nav-item a {
+	line-height: 16px !important;
+}
+
 .dashboard .tab-content {
     padding-top: 2em;
 }
