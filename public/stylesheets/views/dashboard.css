@@ -84,6 +84,12 @@ md-content.md-default-theme, md-content {
     margin-bottom: 30px;
 }
 .instructions {
+    margin-top: 30px;
+    margin-bottom: 5px;
+}
+.instructions {
+    margin-top: 30px;
+    margin-bottom: 5px;
 	margin: 0;
 	line-height: 16px;
 }
@@ -215,7 +221,8 @@ md-input-invalid.subdomain-append {
 .user-list li:last-child {
 	border-bottom: 1px solid #eeeeee;
 }
-.user-list li img {
+.user-list li img,
+.user-list li canvas {
 	width: 100%;
 	padding: 15px 15px 15px 0;
 }
@@ -474,6 +481,10 @@ md-dialog fieldset legend,
 .md-button.md-dashboard:not([disabled]):hover {
     background: var(--color-primary);
 }
+.md-button.md-dashboard.disabled {
+	background: var(--color-text-light);
+}
+
 
 md-icon.btn-icon {
     color: white !important;
@@ -511,6 +522,18 @@ md-icon.btn-icon {
 }
 .md-button.md-dashboard.confirm:not([disabled]):hover .btn-label {
 	color: var(--color-primary);
+}
+
+/* Team Settings */
+.team-uploader {
+	display: none !important;
+}
+/*icon upload*/
+md-progress-linear .md-container {
+	background-color: #eeeeee;
+}
+md-progress-linear .md-bar {
+	background-color: var(--color-text-light);
 }
 
 /* ----------- Manager Users -------------- */
