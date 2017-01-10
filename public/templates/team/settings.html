@@ -32,9 +32,6 @@
         <label for="team_logo" class="md-button md-dashboard" ng-class="{'disabled': logoUploader.getNotUploadedItems().length}">
             {{team.logo ? 'Update' : 'Add'}}
         </label>
-        <md-button class="md-dashboard" ng-click="logoUploader.uploadAll()" ng-hide="!logoUploader.getNotUploadedItems().length">
-            <span class="btn-label">Upload</span>
-        </md-button>
     </div>
 
     <div class="formInput">
@@ -48,14 +45,11 @@
         <label for="team_logo_header" class="md-button md-dashboard" ng-class="{'disabled': logo_headerUploader.getNotUploadedItems().length}">
             {{team.logo_header ? 'Update' : 'Add'}}
         </label>
-        <md-button class="md-dashboard" ng-click="logo_headerUploader.uploadAll()" ng-hide="!logo_headerUploader.getNotUploadedItems().length">
-            <span class="btn-label">Upload</span>
-        </md-button>
     </div>
 
     <div layout="row" layout-align="end center">
-        <md-button class="md-dashboard" type="submit" ng-disabled="vm.websiteForm.$invalid || !vm.websiteForm.$dirty">
-            <span class="btn-label">Update Settings</span>
+        <md-button class="md-dashboard confirm" type="submit" ng-disabled="vm.websiteForm.$invalid || !vm.websiteForm.$dirty">
+            <span class="btn-label">Save Settings</span>
         </md-button>
     </div>
 

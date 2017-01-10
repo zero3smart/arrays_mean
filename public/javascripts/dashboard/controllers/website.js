@@ -20,12 +20,18 @@ angular.module('arraysApp')
                 _uploader.onAfterAddingFile = function(fileItem) {
                     fileItem.uploadUrls = {};
                     fileItem.assetType = this.assetType;
-                    $scope.getUploadUrl(fileItem);
-                }
 
-                _uploader.onBeforeUploadItem = function(fileItem) {
-                    fileItem.url = fileItem.uploadUrls[fileItem.assetType].url;
-                    fileItem.headers['Content-Type'] = fileItem.file.type;
+                    if (!fileItem.uploadUrls[fileItem.assetType]) {
+                        AssetService.getPutUrlForTeamAssets($scope.team._id,fileItem.file.type,fileItem.assetType,fileItem.file.name)
+                            .then(function(urlInfo) {
+                                fileItem.uploadUrls[fileItem.assetType] = {url:urlInfo.putUrl,publicUrl: urlInfo.publicUrl};
+
+                                fileItem.url = fileItem.uploadUrls[fileItem.assetType].url;
+                                fileItem.headers['Content-Type'] = fileItem.file.type;
+
+                                _uploader.uploadAll();
+                            })
+                    }
                 }
 
                 _uploader.onCompleteItem = function(fileItem,response,status,header) {
@@ -57,15 +63,6 @@ angular.module('arraysApp')
             $scope.logoUploader = newUploader('logo', 'websiteForm');
 
             $scope.logo_headerUploader = newUploader('logo_header', 'websiteForm');
-
-            $scope.getUploadUrl = function(fileItem, assetType) {
-                if (!fileItem.uploadUrls[fileItem.assetType]) {
-                    AssetService.getPutUrlForTeamAssets($scope.team._id,fileItem.file.type,fileItem.assetType,fileItem.file.name)
-                        .then(function(urlInfo) {
-                            fileItem.uploadUrls[fileItem.assetType] = {url:urlInfo.putUrl,publicUrl: urlInfo.publicUrl};
-                        })
-                }
-            }
 
             $scope.submitForm = function(formName, isValid) {
                 if (isValid) {
