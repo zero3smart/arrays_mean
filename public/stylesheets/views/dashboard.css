@@ -27,15 +27,15 @@ h4 {
     font-size: 16px;
 }
 
+.dashboard-container {
+    padding: 2em 1em;
+}
+
 .dashboard-container a[href^="mailto"] {
 	/*md-default-theme*/
 	color: rgba(0,0,0,0.87);
 	/*var(--color-text-dark);*/
 	text-decoration: underline;
-}
-
-.dashboard-container {
-    padding: 2em 1em;
 }
 
 md-content.md-default-theme, md-content {

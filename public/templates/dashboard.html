@@ -4,13 +4,13 @@
 
 <div layout="row" class="dashboard-container" flex="">
 
-	<md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="$mdMedia('gt-sm')" flex="">
+	<md-sidenav class="md-sidenav-left" md-component-id="left" md-is-locked-open="$mdMedia('gt-sm')" flex="" flex-gt-sm="25">
 		<div flex="" class="sidebar-menu">
 			<ng-include src="'templates/blocks/sidebar-menu.html'"></ng-include>
 		</div>
 	</md-sidenav>
 
-	<div flex="5"></div>
+	<div flex="5" hide-xs hide-sm show-gt-sm></div>
 
 	<div flex="65" class="dashboard-content">
 		<div ui-view></div>
