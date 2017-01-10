@@ -8,7 +8,7 @@ var recurlyConfig = {
 };
 var recurly = new Recurly(recurlyConfig);
 
-module.exports.new = function(req, res) {
+module.exports.create = function(req, res) {
 
     var userId = req.user;
 
@@ -42,6 +42,19 @@ module.exports.new = function(req, res) {
         ip_address: req.body.ip_address
 
 	}, function(err, response) {
+        if (err) {
+            res.send({error: err.message});
+        } else {
+            res.json(response);
+        }
+    });
+};
+
+module.exports.get = function(req, res) {
+
+    var userId = req.user;
+
+    recurly.billingInfo.get(userId, function(err, response) {
         if (err) {
             res.send({error: err.message});
         } else {

@@ -8,7 +8,7 @@ var recurlyConfig = {
 };
 var recurly = new Recurly(recurlyConfig);
 
-module.exports.new = function(req, res) {
+module.exports.create = function(req, res) {
 
     var userId = req.user;
 

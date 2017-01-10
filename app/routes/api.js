@@ -98,9 +98,10 @@ router.put('/team/:id', ctrlTeam.update);
 router.put('/team/admin/:id',ctrlTeam.switchAdmin);
 
 // billing, account & subscriptions settings
-router.post('/billing/account/new', ctrlBillingAccount.new);
-router.post('/billing/billinginfo/new', ctrlBillingInfo.new);
-router.post('/billing/subscription/new', ctrlSubscription.new);
+router.post('/billing/account', ctrlBillingAccount.create);
+router.post('/billing/billinginfo', ctrlBillingInfo.create);
+router.get('/billing/billinginfo', ctrlBillingInfo.get);
+router.post('/billing/subscription', ctrlSubscription.create);
 
 
 module.exports = router;
