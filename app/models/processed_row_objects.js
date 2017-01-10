@@ -106,36 +106,22 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
         cursor.on('data', function (doc) {
 
             count += 1;
-            // updateDocs.push({insertOne: {document: doc._doc}});
             nativeCollection_ofTheseProcessedRowObjects.insertOne(doc._doc, {ordered: false}, function (err) {
                 if (err) {
                     err = err
                     winston.error("❌ [" + (new Date()).toString() + "] Error from line 121 while saving processed row objects: ", err);
                 }
             })
-
+            
         }).on('error', function (err) {
 
             winston.error("❌ error with cursor" + err)
                 return callback(err)
 
         }).on('end', function () {
-
-            console.log("heap used: " + process.memoryUsage().heapUsed)
-            console.log("done")
-            // nativeCollection_ofTheseProcessedRowObjects.bulkWrite(updateDocs, {ordered: false}, function (err) {
-                // if (err) {
-                    // err = err
-                    // winston.error("❌ [" + (new Date()).toString() + "] Error from line 121 while saving processed row objects: ", err);
-                // } else {
-            winston.info("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.");
+            winston.info("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects. Used " + process.memoryUsage().heapUsed + "heap memory. Inserted " + count + " processed rows for\"" + dataSource_title + "\".");
             job.log("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.")
-                // }
-            // });
-            winston.info("📡  [" + (new Date()).toString() + "] Inserted " + count + " processed rows for \"" + dataSource_title + "\".");
-
             return callback(err)
-            //end
         })
 
     });
