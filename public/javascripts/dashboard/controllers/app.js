@@ -38,6 +38,9 @@ angular
             function buildCloser(navID) {
                 return function() {
                     $mdSidenav(navID).close()
+                    .then(function() {
+                        document.getElementById('leftNav').blur();
+                    })
                 }
             }
             function buildToggler(navID) {
