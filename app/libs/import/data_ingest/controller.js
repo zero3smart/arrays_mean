@@ -88,7 +88,6 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions,job, fn)
         function (err) {
             if (err) {
                 winston.info("❌  Error encountered during import post-processing:", err.message);
-
                 fn(err);
             } else {
                 winston.info("✅  Import post-processing done.");
@@ -183,7 +182,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
                         },
                         function (err) {
                             if (err) winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
-                            callback(err);
+                            return callback(err);
                         }
                     );
 

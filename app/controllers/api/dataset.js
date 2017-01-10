@@ -77,14 +77,17 @@ queue.process('importProcessed',function(job,done) {
 })
 queue.process('postImport',function(job,done) {
     var id = job.data.id;
+
     datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
+
         postimport_caching_controller.GeneratePostImportCaches(descriptions,job,function(err) {
             if (err) {  
                 console.log('err in queue processing post import caches : %s',err);
                 return done(err);
 
             }
-            datasource_description.update({$or:[{_id:id}, {schema_id: id}, {_otherSources:id}]}, {$set: {dirty:0,imported:true}})
+
+            datasource_description.update({$or:[{_id:id}, {schema_id: id}, {_otherSources:id}]}, {$set: {dirty:0,imported:true}},{multi:true})
             .exec(function(err) {
                 if (err) {
                     console.log('err in queue updating post import caches : %s',err);
@@ -113,6 +116,49 @@ function getAllDatasetsWithQuery(query, res) {
     })
 
 }
+
+
+module.exports.getDependencyDatasetsForReimporting = function(req,res) {
+    datasource_description.findById(req.params.id,function(err,currentSource) {
+        if (err) return res.status(500).send(err);
+        if (currentSource == null) {
+            return res.json({datasets:[]})
+        }
+        var uid = currentSource.uid;
+        var importRevision = currentSource.importRevision;
+        var datatsetsNeedReimport = [];
+
+        datasource_description.find({_otherSources: req.params.id},function(err,relatedSources) {
+             if (err) return res.status(500).send(err);
+             var batch = new Batch();
+             batch.concurrency(5);
+
+            relatedSources.forEach(function(src) {
+                batch.push(function(done) {
+
+                    if (src.relationshipFields) {
+                        for (var i = 0; i < src.relationshipFields.length; i++) {
+                            if (src.relationshipFields[i].relationship == true && 
+                                src.relationshipFields[i].by.ofOtherRawSrcUID == uid && 
+                                src.relationshipFields[i].by.andOtherRawSrcImportRevision == importRevision) {
+                                datatsetsNeedReimport.push(src);
+                            }
+                         }
+
+                    }
+                    done();
+                })
+            })
+
+            batch.end(function(err) {
+                if (err) return res.status(500).send(err);
+                return res.json({datasets:datatsetsNeedReimport});
+            })  
+        })
+    })
+
+} 
+
 
 module.exports.getDatasetsWithQuery = function(req,res) {
     var query = req.body;

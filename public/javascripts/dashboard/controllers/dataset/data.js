@@ -967,16 +967,14 @@ angular.module('arraysApp')
 
                            if ($scope.dataset.relationshipFields[index] !== undefined) {
                                $scope.dataset.relationshipFields[index].by.ofOtherRawSrcUID = source.uid;
-
                                 var field_name = $scope.dataset.relationshipFields[index].field;
                                 //set the showfields to be an array of all the fields they want to see taken from the checkbox 
                                 $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {}
                                 $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[field_name] = {"showField": $scope.selectedColumns}
                                 $scope.dataset.relationshipFields[index].by.andOtherRawSrcImportRevision = source.importRevision;
 
-                                if ($scope.dataset._otherSources.indexOf(source._id) == -1)
+                                if ($scope.dataset._otherSources.indexOf(source._id) == -1 )
                                     $scope.dataset._otherSources.push(source._id);
-
 
                            }
                        

@@ -13,17 +13,20 @@ angular.module('arraysApp')
 
             $scope.currentJobId = undefined;
 
-            DatasetService.getDatasetsWithQuery({_otherSources: dataset._id})
+            DatasetService.getReimportDatasets(dataset._id)
             .then(function(datasets) {
                 $scope.additionalDatasources = $scope.additionalDatasources.concat(datasets);
-            })
 
+            })
 
             $scope.dirty = $scope.$parent.$parent.dataset.dirty;
             $scope.imported = $scope.$parent.$parent.dataset.imported;
+
             $scope.additionalDatasources.forEach(function(datasource) {
+
                 $scope.dirty = $scope.dirty || datasource.dirty;
                 $scope.imported = $scope.imported && datasource.imported;
+                
             });
 
 

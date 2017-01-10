@@ -401,12 +401,30 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
                 bulkOperation_ofTheseProcessedRowObjects.execute(function (err, result) {
                     if (err) {
                         winston.error("❌ [" + (new Date()).toString() + "] Error while saving generated fields of processed row objects: ", err);
+                        process.nextTick(function() {callback(err);})
                     } else {
-                        winston.info("✅  [" + (new Date()).toString() + "] Saved generated fields \"" + generateFieldNamed + "\" on processed row objects, result: ", JSON.stringify(result));
-                        job.log("✅  [" + (new Date()).toString() + "] Saved generated fields \"" + generateFieldNamed + "\" on processed row objects.");
+                       
+                      
+                        var setToNull = {};
+                        setToNull["rowParams." + generateFieldNamed] = {$exists: false}
+                        var setTo = {$set:{}};
+                        setTo.$set["rowParams."+ generateFieldNamed] = null
+                        nativeCollection_ofTheseProcessedRowObjects.update(setToNull,setTo,{multi:true},function(err) {
+                            if (err) {
+                                winston.error("❌ [" + (new Date()).toString() + "] Error while saving generated fields of processed row objects: ", err);
+                            } else {
+                                winston.info("✅  [" + (new Date()).toString() + "] Saved generated fields \"" + generateFieldNamed + "\" on processed row objects, result: ", JSON.stringify(result));
+                                job.log("✅  [" + (new Date()).toString() + "] Saved generated fields \"" + generateFieldNamed + "\" on processed row objects.");
+                                process.nextTick(function() {callback(err);})
+                                
+                            }
+
+                        })
+
+
 
                     }
-                    process.nextTick(function() {callback(err);})
+                   
                 });
 
             }

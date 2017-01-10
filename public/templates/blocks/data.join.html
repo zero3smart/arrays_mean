@@ -79,16 +79,16 @@
                         </div>
                     </div>
 
-                  <!--   <div layout="row">
+                    <div ng-if="!relationshipField.by.obtainingValueFromField" layout="row">
                         <md-checkbox aria-label="Select All" ng-click="toggleAll()" ng-checked="isChecked()">
                             <span ng-if="isChecked()">Un-</span>Select All
                         </md-checkbox>
                     </div>
-                    <div layout="row" layout-wrap flex>
-                        <div flex="20" ng-repeat="column in data.columns[$index]" ng-model="relationshipField.by.findingMatchOnFields">
+                    <div ng-if="!relationshipField.by.obtainingValueFromField" layout="row" layout-wrap flex>
+                        <div flex="20" ng-repeat="column in data.columns[$index]">
                             <md-checkbox aria-label="{{column.name}}" ng-checked="exists(column.name, selectedColumns)" ng-click="toggle(column.name, selectedColumns)"> {{column.name}}</md-checkbox>
                         </div>
-                    </div> -->
+                    </div>
 
                     <md-input-container class="md-block">
                         <label>Mapping Foreign Field</label>
@@ -105,10 +105,11 @@
 
                     <div layout="row">
                         <div flex="50">
-                            <md-checkbox name="singular" ng-model="relationshipField.singular">Singular</md-checkbox>
+                            <md-checkbox name="singular" ng-model="relationshipField.singular" ng-click="relationshipField.relationship=false;">Singular</md-checkbox>
                         </div>
-                        <div flex="50">
-                            <md-checkbox name="relationship" ng-model="relationshipField.relationship">Relationship</md-checkbox>
+                        <div flex="50"> 
+
+                            <md-checkbox name="relationship" ng-model="relationshipField.relationship" ng-click="relationshipField.singular=false;">Relationship</md-checkbox>
                         </div>
                     </div>
 
