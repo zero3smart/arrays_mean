@@ -1009,7 +1009,20 @@ angular.module('arraysApp')
                             }
                         }))
                     }, [])
-                );
+                ).concat(
+                    $scope.$parent.$parent.dataset.relationshipFields.map(function(relationshipField) {
+                        return {
+                            name: relationshipField.field,
+                            custom: true
+
+                        }
+                    })
+
+
+                )
+
+
+    
 
                 $scope.data.fields.sort(function (column1, column2) {
                     if ($scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column1.name) == -1 &&

@@ -34,7 +34,10 @@
         </md-checkbox>
     </md-input-container>
 
-    <fieldset class="standard" ng-if="customFieldIndex == undefined">
+
+
+
+    <fieldset class="standard" ng-if="customFieldIndex == undefined && !custom">
         <legend>One To One Override Values By Title</legend>
         <div layout="row"
              ng-repeat="valueByOverride in dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName]">
@@ -69,7 +72,7 @@
         </md-button>
     </fieldset>
 
-    <fieldset class="standard" ng-if="customFieldIndex == undefined">
+    <fieldset class="standard" ng-if="customFieldIndex == undefined && !custom">
         <legend>Values to Exclude by Original Key</legend>
         <md-input-container class="md-block md-padding">
             <label>All</label>
@@ -99,7 +102,7 @@
         </md-input-container>
     </fieldset>
 
-    <md-input-container class="md-block" flex-gt-sm ng-if="customFieldIndex == undefined">
+    <md-input-container class="md-block" flex-gt-sm ng-if="customFieldIndex == undefined && !custom">
         <label>Keywords</label>
         <md-chips ng-model="data.keywords.choices" name="keywords"
                   md-enable-chip-edit="true"
