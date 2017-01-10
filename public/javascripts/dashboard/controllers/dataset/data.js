@@ -965,7 +965,6 @@ angular.module('arraysApp')
                 $scope.toggleAll = function(fieldName,datasetColumns) {
                     $scope.dialog.form.$dirty=true;
                  
-
                     if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames == undefined) {
                         $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {};
                     }

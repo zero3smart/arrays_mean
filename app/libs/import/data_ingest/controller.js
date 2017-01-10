@@ -277,7 +277,9 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             (!Array.isArray(eachCtx) && !eachCtx.fields.length)) {
             continueToAfterIterating();
         } else {
-            eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation;
+
+            // eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation;
+            eachCtx.nativeCollection = forThisDataSource_nativeCollection;
 
             processed_row_objects.EnumerateProcessedDataset(
                 dataSource_uid,
@@ -347,6 +349,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                     };
 
+
+
                     eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
 
                     eachCtx.cached = [];
@@ -376,7 +380,10 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey
                     };
 
-                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateQuery);
+
+                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
+
+                    // find(bulkOperationQueryFragment).update(updateQuery);
                      
                 } else if (newFieldType == 'object') {
 
@@ -444,30 +451,32 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     }
 
     function afterGeneratingProcessedRowObjects_afterIterating_eachRowFn(eachCtx, cb) {
+        winston.info("✅  [" + (new Date()).toString() + "] Saved custom fields.");
+        cb();
    
-        eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(function (err, result) {
+        // eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(function (err, result) {
 
-            if (err) {
-                winston.error("❌ [" + (new Date()).toString() + "] Error while saving custom fields  : ", err);
-            } else {
+        //     if (err) {
+        //         winston.error("❌ [" + (new Date()).toString() + "] Error while saving custom fields  : ", err);
+        //     } else {
 
-                winston.info("✅  [" + (new Date()).toString() + "] Saved custom fields.");
+        //         winston.info("✅  [" + (new Date()).toString() + "] Saved custom fields.");
 
-                if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
+        //         if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
 
-                    var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+        //             var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
 
-                    raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
-                        console.log(err)
-                        cb(err);
-                    })
+        //             raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
+        //                 console.log(err)
+        //                 cb(err);
+        //             })
 
-                } else {
-                    cb(err);
-                }
+        //         } else {
+        //             cb(err);
+        //         }
 
-            }
-        });
+        //     }
+        // });
     }
 
 

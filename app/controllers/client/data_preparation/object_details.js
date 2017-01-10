@@ -145,9 +145,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                     dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField && 
                                     dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField.length > 0) {
 
-
-
                                     needObjectTitle = false;
+
                                     var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField;
                                     for(var i=0; i<wantedfield.length; i++) {
                                         fieldToAcquire["rowParams." + wantedfield[i]] = 1;
@@ -293,31 +292,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     }
                 }
 
-                // var fe_objectShow_customHTMLOverrideFnsByColumnNames = {};
-
-                // if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined') {
-                //     // console.log("fe_objectShow_customHTMLOverrideFnsByColumnNames")
-                //     // console.log("line 250")
-                //     for (var relationshipFieldName in dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames) {
-                //         var joinFields = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName].showField;
-                //         //this doesn't get called
-                //         fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName] = function (rowObject, eachValue, strParams) {
-                //             var relationshipObjectShowLink = "/" + eachValue.srcDocPKey + "/" + eachValue._id;
-                //             if (strParams && strParams != '') relationshipObjectShowLink += '?' + strParams;
-
-                //             var classes = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName].classes.toString().replace(",", " ");
-
-                //             var openingTag = '<a href="' + relationshipObjectShowLink + '" class=' + classes + '">';
-                //             var tagContent = eachValue.rowParams[dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName].showField];
-                //             var closingTag = '</a>';
-                //             return openingTag + tagContent + closingTag;
-
-                //         }
-
-                //     }
-
-                // }
-
                 var collatedJoinData = {}
                 var collateJoinData = function(columnName) {
                     var relationshipData = rowObject.rowParams[columnName]
@@ -370,8 +344,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     //
                     fieldsNotToLinkAsGalleryFilter_byColName: fieldsNotToLinkAsGalleryFilter_byColName,
                     //
-                    // fe_objectShow_customHTMLOverrideFnsByColumnNames: dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames,
-
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
                     scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
                     aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",

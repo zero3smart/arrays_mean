@@ -206,7 +206,6 @@ module.exports.remove = function (req, res) {
 
     // Remove processed row object
     batch.push(function (done) {
-
         mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey, function (err) {
             // Consider that the collection might not exist since it's in the importing process.
             if (err && err.code != 26) return done(err);
@@ -216,6 +215,11 @@ module.exports.remove = function (req, res) {
         });
 
     });
+
+
+    batch.push(function(done) {
+
+    })
 
     // Remove raw row object
     batch.push(function (done) {
@@ -297,6 +301,19 @@ module.exports.remove = function (req, res) {
     });
 
     //TODO: remove merged dataset references and settings
+
+    //  batch.push(function(done) {
+    //     datasource_description.find({_otherSources: description._id},function(err,descriptions) {
+    //         if (err) done(err);
+    //         for (var i = 0; i < descriptions.length; i++) {
+                
+    //         }
+    //     })
+
+    // })
+
+
+
 
 
     batch.push(function(done) {
