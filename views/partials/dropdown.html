@@ -42,7 +42,7 @@
     {% if columnNames | length %}
     <ul class="dropdown-menu axis-control {{ axis }}-axis-control" aria-labelledby="{{ label|replace(' ','') }}">
         {% for colName in columnNames %}
-        <li class="background-color-brand-hover"><a href="#" data-axis="{{ axis }}" data-colname="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
+        <li class="background-color-brand-hover"><a href="javascript:;" data-axis="{{ axis }}" data-colname="{{ colName }}">{{ colName | replace(r/_/g, ' ') }}</a></li>
         {% endfor %}
     </ul>
     {% endif %}
