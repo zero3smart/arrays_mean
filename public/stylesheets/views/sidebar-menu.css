@@ -14,7 +14,6 @@
 }
 @media (min-width: 768px)  {
     .sidebar-menu {
-        position: fixed;
         margin-top: var(--navbar-height-tablet);
     }
 }

@@ -1,7 +1,20 @@
 angular
     .module('arraysApp')
-    .controller('AdminCtrl', ['$scope', '$state', 'AuthService', '$window', '$location', '$mdSidenav',
-        function ($scope, $state, AuthService, $window, $location, $mdSidenav) {
+    .controller('AdminCtrl', ['$scope', '$state', 'AuthService', '$window', '$location', '$mdSidenav', '$state',
+        function ($scope, $state, AuthService, $window, $location, $mdSidenav, $state) {
+
+            $scope.currentMenuItem = '';
+
+            $scope.$on('$stateChangeStart',
+            function(event, toState, toParams, fromState, fromParams){
+                $scope.closeLeft();
+            })
+
+            $scope.$on('$stateChangeSuccess',
+            function(event, toState, toParams, fromState, fromParams){
+                // workaround for ui-sref-active bug
+                $scope.currentMenuItem = $scope.$state.current.name.split('.')[1];
+            })
 
             $scope.user = AuthService.currentUser();
             $scope.teams = AuthService.allTeams();
@@ -19,24 +32,18 @@ angular
                 AuthService.logout();
             };
 
+            $scope.closeLeft = buildCloser('left');
             $scope.toggleLeft = buildToggler('left');
 
+            function buildCloser(navID) {
+                return function() {
+                    $mdSidenav(navID).close()
+                }
+            }
             function buildToggler(navID) {
                 return function() {
                     $mdSidenav(navID).toggle()
                 }
             }
-
-            // if (!isSmartDevice($window)) {
-            //     $scope.showSideMenu = true;
-            // }
-
-            // function isSmartDevice( $window )
-            // {
-            //     // Adapted from http://www.detectmobilebrowsers.com
-            //     var ua = $window['navigator']['userAgent'] || $window['navigator']['vendor'] || $window['opera'];
-            //     // Checks for iOs, Android, Blackberry, Opera Mini, and Windows mobile devices
-            //     return (/iPhone|iPod|iPad|Silk|Android|BlackBerry|Opera Mini|IEMobile/).test(ua);
-            // }
 
     }]);
