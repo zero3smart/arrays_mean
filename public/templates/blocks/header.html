@@ -1,27 +1,47 @@
 <header id="masthead" class="site-header hidden-print" role="banner">
     <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand">
         <div class="container-fluid container-full-width">
+
             <div class="navbar-brand-container">
                 <a class="navbar-brand navbar-brand-arrays" href="{{explore_url}}" target="_self">Arrays</a>
             </div>
+
             <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav" hide-gt-sm="">
+                    <li>
+                        <a href="#" class="dashboard-menu-toggle" ng-click="toggleLeft()">
+                            <svg viewBox="0 0 18 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                <!-- Generator: Sketch 41.2 (35397) - http://www.bohemiancoding.com/sketch -->
+                                <title>Menu Icon</title>
+                                <desc>Created with Sketch.</desc>
+                                <defs></defs>
+                                <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                    <g id="menu" transform="translate(-11.000000, -13.000000)" fill="#000000">
+                                        <g id="Menu-Icon" transform="translate(11.000000, 13.000000)">
+                                            <path d="M0,0 L18,0 L18,2 L0,2 L0,0 Z M0,6 L18,6 L18,8 L0,8 L0,6 Z M0,12 L18,12 L18,14 L0,14 L0,12 Z" id="Combined-Shape"></path>
+                                        </g>
+                                    </g>
+                                </g>
+                            </svg>
+                        </a>
+                    </li>
+                </ul>
+
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown right">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false">{{user.firstName}} {{ user.lastName}} </span></a>
 
-
                         <ul class="dropdown-menu">
-                            <li class="background-color-brand-hover"><a ng-click="logout()" >Log Out</a>
+                            <li class="background-color-brand-hover">
+                                <a ng-click="logout()">Log Out</a>
                             </li>
-                            <li class="background-color-brand-hover"><a href="mailto:Arrays Support<info@arrays.co>">Contact
-                                Support</a></li>
-
-
+                            <li class="background-color-brand-hover">
+                                <a href="mailto:Arrays Support<info@arrays.co>">Contact Support</a>
+                            </li>
                         </ul>
                     </li>
                 </ul>
-
             </div>
         </div>
 

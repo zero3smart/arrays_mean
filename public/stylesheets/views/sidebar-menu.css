@@ -80,4 +80,19 @@
     margin: 12px;
 }
 
+.dashboard-menu-toggle svg {
+	width: 18px;
+	/*height: 24px;*/
+}
+@media (min-width: 768px)  {
+	.navbar-nav > li > a.dashboard-menu-toggle {
+	    padding: 20px;
+		padding-top: 22px;
+	}
+	.dashboard-menu-toggle svg {
+		width: 24px;
+	}
+}
+
+
 /* Menu Nav Bar */
