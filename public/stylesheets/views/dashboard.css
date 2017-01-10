@@ -55,7 +55,13 @@ md-content.md-default-theme, md-content {
 }
 
 .dashboard-content {
-    padding-top: var(--navbar-height-tablet);
+	padding-top: var(--navbar-height-mobile);
+}
+@media (min-width: 960px)  {
+    .dashboard-content {
+		padding-top: var(--navbar-height-tablet);
+		max-width: 45em !important;
+    }
 }
 
 .dashboard-content .array-header {
@@ -64,11 +70,6 @@ md-content.md-default-theme, md-content {
 
 .formInput{
     padding-top:20px;
-}
-@media (max-width: 767px) {
-    .dashboard-content {
-        padding-top: var(--navbar-height-mobile);
-    }
 }
 
 .table > thead > tr > th, .table > thead > tr > td, .table > tbody > tr > th, .table > tbody > tr > td, .table > tfoot > tr > th, .table > tfoot > tr > td {

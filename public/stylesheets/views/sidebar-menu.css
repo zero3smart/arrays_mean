@@ -12,9 +12,14 @@
     padding: 15px;
     width: 100%;
 }
-@media (min-width: 768px)  {
+@media (min-width: 768px) {
     .sidebar-menu {
         margin-top: var(--navbar-height-tablet);
+    }
+}
+@media (min-width: 960px)  {
+    .sidebar-menu {
+        width: var(--sidebar-width);
     }
 }
 
