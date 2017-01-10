@@ -80,13 +80,14 @@
                     </div>
 
                     <div ng-if="!relationshipField.by.obtainingValueFromField" layout="row">
-                        <md-checkbox aria-label="Select All" ng-click="toggleAll()" ng-checked="isChecked()">
+                        <md-checkbox aria-label="Select All" ng-click="toggleAll(dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipField.field].showField,data.columns[$index])" ng-checked="isChecked()">
                             <span ng-if="isChecked()">Un-</span>Select All
                         </md-checkbox>
                     </div>
+
                     <div ng-if="!relationshipField.by.obtainingValueFromField" layout="row" layout-wrap flex>
                         <div flex="20" ng-repeat="column in data.columns[$index]">
-                            <md-checkbox aria-label="{{column.name}}" ng-checked="exists(column.name, selectedColumns)" ng-click="toggle(column.name, selectedColumns)"> {{column.name}}</md-checkbox>
+                            <md-checkbox aria-label="{{column.name}}" ng-checked="dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipField.field].showField.indexOf(column.name)>=0" ng-click="toggle(column.name, dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipField.field].showField)"> {{column.name}}</md-checkbox>
                         </div>
                     </div>
 

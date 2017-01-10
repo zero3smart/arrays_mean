@@ -928,23 +928,25 @@ angular.module('arraysApp')
                     }
                 };
 
-                $scope.exists = function(item, selectedColumnList) {
-                    return selectedColumnList.indexOf(item) > -1;
-                };
 
-                $scope.isChecked = function() {
-                    if($scope.data.columns.length > 0) {
-                        return $scope.selectedColumns.length == $scope.data.columns[0].length   
+                $scope.isChecked = function(field,datasetColumns) {
+                    if (field == undefined) {
+                        field = [];
+                    }
+                    if(field.length > 0) {
+                        return field.length == datasetColumns.length   
                     }
                 };
 
-                $scope.toggleAll = function() {
-                    if ($scope.selectedColumns.length == $scope.data.columns[0].length) {
-                        $scope.selectedColumns = [];
-                    } else if ($scope.selectedColumns.length == 0 || $scope.selectedColumns.length > 0) {
-                        $scope.selectedColumns = [];
-                        for(var i =0; i < $scope.data.columns[0].length; i++) {
-                            $scope.selectedColumns.push($scope.data.columns[0][i].name)
+                $scope.toggleAll = function(field,datasetColumns) {
+
+
+                    if (field.length == datasetColumns.length) {
+                        field = [];
+                    } else if (field.length == 0 || field.length > 0) {
+                        field = [];
+                        for(var i =0; i < datasetColumns.length; i++) {
+                            field.push(datasetColumns[i].name)
                         }
                     }
                 };
@@ -968,18 +970,18 @@ angular.module('arraysApp')
                            if ($scope.dataset.relationshipFields[index] !== undefined) {
                                $scope.dataset.relationshipFields[index].by.ofOtherRawSrcUID = source.uid;
                                 var field_name = $scope.dataset.relationshipFields[index].field;
-                                //set the showfields to be an array of all the fields they want to see taken from the checkbox 
-                                $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {}
-                                $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[field_name] = {"showField": $scope.selectedColumns}
+                            
                                 $scope.dataset.relationshipFields[index].by.andOtherRawSrcImportRevision = source.importRevision;
 
                                 if ($scope.dataset._otherSources.indexOf(source._id) == -1 )
                                     $scope.dataset._otherSources.push(source._id);
 
                            }
+
+                           console.log($scope.dataset);
                        
                     });
-                    $mdDialog.hide($scope.dataset);
+                    // $mdDialog.hide($scope.dataset);
                 };
             }
 

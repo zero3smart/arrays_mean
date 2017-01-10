@@ -58,7 +58,7 @@
                                                 {% if columnName == relationshipField %}
                                                     {% set collatedJoinData = collateJoinData(columnName) %}
                                                     {% for column, fieldValueArray in collatedJoinData%}
-                                                        <dt> {{columnName}} </dt>
+                                                        <dt> {{columnName + " " + column}} </dt>
                                                         {% for value in fieldValueArray %}
                                                             <dd>
                                                                 <ul class="object-list">

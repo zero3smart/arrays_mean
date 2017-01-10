@@ -136,35 +136,57 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
                                 relationshipField = field;
                                 var fieldToAcquire ={ srcDocPKey:1,_id:1};
-
-                                // if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined') {
-                                //     fieldToAcquire ={ srcDocPKey:1,_id:1};
-                                //     var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField;
-                                //     for(var i=0; i<wantedfield.length; i++) {
-                                //         fieldToAcquire = fieldToAcquire + "rowParams." + wantedfield[i] + " ";
-                                //     }
-                                // }
+                                var needObjectTitle = true;
 
 
-                                importedDataPreparation.DataSourceDescriptionWithPKey(relationshipSource_pKey)
-                                .then(function(relationship_dataset) {
+
+                                if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined') {
+
+                                    needObjectTitle = false;
+                                    var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField;
+                                    for(var i=0; i<wantedfield.length; i++) {
+                                        fieldToAcquire = fieldToAcquire + "rowParams." + wantedfield[i] + " ";
+                                    }
+                                } 
 
 
-                                    var objectTitle = relationship_dataset.fe_designatedFields.objectTitle;
+                                if (needObjectTitle) {
+                                    batch.push(function(done) {
+                                        importedDataPreparation.DataSourceDescriptionWithPKey(relationshipSource_pKey)
+                                            .then(function(relationship_dataset) {
 
-                                    fieldToAcquire["rowParams." + objectTitle] = 1;
-                                    rowObjectsOfRelationship_mongooseModel.find(findQuery)
-                                        .select(fieldToAcquire)
-                                        .exec(function (err, hydrationFetchResults) {
-                                            if (err) return done(err);
-                                            var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
 
-                                            rowObject.rowParams[field] = hydrationValue; // a doc or list of docs
-                        
-                                            done();
-                                        });
 
-                                })
+                                                var objectTitle = relationship_dataset.fe_designatedFields.objectTitle;
+
+                                                fieldToAcquire["rowParams." + objectTitle] = 1;
+
+                                                if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined') {
+                                                    fieldToAcquire ={ srcDocPKey:1,_id:1};
+                                                    var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField;
+                                                    for(var i=0; i<wantedfield.length; i++) {
+                                                        fieldToAcquire = fieldToAcquire + "rowParams." + wantedfield[i] + " ";
+                                                    }
+                                                }
+                                                done();
+                                            })
+                                    })
+                                }
+
+
+                                rowObjectsOfRelationship_mongooseModel.find(findQuery)
+                                .select(fieldToAcquire)
+                                .exec(function (err, hydrationFetchResults) {
+                                    if (err) return done(err);
+                                    var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
+
+                                    rowObject.rowParams[field] = hydrationValue; // a doc or list of docs
+                
+                                    done();
+                                });
+
+
+
 
                             } else {
                                 done(); // nothing to hydrate
