@@ -157,7 +157,6 @@
 /* '' */
 .icon-tile-null:before {
     content: '\e814';
-    font-size: 38px;
 }
 
 /* '' */
@@ -168,13 +167,11 @@
 /* '' */
 .icon-tile-female:before {
     content: '\e816';
-    font-size: 38px;
 }
 
 /* '' */
 .icon-tile-male:before {
     content: '\e817';
-    font-size: 38px;
 }
 
 /* '' */

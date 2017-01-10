@@ -45,6 +45,7 @@ router.get('/dataset/getAdditionalSources/:id', ctrlDataset.getAdditionalSources
 router.post('/dataset/update', ctrlDataset.update);
 router.put('/dataset/publish/', ctrlDataset.publish);
 router.post('/dataset/removeSubdataset', ctrlDataset.removeSubdataset);
+router.get('/dataset/reimportDatasets/:id',ctrlDataset.getDependencyDatasetsForReimporting);
 
 router.get('/dataset/getAssetUploadSignedUrl/:id', ctrlDataset.signedUrlForAssetsUpload);
 
