@@ -300,7 +300,7 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
 
 
         var skipping = 0 ;
-        var batchLimit = 5000;
+        var batchLimit = 500;
         var counter = 1;
         var reachTheEnd = false;
         var processedrowobjectsCount = 0;
