@@ -8,8 +8,8 @@ if (!dbURI) dbURI = 'mongodb://localhost/arraysdb';
 winston.info("💬  MongoDB URI: ", dbURI);
 mongoose.Promise = require('q').Promise;
 
-var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } }, 
-                replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } }; 
+var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000, autoReconnect: true} }, 
+                replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000, autoReconnect: true} } }; 
 
 
 mongoose.connect(dbURI,options);
@@ -30,14 +30,20 @@ connection.once('open', function () {
 });
 connection.on('disconnected',function() {
     winston.error("❌  MongoDB disconnected");
-    mongoose.connect(dbURI,options);
+})
+
+process.on('SIGINT',function() {
+    connection.close(function() {
+        winston.info("⚠️ Mongoose connection closed due to app termination");
+        process.exit(0);
+
+    })
 })
 exports.connection = connection;
 //
 function WhenMongoDBConnected(fn) {
     if (isConnected == true) {
         fn();
-
         return;
     } else if (erroredOnConnection == true) {
         winston.warn("⚠️  Not going to call blocked Mongo fn,", fn);
