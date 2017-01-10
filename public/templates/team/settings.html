@@ -1,5 +1,5 @@
 <md-content md-no-ink class="array-content">
-<form name="vm.websiteForm" ng-submit="submitForm('websiteForm', vm.websiteForm.$valid && vm.websiteForm.$dirty)" novalidate>
+<form name="vm.websiteForm" ng-submit="submitForm()" novalidate>
    <md-input-container class="md-block" flex="50">
        <label>Title</label>
        <input required name="title" ng-model="team.title" maxlength="48">
@@ -21,9 +21,16 @@
        <!-- <span>.arrays.co.arrays.co</span> -->
    </div>
 
-    <div>
+   <div layout="row" layout-align="end center">
+       <md-button class="md-dashboard confirm" type="submit" ng-disabled="vm.websiteForm.$invalid || !vm.websiteForm.$dirty">
+           <span class="btn-label">Save Settings</span>
+       </md-button>
+   </div>
+
+   <!-- <div layout="column" layout-gt-sm="row"> -->
+    <div flex="50">
         <label>Team Logo</label>
-        <div flex="50">
+        <div>
             <img class="img-responsive" ng-if="team.logo" ng-src="{{team.logo}}">
         </div>
 
@@ -32,14 +39,11 @@
         <label for="team_logo" class="md-button md-dashboard" ng-class="{'disabled': logoUploader.getNotUploadedItems().length}">
             {{team.logo ? 'Update' : 'Add'}}
         </label>
-        <md-button class="md-dashboard" ng-click="logoUploader.uploadAll()" ng-hide="!logoUploader.getNotUploadedItems().length">
-            <span class="btn-label">Upload</span>
-        </md-button>
     </div>
 
-    <div class="formInput">
+    <div flex="50">
         <label>Team Masthead</label>
-        <div flex="50">
+        <div>
             <img class="img-responsive" ng-if="team.logo_header" ng-src="{{team.logo_header}}">
         </div>
 
@@ -48,18 +52,10 @@
         <label for="team_logo_header" class="md-button md-dashboard" ng-class="{'disabled': logo_headerUploader.getNotUploadedItems().length}">
             {{team.logo_header ? 'Update' : 'Add'}}
         </label>
-        <md-button class="md-dashboard" ng-click="logo_headerUploader.uploadAll()" ng-hide="!logo_headerUploader.getNotUploadedItems().length">
-            <span class="btn-label">Upload</span>
-        </md-button>
     </div>
+<!-- </div> -->
 
-    <div layout="row" layout-align="end center">
-        <md-button class="md-dashboard" type="submit" ng-disabled="vm.websiteForm.$invalid || !vm.websiteForm.$dirty">
-            <span class="btn-label">Update Settings</span>
-        </md-button>
-    </div>
-
-    <a href="" class="warn" ng-if="user.role=='superAdmin'">Delete Team</a>
+    <!-- <a href="" class="warn" ng-if="user.role=='superAdmin'">Delete Team</a> -->
 
 </form>
 <md-content>

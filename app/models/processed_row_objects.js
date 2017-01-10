@@ -107,19 +107,18 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
         cursor.on('data', function (doc) {
 
             count += 1;
-            // updateDocs.push({insertOne: {document: doc._doc}});
             nativeCollection_ofTheseProcessedRowObjects.insertOne(doc._doc, {ordered: false}, function (err) {
                 if (err) {
                     err = err
                     winston.error("❌ [" + (new Date()).toString() + "] Error from line 121 while saving processed row objects: ", err);
                 }
             })
-
+          
             if (count % 1000 == 0 && count !== 0) {
                 winston.info("✅  parsed " + count + " of the row object documents  for \"" + dataSource_title + "\"." );
                 job.log("✅  parsed " + count + " of the row object documents  for \"" + dataSource_title + "\".");
             }
-
+          
         }).on('error', function (err) {
 
             winston.error("❌ error with cursor" + err)
@@ -127,26 +126,11 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
 
         }).on('end', function () {
 
-            winston.info("📡  --------  finished streaming rows, heap used: " + process.memoryUsage().heapUsed + " ------------- ");
-            var err = null;
+            winston.info("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects. Used " + process.memoryUsage().heapUsed + "heap memory. Inserted " + count + " processed rows for\"" + dataSource_title + "\".");
+            job.log("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.")
+            return callback(err)
 
-            nativeCollection_ofTheseProcessedRowObjects.bulkWrite(updateDocs, {ordered: false}, function (err) {
-                if (err) {
-                    err = err
-                    winston.error("❌ [" + (new Date()).toString() + "] Error from line 128 while saving processed row objects: ", err);
-                } else {
-                    winston.info("📡  [" + (new Date()).toString() + "] Inserted " + count + " processed rows for \"" + dataSource_title + "\".");
-
-                    winston.info("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.");
-                    job.log("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.")
-
-                }
-                return callback(err);
-
-            });
-            //end
         })
-
     });
 };
 
