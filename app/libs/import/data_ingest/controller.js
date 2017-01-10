@@ -206,9 +206,6 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
                     cb);
             },
             function (err) {
-
-                console.log("callback here......");
-
                 if (err) {
                     winston.error("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
                     job.log("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
@@ -308,9 +305,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     var fieldName = eachCtx.fields[i];
                     var generatedArray = [];
 
-
                     eachCtx.cached.forEach(function (rowDoc) {
-
                         var fieldValue = rowDoc["rowParams"][fieldName];
 
                         if (eachCtx.valueOverrides[fieldName]) {
@@ -330,12 +325,12 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
                     });
 
-
                     if (eachCtx.fieldOverrides[fieldName]) {
                         fieldName = eachCtx.fieldOverrides[fieldName];
                     }
                     updateFragment["$pushAll"]["rowParams." + eachCtx.prefix + fieldName] = generatedArray;
                 }
+
                 // Insert the nested object into the main row
                 if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {
                     bulkOperationQueryFragment =
@@ -345,7 +340,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     };
 
                     eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
-
 
                     eachCtx.cached = [];
                 }
@@ -358,6 +352,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         } else {
             for (var i = 0; i < eachCtx.length; i++) {
                 var newFieldName = eachCtx[i].fieldName;
+
                 var newFieldType = eachCtx[i].fieldType;
                 if (newFieldType == 'array') {
                     var fieldsToMergeIntoArray = eachCtx[i].fieldsToMergeIntoArray;
@@ -387,8 +382,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
 
     function ifHasAndMeetCriteria(ctx, rowDoc) {
-
-
         if (ctx.criteria !== null && typeof ctx.criteria !== 'undefined') {
             var checkField = ctx.criteria.fieldName;
             var opr = ctx.criteria.operatorName;
@@ -445,6 +438,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         {
             upsert: true
         };
+
         eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(writeConcern, function (err, result) {
             if (err) {
                 winston.error("❌ [" + (new Date()).toString() + "] Error while saving custom fields  : ", err);
