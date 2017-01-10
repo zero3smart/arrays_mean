@@ -109,8 +109,8 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
             updateDocs.push({insertOne: {document: doc._doc}});
 
             if (count % 1000 == 0 && count !== 0) {
-                winston.info("✅  parsed " + count + " of the row object documents");
-                job.log("✅  parsed " + count + " of the row object documents");
+                winston.info("✅  parsed " + count + " of the row object documents  for \"" + dataSource_title + "\"." );
+                job.log("✅  parsed " + count + " of the row object documents  for \"" + dataSource_title + "\".");
             }
 
         }).on('error', function (err) {
@@ -120,7 +120,7 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
 
         }).on('end', function () {
 
-            winston.info(" 📡  --------  finished streaming rows, heap used: " + process.memoryUsage().heapUsed + " ------------- ");
+            winston.info("📡  --------  finished streaming rows, heap used: " + process.memoryUsage().heapUsed + " ------------- ");
             var err = null;
 
             nativeCollection_ofTheseProcessedRowObjects.bulkWrite(updateDocs, {ordered: false}, function (err) {
@@ -300,7 +300,7 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
 
 
         var skipping = 0 ;
-        var batchLimit = 1000;
+        var batchLimit = 500;
         var counter = 1;
         var reachTheEnd = false;
         var processedrowobjectsCount = 0;

@@ -34,7 +34,6 @@ module.exports.Import_rawObjects = function (dataSourceDescriptions,job, fn) {
 
             if (err) {
                 winston.info("❌  Error encountered during raw objects import:", err);
-                job.log("❌  Error encountered during raw objects import:", err);
                 fn(err);
             } else {
                 winston.info("✅  Raw objects import done.");
@@ -89,7 +88,7 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions,job, fn)
         function (err) {
             if (err) {
                 winston.info("❌  Error encountered during import post-processing:", err.message);
-                job.log("❌  Error encountered during import post-processing:", err.message);
+
                 fn(err);
             } else {
                 winston.info("✅  Import post-processing done.");

@@ -8,8 +8,8 @@ if (!dbURI) dbURI = 'mongodb://localhost/arraysdb';
 winston.info("💬  MongoDB URI: ", dbURI);
 mongoose.Promise = require('q').Promise;
 
-var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000, autoReconnect: true} }, 
-                replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000, autoReconnect: true} } }; 
+var options = { server: { socketOptions: { keepAlive: 1000, connectTimeoutMS: 30000 ,socketTimeoutMS: 30000} }, 
+                replset: { socketOptions: { keepAlive: 1000, connectTimeoutMS : 30000} } }; 
 
 
 mongoose.connect(dbURI,options);
@@ -30,6 +30,10 @@ connection.once('open', function () {
 });
 connection.on('disconnected',function() {
     winston.error("❌  MongoDB disconnected");
+    // mongoose.connect(dbURI,options);
+});
+connection.on('reconnected',function() {
+     winston.info("📡  Reconnected to " + process.env.NODE_ENV + " MongoDB.");
 })
 
 process.on('SIGINT',function() {

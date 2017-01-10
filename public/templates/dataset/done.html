@@ -8,7 +8,7 @@
 
         <md-content class="md-block" md-colors="{background: 'grey'}">
             <p ng-repeat="logger in importLogger">{{logger}}
-                <div ng-if="jobs[currentJobId].state!=='complete'">
+                <div ng-if="jobs[currentJobId].state=='active'">
                     <p ng-if="jobs[currentJobId].log" > {{jobs[currentJobId].log}} ..... </p>
                 </div>
             </p>
