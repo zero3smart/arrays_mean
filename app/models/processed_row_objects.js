@@ -109,8 +109,8 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
             updateDocs.push({insertOne: {document: doc._doc}});
 
             if (count % 1000 == 0 && count !== 0) {
-                winston.info("✅  parsed " + count + "of the row object documents");
-                job.log("✅  parsed " + count + "of the row object documents");
+                winston.info("✅  parsed " + count + " of the row object documents");
+                job.log("✅  parsed " + count + " of the row object documents");
             }
 
         }).on('error', function (err) {

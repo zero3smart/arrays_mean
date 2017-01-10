@@ -126,7 +126,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
             if (err) {
                 winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
                 return callback(err);
-            }
+        }
 
             if (dataSourceDescription.useCustomView) {
                 require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,job,callback);

@@ -34,7 +34,7 @@ connection.on('disconnected',function() {
 
 process.on('SIGINT',function() {
     connection.close(function() {
-        winston.info("⚠️ Mongoose connection closed due to app termination");
+        winston.info("⚠️  Mongoose connection closed due to app termination");
         process.exit(0);
 
     })

@@ -955,17 +955,31 @@ angular.module('arraysApp')
                 };
 
                 $scope.save = function () {
-                    $scope.dataset._otherSources = [];
-                    $scope.data.foreignDataset.forEach(function(source, index) {
-                        $scope.dataset.relationshipFields[index].by.ofOtherRawSrcUID = source.uid;
+                    $scope.dataset._otherSources = []
 
-                        var field_name = $scope.dataset.relationshipFields[index].field;
-                        //set the showfields to be an array of all the fields they want to see taken from the checkbox 
-                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {}
-                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[field_name] = {"showField": $scope.selectedColumns}
-                        $scope.dataset.relationshipFields[index].by.andOtherRawSrcImportRevision = source.importRevision;
-                        if ($scope.dataset._otherSources.indexOf(source._id) == -1)
-                            $scope.dataset._otherSources.push(source._id);
+
+            
+
+
+                    $scope.data.foreignDataset.forEach(function(source, index) {
+                      
+                   
+
+                           if ($scope.dataset.relationshipFields[index] !== undefined) {
+                               $scope.dataset.relationshipFields[index].by.ofOtherRawSrcUID = source.uid;
+
+                                var field_name = $scope.dataset.relationshipFields[index].field;
+                                //set the showfields to be an array of all the fields they want to see taken from the checkbox 
+                                $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {}
+                                $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[field_name] = {"showField": $scope.selectedColumns}
+                                $scope.dataset.relationshipFields[index].by.andOtherRawSrcImportRevision = source.importRevision;
+
+                                if ($scope.dataset._otherSources.indexOf(source._id) == -1)
+                                    $scope.dataset._otherSources.push(source._id);
+
+
+                           }
+                       
                     });
                     $mdDialog.hide($scope.dataset);
                 };
@@ -1022,7 +1036,7 @@ angular.module('arraysApp')
                 )
 
 
-    
+
 
                 $scope.data.fields.sort(function (column1, column2) {
                     if ($scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column1.name) == -1 &&
