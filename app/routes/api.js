@@ -12,6 +12,7 @@ var ctrlUsers = require('../controllers/api/users');
 var ctrlTeam = require('../controllers/api/team');
 var ctrlView = require('../controllers/api/views');
 var ctrlBillingAccount = require('../controllers/api/billing/account');
+var ctrlBillingInfo = require('../controllers/api/billing/billingInfo');
 var ctrlSubscription = require('../controllers/api/billing/subscription');
 var ejwt = require('express-jwt');
 
@@ -98,6 +99,7 @@ router.put('/team/admin/:id',ctrlTeam.switchAdmin);
 
 // billing, account & subscriptions settings
 router.post('/billing/account/new', ctrlBillingAccount.new);
+router.post('/billing/billinginfo/new', ctrlBillingInfo.new);
 router.post('/billing/subscription/new', ctrlSubscription.new);
 
 

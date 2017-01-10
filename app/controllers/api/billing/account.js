@@ -12,6 +12,7 @@ module.exports.new = function(req, res) {
 
     var userId = req.user;
 
+    // Create Recurly user based on Arrays' user info
     User.findById(userId)
         .lean()
         .exec(function (err, user) {
@@ -19,7 +20,7 @@ module.exports.new = function(req, res) {
                 res.send(err);
             } else {
                 recurly.accounts.create({
-                    account_code: userId,
+                    account_code: userId, // *required
                     email: user.email,
                     first_name: user.firstName,
                     last_name: user.lastName
