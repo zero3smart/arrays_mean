@@ -1,6 +1,6 @@
 <md-content layout-padding ng-if="dataset.uid">
     <form name="vm.dataForm" ng-submit="submitForm(!vm.dataForm.$invalid )">
-        
+
 
         <md-input-container class="md-block" flex-gt-sm>
             <label>ObjectTitle</label>
@@ -105,10 +105,10 @@
 
 
         <div layout="row" layout-align="space-between center" class="panel-footer">
-            <md-button class="md-raised md-dashboard md-light" ng-click="reset()" ng-disabled="!vm.dataForm.$dirty">
+            <md-button class="md-dashboard" ng-click="reset()" ng-disabled="!vm.dataForm.$dirty">
                 <span class="btn-label">Reset</span>
             </md-button>
-            <md-button class="md-raised md-dashboard md-dark" type="submit" ng-disabled="vm.dataForm.$invalid">
+            <md-button class="md-dashboard confirm" type="submit" ng-disabled="vm.dataForm.$invalid">
                 <span class="btn-label">Next</span>
             </md-button>
         </div>

@@ -15,6 +15,52 @@ html, body {
 .confirm {
     color: var(--color-primary);
 }
+
+/* md-input and container styles */
+
+md-input-container label.md-required:after {
+	color: var(--color-warn) !important;
+}
+
+.md-input-has-value label,
+.md-input-has-value label.md-required:after {
+	color: var(--color-text-med) !important;
+}
+
+.md-input-focused label,
+.md-input-focused label.md-required:after {
+	color: var(--color-text-dark) !important;
+}
+.md-input-focused .md-input {
+	/*border-color: var(--color-text-med) !important;*/
+	border-color: var(--color-primary) !important;
+}
+
+.md-input-invalid label {
+	color: var(--color-warn) !important;
+}
+.md-input-invalid .md-input {
+	border-color: var(--color-warn) !important;
+}
+
+md-checkbox.md-checked .md-icon {
+	background-color: var(--color-primary);
+}
+md-checkbox .md-container:before {
+	/*remove the persistent ink on focus*/
+	content: none;
+}
+
+md-option  {
+	color: var(--color-text-med) !important;
+}
+md-option[selected] {
+	color: var(--color-text-dark) !important;
+}
+md-select:not([disabled]):focus .md-select-value {
+	border-color: var(--color-primary) !important;
+}
+
 /**/
 
 h2 {
@@ -27,15 +73,15 @@ h4 {
     font-size: 16px;
 }
 
+.dashboard-container {
+    padding: 2em 1em;
+}
+
 .dashboard-container a[href^="mailto"] {
 	/*md-default-theme*/
 	color: rgba(0,0,0,0.87);
 	/*var(--color-text-dark);*/
 	text-decoration: underline;
-}
-
-.dashboard-container {
-    padding: 2em 1em;
 }
 
 md-content.md-default-theme, md-content {
