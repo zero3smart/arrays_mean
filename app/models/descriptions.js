@@ -27,8 +27,8 @@ var DatasourceDescription_scheme = Schema({
     brandColor: String,
     urls: Array,
     description: String,
-    fe_visible: {type: Boolean, default: true},
-    fe_listed: {type: Boolean, default: true},
+    fe_visible: {type: Boolean, default: false},
+    fe_listed: {type: Boolean, default: false},
 
     useCustomView: {type: Boolean, default: false},
     
