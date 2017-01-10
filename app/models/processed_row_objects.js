@@ -300,7 +300,7 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
 
 
         var skipping = 0 ;
-        var batchLimit = 500;
+        var batchLimit = 5000;
         var counter = 1;
         var reachTheEnd = false;
         var processedrowobjectsCount = 0;
@@ -383,8 +383,8 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
                 if (err) {
                     until_cb(err);
                 } else {
-                    winston.info("✅  processed " + processedrowobjectsCount + " of the joined field " + generateFieldNamed);
-                    job.log("✅  processed " + processedrowobjectsCount + " of the joined field " + generateFieldNamed);
+                    winston.info("✅  processed " + processedrowobjectsCount + " records of the joined field " + generateFieldNamed);
+                    job.log("✅  processed " + processedrowobjectsCount + " records of the joined field " + generateFieldNamed);
                     skipping = counter * batchLimit;
                     counter ++;
                     until_cb();
