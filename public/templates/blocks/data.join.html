@@ -79,15 +79,18 @@
                         </div>
                     </div>
 
-                    <div ng-if="!relationshipField.by.obtainingValueFromField" layout="row">
-                        <md-checkbox aria-label="Select All" ng-click="toggleAll(dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipField.field].showField,data.columns[$index])" ng-checked="isChecked()">
-                            <span ng-if="isChecked()">Un-</span>Select All
+                     <md-input-container class="md-block">
+                        <md-checkbox  ng-if="relationshipField.field && relationshipField.field!=='' && !relationshipField.by.obtainingValueFromField" name="selectAll_showFields" aria-label="Select All" ng-click="toggleAll(relationshipField.field,data.columns[$index])" 
+                        ng-checked="isChecked(relationshipField.field,data.columns[$index]);">
+                            <span ng-if="!relationshipField.by.obtainingValueFromField &&
+                            isChecked(relationshipField.field,data.columns[$index])" >Un-</span>Select All
                         </md-checkbox>
-                    </div>
+                     </md-input-container>
 
                     <div ng-if="!relationshipField.by.obtainingValueFromField" layout="row" layout-wrap flex>
                         <div flex="20" ng-repeat="column in data.columns[$index]">
-                            <md-checkbox aria-label="{{column.name}}" ng-checked="dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipField.field].showField.indexOf(column.name)>=0" ng-click="toggle(column.name, dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipField.field].showField)"> {{column.name}}</md-checkbox>
+                            <md-checkbox name="showFields_{{column.name}}" aria-label="{{column.name}}" ng-checked="dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipField.field].showField.indexOf(column.name)>=0" 
+                            ng-click="toggle(column.name, relationshipField.field)"> {{column.name}}</md-checkbox>
                         </div>
                     </div>
 
@@ -95,7 +98,7 @@
                         <label>Mapping Foreign Field</label>
                         <md-select name="obtainingValueFromField_{{$index}}"
                                    ng-model="relationshipField.by.obtainingValueFromField">
-                            <md-option ng-repeat="column in data.columns[$index]" value="{{column.name}}">
+                            <md-option ng-repeat="column in data.columns[$index]" ng-click="deleteFeObjectShow(relationshipField.field);" value="{{column.name}}">
                                 {{column.name}}
                             </md-option>
                         </md-select>
@@ -125,6 +128,8 @@
                 <md-button class="md-raised" ng-click="reset()" ng-disabled="!dialog.form.$dirty">
                     Reset
                 </md-button>
+
+
                 <md-button class="md-raised" ng-click="save()"
                            ng-disabled="!dialog.form.$dirty || dialog.form.$invalid">
                     Save

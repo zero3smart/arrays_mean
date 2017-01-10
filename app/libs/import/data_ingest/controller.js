@@ -53,8 +53,8 @@ var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (da
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
-            winston.info("💬  " + i + ": Proceeding to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
-            job.log("💬 Proceeding to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
+            winston.info("💬  " + i + ": Proceeding to image scraping of \"" + dataSourceDescription.title + "\"");
+            job.log("💬 Proceeding to image scraping of \"" + dataSourceDescription.title + "\"");
 
             _proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, job,eachCb);
             i++;

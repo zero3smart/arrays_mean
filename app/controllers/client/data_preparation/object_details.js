@@ -140,12 +140,17 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
 
 
-                                if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined') {
+                                if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined'
+                                    && dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field] && 
+                                    dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField && 
+                                    dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField.length > 0) {
+
+
 
                                     needObjectTitle = false;
                                     var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField;
                                     for(var i=0; i<wantedfield.length; i++) {
-                                        fieldToAcquire = fieldToAcquire + "rowParams." + wantedfield[i] + " ";
+                                        fieldToAcquire["rowParams." + wantedfield[i]] = 1;
                                     }
                                 } 
 
@@ -168,10 +173,12 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                                         fieldToAcquire = fieldToAcquire + "rowParams." + wantedfield[i] + " ";
                                                     }
                                                 }
+                                                console.log("here");
                                                 done();
                                             })
                                     })
                                 }
+
 
 
                                 rowObjectsOfRelationship_mongooseModel.find(findQuery)
@@ -289,25 +296,25 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 // var fe_objectShow_customHTMLOverrideFnsByColumnNames = {};
 
                 // if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined') {
-                    // console.log("fe_objectShow_customHTMLOverrideFnsByColumnNames")
-                    // console.log("line 250")
-                    // for (var relationshipFieldName in dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames) {
-                        // var joinFields = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName].showField;
-                        //this doesn't get called
-                        // fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName] = function (rowObject, eachValue, strParams) {
-                        //     var relationshipObjectShowLink = "/" + eachValue.srcDocPKey + "/" + eachValue._id;
-                        //     if (strParams && strParams != '') relationshipObjectShowLink += '?' + strParams;
+                //     // console.log("fe_objectShow_customHTMLOverrideFnsByColumnNames")
+                //     // console.log("line 250")
+                //     for (var relationshipFieldName in dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames) {
+                //         var joinFields = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName].showField;
+                //         //this doesn't get called
+                //         fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName] = function (rowObject, eachValue, strParams) {
+                //             var relationshipObjectShowLink = "/" + eachValue.srcDocPKey + "/" + eachValue._id;
+                //             if (strParams && strParams != '') relationshipObjectShowLink += '?' + strParams;
 
-                        //     var classes = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName].classes.toString().replace(",", " ");
+                //             var classes = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName].classes.toString().replace(",", " ");
 
-                        //     var openingTag = '<a href="' + relationshipObjectShowLink + '" class=' + classes + '">';
-                        //     var tagContent = eachValue.rowParams[dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName].showField];
-                        //     var closingTag = '</a>';
-                        //     return openingTag + tagContent + closingTag;
+                //             var openingTag = '<a href="' + relationshipObjectShowLink + '" class=' + classes + '">';
+                //             var tagContent = eachValue.rowParams[dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipFieldName].showField];
+                //             var closingTag = '</a>';
+                //             return openingTag + tagContent + closingTag;
 
-                        // }
+                //         }
 
-                    // }
+                //     }
 
                 // }
 
@@ -363,7 +370,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     //
                     fieldsNotToLinkAsGalleryFilter_byColName: fieldsNotToLinkAsGalleryFilter_byColName,
                     //
-                    fe_objectShow_customHTMLOverrideFnsByColumnNames: dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames,
+                    // fe_objectShow_customHTMLOverrideFnsByColumnNames: dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames,
 
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
                     scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
