@@ -39,10 +39,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 processedRowObjects_mongooseModel.findOne(query, function (err, _rowObject) {
                     if (err) return done(err);
 
-
-
-
                     rowObject = _rowObject;
+
                     done();
                 });
             });
@@ -59,14 +57,21 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                         return '<span class="icon-tile-null"></span>';
                     }
                     for (var i = 0; i < conditions.length; i++) {
-                        value = value.trim();
+
 
                         if (value == conditions[i].value) {
-                            if (multiple) {
-                                return "<img class='icon-tile category-icon-2' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
-                            }
 
-                            return "<img class='icon-tile' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
+                            if (conditions[i].applyIconFromUrl) {
+                                if (multiple) {
+                                    return "<img class='icon-tile category-icon-2' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
+                                }
+
+                                return "<img class='icon-tile' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
+                            } else if (conditions[i].applyClass) {
+                                // hard coded color-gender , as it is the only default icon category for now
+                                return "<span class='" + conditions[i].applyClass + " color-gender'></span>";
+                            }
+                           
                         }
                     }
                     return null;
@@ -113,6 +118,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 relationshipSource_uid = by.ofOtherRawSrcUID;
                                 var relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
                                 var relationshipSource_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(relationshipSource_uid, relationshipSource_importRevision);
+
+                            
                                 var rowObjectsOfRelationship_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(relationshipSource_pKey);
                                 var rowObjectsOfRelationship_mongooseModel = rowObjectsOfRelationship_mongooseContext.Model;
                                 var field = afterImportingAllSources_generate_description.field;
@@ -123,29 +130,42 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                     findQuery._id = valueInDocAtField;
                                 } else {
                                     findQuery._id = {$in: valueInDocAtField};
+
                                 }
-                                var fieldToAcquire = "";
+
+
                                 relationshipField = field;
-                                if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined') {
-                                    fieldToAcquire ={ srcDocPKey:1,_id:1};
-                                    var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField;
-                                    for(var i=0; i<wantedfield.length; i++) {
-                                        fieldToAcquire = fieldToAcquire + "rowParams." + wantedfield[i] + " ";
-                                    }
-                                }
+                                var fieldToAcquire ={ srcDocPKey:1,_id:1};
 
-                                // console.log(rowObjectsOfRelationship_mongooseModel);
+                                // if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined') {
+                                //     fieldToAcquire ={ srcDocPKey:1,_id:1};
+                                //     var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField;
+                                //     for(var i=0; i<wantedfield.length; i++) {
+                                //         fieldToAcquire = fieldToAcquire + "rowParams." + wantedfield[i] + " ";
+                                //     }
+                                // }
 
 
-                                rowObjectsOfRelationship_mongooseModel.find(findQuery)
-                                .select(fieldToAcquire)
-                                .exec(function (err, hydrationFetchResults) {
-                                    if (err) return done(err);
-                                    var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
-                                    rowObject.rowParams[field] = hydrationValue; // a doc or list of docs
-                                    //
-                                    done();
-                                });
+                                importedDataPreparation.DataSourceDescriptionWithPKey(relationshipSource_pKey)
+                                .then(function(relationship_dataset) {
+
+
+                                    var objectTitle = relationship_dataset.fe_designatedFields.objectTitle;
+
+                                    fieldToAcquire["rowParams." + objectTitle] = 1;
+                                    rowObjectsOfRelationship_mongooseModel.find(findQuery)
+                                        .select(fieldToAcquire)
+                                        .exec(function (err, hydrationFetchResults) {
+                                            if (err) return done(err);
+                                            var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
+
+                                            rowObject.rowParams[field] = hydrationValue; // a doc or list of docs
+                        
+                                            done();
+                                        });
+
+                                })
+
                             } else {
                                 done(); // nothing to hydrate
                             }

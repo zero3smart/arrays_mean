@@ -57,11 +57,16 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
                         if (value == conditions[i].value) {
-                            if (multiple) {
-                                return "<img class='icon-tile category-icon-2' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
-                            }
+                            if (conditions[i].applyIconFromUrl) {
+                                if (multiple) {
+                                    return "<img class='icon-tile category-icon-2' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
+                                }
 
-                            return "<img class='icon-tile' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
+                                return "<img class='icon-tile' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
+                            } else if (conditions[i].applyClass) {
+                                // hard coded color-gender , as it is the only default icon category for now
+                                return "<span class='" + conditions[i].applyClass + " color-gender'></span>";
+                            }
                         }
                     }
                     return null;
@@ -121,6 +126,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
           
 
             var isFilterActive = Object.keys(filterObj).length != 0;
+
+
             //
             var searchCol = urlQuery.searchCol;
             var searchQ = urlQuery.searchQ;
@@ -135,6 +142,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     return;
                 }
+
                 wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
             }
             if (isFilterActive) {
@@ -199,6 +207,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 var doneFn = function (err, results) {
                     if (err) return done(err);
 
+
                     if (results == undefined || results == null || results.length == 0) { // 0
                     } else {
                         nonpagedCount = results[0].count;
@@ -232,11 +241,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 // Exclude the nested pages fields to reduce the amount of data returned
                 var rowParamsfields = Object.keys(sampleDoc.rowParams);
+
+
                 rowParamsfields.forEach(function (rowParamsField) {
                     if (dataSourceDescription.fe_nestedObject == null || rowParamsField.indexOf(dataSourceDescription.fe_nestedObject.prefix) == -1) {
                         projects['$project']['rowParams.' + rowParamsField] = 1;
                     }
                 });
+
+                // projects['$project']['rowParams.imgURL_gridThumb'] = 1
 
                 var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
                     projects,
@@ -247,6 +260,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     {$limit: limitToNResults}
                 ]);
 
+
+
+
                 var doneFn = function (err, _docs) {
                     if (err) return done(err);
 
@@ -255,8 +271,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         docs = [];
                     }
 
+
+
                     done();
                 };
+
+                // console.log(pagedDocs_aggregationOperators)
 
                 // Next, get the full set of sorted results
                 processedRowObjects_mongooseModel
@@ -281,7 +301,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             batch.end(function (err) {
 
-                if (err) return callback(err);          
+                if (err) return callback(err);        
+          
 
                 var data =
                 {

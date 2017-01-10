@@ -500,6 +500,28 @@ angular.module('arraysApp')
             }
 
             $scope.openFabricatedFilterDialog = function (evt) {
+
+                var dataset = $scope.$parent.$parent.dataset;
+
+                var colsAvailable = dataset.columns.map(function(column) {
+                    return column.name;
+                }).concat(dataset.customFieldsToProcess.map(function(customField) {
+                    return customField.fieldName;
+                })).concat(dataset.fe_nestedObject.fields.map(function(fieldName) {
+                    if (dataset.fe_nestedObject.prefix)
+                        return dataset.fe_nestedObject.prefix + fieldName;
+                    return fieldName;
+                })).concat(dataset.relationshipFields.map(function(field) {
+                    return field.field;
+
+                }))
+
+                dataset.imageScraping.map(function(sourceURL) {
+                   colsAvailable = colsAvailable.concat(sourceURL.setFields.map(function(field) {
+                        return field.newFieldName;
+                    }))
+                })
+
                 $mdDialog.show({
                     controller: FabricatedFilterDialogController,
                     controllerAs: 'dialog',
@@ -509,7 +531,8 @@ angular.module('arraysApp')
                     clickOutsideToClose: true,
                     fullscreen: true, // Only for -xs, -sm breakpoints.
                     locals: {
-                        dataset: $scope.$parent.$parent.dataset
+                        dataset: dataset,
+                        colsAvailable: colsAvailable
                     }
                 })
                     .then(function (savedDataset) {
@@ -520,7 +543,8 @@ angular.module('arraysApp')
                     });
             };
 
-            function FabricatedFilterDialogController($scope, $mdDialog, $filter, dataset) {
+            function FabricatedFilterDialogController($scope, $mdDialog, $filter, dataset,colsAvailable) {
+                $scope.colsAvailable = colsAvailable;
                 $scope.indexInFabricatedFilter = function (input) {
                     for (var i = 0; i < $scope.dataset.fe_filters.fabricated.length; i++) {
                         var currentFab = $scope.dataset.fe_filters.fabricated[i];
@@ -780,6 +804,12 @@ angular.module('arraysApp')
                 $scope.data.columns = [];
                 $scope.selectedColumns = [];
                 $scope.dataset = angular.copy(dataset);
+
+
+                $scope.columnsAvailable = $scope.dataset.columns.concat(dataset.customFieldsToProcess.map(function(customField) {
+                    return {name: customField.fieldName};
+                }))
+
                 if (!$scope.dataset.relationshipFields) $scope.dataset.relationshipFields = [];
 
                 DatasetService.getAvailableMatchFns()
@@ -925,17 +955,29 @@ angular.module('arraysApp')
                 };
 
                 $scope.save = function () {
-                    $scope.dataset._otherSources = [];
-                    $scope.data.foreignDataset.forEach(function(source, index) {
-                        $scope.dataset.relationshipFields[index].by.ofOtherRawSrcUID = source.uid;
+                    $scope.dataset._otherSources = []
 
-                        var field_name = $scope.dataset.relationshipFields[index].field;
-                        //set the showfields to be an array of all the fields they want to see taken from the checkbox 
-                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {}
-                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[field_name] = {"showField": $scope.selectedColumns}
-                        $scope.dataset.relationshipFields[index].by.andOtherRawSrcImportRevision = source.importRevision;
-                        if ($scope.dataset._otherSources.indexOf(source._id) == -1)
-                            $scope.dataset._otherSources.push(source._id);
+
+            
+
+
+                    $scope.data.foreignDataset.forEach(function(source, index) {
+                      
+                   
+
+                           if ($scope.dataset.relationshipFields[index] !== undefined) {
+                               $scope.dataset.relationshipFields[index].by.ofOtherRawSrcUID = source.uid;
+                                var field_name = $scope.dataset.relationshipFields[index].field;
+                                //set the showfields to be an array of all the fields they want to see taken from the checkbox 
+                                $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {}
+                                $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[field_name] = {"showField": $scope.selectedColumns}
+                                $scope.dataset.relationshipFields[index].by.andOtherRawSrcImportRevision = source.importRevision;
+
+                                if ($scope.dataset._otherSources.indexOf(source._id) == -1 )
+                                    $scope.dataset._otherSources.push(source._id);
+
+                           }
+                       
                     });
                     $mdDialog.hide($scope.dataset);
                 };
@@ -979,7 +1021,20 @@ angular.module('arraysApp')
                             }
                         }))
                     }, [])
-                );
+                ).concat(
+                    $scope.$parent.$parent.dataset.relationshipFields.map(function(relationshipField) {
+                        return {
+                            name: relationshipField.field,
+                            custom: true
+
+                        }
+                    })
+
+
+                )
+
+
+
 
                 $scope.data.fields.sort(function (column1, column2) {
                     if ($scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column1.name) == -1 &&
@@ -1058,7 +1113,7 @@ angular.module('arraysApp')
                         $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Dataset updated successfully!')
-                                .position('top right')
+                                .position('top right') 
                                 .hideDelay(3000)
                         );
 

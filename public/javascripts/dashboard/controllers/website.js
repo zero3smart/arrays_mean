@@ -20,12 +20,18 @@ angular.module('arraysApp')
                 _uploader.onAfterAddingFile = function(fileItem) {
                     fileItem.uploadUrls = {};
                     fileItem.assetType = this.assetType;
-                    $scope.getUploadUrl(fileItem);
-                }
 
-                _uploader.onBeforeUploadItem = function(fileItem) {
-                    fileItem.url = fileItem.uploadUrls[fileItem.assetType].url;
-                    fileItem.headers['Content-Type'] = fileItem.file.type;
+                    if (!fileItem.uploadUrls[fileItem.assetType]) {
+                        AssetService.getPutUrlForTeamAssets($scope.team._id,fileItem.file.type,fileItem.assetType,fileItem.file.name)
+                            .then(function(urlInfo) {
+                                fileItem.uploadUrls[fileItem.assetType] = {url:urlInfo.putUrl,publicUrl: urlInfo.publicUrl};
+
+                                fileItem.url = fileItem.uploadUrls[fileItem.assetType].url;
+                                fileItem.headers['Content-Type'] = fileItem.file.type;
+
+                                _uploader.uploadAll();
+                            })
+                    }
                 }
 
                 _uploader.onCompleteItem = function(fileItem,response,status,header) {
@@ -35,8 +41,11 @@ angular.module('arraysApp')
 
                         $scope.team[asset] = fileItem.uploadUrls[asset].publicUrl + '?' + new Date().getTime();
 
-                        if ($scope.vm[formName].$pristine) {
-                            $scope.vm[formName].$setDirty();
+                        if (this.formName) {
+                            if ($scope.vm[formName].$pristine) {
+                                $scope.vm[formName].$setDirty();
+                            }
+                            $scope.submitForm();
                         }
 
                         $mdToast.show(
@@ -49,31 +58,23 @@ angular.module('arraysApp')
                 }
 
                 _uploader.assetType = assetType;
+                _uploader.formName = formName;
                 return _uploader;
             }
 
-            $scope.iconsUploader = newUploader('icon', 'teamIconsForm');
+            $scope.iconsUploader = newUploader('icon');
 
             $scope.logoUploader = newUploader('logo', 'websiteForm');
 
             $scope.logo_headerUploader = newUploader('logo_header', 'websiteForm');
 
-            $scope.getUploadUrl = function(fileItem, assetType) {
-                if (!fileItem.uploadUrls[fileItem.assetType]) {
-                    AssetService.getPutUrlForTeamAssets($scope.team._id,fileItem.file.type,fileItem.assetType,fileItem.file.name)
-                        .then(function(urlInfo) {
-                            fileItem.uploadUrls[fileItem.assetType] = {url:urlInfo.putUrl,publicUrl: urlInfo.publicUrl};
-                        })
-                }
-            }
-
-            $scope.submitForm = function(formName, isValid) {
-                if (isValid) {
+            $scope.submitForm = function() {
+                if ($scope.vm.websiteForm.$valid && $scope.vm.websiteForm.$dirty) {
                     AuthService.updateTeam($scope.team)
                     .then(function(teams) {
                         $scope.$parent.teams = AuthService.allTeams();
                         $scope.$parent.team = AuthService.currentTeam();
-                        $scope.vm[formName].$setPristine();
+                        $scope.vm.websiteForm.$setPristine();
 
                         $mdToast.show(
                             $mdToast.simple()

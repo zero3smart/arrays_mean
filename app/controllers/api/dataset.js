@@ -77,14 +77,17 @@ queue.process('importProcessed',function(job,done) {
 })
 queue.process('postImport',function(job,done) {
     var id = job.data.id;
+
     datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
+
         postimport_caching_controller.GeneratePostImportCaches(descriptions,job,function(err) {
             if (err) {  
                 console.log('err in queue processing post import caches : %s',err);
                 return done(err);
 
             }
-            datasource_description.update({$or:[{_id:id}, {schema_id: id}, {_otherSources:id}]}, {$set: {dirty:0,imported:true}})
+
+            datasource_description.update({$or:[{_id:id}, {schema_id: id}, {_otherSources:id}]}, {$set: {dirty:0,imported:true}},{multi:true})
             .exec(function(err) {
                 if (err) {
                     console.log('err in queue updating post import caches : %s',err);
@@ -113,6 +116,49 @@ function getAllDatasetsWithQuery(query, res) {
     })
 
 }
+
+
+module.exports.getDependencyDatasetsForReimporting = function(req,res) {
+    datasource_description.findById(req.params.id,function(err,currentSource) {
+        if (err) return res.status(500).send(err);
+        if (currentSource == null) {
+            return res.json({datasets:[]})
+        }
+        var uid = currentSource.uid;
+        var importRevision = currentSource.importRevision;
+        var datatsetsNeedReimport = [];
+
+        datasource_description.find({_otherSources: req.params.id},function(err,relatedSources) {
+             if (err) return res.status(500).send(err);
+             var batch = new Batch();
+             batch.concurrency(5);
+
+            relatedSources.forEach(function(src) {
+                batch.push(function(done) {
+
+                    if (src.relationshipFields) {
+                        for (var i = 0; i < src.relationshipFields.length; i++) {
+                            if (src.relationshipFields[i].relationship == true && 
+                                src.relationshipFields[i].by.ofOtherRawSrcUID == uid && 
+                                src.relationshipFields[i].by.andOtherRawSrcImportRevision == importRevision) {
+                                datatsetsNeedReimport.push(src);
+                            }
+                         }
+
+                    }
+                    done();
+                })
+            })
+
+            batch.end(function(err) {
+                if (err) return res.status(500).send(err);
+                return res.json({datasets:datatsetsNeedReimport});
+            })  
+        })
+    })
+
+} 
+
 
 module.exports.getDatasetsWithQuery = function(req,res) {
     var query = req.body;
@@ -198,8 +244,10 @@ module.exports.remove = function (req, res) {
 
     //Remove cache filter
     batch.push(function(done) {
+
         cached_values.findOne({srcDocPKey: srcDocPKey},function(err,document) {
             if (err) return done(err);
+            
             if (!document) return done();
              winston.info("✅  Removed cached unique values : " + srcDocPKey + ", error: " + err);
              document.remove(done);
@@ -322,6 +370,10 @@ module.exports.loadDatasourceColumnsForMapping = function (req, res) {
                     if (err) return res.status(500).send(err);
 
                     req.session.columns[description._id] = columns;
+                    columns = columns.concat(description.customFieldsToProcess.map(function(customField) {
+                        return {name: customField.fieldName} ;
+                    }));
+
                     res.json({
                         cols: columns.filter(function (e) {
                             return !description.fe_excludeFields || !description.fe_excludeFields[e.name];
@@ -329,12 +381,19 @@ module.exports.loadDatasourceColumnsForMapping = function (req, res) {
                     });
                 });
             } else {
-                if (req.session.columns[description._id])
+                if (req.session.columns[description._id]) {
+                    var columns = req.session.columns[description._id];
+                    columns = columns.concat(description.customFieldsToProcess.map(function(customField) {
+                        return {name: customField.fieldName} ;
+                    }));
+
                     return res.json({
-                        cols: req.session.columns[description._id].filter(function (e) {
+                        cols: columns.filter(function (e) {
                             return !description.fe_excludeFields || !description.fe_excludeFields[e.name];
                         })
                     });
+
+                }
                 else
                     return res.status(500).send('Invalid parameter');
             }

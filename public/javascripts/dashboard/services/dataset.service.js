@@ -120,11 +120,24 @@
            return $http.post('api/dataset/removeSubdataset', {id: id})
        };
 
+       var getReimportDatasets = function(id) {
+    
+            return $http.get('api/dataset/reimportDatasets/' + id)
+            .then(function(response) {
+                var data = response.data;
+                return data.datasets;
+            }).catch(function(err) {
+                console.log(err);
+                return [];
+            })
+       }
+
         return {
             removeSubdataset: removeSubdataset,
             remove: remove,
             get: get,
             getAdditionalSources: getAdditionalSources,
+            getReimportDatasets: getReimportDatasets,
             save: save,
             publish: publish,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
