@@ -373,11 +373,21 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
                 if (err) {
                     until_cb(err);
                 } else {
-                    winston.info("✅  processed " + processedrowobjectsCount + " records of the joined field " + generateFieldNamed);
-                    job.log("✅  processed " + processedrowobjectsCount + " records of the joined field " + generateFieldNamed);
-                    skipping = counter * batchLimit;
-                    counter ++;
-                    until_cb();
+
+                    bulkOperation_ofTheseProcessedRowObjects.execute(function(err,result) {
+                        if (err) {
+                            until_cb(err);
+                        } else {
+
+                            winston.info("✅  processed " + processedrowobjectsCount + " records of the joined field, result: %s" + generateFieldNamed,
+                                JSON.stringify(result));
+                            job.log("✅  processed " + processedrowobjectsCount + " records of the joined field " + generateFieldNamed);
+                            skipping = counter * batchLimit;
+                            counter ++;
+                            bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();
+                            until_cb();
+                        }
+                    })
                 }   
             })
         },function(err) {
@@ -385,38 +395,21 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
                  winston.error("❌  Error while generating field by reverse-join:", err);
                  return callback(err);
             } else {
-                winston.info("📡  [" + (new Date()).toString() + "] Upserting processed rows for \"" + dataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
-                job.log("📡  [" + (new Date()).toString() + "] Upserting processed rows for \"" + dataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
 
-                bulkOperation_ofTheseProcessedRowObjects.execute(function (err, result) {
+                var setToNull = {};
+                setToNull["rowParams." + generateFieldNamed] = {$exists: false}
+                var setTo = {$set:{}};
+                setTo.$set["rowParams."+ generateFieldNamed] = null
+                nativeCollection_ofTheseProcessedRowObjects.update(setToNull,setTo,{multi:true},function(err) {
                     if (err) {
                         winston.error("❌ [" + (new Date()).toString() + "] Error while saving generated fields of processed row objects: ", err);
                         process.nextTick(function() {callback(err);})
                     } else {
-                       
-                      
-                        var setToNull = {};
-                        setToNull["rowParams." + generateFieldNamed] = {$exists: false}
-                        var setTo = {$set:{}};
-                        setTo.$set["rowParams."+ generateFieldNamed] = null
-                        nativeCollection_ofTheseProcessedRowObjects.update(setToNull,setTo,{multi:true},function(err) {
-                            if (err) {
-                                winston.error("❌ [" + (new Date()).toString() + "] Error while saving generated fields of processed row objects: ", err);
-                            } else {
-                                winston.info("✅  [" + (new Date()).toString() + "] Saved generated fields \"" + generateFieldNamed + "\" on processed row objects, result: ", JSON.stringify(result));
-                                job.log("✅  [" + (new Date()).toString() + "] Saved generated fields \"" + generateFieldNamed + "\" on processed row objects.");
-                                process.nextTick(function() {callback(err);})
-                                
-                            }
-
-                        })
-
-
-
+                        winston.info("✅  [" + (new Date()).toString() + "] Saved all generated fields \"" + generateFieldNamed + "\" on processed row objects");
+                        job.log("✅  [" + (new Date()).toString() + "] Saved all generated fields \"" + generateFieldNamed + "\" on processed row objects.");
+                        process.nextTick(function() {callback(err);})
                     }
-                   
-                });
-
+                })
             }
         })
 

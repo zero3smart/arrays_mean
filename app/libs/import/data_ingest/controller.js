@@ -197,7 +197,7 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
         
     if (dataSourceDescription.dirty >= 0) { // dont omit scraping
 
-        winston.info(" 🔁  start image scraping");
+        winston.info("🔁  start image scraping");
         job.log("🔁  start image scraping");
         async.eachSeries(
             dataSourceDescription.imageScraping,
@@ -248,10 +248,12 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.Model.modelName;
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.Model.model;
     var forThisDataSource_nativeCollection = forThisDataSource_mongooseContext.Model.collection;
-    var mergeFieldsIntoCustomField_BulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
+
+    // var mergeFieldsIntoCustomField_BulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
 
 
     //
+
     winston.info("🔁  Performing each-row operation for \"" + dataSource_title + "\"");
 
     job.log("🔁  Performing each-row operation and creating custom fields for \"" + dataSource_title + "\"");
@@ -268,6 +270,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     }
 
     startIterations();
+
+    var processedObjectCount = 0;
 
     function startIterations() {
 
@@ -311,7 +315,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             if (!ifHasAndMeetCriteria(eachCtx, rowDoc)) {
                 var updateFragment = {$pushAll: {}};
                 for (var i = 0; i < eachCtx.fields.length; i++) {
-
                     var fieldName = eachCtx.fields[i];
                     var generatedArray = [];
 
@@ -362,7 +365,9 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             }
             eachCtx.numberOfRows++;
         } else {
+
             for (var i = 0; i < eachCtx.length; i++) {
+
                 var newFieldName = eachCtx[i].fieldName;
 
                 var newFieldType = eachCtx[i].fieldType;
@@ -383,14 +388,19 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
                     eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
 
-                    // find(bulkOperationQueryFragment).update(updateQuery);
+                    if (processedObjectCount !== 0 && processedObjectCount % 1000 == 0 ) {
+                        winston.info("✅  processed " + processedObjectCount + " of eachRow operation  for \"" + dataSource_title + "\"." );
+                        job.log("✅  parsed " + processedObjectCount  + " of eachRow operation  for \"" + dataSource_title + "\".");
+                    }
                      
                 } else if (newFieldType == 'object') {
 
 
                 }
+
             }
         }
+        processedObjectCount++;
         cb();
     }
 
