@@ -102,6 +102,7 @@ router.post('/billing/account', ctrlBillingAccount.create);
 router.post('/billing/billinginfo', ctrlBillingInfo.create);
 router.get('/billing/billinginfo', ctrlBillingInfo.get);
 router.post('/billing/subscription', ctrlSubscription.create);
+router.get('/billing/subscription', ctrlSubscription.get);
 
 
 module.exports = router;

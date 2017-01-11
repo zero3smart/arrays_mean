@@ -10,5 +10,34 @@ var recurly = new Recurly(recurlyConfig);
 
 module.exports.create = function(req, res) {
 
+    var userId = req.user;
+
+    recurly.subscriptions.create({
+        plan_code: req.body.plan_code, // *required
+        account: {
+            account_code: userId       // *required
+        },
+        currency: 'USD'                // *required
+
+    }, function(err, response) {
+        if (err) {
+            res.send({error: err.message});
+        } else {
+            res.json(response);
+        }
+    });
     
+};
+
+module.exports.get = function(req, res) {
+
+    var userId = req.user;
+
+    recurly.subscriptions.listByAccount(userId, {}, function(err, response) {
+        if (err) {
+            res.send({error: err.message});
+        } else {
+            res.json(response);
+        }
+    });
 };
