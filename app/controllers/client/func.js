@@ -143,9 +143,13 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
 
                         var nin = [];
 
+                        // catching user input for null and empty string
+
                         choice["match"].nin.map(function(ninField) {
                             if (ninField == 'null') {
                                 nin.push(null);
+                            } else if (ninField == '""') {
+                                nin.push("");
                             } else {
                                 nin.push(ninField);
                             }
@@ -157,6 +161,9 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
                             $exists: choice["match"].exist,
                             $nin: nin
                         }
+
+
+                        console.log(nin);
 
                         matchConditions = [{$match: reformQuery}];
 
@@ -336,6 +343,8 @@ var _activeFilterOR_matchCondition_orErrDescription = function (dataSourceDescri
                             }
 
                             matchConditions = [{$match: reformQuery}];
+
+
 
 
                             break; // found the applicable filter choice
