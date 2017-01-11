@@ -898,20 +898,6 @@ function _initializeToImport (id,callback) {
 
     });
 
-    //remove cache values
-    batch.push(function(done) {
-
-        cached_values.findOne({srcDocPKey: srcDocPKey},function(err,document) {
-            if (err) return done(err);
-            
-            if (!document) return done();
-             winston.info("✅  Removed cached unique values : " + srcDocPKey + ", error: " + err);
-             document.remove(done);
-        })
-    });
-
-
-
     // Remove raw row object
     batch.push(function (done) {
 
