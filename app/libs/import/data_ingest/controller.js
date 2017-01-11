@@ -346,7 +346,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                     };
 
-                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
+                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateFragment);
 
 
 

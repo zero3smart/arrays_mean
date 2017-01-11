@@ -304,8 +304,17 @@ module.exports.remove = function (req, res) {
         datasource_description.update({_otherSources: description._id}, {
             $pull : {
                 $and : [
-                    {"relationshipFields.by.andOtherRawSrcImportRevision" : description.importRevision},
-                    {"relationshipFields.by.ofOtherRawSrcUID" : description.uid}
+                    {relationshipFields: {
+                        by: {
+                            andOtherRawSrcImportRevision: description.importRevision
+                        }
+                    }}, {
+                        relationshipFields: {
+                            by: {
+                                ofOtherRawSrcUID: description.uid
+                            }
+                        }
+                    }
                 ]
             }
         },{multi:true},function(err) {
