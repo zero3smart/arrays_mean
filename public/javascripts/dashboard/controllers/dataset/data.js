@@ -923,7 +923,7 @@ angular.module('arraysApp')
 
                 //begin checkbox logic for showFields
                 $scope.toggle = function(item, fieldName) {
-                    $scope.dialog.form.$dirty=true;
+                    $scope.dialog.form.$setDirty();
                     if (!$scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames) {
                         $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {};
                     }
@@ -963,7 +963,7 @@ angular.module('arraysApp')
                 };
 
                 $scope.toggleAll = function(fieldName,datasetColumns) {
-                    $scope.dialog.form.$dirty=true;
+                    $scope.dialog.form.$setDirty();
                  
                     if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames == undefined) {
                         $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {};
