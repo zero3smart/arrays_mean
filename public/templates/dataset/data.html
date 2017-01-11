@@ -1,4 +1,4 @@
-<md-content layout-padding ng-if="dataset.uid">
+<md-content layout-padding ng-if="dataset.uid" md-no-ink>
     <form name="vm.dataForm" ng-submit="submitForm(!vm.dataForm.$invalid )">
 
 
@@ -19,7 +19,12 @@
                 <div class="field-row-header field">
                     <div class="handler"></div>
                     <div class="order">Order</div>
-                    <div class="exclude">Exclude <md-switch ng-model="excludeAll" ng-change="toggleExclude(excludeAll)" aria-label="Exclude all"></md-switch></div>
+                    <div class="exclude">
+                        Include
+                        <md-button ng-model="excludeAll" aria-label="Include/Exclude All" ng-click="toggleExclude(excludeAll)">
+                            {{ excludeAll ? 'Exclude All' : 'Include All' }}
+                        </md-button>
+                    </div>
                     <div class="name">Column Name</div>
                     <div class="override">Override</div>
                     <div class="type">Type</div>
@@ -39,6 +44,8 @@
                         <div class="exclude">
                             <md-checkbox name="fe_excludeFields_{{$index}}"
                                          ng-model="dataset.fe_excludeFields[field.name]"
+                                         ng-true-value="false"
+                                         ng-false-value="true"
                                          aria-label="Exclude {{field.name}}"
                                          ng-click="$event.stopPropagation()"></md-checkbox>
                         </div>

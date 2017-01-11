@@ -1,6 +1,6 @@
 (function() {
 	var signupModule = angular.module('signupModule');
-	signupModule.directive('uniqueEmail',['$q','User',function($q,User) 
+	signupModule.directive('uniqueEmail',['$q','User',function($q,User)
 	{
 		return {
 			restrict: 'AE',
@@ -26,7 +26,7 @@
 
 
 							}
-							
+
 						},function() {
 							deferred.reject(false);
 						})
@@ -64,17 +64,17 @@
 
 
 
-	signupModule.directive('uniqueSubdomain',['$q','Team',function($q,Team) 
+	signupModule.directive('uniqueSubdomain',['$q','Team',function($q,Team)
 	{
 		return {
 			restrict: 'AE',
 			require: 'ngModel',
 			link: function(scope,elem,attr,model) {
 
-			
+
 
 				model.$asyncValidators.subdomainAvailable = function(modelValue,viewValue) {
-					
+
 					var value = modelValue|| viewValue;
 					var params = {subdomain: value};
 					var deferred = $q.defer();
@@ -92,7 +92,7 @@
 								} else {
 									deferred.reject(false);
 								}
-								
+
 							},function() {
 								deferred.reject(false);
 							})
@@ -124,16 +124,16 @@
 
 					if (typeof value !== 'undefined') {
 						var titleString = value.toLowerCase();
-						var split = titleString.split(" ");
-						var suggestedSubdomain = "";
-						if (split.length == 1) {
-							suggestedSubdomain = split[0];
-						} else {
-							for (var i = 0; i < split.length ; i++) {
-								if (prepositions.indexOf(split[i]) == -1) {
-									suggestedSubdomain += split[i].charAt(0);
+						var noSpecialChars = titleString.replace(/\'/g, "").replace(/[^a-z0-9\-]/g, " ");
+						var split = noSpecialChars.split(" ");
+						var filtered = split.filter(function(val) { return val !== "" && prepositions.indexOf(val) == -1 });
 
-								}
+						var suggestedSubdomain = "";
+						if (filtered.length == 1) {
+							suggestedSubdomain = filtered[0];
+						} else {
+							for (var i = 0; i < filtered.length ; i++) {
+								suggestedSubdomain += filtered[i].charAt(0);
 							}
 						}
 
@@ -147,7 +147,7 @@
 							})
 
 					}
-				
+
 				})
 			},
 			controller: function($scope) {
@@ -160,5 +160,3 @@
 	}])
 
 })();
-
-
