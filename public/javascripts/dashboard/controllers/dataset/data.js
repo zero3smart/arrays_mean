@@ -89,6 +89,8 @@ angular.module('arraysApp')
                 $scope.custom = custom;
                 $scope.customFieldIndex = customFieldIndex;
 
+                var originalFieldName = fieldName;
+
                 function refreshFieldByName(name) {
                     // General
                     if (!$scope.dataset.fe_designatedFields) $scope.dataset.fe_designatedFields = {};
@@ -252,6 +254,15 @@ angular.module('arraysApp')
                 $scope.save = function () {
                     // General
 
+                    var currentValue = $scope.dialog.fieldForm.fieldName.$modelValue;
+
+                    if (originalFieldName !== currentValue) {
+
+                        var originalExclude = $scope.dataset.fe_excludeFields[originalFieldName];
+                        $scope.dataset.fe_excludeFields[currentValue] = originalExclude;
+                        delete $scope.dataset.fe_excludeFields[originalFieldName];
+                    }
+                   
 
                     if (typeof $scope.data.designatedField !== 'undefined') {
                          $scope.dataset.fe_designatedFields[$scope.data.designatedField] = $scope.fieldName;
