@@ -6,14 +6,19 @@ angular.module('arraysApp')
 
             // Assert some of the fields should be available
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
-            if (!dataset.fe_excludeFields) dataset.fe_excludeFields = {};
+
+            if (!dataset.fe_excludeFields) {
+                dataset.fe_excludeFields = {};
+                for (var i = 0; i < dataset.columns.length; i++) {
+                    dataset.fe_excludeFields[dataset.columns[i].name] = false;
+                }
+            }
+
             if (!dataset.fe_displayTitleOverrides) dataset.fe_displayTitleOverrides = {};
             if (!dataset.fe_designatedFields) dataset.fe_designatedFields = {};
 
             $scope.$parent.$parent.dataset = angular.copy(dataset);
             $scope.additionalDatasources = angular.copy(additionalDatasources);
-
-    
 
             $scope.data = {};
 
@@ -48,7 +53,7 @@ angular.module('arraysApp')
                     }
                 })
                     .then(function (savedDataset) {
-                    
+
                         $scope.$parent.$parent.dataset = savedDataset;
 
                         if (Object.keys(savedDataset.fe_designatedFields).length > 0) {
@@ -60,7 +65,6 @@ angular.module('arraysApp')
 
                         $scope.vm.dataForm.$setDirty();
 
-                        
                     }, function () {
                         console.log('You cancelled the field dialog.');
                     });
@@ -240,7 +244,7 @@ angular.module('arraysApp')
 
                     if (typeof $scope.data.designatedField !== 'undefined') {
                          $scope.dataset.fe_designatedFields[$scope.data.designatedField] = $scope.fieldName;
-                    } 
+                    }
 
                     var index = $scope.dataset.fe_fieldDisplayOrder.indexOf($scope.fieldName);
                     if (index != -1) $scope.dataset.fe_fieldDisplayOrder.splice(index, 1);
@@ -934,7 +938,7 @@ angular.module('arraysApp')
 
                 $scope.isChecked = function() {
                     if($scope.data.columns.length > 0) {
-                        return $scope.selectedColumns.length == $scope.data.columns[0].length   
+                        return $scope.selectedColumns.length == $scope.data.columns[0].length
                     }
                 };
 
@@ -958,17 +962,17 @@ angular.module('arraysApp')
                     $scope.dataset._otherSources = []
 
 
-            
+
 
 
                     $scope.data.foreignDataset.forEach(function(source, index) {
-                      
-                   
+
+
 
                            if ($scope.dataset.relationshipFields[index] !== undefined) {
                                $scope.dataset.relationshipFields[index].by.ofOtherRawSrcUID = source.uid;
                                 var field_name = $scope.dataset.relationshipFields[index].field;
-                                //set the showfields to be an array of all the fields they want to see taken from the checkbox 
+                                //set the showfields to be an array of all the fields they want to see taken from the checkbox
                                 $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {}
                                 $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[field_name] = {"showField": $scope.selectedColumns}
                                 $scope.dataset.relationshipFields[index].by.andOtherRawSrcImportRevision = source.importRevision;
@@ -977,7 +981,7 @@ angular.module('arraysApp')
                                     $scope.dataset._otherSources.push(source._id);
 
                            }
-                       
+
                     });
                     $mdDialog.hide($scope.dataset);
                 };
@@ -1113,7 +1117,7 @@ angular.module('arraysApp')
                         $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Dataset updated successfully!')
-                                .position('top right') 
+                                .position('top right')
                                 .hideDelay(3000)
                         );
 
