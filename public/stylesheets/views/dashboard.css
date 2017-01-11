@@ -312,17 +312,16 @@ ul.aa-color-picker {
 	list-style: none;
 }
 .aa-color-picker li {
-	height: 15px;
-	min-width: 30px;
-	margin: 15px 0;
 	padding: 0;
-	transition: height 0.3s, margin 0.3s;
+}
+.aa-color-picker li {
+  content: "";
+  display: block;
+  padding-bottom: 33%;
 }
 .aa-color-picker li.selected,
 .aa-color-picker li:hover,
 .aa-color-picker li:focus {
-	height: 30px;
-	margin: 0;
 	outline: 0;
 }
 
