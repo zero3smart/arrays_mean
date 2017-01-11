@@ -206,7 +206,6 @@ module.exports.remove = function (req, res) {
 
     // Remove processed row object
     batch.push(function (done) {
-
         mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey, function (err) {
             // Consider that the collection might not exist since it's in the importing process.
             if (err && err.code != 26) return done(err);
@@ -216,6 +215,7 @@ module.exports.remove = function (req, res) {
         });
 
     });
+
 
     // Remove raw row object
     batch.push(function (done) {
@@ -260,21 +260,16 @@ module.exports.remove = function (req, res) {
     })
 
 
-
+    //remove resources in s3
     batch.push(function(done) {
         datasource_file_service.deleteDataset(description,done);
     })
 
 
-    // Remove datasource description
-    batch.push(function (done) {
-        description.remove(done);
-    });
-
 
     // Remove datasource description with schema_id
     batch.push(function (done) {
-        winston.info("✅  Removed datasource description : " + description.title);
+        // winston.info("✅  Removed datasource description : " + description.title);
 
         datasource_description.find({schema_id: description._id}, function (err, results) {
             if (err) return done(err);
@@ -286,6 +281,10 @@ module.exports.remove = function (req, res) {
                 batch.push(function (done) {
                     element.remove(done);
                 });
+
+                batch.push(function(done) {
+                    datasource_file_service.deleteDataset(element,done);
+                })
             });
 
             batch.end(function (err) {
@@ -296,7 +295,61 @@ module.exports.remove = function (req, res) {
         });
     });
 
-    //TODO: remove merged dataset references and settings
+
+   
+
+
+
+    batch.push(function(done) {
+
+        datasource_description.find({_otherSources:description._id,"relationshipFields.by.andOtherRawSrcImportRevision":description.importRevision,
+            "relationshipFields.by.ofOtherRawSrcUID":description.uid},function(err,docs) {
+            if (err) {
+                done(err);
+            } else {
+                if (docs.length == 0) {
+                    done();
+                } 
+                for (var i = 0; i < docs.length; i++) {
+                    var batch = new Batch();
+                    batch.concurrency(5);
+
+                    batch.push(function(done) {
+                        var index = docs[i]._otherSources.indexOf(description.uid);
+                        docs[i]._otherSources.splice(index,1);
+
+                        docs[i].relationshipFields = docs[i].relationshipFields.filter(function(field) {
+                          
+                            return field.by.andOtherRawSrcImportRevision !== description.importRevision && 
+                                field.by.ofOtherRawSrcUID !== description.uid
+                        })
+                        docs[i].save(done);
+                    })
+                    batch.end(function(err) {
+                        winston.info("✅  Removed all the merged description settings inherited to the datasource description : " + description._id);
+                        done(err);
+                    });
+                }
+            }
+        })
+    })
+
+
+
+     batch.push(function(done) {
+        datasource_description.update({_otherSources: description._id}, {
+            $pull: {
+                "_otherSources" : description._id
+            }
+        },{multi: true},done);
+    })
+
+
+    // Remove datasource description
+    batch.push(function (done) {
+        description.remove(done);
+    });
+
 
 
     batch.push(function(done) {

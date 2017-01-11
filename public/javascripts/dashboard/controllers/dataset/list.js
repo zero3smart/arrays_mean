@@ -8,7 +8,8 @@ angular.module('arraysApp')
             $scope.remove = function (id) {
                 var confirm = $mdDialog.confirm()
                     .title('Are you sure to delete the dataset?')
-                    .textContent('Dataset will be deleted permanently.')
+                    .textContent('Dataset will be deleted permanently, and any datasets that merged with fields dependent on this dataset' + 
+                        ' will result in an exception. Please re-configure and re-import those dependent datasets as needed.')
                     .targetEvent(event)
                     .ok('Yes')
                     .cancel('No');

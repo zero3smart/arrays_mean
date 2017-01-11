@@ -53,8 +53,8 @@ var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (da
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
-            winston.info("💬  " + i + ": Proceeding to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
-            job.log("💬 Proceeding to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
+            winston.info("💬  " + i + ": Proceeding to image scraping of \"" + dataSourceDescription.title + "\"");
+            job.log("💬 Proceeding to image scraping of \"" + dataSourceDescription.title + "\"");
 
             _proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, job,eachCb);
             i++;
@@ -148,12 +148,6 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
                             switch (by.operation) {
                                 case "Join":
                                 {
-                                    // var matchFn = by.matchFn;
-
-                                    // if (typeof matchFn === 'undefined' || matchFn == null) {
-                                    //     matchFn = "LocalEqualsForeignString";
-                                    // }
-
                                     processed_row_objects.GenerateFieldsByJoining_comparingWithMatchFn(
                                         job,
                                         dataSource_uid,
@@ -167,7 +161,6 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
                                         by.withLocalField,
                                         by.obtainingValueFromField,
                                         formingRelationship,
-                                        /*matchFn, */
                                         cb
                                     );
                                     break;
@@ -197,7 +190,7 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
         
     if (dataSourceDescription.dirty >= 0) { // dont omit scraping
 
-        winston.info(" 🔁  start image scraping");
+        winston.info("🔁  start image scraping");
         job.log("🔁  start image scraping");
         async.eachSeries(
             dataSourceDescription.imageScraping,
@@ -248,10 +241,12 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.Model.modelName;
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.Model.model;
     var forThisDataSource_nativeCollection = forThisDataSource_mongooseContext.Model.collection;
-    var mergeFieldsIntoCustomField_BulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
+
+    // var mergeFieldsIntoCustomField_BulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
 
 
     //
+
     winston.info("🔁  Performing each-row operation for \"" + dataSource_title + "\"");
 
     job.log("🔁  Performing each-row operation and creating custom fields for \"" + dataSource_title + "\"");
@@ -269,6 +264,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     startIterations();
 
+    var processedObjectCount = 0;
+
     function startIterations() {
 
         /*eachCtx could be array or object*/
@@ -277,7 +274,9 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             (!Array.isArray(eachCtx) && !eachCtx.fields.length)) {
             continueToAfterIterating();
         } else {
-            eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation;
+
+            // eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation;
+            eachCtx.nativeCollection = forThisDataSource_nativeCollection;
 
             processed_row_objects.EnumerateProcessedDataset(
                 dataSource_uid,
@@ -309,7 +308,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             if (!ifHasAndMeetCriteria(eachCtx, rowDoc)) {
                 var updateFragment = {$pushAll: {}};
                 for (var i = 0; i < eachCtx.fields.length; i++) {
-
                     var fieldName = eachCtx.fields[i];
                     var generatedArray = [];
 
@@ -330,7 +328,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                             pKey: rowDoc.pKey, // the specific row
                             srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                         };
-                        eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
+                        eachCtx.nativeCollection.remove(bulkOperationQueryFragment);
+                        // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
                     });
 
                     if (eachCtx.fieldOverrides[fieldName]) {
@@ -347,7 +346,11 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                     };
 
-                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateFragment);
+
+
+
+                    // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
 
                     eachCtx.cached = [];
                 }
@@ -358,7 +361,9 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             }
             eachCtx.numberOfRows++;
         } else {
+
             for (var i = 0; i < eachCtx.length; i++) {
+
                 var newFieldName = eachCtx[i].fieldName;
 
                 var newFieldType = eachCtx[i].fieldType;
@@ -376,14 +381,23 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey
                     };
 
-                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateQuery);
+
+                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
                      
                 } else if (newFieldType == 'object') {
 
 
                 }
+
             }
         }
+
+        if (processedObjectCount !== 0 && processedObjectCount % 1000 == 0 ) {
+            winston.info("✅  processed " + processedObjectCount + " of eachRow operation  for \"" + dataSource_title + "\"." );
+            job.log("✅  parsed " + processedObjectCount  + " of eachRow operation  for \"" + dataSource_title + "\".");
+        }
+
+        processedObjectCount++;
         cb();
     }
 
@@ -444,30 +458,46 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     }
 
     function afterGeneratingProcessedRowObjects_afterIterating_eachRowFn(eachCtx, cb) {
-   
-        eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(function (err, result) {
 
-            if (err) {
-                winston.error("❌ [" + (new Date()).toString() + "] Error while saving custom fields  : ", err);
-            } else {
+        winston.info("✅  [" + (new Date()).toString() + "] Saved custom fields.");
 
-                winston.info("✅  [" + (new Date()).toString() + "] Saved custom fields.");
+        if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
+            var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
 
-                if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
-
-                    var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
-
-                    raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
-                        console.log(err)
-                        cb(err);
-                    })
-
-                } else {
-                    cb(err);
+            raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
+                if (err) {
+                    winston.error('❌ Error when modifying number of rows in raw source documents: %s', err);
                 }
+                cb(err);
+            })
 
-            }
-        });
+        } else {
+            cb(null);
+        }
+   
+        // eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(function (err, result) {
+
+        //     if (err) {
+        //         winston.error("❌ [" + (new Date()).toString() + "] Error while saving custom fields  : ", err);
+        //     } else {
+
+        //         winston.info("✅  [" + (new Date()).toString() + "] Saved custom fields.");
+
+        //         if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
+
+        //             var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+
+        //             raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
+        //                 console.log(err)
+        //                 cb(err);
+        //             })
+
+        //         } else {
+        //             cb(err);
+        //         }
+
+        //     }
+        // });
     }
 
 

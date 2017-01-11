@@ -903,12 +903,16 @@ angular.module('arraysApp')
                 };
 
                 $scope.removeJoin = function(index) {
+                    var fieldName = $scope.dataset.relationshipFields[index].field;
+                    if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames) {
+                         delete $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[field];
+                    }
                     $scope.dataset.relationshipFields.splice(index, 1);
                     $scope.dialog.form.$setDirty();
                 };
 
                 $scope.loadColumnsForDataset = function(index) {
-                    var source = $scope.data.foreignDataset[index];
+                    var source = $scope.data.foreignDataset[index]
                     var pKey = source.uid + '-v' + source.importRevision;
 
                     DatasetService.getMappingDatasourceCols(pKey)
@@ -926,44 +930,93 @@ angular.module('arraysApp')
                         singular: true,
                         relationship: false,
                         by: {
-                            operation: "Join",
-                            findingMatchOnFields: []
+                            operation: "Join"
                         }
                     });
                     $scope.dialog.form.$setDirty();
                 };
 
                 //begin checkbox logic for showFields
-                $scope.toggle = function(item, selectedColumnList) {
-                    var i = selectedColumnList.indexOf(item);
+                $scope.toggle = function(item, fieldName) {
+                    $scope.dialog.form.$setDirty();
+                    if (!$scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames) {
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {};
+                    }
+                    if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName] == undefined) {
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName] = {};
+                    }
+
+                    if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField == undefined) {
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField = [];
+                    }
+
+                    var i = $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField.indexOf(item);
                     if(i > -1) {
-                        selectedColumnList.splice(i, 1);
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField.splice(i, 1);
                     } else {
-                        selectedColumnList.push(item);
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField.push(item);
                     }
                 };
 
-                $scope.exists = function(item, selectedColumnList) {
-                    return selectedColumnList.indexOf(item) > -1;
-                };
 
-                $scope.isChecked = function() {
-                    if($scope.data.columns.length > 0) {
-                        return $scope.selectedColumns.length == $scope.data.columns[0].length
+                $scope.isChecked = function(fieldName,datasetColumns) {
+
+                    if (datasetColumns == undefined || $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames == undefined) {
+                        return false;
+                    }
+                    if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName] == undefined) {
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName] = {};
+                    }
+                
+                    if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField == undefined) {
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField = [];
+                    }
+                    if($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField.length > 0) {
+
+                        return $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField.length == datasetColumns.length   
                     }
                 };
 
-                $scope.toggleAll = function() {
-                    if ($scope.selectedColumns.length == $scope.data.columns[0].length) {
-                        $scope.selectedColumns = [];
-                    } else if ($scope.selectedColumns.length == 0 || $scope.selectedColumns.length > 0) {
-                        $scope.selectedColumns = [];
-                        for(var i =0; i < $scope.data.columns[0].length; i++) {
-                            $scope.selectedColumns.push($scope.data.columns[0][i].name)
+                $scope.toggleAll = function(fieldName,datasetColumns) {
+                    $scope.dialog.form.$setDirty();
+                 
+                    if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames == undefined) {
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {};
+                    }
+                    if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName] == undefined) {
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName] = {};
+                    }
+             
+                    if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField == undefined) {
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField = [];
+                    }
+                     
+                    if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField.length == datasetColumns.length) {
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField = [];
+                    } else if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField.length == 0 || 
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField.length > 0) {
+
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField = [];
+
+                        for(var i =0; i < datasetColumns.length; i++) {
+                            $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName].showField.push(datasetColumns[i].name)
                         }
+
+                    
                     }
+
+                   
                 };
-                //end checkbox logic
+                $scope.deleteFeObjectShow = function(fieldName) {
+
+             
+                    if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames &&
+                        $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName]) {
+
+                       delete $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName]
+                    }
+
+                }
 
                 $scope.cancel = function () {
                     $mdDialog.cancel();
@@ -971,28 +1024,19 @@ angular.module('arraysApp')
 
                 $scope.save = function () {
                     $scope.dataset._otherSources = []
-
-
-
-
-
+                  
                     $scope.data.foreignDataset.forEach(function(source, index) {
-
-
-
+                    
                            if ($scope.dataset.relationshipFields[index] !== undefined) {
                                $scope.dataset.relationshipFields[index].by.ofOtherRawSrcUID = source.uid;
                                 var field_name = $scope.dataset.relationshipFields[index].field;
-                                //set the showfields to be an array of all the fields they want to see taken from the checkbox
-                                $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames = {}
-                                $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[field_name] = {"showField": $scope.selectedColumns}
+                            
                                 $scope.dataset.relationshipFields[index].by.andOtherRawSrcImportRevision = source.importRevision;
 
                                 if ($scope.dataset._otherSources.indexOf(source._id) == -1 )
                                     $scope.dataset._otherSources.push(source._id);
 
                            }
-
                     });
                     $mdDialog.hide($scope.dataset);
                 };
