@@ -217,10 +217,6 @@ module.exports.remove = function (req, res) {
     });
 
 
-    batch.push(function(done) {
-
-    })
-
     // Remove raw row object
     batch.push(function (done) {
 
@@ -264,16 +260,11 @@ module.exports.remove = function (req, res) {
     })
 
 
-
+    //remove resources in s3
     batch.push(function(done) {
         datasource_file_service.deleteDataset(description,done);
     })
 
-
-    // Remove datasource description
-    batch.push(function (done) {
-        description.remove(done);
-    });
 
 
     // Remove datasource description with schema_id
@@ -290,6 +281,10 @@ module.exports.remove = function (req, res) {
                 batch.push(function (done) {
                     element.remove(done);
                 });
+
+                batch.push(function(done) {
+                    datasource_file_service.deleteDataset(element,done);
+                })
             });
 
             batch.end(function (err) {
@@ -300,19 +295,39 @@ module.exports.remove = function (req, res) {
         });
     });
 
-    //TODO: remove merged dataset references and settings
 
-    //  batch.push(function(done) {
-    //     datasource_description.find({_otherSources: description._id},function(err,descriptions) {
-    //         if (err) done(err);
-    //         for (var i = 0; i < descriptions.length; i++) {
-                
-    //         }
-    //     })
-
-    // })
+   
 
 
+
+    batch.push(function(done) {
+        datasource_description.update({_otherSources: description._id}, {
+            $pull : {
+                $and : [
+                    {"relationshipFields.by.andOtherRawSrcImportRevision" : description.importRevision},
+                    {"relationshipFields.by.ofOtherRawSrcUID" : description.uid}
+                ]
+            }
+        },{multi:true},function(err) {
+            console.log(err);
+        });
+    })
+
+
+
+     batch.push(function(done) {
+        datasource_description.update({_otherSources: description._id}, {
+            $pull: {
+                "_otherSources" : description._id
+            }
+        },{multi: true},done);
+    })
+
+
+    // Remove datasource description
+    batch.push(function (done) {
+        // description.remove(done);
+    });
 
 
 
@@ -861,6 +876,20 @@ function _initializeToImport (id,callback) {
         });
 
     });
+
+    //remove cache values
+    batch.push(function(done) {
+
+        cached_values.findOne({srcDocPKey: srcDocPKey},function(err,document) {
+            if (err) return done(err);
+            
+            if (!document) return done();
+             winston.info("✅  Removed cached unique values : " + srcDocPKey + ", error: " + err);
+             document.remove(done);
+        })
+    });
+
+
 
     // Remove raw row object
     batch.push(function (done) {

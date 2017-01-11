@@ -148,12 +148,6 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
                             switch (by.operation) {
                                 case "Join":
                                 {
-                                    // var matchFn = by.matchFn;
-
-                                    // if (typeof matchFn === 'undefined' || matchFn == null) {
-                                    //     matchFn = "LocalEqualsForeignString";
-                                    // }
-
                                     processed_row_objects.GenerateFieldsByJoining_comparingWithMatchFn(
                                         job,
                                         dataSource_uid,
@@ -167,7 +161,6 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
                                         by.withLocalField,
                                         by.obtainingValueFromField,
                                         formingRelationship,
-                                        /*matchFn, */
                                         cb
                                     );
                                     break;
@@ -335,7 +328,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                             pKey: rowDoc.pKey, // the specific row
                             srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                         };
-                        eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
+                        eachCtx.nativeCollection.remove(bulkOperationQueryFragment);
+                        // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
                     });
 
                     if (eachCtx.fieldOverrides[fieldName]) {
@@ -352,9 +346,11 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                     };
 
+                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
 
 
-                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+
+                    // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
 
                     eachCtx.cached = [];
                 }
@@ -387,11 +383,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
 
                     eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
-
-                    if (processedObjectCount !== 0 && processedObjectCount % 1000 == 0 ) {
-                        winston.info("✅  processed " + processedObjectCount + " of eachRow operation  for \"" + dataSource_title + "\"." );
-                        job.log("✅  parsed " + processedObjectCount  + " of eachRow operation  for \"" + dataSource_title + "\".");
-                    }
                      
                 } else if (newFieldType == 'object') {
 
@@ -400,6 +391,12 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
             }
         }
+
+        if (processedObjectCount !== 0 && processedObjectCount % 1000 == 0 ) {
+            winston.info("✅  processed " + processedObjectCount + " of eachRow operation  for \"" + dataSource_title + "\"." );
+            job.log("✅  parsed " + processedObjectCount  + " of eachRow operation  for \"" + dataSource_title + "\".");
+        }
+
         processedObjectCount++;
         cb();
     }
@@ -461,8 +458,22 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     }
 
     function afterGeneratingProcessedRowObjects_afterIterating_eachRowFn(eachCtx, cb) {
+
         winston.info("✅  [" + (new Date()).toString() + "] Saved custom fields.");
-        cb();
+
+        if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
+            var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+
+            raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
+                if (err) {
+                    winston.error('❌ Error when modifying number of rows in raw source documents: %s', err);
+                }
+                cb(err);
+            })
+
+        } else {
+            cb(null);
+        }
    
         // eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(function (err, result) {
 

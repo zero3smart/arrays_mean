@@ -270,24 +270,14 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
 
         var pKey_ofFromDataSourceDoc = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(ofOtherRawSrcUID, andOtherRawSrcImportRevision);
         var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
-        //
-        // var mongooseContext_ofFromRawRowObjects = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofFromDataSourceDoc);
-        // var mongooseModel_ofFromRawRowObjects = mongooseContext_ofFromRawRowObjects.forThisDataSource_RawRowObject_model;
-        //
-        // var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
-        // var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
-        //
+    
         var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
 
 
         var processedrowobjects_fromSource = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofFromDataSourceDoc).Model.collection;
-
-
-        //
-        var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();
-
+       
 
         var skipping = 0 ;
         var batchLimit = 200;
@@ -298,6 +288,8 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
         async.until(function() {
             return reachTheEnd;
         },function(until_cb) {
+
+            var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();
 
             async.waterfall([
                 // waterfall first function
@@ -379,12 +371,11 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
                             until_cb(err);
                         } else {
 
-                            winston.info("✅  processed " + processedrowobjectsCount + " records of the joined field, result: %s" + generateFieldNamed,
+                            winston.info("✅  processed " + processedrowobjectsCount + " records of the joined field " + generateFieldNamed + " result: %s",
                                 JSON.stringify(result));
                             job.log("✅  processed " + processedrowobjectsCount + " records of the joined field " + generateFieldNamed);
                             skipping = counter * batchLimit;
                             counter ++;
-                            bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();
                             until_cb();
                         }
                     })
@@ -412,167 +403,6 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
                 })
             }
         })
-
-        // mongooseModel_ofRawRowObjectsBeingProcessed.find({}, function (err, ofTheseProcessedRowObjectDocs) {
-        //     if (err) {
-        //         winston.error("❌  Error while generating field by reverse-join:", err);
-        //         callback(err);
-
-        //         return;
-        //     }
-        //     mongooseModel_ofFromRawRowObjects.find({}, function (err, fromProcessedRowObjectDocs) {
-        //         if (err) {
-        //             winston.error("❌  Error while generating field by reverse-join:", err);
-        //             return callback(err);
-        //         }
-        //         var fromProcessedRowObjectDocs_length = fromProcessedRowObjectDocs.length;
-        //         if (fromProcessedRowObjectDocs_length == 0) {
-        //             var errorString = "No rows in foreign set " + pKey_ofFromDataSourceDoc + ".";
-        //             var err = new Error(errorString);
-        //             winston.error("❌  Error while generating field by reverse-join:", err);
-        //             return callback(err);
-        //         }
-        //         var ofTheseProcessedRowObjectDocs_length = ofTheseProcessedRowObjectDocs.length;
-        //         if (ofTheseProcessedRowObjectDocs_length == 0) {
-        //             var errorString = "No rows in " + pKey_ofDataSrcDocBeingProcessed + ".";
-        //             var err = new Error(errorString);
-        //             winston.error("❌  Error while generating field by join:", err);
-        //             return callback(err);
-        //         }
-        //         //
-        //         for (var i = 0; i < ofTheseProcessedRowObjectDocs.length; i++) {
-        //             if (i != 0 && i % 1000 == 0) {
-        //                 winston.info("" + i + " / " + ofTheseProcessedRowObjectDocs_length + " of local '" + pKey_ofDataSrcDocBeingProcessed + "'  *  " + fromProcessedRowObjectDocs_length + " of foreign '" + pKey_ofFromDataSourceDoc + "'");
-        //                 job.log("" + i + " / " + ofTheseProcessedRowObjectDocs_length + " of local '" + pKey_ofDataSrcDocBeingProcessed + "'  *  " + fromProcessedRowObjectDocs_length + " of foreign '" + pKey_ofFromDataSourceDoc + "'");
-        //             }
-        //             var ofTheseProcessedRowObjectDoc = ofTheseProcessedRowObjectDocs[i];
-        //             var localFieldValue = ofTheseProcessedRowObjectDoc.rowParams["" + withLocalField];
-        //             // now check if localFieldValue contains any of the foreignFieldValues in the matchOn fields
-        //             var wasFound = false;
-        //             var matchingForeignValues = [];
-        //             for (var j = 0; j < findingMatchOnFields_length; j++) {
-        //                 var matchOnField = findingMatchOnFields[j];
-                    
-        //                 for (var k = 0; k < fromProcessedRowObjectDocs_length; k++) {
-        //                     // if (k != 0 && k % 10000 == 0) {
-        //                     //     console.log("- Foreign: " + pKey_ofFromDataSourceDoc + ": " + k + " / " + fromProcessedRowObjectDocs_length);
-        //                     // }
-        //                     var fromProcessedRowObjectDoc = fromProcessedRowObjectDocs[k];
-        //                     var foreignFieldValue = fromProcessedRowObjectDoc.rowParams[matchOnField];
-
-                 
-
-
-        //                     var doesFieldMatch = processing.MatchFns[doesFieldMatch_fn](localFieldValue, foreignFieldValue);
-
-                        
-
-        //                     if (doesFieldMatch == true) {
-        //                         wasFound = true;
-        //                         if (typeof obtainingValueFromField_orUndefined === 'undefined') {
-        //                             if (or_formingRelationship == false) {
-        //                                 var errorString = "Generate Join parameter configuration conflict: obtainingValueFromField was undefined as " + obtainingValueFromField_orUndefined + " but relationship=true";
-        //                                 var err = new Error(errorString);
-        //                                 winston.error("❌  Error while generating field by join:", err);
-        //                                 callback(err);
-
-        //                                 return;
-        //                             }
-        //                         } else {
-        //                             if (or_formingRelationship == true) {
-        //                                 var errorString = "Generate Join parameter configuration conflict: obtainingValueFromField was not undefined as " + obtainingValueFromField_orUndefined + " but relationship=false";
-        //                                 var err = new Error(errorString);
-        //                                 winston.error("❌  Error while generating field by join:", err);
-        //                                 callback(err);
-
-        //                                 return;
-        //                             }
-        //                         }
-        //                         var foreignValueToExtract;
-        //                         if (getIdInsteadOfValueFromField == true) {
-        //                             foreignValueToExtract = fromProcessedRowObjectDoc._id;
-        //                         } else {
-        //                             foreignValueToExtract = fromProcessedRowObjectDoc.rowParams[obtainingValueFromField_orUndefined];
-        //                         }
-        //                         // console.log("foreignValueToExtract " , foreignValueToExtract)
-        //                         if (typeof foreignValueToExtract === 'undefined') {
-        //                             var errorString = "Value at \"" + obtainingValueFromField_orUndefined + "\" of foreign row object of \"" + ofOtherRawSrcUID + "\" was undefined… doc: " + JSON.stringify(fromProcessedRowObjectDoc, null, '  ');
-        //                             var err = new Error(errorString);
-        //                             winston.error("❌  Error while generating field by join:", err);
-        //                             callback(err);
-
-        //                             return;
-        //                         }
-        //                         matchingForeignValues.push(foreignValueToExtract);
-        //                         if (isSingular == true) { // we have to check if it's singular here before we break
-        //                             // otherwise we won't get all the possible values from all the foreign rows
-        //                             break;
-        //                         }
-        //                     }
-        //                 }
-        //                 if (wasFound == true) {
-        //                     if (isSingular == true) {
-        //                         break; // since we don't need to try any more fields, as we got a singular value
-        //                     } // otherwise, keep going until we have all the possible values of all fields from all rows
-        //                 }
-        //             }
-        //             // if (wasFound == false) {
-        //             //  winston.warn("⚠️  Still didn't find a result for fieldValue " + localFieldValue);
-        //             // }
-        //             // instead of checking wasFound == true here, we still want to persist 
-        //             // a value even if it wasn't found - so that the field exists
-        //             var persistableValue;
-        //             if (wasFound == true) {
-        //                 if (isSingular) {
-        //                     persistableValue = matchingForeignValues ? (matchingForeignValues.length > 0 ? matchingForeignValues[0] : null) : null;
-        //                 } else {
-        //                     persistableValue = matchingForeignValues;
-        //                 }
-        //             } else {
-        //                 persistableValue = null;
-        //             }
-        //             //
-        //             var bulkOperationQueryFragment =
-        //             {
-        //                 pKey: ofTheseProcessedRowObjectDoc.pKey,
-        //                 srcDocPKey: ofTheseProcessedRowObjectDoc.srcDocPKey
-        //             };
-        //             var updateFragment = {};
-        //             updateFragment["$set"] = {};
-        //             updateFragment["$set"]["rowParams." + generateFieldNamed] = persistableValue;
-        //             // ^ Note that we're only updating a specific path, not the whole rowParams value
-
-        //             bulkOperation_ofTheseProcessedRowObjects.find(bulkOperationQueryFragment).upsert().update(updateFragment);
-        //         }
-        //         //
-        //         proceedToPersist();
-        //     });
-        // });
-        // //
-        // function proceedToPersist() {
-        //     winston.info("📡  [" + (new Date()).toString() + "] Upserting processed rows for \"" + dataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
-        //     job.log("📡  [" + (new Date()).toString() + "] Upserting processed rows for \"" + dataSource_title + "\" having generated fields named \"" + generateFieldNamed + "\".");
-        //     //
-        //     callback();
-            // var writeConcern =
-            // {
-            //     // upsert: true,
-            //     // note: we're turning this off as it's super slow for large datasets like Artworks
-            //     // j: true // 'requests acknowledgement from MongoDB that the write operation has been written to the journal'
-            // };
-            // bulkOperation_ofTheseProcessedRowObjects.execute(writeConcern, function (err, result) {
-            //     if (err) {
-            //         console.log('time out here?');
-
-            //         winston.error("❌ [" + (new Date()).toString() + "] Error while saving generated fields of processed row objects: ", err);
-
-            //     } else {
-            //         winston.info("✅  [" + (new Date()).toString() + "] Saved generated fields on processed row objects.");
-            //         job.log("✅  [" + (new Date()).toString() + "] Saved generated fields on processed row objects.");
-            //     }
-            //     callback(err);
-            // });
-        // }
     });
 };
 
