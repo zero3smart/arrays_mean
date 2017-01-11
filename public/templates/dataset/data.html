@@ -19,7 +19,12 @@
                 <div class="field-row-header field">
                     <div class="handler"></div>
                     <div class="order">Order</div>
-                    <div class="exclude">Include <!--<md-checkbox ng-model="excludeAll" ng-change="toggleExclude(excludeAll)" aria-label="Exclude all"></md-checkbox>{{excludeAll}}--></div>
+                    <div class="exclude">
+                        Include
+                        <md-button ng-model="excludeAll" aria-label="Include/Exclude All" ng-click="toggleExclude(excludeAll)">
+                            {{ excludeAll ? 'Exclude All' : 'Include All' }}
+                        </md-button>
+                    </div>
                     <div class="name">Column Name</div>
                     <div class="override">Override</div>
                     <div class="type">Type</div>

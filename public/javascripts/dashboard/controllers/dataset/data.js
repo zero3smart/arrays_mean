@@ -7,10 +7,20 @@ angular.module('arraysApp')
             // Assert some of the fields should be available
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
 
+            // include all fields (false) if new dataset
             if (!dataset.fe_excludeFields) {
                 dataset.fe_excludeFields = {};
                 for (var i = 0; i < dataset.columns.length; i++) {
                     dataset.fe_excludeFields[dataset.columns[i].name] = false;
+                }
+                $scope.excludeAll = true; // set toggle to "Exclude All"
+            } else {
+                $scope.excludeAll = false; // check if any fields are included, if not, set button to "Include All"
+                for (var i = 0; i < dataset.columns.length; i++) {
+                    if(!dataset.fe_excludeFields[dataset.columns[i].name]){
+                        $scope.excludeAll = true; // at least one included, set toggle to "Exclude All"
+                        break;
+                    }
                 }
             }
 
@@ -30,6 +40,7 @@ angular.module('arraysApp')
                 for (var i = 0; i < $scope.dataset.columns.length; i++) {
                     $scope.dataset.fe_excludeFields[$scope.dataset.columns[i].name] = exclude;
                 }
+                $scope.excludeAll = exclude ? false : true; // toggle
             };
 
             $scope.openFieldDialog = function (evt, fieldName, firstRecord, custom, customFieldIndex) {
