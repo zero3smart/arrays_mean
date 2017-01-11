@@ -110,7 +110,6 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, 
         }
     }
 
-
     // First sort alphabetically
     rowParams_keys.sort();
 
