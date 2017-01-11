@@ -1050,6 +1050,12 @@ angular.module('arraysApp')
             function sortColumnsByDisplayOrder() {
                 $scope.data.fields = $scope.$parent.$parent.dataset.columns.concat(
                     $scope.$parent.$parent.dataset.customFieldsToProcess.map(function(customField, index) {
+
+
+                        if (!$scope.$parent.$parent.dataset.fe_excludeFields[customField.fieldName]) {
+                            $scope.$parent.$parent.dataset.fe_excludeFields[customField.fieldName] = false;
+                        }
+
                         return {
                             name: customField.fieldName,
                             sample: null,
@@ -1087,6 +1093,13 @@ angular.module('arraysApp')
                     }, [])
                 ).concat(
                     $scope.$parent.$parent.dataset.relationshipFields.map(function(relationshipField) {
+
+                        if (!$scope.$parent.$parent.dataset.fe_excludeFields[relationshipField.field]) {
+                            $scope.$parent.$parent.dataset.fe_excludeFields[relationshipField.field] = false;
+                        }
+
+
+
                         return {
                             name: relationshipField.field,
                             custom: true
@@ -1194,7 +1207,7 @@ angular.module('arraysApp')
                     delete finalizedDataset.columns;
 
                     // console.log(finalizedDataset)
-
+// 
                     queue.push(DatasetService.save(finalizedDataset));
 
                     $scope.additionalDatasources.forEach(function(datasource) {
@@ -1221,7 +1234,6 @@ angular.module('arraysApp')
                         delete finalizedDatasource.fe_filters;
                         delete finalizedDatasource.fe_objectShow_customHTMLOverrideFnsByColumnNames;
 
-                        // console.log(finalizedDatasource);
                         queue.push(DatasetService.save(finalizedDatasource));
                     });
 
