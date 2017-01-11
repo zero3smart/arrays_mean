@@ -59,7 +59,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var findOutputFormatObj = func.findItemInArrayOfObject(dataSourceDescription.fe_views.views.lineGraph.outputInFormat,groupBy_realColumnName);
 
-          
+
 
             if (findOutputFormatObj != null) {
                 groupBy_outputInFormat = findOutputFormatObj.value;
@@ -90,7 +90,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var datasourceMapping = dataSourceDescription.fe_views.views.lineGraph.datasourceMappings;
             if(datasourceMapping != undefined){
                 mapping_source_pKey = datasourceMapping.pKey;
-            } 
+            }
             //var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
             var mapping_default_filterObj = {};
             var mapping_default_view = "gallery";
@@ -117,7 +117,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                     break;
                                 }
                             }
-                            
+
                         if (urlQuery.embed == 'true') mapping_groupByObj.embed = 'true';
                         mapping_groupByObj[mapping_groupBy] = '';
 
@@ -166,7 +166,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregateBy_humanReadable_available = undefined;
             }
 
-           
+
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
             (typeof dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
             dataSourceDescription.fe_views.views.lineGraph.defaultAggregateByColumnName;
@@ -506,16 +506,29 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            });
+
             batch.end(function (err) {
                 if (err) return callback(err);
 
-             
+
                 //
                 var data =
                 {
                     env: process.env,
 
-                    user: req.user,
+                    user: user,
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,

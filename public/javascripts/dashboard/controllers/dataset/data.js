@@ -6,14 +6,29 @@ angular.module('arraysApp')
 
             // Assert some of the fields should be available
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
-            if (!dataset.fe_excludeFields) dataset.fe_excludeFields = {};
+
+            // include all fields (false) if new dataset
+            if (!dataset.fe_excludeFields) {
+                dataset.fe_excludeFields = {};
+                for (var i = 0; i < dataset.columns.length; i++) {
+                    dataset.fe_excludeFields[dataset.columns[i].name] = false;
+                }
+                $scope.excludeAll = true; // set toggle to "Exclude All"
+            } else {
+                $scope.excludeAll = false; // check if any fields are included, if not, set button to "Include All"
+                for (var i = 0; i < dataset.columns.length; i++) {
+                    if(!dataset.fe_excludeFields[dataset.columns[i].name]){
+                        $scope.excludeAll = true; // at least one included, set toggle to "Exclude All"
+                        break;
+                    }
+                }
+            }
+
             if (!dataset.fe_displayTitleOverrides) dataset.fe_displayTitleOverrides = {};
             if (!dataset.fe_designatedFields) dataset.fe_designatedFields = {};
 
             $scope.$parent.$parent.dataset = angular.copy(dataset);
             $scope.additionalDatasources = angular.copy(additionalDatasources);
-
-    
 
             $scope.data = {};
 
@@ -25,6 +40,7 @@ angular.module('arraysApp')
                 for (var i = 0; i < $scope.dataset.columns.length; i++) {
                     $scope.dataset.fe_excludeFields[$scope.dataset.columns[i].name] = exclude;
                 }
+                $scope.excludeAll = exclude ? false : true; // toggle
             };
 
             $scope.openFieldDialog = function (evt, fieldName, firstRecord, custom, customFieldIndex) {
@@ -48,7 +64,7 @@ angular.module('arraysApp')
                     }
                 })
                     .then(function (savedDataset) {
-                    
+
                         $scope.$parent.$parent.dataset = savedDataset;
 
                         if (Object.keys(savedDataset.fe_designatedFields).length > 0) {
@@ -60,7 +76,6 @@ angular.module('arraysApp')
 
                         $scope.vm.dataForm.$setDirty();
 
-                        
                     }, function () {
                         console.log('You cancelled the field dialog.');
                     });
@@ -240,7 +255,7 @@ angular.module('arraysApp')
 
                     if (typeof $scope.data.designatedField !== 'undefined') {
                          $scope.dataset.fe_designatedFields[$scope.data.designatedField] = $scope.fieldName;
-                    } 
+                    }
 
                     var index = $scope.dataset.fe_fieldDisplayOrder.indexOf($scope.fieldName);
                     if (index != -1) $scope.dataset.fe_fieldDisplayOrder.splice(index, 1);
@@ -1009,11 +1024,7 @@ angular.module('arraysApp')
 
                 $scope.save = function () {
                     $scope.dataset._otherSources = []
-
-
-            
-
-
+                  
                     $scope.data.foreignDataset.forEach(function(source, index) {
                     
                            if ($scope.dataset.relationshipFields[index] !== undefined) {
@@ -1161,7 +1172,7 @@ angular.module('arraysApp')
                         $mdToast.show(
                             $mdToast.simple()
                                 .textContent('Dataset updated successfully!')
-                                .position('top right') 
+                                .position('top right')
                                 .hideDelay(3000)
                         );
 
