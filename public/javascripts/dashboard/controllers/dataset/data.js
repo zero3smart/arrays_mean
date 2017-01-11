@@ -1221,8 +1221,8 @@ angular.module('arraysApp')
                         delete finalizedDatasource.fe_filters;
                         delete finalizedDatasource.fe_objectShow_customHTMLOverrideFnsByColumnNames;
 
-                        console.log(finalizedDatasource);
-                        // queue.push(DatasetService.save(finalizedDatasource));
+                        // console.log(finalizedDatasource);
+                        queue.push(DatasetService.save(finalizedDatasource));
                     });
 
                     $q.all(queue)
