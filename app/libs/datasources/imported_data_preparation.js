@@ -106,9 +106,11 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, 
         var displayTitleForKey = fe_displayTitleOverrides[originalKey];
         var indexOfOriginalKey = rowParams_keys.indexOf(originalKey);
         if (indexOfOriginalKey !== -1) {
+            // rowParams_keys[indexOfOriginalKey] = {original: originalKey, display: displayTitleForKey}
             rowParams_keys[indexOfOriginalKey] = displayTitleForKey; // replace with display title
         }
     }
+
 
     // First sort alphabetically
     rowParams_keys.sort();
@@ -120,15 +122,23 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, 
         for (i = 0; i < fe_fieldDisplayOrder.length; i++) {
             var index = rowParams_keys.indexOf(fe_fieldDisplayOrder[i]);
             if (index > -1) {
-                rowParams_keys.splice(index, 1);
-                rowParams_keys_customSorted.push(fe_fieldDisplayOrder[i]);
+                reorder(index, rowParams_keys, fe_fieldDisplayOrder[i])
+            } else {
+                var displayTitle = fe_displayTitleOverrides[fe_fieldDisplayOrder[i]];
+                index = rowParams_keys.indexOf(displayTitle)
+                if (index > -1) {
+                    reorder(index, rowParams_keys, displayTitle)
+                }
             }
         }
 
         rowParams_keys = rowParams_keys_customSorted.concat(rowParams_keys);
     }
 
-
+    function reorder (index, rowParams_keys, displayOrderKey) {
+        rowParams_keys.splice(index, 1);
+        rowParams_keys_customSorted.push(displayOrderKey);
+    }
 
     return rowParams_keys;
 }
