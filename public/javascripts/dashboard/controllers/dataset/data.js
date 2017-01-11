@@ -37,8 +37,8 @@ angular.module('arraysApp')
             $scope.availableTypeCoercions = availableTypeCoercions;
 
             $scope.toggleExclude = function (exclude) {
-                for (var i = 0; i < $scope.dataset.columns.length; i++) {
-                    $scope.dataset.fe_excludeFields[$scope.dataset.columns[i].name] = exclude;
+                for (var i = 0; i < $scope.data.fields.length; i++) {
+                    $scope.dataset.fe_excludeFields[$scope.data.fields[i].name] = exclude;
                 }
                 $scope.excludeAll = exclude ? false : true; // toggle
             };
@@ -1220,7 +1220,9 @@ angular.module('arraysApp')
                         delete finalizedDatasource.fe_views;
                         delete finalizedDatasource.fe_filters;
                         delete finalizedDatasource.fe_objectShow_customHTMLOverrideFnsByColumnNames;
-                        queue.push(DatasetService.save(finalizedDatasource));
+
+                        console.log(finalizedDatasource);
+                        // queue.push(DatasetService.save(finalizedDatasource));
                     });
 
                     $q.all(queue)
