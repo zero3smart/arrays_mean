@@ -44,9 +44,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName] ||
             dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName;
 
-        
 
-            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+
+            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
             (dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName,dataSourceDescription) :
              dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName
 
@@ -57,9 +57,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultChartByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName] ||
             dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName;
 
-           
 
-            var chartBy_realColumnName =  chartBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartBy,dataSourceDescription) : 
+
+            var chartBy_realColumnName =  chartBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartBy,dataSourceDescription) :
             (dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName,dataSourceDescription) :
              dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName
 
@@ -121,7 +121,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aggregateBy_humanReadable_available = undefined;
             }
 
-           
+
 
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
             (typeof dataSourceDescription.fe_views.views.pieSet.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
@@ -344,6 +344,19 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
             });
 
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            });
+
             batch.end(function (err) {
                 if (err) return callback(err);
 
@@ -362,14 +375,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     return flatResults[key];
                 });
 
-              
+
 
                 var data =
                 {
                     env: process.env,
 
-                    user: req.user,
-            
+                    user: user,
+
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
