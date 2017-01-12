@@ -325,8 +325,8 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
 
 
             if (count !== 0 && count % 1000 == 0) {
-                winston.info("✅  processed " + processedrowobjectsCount + " records of the joined field " + generateFieldNamed);
-                job.log("✅  processed " + processedrowobjectsCount + " records of the joined field " + generateFieldNamed);
+                winston.info("✅  processed " + count + " records of the joined field " + generateFieldNamed);
+                job.log("✅  processed " + count + " records of the joined field " + generateFieldNamed);
             }
           
         }).on('error', function (err) {
@@ -338,8 +338,8 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
 
 
             if (count % 1000 !== 0) {
-                winston.info("✅  processed " + processedrowobjectsCount + " records of the joined field " + generateFieldNamed);
-                job.log("✅  processed " + processedrowobjectsCount + " records of the joined field " + generateFieldNamed);
+                winston.info("✅  processed " + count  + " records of the joined field " + generateFieldNamed);
+                job.log("✅  processed " + count+ " records of the joined field " + generateFieldNamed);
             }
           
             
