@@ -1,7 +1,7 @@
 angular
     .module('arraysApp')
-    .controller('AdminCtrl', ['$scope', '$state', 'AuthService', '$window', '$location', '$mdSidenav', '$state',
-        function ($scope, $state, AuthService, $window, $location, $mdSidenav, $state) {
+    .controller('AdminCtrl', ['$scope', '$state', 'AuthService', '$window', '$location', '$mdSidenav',
+        function ($scope, $state, AuthService, $window, $location, $mdSidenav) {
 
             $scope.currentMenuItem = '';
 
