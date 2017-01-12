@@ -132,14 +132,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
 
             if (colNames_orderedForAggregateByDropdown) {
-                if (colNames_orderedForAggregateByDropdown.length > 0)
-                    defaultAggregateByColumnName_humanReadable = colNames_orderedForAggregateByDropdown[0];
                 if (colNames_orderedForAggregateByDropdown.length == 1)
                     colNames_orderedForAggregateByDropdown = undefined;
             }
-
-
-
 
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
             (typeof dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
