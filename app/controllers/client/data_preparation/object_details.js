@@ -24,6 +24,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
             var rowObject;
             var relationshipField;
             var relationshipSource_uid;
+            var relationshipSource_importRevision;
 
             var batch = new Batch()
             batch.concurrency(1);
@@ -116,7 +117,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 var by = afterImportingAllSources_generate_description.by;
                                 //this is the field we'll use to link to the other dataset
                                 relationshipSource_uid = by.ofOtherRawSrcUID;
-                                var relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
+                                relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
                                 var relationshipSource_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(relationshipSource_uid, relationshipSource_importRevision);
 
                             
@@ -308,7 +309,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 }
 
                 var buildObjectLink = function(columnName, value) {
-                    return relationshipSource_uid + "-r1/" + rowObject.rowParams[columnName][0]._id;
+                    return relationshipSource_uid + "-r" + relationshipSource_importRevision + "/" + rowObject.rowParams[columnName][0]._id;
                 }
 
                 //
