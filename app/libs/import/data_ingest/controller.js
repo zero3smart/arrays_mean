@@ -126,9 +126,6 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
     //
 
 
-console.log(dataSourceDescription);
-
-
 
     processed_row_objects.InsertProcessedDatasetFromRawRowObjects
     (

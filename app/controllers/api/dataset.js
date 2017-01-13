@@ -230,25 +230,56 @@ queue.process('importProcessed',function(job,done) {
 })
 queue.process('postImport',function(job,done) {
     var id = job.data.id;
+    var description;
 
-    datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
+    var description_schemaId;
 
-        postimport_caching_controller.GeneratePostImportCaches(descriptions,job,function(err) {
-            if (err) {  
-                console.log('err in queue processing post import caches : %s',err);
-                return done(err);
+    var batch = new Batch();
+    batch.concurrency(1);
 
+    batch.push(function(done) {
+         datasource_description.findById(id)
+        .lean()
+        .deepPopulate('schema_id _team schema_id._team')
+        .exec(function (err, data) {
+            if (err) return done(err);
+            if (!data) return done(new Error('No datasource exists : ' + uid));
+
+            description = data;
+
+             if (description.schema_id) { //merge with parent description
+                description_schemaId = description.schema_id._id;
+                description = datasource_description.Consolidate_descriptions_hasSchema(description);
             }
+            done();
+        });
+    })
 
-            datasource_description.update({$or:[{_id:id}, {_otherSources:id}]}, {$set: {dirty:0,imported:true}},{multi:true})
-            .exec(function(err) {
-                if (err) {
-                    console.log('err in queue updating post import caches : %s',err);
-                    return done(err);
-                }
-                done();
-            })
-        })
+
+    batch.push(function(done) {
+        postimport_caching_controller.GeneratePostImportCaches([description],job,done);
+    })
+
+    batch.push(function(done) {
+        var updateQuery =  {$set: {dirty:0,imported:true}};
+        var multi = {multi: true};
+        if (description_schemaId) { //update parent 
+            datasource_description.update({$or: [{_id:id}, {_id: description_schemaId}]}, updateQuery,multi,done);
+
+        } else {
+            datasource_description.update({$or:[{_id:id}, {_otherSources:id}]}, updateQuery, multi,done);
+
+        }
+    })
+
+    batch.end(function(err) {
+         if (err) {
+            console.log('err in queue updating post import caches : %s',err);
+            return done(err);
+        } else {
+            done(null);
+        }
+
     })
 })
 

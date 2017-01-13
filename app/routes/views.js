@@ -61,8 +61,6 @@ View.getAllCustomViews(function(err,customViews) {
 
             router.get('/:source_key/getData', ensureAuthorized,function(req,res,next) {
 
-                console.log('get data here');
-
                 var team = req.subdomains[0];
                 var controller = require('../../user/' + team + '/src/' + view.name);
 
@@ -71,6 +69,7 @@ View.getAllCustomViews(function(err,customViews) {
                          winston.error("❌  Error getting bind data for custom view %s , err: %s" , view.name,err);
                         return res.status(500).send(err.response || 'Internal Server Error');
                     }
+                    winston.info("💬   getting data for custom view: %s", view.name);
                     res.json(bindData);
                 })
             })
