@@ -144,6 +144,8 @@ angular.module('arraysApp')
 
             function lastStep() {
 
+            
+
                 if (datasourceIndex == -1) {
 
                     if (!dataset.fe_designatedFields) {
@@ -158,6 +160,7 @@ angular.module('arraysApp')
                 }
 
                 datasourceIndex ++;
+
 
                 if (datasourceIndex < $scope.additionalDatasources.length) {
 
@@ -221,28 +224,36 @@ angular.module('arraysApp')
 
 
             function postImport(id,uid) {
-               
-                DatasetService.postImport(id)
-                    .then(function (response) {
 
-                        if (response.status == 200 && !response.data.error) {
 
-                            var jobId = response.data.jobId;
+                if ($scope.additionalDatasources.length == 0 || datasourceIndex !== -1) {
 
-                            $scope.importLogger.push("🔁  [" + uid + "] Generating post import filter caching....");
-                            $scope.currentJobId = jobId;
-                            $scope.jobs[jobId] = {};
-                            $scope.currentStep = 3;
+                    DatasetService.postImport(id)
 
-                            $timeout(function() {
-                                getJobStatus(id,uid)
-                            },2000);
-                            
-                        } else {
-                            errorHandler(response);
-                        }
+                        .then(function (response) {
+                            if (response.status == 200 && !response.data.error) {
 
-                    }, errorHandler);
+                                var jobId = response.data.jobId;
+
+                                $scope.importLogger.push("🔁  [" + uid + "] Generating post import filter caching....");
+                                $scope.currentJobId = jobId;
+                                $scope.jobs[jobId] = {};
+                                $scope.currentStep = 3;
+
+                                $timeout(function() {
+                                    getJobStatus(id,uid)
+                                },2000);
+                                
+                            } else {
+                                errorHandler(response);
+                            }
+
+                        }, errorHandler);
+
+                } else {
+                    lastStep();
+
+                }
             }
 
             function allDone() {

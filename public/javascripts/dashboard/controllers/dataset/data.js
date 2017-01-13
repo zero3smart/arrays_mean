@@ -4,6 +4,7 @@ angular.module('arraysApp')
             $scope.$parent.$parent.currentNavItem = 'Data';
             $scope.availableTypeCoercions = availableTypeCoercions;
 
+
             // Assert some of the fields should be available
             if (!dataset.raw_rowObjects_coercionScheme) dataset.raw_rowObjects_coercionScheme = {};
 
@@ -86,6 +87,8 @@ angular.module('arraysApp')
                         $scope.vm.dataForm.$setDirty();
 
                     }, function () {
+
+
                         console.log('You cancelled the field dialog.');
                     });
             };
@@ -172,7 +175,8 @@ angular.module('arraysApp')
                     refreshFieldByName($scope.fieldName);
 
                     // Data Type Coercion
-                    $scope.coercionScheme = angular.copy(dataset.raw_rowObjects_coercionScheme);
+
+                    $scope.coercionScheme = angular.copy($scope.dataset.raw_rowObjects_coercionScheme);
 
                     if ($scope.dialog.fieldForm) $scope.dialog.fieldForm.$setPristine();
                 };
@@ -215,22 +219,28 @@ angular.module('arraysApp')
                     $scope.dialog.fieldForm['overrideValueTitle_' + index].$setValidity('unique', valueOverrideTitleUnique);
                 };
 
+
+
+
                 $scope.changeCoercionSchemeByOperation = function (colName) {
                     
 
-
-
                     var coercion = $scope.coercionScheme[colName];
-                  
-                    $scope.dataset.dirty = 1;
+
                     
                     if ($filter('typeCoercionToString')(coercion) != 'Date') {
                         $scope.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
+                        $scope.dataset.dirty = 1;
+                        $scope.dialog.fieldForm.$setDirty();
                     } else {
-                        if (!$scope.dataset.raw_rowObjects_coercionScheme[colName]) {
+                        if (!$scope.dataset.raw_rowObjects_coercionScheme[colName]) { 
                             $scope.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
+                            $scope.dataset.dirty = 1;
+                             $scope.dialog.fieldForm.$setDirty();
+
                         } else {
                             $scope.dataset.raw_rowObjects_coercionScheme[colName].operation = coercion.operation;
+                             $scope.dialog.fieldForm.$setPristine();
                         }
                     }
                 };
@@ -298,9 +308,9 @@ angular.module('arraysApp')
                     // Filter
                     index = $scope.dataset.fe_filters.fieldsNotAvailable.indexOf($scope.fieldName);
                     if (index != -1) $scope.dataset.fe_filters.fieldsNotAvailable.splice(index, 1);
-                    if ($scope.data.filterNotAvailable) {
+                    if ($scope.data.filterNotAvailable) { 
                         if ($scope.dataset.dirty !== 1 ) {
-                            $scope.dataset.dirty 
+                            $scope.dataset.dirty = 3; //redo filter caching
                         }
                         $scope.dataset.fe_filters.fieldsNotAvailable.push($scope.fieldName);
                     }
@@ -349,6 +359,8 @@ angular.module('arraysApp')
                         }
                         $scope.dataset.customFieldsToProcess.splice(customFieldIndex, 1, $scope.customField);
                     }
+
+                    // console.log($scope.dataset);
 
                     $mdDialog.hide($scope.dataset);
                 };
@@ -513,6 +525,8 @@ angular.module('arraysApp')
                 $scope.save = function () {
                     // Master Dataset
 
+
+
                     if ($scope.dataset.dirty !== 1) {
                         $scope.dataset.dirty = 2;
                     }
@@ -555,6 +569,9 @@ angular.module('arraysApp')
                             datasource.fe_nestedObject.valueOverrides[elem.field] = valueOverrides;
                         });
                     });
+
+
+
 
                     $mdDialog.hide({
                         dataset: $scope.dataset,
@@ -1214,14 +1231,24 @@ angular.module('arraysApp')
 
             $scope.changeCoercionSchemeByOperation = function (colName) {
                 var coercion = $scope.coercionScheme[colName];
-                $scope.$parent.$parent.dataset.dirty = 1;
+
                 if ($filter('typeCoercionToString')(coercion) != 'Date') {
                     $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
+                    $scope.$parent.$parent.dataset.dirty = 1;
+
                 } else {
-                    if (!$scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName])
-                        $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
-                    else
+                    if (!$scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName]) {
+                         $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName] = coercion;
+
+                         $scope.$parent.$parent.dataset.dirty = 1;
+
+                    }
+
+                    else {
                         $scope.$parent.$parent.dataset.raw_rowObjects_coercionScheme[colName].operation = coercion.operation;
+    
+                    }
+        
                 }
             };
 
@@ -1262,7 +1289,7 @@ angular.module('arraysApp')
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
                     delete finalizedDataset.columns;
 
-                    console.log(finalizedDataset)
+
 
                     queue.push(DatasetService.save(finalizedDataset));
 
@@ -1292,10 +1319,10 @@ angular.module('arraysApp')
 
 
 
-                        // queue.push(DatasetService.save(finalizedDatasource));
+                        queue.push(DatasetService.save(finalizedDatasource));
                     });
 
-                    console.log($scope.additionalDatasources);
+                    // console.log($scope.additionalDatasources);
 
                     $q.all(queue)
                         .then(done)

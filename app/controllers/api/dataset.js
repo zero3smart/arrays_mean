@@ -19,6 +19,9 @@ var postimport_caching_controller = require('../../libs/import/cache/controller'
 var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
 var processing = require('../../libs/datasources/processing');
 
+var raw_row_objects = require('../../models/raw_row_objects');
+
+
 
 var kue = require('kue');
 
@@ -190,9 +193,27 @@ queue.process('importProcessed',function(job,done) {
         } else {
             done();
         }
-
-
     });
+
+
+    batch.push(function(done) {
+        if (!description.dataset_uid) { 
+            var raw_row_objects_forThisDescription = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey).forThisDataSource_RawRowObject_model
+            raw_row_objects_forThisDescription.count(function(err,numberOfDocs) {
+                if (err) return done(err);
+                raw_source_documents.Model.update({primaryKey: srcDocPKey},{$set: {numberOfRows: numberOfDocs}},function(err) {
+                     winston.info("✅  Updated raw source document number of rows to the raw doc count : " + srcDocPKey);
+                    done(err);
+                })
+            })
+
+        } else {
+            done();
+        }
+    })
+
+
+
 
 
     batch.end(function (err) {
