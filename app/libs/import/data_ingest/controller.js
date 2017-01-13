@@ -20,6 +20,7 @@ module.exports.Import_rawObjects = function (dataSourceDescriptions,job, fn) {
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
 
+            
             if (dataSourceDescription.useCustomView) {
                 require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').ParseAndImportRaw(i,dataSourceDescription,job,eachCb);
                 
@@ -106,8 +107,19 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
     var dataSource_title = dataSourceDescription.title;
     var dataset_uid = dataSourceDescription.dataset_uid;
 
-    winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
+
+    if (dataSourceDescription.dataset_uid) { 
+
+        winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\" (appended dataset: " + 
+            dataSourceDescription.dataset_uid + ")");
+
+    } else {
+         winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
+
+    }
     job.log("🔁  Post-processing \"" + dataSource_title + "\"");
+
+
     //
     //
     // Firstly, generate the whole processed objects dataset
@@ -124,7 +136,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
             if (err) {
                 winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
                 return callback(err);
-        }
+            }
 
             if (dataSourceDescription.useCustomView) {
                 require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,job,callback);

@@ -84,10 +84,19 @@ var DatasourceDescription_scheme = Schema({
     updatedBy: {type: Schema.Types.ObjectId, ref: 'User'},
 
     imported: {type: Boolean, default: false},
-    dirty: {type: Number, integer: true, default: 0}
-    // 1: Only post cache,
-    // 2: Need to Import data without sraping & post cache as well,
-    // 3: Full import as well as image scraping
+    dirty: {type: Number, integer: true, default: 0},
+    skipImageScraping: {type: Boolean, default: false}
+    //0: nth to do, imported
+  
+
+
+
+
+    //1: reimport from begining
+    //2: starting from import processed
+    //3: post import caching
+    //4: only image scraping 
+
 });
 
 var deepPopulate = require('mongoose-deep-populate')(mongoose);

@@ -24,15 +24,19 @@
             </md-tabs>
 
             <md-dialog-actions layout="row" layout-align="end center">
-                <!--<md-button class="md-raised" ng-click="delete()" ng-if="customFieldIndex != undefined">-->
-                    <!--Delete-->
-                <!--</md-button>-->
+                <md-button class="md-raised" ng-click="delete()" ng-if="customFieldIndex != undefined">
+                    Delete
+                </md-button> 
                 <md-button class="md-raised" ng-click="reset()" ng-disabled="!dialog.fieldForm.$dirty">
                     Reset
                 </md-button>
+
                 <md-button class="md-raised" ng-click="save()" ng-disabled="!dialog.fieldForm.$dirty || dialog.fieldForm.$invalid">
                     Save
                 </md-button>
+
+
+
             </md-dialog-actions>
         </form>
     </md-dialog-content>

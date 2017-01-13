@@ -98,20 +98,26 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
 
         var updateDocs = [];
 
-        var datasetQuery = dataset_uid ? {pKey: {$regex: "^" + dataset_uid + "-"}} : {};
+        var datasetQuery = dataset_uid ? {pKey: {$regex: "^" + dataset_uid + "-"}} : {pKey: {$regex: /^\d+$/ }};
 
 
         var cursor = mongooseModel_ofRawRowObjectsBeingProcessed.find(datasetQuery).cursor()
         var count = 0;
-        var err = null
+        var error = null;
+
         cursor.on('data', function (doc) {
 
             count += 1;
+
             nativeCollection_ofTheseProcessedRowObjects.insertOne(doc._doc, {ordered: false}, function (err) {
                 if (err) {
-                    err = err
-                    winston.error("❌ [" + (new Date()).toString() + "] Error from line 121 while saving processed row objects: ", err);
-                }
+                   
+                    
+                    winston.error("❌ [" + (new Date()).toString() + "] Error from line 121 while saving processed row objects: ", JSON.stringify(err));
+                    
+                    error = err;
+                    
+                } 
             })
           
             if (count % 1000 == 0 && count !== 0) {
@@ -121,16 +127,25 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
           
         }).on('error', function (err) {
 
-            winston.error("❌ error with cursor" + err)
-                return callback(err)
+            winston.error("❌ error with cursor" + err);
+
+            return callback(err)
 
         }).on('end', function () {
 
+
             winston.info("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects. Used " + process.memoryUsage().heapUsed + " heap memory. Inserted " + count + " processed rows for\"" + dataSource_title + "\".");
             job.log("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.")
-            return callback(err)
+        
+            return callback(error)
+        
 
         })
+
+
+
+
+        
     });
 };
 
