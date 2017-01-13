@@ -267,9 +267,14 @@ angular.module('arraysApp')
                     $scope.dialog.fieldForm.fieldName.$setValidity('unique', unique);
                 };
 
+                $scope.setDirty = function(number) {
+                    if ($scope.dataset.dirty !== 1) {
+                        $scope.dataset.dirty = number;
+                    }
+                }
+
                 $scope.save = function () {
                     // General
-
                     var currentValue = $scope.dialog.fieldForm.fieldName.$modelValue;
 
                     if (originalFieldName !== currentValue) {
@@ -519,7 +524,9 @@ angular.module('arraysApp')
 
                     $scope.dataset.fe_nestedObject.valueOverrides = {};
                     $scope.dataset.fe_nestedObject.fields = $scope.data.fields;
+                    
                     $scope.data.valueOverrides.map(function (elem) {
+
                         var valueOverrides = {};
                         elem.valueOverrides.map(function (el) {
                             valueOverrides[el.value] = el.override;
@@ -529,7 +536,7 @@ angular.module('arraysApp')
 
                     // Additional Datasources
                     $scope.additionalDatasources.forEach(function(datasource, index) {
-                        
+
                         if (datasource.dirty !== 1) {
                             datasource.dirty = 2;
                         }

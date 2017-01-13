@@ -87,11 +87,6 @@ var DatasourceDescription_scheme = Schema({
     dirty: {type: Number, integer: true, default: 0},
     skipImageScraping: {type: Boolean, default: false}
     //0: nth to do, imported
-  
-
-
-
-
     //1: reimport from begining
     //2: starting from import processed
     //3: post import caching

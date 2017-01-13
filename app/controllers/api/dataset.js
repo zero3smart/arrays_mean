@@ -67,10 +67,8 @@ queue.process('preImport',function(job,done) {
     });
 
 
-
-
-
     // Remove source document
+    
     batch.push(function (done) {
 
         if (!description.dataset_uid) {

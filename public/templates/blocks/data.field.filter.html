@@ -1,6 +1,6 @@
 <md-content layout-padding>
     <md-input-container class="md-block" flex-gt-sm>
-        <md-checkbox name="filterNotAvailable" ng-model="data.filterNotAvailable"
+        <md-checkbox name="filterNotAvailable" ng-model="data.filterNotAvailable" ng-change="setDirty(3)"
                      aria-label="Filter Not Available">
             Not Available
         </md-checkbox>

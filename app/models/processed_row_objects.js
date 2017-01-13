@@ -136,16 +136,10 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
 
             winston.info("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects. Used " + process.memoryUsage().heapUsed + " heap memory. Inserted " + count + " processed rows for\"" + dataSource_title + "\".");
             job.log("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.")
-        
+    
             return callback(error)
-        
 
-        })
-
-
-
-
-        
+        })        
     });
 };
 
