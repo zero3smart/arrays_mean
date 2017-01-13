@@ -1,6 +1,6 @@
 <md-content layout-padding ng-if=" (dataset.fe_listed && dataset.fe_visible && dataset.fe_views.default_view) || (!dataset.fe_listed&&!dataset.fe_visible) ">
     <div>
-        <h2 ng-if="dirty">You're almost done!<br/>The data must be imported to take effect some of your changes </h2>
+        <h2 ng-if="dirty">You're almost done!<br/>Your data must be imported for some of the changes to take effect.</h2>
 
         <md-content class="md-block md-padding" ng-show="inProgress">
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>
@@ -34,7 +34,7 @@
             </md-switch>
 
         </div>
-        
+
     </div>
 </md-content>
 <ng-include src="'/templates/blocks/dataset.empty.html'" ng-if=" (dataset.fe_listed && dataset.fe_visible && !dataset.fe_views.default_view) "></ng-include>
