@@ -372,6 +372,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 };
             }
 
+            var returnAbsURLorBuildURL = function(url) {
+                if (url.slice(0, 5) == "https") {
+                    return url
+                } else {
+                    return "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
+                }
+            }
 
             var user = null;
             batch.push(function(done) {
@@ -454,7 +461,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
                     folder: "/assets/images/",
-                    uid: dataSourceDescription.uid
+                    uid: dataSourceDescription.uid,
+                    returnAbsURLorBuildURL: returnAbsURLorBuildURL
 
                 };
 
