@@ -125,6 +125,11 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
     // Firstly, generate the whole processed objects dataset
     //
 
+
+console.log(dataSourceDescription);
+
+
+
     processed_row_objects.InsertProcessedDatasetFromRawRowObjects
     (
         job,

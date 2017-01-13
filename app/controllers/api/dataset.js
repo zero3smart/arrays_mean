@@ -159,7 +159,7 @@ queue.process('importProcessed',function(job,done) {
 
         datasource_description.findById(id)
         .lean()
-        .deepPopulate('schema_id _team schema_id.team')
+        .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, data) {
             if (err) return done(err);
             if (!data) return done(new Error('No datasource exists : ' + uid));
