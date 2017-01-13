@@ -316,6 +316,14 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 if (typeof dataSourceDescription.fe_filters.default !== 'undefined') {
                     default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default || {}); // "|| {}" for safety
                 }
+
+                var returnAbsURLorBuildURL = function(url) {
+                    if (url.slice(0, 5) == "https") {
+                        return url
+                    } else {
+                        return "https://" + aws_bucket_for_url + title + "/datasets/" + uid + folder + url
+                    }
+                }
               
                 //
                 var data =
@@ -353,6 +361,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     relationshipField: relationshipField,
                     buildObjectLink: buildObjectLink,
                     uid: dataSourceDescription.uid,
+                    returnAbsURLorBuildURL: returnAbsURLorBuildURL
                 };
                 callback(null, data);
             });
