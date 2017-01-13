@@ -99,7 +99,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (url.slice(0, 5) == "https") {
                         return url
                     } else {
-                        return "https://" + aws_bucket_for_url + title + "/datasets/" + uid + folder + url
+                        return "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription.title + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
                     }
                 }
             }
@@ -368,9 +368,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
                     //image url
-                    aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
-                    folder: "/assets/images/",
-                    uid: dataSourceDescription.uid,
+                    // aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
+                    // folder: "/assets/images/",
+                    // uid: dataSourceDescription.uid,
                     returnAbsURLorBuildURL: returnAbsURLorBuildURL
                 };
 
