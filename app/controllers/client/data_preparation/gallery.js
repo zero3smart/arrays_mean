@@ -99,10 +99,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (url.slice(0, 5) == "https") {
                         return url
                     } else {
-                        console.log(dataSourceDescription.title)
-                        console.log(dataSourceDescription.uid)
                         urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
-                        console.log(urlToReturn)
                         return urlToReturn
                     }
                 }
