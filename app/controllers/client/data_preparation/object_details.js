@@ -322,7 +322,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     if (url.slice(0, 5) == "https") {
                         return url
                     } else {
-                        return "https://" + aws_bucket_for_url + title + "/datasets/" + uid + folder + url
+                        return "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription.title + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
                     }
                 }
               
@@ -355,8 +355,8 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     //
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
                     scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
-                    aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
-                    folder: "/assets/images/",
+                    // aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
+                    // folder: "/assets/images/",
 
                     collateJoinData: collateJoinData,
                     relationshipField: relationshipField,
