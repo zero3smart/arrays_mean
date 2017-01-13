@@ -1,5 +1,6 @@
 <header>
-    <h1>{{ dataset.title ? dataset.title : 'Dataset Settings' }}</h1>
+    <h1 ng-if="$state.is('dashboard.dataset.list') == true">Dataset Settings</h1>
+    <h1 ng-if="$state.is('dashboard.dataset.list') == false">{{ dataset.title ? dataset.title : 'New Dataset' }}</h1>
 </header>
 
 <div class="array-content dataset">
