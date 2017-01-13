@@ -12,7 +12,7 @@ angular.module('arraysApp')
         return {
             restrict: 'A',
             transclude: true,
-            template: '<span ng-transclude></span><md-tooltip md-delay="300">{{toolTipText()}}</md-tooltip>',
+            template: '<span ng-transclude></span><md-tooltip md-delay="600">{{toolTipText()}}</md-tooltip>',
             link: function(scope, element, attr) {
                 scope.toolTipText = function() { return attr.aaTooltip; }
             }
