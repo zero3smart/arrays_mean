@@ -31,3 +31,14 @@
     </button>
 
 </nav>
+
+<md-nav-bar md-selected-nav-item="currentStep" md-no-ink role="navigation" aria-label="navigation links">
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.settings')" name="settings" value="settings"
+        >Data Source</md-nav-item>
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.data')" name="data" value="data"
+        ng-disabled="!dataset.uid">Format Data</md-nav-item>
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.views')" name="views" value="views"
+        ng-disabled="!dataset.fe_designatedFields">Format Views</md-nav-item>
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.done')" name="done" value="done"
+        ng-disabled="!dataset.fe_views.default_view">Publish</md-nav-item>
+</md-nav-bar>
