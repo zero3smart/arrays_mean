@@ -131,13 +131,8 @@ md-content.md-default-theme, md-content {
     margin-bottom: 30px;
 }
 .instructions {
-    margin-top: 30px;
-    margin-bottom: 5px;
-}
-.instructions {
-    margin-top: 30px;
-    margin-bottom: 5px;
-	margin: 0;
+    /*margin-top: 30px;*/
+    margin-bottom: 15px;
 	line-height: 16px;
 }
 .teams .instructions {
@@ -204,6 +199,9 @@ body.md-toast-animating {
     padding: 0;
     list-style: none;
 }
+.dashboard-list > li, div, span {
+	outline: 0;
+}
 .dashboard-list-order {
     display: inline-block;
     width: 20px;
@@ -268,6 +266,7 @@ md-input-invalid.subdomain-append {
 .user-list li:last-child {
 	border-bottom: 1px solid #eeeeee;
 }
+/*.list-thumb*/
 .user-list li img,
 .user-list li canvas {
 	width: 100%;
