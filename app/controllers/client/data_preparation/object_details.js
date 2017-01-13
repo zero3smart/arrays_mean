@@ -322,7 +322,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     if (url.slice(0, 5) == "https") {
                         return url
                     } else {
-                        return "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription.title + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
+                        return "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
                     }
                 }
               
