@@ -94,6 +94,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
                     return htmlElem;
                 };
+                
+                var returnAbsURLorBuildURL = function(url) {
+                    if (url.slice(0, 5) == "https") {
+                        return url
+                    } else {
+                        return "https://" + aws_bucket_for_url + title + "/datasets/" + uid + folder + url
+                    }
+                }
             }
 
             var page = urlQuery.page;
@@ -299,6 +307,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
             });
 
+
             batch.end(function (err) {
 
                 if (err) return callback(err);        
@@ -361,7 +370,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     //image url
                     aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
                     folder: "/assets/images/",
-                    uid: dataSourceDescription.uid
+                    uid: dataSourceDescription.uid,
+                    returnAbsURLorBuildURL: returnAbsURLorBuildURL
                 };
 
                 callback(null, data);

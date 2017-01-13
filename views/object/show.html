@@ -15,13 +15,14 @@
                                 <header class="object-header">
                                     {% if hasOriginalImage %}
                                     {% set title = team.title | lower %}
-                                    {% set url = "https://" + aws_bucket_for_url + title + "/datasets/" + uid + folder + rowObject.rowParams[fieldKey_originalImageURL] %}
+                                    <!-- We will need to replace this as it's super hacky but for now we need it for moma -->
+                                    {% set url = returnAbsURLorBuildURL(rowObject.rowParams[fieldKey_originalImageURL]) %}
                                         {% if scrapedImages %}
                                             <img src="{{ url }}" class="object-featured img-responsive" />
-                                        {% else %}  
+                                        {% else %}
+                                            <p>Not Scraped</p>
                                             <img src="{{ rowObject.rowParams[fieldKey_originalImageURL] }}" class="img-responsive" />
                                         {% endif %}
-                                    <!-- <img src="{{ url }}" class="object-featured img-responsive" /> -->
                                     {% endif %}
 
                                     {% if not rowObject.rowParams[fieldKey_originalImageURL] and fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}
