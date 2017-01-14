@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', 'Billing',
-        function($scope, $mdDialog, $state, $http, Billing) {
+    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', 'Billing', 'Subscriptions', 'Plans', 
+        function($scope, $mdDialog, $state, $http, Billing, Subscriptions, Plans) {
 
             $scope.errors = {};
 
@@ -41,6 +41,25 @@ angular.module('arraysApp')
                 }
             }, function(err) {});
 
+
+            //Get subscriptions info from Recurly
+            Subscriptions.get()
+            .$promise.then(function(res) {
+                console.log(res);
+
+                $scope.subscription = res.data.subscriptions.subscription[0];
+                $scope.subscription.quantity._ = parseInt($scope.subscription.quantity._);
+
+                //Get plans info from Recurly
+                Plans.get({ plan_code: $scope.subscription.plan.plan_code })
+                .$promise.then(function(res) {
+                    console.log(res);
+
+                    $scope.plan = res.data.plan;
+                });
+            });
+
+
             $scope.$parent.currentNavItem = 'billing';
 
             //
@@ -49,7 +68,7 @@ angular.module('arraysApp')
             // display name, cost per dataset
             $scope.testPlans = {
                 trial: {
-                    name: 'Pro',
+                    name: 'Trial',
                     cost: { // per month
                         trial: 0,
                         month: 0,

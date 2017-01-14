@@ -18,6 +18,7 @@ app.filter('capitalize', function () {
 
 app.filter('pluralize', function () {
     return function (input, singular, plural) {
+        input = parseInt(input);
         if (input === undefined) {
             return;
         }

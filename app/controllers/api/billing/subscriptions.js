@@ -29,7 +29,7 @@ module.exports.create = function(req, res) {
     
 };
 
-module.exports.get = function(req, res) {
+module.exports.getAll = function(req, res) {
 
     var userId = req.user;
 

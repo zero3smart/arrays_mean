@@ -13,7 +13,8 @@ var ctrlTeam = require('../controllers/api/team');
 var ctrlView = require('../controllers/api/views');
 var ctrlBillingAccount = require('../controllers/api/billing/account');
 var ctrlBillingInfo = require('../controllers/api/billing/billingInfo');
-var ctrlSubscription = require('../controllers/api/billing/subscription');
+var ctrlPlans = require('../controllers/api/billing/plans');
+var ctrlSubscriptions = require('../controllers/api/billing/subscriptions');
 var ejwt = require('express-jwt');
 
 var auth = ejwt({
@@ -102,8 +103,9 @@ router.post('/billing/account', ctrlBillingAccount.create);
 router.post('/billing/billinginfo', ctrlBillingInfo.create);
 router.get('/billing/billinginfo', ctrlBillingInfo.get);
 router.put('/billing/billinginfo', ctrlBillingInfo.update);
-router.post('/billing/subscription', ctrlSubscription.create);
-router.get('/billing/subscription', ctrlSubscription.get);
+router.get('/billing/plans/:plan_code', ctrlPlans.get);
+router.post('/billing/subscriptions', ctrlSubscriptions.create);
+router.get('/billing/subscriptions', ctrlSubscriptions.getAll);
 
 
 module.exports = router;
