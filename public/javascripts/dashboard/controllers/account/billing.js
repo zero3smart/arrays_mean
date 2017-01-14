@@ -19,7 +19,7 @@ angular.module('arraysApp')
             // Get billing info from Recurly
             Billing.get()
             .$promise.then(function(res) {
-                console.log(res);
+                console.log(res.data);
 
                 var billingInfo = res.data.billing_info;
 
@@ -45,15 +45,22 @@ angular.module('arraysApp')
             //Get subscriptions info from Recurly
             Subscriptions.get()
             .$promise.then(function(res) {
-                console.log(res);
+                console.log(res.data);
 
                 $scope.subscription = res.data.subscriptions.subscription[0];
                 $scope.subscription.quantity._ = parseInt($scope.subscription.quantity._);
 
+                // Calculate trial days remaining
+                var now = new Date();
+                var end = new Date($scope.subscription.trial_ends_at._);
+                var timeDiff = Math.abs(end.getTime() - now.getTime());
+                var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                $scope.subscription.trial_days_left = diffDays;
+
                 //Get plans info from Recurly
                 Plans.get({ plan_code: $scope.subscription.plan.plan_code })
                 .$promise.then(function(res) {
-                    console.log(res);
+                    console.log(res.data);
 
                     $scope.plan = res.data.plan;
                 });

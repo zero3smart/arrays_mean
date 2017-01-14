@@ -2,7 +2,7 @@
     <h2>Plan Summary</h2>
 
     <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
-    <p ng-if="testUser.p === 'trial'">Your free trial expires in <strong>6</strong> days.&emsp;<a ui-sref="dashboard.account.upgradePro">Upgrade Now</a></p>
+    <p ng-if="testUser.p === 'trial'">Your free trial expires in <strong>{{ subscription.trial_days_left | pluralize: "day" : "days" }}</strong>.&emsp;<a ui-sref="dashboard.account.upgradePro">Upgrade Now</a></p>
 
     <p>{{ paymentMethod }}&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
 
