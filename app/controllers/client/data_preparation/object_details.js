@@ -297,19 +297,20 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 var collateJoinData = function(columnName) {
                     var relationshipData = rowObject.rowParams[columnName]
                     for(var i = 0; i < relationshipData.length; i++) {
+                        var fieldId = relationshipData[i]._id
                         for(var fieldName in relationshipData[i].rowParams) {
                             var fieldData = relationshipData[i].rowParams[fieldName]
                             if(!collatedJoinData.hasOwnProperty(fieldName)) {
                                 collatedJoinData[fieldName] = []
                             }
-                            collatedJoinData[fieldName].push(fieldData)
+                            collatedJoinData[fieldName].push([fieldData, fieldId])
                         }
                     }
                     return collatedJoinData
                 }
 
-                var buildObjectLink = function(columnName, value) {
-                    return relationshipSource_uid + "-r" + relationshipSource_importRevision + "/" + rowObject.rowParams[columnName][0]._id;
+                var buildObjectLink = function(columnName, value, id) {
+                    return relationshipSource_uid + "-r" + relationshipSource_importRevision + "/" + id;
                 }
 
                 //
