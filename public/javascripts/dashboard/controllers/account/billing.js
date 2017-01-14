@@ -1,6 +1,45 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http',
-        function($scope, $mdDialog, $state, $http) {
+    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', 'Billing',
+        function($scope, $mdDialog, $state, $http, Billing) {
+
+            $scope.errors = {};
+
+            // Default to Credit Card tab selected
+            $scope.selectedTab = 0;
+            $scope.paymentMethod = '';
+
+            // Set defaults for empty fields
+            $scope.billing = {
+                month: 01,
+                year: 2016,
+
+                country: 'US'
+            };
+
+            // Get billing info from Recurly
+            Billing.get()
+            .$promise.then(function(res) {
+                console.log(res);
+
+                var billingInfo = res.data.billing_info;
+
+                // Filter out blank fields coming back from Recurly
+                for (var field in billingInfo) {
+                    if ( typeof billingInfo[field] === 'string' ) {
+                        $scope.billing[field] = billingInfo[field];
+                    }
+                }
+
+                // Set tab based on payment method
+                if (billingInfo.account_type) {
+                    $scope.selectedTab = 1;
+                    $scope.paymentMethod = 'Bank Account';
+                } else {
+                    $scope.selectedTab = 0;
+                    $scope.paymentMethod = 'Credit Card (' + billingInfo.card_type + ')';
+                    $scope.billing.number = billingInfo.first_six + 'XXXXXX' + billingInfo.last_four;
+                }
+            }, function(err) {});
 
             $scope.$parent.currentNavItem = 'billing';
 
@@ -31,7 +70,7 @@ angular.module('arraysApp')
             // for testing, to attach to user
             $scope.testUser = {};
 
-            $scope.testUser.p = 'pro';
+            $scope.testUser.p = 'trial';
             $scope.testUser.plan = $scope.testPlans[$scope.testUser.p];
             $scope.testUser.paidDatasets = 2; // not the current number but the allowed, paid number
             $scope.testUser.billingCycle = 'month';
@@ -40,7 +79,6 @@ angular.module('arraysApp')
             // $scope.testUser.plan = $scope.testPlans[$scope.testUser.p];
             // $scope.testUser.paidDatasets = 1;
             // $scope.testUser.billingCycle = 'trial';
-
 
             //
             // also for testing only--does Schema or Recurly have its own JSON data for countries/states?
@@ -85,5 +123,26 @@ angular.module('arraysApp')
                     $mdDialog.hide(answer);
                 };
             }
+
+            // Set whether using credit card or bank account depending on which tab is selected
+            $scope.onTabChanges = function(currentTab){
+                $scope.billing.payment_type = currentTab;
+            };
+
+            $scope.updateBillingInfo = function(ev) {
+                Billing.update(null, $scope.billing)
+                .$promise.then(function(res) {
+                    console.log(res);
+
+                    if (res.statusCode === 200) {
+                        console.log('success');
+
+                        $state.go('dashboard.account.billing');
+                    } else {
+                        console.log('error');
+                        $scope.errors = res.data.errors.error;
+                    }
+                }, function(err) {});
+            };
 
     }]);

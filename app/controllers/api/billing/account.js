@@ -27,9 +27,9 @@ module.exports.create = function(req, res) {
 
                 }, function(err, response) {
                     if (err) {
-                        res.send({error: err.message});
+                        res.status(err.statusCode).send(err);
                     } else {
-                        res.json(response);
+                        res.status(response.statusCode).json(response);
                     }
                 });
             }

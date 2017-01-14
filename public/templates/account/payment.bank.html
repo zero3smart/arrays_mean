@@ -2,17 +2,17 @@
 
 <md-input-container class="md-block">
     <label>Name on Account</label>
-    <input required />
+    <input ng-model="billing.name_on_account" required />
 </md-input-container>
 
 <md-input-container class="md-block">
     <label>Routing Number</label>
-    <input required />
+    <input ng-model="billing.routing_number"required />
 </md-input-container>
 
 <md-input-container class="md-block">
     <label>Account Number</label>
-    <input required />
+    <input ng-model="billing.account_number" required />
 </md-input-container>
 
 <md-input-container class="md-block">
@@ -22,7 +22,7 @@
 
 <h4>Account Type</h4>
 
-<md-radio-group ng-model="dummyData.type" class="payment-bank-type">
+<md-radio-group ng-model="billing.account_type" class="payment-bank-type">
     <md-radio-button value="checking">Checking</md-radio-button>
     <md-radio-button value="savings">Savings</md-radio-button>
 </md-radio-group>

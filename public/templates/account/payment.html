@@ -3,13 +3,13 @@
 
     <div ng-cloak>
         <md-content>
-            <md-tabs md-dynamic-height md-no-padding>
-                <md-tab label="Credit Card">
+            <md-tabs md-dynamic-height md-no-padding md-selected="selectedTab">
+                <md-tab label="Credit Card" md-on-select="onTabChanges('credit_card')">
                     <md-content>
                         <ng-include src="'templates/account/payment.card.html'"></ng-include>
                     </md-content>
                 </md-tab>
-                <md-tab label="Bank Account">
+                <md-tab label="Bank Account" md-on-select="onTabChanges('bank_account')">
                     <md-content>
                         <ng-include src="'templates/account/payment.bank.html'"></ng-include>
                     </md-content>
@@ -21,42 +21,51 @@
 
     <md-input-container class="md-block">
         <label>Country</label>
-        <md-select ng-model="country" required>
-            <md-option ng-repeat="country in countries" value="{{country.code}}" ng-selected="country.code === 'US'">{{country.name}}</md-option>
+        <md-select ng-model="billing.country" required>
+            <md-option ng-repeat="country in countries" value="{{country.code}}">{{country.name}}</md-option>
         </md-select>
     </md-input-container>
 
     <md-input-container class="md-block">
         <label>Address</label>
-        <input required value="1517 12th Ave">
+        <input ng-model="billing.address1" required />
     </md-input-container>
 
     <md-input-container class="md-block">
         <label>Address 2</label>
         <!-- tooltip: Suite, Apt no -->
-        <input required value="Suite 304">
+        <input ng-model="billing.address2" />
     </md-input-container>
 
     <md-input-container class="md-block">
         <label>City</label>
-        <input required value="Seattle">
+        <input ng-model="billing.city" required />
     </md-input-container>
 
     <div layout="row">
         <md-input-container>
             <label>State</label>
-            <md-select ng-model="aState" required>
+            <md-select ng-model="billing.state" required>
                 <md-option ng-repeat="aState in availableStates" value="{{aState.abbreviation}}">{{aState.name}}</md-option>
             </md-select>
         </md-input-container>
         <md-input-container>
             <label>Zip Code</label>
-            <input name="cardCVV" required value="98122"/>
+            <input ng-model="billing.zip" required />
         </md-input-container>
     </div>
 
+    <div layout="row">
+        <ul>
+            <li ng-repeat="error in errors">
+                {{ error.$.field }}: {{ error._ }}
+            </li>
+        </ul>
+    </div>
+
     <div layout="row" layout-align="space-between center">
-        <md-button class="md-dashboard" ng-disabled="1">
+
+        <md-button class="md-dashboard" ng-click="updateBillingInfo($event)">
             <span class="btn-label">Update Billing Information</span>
         </md-button>
 
