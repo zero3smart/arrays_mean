@@ -68,7 +68,8 @@ angular.module('arraysApp')
                             viewSetting: data.settings,
                             colsAvailable: colsAvailable,
                             team: $scope.$parent.$parent.team,
-                            default_view: $scope.data.default_view
+                            default_view: $scope.data.default_view,
+                            reimportStep: data.reimportStep
                         }
                     })
                         .then(function (savedDataset) {
@@ -149,7 +150,7 @@ angular.module('arraysApp')
 
 
             function ViewDialogController($scope, $mdDialog, $filter, viewName,belongsToTeam,viewDisplayName,dataset,viewSetting,colsAvailable,AssetService,
-                DatasetService,team,default_view) {
+                DatasetService,team,default_view,reimportStep) {
 
                 $scope.viewName = viewName;
                 $scope.viewDisplayName = viewDisplayName;
@@ -160,6 +161,7 @@ angular.module('arraysApp')
                 $scope.otherDatasetsloaded = false;
                 $scope.otherDatasetCols = {};
                 $scope.isCustomView = belongsToTeam? true: false;
+                $scope.reimportStep = reimportStep
 
 
                 $scope.availableForDuration = [ "Decade", "Year", "Month", "Day"];
@@ -357,7 +359,9 @@ angular.module('arraysApp')
 
                 $scope.save = function () {
 
-
+                    if (typeof $scope.reimportStep !== 'undefined') {
+                        $scope.dataset.dirty = ($scope.dataset.dirty == 1) ? 1: $scope.reimportStep;
+                    }
 
                     if ($scope.isDefault == true) {
                         $scope.dataset.fe_views.default_view = viewName;

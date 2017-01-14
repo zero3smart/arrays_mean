@@ -165,7 +165,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             callback(err, {
                                 env: process.env,
 
-                                user: user,
+                                user: null,
 
                                 displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
 
