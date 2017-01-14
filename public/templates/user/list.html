@@ -24,14 +24,14 @@
             <img src="/images/image-not-found-sm.png" style="opacity: 0" />
         </div>
 
-        <span class="dashboard-list-icon" ng-click="openUserDialog($event, person, user)" ng-if="user._id != person._id && !user.invited[person._id]" flex="10">
+        <span class="dashboard-list-icon" ng-click="openUserDialog($event, person, user)" ng-if="user._id != person._id && !user.invited[person._id]" flex="10" aa-tooltip="Edit user">
             <i class="fa fa-pencil" aria-hidden="true"></i>
         </span>
-        <span class="dashboard-list-icon" ng-click="resendInvite(person, $event)" ng-if="user.invited[person._id]" flex="10">
+        <span class="dashboard-list-icon" ng-click="resendInvite(person, $event)" ng-if="user.invited[person._id]" flex="10" aa-tooltip="Resend invitation">
             <i class="fa fa-refresh" aria-hidden="true"></i>
         </span>
 
-        <span class="dashboard-list-icon warn" ng-click="remove(person, $event)" aria-hidden="true" aria-label="Delete" flex="5">
+        <span class="dashboard-list-icon warn" ng-click="remove(person, $event)" aria-hidden="true" aria-label="Delete" flex="5" aa-tooltip="Remove User">
             <i class="fa fa-remove" aria-hidden="true"></i>
         </span>
 
