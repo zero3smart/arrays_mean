@@ -58,7 +58,14 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
     if (fileType == 'TSV') delimiter = '\t';
     var fileEncoding = description.fileEncoding || 'utf8';
 
-    winston.info("🔁  " + dataSourceIsIndexInList + ": Importing " + fileType + " \"" + title + "\"");
+    if (description.dataset_uid) { 
+        winston.info("🔁  " + dataSourceIsIndexInList + ": Importing " + fileType + " \"" + title + "\" (appended dataset: " + 
+            description.dataset_uid + ")" );
+    } else {
+        winston.info("🔁  " + dataSourceIsIndexInList + ": Importing " + fileType + " \"" + title + "\"");
+    }
+
+    
     job.log("🔁  Importing " + fileType + " \"" + title + "\"");
 
     var filepath;

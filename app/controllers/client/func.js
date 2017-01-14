@@ -898,6 +898,10 @@ function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupB
     var fe_valuesToExcludeByOriginalKey = obj;
     if (fe_valuesToExcludeByOriginalKey != null) {
         if (fe_valuesToExcludeByOriginalKey._all) {
+            //escape double quote
+            if (originalVal == "" &&  fe_valuesToExcludeByOriginalKey._all.indexOf('\"\"') !== -1) {
+                return null;
+            }
             if (fe_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
                 return null; // do not push to list
             }

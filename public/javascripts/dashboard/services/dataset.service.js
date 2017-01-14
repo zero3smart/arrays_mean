@@ -34,6 +34,15 @@
             return $http.put('api/dataset/publish',body)
         };
 
+
+        var skipImageScraping = function(id,skipping) {
+            var body = {
+                id: id,
+                skipImageScraping : skipping
+            }
+            return $http.put('api/dataset/skipImageScraping',body);
+        }
+
         var getAdditionalSources = function(id) {
 
             return $http.get('api/dataset/getAdditionalSources/' + id)
@@ -47,12 +56,6 @@
 
         var save = function(dataset) {
             return $http.post('api/dataset/update', dataset)
-        };
-
-
-        var initializeToImport = function(id) {
-            return $http.get('api/dataset/initializeToImport/' + id);
-           
         };
 
         var preImport = function(id) {
@@ -140,12 +143,12 @@
             getReimportDatasets: getReimportDatasets,
             save: save,
             publish: publish,
+            skipImageScraping: skipImageScraping,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
             getAvailableDesignatedFields: getAvailableDesignatedFields,
             getAvailableMatchFns: getAvailableMatchFns,
             getDatasetsWithQuery: getDatasetsWithQuery,
             getMappingDatasourceCols: getMappingDatasourceCols,
-            initializeToImport: initializeToImport,
             preImport: preImport,
             postImport: postImport,
             scrapeImages: scrapeImages,
