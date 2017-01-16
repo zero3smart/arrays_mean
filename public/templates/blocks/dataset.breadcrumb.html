@@ -3,19 +3,19 @@
     <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.upload')" ng-disabled="!dataset._id"
         ng-class="{active: currentStep == 'dashboard.dataset.upload'}">
         <span class="nav-item-icon" ng-class="dataset.format ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
-        <span class="nav-item-label">2. Upload Data</span>
+        <span class="nav-item-label">Data Source</span>
     </button>
 
     <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.data')" ng-disabled="!dataset.uid"
         ng-class="{active: currentStep == 'dashboard.dataset.data'}">
         <span class="nav-item-icon" ng-class="(dataset.fe_designatedFields) ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
-        <span class="nav-item-label">3. Format Data</span>
+        <span class="nav-item-label">Format Data</span>
     </button>
 
     <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.views')" ng-disabled="!dataset.fe_designatedFields"
         ng-class="{active: currentStep == 'dashboard.dataset.views'}">
         <span class="nav-item-icon" ng-class="(dataset.fe_visible && dataset.fe_listed && dataset.fe_views.default_view) || (!dataset.fe_listed && !dataset.fe_visible) ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
-        <span class="nav-item-label">4. Format Views</span>
+        <span class="nav-item-label">Format Views</span>
     </button>
 
     <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.done')" ng-disabled="!dataset.fe_views.default_view"

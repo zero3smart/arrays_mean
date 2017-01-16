@@ -3,13 +3,17 @@
 
         <h2>Select Your Data Source</h2>
 
-        <label>Upload spreadsheet</label>
-        <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
-        <input type="file" id="datafile" nv-file-select="" uploader="uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" class="team-uploader" ng-disabled="uploader.queue.length > 0" />
+        <div ng-hide="dataset.uid">
+            <label>Upload spreadsheet</label>
+            <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
+            <input type="file" id="datafile" nv-file-select="" uploader="uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" class="team-uploader" ng-disabled="uploader.queue.length > 0" />
 
-        <label for="datafile" class="md-button md-dashboard primary-action" ng-disabled="uploader.queue.length > 0">
-            Choose File
-        </label>
+            <label for="datafile" class="md-button md-dashboard primary-action" ng-disabled="uploader.queue.length > 0">
+                {{ dataset.uid ? 'Replace File' : 'Choose File' }}
+            </label>
+        </div>
+
+        <p class="instructions" ng-if="dataset.uid">Dataset(s)</p>
 
         <ul class="dashboard-list user-list" ng-cloak>
             <li ng-if="dataset.uid" layout="row" layout-align="none center">
@@ -22,13 +26,11 @@
         </ul>
 
         <ul class="dashboard-list user-list" ng-cloak>
-            <li ng-repeat="item in uploader.queue track by $index" layout="row" layout-align="none center">
+            <li ng-repeat="item in uploader.queue track by $index" ng-if="!item.isSuccess" layout="row" layout-align="none center">
 
                 <span ng-class="{'pending': item.isUploading }" flex="50">
                     <span class="dashboard-list-name">{{ item.file.name }}</span>
                 </span>
-
-                <div flex="10" src="/images/image-not-found-sm.png"></div>
 
                 <div ng-show="uploader.isHTML5" ng-hide="item.isSuccess" class="progress-container" draggable="" flex="50">
                     <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
@@ -52,7 +54,7 @@
         <div ng-if="dataset.uid" ng-repeat="additionalDatasource in additionalDatasources">
             <label>Upload spreadsheet</label>
             <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
-            <input type="file" id="adddatafile" nv-file-select="" uploader="additionalDatasourceuploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" class="team-uploader" />
+            <input type="file" id="adddatafile" nv-file-select="" uploader="additionalDatasource.uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" class="team-uploader" />
 
             <label for="adddatafile" class="md-button md-dashboard primary-action">
                 Choose File
@@ -94,12 +96,15 @@
                 <span class="btn-label">Combine With Another Datasource</span></md-button>
         </md-input-container>
 
-        <!-- <md-input-container>
-            <md-button class="md-dashboard" ng-click="removeAdditionalDatasource()" ng-disabled="additionalDatasources.length == 0"><span class="glyphicon glyphicon-minus"
-                                                                             aria-hidden="true"></span><span
-                    class="btn-label">Remove Last Sub Datasource </span></md-button>
-        </md-input-container> -->
-        <p>Clear All</p>
+        <p>
+            <a href="" class="warn">Clear All</a>
+        </p>
+
+        <!-- Important: Clearing all your data sources will delete any data currently stored in your dataset.
+        Are you sure you want to clear all data sources?
+        CLEAR ALL
+        CANCEL -->
+
         </div>
     </div>
 
