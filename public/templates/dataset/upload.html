@@ -12,6 +12,16 @@
         </label>
 
         <ul class="dashboard-list user-list" ng-cloak>
+            <li ng-if="dataset.uid" layout="row" layout-align="none center">
+
+                <span flex="50">
+                    <span class="dashboard-list-name">{{ dataset.uid }}</span>
+                </span>
+
+            </li>
+        </ul>
+
+        <ul class="dashboard-list user-list" ng-cloak>
             <li ng-repeat="item in uploader.queue track by $index" layout="row" layout-align="none center">
 
                 <span ng-class="{'pending': item.isUploading }" flex="50">
@@ -39,44 +49,6 @@
             </li>
         </ul>
 
-        <!-- <table class="table upload">
-            <thead>
-            <tr>
-                <th width="50%">DataSource Name</th>
-                <th ng-show="uploader.isHTML5">Size</th>
-                <th ng-show="uploader.isHTML5">Progress</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-
-            <tr ng-repeat="item in uploader.queue">
-                <td><strong>{{ item.file.name }}</strong></td>
-                <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
-                <td ng-show="uploader.isHTML5" class="progress-container">
-                    <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
-                </td>
-
-                <td class="text-center">
-                    <span ng-show="item.isSuccess" class="text-success"><i class="glyphicon glyphicon-ok"></i></span>
-                    <span ng-show="item.isCancel" class="text-warning"><i
-                            class="glyphicon glyphicon-ban-circle"></i></span>
-                    <span ng-show="item.isError" class="text-danger"><i class="glyphicon glyphicon-remove"></i></span>
-                </td>
-                <td nowrap class="no-padding-vertical">
-                    <md-button class="md-raised" ng-click="item.upload()"
-                               ng-disabled="item.isReady || item.isUploading || item.isSuccess">
-                        Upload
-                    </md-button>
-                    <md-button class="md-raised" ng-click="item.cancel()" ng-disabled="!item.isUploading">
-                        Cancel
-                    </md-button>
-                </td>
-            </tr>
-            </tbody>
-        </table> -->
-
         <div ng-if="dataset.uid" ng-repeat="additionalDatasource in additionalDatasources">
             <label>Upload spreadsheet</label>
             <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
@@ -85,9 +57,6 @@
             <label for="adddatafile" class="md-button md-dashboard primary-action">
                 Choose File
             </label>
-
-            <!-- <label>Choose datasource file to merge {{additionalDatasource.dataset_uid ? '(' + additionalDatasource.dataset_uid + ')' : ''}}</label>
-            <input type="file" nv-file-select="" uploader="additionalDatasource.uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv"/> -->
 
             <ul class="dashboard-list user-list" ng-cloak>
                 <li ng-repeat="item in additionalDatasource.uploader.queue track by $index" layout="row" layout-align="none center">
@@ -110,9 +79,9 @@
                     <span class="dashboard-list-icon warn" ng-click="item.cancel()" ng-hide="!item.isUploading" aria-hidden="true" aria-label="Cancel Upload" flex="5">
                         <i class="fa fa-remove" aria-hidden="true"></i>
                     </span>
-                    <!-- <span class="dashboard-list-icon warn" ng-click="item.remove()" ng-hide="item.isUploading" aria-hidden="true" aria-label="Delete" flex="5">
+                    <span class="dashboard-list-icon warn" ng-click="item.remove()" ng-hide="item.isUploading" aria-hidden="true" aria-label="Delete" flex="5">
                         <i class="fa fa-remove" aria-hidden="true"></i>
-                    </span> -->
+                    </span>
 
                 </li>
             </ul>
@@ -125,12 +94,12 @@
                 <span class="btn-label">Combine With Another Datasource</span></md-button>
         </md-input-container>
 
-        <md-input-container>
+        <!-- <md-input-container>
             <md-button class="md-dashboard" ng-click="removeAdditionalDatasource()" ng-disabled="additionalDatasources.length == 0"><span class="glyphicon glyphicon-minus"
                                                                              aria-hidden="true"></span><span
                     class="btn-label">Remove Last Sub Datasource </span></md-button>
-        </md-input-container>
-        Clear All
+        </md-input-container> -->
+        <p>Clear All</p>
         </div>
     </div>
 

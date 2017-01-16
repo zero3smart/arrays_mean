@@ -261,6 +261,7 @@ md-input-invalid.subdomain-append {
 }
 
 .user-list li {
+	padding: 1em 0;
 	border-top: 1px solid #eeeeee; /*match <hr>*/
 }
 .user-list li:last-child {
