@@ -99,6 +99,16 @@ angular.module('arraysApp')
                             }]
                         }
                     })
+                    .state('dashboard.dataset.new', {
+                        url: '/new',
+                        controller: 'DatasetNewCtrl',
+                        templateUrl: 'templates/dataset/new.html',
+                        resolve: {
+                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
+                                return DatasetService.get($stateParams.id);
+                            }]
+                        }
+                    })
                     .state('dashboard.dataset.upload', {
                         url: '/upload/:id',
                         templateUrl: 'templates/dataset/upload.html',

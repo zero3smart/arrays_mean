@@ -1,6 +1,6 @@
 angular.module('arraysApp')
 
-    .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast',
+    .controller('DatasetNewCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast',
         function($scope, $state, dataset, DatasetService, $mdToast) {
 
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
@@ -8,6 +8,11 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
+////
+var uniquePlaceholder = Date.now();
+if (!dataset.title) {dataset.title = '_temp_' + uniquePlaceholder;}
+if (!dataset.description) {dataset.description = '_temp_' + uniquePlaceholder;}
+if (!dataset.importRevision) {dataset.importRevision = 1;}
 
 
 

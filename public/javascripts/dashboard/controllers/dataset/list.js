@@ -56,7 +56,7 @@ angular.module('arraysApp')
             };
 
             $scope.add = function() {
-                $state.go('dashboard.dataset.upload');
+                $state.go('dashboard.dataset.new');
             };
         }]
     );
