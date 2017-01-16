@@ -15,9 +15,9 @@ angular.module('arraysApp')
             // if (!dataset.uid) {dataset.uid = uniquePlaceholder;}
             if (!dataset.importRevision) {dataset.importRevision = 1;}
 
-            $scope.submitForm = function(isValid) {
+            // $scope.submitForm = function(isValid) {
 
-                if (isValid) {
+                // if (isValid) {
                     $scope.submitting = true;
                     if (!dataset.author) {
                         dataset.author = $scope.user._id;
@@ -57,7 +57,6 @@ angular.module('arraysApp')
                         );
                         $scope.submitting = false;
                     });
-                }
-            }
-        }
-    ]);
+                // }
+            // }
+    }]);

@@ -528,7 +528,9 @@ md-dialog fieldset legend,
     padding-right: 12px;
 }
 
-.md-button.md-dashboard:disabled {
+.md-button.md-dashboard[disabled],
+.md-button.md-dashboard:disabled,
+.md-button.md-dashboard.disabled {
     background: var(--color-text-light);
 }
 .md-button.md-dashboard:not([disabled]) {
@@ -537,10 +539,6 @@ md-dialog fieldset legend,
 .md-button.md-dashboard:not([disabled]):hover {
     background: var(--color-primary);
 }
-.md-button.md-dashboard.disabled {
-	background: var(--color-text-light);
-}
-
 
 md-icon.btn-icon {
     color: white !important;
