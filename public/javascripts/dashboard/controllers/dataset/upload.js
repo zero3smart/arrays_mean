@@ -5,7 +5,7 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Upload';
             $scope.progressMode = "determinate";
-            
+
             $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
                 return initSource(additionalDatasource)
             });
@@ -87,7 +87,7 @@ angular.module('arraysApp')
 
             });
 
-            //right now only for uploading banner, later maybe icons. 
+            //right now only for uploading banner, later maybe icons.
             $scope.imageUploader = new FileUploader({
                 method: 'PUT',
                 disableMultipart: true,
@@ -141,6 +141,11 @@ angular.module('arraysApp')
             };
 
             // CALLBACKS
+
+            // $scope.uploader.onAfterAddingFile = function(item) {
+            //     // set uid to
+            //     // item.file.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
+            // };
 
             function onWhenAddingFileFailed(item, filter, options) {
                 // console.info('onWhenAddingFileFailed', item, filter, options);

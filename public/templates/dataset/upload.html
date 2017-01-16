@@ -16,10 +16,14 @@
         <p class="instructions" ng-if="dataset.uid">Dataset(s)</p>
 
         <ul class="dashboard-list user-list" ng-cloak>
-            <li ng-if="dataset.uid" layout="row" layout-align="none center">
+            <li ng-if="dataset.uid" layout="row" layout-align="space-between center">
 
                 <span flex="50">
-                    <span class="dashboard-list-name">{{ dataset.uid }}</span>
+                    <span class="dashboard-list-name"><strong>{{ dataset.uid }}</strong></span>
+                </span>
+
+                <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5">
+                    <i class="fa fa-remove" aria-hidden="true"></i>
                 </span>
 
             </li>
@@ -60,8 +64,9 @@
                 Choose File
             </label>
 
+            <!-- show already-uploaded sources here -->
             <ul class="dashboard-list user-list" ng-cloak>
-                <li ng-repeat="item in additionalDatasource.uploader.queue track by $index" layout="row" layout-align="none center">
+                <li ng-repeat="item in additionalDatasource.uploader.queue track by $index" layout="row" layout-align="space-between center">
 
                     <span ng-class="{'pending': item.isUploading }" flex="50">
                         <span class="dashboard-list-name">{{ item.file.name }}</span>
