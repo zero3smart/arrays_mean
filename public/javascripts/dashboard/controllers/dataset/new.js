@@ -8,16 +8,14 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
-////
-var uniquePlaceholder = Date.now();
-if (!dataset.title) {dataset.title = '_temp_' + uniquePlaceholder;}
-if (!dataset.description) {dataset.description = '_temp_' + uniquePlaceholder;}
-if (!dataset.importRevision) {dataset.importRevision = 1;}
+            ////
+            var uniquePlaceholder = Date.now();
+            if (!dataset.title) {dataset.title = '_temp_' + uniquePlaceholder;}
+            if (!dataset.description) {dataset.description = '_temp_' + uniquePlaceholder;}
+            // if (!dataset.uid) {dataset.uid = uniquePlaceholder;}
+            if (!dataset.importRevision) {dataset.importRevision = 1;}
 
-
-
-
-           $scope.submitForm = function(isValid) {
+            $scope.submitForm = function(isValid) {
 
                 if (isValid) {
                     $scope.submitting = true;
