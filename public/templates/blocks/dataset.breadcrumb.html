@@ -1,11 +1,5 @@
 <nav class="dataset-breadcrumb clearfix" role="navigation" aria-label="navigation links">
 
-    <button ng-click="navigate('dashboard.dataset.settings')"
-        ng-class="{active: currentStep == 'dashboard.dataset.settings'}">
-        <span class="nav-item-icon" ng-class="dataset._id ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
-        <span class="nav-item-label">1. General Settings</span>
-    </button>
-
     <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.upload')" ng-disabled="!dataset._id"
         ng-class="{active: currentStep == 'dashboard.dataset.upload'}">
         <span class="nav-item-icon" ng-class="dataset.format ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
@@ -30,8 +24,15 @@
         <span class="nav-item-label">5. Done!</span>
     </button>
 
+    <button ng-click="navigate('dashboard.dataset.settings')"
+        ng-class="{active: currentStep == 'dashboard.dataset.settings'}">
+        <span class="nav-item-icon" ng-class="dataset._id ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
+        <span class="nav-item-label">1. General Settings</span>
+    </button>
+
 </nav>
-{{dataset.uid}}
+id: {{dataset._id}}<br />
+uid: {{dataset.uid}}
 <!-- <md-nav-bar md-selected-nav-item="currentStep" md-no-ink role="navigation" aria-label="navigation links">
     <md-nav-item md-nav-click="navigate('dashboard.dataset.settings')" name="settings" value="settings"
         >Data Source</md-nav-item>

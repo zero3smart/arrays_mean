@@ -52,11 +52,11 @@ angular.module('arraysApp')
             }
 
             $scope.select = function (id) {
-                $state.go('dashboard.dataset.settings', {id: id});
+                $state.go('dashboard.dataset.upload', {id: id});
             };
 
             $scope.add = function() {
-                $state.go('dashboard.dataset.settings');
+                $state.go('dashboard.dataset.upload');
             };
         }]
     );

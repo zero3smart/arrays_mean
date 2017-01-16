@@ -1,4 +1,4 @@
-<md-content layout-padding ng-if="dataset.title">
+<md-content layout-padding>
     <div>
 
         <h2>Select Your Data Source</h2>
@@ -24,7 +24,7 @@
                     <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
                 </div>
 
-                <md-button class="md-raised" ng-click="item.upload()" ng-if="!item.isSuccess"
+                <md-button class="md-dashboard confirm" ng-click="item.upload()" ng-if="!item.isSuccess"
                            ng-disabled="item.isReady || item.isUploading">
                     Upload
                 </md-button>
@@ -120,6 +120,7 @@
             </table>
         </div>
 
+        <div ng-if="dataset.uid">
         <md-input-container>
             <md-button class="md-raised" ng-click="addNewDatasource()"><span class="glyphicon glyphicon-plus"
                                                                              aria-hidden="true"></span><span
@@ -131,6 +132,7 @@
                                                                              aria-hidden="true"></span><span
                     class="btn-label">Remove Last Sub Datasource </span></md-button>
         </md-input-container>
+        </div>
     </div>
 
     <!-- <div>
@@ -195,7 +197,7 @@
         </table>
     </div> -->
 
-    <div layout="row" layout-align="space-between center" class="panel-footer">
+    <div layout="row" layout-align="space-between center">
         <md-button class="md-dashboard" ng-click="navigate('dashboard.dataset.settings')" target="_self" md-no-ink>
             <span class="btn-label">Back</span>
         </md-button>
