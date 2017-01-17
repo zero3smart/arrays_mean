@@ -86,6 +86,9 @@ angular.module('arraysApp')
                                 } else {
                                     return [];
                                 }
+                            }],
+                            nullDatasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
+                                return DatasetService.getDatasetsWithQuery({uid:null});
                             }]
                         }
                     })
