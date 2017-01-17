@@ -35,3 +35,16 @@ module.exports.create = function(req, res) {
             }
         });
 };
+
+module.exports.get = function(req, res) {
+
+    var userId = req.user;
+
+    recurly.accounts.get(userId, function(err, response) {
+        if (err) {
+            res.status(err.statusCode).send(err);
+        } else {
+            res.status(response.statusCode).json(response);
+        }
+    });
+};

@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', 'Billing', 'Subscriptions', 'Plans', 
-        function($scope, $mdDialog, $state, $http, Billing, Subscriptions, Plans) {
+    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', 'Account', 'Billing', 'Subscriptions', 'Plans', 
+        function($scope, $mdDialog, $state, $http, Account, Billing, Subscriptions, Plans) {
 
             $scope.errors = {};
 
@@ -16,95 +16,105 @@ angular.module('arraysApp')
                 country: 'US'
             };
 
-            // Get billing info from Recurly
-            Billing.get()
+
+            // Get account info from Recurly
+            Account.get()
             .$promise.then(function(res) {
                 console.log(res.data);
 
-                var billingInfo = res.data.billing_info;
+                // If no account, make new one
+                if (res.data.error) {
+                    newAccount();
+                } else if (res.data.account) {
+                    getBilling();
+                    getSubscriptions();
+                }
+            });
 
-                // Filter out blank fields coming back from Recurly
-                for (var field in billingInfo) {
-                    if ( typeof billingInfo[field] === 'string' ) {
-                        $scope.billing[field] = billingInfo[field];
+
+            // Create new billing account in Recurly
+            function newAccount() {
+                Account.save()
+                .$promise.then(function() {
+                    getBilling();
+                    getSubscriptions();
+                });
+            }
+
+
+            // Get billing info from Recurly
+            function getBilling() {
+                Billing.get()
+                .$promise.then(function(res) {
+                    console.log(res.data);
+
+                    if (res.data.error) {
+                        $scope.billing.exists = false;
+                    } else if (res.data.billing_info) {
+
+                        $scope.billing.exists = true;
+
+                        var billingInfo = res.data.billing_info;
+
+                        // Filter out blank fields coming back from Recurly
+                        for (var field in billingInfo) {
+                            if ( typeof billingInfo[field] === 'string' ) {
+                                $scope.billing[field] = billingInfo[field];
+                            }
+                        }
+
+                        // Set tab based on payment method
+                        if (billingInfo.account_type) {
+                            $scope.selectedTab = 1;
+                            $scope.paymentMethod = 'Bank Account';
+                        } else {
+                            $scope.selectedTab = 0;
+                            $scope.paymentMethod = 'Credit Card (' + billingInfo.card_type + ')';
+                            $scope.billing.number = billingInfo.first_six + 'XXXXXX' + billingInfo.last_four;
+                        }
                     }
-                }
-
-                // Set tab based on payment method
-                if (billingInfo.account_type) {
-                    $scope.selectedTab = 1;
-                    $scope.paymentMethod = 'Bank Account';
-                } else {
-                    $scope.selectedTab = 0;
-                    $scope.paymentMethod = 'Credit Card (' + billingInfo.card_type + ')';
-                    $scope.billing.number = billingInfo.first_six + 'XXXXXX' + billingInfo.last_four;
-                }
-            }, function(err) {});
+                }, function(err) {});
+            }
 
 
             //Get subscriptions info from Recurly
-            Subscriptions.get()
-            .$promise.then(function(res) {
-                console.log(res.data);
+            function getSubscriptions() {
+                Subscriptions.get()
+                .$promise.then(function(res) {
+                    console.log(res.data);
 
-                $scope.subscription = res.data.subscriptions.subscription[0];
-                $scope.subscription.quantity._ = parseInt($scope.subscription.quantity._);
+                    if (res.data.error) {
+                        
+                    } else if (res.data.subscriptions.subscription) {
 
-                // Calculate trial days remaining
-                var now = new Date();
-                var end = new Date($scope.subscription.trial_ends_at._);
-                var timeDiff = Math.abs(end.getTime() - now.getTime());
-                var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                $scope.subscription.trial_days_left = diffDays;
+                        $scope.subscription = res.data.subscriptions.subscription;
+                        $scope.subscription.quantity._ = parseInt(res.data.subscriptions.subscription.quantity._);
 
-                //Get plans info from Recurly
-                Plans.get({ plan_code: $scope.subscription.plan.plan_code })
+                        // Calculate trial days remaining
+                        var now = new Date();
+                        var end = new Date($scope.subscription.trial_ends_at._);
+                        var timeDiff = Math.abs(end.getTime() - now.getTime());
+                        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                        $scope.subscription.trial_days_left = diffDays;
+
+                        getPlan($scope.subscription.plan.plan_code);
+                    }
+                });
+            }
+
+
+            //Get plans info from Recurly
+            function getPlan(plan_code) {
+                Plans.get({ plan_code: plan_code })
                 .$promise.then(function(res) {
                     console.log(res.data);
 
                     $scope.plan = res.data.plan;
                 });
-            });
+            }
 
 
             $scope.$parent.currentNavItem = 'billing';
-
-            //
-            // for testing
-            //
-            // display name, cost per dataset
-            $scope.testPlans = {
-                trial: {
-                    name: 'Trial',
-                    cost: { // per month
-                        trial: 0,
-                        month: 0,
-                        year: 0
-                    }
-                },
-                pro: {
-                    name: 'Pro',
-                    cost: { // per month
-                        month: 149,
-                        year: 99
-                    }
-                },
-                // enterprise: {
-                //     name: 'Enterprise',
-                // }
-            };
-            // for testing, to attach to user
-            $scope.testUser = {};
-
-            $scope.testUser.p = 'trial';
-            $scope.testUser.plan = $scope.testPlans[$scope.testUser.p];
-            $scope.testUser.paidDatasets = 2; // not the current number but the allowed, paid number
-            $scope.testUser.billingCycle = 'month';
-
-            // $scope.testUser.p = 'trial';
-            // $scope.testUser.plan = $scope.testPlans[$scope.testUser.p];
-            // $scope.testUser.paidDatasets = 1;
-            // $scope.testUser.billingCycle = 'trial';
 
             //
             // also for testing only--does Schema or Recurly have its own JSON data for countries/states?
@@ -160,15 +170,26 @@ angular.module('arraysApp')
                 .$promise.then(function(res) {
                     console.log(res);
 
-                    if (res.statusCode === 200) {
-                        console.log('success');
-
+                    if (res.statusCode === 200 || res.statusCode === 201) {
                         $state.go('dashboard.account.billing');
                     } else {
-                        console.log('error');
+                        console.log(res.data);
                         $scope.errors = res.data.errors.error;
                     }
                 }, function(err) {});
+            };
+
+            $scope.startTrialSubscription = function(plan_code) {
+                Subscriptions.save({ 'plan_code': plan_code })
+                .$promise.then(function(res) {
+                    console.log(res.data);
+
+                    if (res.statusCode === 200 || res.statusCode === 201) {
+                        getSubscriptions();
+                    } else {
+                        console.log(res.data);
+                    }
+                });
             };
 
     }]);

@@ -1,5 +1,10 @@
 (function() {
     angular.module('arraysApp')
+        .factory('Account', function($resource) {
+            return $resource('api/billing/account', null, {
+                'update': { method: 'PUT' }
+            });
+        })
         .factory('Billing', function($resource) {
             return $resource('api/billing/billingInfo', null, {
                 'update': { method: 'PUT' }

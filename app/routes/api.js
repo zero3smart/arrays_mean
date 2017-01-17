@@ -100,6 +100,7 @@ router.put('/team/admin/:id',ctrlTeam.switchAdmin);
 
 // billing, account & subscriptions settings
 router.post('/billing/account', ctrlBillingAccount.create);
+router.get('/billing/account', ctrlBillingAccount.get);
 router.post('/billing/billinginfo', ctrlBillingInfo.create);
 router.get('/billing/billinginfo', ctrlBillingInfo.get);
 router.put('/billing/billinginfo', ctrlBillingInfo.update);
