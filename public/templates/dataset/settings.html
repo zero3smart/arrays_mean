@@ -16,10 +16,12 @@
             </div>
         </md-input-container>
 
-        <md-input-container class="md-block">
+        <md-input-container class="md-block md-input-has-placeholder">
             <label>URL</label>
-            <!-- <span>subdomain.arrays.co/</spnm> -->
-            <input required name="url" ng-model="dataset.url" ng-pattern="/^[a-z0-9\-\_]*$/" />
+            <div layout="row" layout-align="start center">
+                <span style="font-size: 16px; font-family: Roboto; padding-top: 2px;">{{team.subdomain}}.arrays.co/</span>
+                <input required name="url" ng-model="dataset.url" ng-pattern="/^[a-z0-9\-\_]*$/" />
+            </div>
             <div ng-messages="settingsForm.url.$error">
                 <p ng-message="required">This field is required.</p>
 			    <!-- <p ng-message="">This url is already is use on your team.</p> -->
