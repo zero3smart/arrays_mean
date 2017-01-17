@@ -24,6 +24,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
             var rowObject;
             var relationshipField;
             var relationshipSource_uid;
+            var relationshipSource_importRevision;
 
             var batch = new Batch()
             batch.concurrency(1);
@@ -116,7 +117,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 var by = afterImportingAllSources_generate_description.by;
                                 //this is the field we'll use to link to the other dataset
                                 relationshipSource_uid = by.ofOtherRawSrcUID;
-                                var relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
+                                relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
                                 var relationshipSource_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(relationshipSource_uid, relationshipSource_importRevision);
 
                             
@@ -296,25 +297,34 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 var collateJoinData = function(columnName) {
                     var relationshipData = rowObject.rowParams[columnName]
                     for(var i = 0; i < relationshipData.length; i++) {
+                        var fieldId = relationshipData[i]._id
                         for(var fieldName in relationshipData[i].rowParams) {
                             var fieldData = relationshipData[i].rowParams[fieldName]
                             if(!collatedJoinData.hasOwnProperty(fieldName)) {
                                 collatedJoinData[fieldName] = []
                             }
-                            collatedJoinData[fieldName].push(fieldData)
+                            collatedJoinData[fieldName].push([fieldData, fieldId])
                         }
                     }
                     return collatedJoinData
                 }
 
-                var buildObjectLink = function(columnName, value) {
-                    return relationshipSource_uid + "-r1/" + rowObject.rowParams[columnName][0]._id;
+                var buildObjectLink = function(columnName, value, id) {
+                    return relationshipSource_uid + "-r" + relationshipSource_importRevision + "/" + id;
                 }
 
                 //
                 var default_filterJSON = undefined;
                 if (typeof dataSourceDescription.fe_filters.default !== 'undefined') {
                     default_filterJSON = queryString.stringify(dataSourceDescription.fe_filters.default || {}); // "|| {}" for safety
+                }
+
+                var returnAbsURLorBuildURL = function(url) {
+                    if (url.slice(0, 5) == "https") {
+                        return url
+                    } else {
+                        return "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
+                    }
                 }
               
                 //
@@ -346,13 +356,14 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                     //
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
                     scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
-                    aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
-                    folder: "/assets/images/",
+                    // aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
+                    // folder: "/assets/images/",
 
                     collateJoinData: collateJoinData,
                     relationshipField: relationshipField,
                     buildObjectLink: buildObjectLink,
                     uid: dataSourceDescription.uid,
+                    returnAbsURLorBuildURL: returnAbsURLorBuildURL
                 };
                 callback(null, data);
             });

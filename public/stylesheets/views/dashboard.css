@@ -101,7 +101,13 @@ md-content.md-default-theme, md-content {
 }
 
 .dashboard-content {
-    padding-top: var(--navbar-height-tablet);
+	padding-top: var(--navbar-height-mobile);
+}
+@media (min-width: 960px)  {
+    .dashboard-content {
+		padding-top: var(--navbar-height-tablet);
+		max-width: 45em !important;
+    }
 }
 
 .dashboard-content .array-header {
@@ -110,11 +116,6 @@ md-content.md-default-theme, md-content {
 
 .formInput{
     padding-top:20px;
-}
-@media (max-width: 767px) {
-    .dashboard-content {
-        padding-top: var(--navbar-height-mobile);
-    }
 }
 
 .table > thead > tr > th, .table > thead > tr > td, .table > tbody > tr > th, .table > tbody > tr > td, .table > tfoot > tr > th, .table > tfoot > tr > td {
@@ -130,13 +131,8 @@ md-content.md-default-theme, md-content {
     margin-bottom: 30px;
 }
 .instructions {
-    margin-top: 30px;
-    margin-bottom: 5px;
-}
-.instructions {
-    margin-top: 30px;
-    margin-bottom: 5px;
-	margin: 0;
+    /*margin-top: 30px;*/
+    margin-bottom: 15px;
 	line-height: 16px;
 }
 .teams .instructions {
@@ -203,6 +199,9 @@ body.md-toast-animating {
     padding: 0;
     list-style: none;
 }
+.dashboard-list > li, div, span {
+	outline: 0;
+}
 .dashboard-list-order {
     display: inline-block;
     width: 20px;
@@ -224,6 +223,10 @@ body.md-toast-animating {
 }
 .dashboard-list-icon {
     text-align: center;
+}
+.dashboard-list-icon:hover,
+.dashboard-list-icon:focus {
+    color: var(--color-primary);
 }
 
 .team-list .md-button .dashboard-list-name,
@@ -267,6 +270,7 @@ md-input-invalid.subdomain-append {
 .user-list li:last-child {
 	border-bottom: 1px solid #eeeeee;
 }
+/*.list-thumb*/
 .user-list li img,
 .user-list li canvas {
 	width: 100%;
@@ -285,6 +289,16 @@ md-input-invalid.subdomain-append {
     font-size: 16px;
     text-transform: none;
 }
+
+/*match sidebar button height*/
+.md-nav-bar {
+	height: 41px;
+}
+/*.md-tab,*/
+.md-nav-item a {
+	line-height: 16px !important;
+}
+
 .dashboard .tab-content {
     padding-top: 2em;
 }
@@ -297,6 +311,15 @@ md-nav-ink-bar,
 md-ink-bar {
     color: var(--color-primary) !important;
     background-color: var(--color-primary) !important;
+}
+
+/*tool tips*/
+md-tooltip.md-default-theme .md-content,
+md-tooltip .md-content {
+	font-size: 13px !important;
+	color: white !important;
+	/*background: var(--color-primary) !important;*/
+	background: var(--color-text-dark) !important;
 }
 
 /* Account */

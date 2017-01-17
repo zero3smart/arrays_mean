@@ -115,13 +115,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
             }
             if (aggregateBy_humanReadable_available) {
-                if (aggregateBy_humanReadable_available.length > 0)
-                    defaultAggregateByColumnName_humanReadable = aggregateBy_humanReadable_available[0];
                 if (aggregateBy_humanReadable_available.length == 1)
                     aggregateBy_humanReadable_available = undefined;
             }
-
-
 
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
             (typeof dataSourceDescription.fe_views.views.pieSet.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :

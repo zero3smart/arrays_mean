@@ -94,6 +94,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
                     return htmlElem;
                 };
+                
+                var returnAbsURLorBuildURL = function(url) {
+                    if (url.slice(0, 5) == "https") {
+                        return url
+                    } else {
+                        urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
+                        return urlToReturn
+                    }
+                }
             }
 
             var page = urlQuery.page;
@@ -299,6 +308,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
             });
 
+
             batch.end(function (err) {
 
                 if (err) return callback(err);        
@@ -359,9 +369,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
                     //image url
-                    aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
-                    folder: "/assets/images/",
-                    uid: dataSourceDescription.uid
+                    // aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
+                    // folder: "/assets/images/",
+                    // uid: dataSourceDescription.uid,
+                    returnAbsURLorBuildURL: returnAbsURLorBuildURL
                 };
 
                 callback(null, data);

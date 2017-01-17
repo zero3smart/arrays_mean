@@ -39,5 +39,4 @@ angular.module('arraysApp')
         		}
         	};
 
-        }]
-    );
+}]);

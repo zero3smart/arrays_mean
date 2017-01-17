@@ -2,10 +2,10 @@
 	<div class="timeline-item timeline-item-image">
 		<a href="/{{ doc.srcDocPKey }}/{{ doc._id }}{{ '?embed=true' if embedded }}" class="timeline-link">
 			{% set title = team.title | lower %}
-	        {% set url = "https://" + aws_bucket_for_url + title + "/datasets/" + uid + folder + doc.rowParams[fieldKey_medThumbImageURL] %}
+	        {% set url = doc.rowParams[fieldKey_medThumbImageURL] %}
 			
 			{% if scrapedImages %}
-				<img src="{{ url }}" class="timeline-image" />
+				<img src="{{ returnAbsURLorBuildURL(url) }}" class="timeline-image" />
 			{% else %}	
 				<img src="{{ doc.rowParams[fieldKey_medThumbImageURL] }}" class="timeline-image" />
 			{% endif %}
