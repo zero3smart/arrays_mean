@@ -151,8 +151,13 @@ function BarChart(selector, dataSet, options) {
 
     legendListLink.attr('class', 'legend-list-link')
         .attr('href','javascript:;')
-        .on('click',function() {
-            document.location.hash = '';
+        .on('click',function(d) {
+            var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1? '&' : '?';
+            var filterObjForThisFilterColVal = constructedFilterObj(filterObj, stackBy, d.label, false);
+            var filterJSONString = $.param(filterObjForThisFilterColVal);
+            var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterJSONString;
+
+            window.location = urlForFilterValue;
         })
         .on('mouseover', function(d, i) {
             d3.select(this)
