@@ -107,6 +107,7 @@ router.put('/billing/billinginfo', ctrlBillingInfo.update);
 router.get('/billing/plans/:plan_code', ctrlPlans.get);
 router.post('/billing/subscriptions', ctrlSubscriptions.create);
 router.get('/billing/subscriptions', ctrlSubscriptions.getAll);
+router.put('/billing/subscriptions/:subscrId', ctrlSubscriptions.update);
 
 
 module.exports = router;

@@ -10,8 +10,6 @@ var recurly = new Recurly(recurlyConfig);
 
 module.exports.get = function(req, res) {
 
-    // console.log(req.params.plan_code);
-
     var plan_code = req.params.plan_code;
 
     recurly.plans.get(plan_code, function(err, response) {

@@ -41,3 +41,21 @@ module.exports.getAll = function(req, res) {
         }
     });
 };
+
+module.exports.update = function(req, res) {
+
+    var userId = req.user;
+    var subscrId = req.params.subscrId;
+
+    recurly.subscriptions.update(subscrId, {
+        quantity: req.body.quantity
+
+    }, function(err, response) {
+        if (err) {
+            res.status(err.statusCode).send(err);
+        } else {
+            res.status(response.statusCode).json(response);
+        }
+    });
+    
+};

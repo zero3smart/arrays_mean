@@ -11,7 +11,7 @@
             });
         })
         .factory('Subscriptions', function($resource) {
-            return $resource('api/billing/subscriptions', null, {
+            return $resource('api/billing/subscriptions/:subscrId', null, {
                 'update': { method: 'PUT' }
             });
         })

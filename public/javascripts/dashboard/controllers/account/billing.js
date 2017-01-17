@@ -35,7 +35,7 @@ angular.module('arraysApp')
             // Create new billing account in Recurly
             function newAccount() {
                 Account.save()
-                .$promise.then(function() {
+                .$promise.then(function(res) {
                     getBilling();
                     getSubscriptions();
                 });
@@ -139,15 +139,18 @@ angular.module('arraysApp')
                     // clickOutsideToClose: true,
                     fullscreen: true,
                     locals: {
-                        testPlans: $scope.testPlans,
-                        testUser: $scope.testUser
+                        billing: $scope.billing,
+                        plan: $scope.plan,
+                        subscription: $scope.subscription,
+                        Subscriptions: Subscriptions
                     }
                 });
             };
 
-            function BillingDialogController($scope, $mdDialog, testPlans, testUser) {
-                $scope.testPlans = testPlans;
-                $scope.testUser = testUser;
+            function BillingDialogController($scope, $mdDialog, billing, plan, subscription, Subscriptions) {
+                $scope.billing = billing;
+                $scope.plan = plan;
+                $scope.subscription = subscription;
 
                 $scope.hide = function() {
                     $mdDialog.hide();
@@ -155,8 +158,13 @@ angular.module('arraysApp')
                 $scope.cancel = function() {
                     $mdDialog.cancel();
                 };
-                $scope.answer = function(answer) {
-                    $mdDialog.hide(answer);
+                $scope.update = function(quantity) {
+                    var subscrId = $scope.subscription.uuid;
+                    Subscriptions.update({ subscrId: subscrId }, { quantity: $scope.subscription.quantity._ })
+                    .$promise.then(function(res) {
+                        console.log(res.data);
+                        $mdDialog.hide();
+                    });
                 };
             }
 
