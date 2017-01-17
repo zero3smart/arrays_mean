@@ -35,7 +35,7 @@ angular.module('arraysApp')
                                     .hideDelay(3000)
                             );
 
-                            $state.transitionTo('dashboard.dataset.upload', {id: response.data.id}, {
+                            $state.transitionTo('dashboard.dataset.done', {id: response.data.id}, {
                                 reload: true,
                                 inherit: false,
                                 notify: true

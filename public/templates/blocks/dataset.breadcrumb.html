@@ -18,16 +18,16 @@
         <span class="nav-item-label">Format Views</span>
     </button>
 
-    <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.done')" ng-disabled="!dataset.fe_views.default_view"
-        ng-class="{active: currentStep == 'dashboard.dataset.done'}">
-        <span class="nav-item-icon" ng-class="(dataset.fe_views.views && dataset.imported) ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
-        <span class="nav-item-label">5. Done!</span>
-    </button>
-
     <button ng-click="navigate('dashboard.dataset.settings')"
         ng-class="{active: currentStep == 'dashboard.dataset.settings'}">
         <span class="nav-item-icon" ng-class="dataset._id ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
-        <span class="nav-item-label">1. General Settings</span>
+        <span class="nav-item-label">Publish</span>
+    </button>
+
+    <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.done')" ng-disabled="!dataset.fe_views.default_view"
+        ng-class="{active: currentStep == 'dashboard.dataset.done'}">
+        <span class="nav-item-icon" ng-class="(dataset.fe_views.views && dataset.imported) ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
+        <span class="nav-item-label">[import]</span>
     </button>
 
 </nav>

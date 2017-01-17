@@ -142,10 +142,13 @@ angular.module('arraysApp')
 
             // CALLBACKS
 
-            // $scope.uploader.onAfterAddingFile = function(item) {
-            //     // set uid to
-            //     // item.file.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
-            // };
+            $scope.uploader.onBeforeUploadItem = function(item) {
+                // temporary title based on name of main dataset, for clean looking uid
+                var tempTitle = item.file.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
+                dataset.title = tempTitle;
+                dataset.uid = tempTitle;
+                DatasetService.save(dataset);
+            };
 
             function onWhenAddingFileFailed(item, filter, options) {
                 // console.info('onWhenAddingFileFailed', item, filter, options);
