@@ -3,8 +3,15 @@ angular.module('arraysApp')
     .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast',
         function($scope, $state, dataset, DatasetService, $mdToast) {
 
+            // still needed now that this step comes later?
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
             if (!dataset.fe_visible) {dataset.fe_visible = false;}
+
+            if (!dataset.url) {
+                dataset.url = $scope.convertToURLSafe(dataset.title);
+            }
+            if (!dataset.importRevision) {dataset.importRevision = 1;}
+
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
