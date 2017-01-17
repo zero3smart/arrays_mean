@@ -93,8 +93,10 @@ function PieChart(selection, pieData, colorMap) {
      */
     g.on('click', function(d) {
         var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1? '&' : '?';
+        var filterCols = [groupBy, chartBy] 
+        var filterVals = [d.data.label, d.data.title]
 
-        var filterObjForThisFilterColVal = constructedFilterObj(filterObj, groupBy, d.data.label, false);
+        var filterObjForThisFilterColVal = constructedFilterObj(filterObj, filterCols, filterVals, false);
         var filterJSONString = $.param(filterObjForThisFilterColVal);
         var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterJSONString;
 

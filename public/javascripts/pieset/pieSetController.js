@@ -35,6 +35,10 @@ d3.select('#pie-set')
     .append('li')
     .attr('class', 'gallery-item gallery-item-image pie-set-item')
     .each(function(d, i) {
+        //set the title in the data object so it gets passed with the filter
+        for(var dataObjectIndex = 0; dataObjectIndex < d.data.length; dataObjectIndex++) {
+            d.data[dataObjectIndex].title = d.title
+        }        
         pieChart = new PieChart(this, d.data, colorMap);
 
         var container = d3.select(this);

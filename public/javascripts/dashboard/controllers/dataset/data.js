@@ -73,8 +73,6 @@ angular.module('arraysApp')
                 })
                     .then(function (savedDataset) {
 
-                        console.log(savedDataset);
-
                         $scope.$parent.$parent.dataset = savedDataset;
 
                         if (Object.keys(savedDataset.fe_designatedFields).length > 0) {
@@ -359,8 +357,6 @@ angular.module('arraysApp')
                         }
                         $scope.dataset.customFieldsToProcess.splice(customFieldIndex, 1, $scope.customField);
                     }
-
-                    // console.log($scope.dataset);
 
                     $mdDialog.hide($scope.dataset);
                 };
@@ -755,6 +751,7 @@ angular.module('arraysApp')
                 })
                     .then(function (savedDataset) {
                         $scope.$parent.$parent.dataset = savedDataset;
+                        $scope.data.fe_designatedFields = savedDataset.fe_designatedFields
                         sortColumnsByDisplayOrder();
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
@@ -854,6 +851,7 @@ angular.module('arraysApp')
                     if ($scope.dataset.skipImageScraping == false && $scope.dataset.dirty == 0) {
                         $scope.dataset.dirty = 4;
                     }
+
 
                     $mdDialog.hide($scope.dataset);
                 };
@@ -1200,6 +1198,7 @@ angular.module('arraysApp')
                         return $scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column1.name) -
                             $scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column2.name);
                 });
+
             }
 
             $scope.fieldSortableOptions = {
