@@ -27,7 +27,7 @@ angular.module('arraysApp')
             $scope.additionalDatasources.forEach(function(datasource) {
 
                 if (datasource.dirty !== 0 && datasource.dirty < $scope.dirty) {
-                    $scope.dirty == datasource.dirty;
+                    $scope.dirty = datasource.dirty;
                 } 
 
                 $scope.imported = $scope.imported && datasource.imported;
@@ -90,56 +90,60 @@ angular.module('arraysApp')
 
             var getJobStatus = function (id,uid) {
 
-                Job.get({id:$scope.currentJobId}).$promise
+                DatasetService.getJobStatus(id).$promise
                 .then(function(job) {
-
-                    // console.log(job);
-
-                    $scope.jobs[$scope.currentJobId].state = job.state;
-
-                    if (job.state == 'active') {
-                        Job.getLog({id:$scope.currentJobId}).$promise
-                        .then(function(logs) {
-                            $scope.jobs[$scope.currentJobId].log = logs[logs.length-1];
-                        })
-
-                         $timeout(function() {
-                            getJobStatus(id,uid)
-                        }, 4000);
-
-                    } else if (job.state == 'failed') {
-                        $scope.importLogger.push(" ❌  [" + uid + "] Error: " + job.error);
-
-
-                    } else {
-                        if ($scope.currentStep == 1) {
-                            $scope.importLogger.push("📡 [" + uid + "] Successfully imported raw objects!");
-                            importProcess(id,uid);
-
-                        } else if ($scope.currentStep == 2) {
-                            $scope.importLogger.push("📡  [" + uid + "] Successfully imported processed objects!")
-                            postImport(id,uid);
-
-                        } else if ($scope.currentStep == 3) {
-                            $scope.importLogger.push("📡  [" + uid + "] Successfully cached all the filters for the views! ");
-
-                            if (dataset.skipImageScraping) {
-                                lastStep();
-                            } else {
-                                scrapeImages(id,uid);
-                            }
-
-                        } else if ($scope.currentStep == 4) {
-
-                            $scope.importLogger.push("📡  [" + uid + "] Successfully scraped all the images! ");
-
-                            lastStep();
-
-                        }
-                    }
-
-
+                    console.log("getJobStatus");
+                    console.log(job);
                 })
+
+                // Job.get({id:$scope.currentJobId}).$promise
+                // .then(function(job) {
+
+                //     $scope.jobs[$scope.currentJobId].state = job.state;
+
+                //     if (job.state == 'active') {
+                //         Job.getLog({id:$scope.currentJobId}).$promise
+                //         .then(function(logs) {
+                //             $scope.jobs[$scope.currentJobId].log = logs[logs.length-1];
+                //         })
+
+                //          $timeout(function() {
+                //             getJobStatus(id,uid)
+                //         }, 4000);
+
+                //     } else if (job.state == 'failed') {
+                //         $scope.importLogger.push(" ❌  [" + uid + "] Error: " + job.error);
+
+
+                //     } else {
+                //         if ($scope.currentStep == 1) {
+                //             $scope.importLogger.push("📡 [" + uid + "] Successfully imported raw objects!");
+                //             importProcess(id,uid);
+
+                //         } else if ($scope.currentStep == 2) {
+                //             $scope.importLogger.push("📡  [" + uid + "] Successfully imported processed objects!")
+                //             postImport(id,uid);
+
+                //         } else if ($scope.currentStep == 3) {
+                //             $scope.importLogger.push("📡  [" + uid + "] Successfully cached all the filters for the views! ");
+
+                //             if (dataset.skipImageScraping) {
+                //                 lastStep();
+                //             } else {
+                //                 scrapeImages(id,uid);
+                //             }
+
+                //         } else if ($scope.currentStep == 4) {
+
+                //             $scope.importLogger.push("📡  [" + uid + "] Successfully scraped all the images! ");
+
+                //             lastStep();
+
+                //         }
+                //     }
+
+
+                // })
             }
 
             function lastStep() {
@@ -284,6 +288,8 @@ angular.module('arraysApp')
                         importProcess(id,uid);
                     } else if (datasource.dirty == 3) {
                         postImport(id,uid);
+                    } else if (datasource.dirty == 4) {
+                        scrapeImages(id,uid);
                     }
                 } else {
                      if ($scope.dirty == 1) {
@@ -292,6 +298,8 @@ angular.module('arraysApp')
                         importProcess(id,uid);
                     } else if ($scope.dirty == 3) {
                         postImport(id,uid);
+                    } else if ($scope.dirty == 4) {
+                        scrapeImages(id,uid);
                     }
 
                 }

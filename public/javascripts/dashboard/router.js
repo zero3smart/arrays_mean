@@ -6,6 +6,14 @@ angular.module('arraysApp')
             function ($rootScope, $state, $stateParams) {
                 $rootScope.$state = $state;
                 $rootScope.$stateParams = $stateParams;
+
+                $rootScope.$on('$stateChangeError',function(event, toState,toParams,fromState,fromParams,error) {
+                    event.preventDefault();
+                    console.log(error);
+                    if (error.importing == true) {
+                        $state.go('dashboard.dataset.done', {id: error.datasetId});
+                    }
+                })
             }
         ]
     )
@@ -94,8 +102,31 @@ angular.module('arraysApp')
                         controller: 'DatasetSettingsCtrl',
                         templateUrl: 'templates/dataset/settings.html',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
-                                return DatasetService.get($stateParams.id);
+                            dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {
+
+                                // return DatasetService.get($stateParams.id);
+
+                                if ($stateParams.id) {
+                                    var deferred = $q.defer();
+                                    DatasetService.get($stateParams.id)
+                                    .then(function(data) {
+                                        if (data.jobId !== 0) {
+                                            deferred.reject({importing: true, datasetId: data._id});
+                                        } else {
+                                            deferred.resolve(data);
+                                        }
+                                        
+                                    })
+                                    return deferred.promise;
+
+                                } else {
+                                    return {urls: []};
+                                }
+
+
+                           
+
+                                
                             }]
                         }
                     })

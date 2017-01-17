@@ -47,6 +47,7 @@ router.put('/dataset/publish/', ctrlDataset.publish);
 router.put('/dataset/skipImageScraping',ctrlDataset.skipImageScraping);
 router.post('/dataset/removeSubdataset', ctrlDataset.removeSubdataset);
 router.get('/dataset/reimportDatasets/:id',ctrlDataset.getDependencyDatasetsForReimporting);
+router.get('/dataset/jobStatus/:id',ctrlDataset.getJobStatus);
 
 router.get('/dataset/getAssetUploadSignedUrl/:id', ctrlDataset.signedUrlForAssetsUpload);
 

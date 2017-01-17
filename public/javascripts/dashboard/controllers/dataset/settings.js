@@ -2,16 +2,13 @@ angular.module('arraysApp')
 
     .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast',
         function($scope, $state, dataset, DatasetService, $mdToast) {
-
+            
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
             if (!dataset.fe_visible) {dataset.fe_visible = false;}
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
 
-
-
-    
            $scope.submitForm = function(isValid) {
 
                 if (isValid) {

@@ -36,8 +36,38 @@ queue.on('job enqueue',function(id,type) {
     console.log('Job %s got queued of type %s',id,type);
 
 }).on('job complete',function(id,result) {
+
     console.log('Job %s completed with result %s', id, result);
+    
+    kue.Job.get(id,function(err,job) {
+        if (err) return;
+        var task = job.type;
+        if (task == 'preImport') {
+
+            _startJob(job.data.id,'importProcessed');
+
+        } else if (task == 'importProcessed') {
+            _startJob(job.data.id,'postImport');
+
+        } else if (task == 'postImport') {
+
+            datasource_description.findById(job.data.id,function(err,dataset) {
+                if (!dataset.skipImageScraping) {   //check for skipping image scraping 
+                    _startJob(job.data.id,'scrapeImages')
+                } 
+            }) else {
+                datasource_description.findOneAndUpdate({_id: datasetId}, {$set: {jobId: 0}});
+            }
+
+        } else if (task == 'scrapeImages') {
+            datasource_description.findOneAndUpdate({_id: datasetId}, {$set: {jobId: 0}})
+        }
+    })
 })
+
+
+
+
 
 queue.process('preImport',function(job,done) {
 
@@ -284,6 +314,7 @@ queue.process('postImport',function(job,done) {
 })
 
 /* end queue functions */
+
 
 function getAllDatasetsWithQuery(query, res) {
 
@@ -681,6 +712,7 @@ module.exports.skipImageScraping = function(req,res) {
     })
 }
 
+
 module.exports.update = function (req, res) {
 
     if (!req.body._id) {
@@ -724,54 +756,17 @@ module.exports.update = function (req, res) {
                 winston.info("🔁  Updating the dataset " + description_title + "...");
 
 
-
-                // if (doc.relationshipFields && doc.relationshipFields.length > 0) doc.dirty = 3;
-                // if (doc.customFieldsToProcess && doc.customFieldsToProcess.length > 0) doc.dirty = 3;
-                // if (doc.fe_nestedObject && doc.fe_nestedObject.fields.length > 0) doc.dirty = 3;
-                // if (doc.imageScraping && doc.imageScraping.length > 0) doc.dirty = 3
-
                 _.forOwn(req.body, function (value, key) {
                     if (key != '_id' && ((!doc.schema_id && !_.isEqual(value, doc._doc[key]))
                         || (doc.schema_id && !_.isEqual(value, description[key])))) {
 
                         winston.info('  ✅ ' + key + ' with ' + JSON.stringify(value));
 
-                        // if (key == 'dirty') return;
-
                         doc[key] = value;
                         if (typeof value === 'object')
                             doc.markModified(key);
-
-                        // detect whether you need to re-import dataset to the system or not, and inform that the client
-
-                        // Only post-import cache
-                        // var keysForNeedToImport = [
-                        //     'fe_filters',
-                        //     'fe_excludeFields'
-                        // ];
-                        // if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 1)
-                        //     doc.dirty = 1;
-
-                        // // Import without image scrapping
-                        // keysForNeedToImport = [
-                        //     'importRevision',
-                        //     'raw_rowObjects_coercionScheme',
-                        //     'relationshipFields',
-                        //     'customFieldsToProcess',
-                        //     'fe_nestedObject'
-                        // ];
-                        // if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 2)
-                        //     doc.dirty = 2;
-
-                        // // Full Import
-                        // keysForNeedToImport = [
-                        //     'imageScraping',
-                        // ];
-                        // if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 3)
-                        //     doc.dirty = 3;
                     }
                 });
-
 
 
                 doc.save(function (err, updatedDoc) {
@@ -1059,49 +1054,79 @@ module.exports.download = function (req, res) {
         });
 }
 
+function _startJob(datasetId,jobNam,cb) {
+
+
+    var job = queue.create(jobName, {
+        id: datasetId
+    }).ttl(9000000)
+    .save(function(err) {
+        if (err) return cb(err);
+        else {
+
+            //update dataset with jobId that started
+
+            datasource_description.findOneAndUpdate({_id: datasetId},{$set:{jobId: job.id}},{new: true},function(err,updatedDataset) {
+                if (err) return cb(err);
+                else {
+                    return cb(null,updatedDataset.jobId);
+                }
+            });
+        }
+    })
+}
+
 
 module.exports.preImport = function (req, res) {
 
-    var job = queue.create('preImport', {
-        id: req.params.id
-    }).ttl(3600000)
-    .save(function(err) {
+    _startJob(req.params.id, 'preImport',function(err,jobId) {
         if (err) res.status(500).send(err);
-        res.json({jobId: job.id});
+        return res.status(200).send('ok');
     })
 }
+
+module.exports.getJobStatus = function(req,res) {
+    var datasetId = req.params.id;
+    datasource_description.findById(datasetId)
+    .select({jobId: 1})
+    .exec(function(err,queryingDataset) {
+        if (err) return res.status(500).send(err);
+        var jobId = queryingDataset.jobId;
+        if (jobId == 0) {
+            return res.status(404).send({err: 'No importing job found'});
+        } 
+        kue.Job.get(jobId,function(err,job) {
+            if (err) return res.status(500).send(err);
+            return res.json(job);
+        })
+    })
+}
+
 
 module.exports.importProcessed = function(req, res) {
 
-    var job = queue.create('importProcessed', {
-        id: req.params.id
-    }).ttl(3600000)
-    .save(function(err) {
+     _startJob(req.params.id,'importProcessed',function(err,jobId) {
         if (err) res.status(500).send(err);
-        res.json({jobId: job.id});
+        return res.status(200).send('ok');
     })
 }
 
+
+
 module.exports.scrapeImages = function(req, res) {
-    var job = queue.create('scrapeImages', {
-        id: req.params.id
-    }).ttl(9000000)
-    .save(function(err) {
+
+     _startJob(req.params.id,'scrapeImages',function(err,jobId) {
         if (err) res.status(500).send(err);
-        res.json({jobId: job.id});
+        return res.status(200).send('ok');
     })
 }
 
 
 module.exports.postImport = function (req, res) {
 
-
-    var job = queue.create('postImport', {
-        id: req.params.id
-    }).ttl(3600000)
-    .save(function(err) {
+     _startJob(req.params.id,'postImport',function(err,jobId) {
         if (err) res.status(500).send(err);
-        res.json({jobId: job.id});
+        return res.status(200).send('ok');
     })
 };
 

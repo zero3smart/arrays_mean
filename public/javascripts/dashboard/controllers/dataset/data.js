@@ -851,6 +851,10 @@ angular.module('arraysApp')
                         $scope.dataset.fe_designatedFields[$scope.data.designatedFields[fieldName]] = fieldName;
                     }
 
+                    if ($scope.dataset.skipImageScraping == false && $scope.dataset.dirty == 0) {
+                        $scope.dataset.dirty = 4;
+                    }
+
                     $mdDialog.hide($scope.dataset);
                 };
             }

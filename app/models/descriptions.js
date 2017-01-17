@@ -85,12 +85,22 @@ var DatasourceDescription_scheme = Schema({
 
     imported: {type: Boolean, default: false},
     dirty: {type: Number, integer: true, default: 0},
-    skipImageScraping: {type: Boolean, default: false}
     //0: nth to do, imported
     //1: reimport from begining
     //2: starting from import processed
     //3: post import caching
     //4: only image scraping 
+
+    skipImageScraping: {type: Boolean, default: false},
+
+    jobId: {type: Number,integer: true, default: 0}
+
+    //0: no job has started, job has completed
+    // all others: related to the jobId in the queue
+
+
+    
+
 
 });
 

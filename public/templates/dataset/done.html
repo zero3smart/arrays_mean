@@ -6,6 +6,8 @@
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>
         </md-content>
 
+        
+
         <md-content class="md-block" md-colors="{background: 'grey'}">
             <p ng-repeat="logger in importLogger">{{logger}}
                 <div ng-if="jobs[currentJobId].state=='active'">

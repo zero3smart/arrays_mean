@@ -107,6 +107,17 @@
 
         };
 
+        var getJobStatus = function(id) {
+            return $http.get('api/dataset/jobStatus/')
+            .then(function(response) {
+                console.log(response);
+            }).catch(function(err) {
+                console.log("err");
+
+                console.log(err);
+            })
+        }
+
         var getDatasetsWithQuery = function(query) {
             return $http.post('api/dataset/getDatasetsWithQuery',query)
             .then(function(response) {
@@ -144,6 +155,7 @@
             save: save,
             publish: publish,
             skipImageScraping: skipImageScraping,
+            getJobStatus: getJobStatus,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
             getAvailableDesignatedFields: getAvailableDesignatedFields,
             getAvailableMatchFns: getAvailableMatchFns,
