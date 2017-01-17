@@ -5,6 +5,7 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Upload';
             $scope.progressMode = "determinate";
+            $scope.addingAdditionalDatasource = false;
 
             $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
                 return initSource(additionalDatasource)
@@ -58,6 +59,7 @@ angular.module('arraysApp')
                         );
 
                         additionalDatasource._id = response.id;
+                        $scope.addingAdditionalDatasource = false;
                     } else {
                         $mdToast.show(
                             $mdToast.simple()
@@ -187,7 +189,7 @@ angular.module('arraysApp')
                                 .hideDelay(3000)
                         );
                     })
-                    
+
                     // $state.transitionTo('dashboard.dataset.data', {id: response.id}, {
                     //     reload: true,
                     //     inherit: false,
@@ -221,6 +223,7 @@ angular.module('arraysApp')
                     return;
                 }
 
+                $scope.addingAdditionalDatasource = true;
                 $scope.additionalDatasources.push(initSource({}));
             };
 

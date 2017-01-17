@@ -36,14 +36,11 @@
                     <span class="dashboard-list-name">{{ item.file.name }}</span>
                 </span>
 
-                <div ng-show="uploader.isHTML5" ng-hide="item.isSuccess" class="progress-container" draggable="" flex="50">
+                <div ng-show="uploader.isHTML5" ng-hide="item.isSuccess" class="progress-container" draggable="" flex="40">
                     <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
                 </div>
 
-                <md-button class="md-dashboard confirm" ng-click="item.upload()" ng-if="!item.isSuccess"
-                           ng-disabled="item.isReady || item.isUploading">
-                    <span class="btn-label">Upload</span>
-                </md-button>
+                <div flex="5"></div>
 
                 <span class="dashboard-list-icon warn" ng-click="item.cancel()" ng-hide="!item.isUploading" aria-hidden="true" aria-label="Cancel Upload" flex="5">
                     <i class="fa fa-remove" aria-hidden="true"></i>
@@ -55,7 +52,13 @@
             </li>
         </ul>
 
-        <div ng-if="dataset.uid" ng-repeat="additionalDatasource in additionalDatasources">
+        <md-button class="md-dashboard confirm" style="margin-top: 30px" ng-click="uploader.uploadAll()"
+            ng-if="uploader.queue.length > 0 && !dataset.uid"
+            ng-disabled="uploader.isUploading">
+            <span class="btn-label">Import Data</span>
+        </md-button>
+
+        <div ng-if="dataset.uid && addingAdditionalDatasource" ng-repeat="additionalDatasource in additionalDatasources" style="margin-top: 15px">
             <label>Upload spreadsheet</label>
             <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
             <input type="file" id="adddatafile" nv-file-select="" uploader="additionalDatasource.uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" class="team-uploader" />
@@ -64,7 +67,7 @@
                 Choose File
             </label>
 
-            <!-- show already-uploaded sources here -->
+            <!-- TODO show already-uploaded sources here -->
             <ul class="dashboard-list user-list" ng-cloak>
                 <li ng-repeat="item in additionalDatasource.uploader.queue track by $index" layout="row" layout-align="space-between center">
 
@@ -72,9 +75,7 @@
                         <span class="dashboard-list-name">{{ item.file.name }}</span>
                     </span>
 
-                    <div flex="10" src="/images/image-not-found-sm.png"></div>
-
-                    <div ng-show="uploader.isHTML5" ng-hide="item.isSuccess" class="progress-container" draggable="" flex="50">
+                    <div ng-show="uploader.isHTML5" ng-hide="item.isSuccess" class="progress-container" draggable="" flex="40">
                         <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
                     </div>
 
@@ -82,6 +83,8 @@
                                ng-disabled="item.isReady || item.isUploading">
                         <span class="btn-label">Upload</span>
                     </md-button>
+
+                    <div flex="5"></div>
 
                     <span class="dashboard-list-icon warn" ng-click="item.cancel()" ng-hide="!item.isUploading" aria-hidden="true" aria-label="Cancel Upload" flex="5">
                         <i class="fa fa-remove" aria-hidden="true"></i>
@@ -95,20 +98,20 @@
 
         </div>
 
-        <div ng-if="dataset.uid">
-        <md-input-container>
-            <md-button class="md-dashboard" ng-click="addNewDatasource()">
-                <span class="btn-label">Combine With Another Datasource</span></md-button>
-        </md-input-container>
+        <div ng-if="dataset.uid && !addingAdditionalDatasource">
+            <md-input-container>
+                <md-button class="md-dashboard" ng-click="addNewDatasource()">
+                    <span class="btn-label">Combine With Another Datasource</span></md-button>
+            </md-input-container>
 
-        <p>
-            <a href="" class="warn">Clear All</a>
-        </p>
+            <p>
+                <a href="" class="warn">Clear All</a>
+            </p>
 
-        <!-- Important: Clearing all your data sources will delete any data currently stored in your dataset.
-        Are you sure you want to clear all data sources?
-        CLEAR ALL
-        CANCEL -->
+            <!-- Important: Clearing all your data sources will delete any data currently stored in your dataset.
+            Are you sure you want to clear all data sources?
+            CLEAR ALL
+            CANCEL -->
 
         </div>
     </div>
