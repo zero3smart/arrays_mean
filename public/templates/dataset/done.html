@@ -17,7 +17,18 @@
 
         </md-content>
 
+
+
+
+
         <div layout="row" layout-align="end center" class="panel-footer" ng-if="dirty">
+
+        <md-checkbox name="selectAll_showFields" ng-model="dataset.skipImageScraping" ng-change="toggleImageScraping()" aria-label="Select All">
+            Skip Image Scraping
+        </md-checkbox>
+
+
+
             <md-button class="md-raised pull-right" ng-click="importData()" ng-disabled="inProgress"><span
                     class="glyphicon glyphicon-import"></span>{{ inProgress ? 'Importing' : 'Import' }}
             </md-button>

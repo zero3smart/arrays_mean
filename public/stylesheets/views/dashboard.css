@@ -224,6 +224,10 @@ body.md-toast-animating {
 .dashboard-list-icon {
     text-align: center;
 }
+.dashboard-list-icon:hover,
+.dashboard-list-icon:focus {
+    color: var(--color-primary);
+}
 
 .team-list .md-button .dashboard-list-name,
 .team-list .md-button .dashboard-list-revision  {
@@ -308,6 +312,15 @@ md-nav-ink-bar,
 md-ink-bar {
     color: var(--color-primary) !important;
     background-color: var(--color-primary) !important;
+}
+
+/*tool tips*/
+md-tooltip.md-default-theme .md-content,
+md-tooltip .md-content {
+	font-size: 13px !important;
+	color: white !important;
+	/*background: var(--color-primary) !important;*/
+	background: var(--color-text-dark) !important;
 }
 
 /* Account */

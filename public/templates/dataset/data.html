@@ -47,7 +47,7 @@
                                          ng-true-value="false"
                                          ng-false-value="true"
                                          aria-label="Exclude {{field.name}}"
-                                         ng-click="$event.stopPropagation()"></md-checkbox>
+                                         ng-click="$event.stopPropagation();" ng-change="setDirty(3)"></md-checkbox>
                         </div>
                         <div class="name">{{ field.name }}</div>
                         <div class="override">{{ dataset.fe_displayTitleOverrides[field.name] }}</div>

@@ -35,6 +35,13 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
         winston.warn("⚠️  The data source \"" + dataSource_title + "\" had fe_visible=false, so not going to generate its unique filter value cache.");
         return callback(null);
     }
+
+    if (dataSourceDescription.dataset_uid) {
+          winston.info("🔁  " + indexInList + ": Generated post-import caches for \"" + dataSource_title + "\" (appended dataset: " + 
+            dataSourceDescription.dataset_uid + ")");
+    }
+
+
     winston.info("🔁  " + indexInList + ": Generated post-import caches for \"" + dataSource_title + "\"");
 
     _generateUniqueFilterValueCacheCollection(job,dataSourceDescription, function (err) {

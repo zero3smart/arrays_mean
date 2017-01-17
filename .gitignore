@@ -109,7 +109,9 @@ Temporary Items
 *.csv
 
 
-
+#dump
+dump/
+dump.*
 
 ##csv files ###
 *.csv

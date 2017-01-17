@@ -220,6 +220,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (err) return done(err);
 
                     if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
+
                     var finalizedButNotCoalesced_groupedResults = [];
                     _groupedResults.forEach(function (el, i, arr) {
                         var displayableVal = func.ValueToExcludeByOriginalKey(
@@ -237,6 +238,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     var summedValuesByLowercasedLabels = {};
                     var titleWithMostMatchesAndMatchCountByLowercasedTitle = {};
+
+
                     finalizedButNotCoalesced_groupedResults.forEach(function (el, i, arr) {
                         var label = el.label;
                         var value = el.value;
@@ -264,6 +267,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     // Custom colors
                     var colors = dataSourceDescription.fe_views.views.chart.colorsInPercentOrder ? dataSourceDescription.fe_views.views.chart.colorsInPercentOrder : {};
+
+
 
 
                     var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
