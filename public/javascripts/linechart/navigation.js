@@ -15,7 +15,6 @@ linechart.navigation = function (data, viewport) {
             return d;
         })
     });
-
     /**
      * Time series names.
      * @private
@@ -76,7 +75,7 @@ linechart.navigation = function (data, viewport) {
      * @private
      * @member {Function}
      */
-    this._xScale = d3.time.scale();
+    this._xScale = d3.time.scale()
     /**
      * Chart y scale function.
      * @private
@@ -120,6 +119,7 @@ linechart.navigation = function (data, viewport) {
     this._xAxis = d3.svg.axis()
         .scale(this._xScale)
         .orient('bottom')
+
         .tickFormat(this._customTimeFormat);
     /**
      * Chart x axis container.
@@ -468,12 +468,6 @@ linechart.navigation.prototype.update = function (data) {
     /*
      * Update x axis labels.
      */
-
-    var xTicks = this._xScale.ticks(this._xAxis.ticks()[0]);
-    var xStep = this._xScale(xTicks[1]) - this._xScale(xTicks[0]);
-    this._xAxisContainer.selectAll('text')
-        .attr('x', xStep / 2);
-
     if (this._brush.empty()) {
         this._resetBrush();
     }
