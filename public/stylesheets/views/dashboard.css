@@ -312,12 +312,10 @@ ul.aa-color-picker {
 	list-style: none;
 }
 .aa-color-picker li {
-	padding: 0;
-}
-.aa-color-picker li {
   content: "";
   display: block;
-  padding-bottom: 33%;
+  padding: 0;
+  padding-bottom: 30px;
 }
 .aa-color-picker li.selected,
 .aa-color-picker li:hover,

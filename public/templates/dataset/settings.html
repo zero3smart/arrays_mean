@@ -31,15 +31,13 @@
             <div md-color-picker ng-model="dataset.brandColor"></div>
         </md-input-container> -->
 
-        <div style="margin-top: -18px;">
-            <label style="color: var(--color-text-light);">Brand Color</label>
-            <div layout="row">
-                <div flex="50" ng-style="{'background-color':selected};">
-                </div>
-                <ul class="aa-color-picker" flex="50" layout="row" layout-wrap>
-                    <li flex="33" ng-repeat="color in colors" ng-click="pickColor(color)" ng-style="{'background-color':color};"></li>
-                </ul>
-            </div>
+        <div>
+            <label>Brand Color</label>
+            <ul class="aa-color-picker" flex layout="row" layout-alignment="center center">
+                <li ng-repeat="color in colors" flex ng-click="pickColor(color)" ng-style="{'background-color':color};">
+                    {{selected == color}}
+                </li>
+            </ul>
         </div>
 
         <md-input-container class="md-block">

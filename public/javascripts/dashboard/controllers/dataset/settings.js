@@ -8,6 +8,7 @@ angular.module('arraysApp')
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
             $scope.colors = [
+                // ['#FA2A00','#FFFFFF'] // brandColor, iconColor
                 '#FA2A00',
                 '#FEB600',
                 '#79F800',
@@ -19,7 +20,7 @@ angular.module('arraysApp')
                 '#7A00F6'
             ];
             $scope.selected = dataset.brandColor || $scope.colors[0];
-            console.log($scope.colors.length);
+
             $scope.pickColor = function(color) {
                 $scope.selected = color;
                 dataset.brandColor = color;
