@@ -3,8 +3,8 @@
 
 
         <md-input-container class="md-block" flex-gt-sm>
-            <label>ObjectTitle</label>
-            <md-select name="ObjectTitle"
+            <label>Object Title</label>
+            <md-select required name="ObjectTitle"
                        ng-model="data.fe_designatedFields.objectTitle"
                        >
                 <md-option ng-repeat="column in dataset.columns track by column.name" value="{{column.name}}">
@@ -17,8 +17,8 @@
             <legend>Fields</legend>
             <div class="fields-container">
                 <div class="field-row-header field">
-                    <div class="handler"></div>
-                    <div class="order">Order</div>
+                    <!-- <div class="handler"></div> -->
+                    <div class="order" aa-tooltip="Drag to re-order">Order</div>
                     <div class="exclude">
                         Include
                         <md-button ng-model="excludeAll" aria-label="Include/Exclude All" ng-click="toggleExclude(excludeAll)">
@@ -26,16 +26,17 @@
                         </md-button>
                     </div>
                     <div class="name">Column Name</div>
-                    <div class="override">Override</div>
+                    <!-- <div class="override">Override</div> -->
                     <div class="type">Type</div>
                     <div class="sample">Sample</div>
                 </div>
                 <ul ui-sortable="fieldSortableOptions" ng-model="data.fields" class="fields">
                     <li ng-repeat="field in data.fields" class="field"
                         ng-class="{'custom': field.custom}"
-                        ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex)">
-                        <div class="handler"><span class="glyphicon glyphicon-move"></span></div>
+                        >
+                        <!-- <div class="handler"></div> -->
                         <div class="order">
+                            <span class="glyphicon glyphicon-move"></span>
                             {{
                             dataset.fe_fieldDisplayOrder.indexOf(field.name) != -1 ?
                                 dataset.fe_fieldDisplayOrder.indexOf(field.name) : ''
@@ -49,8 +50,8 @@
                                          aria-label="Exclude {{field.name}}"
                                          ng-click="$event.stopPropagation();" ng-change="setDirty(3)"></md-checkbox>
                         </div>
-                        <div class="name">{{ field.name }}</div>
-                        <div class="override">{{ dataset.fe_displayTitleOverrides[field.name] }}</div>
+                        <div class="name">{{ dataset.fe_displayTitleOverrides[field.name] ? dataset.fe_displayTitleOverrides[field.name] + ' (' + field.name + ')' : field.name }}</div>
+                        <!-- <div class="override">{{ dataset.fe_displayTitleOverrides[field.name] }}</div> -->
                         <div class="type">
                             <md-select ng-if="!field.custom"
                                        name="raw_rowObjects_coercionScheme"
@@ -69,11 +70,15 @@
 
                             <b ng-if="field.custom">Custom</b>
                         </div>
-                        <div class="sample">
+                        <div class="sample no-break-out">
                             <span ng-if="!field.custom">{{ field.sample | limitTo: 200 }}{{ field.sample.length > 200 ? '...' : '' }}</span>
                             <span ng-if="field.customField" ng-repeat="mergeField in field.customField.fieldsToMergeIntoArray" >{{mergeField}} <span
                             ng-if="!$last">,</span> </span>
                         </div>
+                        <span class="dashboard-list-icon" flex="10" aa-tooltip="Edit"
+                            ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex)">
+                            <i class="fa fa-pencil" aria-hidden="true"></i>
+                        </span>
                     </li>
                 </ul>
             </div>
@@ -111,7 +116,7 @@
         </div>
 
 
-        <div layout="row" layout-align="space-between center" class="panel-footer">
+        <div layout="row" layout-align="space-between center">
             <md-button class="md-dashboard" ng-click="reset()" ng-disabled="!vm.dataForm.$dirty">
                 <span class="btn-label">Reset</span>
             </md-button>

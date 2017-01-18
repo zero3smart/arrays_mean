@@ -16,6 +16,13 @@ html, body {
     color: var(--color-primary);
 }
 
+.no-break-out {
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	-ms-word-break: break-all;
+	word-break: break-word;
+}
+
 /* md-input and container styles */
 
 md-input-container,
@@ -487,18 +494,18 @@ md-tooltip .md-content {
 }
 
 .dataset .field:not(.field-row-header) {
-    cursor: pointer;
+    /*cursor: pointer;*/
     /*To protect flash issue while object is being updated*/
     /*-webkit-transition: box-shadow .4s cubic-bezier(.25,.8,.25,1),background-color .4s cubic-bezier(.25,.8,.25,1);*/
     /*transition: box-shadow .4s cubic-bezier(.25,.8,.25,1),background-color .4s cubic-bezier(.25,.8,.25,1);*/
 }
 
 .dataset .field:not(.field-row-header):hover {
-    background-color: var(--color-item-hover);
+    /*background-color: var(--color-item-hover);*/
 }
 
 .dataset .field:not(.field-row-header):focus {
-    background-color: var(--color-item-active);
+    /*background-color: var(--color-item-active);*/
 }
 
 
