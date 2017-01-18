@@ -447,6 +447,13 @@ md-tooltip .md-content {
     font-weight: bold;
 }
 
+.incl-excl-all {
+	color: var(--color-text-light);
+}
+.incl-excl-all:hover {
+	color: var(--color-primary);
+}
+
 /*.dataset .field > .handler {
     width: 4%;
     min-width: 20px;
@@ -480,9 +487,9 @@ md-tooltip .md-content {
 .dataset .field .exclude > md-checkbox {
     margin-bottom: 6px;
 }
-.dataset .field .exclude > md-switch {
+/*.dataset .field .exclude > md-switch {
     margin: 0;
-}
+}*/
 .dataset .field:not(.custom) .type {
     padding-top: 4px;
 }
