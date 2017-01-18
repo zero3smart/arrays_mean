@@ -188,7 +188,7 @@ angular.module('arraysApp')
                     var subscrId = $scope.subscription.uuid;
                     Subscriptions.update({ subscrId: subscrId }, {
                         quantity: $scope.subscription.quantity._,
-                        plan_code: 'arrays-pro-yearly'
+                        plan_code: plan_code
                     })
                     .$promise.then(function(res) {
                         console.log(res.data);
@@ -227,6 +227,15 @@ angular.module('arraysApp')
                     } else {
                         console.log(res.data);
                     }
+                });
+            };
+
+            $scope.cancelSubscription = function() {
+                var subscrId = $scope.subscription.uuid;
+                Subscriptions.cancel({ subscrId: subscrId })
+                .$promise.then(function(res) {
+                    console.log(res.data);
+                    $state.go('dashboard.account.billing');
                 });
             };
 

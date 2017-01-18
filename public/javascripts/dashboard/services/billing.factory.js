@@ -12,11 +12,16 @@
         })
         .factory('Subscriptions', function($resource) {
             return $resource('api/billing/subscriptions/:subscrId', null, {
-                'update': { method: 'PUT' }
+                'update': { method: 'PUT' },
+                'cancel': {
+                    method: 'PUT',
+                    params: { subscrId: '@subscrId' },
+                    url: 'api/billing/subscriptions/:subscrId/cancel'
+                }
             });
         })
         .factory('Plans', function($resource) {
-            return $resource('api/billing/plans/:plan_code', { plan_code: '@id' }, {
+            return $resource('api/billing/plans/:plan_code', null, {
                 'update': { method: 'PUT' }
             });
         });
