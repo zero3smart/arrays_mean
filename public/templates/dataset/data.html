@@ -14,30 +14,27 @@
     </md-input-container>
 
         <fieldset class="standard">
-            <legend>Fields</legend>
-            <div class="fields-container">
-                <div class="field-row-header field">
-                    <!-- <div class="handler"></div> -->
-                    <div class="order" flex="10" aa-tooltip="Drag to re-order">Order</div>
-                    <div class="exclude" flex="10">
+            <!-- <legend>Fields</legend> -->
+            <table class="fields-container">
+                <thead class="field-row-header field"><tr layout="row" flex>
+                    <th flex="10" aa-tooltip="Drag to re-order">Order</th>
+                    <th flex="10">
                         Include
                         <span ng-model="excludeAll" aria-label="Include/Exclude All" ng-click="toggleExclude(excludeAll)"
                             class="incl-excl-all" aa-tooltip="{{ excludeAll ? 'Exclude All' : 'Include All' }}">
                             <i class="fa {{ excludeAll ? 'fa-remove' : 'fa-check' }}" aria-hidden="true"></i> all
                         </span>
-                    </div>
-                    <div class="name" flex="30">Column Name</div>
-                    <!-- <div class="override">Override</div> -->
-                    <div class="type" flex="15">Type</div>
-                    <div class="sample" flex="30">Sample</div>
-                    <div flex="5"></div>
-                </div>
-                <ul ui-sortable="fieldSortableOptions" ng-model="data.fields" class="fields">
-                    <li ng-repeat="field in data.fields" class="field"
-                        ng-class="{'custom': field.custom}"
-                        >
+                    </th>
+                    <th flex="30">Column Name</th>
+                    <th flex="15">Type</th>
+                    <th flex="30">Sample</th>
+                    <th flex="5"></th>
+                </tr></thead>
+                <tbody ui-sortable="fieldSortableOptions" ng-model="data.fields" class="fields">
+                    <tr ng-repeat="field in data.fields" class="field"
+                        ng-class="{'custom': field.custom}" flex>
                         <!-- <div class="handler"></div> -->
-                        <div class="order dashboard-list-icon" aa-tooltip="Drag to re-order" flex="10">
+                        <td class="order dashboard-list-icon" aa-tooltip="Drag to re-order" flex="10">
                             <span class="glyphicon glyphicon-move"></span>
                             <span class="field-order">
                             {{
@@ -45,18 +42,20 @@
                                 dataset.fe_fieldDisplayOrder.indexOf(field.name) : ''
                             }}
                             </span>
-                        </div>
-                        <div class="exclude" flex="10">
+                        </td>
+                        <td class="exclude" flex="10">
                             <md-checkbox name="fe_excludeFields_{{$index}}"
                                          ng-model="dataset.fe_excludeFields[field.name]"
                                          ng-true-value="false"
                                          ng-false-value="true"
                                          aria-label="Exclude {{field.name}}"
                                          ng-click="$event.stopPropagation();" ng-change="setDirty(3)"></md-checkbox>
-                        </div>
-                        <div class="name" flex="30">{{ dataset.fe_displayTitleOverrides[field.name] ? dataset.fe_displayTitleOverrides[field.name] + ' (' + field.name + ')' : field.name }}</div>
+                        </td>
+                        <td class="name" flex="30">
+                            {{ dataset.fe_displayTitleOverrides[field.name] ? dataset.fe_displayTitleOverrides[field.name] + ' (' + field.name + ')' : field.name }}
+                        </td>
                         <!-- <div class="override">{{ dataset.fe_displayTitleOverrides[field.name] }}</div> -->
-                        <div class="type" flex="15">
+                        <td class="type" flex="15">
                             <md-select ng-if="!field.custom"
                                        name="raw_rowObjects_coercionScheme"
                                        ng-model="coercionScheme[field.name]"
@@ -73,19 +72,19 @@
                             </b>
 
                             <b ng-if="field.custom">Custom</b>
-                        </div>
-                        <div class="sample" flex="30">
+                        </td>
+                        <td class="sample" flex="30">
                             <span ng-if="!field.custom">{{ field.sample | limitTo: 200 }}{{ field.sample.length > 200 ? '...' : '' }}</span>
                             <span ng-if="field.customField" ng-repeat="mergeField in field.customField.fieldsToMergeIntoArray" >{{mergeField}} <span
                             ng-if="!$last">,</span> </span>
-                        </div>
-                        <span class="dashboard-list-icon" flex="5" aa-tooltip="Edit field"
+                        </td>
+                        <td class="dashboard-list-icon" flex="5" aa-tooltip="Edit field"
                             ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex)">
                             <i class="fa fa-pencil" aria-hidden="true"></i>
-                        </span>
-                    </li>
-                </ul>
-            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </fieldset>
 
         <div layout="column">
