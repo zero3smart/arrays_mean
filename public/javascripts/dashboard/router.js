@@ -9,7 +9,6 @@ angular.module('arraysApp')
 
                 $rootScope.$on('$stateChangeError',function(event, toState,toParams,fromState,fromParams,error) {
                     event.preventDefault();
-                    console.log(error);
                     if (error.importing == true) {
                         $state.go('dashboard.dataset.done', {id: error.datasetId});
                     }

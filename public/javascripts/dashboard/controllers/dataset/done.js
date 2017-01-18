@@ -2,15 +2,24 @@ angular.module('arraysApp')
     .controller('DatasetDoneCtrl', ['$scope', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q','Job','$timeout',
         function($scope, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q,Job,$timeout) {
 
+            if (dataset.jobId !== 0) {
+                $scope.inProgress = true; 
+                $timeout(function() {
+                    getJobStatus($scope.$parent.$parent.dataset._id)
+                });
+            } else {
+                 $scope.inProgress = false;
+            }
+
+
+
             $scope.$parent.$parent.dataset = dataset;
             $scope.additionalDatasources = additionalDatasources;
             $scope.$parent.$parent.currentNavItem = 'Done';
             $scope.importLogger = [];
-            $scope.inProgress = false;
+           
 
-            $scope.jobs = {};
-            $scope.currentStep = 0;
-
+            $scope.jobs = [];
             $scope.currentJobId = undefined;
 
             DatasetService.getReimportDatasets(dataset._id)
@@ -19,9 +28,12 @@ angular.module('arraysApp')
 
             })
 
+        
             $scope.dirty = $scope.$parent.$parent.dataset.dirty;
 
             $scope.imported = $scope.$parent.$parent.dataset.imported;
+
+
 
 
             $scope.additionalDatasources.forEach(function(datasource) {
@@ -72,28 +84,53 @@ angular.module('arraysApp')
                     .then(function (response) {
 
                         if (response.status == 200 && !response.data.error) {
-                           
-                            var jobId = response.data.jobId;
-                            $scope.importLogger.push("🔁  [" + uid + "] Importing raw objects ...");
-                            $scope.currentJobId = jobId;
-                            $scope.jobs[jobId] = {};
-                            $scope.currentStep = 1;
 
                             $timeout(function() {
-                                getJobStatus(id,uid)
+                                getJobStatus(id)
                             }, 2000);
+
                         } else {
                             errorHandler(response);
                         }
                     }, errorHandler);
             }
 
-            var getJobStatus = function (id,uid) {
 
-                DatasetService.getJobStatus(id).$promise
-                .then(function(job) {
-                    console.log("getJobStatus");
-                    console.log(job);
+            var getLog = function(datasetId) {
+                if ($scope.jobs[$scope.jobs.length-1].state == 'active') {
+                    Job.getLog({id:$scope.currentJobId}).$promise
+                    .then(function(logs) {
+                        $scope.jobs[$scope.jobs.length -1].log = logs[logs.length-1];
+                        $timeout(function() {
+                            getLog(datasetId);
+                        },2000) 
+                    })
+                } else {
+                    getJobStatus(datasetId);
+                }
+               
+            }
+
+            var getJobStatus = function (datasetId) {
+
+                DatasetService.getJobStatus(datasetId)
+                .then(function(job) { 
+                    if (job == null) {
+                        $scope.inProgress = false;
+        
+                    } else {
+
+                        if (typeof $scope.currentJobId == 'undefined' || $scope.currentJobId !== job.id) {
+                            $scope.currentJobId = job.id;
+                            $scope.jobs.push({});
+                        }
+
+                        job.log = $scope.jobs[$scope.jobs.length -1].log;
+
+                        $scope.jobs[$scope.jobs.length -1] = job;
+
+                        getLog(datasetId);
+                    }
                 })
 
                 // Job.get({id:$scope.currentJobId}).$promise
@@ -213,9 +250,10 @@ angular.module('arraysApp')
                         $scope.currentJobId = jobId;
                         $scope.jobs[jobId] = {};
 
-
                     } else {
+
                         errorHandler(response);
+                        
                     }
                 }, errorHandler);
             
@@ -279,7 +317,6 @@ angular.module('arraysApp')
                 var uid = datasource.dataset_uid ? datasource.dataset_uid : datasource.uid;
                 var id = datasource._id;
 
-
                 if ($scope.additionalDatasources.length == 0) {
 
                     if (datasource.dirty == 1) {
@@ -307,7 +344,7 @@ angular.module('arraysApp')
             }
 
             $scope.importData = function() {
-                datasourceIndex = -1;
+                // datasourceIndex = -1;
                 $scope.inProgress = true;
                 importDatasource($scope.$parent.$parent.dataset);
             }

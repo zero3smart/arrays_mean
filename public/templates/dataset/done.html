@@ -6,14 +6,28 @@
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>
         </md-content>
 
-        
 
         <md-content class="md-block" md-colors="{background: 'grey'}">
-            <p ng-repeat="logger in importLogger">{{logger}}
-                <div ng-if="jobs[currentJobId].state=='active'">
-                    <p ng-if="jobs[currentJobId].log" > {{jobs[currentJobId].log}} ..... </p>
+
+            <div ng-repeat=" job in jobs">
+
+                <div ng-show="job.state == 'active'">
+
+
+                    <div>⏳ In Progress {{job.type}} Task  <span ng-show="job.log" > : {{job.log}}</span> </div>
+            
                 </div>
-            </p>
+
+                <div ng-show="job.state && job.state=='complete'">
+                    ✅ Completed {{jobInfo.type}} Task
+                </div>
+
+                <div ng-show="job.state && job.state=='failed'">
+                    ❌ Task  {{jobInfo.type}} Failed : {{jobInfo.error}}
+                </div>
+
+
+            </div>
 
 
         </md-content>

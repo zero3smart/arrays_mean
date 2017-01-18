@@ -53,13 +53,15 @@ router.post('/login',function(req,res,next) {
 });
 
 router.get('/login', function (req, res) {
- 
-    var info = req.flash();
-    res.render('auth/login', {
-        env: process.env,
-        flash: info
-    });
-
+    if (req.user) {
+        return res.redirect('/dashboard');
+    } else {
+        var info = req.flash();
+        res.render('auth/login', {
+            env: process.env,
+            flash: info
+        });
+    }
 });
 
 router.get('/logout', function (req, res) {

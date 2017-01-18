@@ -52,12 +52,12 @@ queue.on('job enqueue',function(id,type) {
         } else if (task == 'postImport') {
 
             datasource_description.findById(job.data.id,function(err,dataset) {
-                if (!dataset.skipImageScraping) {   //check for skipping image scraping 
-                    _startJob(job.data.id,'scrapeImages')
-                } 
-            }) else {
-                datasource_description.findOneAndUpdate({_id: datasetId}, {$set: {jobId: 0}});
-            }
+                if (!dataset.skipImageScraping) {
+                    _startJob(job.data.id,'scrapeImages');
+                } else {
+                    datasource_description.findOneAndUpdate({_id: datasetId}, {$set: {jobId:0}})
+                }
+            })
 
         } else if (task == 'scrapeImages') {
             datasource_description.findOneAndUpdate({_id: datasetId}, {$set: {jobId: 0}})
@@ -1054,7 +1054,7 @@ module.exports.download = function (req, res) {
         });
 }
 
-function _startJob(datasetId,jobNam,cb) {
+function _startJob(datasetId,jobName,cb) {
 
 
     var job = queue.create(jobName, {
@@ -1093,7 +1093,7 @@ module.exports.getJobStatus = function(req,res) {
         if (err) return res.status(500).send(err);
         var jobId = queryingDataset.jobId;
         if (jobId == 0) {
-            return res.status(404).send({err: 'No importing job found'});
+            return res.json(null);
         } 
         kue.Job.get(jobId,function(err,job) {
             if (err) return res.status(500).send(err);

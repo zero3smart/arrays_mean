@@ -108,13 +108,10 @@
         };
 
         var getJobStatus = function(id) {
-            return $http.get('api/dataset/jobStatus/')
+            return $http.get('api/dataset/jobStatus/' + id)
             .then(function(response) {
-                console.log(response);
-            }).catch(function(err) {
-                console.log("err");
 
-                console.log(err);
+                return response.data;
             })
         }
 
