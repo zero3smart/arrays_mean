@@ -503,6 +503,18 @@ md-tooltip .md-content {
 .dataset .field:not(.field-row-header):hover {
     /*background-color: var(--color-item-hover);*/
 }
+.dataset .field:not(.field-row-header) .glyphicon {
+	display: none;
+}
+.dataset .field:not(.field-row-header):hover .glyphicon {
+	display: initial;
+}
+.dataset .field:not(.field-row-header) .field-order {
+	display: initial;
+}
+.dataset .field:not(.field-row-header):hover .field-order {
+	display: none;
+}
 
 .dataset .field:not(.field-row-header):focus {
     /*background-color: var(--color-item-active);*/

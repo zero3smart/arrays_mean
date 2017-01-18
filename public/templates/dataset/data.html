@@ -35,12 +35,14 @@
                         ng-class="{'custom': field.custom}"
                         >
                         <!-- <div class="handler"></div> -->
-                        <div class="order">
+                        <div class="order dashboard-list-icon" aa-tooltip="Drag to re-order">
                             <span class="glyphicon glyphicon-move"></span>
+                            <span class="field-order">
                             {{
                             dataset.fe_fieldDisplayOrder.indexOf(field.name) != -1 ?
                                 dataset.fe_fieldDisplayOrder.indexOf(field.name) : ''
                             }}
+                            </span>
                         </div>
                         <div class="exclude">
                             <md-checkbox name="fe_excludeFields_{{$index}}"
@@ -75,7 +77,7 @@
                             <span ng-if="field.customField" ng-repeat="mergeField in field.customField.fieldsToMergeIntoArray" >{{mergeField}} <span
                             ng-if="!$last">,</span> </span>
                         </div>
-                        <span class="dashboard-list-icon" flex="10" aa-tooltip="Edit"
+                        <span class="dashboard-list-icon" flex="10" aa-tooltip="Edit field"
                             ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex)">
                             <i class="fa fa-pencil" aria-hidden="true"></i>
                         </span>
