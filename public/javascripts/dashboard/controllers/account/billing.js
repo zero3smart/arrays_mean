@@ -97,20 +97,35 @@ angular.module('arraysApp')
                         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
                         $scope.subscription.trial_days_left = diffDays;
 
-                        getPlan($scope.subscription.plan.plan_code);
+                        getPlans();
                     }
                 });
             }
 
 
             //Get plans info from Recurly
-            function getPlan(plan_code) {
-                Plans.get({ plan_code: plan_code })
+            function getPlans() {
+                Plans.get()
                 .$promise.then(function(res) {
-                    console.log(res.data);
+                    console.log(res.data.plans.plan);
 
-                    $scope.plan = res.data.plan;
+                    $scope.plans = res.data.plans.plan;
+
+                    $scope.plan = getPlanFromPlans($scope.subscription.plan.plan_code, res.data.plans.plan);
+                    $scope.annualplan = getPlanFromPlans('arrays-pro-yearly', res.data.plans.plan);
+
+                    console.log($scope.annualplan);
                 });
+            }
+
+
+            // Get current plan
+            function getPlanFromPlans(plan_code, plans) {
+                var currentPlan = plans.filter(function(plan) {
+                    return plan.plan_code === plan_code;
+                });
+
+                return currentPlan[0];
             }
 
 
@@ -141,15 +156,17 @@ angular.module('arraysApp')
                     locals: {
                         billing: $scope.billing,
                         plan: $scope.plan,
+                        annualplan: $scope.annualplan,
                         subscription: $scope.subscription,
                         Subscriptions: Subscriptions
                     }
                 });
             };
 
-            function BillingDialogController($scope, $mdDialog, billing, plan, subscription, Subscriptions) {
+            function BillingDialogController($scope, $mdDialog, billing, plan, annualplan, subscription, Subscriptions) {
                 $scope.billing = billing;
                 $scope.plan = plan;
+                $scope.annualplan = annualplan;
                 $scope.subscription = subscription;
 
                 $scope.hide = function() {
@@ -158,11 +175,24 @@ angular.module('arraysApp')
                 $scope.cancel = function() {
                     $mdDialog.cancel();
                 };
-                $scope.update = function(quantity) {
+                $scope.updateQuantitity = function() {
                     var subscrId = $scope.subscription.uuid;
                     Subscriptions.update({ subscrId: subscrId }, { quantity: $scope.subscription.quantity._ })
                     .$promise.then(function(res) {
                         console.log(res.data);
+                        $mdDialog.hide();
+                    });
+                };
+                $scope.updatePlanCode = function(plan_code) {
+                    console.log(plan_code);
+                    var subscrId = $scope.subscription.uuid;
+                    Subscriptions.update({ subscrId: subscrId }, {
+                        quantity: $scope.subscription.quantity._,
+                        plan_code: 'arrays-pro-yearly'
+                    })
+                    .$promise.then(function(res) {
+                        console.log(res.data);
+                        getSubscriptions();
                         $mdDialog.hide();
                     });
                 };

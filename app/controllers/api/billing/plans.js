@@ -20,3 +20,14 @@ module.exports.get = function(req, res) {
         }
     });
 };
+
+module.exports.getAll = function(req, res) {
+
+    recurly.plans.list(null, function(err, response) {
+        if (err) {
+            res.status(err.statusCode).send(err);
+        } else {
+            res.status(response.statusCode).json(response);
+        }
+    });
+};

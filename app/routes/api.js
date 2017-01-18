@@ -105,6 +105,7 @@ router.post('/billing/billinginfo', ctrlBillingInfo.create);
 router.get('/billing/billinginfo', ctrlBillingInfo.get);
 router.put('/billing/billinginfo', ctrlBillingInfo.update);
 router.get('/billing/plans/:plan_code', ctrlPlans.get);
+router.get('/billing/plans', ctrlPlans.getAll);
 router.post('/billing/subscriptions', ctrlSubscriptions.create);
 router.get('/billing/subscriptions', ctrlSubscriptions.getAll);
 router.put('/billing/subscriptions/:subscrId', ctrlSubscriptions.update);

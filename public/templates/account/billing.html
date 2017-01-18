@@ -24,7 +24,7 @@
                     <span class="btn-label">Save and Update Monthly Billing Amount</span>
                 </md-button>
 
-                <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'annual')">
+                <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'annual')" ng-if="subscription.plan.plan_code != 'arrays-pro-yearly'">
                     <span class="btn-label">Pay Yearly (${{ subscription.quantity._ * 99 }} / mo)</span>
                 </md-button>
             </div>

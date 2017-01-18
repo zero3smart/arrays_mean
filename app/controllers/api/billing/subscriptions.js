@@ -46,11 +46,20 @@ module.exports.update = function(req, res) {
 
     var userId = req.user;
     var subscrId = req.params.subscrId;
+    var options = {};
 
-    recurly.subscriptions.update(subscrId, {
-        quantity: req.body.quantity
+    if (req.body.plan_code) {
+        options = {
+            plan_code: req.body.plan_code,
+            quantity: req.body.quantity
+        };
+    } else {
+        options = {
+            quantity: req.body.quantity
+        };
+    }
 
-    }, function(err, response) {
+    recurly.subscriptions.update(subscrId, options, function(err, response) {
         if (err) {
             res.status(err.statusCode).send(err);
         } else {
