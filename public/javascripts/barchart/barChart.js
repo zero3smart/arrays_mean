@@ -129,6 +129,8 @@ function BarChart(selector, dataSet, options) {
             self._barMouseEnterEventHandler(this, d, i, j);
         }).on('mouseout', function(d, i, j) {
             self._barMouseOutEventHandler(this, d, i, j);
+        }).on('click', function(d, j, i){
+            self._barClickEventHandler(categoriesAndData, j, i);
         });
 
     /*
@@ -182,13 +184,14 @@ function BarChart(selector, dataSet, options) {
 
     this._animate();
 };
+var categoriesAndData;
 
 /*
  * Sort By Order
  */
 BarChart.prototype.sortData = function() {
     var self = this;
-    this._categories = this._categoryData
+    categoriesAndData = this._categoryData
         .reduce(function(o, v, i) {
             o.push([v, self._data[i]]);
             return o;
@@ -207,23 +210,15 @@ BarChart.prototype.sortData = function() {
                 }, 0);
         })
         .map(function (d) {
-            return d[0];
+            return d;
         });
 
-    this._data = $.extend(true, [], this._data);
-    this._data.sort(!this._options.sortDirection ? function(a, b) {
-        return a.reduce(function (sum, obj) {
-                return sum + obj.value;
-            }, 0) - b.reduce(function (sum, obj) {
-                return sum + obj.value;
-            }, 0);
-    } : function(a, b) {
-        return b.reduce(function (sum, obj) {
-                return sum + obj.value;
-            }, 0) - a.reduce(function (sum, obj) {
-                return sum + obj.value;
-            }, 0);
-    });
+    this._categories = [];
+    this._data = [];
+    for(var i = 0; i < categoriesAndData.length; i++) {
+        this._categories.push(categoriesAndData[i][0])
+        this._data.push(categoriesAndData[i][1])
+    }
 }
 
 /**
@@ -356,6 +351,18 @@ BarChart.prototype._barMouseOutEventHandler = function(barElement, barData, i, j
 
     this._tooltip.hide();
 };
+
+BarChart.prototype._barClickEventHandler = function(categoriesAndData, stackByIndex, groupByIndex) {
+    var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1? '&' : '?';
+    var filterCols = [groupBy, stackBy]
+    var filterVals = [categoriesAndData[groupByIndex][0], categoriesAndData[groupByIndex][1][stackByIndex].label]
+    var filterObjForThisFilterColVal = constructedFilterObj(filterObj, filterCols, filterVals, false);
+    var filterJSONString = $.param(filterObjForThisFilterColVal);
+    var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterJSONString;
+
+    window.location = urlForFilterValue;
+
+}
 
 
 /**
