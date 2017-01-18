@@ -21,9 +21,10 @@
                     <div class="order" flex="10" aa-tooltip="Drag to re-order">Order</div>
                     <div class="exclude" flex="10">
                         Include
-                        <md-button ng-model="excludeAll" aria-label="Include/Exclude All" ng-click="toggleExclude(excludeAll)">
-                            {{ excludeAll ? 'Exclude All' : 'Include All' }}
-                        </md-button>
+                        <span ng-model="excludeAll" aria-label="Include/Exclude All" ng-click="toggleExclude(excludeAll)"
+                            aa-tooltip="{{ excludeAll ? 'Exclude All' : 'Include All' }}">
+                            <i class="fa {{ excludeAll ? 'fa-remove' : 'fa-check' }}" aria-hidden="true"></i> all
+                        </span>
                     </div>
                     <div class="name" flex="30">Column Name</div>
                     <!-- <div class="override">Override</div> -->
