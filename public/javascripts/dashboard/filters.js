@@ -61,6 +61,20 @@ app.filter('viewToName',function() {
 })
 
 
+app.filter('jobTask', function() {
+    return function(input) {
+        if (input == 'preImport') {
+            return 'Import Raw Objects';
+        } else if (input == 'importProcessed') {
+            return 'Import Processed Objects';
+        } else if (input == 'postImport') {
+            return 'Caching unique filters';
+        } else if (input == 'scrapeImages') {
+            return 'Image Scraping';
+        }
+    }
+})
+
 app.filter('omit',function() {
     return function(input,keyName) {
         var copy = angular.copy(input);

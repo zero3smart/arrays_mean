@@ -33,35 +33,107 @@ var queue = kue.createQueue({
 
 /*  start queue functions */
 queue.on('job enqueue',function(id,type) {
-    console.log('Job %s got queued of type %s',id,type);
+    console.log('Job %s got enqueued of type %s',id,type);
 
 }).on('job complete',function(id,result) {
 
-    console.log('Job %s completed with result %s', id, result);
+    console.log('Job %s completed with result %s', id, JSON.stringify(result));
+
     
     kue.Job.get(id,function(err,job) {
         if (err) return;
         var task = job.type;
+
         if (task == 'preImport') {
 
-            _startJob(job.data.id,'importProcessed');
-
-        } else if (task == 'importProcessed') {
-            _startJob(job.data.id,'postImport');
-
-        } else if (task == 'postImport') {
-
-            datasource_description.findById(job.data.id,function(err,dataset) {
-                if (!dataset.skipImageScraping) {
-                    _startJob(job.data.id,'scrapeImages');
-                } else {
-                    datasource_description.findOneAndUpdate({_id: datasetId}, {$set: {jobId:0}})
-                }
+            _startJob(job.data.id,'importProcessed',function(err) {
+                if (err) winston.error('❌ in initializing job importProcessed on job completion');
+                return;
             })
 
-        } else if (task == 'scrapeImages') {
-            datasource_description.findOneAndUpdate({_id: datasetId}, {$set: {jobId: 0}})
+        } else { // importProcessed || postImport || scrapeImages
+
+            datasource_description.findById(job.data.id,function(err,dataset) {
+                if (err || !dataset) return;
+                var dirty = dataset.dirty;
+
+                datasource_description.find({schema_id: job.data.id},function(err,childrenDatasets) {
+                    if (err) return;
+                    if (childrenDatasets.length == 0) {
+
+                        if (task == 'importProcessed') {
+
+                            _startJob(job.data.id,'postImport',function(err) {
+                                if (err) winston.error('❌ in initializing job importProcessed on job completion');
+                                return;
+                            });
+
+                        } else if (task == 'postImport') {
+
+                            if (dataset.skipImageScraping) {
+
+                                dataset.jobId = 0;
+                                dataset.save();
+
+                            } else {
+
+                                 _startJob(job.data.id,'scrapeImages',function(err) {
+                                    if (err) winston.error('❌ in initializing job scrapeImages on job completion');
+                                    return;
+                                });
+
+                            }
+
+                        } else {
+                            dataset.jobId = 0;
+                            dataset.save();
+                        }
+            
+
+                    } else {
+                        childrenDatasets.forEach(function(dataset,index) {
+                            if (index == childrenDatasets.length - 1 && task == 'importProcessed') {
+
+                                _startJob(dataset.id,'postImport',function(err) {
+                                    if (err) winston.error('❌ in initializing job preImport on child dataset');
+                                    return;
+                                });
+
+                            } else if (dirty == 1) {
+
+                                if (task == 'scrapeImages' || task == 'postImport') {
+
+                                    _startJob(dataset.id,'preImport',function(err) {
+                                        if (err) winston.error('❌ in initializing job preImport on child dataset');
+                                        return;
+                                    });
+                                }
+
+                               
+                            } else if (dirty == 2) {
+
+
+                                if (task == 'scrapeImages' || task == 'postImport') {
+                                    _startJob(dataset.id,'importProcessed',function(err) {
+                                        if (err) winston.error('❌ in initializing job preImport on child dataset');
+                                        return;
+                                    });
+
+                                }
+
+                            
+
+                            }
+                        })
+
+
+
+                    }
+                })
+
+            })
         }
+
     })
 })
 
@@ -158,15 +230,60 @@ queue.process('preImport',function(job,done) {
 
 queue.process('scrapeImages', function(job,done) {
     var id = job.data.id;
-    datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
-        import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(descriptions,job,function(err) {
-            if (err) {
-                console.log('err in queue processing scrape images job : %s',err);
-                return done(err);
-            }
+
+    var batch = new Batch();
+    batch.concurrency(1);
+
+    var description;
+    var description_schemaId;
+    batch.push(function(done) {
+        datasource_description.findById(id)
+        .lean()
+        .deepPopulate('schema_id _team schema_id._team')
+        .exec(function(err,data) {
+            if (err) return done(err);
+            if (!data) return done(new Error('No datasource exists : ' + uid));
+
+            description = data;
+
+             if (description.schema_id) { //merge with parent description
+                description_schemaId = description.schema_id.id;
+                description = datasource_description.Consolidate_descriptions_hasSchema(description);
+            } 
             done();
         })
     })
+
+    batch.push(function(done) {
+        import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly([description],job,function(err) {
+            if (err) return done(err);
+            done();
+        })
+    })
+
+    batch.end(function(err) {
+
+        if (!err) {
+            var updateQuery =  {$set: {dirty:0,imported:true}};
+            var multi = {multi: true};
+            if (description.schema_id) {
+                 datasource_description.update({$or: [{_id:id}, {_id: description_schemaId}]}, updateQuery,multi,done);
+
+            } else {
+                 datasource_description.update({$or: [{_id:id}, {_otherSources: id}]}, updateQuery,multi,done);
+
+            }
+           
+            
+        }
+       
+
+    })
+
+
+
+
+
 })
 
 
@@ -258,6 +375,7 @@ queue.process('importProcessed',function(job,done) {
     });
 
 })
+
 queue.process('postImport',function(job,done) {
     var id = job.data.id;
     var description;
@@ -1064,8 +1182,6 @@ function _startJob(datasetId,jobName,cb) {
         if (err) return cb(err);
         else {
 
-            //update dataset with jobId that started
-
             datasource_description.findOneAndUpdate({_id: datasetId},{$set:{jobId: job.id}},{new: true},function(err,updatedDataset) {
                 if (err) return cb(err);
                 else {
@@ -1091,14 +1207,7 @@ module.exports.getJobStatus = function(req,res) {
     .select({jobId: 1})
     .exec(function(err,queryingDataset) {
         if (err) return res.status(500).send(err);
-        var jobId = queryingDataset.jobId;
-        if (jobId == 0) {
-            return res.json(null);
-        } 
-        kue.Job.get(jobId,function(err,job) {
-            if (err) return res.status(500).send(err);
-            return res.json(job);
-        })
+        return res.json({id:queryingDataset.jobId});
     })
 }
 

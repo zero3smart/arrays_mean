@@ -9,21 +9,20 @@
 
         <md-content class="md-block" md-colors="{background: 'grey'}">
 
-            <div ng-repeat=" job in jobs">
+            <div ng-if="dirty" ng-repeat=" job in jobs">
 
                 <div ng-show="job.state == 'active'">
 
-
-                    <div>⏳ In Progress {{job.type}} Task  <span ng-show="job.log" > : {{job.log}}</span> </div>
+                    <div>⏳ [{{currentImportingDataset.title}}] In Progress {{job.type | jobTask}} </u> Task  <span ng-show="job.log" > : {{job.log}}</span> </div>
             
                 </div>
 
-                <div ng-show="job.state && job.state=='complete'">
-                    ✅ Completed {{jobInfo.type}} Task
+                <div ng-show="job.state=='complete'">
+                    ✅ [{{currentImportingDataset.title}}]  Completed {{job.type | jobTask }} Task
                 </div>
 
-                <div ng-show="job.state && job.state=='failed'">
-                    ❌ Task  {{jobInfo.type}} Failed : {{jobInfo.error}}
+                <div ng-show="job.state=='failed'">
+                    ❌ [ {{currentImportingDataset.title}} ] Task {{job.type| jobTask }} Failed : {{job.error}}
                 </div>
 
 

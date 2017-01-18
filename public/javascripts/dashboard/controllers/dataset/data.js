@@ -848,6 +848,9 @@ angular.module('arraysApp')
                         $scope.dataset.fe_designatedFields[$scope.data.designatedFields[fieldName]] = fieldName;
                     }
 
+
+                    console.log($scope.dataset);
+
                     if ($scope.dataset.skipImageScraping == false && $scope.dataset.dirty == 0) {
                         $scope.dataset.dirty = 4;
                     }

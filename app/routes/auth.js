@@ -40,7 +40,6 @@ router.post('/login',function(req,res,next) {
             } else {
                 req.flash("error",info);
                 return res.redirect('/auth/login');
-
             }
           
         } else {
