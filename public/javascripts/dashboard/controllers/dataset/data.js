@@ -377,6 +377,8 @@ angular.module('arraysApp')
                     }
                 })
                     .then(function (result) {
+
+
                         $scope.$parent.$parent.dataset = result.dataset;
                         $scope.additionalDatasources = result.additionalDatasources;
 
@@ -390,6 +392,8 @@ angular.module('arraysApp')
             };
 
             function NestedDialogController($scope, $mdDialog, $filter, dataset, additionalDatasources) {
+
+
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
                     $scope.additionalDatasources = angular.copy(additionalDatasources);
@@ -527,6 +531,20 @@ angular.module('arraysApp')
                         $scope.dataset.dirty = 2;
                     }
 
+
+                    $scope.dataset.fe_nestedObject.fields.map(function(field) {
+
+                        var fieldName = $scope.dataset.fe_nestedObject.prefix + field;
+
+                        if ($scope.dataset.fe_excludeFields[fieldName]) {
+                            delete $scope.dataset.fe_excludeFields[fieldName];
+                        }
+                    })
+
+                   
+
+
+
                     $scope.dataset.fe_nestedObject.fieldOverrides = {};
                     $scope.data.fieldOverrides.map(function (elem) {
                         $scope.dataset.fe_nestedObject.fieldOverrides[elem.field] = elem.override;
@@ -534,7 +552,7 @@ angular.module('arraysApp')
 
                     $scope.dataset.fe_nestedObject.valueOverrides = {};
                     $scope.dataset.fe_nestedObject.fields = $scope.data.fields;
-                    
+
                     $scope.data.valueOverrides.map(function (elem) {
 
                         var valueOverrides = {};
@@ -543,6 +561,8 @@ angular.module('arraysApp')
                         });
                         $scope.dataset.fe_nestedObject.valueOverrides[elem.field] = valueOverrides;
                     });
+
+
 
                     // Additional Datasources
                     $scope.additionalDatasources.forEach(function(datasource, index) {
@@ -848,9 +868,6 @@ angular.module('arraysApp')
                         $scope.dataset.fe_designatedFields[$scope.data.designatedFields[fieldName]] = fieldName;
                     }
 
-
-                    console.log($scope.dataset);
-
                     if ($scope.dataset.skipImageScraping == false && $scope.dataset.dirty == 0) {
                         $scope.dataset.dirty = 4;
                     }
@@ -1125,6 +1142,7 @@ angular.module('arraysApp')
             }
 
             function sortColumnsByDisplayOrder() {
+
                 $scope.data.fields = $scope.$parent.$parent.dataset.columns.concat(
                     $scope.$parent.$parent.dataset.customFieldsToProcess.map(function(customField, index) {
 
@@ -1143,11 +1161,19 @@ angular.module('arraysApp')
                     })
                 ).concat(
                     $scope.$parent.$parent.dataset.fe_nestedObject.fields.map(function(field, index) {
+
+                        var fieldName = $scope.$parent.$parent.dataset.fe_nestedObject.prefix + field;
+
+                        if (!$scope.$parent.$parent.dataset.fe_excludeFields[fieldName]) {
+                            $scope.$parent.$parent.dataset.fe_excludeFields[fieldName] = false;
+                        }
+
                         return {
                             name: $scope.$parent.$parent.dataset.fe_nestedObject.prefix + field,
                             sample: null,
                             custom: true
                         };
+
                     })
                 ).concat(
                     $scope.$parent.$parent.dataset.imageScraping.reduce(function(imageScraping1, imageScraping2) {
@@ -1175,8 +1201,6 @@ angular.module('arraysApp')
                             $scope.$parent.$parent.dataset.fe_excludeFields[relationshipField.field] = false;
                         }
 
-
-
                         return {
                             name: relationshipField.field,
                             custom: true
@@ -1186,9 +1210,6 @@ angular.module('arraysApp')
 
 
                 )
-
-
-
 
                 $scope.data.fields.sort(function (column1, column2) {
                     if ($scope.$parent.$parent.dataset.fe_fieldDisplayOrder.indexOf(column1.name) == -1 &&
@@ -1295,8 +1316,6 @@ angular.module('arraysApp')
                     var finalizedDataset = angular.copy($scope.$parent.$parent.dataset);
                     delete finalizedDataset.columns;
 
-
-
                     queue.push(DatasetService.save(finalizedDataset));
 
                     $scope.additionalDatasources.forEach(function(datasource) {
@@ -1328,7 +1347,6 @@ angular.module('arraysApp')
                         queue.push(DatasetService.save(finalizedDatasource));
                     });
 
-                    // console.log($scope.additionalDatasources);
 
                     $q.all(queue)
                         .then(done)

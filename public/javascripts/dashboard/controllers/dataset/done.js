@@ -44,7 +44,7 @@ angular.module('arraysApp')
             }
 
 
-            function preImport(id,uid) {
+            function preImport(id) {
                 DatasetService.preImport(id)
                     .then(function (response) {
 
@@ -113,8 +113,15 @@ angular.module('arraysApp')
 
                 if (datasourceIndex < $scope.additionalDatasources.length) {
 
+                    if ($scope.dirty == 3) {
 
-                    getJobStatus($scope.additionalDatasources[datasourceIndex]._id);
+                        postImport($scope.additionalDatasources[datasourceIndex]._id);
+
+                    } else {
+                        getJobStatus($scope.additionalDatasources[datasourceIndex]._id);
+
+                    }
+                    
                     
                 } else {
                     allDone();
@@ -125,7 +132,7 @@ angular.module('arraysApp')
 
            
 
-            function importProcess(id,uid) {
+            function importProcess(id) {
 
                 DatasetService.importProcessed(id)
                     .then(function (response) {
@@ -141,7 +148,7 @@ angular.module('arraysApp')
                     }, errorHandler);
             }
 
-            function scrapeImages(id,uid) { 
+            function scrapeImages(id) { 
 
                 DatasetService.scrapeImages(id)
                 .then(function (response) {
@@ -162,8 +169,8 @@ angular.module('arraysApp')
             }
 
 
-            function postImport(id,uid) {
-
+            function postImport(id) {
+               
 
                 if ($scope.additionalDatasources.length == 0 || datasourceIndex !== -1) {
 
@@ -203,7 +210,6 @@ angular.module('arraysApp')
 
             function importDatasource(datasource) {
 
-                var uid = datasource.dataset_uid ? datasource.dataset_uid : datasource.uid;
                 var id = datasource._id;
 
                 if ($scope.additionalDatasources.length == 0) {
@@ -211,24 +217,26 @@ angular.module('arraysApp')
 
 
                     if (datasource.dirty == 1) {
-                        preImport(id,uid);
+                        preImport(id);
                     } else if (datasource.dirty == 2) {
-                        importProcess(id,uid);
+                        importProcess(id);
                     } else if (datasource.dirty == 3) {
-                        postImport(id,uid);
+                        postImport(id);
                     } else if (datasource.dirty == 4) {
-                        scrapeImages(id,uid);
+                        scrapeImages(id);
                     }
 
                 } else {
-                     if ($scope.dirty == 1) {
-                        preImport(id,uid);
+
+                 
+                    if ($scope.dirty == 1) {
+                        preImport(id);
                     } else if ($scope.dirty == 2) {
-                        importProcess(id,uid);
+                        importProcess(id);
                     } else if ($scope.dirty == 3) {
-                        postImport(id,uid);
+                        postImport(id);
                     } else if ($scope.dirty == 4) {
-                        scrapeImages(id,uid);
+                        scrapeImages(id);
                     }
 
                 }

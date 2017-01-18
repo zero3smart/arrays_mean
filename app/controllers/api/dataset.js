@@ -55,7 +55,11 @@ queue.on('job enqueue',function(id,type) {
 
             datasource_description.findById(job.data.id,function(err,dataset) {
                 if (err || !dataset) return;
+
+
                 var dirty = dataset.dirty;
+
+
 
                 datasource_description.find({schema_id: job.data.id},function(err,childrenDatasets) {
                     if (err) return;
@@ -110,7 +114,8 @@ queue.on('job enqueue',function(id,type) {
                             } else if (dirty == 2) {
 
 
-                                if (task == 'scrapeImages' || task == 'postImport') {
+                                if (task == 'scrapeImages' || task == 'postImport' || task == 'importProcessed') {
+
                                     _startJob(dataset.id,'importProcessed',function(err) {
                                         if (err) winston.error('❌ in initializing job preImport on child dataset');
                                         return;
