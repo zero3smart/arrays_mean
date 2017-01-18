@@ -2,77 +2,8 @@ angular.module('arraysApp')
     .controller('DatasetDoneCtrl', ['$scope', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q','Job','$timeout',
         function($scope, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q,Job,$timeout) {
 
-            if (dataset.jobId !== 0) {
-                $scope.inProgress = true; 
-                $timeout(function() {
-                    getJobStatus($scope.$parent.$parent.dataset._id)
-                },2000);
-            } else {
-                 $scope.inProgress = false;
-            }
 
-
-
-            $scope.$parent.$parent.dataset = dataset;
-            $scope.additionalDatasources = additionalDatasources;
-            $scope.$parent.$parent.currentNavItem = 'Done';
-            $scope.importLogger = [];
-
-            $scope.currentImportingDataset = $scope.$parent.$parent.dataset;
-           
-
-            $scope.jobs = [];
-            $scope.currentJobId = undefined;
-
-            DatasetService.getReimportDatasets(dataset._id)
-            .then(function(datasets) {
-
-                $scope.additionalDatasources = $scope.additionalDatasources.concat(datasets);
-
-            })
-
-        
-            $scope.dirty = $scope.$parent.$parent.dataset.dirty;
-
-            $scope.imported = $scope.$parent.$parent.dataset.imported;
-
-
-
-
-            $scope.additionalDatasources.forEach(function(datasource) {
-
-                if (datasource.dirty !== 0 && datasource.dirty < $scope.dirty) {
-                    $scope.dirty = datasource.dirty;
-                } 
-
-                $scope.imported = $scope.imported && datasource.imported;
-                
-            });
-
-
-
-            $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $location.host() + ":" + $location.port();
-
-
-
-            function refreshForm() {
-                $scope.dirty = 0;
-                $scope.imported = true;
-            }
-
-
-            var datasourceIndex = -1;
-
-            $scope.togglePublish = function() {
-                var isPublic = $scope.$parent.$parent.dataset.isPublic;
-                DatasetService.publish($scope.$parent.$parent.dataset._id, isPublic)
-            };
-
-
-            $scope.toggleImageScraping = function() {
-                var skip = $scope.$parent.$parent.dataset.skipImageScraping;
-                DatasetService.skipImageScraping($scope.$parent.$parent.dataset._id,skip);
-            }
+            //-- helper functions ---//
 
             function errorHandler(response) {
 
@@ -82,24 +13,8 @@ angular.module('arraysApp')
                 $scope.inProgress = false;
             }
 
-            function preImport(id,uid) {
-                DatasetService.preImport(id)
-                    .then(function (response) {
 
-                        if (response.status == 200 && !response.data.error) {
-
-                            $timeout(function() {
-                                getJobStatus(id)
-                            }, 2000);
-
-                        } else {
-                            errorHandler(response);
-                        }
-                    }, errorHandler);
-            }
-
-
-            var getJobAndLog = function(datasetId) {
+            function getJobAndLog (datasetId) {
 
                 if (!$scope.jobs[$scope.jobs.length-1].state || $scope.jobs[$scope.jobs.length-1].state == 'active') {
         
@@ -121,14 +36,41 @@ angular.module('arraysApp')
                    
                 } else if ($scope.jobs[$scope.jobs.length-1].state == 'complete'){
   
-                    $timeout(function() {
-                        getJobStatus(datasetId);
-                    },1000);
+                    
+                    getJobStatus(datasetId);
+                  
                 }
                
             }
 
-            var getJobStatus = function (datasetId) {
+
+            function preImport(id,uid) {
+                DatasetService.preImport(id)
+                    .then(function (response) {
+
+                        if (response.status == 200 && !response.data.error) {
+
+                            $timeout(function() {
+                                getJobStatus(id)
+                            }, 2000);
+
+                        } else {
+                            errorHandler(response);
+                        }
+                    }, errorHandler);
+            }
+
+
+
+
+            function refreshForm() {
+                $scope.dirty = 0;
+                $scope.imported = true;
+            }
+
+
+
+            function getJobStatus (datasetId) {
                 DatasetService.getJobStatus(datasetId)
                 .then(function(job) { 
 
@@ -168,14 +110,12 @@ angular.module('arraysApp')
                 datasourceIndex ++;
 
 
+
                 if (datasourceIndex < $scope.additionalDatasources.length) {
 
-                    $scope.currentImportingDataset = $scope.additionalDatasources[datasourceIndex];
 
-                    $timeout(function() {
-                        getJobStatus($scope.currentImportingDataset._id);
-                    },1000);
-
+                    getJobStatus($scope.additionalDatasources[datasourceIndex]._id);
+                    
                 } else {
                     allDone();
                 }
@@ -183,7 +123,7 @@ angular.module('arraysApp')
 
             }
 
-        
+           
 
             function importProcess(id,uid) {
 
@@ -219,11 +159,6 @@ angular.module('arraysApp')
                     }
                 }, errorHandler);
             
-                $scope.currentStep = 4;
-
-                $timeout(function() {
-                    getJobStatus(id,uid)
-                },2000);
             }
 
 
@@ -299,11 +234,101 @@ angular.module('arraysApp')
                 }
 
             }
+            // -- end helper functions --- //
+
+
+
+            if (dataset.jobId !== 0) {
+                $scope.inProgress = true; 
+            
+                getJobStatus(dataset._id);
+               
+            } else {
+                 $scope.inProgress = false;
+            }
+
+
+
+            $scope.$parent.$parent.dataset = dataset;
+            $scope.additionalDatasources = additionalDatasources;
+            $scope.$parent.$parent.currentNavItem = 'Done';
+            $scope.importLogger = [];
+            $scope.datasetsToProcess = [];
+
+            $scope.datasetsToProcess[$scope.$parent.$parent.dataset._id] = {uid: $scope.$parent.$parent.dataset.uid};
+
+
+            $scope.jobs = [];
+            $scope.currentJobId = undefined;
+
+            DatasetService.getReimportDatasets(dataset._id)
+            .then(function(datasets) {
+
+                $scope.additionalDatasources = $scope.additionalDatasources.concat(datasets);
+
+                $scope.additionalDatasources.map(function(ds) {
+                    if (ds.dataset_uid) {
+                         $scope.datasetsToProcess[ds._id] = {uid: ds.dataset_uid};
+                    } else {
+                         $scope.datasetsToProcess[ds._id] = {uid: ds.uid};
+                    }
+                })
+
+            })
+
+            
+
+           
+            $scope.dirty = $scope.$parent.$parent.dataset.dirty;
+
+            $scope.imported = $scope.$parent.$parent.dataset.imported;
+
+
+
+
+            $scope.additionalDatasources.forEach(function(datasource) {
+
+                if (datasource.dirty !== 0 && datasource.dirty < $scope.dirty) {
+                    $scope.dirty = datasource.dirty;
+                } 
+                $scope.imported = $scope.imported && datasource.imported;
+
+                if (dataset.jobId == 0 && datasource.jobId !== 0) {
+
+                    $scope.inProgress = true; 
+                    getJobStatus(datasource._id);
+                    return false;
+                }
+                
+            });
+
+
+
+            $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $location.host() + ":" + $location.port();
+
+
+
+           
+
+
+            var datasourceIndex = -1;
+
+            $scope.togglePublish = function() {
+                var isPublic = $scope.$parent.$parent.dataset.isPublic;
+                DatasetService.publish($scope.$parent.$parent.dataset._id, isPublic)
+            };
+
+
+            $scope.toggleImageScraping = function() {
+                var skip = $scope.$parent.$parent.dataset.skipImageScraping;
+                DatasetService.skipImageScraping($scope.$parent.$parent.dataset._id,skip);
+            }
+            
 
             $scope.importData = function() {
                 // datasourceIndex = -1;
                 $scope.inProgress = true;
-                importDatasource($scope.currentImportingDataset);
+                importDatasource($scope.$parent.$parent.dataset);
             }
         }
     ]);

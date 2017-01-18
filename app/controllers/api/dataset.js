@@ -91,17 +91,14 @@ queue.on('job enqueue',function(id,type) {
             
 
                     } else {
+                        dataset.jobId = 0;
+                        dataset.save();
+                        
                         childrenDatasets.forEach(function(dataset,index) {
-                            if (index == childrenDatasets.length - 1 && task == 'importProcessed') {
 
-                                _startJob(dataset.id,'postImport',function(err) {
-                                    if (err) winston.error('❌ in initializing job preImport on child dataset');
-                                    return;
-                                });
+                            if (dirty == 1) {
 
-                            } else if (dirty == 1) {
-
-                                if (task == 'scrapeImages' || task == 'postImport') {
+                                if (task == 'scrapeImages' || task == 'importProcessed') {
 
                                     _startJob(dataset.id,'preImport',function(err) {
                                         if (err) winston.error('❌ in initializing job preImport on child dataset');

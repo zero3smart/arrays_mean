@@ -13,16 +13,16 @@
 
                 <div ng-show="job.state == 'active'">
 
-                    <div>⏳ [{{currentImportingDataset.title}}] In Progress {{job.type | jobTask}} </u> Task  <span ng-show="job.log" > : {{job.log}}</span> </div>
+                    <div>⏳ [{{datasetsToProcess[job.data.id].uid}}] In Progress {{job.type | jobTask}} </u> Task  <span ng-show="job.log" > : {{job.log}}</span> </div>
             
                 </div>
 
                 <div ng-show="job.state=='complete'">
-                    ✅ [{{currentImportingDataset.title}}]  Completed {{job.type | jobTask }} Task
+                    ✅ [{{datasetsToProcess[job.data.id].uid}}]  Completed {{job.type | jobTask }} Task
                 </div>
 
                 <div ng-show="job.state=='failed'">
-                    ❌ [ {{currentImportingDataset.title}} ] Task {{job.type| jobTask }} Failed : {{job.error}}
+                    ❌ [{{datasetsToProcess[job.data.id].uid}}] Task {{job.type| jobTask }} Failed : {{job.error}}
                 </div>
 
 

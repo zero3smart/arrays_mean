@@ -96,7 +96,7 @@ var DatasourceDescription_scheme = Schema({
     jobId: {type: Number,integer: true, default: 0}
 
     //0: no job has started, job has completed
-    // all others: related to the jobId in the queue
+    //all others: related to the jobId in the queue
 
 
     

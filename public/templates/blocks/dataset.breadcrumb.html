@@ -24,9 +24,10 @@
         <span class="nav-item-label">4. Format Views</span>
     </button>
 
-    <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.done')" ng-disabled="!dataset.fe_views.default_view"
+    <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.done')" ng-disabled=" (dataset.fe_visible && !dataset.fe_views.default_view)"
         ng-class="{active: currentStep == 'dashboard.dataset.done'}">
-        <span class="nav-item-icon" ng-class="(dataset.fe_views.views && dataset.imported) ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
+
+        <span class="nav-item-icon" ng-class="( (!dataset.fe_visible || dataset.fe_views.default_view) && dataset.imported) ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
         <span class="nav-item-label">5. Done!</span>
     </button>
 

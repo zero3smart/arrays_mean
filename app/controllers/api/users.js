@@ -66,6 +66,7 @@ module.exports.get = function (req, res) {
 
                     batch.concurrency(1);
                     batch.push(function (done) {
+
                         if (!user.defaultLoginTeam || user._team.length == 0) {
                             return res.status(401).send({error: 'unauthorized'});
                         }
@@ -87,6 +88,7 @@ module.exports.get = function (req, res) {
                     })
 
                     batch.end(function (err) {
+
                         if (err) {
                             console.log(err);
                             res.status(500).send(err);
