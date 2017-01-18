@@ -18,24 +18,25 @@
             <div class="fields-container">
                 <div class="field-row-header field">
                     <!-- <div class="handler"></div> -->
-                    <div class="order" aa-tooltip="Drag to re-order">Order</div>
-                    <div class="exclude">
+                    <div class="order" flex="10" aa-tooltip="Drag to re-order">Order</div>
+                    <div class="exclude" flex="10">
                         Include
                         <md-button ng-model="excludeAll" aria-label="Include/Exclude All" ng-click="toggleExclude(excludeAll)">
                             {{ excludeAll ? 'Exclude All' : 'Include All' }}
                         </md-button>
                     </div>
-                    <div class="name">Column Name</div>
+                    <div class="name" flex="30">Column Name</div>
                     <!-- <div class="override">Override</div> -->
-                    <div class="type">Type</div>
-                    <div class="sample">Sample</div>
+                    <div class="type" flex="15">Type</div>
+                    <div class="sample" flex="30">Sample</div>
+                    <div flex="5"></div>
                 </div>
                 <ul ui-sortable="fieldSortableOptions" ng-model="data.fields" class="fields">
                     <li ng-repeat="field in data.fields" class="field"
                         ng-class="{'custom': field.custom}"
                         >
                         <!-- <div class="handler"></div> -->
-                        <div class="order dashboard-list-icon" aa-tooltip="Drag to re-order">
+                        <div class="order dashboard-list-icon" aa-tooltip="Drag to re-order" flex="10">
                             <span class="glyphicon glyphicon-move"></span>
                             <span class="field-order">
                             {{
@@ -44,7 +45,7 @@
                             }}
                             </span>
                         </div>
-                        <div class="exclude">
+                        <div class="exclude" flex="10">
                             <md-checkbox name="fe_excludeFields_{{$index}}"
                                          ng-model="dataset.fe_excludeFields[field.name]"
                                          ng-true-value="false"
@@ -52,9 +53,9 @@
                                          aria-label="Exclude {{field.name}}"
                                          ng-click="$event.stopPropagation();" ng-change="setDirty(3)"></md-checkbox>
                         </div>
-                        <div class="name">{{ dataset.fe_displayTitleOverrides[field.name] ? dataset.fe_displayTitleOverrides[field.name] + ' (' + field.name + ')' : field.name }}</div>
+                        <div class="name" flex="30">{{ dataset.fe_displayTitleOverrides[field.name] ? dataset.fe_displayTitleOverrides[field.name] + ' (' + field.name + ')' : field.name }}</div>
                         <!-- <div class="override">{{ dataset.fe_displayTitleOverrides[field.name] }}</div> -->
-                        <div class="type">
+                        <div class="type" flex="15">
                             <md-select ng-if="!field.custom"
                                        name="raw_rowObjects_coercionScheme"
                                        ng-model="coercionScheme[field.name]"
@@ -72,12 +73,12 @@
 
                             <b ng-if="field.custom">Custom</b>
                         </div>
-                        <div class="sample no-break-out">
+                        <div class="sample" flex="30">
                             <span ng-if="!field.custom">{{ field.sample | limitTo: 200 }}{{ field.sample.length > 200 ? '...' : '' }}</span>
                             <span ng-if="field.customField" ng-repeat="mergeField in field.customField.fieldsToMergeIntoArray" >{{mergeField}} <span
                             ng-if="!$last">,</span> </span>
                         </div>
-                        <span class="dashboard-list-icon" flex="10" aa-tooltip="Edit field"
+                        <span class="dashboard-list-icon" flex="5" aa-tooltip="Edit field"
                             ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex)">
                             <i class="fa fa-pencil" aria-hidden="true"></i>
                         </span>
