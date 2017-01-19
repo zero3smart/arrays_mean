@@ -195,6 +195,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
 
     readStream = readStream.pipe(es.split())
         .pipe(es.mapSync(function (line) {
+
                 // pause the readstream
                 readStream.pause();
 
@@ -202,7 +203,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
 
                 parse(cachedLines + line, {delimiter: delimiter, relax: true, skip_empty_lines: true}, function (err, output) {
                     if (err || !output || output.length == 0) {
-                        //winston.info("❌  Error encountered during saving the line " + lineNr + " of document: ", sourceDocumentTitle);
+                        winston.info("❌  Error encountered during saving the line " + lineNr + " of document: ", sourceDocumentTitle);
                         cachedLines = cachedLines + line;
                         return readStream.resume();
                     }
@@ -210,7 +211,11 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
                     cachedLines = '';
 
 
+
+
                     parser(output[0]);
+
+    
 
                     // process line here and call s.resume() when rdy
                     if (lineNr % 1000 == 0) {

@@ -53,6 +53,8 @@ function _getDatasource(description) {
 
     winston.info("🔁  Reading the datasource from S3 " + key);
 
+
+
     return s3.getObject(param)
 
 }

@@ -18,7 +18,7 @@ angular.module('arraysApp')
 
     
                 if (!$scope.jobs[$scope.jobs.length-1].state || $scope.jobs[$scope.jobs.length-1].state == 'active' ||
-                    $scope.jobs[$scope.jobs.length-1].state == 'in active') {
+                    $scope.jobs[$scope.jobs.length-1].state == 'inactive') {
         
                     Job.get({id:$scope.currentJobId}).$promise.then(function(job) {
 
@@ -41,6 +41,8 @@ angular.module('arraysApp')
                     
                     getJobStatus(datasetId);
                   
+                } else if ($scope.jobs[$scope.jobs.length-1].state == 'failed') {
+                    $scope.inProgress = false;
                 }
                
             }
