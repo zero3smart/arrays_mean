@@ -82,10 +82,10 @@ function BarChart(selector, dataSet, options) {
     var realDimensionWidth = dimension.width - divPadding
     var barPaddingWidth = self._categoryData.length * this._padding 
 
-    if(((self._categoryData.length * (realDimensionWidth/30)) + barPaddingWidth) < realDimensionWidth) {
+    if(((self._categoryData.length * (realDimensionWidth/20)) + barPaddingWidth) < realDimensionWidth) {
         var svgWidth = realDimensionWidth
     } else {
-        var svgWidth = (self._categoryData.length * (realDimensionWidth/30)) + barPaddingWidth
+        var svgWidth = Math.max((self._categoryData.length * (realDimensionWidth/20)) - barPaddingWidth)
     }
 
     // /*Set a minimum width for the barchart in cases where # of labels exceeds 18*/
@@ -105,10 +105,10 @@ function BarChart(selector, dataSet, options) {
 
     this._svg = this._container.append('svg')
         .attr('height', this._outerHeight)
-        .attr('style', 'width: ' + this._svgWidth + 'px; padding: 10px')
+        .attr('style', 'width: ' + this._svgWidth + 'px;')
         .attr('id', 'barChart-svg')
-        .attr('preserveAspectRatio', 'xMinYMin meet')
-        .attr('viewBox', '0 0 ' + dimension.width + ' ' + this._outerHeight);
+        .attr('preserveAspectRatio', 'xMinYMin')
+        .attr('viewBox', '0 0 '+ this._svgWidth + ' ' + this._outerHeight);
 
     this._canvas = this._svg.append('g')
         .attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')')

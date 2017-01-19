@@ -94,9 +94,14 @@ VerticalBarChart.prototype.rotateLabel = function () {
 
 
 VerticalBarChart.prototype.getXScale = function () {
-    return this._xScale = d3.scale.ordinal()
-        .rangeBands([0, this._svgWidth], this._padding)
+    console.log(this._categories)
+    console.log(this._svgWidth)
+    this._xScale = d3.scale.ordinal()
+        .rangeBands([0, this._svgWidth - 60], this._padding)
         .domain(this._categories);
+    console.log(this._xScale.range())
+    console.log(this._xScale.rangeBand())
+    return this._xScale
 };
 
 
