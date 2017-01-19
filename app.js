@@ -9,14 +9,18 @@ if (cluster.isMaster) {
 
     require('./queue-init');
 
-    var clusterWorkerSize = require('os').cpus().length;
+    var clusterWorkerSize = process.env.WEB_CONCURRENCY || require('os').cpus().length;
     console.log('master pid %s', process.pid);
     for (var i = 0; i < clusterWorkerSize; i ++) {
         cluster.fork();
     }
-    cluster.on('exit',function(worker_process) {
-        console.log("Worker %d died pid %d",cluster.worker.id,process.pid);
 
+    cluster.on('exit',function(worker_process) {
+        if (cluster.worker) {
+            console.log("Worker %d died pid %d",cluster.worker.id,process.pid);
+        } else {
+            console.log("no worker available");
+        }
     })
 
 } else {
