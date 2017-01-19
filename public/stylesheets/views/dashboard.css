@@ -308,14 +308,25 @@ md-ink-bar {
 
 ul.aa-color-picker {
 	margin: 0;
+	margin-bottom: 30px;
 	padding: 0;
 	list-style: none;
 }
 .aa-color-picker li {
-  content: "";
-  display: block;
-  padding: 0;
-  padding-bottom: 30px;
+	position: relative;
+	border-radius: 100%;
+	/*must match flex width*/
+	padding-bottom: 5%;
+}
+.aa-color-picker li.selected:before {
+	position: absolute;
+	content: '';
+	border-radius: 100%;
+	top: 25%;
+	left: 25%;
+	width: 50%;
+	height: 50%;
+	background-color: white;
 }
 .aa-color-picker li.selected,
 .aa-color-picker li:hover,
