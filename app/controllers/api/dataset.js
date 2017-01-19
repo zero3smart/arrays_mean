@@ -21,14 +21,13 @@ var processing = require('../../libs/datasources/processing');
 
 var raw_row_objects = require('../../models/raw_row_objects');
 
-var queue = require.main.require('./queue-init').queue;
-
-var initJob = require.main.require('./queue-init').initJob;
+var queue = require.main.require('./queue-init')();
 
 
 /*  start queue functions */
 
-queue.process('preImport',function(job,done) {
+
+queue.worker.process('preImport',function(job,done) {
 
     var id = job.data.id;
 
@@ -115,7 +114,7 @@ queue.process('preImport',function(job,done) {
 })
 
 
-queue.process('scrapeImages', function(job,done) {
+queue.worker.process('scrapeImages', function(job,done) {
     var id = job.data.id;
 
     var batch = new Batch();
@@ -174,7 +173,7 @@ queue.process('scrapeImages', function(job,done) {
 })
 
 
-queue.process('importProcessed',function(job,done) {
+queue.worker.process('importProcessed',function(job,done) {
     var id = job.data.id;
 
     // need to delete processed row object
@@ -263,7 +262,7 @@ queue.process('importProcessed',function(job,done) {
 
 })
 
-queue.process('postImport',function(job,done) {
+queue.worker.process('postImport',function(job,done) {
     var id = job.data.id;
     var description;
 
@@ -1043,7 +1042,7 @@ module.exports.download = function (req, res) {
 
 module.exports.preImport = function (req, res) {
 
-    initJob(req.params.id, 'preImport',function(err,jobId) {
+    queue.initJob(req.params.id, 'preImport',function(err,jobId) {
         if (err) res.status(500).send(err);
         return res.status(200).send('ok');
     })
@@ -1062,7 +1061,7 @@ module.exports.getJobStatus = function(req,res) {
 
 module.exports.importProcessed = function(req, res) {
 
-     initJob(req.params.id,'importProcessed',function(err,jobId) {
+     queue.initJob(req.params.id,'importProcessed',function(err,jobId) {
         if (err) res.status(500).send(err);
         return res.status(200).send('ok');
     })
@@ -1072,7 +1071,7 @@ module.exports.importProcessed = function(req, res) {
 
 module.exports.scrapeImages = function(req, res) {
 
-     initJob(req.params.id,'scrapeImages',function(err,jobId) {
+     queue.initJob(req.params.id,'scrapeImages',function(err,jobId) {
         if (err) res.status(500).send(err);
         return res.status(200).send('ok');
     })
@@ -1081,7 +1080,7 @@ module.exports.scrapeImages = function(req, res) {
 
 module.exports.postImport = function (req, res) {
 
-     initJob(req.params.id,'postImport',function(err,jobId) {
+     queue.initJob(req.params.id,'postImport',function(err,jobId) {
         if (err) res.status(500).send(err);
         return res.status(200).send('ok');
     })

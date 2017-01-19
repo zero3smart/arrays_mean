@@ -5,9 +5,7 @@ var cluster = require('cluster');
 
 if (cluster.isMaster) {
 
-
-
-    require('./queue-init');
+    require('./queue-init')();
 
 
     var clusterWorkerSize = process.env.WEB_CONCURRENCY || require('os').cpus().length;

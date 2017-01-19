@@ -343,6 +343,7 @@ angular.module('arraysApp')
             $scope.importData = function() {
                 // datasourceIndex = -1;
                 $scope.inProgress = true;
+                $scope.jobs = [];
                 importDatasource($scope.$parent.$parent.dataset);
             }
         }
