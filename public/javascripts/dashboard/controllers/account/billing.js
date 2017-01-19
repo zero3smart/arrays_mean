@@ -223,7 +223,7 @@ angular.module('arraysApp')
                     console.log(res.data);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
-                        getSubscriptions();
+                        $state.go('dashboard.account.billing');
                     } else {
                         console.log(res.data);
                     }

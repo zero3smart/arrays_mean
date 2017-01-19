@@ -38,18 +38,18 @@
         <div ng-if="!subscription.trial_days_left && billing.exists">
             <h3>Start Free Trial of Arrays Pro</h3>
 
-            <md-button class="md-dashboard" ng-click="startTrialSubscription('arrays-pro')">
-                <span class="btn-label">Start Free Trial</span>
+            <md-button ui-sref="dashboard.account.startProTrial" class="md-dashboard">
+                <span class="btn-label">Learn More</span>
             </md-button>
         </div>
 
-        <div ng-if="subscription.trial_days_left > 0">
+        <!--<div ng-if="subscription.trial_days_left > 0">
             <h3>Upgrade to Arrays Pro</h3>
 
             <md-button ui-sref="dashboard.account.upgradePro" class="md-dashboard">
                 <span class="btn-label">Learn More</span>
             </md-button>
-        </div>
+        </div>-->
 
         <h3>Upgrade to Arrays Enterprise</h3>
 
