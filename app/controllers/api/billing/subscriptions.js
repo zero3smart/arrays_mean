@@ -82,3 +82,17 @@ module.exports.cancel = function(req, res) {
         }
     });
 };
+
+module.exports.reactivate = function(req, res) {
+
+    var userId = req.user;
+    var subscrId = req.params.subscrId;
+
+    recurly.subscriptions.reactivate(subscrId, function(err, response) {
+        if (err) {
+            res.status(err.statusCode).send(err);
+        } else {
+            res.status(response.statusCode).json(response);
+        }
+    });
+};

@@ -239,4 +239,13 @@ angular.module('arraysApp')
                 });
             };
 
+            $scope.reactivateCanceledSubscription = function() {
+                var subscrId = $scope.subscription.uuid;
+                Subscriptions.reactivate({ subscrId: subscrId })
+                .$promise.then(function(res) {
+                    console.log(res.data);
+                    getSubscriptions();
+                });
+            };
+
     }]);

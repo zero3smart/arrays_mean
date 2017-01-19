@@ -2,12 +2,12 @@
     <h2>Plan Summary</h2>
 
     <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
-    <p ng-if="subscription.trial_days_left > 0">Your free trial expires in <strong>{{ subscription.trial_days_left | pluralize: "day" : "days" }}</strong>.&emsp;<a ui-sref="dashboard.account.upgradePro">Upgrade Now</a></p>
+    <p ng-if="subscription.trial_days_left > 0 && !subscription.canceled_at._">Your free trial expires in <strong>{{ subscription.trial_days_left | pluralize: "day" : "days" }}</strong>.&emsp;<a ui-sref="dashboard.account.upgradePro">Upgrade Now</a></p>
 
     <p ng-if="billing.exists">{{ paymentMethod }}&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
     <p ng-if="!billing.exists"><a ui-sref="dashboard.account.payment">Add Payment Info</a></p>
 
-    <div ng-if="subscription.trial_days_left > 0">
+    <div ng-if="subscription.trial_days_left > 0 && !subscription.canceled_at._">
     <hr>
 
         <form name="billingForm">
@@ -32,7 +32,7 @@
 
     </div>
 
-    <div ng-if="!subscription">
+    <div ng-if="!subscription.canceled_at._">
         <hr>
 
         <div ng-if="!subscription.trial_days_left && billing.exists">
@@ -58,8 +58,16 @@
         </md-button>
     </div>
 
+    <div ng-if="subscription.canceled_at._">
+        <h3>Reactivate Canceled Subscription</h3>
+
+        <md-button class="md-dashboard" ng-click="reactivateCanceledSubscription()">
+            <span class="btn-label">Reactivate Subscription</span>
+        </md-button>
+    </div>
+
     <hr>
 
-    <a ui-sref="dashboard.account.close" ng-if="subscription">Close Account</a>
+    <a ui-sref="dashboard.account.cancel" ng-if="subscription && !subscription.canceled_at._">Cancel Subscription</a>
 
 </md-content>

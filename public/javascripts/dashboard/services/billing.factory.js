@@ -17,6 +17,11 @@
                     method: 'PUT',
                     params: { subscrId: '@subscrId' },
                     url: 'api/billing/subscriptions/:subscrId/cancel'
+                },
+                'reactivate': {
+                    method: 'PUT',
+                    params: { subscrId: '@subscrId' },
+                    url: 'api/billing/subscriptions/:subscrId/reactivate'
                 }
             });
         })

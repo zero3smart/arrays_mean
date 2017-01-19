@@ -65,6 +65,11 @@ angular.module('arraysApp')
                         controller: 'BillingCtrl',
                         templateUrl: 'templates/account/close.html'
                     })
+                    .state('dashboard.account.cancel', {
+                        url: '/cancel',
+                        controller: 'BillingCtrl',
+                        templateUrl: 'templates/account/cancel.html'
+                    })
                     //
                     .state('dashboard.dataset', {
                         abstract: true,
