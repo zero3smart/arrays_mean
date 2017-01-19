@@ -70,7 +70,7 @@ angular.module('arraysApp')
                         } else {
                             $scope.selectedTab = 0;
                             $scope.paymentMethod = 'Credit Card (' + billingInfo.card_type + ')';
-                            $scope.billing.number = billingInfo.first_six + 'XXXXXX' + billingInfo.last_four;
+                            $scope.billing.numberPlaceholder = billingInfo.first_six + 'XXXXXX' + billingInfo.last_four;
                         }
                     }
                 }, function(err) {});

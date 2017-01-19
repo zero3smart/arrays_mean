@@ -55,7 +55,7 @@
                 </md-input-container>
                 <md-input-container>
                     <label>Zip Code</label>
-                    <input ng-model="billing.zip" required />
+                    <input ng-model="billing.zip" required ng-minlength="5" ng-maxlength="16" maxlength="16" />
                 </md-input-container>
             </div>
         </ng-form>
