@@ -56,43 +56,49 @@ queue.on('job enqueue',function(id,type) {
             datasource_description.findById(job.data.id,function(err,dataset) {
                 if (err || !dataset) return;
 
-
                 var dirty = dataset.dirty;
-
-
 
                 datasource_description.find({schema_id: job.data.id},function(err,childrenDatasets) {
                     if (err) return;
                     if (childrenDatasets.length == 0) {
 
                         if (task == 'importProcessed') {
-
                             _startJob(job.data.id,'postImport',function(err) {
                                 if (err) winston.error('❌ in initializing job importProcessed on job completion');
                                 return;
                             });
+                        } else if (task == 'postImport' && dataset.skipImageScraping == false) {
 
-                        } else if (task == 'postImport') {
+                             _startJob(job.data.id,'scrapeImages',function(err) {
+                                if (err) winston.error('❌ in initializing job importProcessed on job completion');
+                                return;
+                            });
+                        } else {
 
-                            if (dataset.skipImageScraping) {
-
+                            _datasetsNeedToReimport(dataset._id,dataset.uid,dataset.importRevision,function(err,jsonObj) {
+                                if (err) return;
                                 dataset.jobId = 0;
                                 dataset.save();
 
-                            } else {
+                                
+                                jsonObj.datasets.forEach(function(ds) {
+                                    
+                                    ds.dirty = 1;
+                                    ds.save();
 
-                                 _startJob(job.data.id,'scrapeImages',function(err) {
-                                    if (err) winston.error('❌ in initializing job scrapeImages on job completion');
-                                    return;
-                                });
+                                    _startJob(ds.id,'preImport',function(err) {
+                                        if (err) winston.error('❌ in initializing job scrapeImages on job completion');
+                                        return;
+                                    });
+                                })
+                                
+                            })
 
-                            }
 
-                        } else {
-                            dataset.jobId = 0;
-                            dataset.save();
                         }
-            
+
+
+                        
 
                     } else {
                         dataset.jobId = 0;
@@ -113,7 +119,6 @@ queue.on('job enqueue',function(id,type) {
                                
                             } else if (dirty == 2) {
 
-
                                 if (task == 'scrapeImages' || task == 'postImport' || task == 'importProcessed') {
 
                                     _startJob(dataset.id,'importProcessed',function(err) {
@@ -121,14 +126,9 @@ queue.on('job enqueue',function(id,type) {
                                         return;
                                     });
 
-                                }
-
-                            
-
+                                } 
                             }
                         })
-
-
 
                     }
                 })
@@ -449,6 +449,36 @@ function getAllDatasetsWithQuery(query, res) {
         }
         return res.json({datasets: datasets});
     })
+}
+
+
+function _datasetsNeedToReimport(currentSourceId,currentSourceUID,currentSourceImportRevision,cb) {
+
+    datasource_description.find({_otherSources: currentSourceId},function(err,relatedSources) {
+        if (err) return cb(err);
+        if (!relatedSources) return cb(null,{datasets:[]});
+        var datasetsNeedToReimport = [];
+        relatedSources.forEach(function(src) {
+            if (src.relationshipFields) {
+
+                for (var i = 0; i < src.relationshipFields.length; i++) {
+
+                    if (src.relationshipFields[i].relationship == true && 
+                        src.relationshipFields[i].by.ofOtherRawSrcUID == currentSourceUID && 
+                        src.relationshipFields[i].by.andOtherRawSrcImportRevision == currentSourceImportRevision) {
+                        datasetsNeedToReimport.push(src);
+                    }
+
+                 }
+
+            }
+
+
+        })
+        cb(null,{datasets:datasetsNeedToReimport});
+
+
+    })
 
 }
 
@@ -461,34 +491,11 @@ module.exports.getDependencyDatasetsForReimporting = function(req,res) {
         }
         var uid = currentSource.uid;
         var importRevision = currentSource.importRevision;
-        var datatsetsNeedReimport = [];
+        
 
-        datasource_description.find({_otherSources: req.params.id},function(err,relatedSources) {
-             if (err) return res.status(500).send(err);
-             var batch = new Batch();
-             batch.concurrency(5);
-
-            relatedSources.forEach(function(src) {
-                batch.push(function(done) {
-
-                    if (src.relationshipFields) {
-                        for (var i = 0; i < src.relationshipFields.length; i++) {
-                            if (src.relationshipFields[i].relationship == true && 
-                                src.relationshipFields[i].by.ofOtherRawSrcUID == uid && 
-                                src.relationshipFields[i].by.andOtherRawSrcImportRevision == importRevision) {
-                                datatsetsNeedReimport.push(src);
-                            }
-                         }
-
-                    }
-                    done();
-                })
-            })
-
-            batch.end(function(err) {
-                if (err) return res.status(500).send(err);
-                return res.json({datasets:datatsetsNeedReimport});
-            })  
+        _datasetsNeedToReimport(req.params.id,uid,importRevision,function(err,jsonObj) {
+            if (err) return res.status(500).send(err);
+            return res.json(jsonObj);
         })
     })
 

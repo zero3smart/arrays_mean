@@ -118,6 +118,7 @@ angular.module('arraysApp')
                         postImport($scope.additionalDatasources[datasourceIndex]._id);
 
                     } else {
+
                         getJobStatus($scope.additionalDatasources[datasourceIndex]._id);
 
                     }
@@ -282,8 +283,10 @@ angular.module('arraysApp')
                     }
                 })
 
+
             })
 
+            
             
 
            
