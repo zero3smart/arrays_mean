@@ -1182,6 +1182,14 @@ angular.module('arraysApp')
                         var setFields1 = imageScraping1.setFields || [],
                             setFields2 = imageScraping2.setFields || [];
 
+                        if (!$scope.$parent.$parent.dataset.fe_excludeFields[fieldName]) {
+                            $scope.$parent.$parent.dataset.fe_excludeFields[fieldName] = false;
+
+                            if ($scope.$parent.$parent.dataset.dirty == 4) {
+                                $scope.$parent.$parent.dataset.dirty = 3;
+                            }
+                        }
+
                         return setFields1.map(function(field) {
                             return {
                                 name: field.newFieldName,

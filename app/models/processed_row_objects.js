@@ -1133,9 +1133,9 @@ module.exports.GenerateImageURLFieldsByScraping
                 var doc = task.doc;
                 if (typeof doc["rowParams"]["imageScraped"] !== 'undefined' && doc["rowParams"]["imageScraped"] == true) {
 
-                    winston.info("📡  already scraped this ,skipping");
+                    // winston.info("📡  already scraped this ,skipping");
 
-                    callback();
+                     process.nextTick(function() {callback();})
 
                 } else {
                    
@@ -1146,7 +1146,7 @@ module.exports.GenerateImageURLFieldsByScraping
                             if (err && err.code !== 'ENOTFOUND'  &&  err.code !== 'ETIMEDOUT' && err.code !== 'ECONNRESET') {
                                 callback(err);
                             } else {
-                                callback();
+                                 process.nextTick(function() {callback();})
                             }
                         })
                 }

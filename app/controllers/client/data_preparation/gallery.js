@@ -95,15 +95,19 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     return htmlElem;
                 };
                 
-                var returnAbsURLorBuildURL = function(url) {
-                    if (url.slice(0, 5) == "https") {
-                        return url
-                    } else {
-                        urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
-                        return urlToReturn
-                    }
+
+            }
+
+            var returnAbsURLorBuildURL = function(url) {
+                if (url.slice(0, 5) == "https") {
+                    return url
+                } else {
+                    urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
+                    return urlToReturn
                 }
             }
+
+                
 
             var page = urlQuery.page;
             var pageNumber = page ? page : 1;
@@ -214,6 +218,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
                 ]);
                 var doneFn = function (err, results) {
+
+                    console.log(results[0])
                     if (err) return done(err);
 
 
@@ -258,7 +264,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
                 });
 
-                // projects['$project']['rowParams.imgURL_gridThumb'] = 1
+  
 
                 var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
                     projects,
@@ -269,10 +275,16 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     {$limit: limitToNResults}
                 ]);
 
+                // console.log(pagedDocs_aggregationOperators);
+
 
 
 
                 var doneFn = function (err, _docs) {
+
+                    console.log(_docs[1]);
+
+
                     if (err) return done(err);
 
                     docs = _docs;
@@ -312,7 +324,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.end(function (err) {
 
                 if (err) return callback(err);        
-          
+
+
 
                 var data =
                 {
