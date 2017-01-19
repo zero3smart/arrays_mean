@@ -17,11 +17,9 @@ if (cluster.isMaster) {
     }
 
     cluster.on('exit',function(worker_process) {
-        if (cluster.worker) {
-            console.log("Worker %d died pid %d",cluster.worker.id,process.pid);
-        } else {
-            console.log("no worker available");
-        }
+    
+        console.log("Worker %d died pid %d",worker_process.id,process.pid);
+        
     })
 
 } else {
