@@ -120,15 +120,24 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject(sampleRowObject, 
         for (i = 0; i < fe_fieldDisplayOrder.length; i++) {
             var index = rowParams_keys.indexOf(fe_fieldDisplayOrder[i]);
             if (index > -1) {
-                rowParams_keys.splice(index, 1);
-                rowParams_keys_customSorted.push(fe_fieldDisplayOrder[i]);
+                reorder(index, rowParams_keys, fe_fieldDisplayOrder[i])
+            } else {
+                //the list is now made up of original keys and displayTitles so we have to check both
+                var displayTitle = fe_displayTitleOverrides[fe_fieldDisplayOrder[i]];
+                index = rowParams_keys.indexOf(displayTitle)
+                if (index > -1) {
+                    reorder(index, rowParams_keys, displayTitle)
+                }
             }
         }
 
         rowParams_keys = rowParams_keys_customSorted.concat(rowParams_keys);
     }
 
-
+    function reorder (index, rowParams_keys, displayOrderKey) {
+        rowParams_keys.splice(index, 1);
+        rowParams_keys_customSorted.push(displayOrderKey);
+    }
 
     return rowParams_keys;
 }

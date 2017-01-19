@@ -172,10 +172,24 @@ angular.module('arraysApp')
                             }]
                         }
                     })
-                    .state('dashboard.website', {
-                        url: '/website',
+                    .state('dashboard.team', {
+                        url: '/team',
                         controller: 'WebsiteCtrl as vm',
-                        templateUrl: 'templates/website.html'
+                        templateUrl: 'templates/team.html'
+                    })
+                    .state('dashboard.team.settings', {
+                        url: '/settings',
+                        controller: function($scope) {
+                            $scope.$parent.currentNavItem = 'settings';
+                        },
+                        templateUrl: 'templates/team/settings.html'
+                    })
+                    .state('dashboard.team.icons', {
+                        url: '/icons',
+                        controller: function($scope) {
+                            $scope.$parent.currentNavItem = 'icons';
+                        },
+                        templateUrl: 'templates/team/icons.html'
                     })
                     .state('dashboard.user', {
                         url: '/user',
@@ -190,14 +204,7 @@ angular.module('arraysApp')
                             users: ['User', 'AuthService', function (User, AuthService) { //all users in this team, except myself
                                 var currentTeam = AuthService.currentTeam();
                                 return User.getAll({teamId: currentTeam._id});
-                            }]
-                        }
-                    })
-                    .state('dashboard.user.edit', {
-                        url: '/edit/:id',
-                        controller: 'UserEditCtrl as vm',
-                        templateUrl: 'templates/user/edit.html',
-                        resolve: {
+                            }],
                             datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
                                 var user = AuthService.currentUser();
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
@@ -206,12 +213,6 @@ angular.module('arraysApp')
                                     return [];
                                 }
                             }],
-                            selectedUser: ['User', '$stateParams', function (User, $stateParams) {
-                                if ($stateParams.id)
-                                    return User.get({id: $stateParams.id}).$promise;
-                                else
-                                    return {};
-                            }]
                         }
                     })
                     .state('dashboard.teams', {

@@ -39,7 +39,7 @@
                             <label>Local Field</label>
                             <md-select required name="localField_{{$index}}"
                                        ng-model="relationshipField.by.withLocalField">
-                                <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
+                                <md-option ng-repeat="column in columnsAvailable" value="{{column.name}}">
                                     {{column.name}}
                                 </md-option>
                             </md-select>
@@ -48,13 +48,13 @@
                             </div>
                         </md-input-container>
 
-                        <md-input-container flex="20">
+                       <!--  <md-input-container flex="20">
                             <label>Match Function</label>
                             <md-select required name="matchFn_{{$index}}"
                                        ng-model="relationshipField.by.matchFn">
                                 <md-option ng-repeat="fn in availableMatchFns" value="{{fn}}">{{fn}}</md-option>
                             </md-select>
-                        </md-input-container>
+                        </md-input-container> -->
 
                         <div layout="row" flex="55">
                             <md-input-container flex="50">
@@ -71,7 +71,7 @@
                             <md-input-container flex="50">
                                 <label>Foreign Field</label>
                                 <md-select required name="foreignField_{{$index}}"
-                                           ng-model="relationshipField.by.findingMatchOnFields" multiple>
+                                           ng-model="relationshipField.by.findingMatchOnField">
                                     <md-option ng-repeat="column in data.columns[$index]" value="{{column.name}}">{{column.name}}
                                     </md-option>
                                 </md-select>
@@ -79,14 +79,18 @@
                         </div>
                     </div>
 
-                    <div layout="row">
-                        <md-checkbox aria-label="Select All" ng-click="toggleAll()" ng-checked="isChecked()">
-                            <span ng-if="isChecked()">Un-</span>Select All
+                     <md-input-container class="md-block">
+                        <md-checkbox  ng-if="relationshipField.field && relationshipField.field!=='' && !relationshipField.by.obtainingValueFromField" name="selectAll_showFields" aria-label="Select All" ng-click="toggleAll(relationshipField.field,data.columns[$index])" 
+                        ng-checked="isChecked(relationshipField.field,data.columns[$index]);">
+                            <span ng-if="!relationshipField.by.obtainingValueFromField &&
+                            isChecked(relationshipField.field,data.columns[$index])" >Un-</span>Select All
                         </md-checkbox>
-                    </div>
-                    <div layout="row" layout-wrap flex>
-                        <div flex="20" ng-repeat="column in data.columns[$index]" ng-model="relationshipField.by.findingMatchOnFields">
-                            <md-checkbox aria-label="{{column.name}}" ng-checked="exists(column.name, selectedColumns)" ng-click="toggle(column.name, selectedColumns)"> {{column.name}}</md-checkbox>
+                     </md-input-container>
+
+                    <div ng-if="!relationshipField.by.obtainingValueFromField" layout="row" layout-wrap flex>
+                        <div flex="20" ng-repeat="column in data.columns[$index]">
+                            <md-checkbox name="showFields_{{column.name}}" aria-label="{{column.name}}" ng-checked="dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[relationshipField.field].showField.indexOf(column.name)>=0" 
+                            ng-click="toggle(column.name, relationshipField.field)"> {{column.name}}</md-checkbox>
                         </div>
                     </div>
 
@@ -94,7 +98,7 @@
                         <label>Mapping Foreign Field</label>
                         <md-select name="obtainingValueFromField_{{$index}}"
                                    ng-model="relationshipField.by.obtainingValueFromField">
-                            <md-option ng-repeat="column in data.columns[$index]" value="{{column.name}}">
+                            <md-option ng-repeat="column in data.columns[$index]" ng-click="deleteFeObjectShow(relationshipField.field);" value="{{column.name}}">
                                 {{column.name}}
                             </md-option>
                         </md-select>
@@ -105,10 +109,11 @@
 
                     <div layout="row">
                         <div flex="50">
-                            <md-checkbox name="singular" ng-model="relationshipField.singular">Singular</md-checkbox>
+                            <md-checkbox name="singular" ng-model="relationshipField.singular" ng-click="relationshipField.relationship=false;">Singular</md-checkbox>
                         </div>
-                        <div flex="50">
-                            <md-checkbox name="relationship" ng-model="relationshipField.relationship">Relationship</md-checkbox>
+                        <div flex="50"> 
+
+                            <md-checkbox name="relationship" ng-model="relationshipField.relationship" ng-click="relationshipField.singular=false;">Relationship</md-checkbox>
                         </div>
                     </div>
 
@@ -123,6 +128,8 @@
                 <md-button class="md-raised" ng-click="reset()" ng-disabled="!dialog.form.$dirty">
                     Reset
                 </md-button>
+
+
                 <md-button class="md-raised" ng-click="save()"
                            ng-disabled="!dialog.form.$dirty || dialog.form.$invalid">
                     Save

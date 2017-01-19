@@ -1,10 +1,10 @@
 <md-content layout-padding ng-if="dataset.title">
     <div>
-        <md-toolbar layout="row">
-            <div class="md-toolbar-tools">Datasource</div>
-        </md-toolbar>
 
-        <label>Choose datasource file {{dataset.uid ? '(' + dataset.uid + ')' : ''}}</label>
+        <h2>Select Your Data Source</h2>
+
+        <label>Upload spreadsheet</label>
+        <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
         <input type="file" nv-file-select="" uploader="uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv"/>
 
         <table class="table upload">
@@ -163,10 +163,10 @@
         </table>
     </div>
     <div layout="row" layout-align="space-between center" class="panel-footer">
-        <md-button class="md-raised md-dashboard md-light" ng-click="navigate('dashboard.dataset.settings')" target="_self" md-no-ink>
+        <md-button class="md-dashboard" ng-click="navigate('dashboard.dataset.settings')" target="_self" md-no-ink>
             <span class="btn-label">Back</span>
         </md-button>
-        <md-button class="md-raised md-dashboard md-dark" ng-click="navigate('dashboard.dataset.data')" ng-disabled="!dataset.uid" md-no-ink>
+        <md-button class="md-dashboard confirm" ng-click="navigate('dashboard.dataset.data')" ng-disabled="!dataset.uid" md-no-ink>
             <span class="btn-label">Next</span>
         </md-button>
     </div>

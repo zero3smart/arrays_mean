@@ -162,17 +162,24 @@ angular.module('arraysApp')
             $scope.uploader.onCompleteItem = function (fileItem, response, status, headers) {
                 $scope.progressMode = "determinate";
 
+
+
                 if (status != 200 || response == '') return;
 
                 if (!response.error && response.id) {
                     dataset.uid = response.uid;
-                    $mdToast.show(
-                        $mdToast.simple()
-                            .textContent('Dataset uploaded successfully!')
-                            .position('top right')
-                            .hideDelay(3000)
-                    );
 
+                    dataset.dirty = 1;
+
+                    DatasetService.save(dataset).then(function () {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Dataset uploaded successfully!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    })
+                    
                     // $state.transitionTo('dashboard.dataset.data', {id: response.id}, {
                     //     reload: true,
                     //     inherit: false,

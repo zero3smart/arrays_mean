@@ -35,6 +35,13 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
         winston.warn("⚠️  The data source \"" + dataSource_title + "\" had fe_visible=false, so not going to generate its unique filter value cache.");
         return callback(null);
     }
+
+    if (dataSourceDescription.dataset_uid) {
+          winston.info("🔁  " + indexInList + ": Generated post-import caches for \"" + dataSource_title + "\" (appended dataset: " + 
+            dataSourceDescription.dataset_uid + ")");
+    }
+
+
     winston.info("🔁  " + indexInList + ": Generated post-import caches for \"" + dataSource_title + "\"");
 
     _generateUniqueFilterValueCacheCollection(job,dataSourceDescription, function (err) {
@@ -79,17 +86,7 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
 
         } else {
 
-            var isRelationshipField = function(key) {
-                for (var i = 0; i < dataSourceDescription.relationshipFields.length; i++) {
-                    var field = dataSourceDescription.relationshipFields[i].field;
-                    
-                   if (field == key) {
-                        return 0;
-                   }
-                    
-                }
-                return -1;
-            }
+            
             if (!dataSourceDescription.fe_excludeFields) {
                 dataSourceDescription.fe_excludeFields = {};
             }
@@ -99,7 +96,7 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
             }
 
             filterKeys = filterKeys.filter(function(key) {
-                return !dataSourceDescription.fe_excludeFields[key] && dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key)==-1 && isRelationshipField(key)==-1;
+                return !dataSourceDescription.fe_excludeFields[key] && dataSourceDescription.fe_filters.fieldsNotAvailable.indexOf(key)==-1;
 
             })
         }

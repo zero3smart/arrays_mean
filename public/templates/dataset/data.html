@@ -1,6 +1,6 @@
-<md-content layout-padding ng-if="dataset.uid">
+<md-content layout-padding ng-if="dataset.uid" md-no-ink>
     <form name="vm.dataForm" ng-submit="submitForm(!vm.dataForm.$invalid )">
-        
+
 
         <md-input-container class="md-block" flex-gt-sm>
             <label>ObjectTitle</label>
@@ -19,7 +19,12 @@
                 <div class="field-row-header field">
                     <div class="handler"></div>
                     <div class="order">Order</div>
-                    <div class="exclude">Exclude <md-switch ng-model="excludeAll" ng-change="toggleExclude(excludeAll)" aria-label="Exclude all"></md-switch></div>
+                    <div class="exclude">
+                        Include
+                        <md-button ng-model="excludeAll" aria-label="Include/Exclude All" ng-click="toggleExclude(excludeAll)">
+                            {{ excludeAll ? 'Exclude All' : 'Include All' }}
+                        </md-button>
+                    </div>
                     <div class="name">Column Name</div>
                     <div class="override">Override</div>
                     <div class="type">Type</div>
@@ -37,11 +42,12 @@
                             }}
                         </div>
                         <div class="exclude">
-                            <md-checkbox ng-if="!field.customField"
-                                         name="fe_excludeFields_{{$index}}"
+                            <md-checkbox name="fe_excludeFields_{{$index}}"
                                          ng-model="dataset.fe_excludeFields[field.name]"
+                                         ng-true-value="false"
+                                         ng-false-value="true"
                                          aria-label="Exclude {{field.name}}"
-                                         ng-click="$event.stopPropagation()"></md-checkbox>
+                                         ng-click="$event.stopPropagation();" ng-change="setDirty(3)"></md-checkbox>
                         </div>
                         <div class="name">{{ field.name }}</div>
                         <div class="override">{{ dataset.fe_displayTitleOverrides[field.name] }}</div>
@@ -60,6 +66,7 @@
                             <b ng-if="field.customField">
                                 {{ (field.customField.fieldType | capitalize) }}
                             </b>
+
                             <b ng-if="field.custom">Custom</b>
                         </div>
                         <div class="sample">
@@ -105,10 +112,10 @@
 
 
         <div layout="row" layout-align="space-between center" class="panel-footer">
-            <md-button class="md-raised md-dashboard md-light" ng-click="reset()" ng-disabled="!vm.dataForm.$dirty">
+            <md-button class="md-dashboard" ng-click="reset()" ng-disabled="!vm.dataForm.$dirty">
                 <span class="btn-label">Reset</span>
             </md-button>
-            <md-button class="md-raised md-dashboard md-dark" type="submit" ng-disabled="vm.dataForm.$invalid">
+            <md-button class="md-dashboard confirm" type="submit" ng-disabled="vm.dataForm.$invalid">
                 <span class="btn-label">Next</span>
             </md-button>
         </div>

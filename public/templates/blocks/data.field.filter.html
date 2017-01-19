@@ -1,18 +1,18 @@
 <md-content layout-padding>
     <md-input-container class="md-block" flex-gt-sm>
-        <md-checkbox name="filterNotAvailable" ng-model="data.filterNotAvailable"
+        <md-checkbox name="filterNotAvailable" ng-model="data.filterNotAvailable" ng-change="setDirty(3)"
                      aria-label="Filter Not Available">
             Not Available
         </md-checkbox>
     </md-input-container>
 
-    <md-input-container class="md-block" flex-gt-sm>
+<!--     <md-input-container class="md-block" flex-gt-sm>
         <md-checkbox name="commaSeparatedAsIndividual" ng-model="data.commaSeparatedAsIndividual"
                      aria-label="Filter Comma Separated">
             Comma Separated As Individual
         </md-checkbox>
     </md-input-container>
-
+ -->
     <md-input-container class="md-block" flex-gt-sm>
         <md-checkbox name="multipleSelection" ng-model="data.multipleSelection"
                      aria-label="Filter Multiple Selection">
@@ -33,6 +33,9 @@
             Sortable In Reverse Order
         </md-checkbox>
     </md-input-container>
+
+
+
 
     <fieldset class="standard" ng-if="customFieldIndex == undefined">
         <legend>One To One Override Values By Title</legend>

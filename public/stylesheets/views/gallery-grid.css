@@ -134,12 +134,13 @@
     left: 10px;
 }
 
-.gallery-item-text-inner [class="icon-tile"] {
+.gallery-item-text-inner [class^="icon-tile-"] {
     display: inline-block;
     width: 1em;
     font-size: 38px;
     line-height: 1em;
 }
+
 
 .gallery-item-text-link::before {
     position: relative;

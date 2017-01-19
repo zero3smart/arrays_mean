@@ -34,6 +34,15 @@
             return $http.put('api/dataset/publish',body)
         };
 
+
+        var skipImageScraping = function(id,skipping) {
+            var body = {
+                id: id,
+                skipImageScraping : skipping
+            }
+            return $http.put('api/dataset/skipImageScraping',body);
+        }
+
         var getAdditionalSources = function(id) {
 
             return $http.get('api/dataset/getAdditionalSources/' + id)
@@ -47,12 +56,6 @@
 
         var save = function(dataset) {
             return $http.post('api/dataset/update', dataset)
-        };
-
-
-        var initializeToImport = function(id) {
-            return $http.get('api/dataset/initializeToImport/' + id);
-           
         };
 
         var preImport = function(id) {
@@ -120,19 +123,32 @@
            return $http.post('api/dataset/removeSubdataset', {id: id})
        };
 
+       var getReimportDatasets = function(id) {
+    
+            return $http.get('api/dataset/reimportDatasets/' + id)
+            .then(function(response) {
+                var data = response.data;
+                return data.datasets;
+            }).catch(function(err) {
+                console.log(err);
+                return [];
+            })
+       }
+
         return {
             removeSubdataset: removeSubdataset,
             remove: remove,
             get: get,
             getAdditionalSources: getAdditionalSources,
+            getReimportDatasets: getReimportDatasets,
             save: save,
             publish: publish,
+            skipImageScraping: skipImageScraping,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
             getAvailableDesignatedFields: getAvailableDesignatedFields,
             getAvailableMatchFns: getAvailableMatchFns,
             getDatasetsWithQuery: getDatasetsWithQuery,
             getMappingDatasourceCols: getMappingDatasourceCols,
-            initializeToImport: initializeToImport,
             preImport: preImport,
             postImport: postImport,
             scrapeImages: scrapeImages,

@@ -1,6 +1,6 @@
 <md-content layout-padding ng-if=" (dataset.fe_listed && dataset.fe_visible && dataset.fe_views.default_view) || (!dataset.fe_listed&&!dataset.fe_visible) ">
     <div>
-        <h2 ng-if="dirty">You're almost done!<br/>The data must be imported to take effect some of your changes </h2>
+        <h2 ng-if="dirty">You're almost done!<br/>Your data must be imported for some of the changes to take effect.</h2>
 
         <md-content class="md-block md-padding" ng-show="inProgress">
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>
@@ -8,7 +8,7 @@
 
         <md-content class="md-block" md-colors="{background: 'grey'}">
             <p ng-repeat="logger in importLogger">{{logger}}
-                <div ng-if="jobs[currentJobId].state!=='complete'">
+                <div ng-if="jobs[currentJobId].state=='active'">
                     <p ng-if="jobs[currentJobId].log" > {{jobs[currentJobId].log}} ..... </p>
                 </div>
             </p>
@@ -16,7 +16,18 @@
 
         </md-content>
 
+
+
+
+
         <div layout="row" layout-align="end center" class="panel-footer" ng-if="dirty">
+
+        <md-checkbox name="selectAll_showFields" ng-model="dataset.skipImageScraping" ng-change="toggleImageScraping()" aria-label="Select All">
+            Skip Image Scraping
+        </md-checkbox>
+
+
+
             <md-button class="md-raised pull-right" ng-click="importData()" ng-disabled="inProgress"><span
                     class="glyphicon glyphicon-import"></span>{{ inProgress ? 'Importing' : 'Import' }}
             </md-button>
@@ -34,7 +45,7 @@
             </md-switch>
 
         </div>
-        
+
     </div>
 </md-content>
 <ng-include src="'/templates/blocks/dataset.empty.html'" ng-if=" (dataset.fe_listed && dataset.fe_visible && !dataset.fe_views.default_view) "></ng-include>

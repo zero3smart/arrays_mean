@@ -15,8 +15,13 @@
                                 <header class="object-header">
                                     {% if hasOriginalImage %}
                                     {% set title = team.title | lower %}
-                                    {% set url = "https://" + aws_bucket_for_url + title + "/datasets/" + uid + folder + rowObject.rowParams[fieldKey_originalImageURL] %}
-                                    <img src="{{ url }}" class="object-featured img-responsive" />
+                                    <!-- We will need to replace this as it's super hacky but for now we need it for moma -->
+                                    {% set url = returnAbsURLorBuildURL(rowObject.rowParams[fieldKey_originalImageURL]) %}
+                                        {% if scrapedImages %}
+                                            <img src="{{ url }}" class="object-featured img-responsive" />
+                                        {% else %}
+                                            <img src="{{ rowObject.rowParams[fieldKey_originalImageURL] }}" class="img-responsive" />
+                                        {% endif %}
                                     {% endif %}
 
                                     {% if not rowObject.rowParams[fieldKey_originalImageURL] and fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}
@@ -48,15 +53,16 @@
                                         {% if columnValue %}
                                             {% if columnValue | isArray %}
 
+
                                             <!-- This bit is for listing the relationship fields -->
                                                 {% if columnName == relationshipField %}
                                                     {% set collatedJoinData = collateJoinData(columnName) %}
                                                     {% for column, fieldValueArray in collatedJoinData%}
-                                                        <dt> {{column}} </dt>
-                                                        {% for value in fieldValueArray %}
+                                                        <dt> {{columnName + " " + column}} </dt>
+                                                        {% for value, id in fieldValueArray %}
                                                             <dd>
                                                                 <ul class="object-list">
-                                                                    <li class="object-list-item"><a href="{{ buildObjectLink(columnName, value) }}" class="color-brand">{{ value }}</a></li>
+                                                                    <li class="object-list-item"><a href="{{ buildObjectLink(columnName, value, id) }}" class="color-brand">{{ value }}</a></li>
                                                                 </ul>
                                                             </dd>
                                                         {% endfor %}

@@ -20,6 +20,7 @@ module.exports.Import_rawObjects = function (dataSourceDescriptions,job, fn) {
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
 
+            
             if (dataSourceDescription.useCustomView) {
                 require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').ParseAndImportRaw(i,dataSourceDescription,job,eachCb);
                 
@@ -34,7 +35,6 @@ module.exports.Import_rawObjects = function (dataSourceDescriptions,job, fn) {
 
             if (err) {
                 winston.info("❌  Error encountered during raw objects import:", err);
-                job.log("❌  Error encountered during raw objects import:", err);
                 fn(err);
             } else {
                 winston.info("✅  Raw objects import done.");
@@ -54,8 +54,8 @@ var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (da
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
-            winston.info("💬  " + i + ": Proceeding to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
-            job.log("💬 Proceeding to image scraping and remainder of post-processing of \"" + dataSourceDescription.title + "\"");
+            winston.info("💬  " + i + ": Proceeding to image scraping of \"" + dataSourceDescription.title + "\"");
+            job.log("💬 Proceeding to image scraping of \"" + dataSourceDescription.title + "\"");
 
             _proceedToScrapeImagesAndRemainderOfPostProcessing(i, dataSourceDescription, job,eachCb);
             i++;
@@ -89,7 +89,6 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions,job, fn)
         function (err) {
             if (err) {
                 winston.info("❌  Error encountered during import post-processing:", err.message);
-                job.log("❌  Error encountered during import post-processing:", err.message);
                 fn(err);
             } else {
                 winston.info("✅  Import post-processing done.");
@@ -108,13 +107,26 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
     var dataSource_title = dataSourceDescription.title;
     var dataset_uid = dataSourceDescription.dataset_uid;
 
-    winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
+
+    if (dataSourceDescription.dataset_uid) { 
+
+        winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\" (appended dataset: " + 
+            dataSourceDescription.dataset_uid + ")");
+
+    } else {
+         winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
+
+    }
     job.log("🔁  Post-processing \"" + dataSource_title + "\"");
+
+
     //
     //
     // Firstly, generate the whole processed objects dataset
     //
-    //processed_row_objects.GenerateProcessedDatasetFromRawRowObjects
+
+
+
     processed_row_objects.InsertProcessedDatasetFromRawRowObjects
     (
         job,
@@ -127,77 +139,78 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
                 winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
                 return callback(err);
             }
-            //
-            //
-            // Now generate fields by joins, etc.
-            //
-            job.log("🔁  Now generating fields by joining datasets ");
-            async.eachSeries(
-                dataSourceDescription.relationshipFields,
-                function (description, cb) {
-                    var by = description.by;
-                    var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
-                    switch (by.operation) {
-                        case "Join":
-                        {
-                            var matchFn = by.matchFn;
-                            if (typeof matchFn === 'undefined' || matchFn == null) {
-                                matchFn = "LocalEqualsForeignString";
-                            }
-                            processed_row_objects.GenerateFieldsByJoining_comparingWithMatchFn(
-                                dataSource_uid,
-                                dataSource_importRevision,
-                                dataSource_title,
-                                description.field,
-                                description.singular,
-                                by.findingMatchOnFields,
-                                by.ofOtherRawSrcUID,
-                                by.andOtherRawSrcImportRevision,
-                                by.withLocalField,
-                                by.obtainingValueFromField,
-                                formingRelationship,
-                                matchFn,
-                                cb
-                            );
-                            break;
-                        }
 
-                        default:
-                        {
-                            winston.error("❌  Unrecognized post-processing field generation operation \"" + byDoingOp + "\" in", description);
-                            break;
-                        }
+            if (dataSourceDescription.useCustomView) {
+                require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,job,callback);
+            } else {
+                 _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription,job, function(err) {
+
+                     if (err) {
+                        winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
+                        return callback(err);
                     }
-                },
-                function (err) {
-                    if (err) winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
-                    callback(err);
-                }
-            );
+       
+
+
+                    job.log("🔁  Now generating fields by joining datasets ");
+
+                    async.each(
+                        dataSourceDescription.relationshipFields,
+                        function (description, cb) {
+                            var by = description.by;
+                            var formingRelationship = typeof description.relationship !== 'undefined' && description.relationship == true ? true : false;
+                            switch (by.operation) {
+                                case "Join":
+                                {
+                                    processed_row_objects.GenerateFieldsByJoining_comparingWithMatchFn(
+                                        job,
+                                        dataSource_uid,
+                                        dataSource_importRevision,
+                                        dataSource_title,
+                                        description.field,
+                                        description.singular,
+                                        by.findingMatchOnField,
+                                        by.ofOtherRawSrcUID,
+                                        by.andOtherRawSrcImportRevision,
+                                        by.withLocalField,
+                                        by.obtainingValueFromField,
+                                        formingRelationship,
+                                        cb
+                                    );
+                                    break;
+                                }
+
+                                default:
+                                {
+                                    winston.error("❌  Unrecognized post-processing field generation operation \"" + byDoingOp + "\" in", description);
+                                    break;
+                                }
+                            }
+                        },
+                        function (err) {
+                            if (err) winston.error("❌  Error encountered while processing \"" + dataSource_title + "\".");
+                            return callback(err);
+                        }
+                    );
+
+                 });
+            }
         });
 };
 
 var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, dataSourceDescription,job, callback) {
 
-    var finalCallback = function() {
-        if (dataSourceDescription.useCustomView) {
-            require(__dirname + '/../../../../user/' + dataSourceDescription._team.subdomain +  '/src/import').afterGeneratingProcessedDataSet_performEachRowOperations(indexInList,dataSourceDescription,job,callback);
-        } else {
-             _afterGeneratingProcessedDataSet_performEachRowOperations(indexInList, dataSourceDescription,job, callback);
-        }
-    }
+  
+        
+    if (dataSourceDescription.dirty >= 0) { // dont omit scraping
 
-
-     if (dataSourceDescription.dirty >= 0) { // dont omit scraping
-
-        winston.info(" 🔁  start image scraping");
+        winston.info("🔁  start image scraping");
         job.log("🔁  start image scraping");
         async.eachSeries(
             dataSourceDescription.imageScraping,
             function (description, cb) {
 
-                  // if (dataSourceDescription.dirty >= 3) omitImageScraping = false;
-                processed_row_objects.GenerateImageURLFieldsByScraping(dataSourceDescription._team.subdomain,dataSourceDescription.uid,
+                processed_row_objects.GenerateImageURLFieldsByScraping(job,dataSourceDescription._team.subdomain,dataSourceDescription.uid,
                     dataSourceDescription.importRevision,
                     dataSourceDescription.title,
                     dataSourceDescription.dataset_uid,
@@ -207,17 +220,16 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
             },
             function (err) {
 
-                console.log("callback here......");
+                winston.info("✅  finished image scraping")
+                job.log("✅  finished image scraping");
 
-                if (err) {
+                if (err) { 
+
                     winston.error("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
-                    job.log("❌  Error encountered while scraping image with \"" + dataSourceDescription.title + "\".");
                     return callback(err);
                 }
 
-                finalCallback();
-                
-
+                callback();
                  
             }
         );
@@ -225,7 +237,7 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
      } else { //omit scraping
         winston.info(" ⚠️  skipping image scraping");
         job.log("⚠️  skipping image scraping"); 
-        finalCallback();
+        callback();
      }
 }
 //
@@ -243,10 +255,12 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.Model.modelName;
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.Model.model;
     var forThisDataSource_nativeCollection = forThisDataSource_mongooseContext.Model.collection;
-    var mergeFieldsIntoCustomField_BulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
+
+    // var mergeFieldsIntoCustomField_BulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
 
 
     //
+
     winston.info("🔁  Performing each-row operation for \"" + dataSource_title + "\"");
 
     job.log("🔁  Performing each-row operation and creating custom fields for \"" + dataSource_title + "\"");
@@ -264,6 +278,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     startIterations();
 
+    var processedObjectCount = 0;
+
     function startIterations() {
 
         /*eachCtx could be array or object*/
@@ -272,7 +288,9 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             (!Array.isArray(eachCtx) && !eachCtx.fields.length)) {
             continueToAfterIterating();
         } else {
-            eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation;
+
+            // eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation;
+            eachCtx.nativeCollection = forThisDataSource_nativeCollection;
 
             processed_row_objects.EnumerateProcessedDataset(
                 dataSource_uid,
@@ -304,13 +322,10 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             if (!ifHasAndMeetCriteria(eachCtx, rowDoc)) {
                 var updateFragment = {$pushAll: {}};
                 for (var i = 0; i < eachCtx.fields.length; i++) {
-
                     var fieldName = eachCtx.fields[i];
                     var generatedArray = [];
 
-
                     eachCtx.cached.forEach(function (rowDoc) {
-
                         var fieldValue = rowDoc["rowParams"][fieldName];
 
                         if (eachCtx.valueOverrides[fieldName]) {
@@ -327,15 +342,16 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                             pKey: rowDoc.pKey, // the specific row
                             srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                         };
-                        eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
+                        eachCtx.nativeCollection.remove(bulkOperationQueryFragment);
+                        // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
                     });
-
 
                     if (eachCtx.fieldOverrides[fieldName]) {
                         fieldName = eachCtx.fieldOverrides[fieldName];
                     }
                     updateFragment["$pushAll"]["rowParams." + eachCtx.prefix + fieldName] = generatedArray;
                 }
+
                 // Insert the nested object into the main row
                 if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {
                     bulkOperationQueryFragment =
@@ -344,8 +360,11 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                     };
 
-                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateFragment);
 
+
+
+                    // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
 
                     eachCtx.cached = [];
                 }
@@ -356,8 +375,11 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             }
             eachCtx.numberOfRows++;
         } else {
+
             for (var i = 0; i < eachCtx.length; i++) {
+
                 var newFieldName = eachCtx[i].fieldName;
+
                 var newFieldType = eachCtx[i].fieldType;
                 if (newFieldType == 'array') {
                     var fieldsToMergeIntoArray = eachCtx[i].fieldsToMergeIntoArray;
@@ -373,22 +395,29 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey
                     };
 
-                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateQuery);
+
+                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
                      
                 } else if (newFieldType == 'object') {
 
 
                 }
+
             }
         }
+
+        if (processedObjectCount !== 0 && processedObjectCount % 1000 == 0 ) {
+            winston.info("✅  processed " + processedObjectCount + " of eachRow operation  for \"" + dataSource_title + "\"." );
+            job.log("✅  parsed " + processedObjectCount  + " of eachRow operation  for \"" + dataSource_title + "\".");
+        }
+
+        processedObjectCount++;
         cb();
     }
 
 
 
     function ifHasAndMeetCriteria(ctx, rowDoc) {
-
-
         if (ctx.criteria !== null && typeof ctx.criteria !== 'undefined') {
             var checkField = ctx.criteria.fieldName;
             var opr = ctx.criteria.operatorName;
@@ -417,6 +446,9 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             if (typeof fieldValue !== 'undefined' && fieldValue !== null && fieldValue !== "") {
                 if (typeof delimiterArrays !== 'undefined' && Array.isArray(delimiterArrays) &&
                     delimiterArrays.length > 0) {
+                    if (delimiterArrays[i] == '" "') {
+                        delimiterArrays[i] = " ";
+                    }
                     fieldValue = fieldValue.split(delimiterArrays[i]);
                     var refinedValue = [];
                     fieldValue.forEach(function(value) {
@@ -441,31 +473,45 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     function afterGeneratingProcessedRowObjects_afterIterating_eachRowFn(eachCtx, cb) {
 
-        var writeConcern =
-        {
-            upsert: true
-        };
-        eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(writeConcern, function (err, result) {
-            if (err) {
-                winston.error("❌ [" + (new Date()).toString() + "] Error while saving custom fields  : ", err);
-            } else {
+        winston.info("✅  [" + (new Date()).toString() + "] Saved custom fields.");
 
-                winston.info("✅  [" + (new Date()).toString() + "] Saved custom fields.");
+        if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
+            var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
 
-                if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
-
-                    var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
-
-                    raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
-                        cb(err);
-                    })
-
-                } else {
-                    cb(err);
+            raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
+                if (err) {
+                    winston.error('❌ Error when modifying number of rows in raw source documents: %s', err);
                 }
+                cb(err);
+            })
 
-            }
-        });
+        } else {
+            cb(null);
+        }
+   
+        // eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(function (err, result) {
+
+        //     if (err) {
+        //         winston.error("❌ [" + (new Date()).toString() + "] Error while saving custom fields  : ", err);
+        //     } else {
+
+        //         winston.info("✅  [" + (new Date()).toString() + "] Saved custom fields.");
+
+        //         if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
+
+        //             var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+
+        //             raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
+        //                 console.log(err)
+        //                 cb(err);
+        //             })
+
+        //         } else {
+        //             cb(err);
+        //         }
+
+        //     }
+        // });
     }
 
 
@@ -481,16 +527,16 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     if (err) {
                         winston.error("❌  Error encountered while performing each-row operations \"" + dataSource_title + "\".");
                     } else {
-                        winston.info("✅  " + indexInList + ": Finished with importing data --  \"" + dataSource_title + "\".");
-                        job.log("✅  " + indexInList + ": Finished with importing data --  generated custom fields/nested fields for \"" + dataSource_title + "\".");
+                        winston.info("✅  " + indexInList + ": Imported processed rows and custom field objects --  \"" + dataSource_title + "\".");
+                        job.log("✅  " + indexInList + ": Imported processed rows and custom field objects for \"" + dataSource_title + "\".");
                     }
                     //
                     callback(err);
                 }
             );
         } else {
-            winston.info("✅  " + indexInList + ": Finished with importing data --  \"" + dataSource_title + "\".");
-            job.log("✅  " + indexInList + ": Finished with importing data -- (no custom fields/nested fields set up) \"" + dataSource_title + "\".");
+            winston.info("✅  " + indexInList + ": Imported processed rows and custom field objects  --  \"" + dataSource_title + "\".");
+            job.log("✅  " + indexInList + ": Imported processed rows and custom field objects  \"" + dataSource_title + "\".");
             callback(); // all done
         }
     }

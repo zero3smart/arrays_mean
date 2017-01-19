@@ -331,11 +331,18 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
                         if (value == conditions[i].value) {
-                            if (multiple) {
-                                return "<img class='icon-tile category-icon-2' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
-                            }
 
-                            return "<img class='icon-tile' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
+                            if (conditions[i].applyIconFromUrl) {
+                                if (multiple) {
+                                    return "<img class='icon-tile category-icon-2' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
+                                }
+
+                                return "<img class='icon-tile' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
+                            } else if (conditions[i].applyClass) {
+                                // hard coded color-gender , as it is the only default icon category for now
+                                return "<span class='" + conditions[i].applyClass + " color-gender'></span>";
+                            }
+                           
                         }
                     }
                     return null;
@@ -365,6 +372,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 };
             }
 
+            var returnAbsURLorBuildURL = function(url) {
+                if (url.slice(0, 5) == "https") {
+                    return url
+                } else {
+                    return "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
+                }
+            }
 
             var user = null;
             batch.push(function(done) {
@@ -407,6 +421,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
                     humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
                     //
+                    scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
                     hasThumbs: hasThumbs,
                     fieldKey_medThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.medThumbImageURL : undefined,
                     //
@@ -446,7 +461,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
                     folder: "/assets/images/",
-                    uid: dataSourceDescription.uid
+                    uid: dataSourceDescription.uid,
+                    returnAbsURLorBuildURL: returnAbsURLorBuildURL
 
                 };
 

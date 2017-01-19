@@ -149,6 +149,8 @@
                             groupBy: groupBy,
                             aggregateBy: aggregateBy
                     }) | safe }}";
+                    var chartBy = '{{ chartBy if chartBy else
+                        defaultChartByColumnName_humanReadable }}';
                     var groupBy = '{{ groupBy if groupBy else defaultGroupByColumnName_humanReadable }}';
                 </script>
                 <div class="container-fluid">

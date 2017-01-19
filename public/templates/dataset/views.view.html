@@ -15,10 +15,10 @@
           <form name="viewForm">
                <div layout="row" layout-xs="column" layout-sm="column" layout-align="space-between center">
                     <md-input-container class="md-block" flex-gt-sm>
-                     
+
                         <md-checkbox ng-model="data.visible" aria-label="Visible {{viewName}}">
                          <strong>Visible</strong>
-                          
+
                         </md-checkbox>
                     </md-input-container>
 
@@ -32,14 +32,14 @@
 
                </div>
                <label>Name</label>
-                <md-input-container class="md-block" flex-gt-sm>  
+                <md-input-container class="md-block" flex-gt-sm>
 
-    
+
                     <input type="text" ng-model="viewDisplayName" readonly="readonly" aria-label="Display Name {{viewName}}">
                 </md-input-container>
 
                 <label>Description</label>
-                <md-input-container class="md-block" flex-gt-sm>            
+                <md-input-container class="md-block" flex-gt-sm>
                     <textarea class="md-block" md-maxlength="500" rows="3" aria-label="Description {{viewName}}"
                            ng-model="data.description"></textarea>
                 </md-input-container>
@@ -62,7 +62,7 @@
 
 
                 <div ng-if="setting.inputType == 'datasetMapping' && setting.mappingType=='dataset'" ng-init="loadDatasetsForMapping();">
-                 <label>{{setting.displayAs}}</label> 
+                 <label>{{setting.displayAs}}</label>
 
 
                   <md-input-container class="md-block">
@@ -71,21 +71,21 @@
                             {{dataset.displayAs}}
                         </md-option>
                       </md-select>
-                      
+
                   </md-input-container>
                 </div>
 
-                <div ng-if="setting.inputType == 'datasetMapping' && setting.mappingType=='fields' && 
+                <div ng-if="setting.inputType == 'datasetMapping' && setting.mappingType=='fields' &&
                 data[setting.name].pKey" ng-init="data[setting.name].mappings=[{key:'',value:''}]">
-                 <label>{{setting.displayAs}}</label> 
-    
+                 <label>{{setting.displayAs}}</label>
+
                       <div ng-repeat="item in data[setting.name].mappings">
 
-                          <div layout="row">  
-                              <md-input-container flex="40" >                  
+                          <div layout="row">
+                              <md-input-container flex="40" >
                                 <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="item.key">
-                                   
-                                    <md-option  ng-repeat="col in colsAvailable | filter: checkDuplicateKey(data[setting.name],$index) | filter: 
+
+                                    <md-option  ng-repeat="col in colsAvailable | filter: checkDuplicateKey(data[setting.name],$index) | filter:
                                     excludeBy(data[setting.keyExcludeBy])" ng-value="col">
                                         {{col}}
                                     </md-option>
@@ -94,7 +94,7 @@
                             </md-input-container>
 
 
-                             <md-input-container flex="50" >                  
+                             <md-input-container flex="50" >
                                 <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="item.value">
                                     <md-option  ng-repeat="col in otherDatasetCols[data[setting.name].pKey].cols" ng-value="col.name">
                                         {{col.name}}
@@ -113,7 +113,7 @@
 
 
                  <div ng-if="setting.inputType == 'select'" ng-init="dep = checkDependency(setting.selectFrom);">
-                  <label>{{setting.displayAs}}</label> 
+                  <label>{{setting.displayAs}}</label>
                     <small class="pull-right" ng-if="dep">
                       Dropdown selections are based on {{dep.display}} </small>
                       <small class="pull-right" ng-if="setting.restrictColumnDataType">
@@ -121,9 +121,9 @@
                        <small class="pull-right" ng-if="setting.require">
                       This is a required field. </small>
 
-                     <md-input-container class="md-block" flex-gt-sm>  
+                     <md-input-container class="md-block" flex-gt-sm>
 
-                
+
                         <md-select ng-if="setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name][setting.settingNestedField]">
 
                           <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType
@@ -145,7 +145,7 @@
                         </md-select>
 
 
-              
+
 
                          <md-select ng-required='setting.require' ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
                           <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
@@ -164,7 +164,7 @@
                             </md-option>
 
 
-                      
+
 
 
                         </md-select>
@@ -182,7 +182,7 @@
 
                   <div ng-if="setting.inputType=='multiselect'">
                   <label>{{setting.displayAs}}</label>
-                     <md-input-container class="md-block" flex-gt-sm>  
+                     <md-input-container class="md-block" flex-gt-sm>
                         <md-select multiple aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name]">
                             <md-option  ng-if="setting.selectFrom=='column'  && !setting.restrictColumnDataType " ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)
                              | filter: excludeBy(data[setting.selectExcludeBy])" ng-value="col">
@@ -207,7 +207,7 @@
 
                   <md-input-container class="md-block" >
                             <md-chips ng-model="data[setting.name]"
-                        
+
                                   md-enable-chip-edit="true"
                                   placeholder="Enter a Value" secondary-placeholder="+Value">
                               <md-chip-template>
@@ -225,7 +225,7 @@
                   <label>{{setting.displayAs}}</label>
 
                   <div ng-repeat=" item in data[setting.name] track by $index" layout="row">
-                      <md-input-container flex="25" >                  
+                      <md-input-container flex="25" >
                           <md-select ng-if="setting.keyInputType=='select' && setting.keySelectFrom=='column'" aria-label="{{setting.name}} for {{viewName}}" ng-model="item.key">
                               <md-option value="_all" ng-if="notChosen(data[setting.name],'_all',$index) && !setting.restrictColumnDataType" > All Columns </md-option>
                               <md-option  ng-repeat="col in colsAvailable | filter: checkDuplicateKey(data[setting.name],$index) &&
@@ -248,7 +248,7 @@
 
                       </md-input-container>
 
-                      <md-input-container flex="65" ng-if="setting.valueInputType=='select'">                  
+                      <md-input-container flex="65" ng-if="setting.valueInputType=='select'">
                           <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="item.value">
                               <md-option  ng-if="setting.valueSelectFrom=='column'" ng-repeat="col in colsAvailable | filter:
                               DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
@@ -258,7 +258,7 @@
                       </md-input-container>
 
 
-                      <md-input-container flex="65" ng-if="setting.valueInputType=='textbox'">                  
+                      <md-input-container flex="65" ng-if="setting.valueInputType=='textbox'">
                          <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
                       </md-input-container>
 
@@ -280,7 +280,7 @@
 
 
                <div ng-if="setting.inputType=='toggle'">
-            
+
                   <md-switch md-invert ng-model="data[setting.name]" aria-label="Switch 1">
                       <label>{{setting.displayAs}}</label>
                   </md-switch>
@@ -302,12 +302,12 @@
                             class="glyphicon glyphicon-plus"></span>Add more
                   </md-button>
 
-               
+
                </div>
 
 
                 <div ng-if="setting.inputType=='iconMapping'" ng-init="initIcons(setting.name)">
-                  <label>{{setting.displayAs}}</label> 
+                  <label>{{setting.displayAs}}</label>
                     <div layout="row">
 
                         <md-select aria-label="{{setting.name}} for {{viewName}}" flex="30" class="md-block" ng-model="data[setting.name].field" ng-model-options="{updateOn:'blur'}">
@@ -317,16 +317,18 @@
                                 {{col}}
                         </md-select>
                         <div flex="20"></div>
-                        
+
                     </div>
 
 
 
 
-                  <div ng-if="data[setting.name].field" ng-repeat="item in data[setting.name].conditions track by $index">
+
+
+                    <div ng-if="data[setting.name].field && iconsUrl.length > 0" ng-repeat="item in data[setting.name].conditions track by $index">
                       <div layout="row" >
 
-                        <md-input-container flex="50">                  
+                        <md-input-container flex="50">
                           <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
                         </md-input-container>
                         <md-input-container flex="50">
@@ -334,21 +336,48 @@
                             <md-option  data-ng-repeat="icon_url in iconsUrl" data-ng-value="makeRelative(icon_url)" >
                               <img class="iconMap" ng-src="{{icon_url}}">
                             </md-option>
+
                           </md-select>
                         </md-input-container>
-                         
+
                       </div>
 
-
-                  
-
                     </div>
+
+                     <div ng-if="data[setting.name].field && iconsUrl && iconsUrl.length == 0" ng-repeat="item in data[setting.name].conditions track by $index">
+                      <div layout="row" >
+
+                          <md-input-container flex="50">
+                             <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
+                          </md-input-container>
+                          <md-input-container flex="50">
+                           <md-select aria-label="{{setting.name}} for {{viewName}}" data-ng-model="data[setting.name].conditions[$index].applyClass" flex="50">
+                            <md-select-label></md-select-label>
+                              <md-option value="icon-tile-female">
+                                <span class="icon-tile-female color-gender"></span>
+                              </md-option>
+                              <md-option value="icon-tile-male">
+                                <span class="icon-tile-male color-gender"></span>
+                              </md-option>
+                              <md-option value="icon-tile-null">
+                                <span class="icon-tile-null color-gender"></span>
+                              </md-option>
+
+                          </md-select>
+                          </md-input-container>
+                      </div>
+                    </div>
+
+
+
+
+
 
                     <md-button ng-if="data[setting.name].field" class="md-raised" ng-click="addMore(data[setting.name].conditions,'object')"><span
                         class="glyphicon glyphicon-plus"></span>Add more
                     </md-button>
-                      
-          
+
+
 
                   </div>
 
@@ -358,16 +387,16 @@
 
         </md-content>
 
-    
-    </md-dialog-content> 
+
+    </md-dialog-content>
 
     <md-dialog-actions layout="row" layout-align="end center">
 
-        <md-button ng-click="reset()" ng-disabled="!viewForm.$dirty">
-            Reset
+        <md-button class="md-dashboard" ng-click="reset()" ng-disabled="!viewForm.$dirty">
+            <span class="btn-label">Reset</span>
         </md-button>
-        <md-button ng-click="save()" ng-disabled="viewForm.$invalid">
-            Save
+        <md-button class="md-dashboard confirm" ng-click="save()" ng-disabled="viewForm.$invalid">
+            <span class="btn-label">Save</span>
         </md-button>
     </md-dialog-actions>
 

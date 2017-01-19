@@ -12,6 +12,55 @@ html, body {
 .warn {
     color: var(--color-warn);
 }
+.confirm {
+    color: var(--color-primary);
+}
+
+/* md-input and container styles */
+
+md-input-container label.md-required:after {
+	color: var(--color-warn) !important;
+}
+
+.md-input-has-value label,
+.md-input-has-value label.md-required:after {
+	color: var(--color-text-med) !important;
+}
+
+.md-input-focused label,
+.md-input-focused label.md-required:after {
+	color: var(--color-text-dark) !important;
+}
+.md-input-focused .md-input {
+	/*border-color: var(--color-text-med) !important;*/
+	border-color: var(--color-primary) !important;
+}
+
+.md-input-invalid label {
+	color: var(--color-warn) !important;
+}
+.md-input-invalid .md-input {
+	border-color: var(--color-warn) !important;
+}
+
+md-checkbox.md-checked .md-icon {
+	background-color: var(--color-primary);
+}
+md-checkbox .md-container:before {
+	/*remove the persistent ink on focus*/
+	content: none;
+}
+
+md-option  {
+	color: var(--color-text-med) !important;
+}
+md-option[selected] {
+	color: var(--color-text-dark) !important;
+}
+md-select:not([disabled]):focus .md-select-value {
+	border-color: var(--color-primary) !important;
+}
+
 /**/
 
 h2 {
@@ -24,15 +73,15 @@ h4 {
     font-size: 16px;
 }
 
-a[href^="mailto"] {
+.dashboard-container {
+    padding: 2em 1em;
+}
+
+.dashboard-container a[href^="mailto"] {
 	/*md-default-theme*/
 	color: rgba(0,0,0,0.87);
 	/*var(--color-text-dark);*/
 	text-decoration: underline;
-}
-
-.dashboard-container {
-    padding: 2em 1em;
 }
 
 md-content.md-default-theme, md-content {
@@ -52,7 +101,13 @@ md-content.md-default-theme, md-content {
 }
 
 .dashboard-content {
-    padding-top: var(--navbar-height-tablet);
+	padding-top: var(--navbar-height-mobile);
+}
+@media (min-width: 960px)  {
+    .dashboard-content {
+		padding-top: var(--navbar-height-tablet);
+		max-width: 45em !important;
+    }
 }
 
 .dashboard-content .array-header {
@@ -61,11 +116,6 @@ md-content.md-default-theme, md-content {
 
 .formInput{
     padding-top:20px;
-}
-@media (max-width: 767px) {
-    .dashboard-content {
-        padding-top: var(--navbar-height-mobile);
-    }
 }
 
 .table > thead > tr > th, .table > thead > tr > td, .table > tbody > tr > th, .table > tbody > tr > td, .table > tfoot > tr > th, .table > tfoot > tr > td {
@@ -77,10 +127,18 @@ md-content.md-default-theme, md-content {
     padding: 15px 0;
 }
 
-.instructions {
-    margin-top: 32px;
-    margin-bottom: 4px;
+.md-button.md-dashboard.primary-action {
+    margin-bottom: 30px;
 }
+.instructions {
+    /*margin-top: 30px;*/
+    margin-bottom: 15px;
+	line-height: 16px;
+}
+.teams .instructions {
+	padding: 12px;
+}
+
 
 .dataset .md-content {
     overflow: hidden;
@@ -88,6 +146,9 @@ md-content.md-default-theme, md-content {
 
 md-toolbar:not(.md-menu-toolbar) {
     background-color: var(--color-primary);
+}
+.warn md-toolbar:not(.md-menu-toolbar) {
+    background-color: var(--color-warn);
 }
 
 md-tabs .md-tab.md-active {
@@ -103,6 +164,9 @@ img.iconMap {
     position: fixed;
     top: 64px;
     z-index: 1000;
+}
+.dashboard md-toast .md-toast-content {
+	background-color: var(--color-text-dark);
 }
 /*prevent scrollbar pop-in*/
 body.md-toast-animating {
@@ -135,6 +199,9 @@ body.md-toast-animating {
     padding: 0;
     list-style: none;
 }
+.dashboard-list > li, div, span {
+	outline: 0;
+}
 .dashboard-list-order {
     display: inline-block;
     width: 20px;
@@ -144,22 +211,21 @@ body.md-toast-animating {
     color: var(--color-primary);
 }
 .dashboard-list-name {
-    font-size: 20px;
+    font-size: 16px;
     line-height: 30px;
     font-weight: 600;
 }
-.dashboard-list-revision {
-    font-size: 20px;
-    /*font-weight: 100;*/
+.user-list .pending {
+	color: var(--color-text-light);
 }
-.dashboard-list-delete {
-    /* temp × symbol */
-    font-size: 20px;
-    line-height: 20px;
-    font-weight: bold;
-    display: inline-block;
-    width: 20px;
+.dashboard-list-revision {
+    font-size: 16px;
+}
+.dashboard-list-icon {
     text-align: center;
+}
+.dashboard-list-icon:hover,
+.dashboard-list-icon:focus {
     color: var(--color-primary);
 }
 
@@ -190,9 +256,29 @@ body.md-toast-animating {
     color: var(--color-primary);
     background-color: transparent;
 }
-.team-list .md-button:disabled:hover {
-    padding: 11px;
-    border: 1px solid var(--color-primary);
+
+.subdomain-append,
+md-input-invalid.subdomain-append {
+	display: inline;
+	font-size: 20px;
+	font-weight: normal;
+}
+
+.user-list li {
+	border-top: 1px solid #eeeeee; /*match <hr>*/
+}
+.user-list li:last-child {
+	border-bottom: 1px solid #eeeeee;
+}
+/*.list-thumb*/
+.user-list li img,
+.user-list li canvas {
+	width: 100%;
+	padding: 15px 15px 15px 0;
+}
+.user-dialog .profile-thumb {
+	width: 100%;
+	padding-right: 15px;
 }
 
 /* Angular Material tabs and nav bars */
@@ -203,6 +289,16 @@ body.md-toast-animating {
     font-size: 16px;
     text-transform: none;
 }
+
+/*match sidebar button height*/
+.md-nav-bar {
+	height: 41px;
+}
+/*.md-tab,*/
+.md-nav-item a {
+	line-height: 16px !important;
+}
+
 .dashboard .tab-content {
     padding-top: 2em;
 }
@@ -215,6 +311,15 @@ md-nav-ink-bar,
 md-ink-bar {
     color: var(--color-primary) !important;
     background-color: var(--color-primary) !important;
+}
+
+/*tool tips*/
+md-tooltip.md-default-theme .md-content,
+md-tooltip .md-content {
+	font-size: 13px !important;
+	color: white !important;
+	/*background: var(--color-primary) !important;*/
+	background: var(--color-text-dark) !important;
 }
 
 /* Account */
@@ -403,7 +508,7 @@ md-dialog.field-dialog .md-dialog-content {
     padding-bottom: 10px;
 }
 md-dialog {
-    min-width: 80%;
+    min-width: 66%;
 }
 
 md-dialog fieldset legend,
@@ -445,6 +550,10 @@ md-dialog fieldset legend,
 .md-button.md-dashboard:not([disabled]):hover {
     background: var(--color-primary);
 }
+.md-button.md-dashboard.disabled {
+	background: var(--color-text-light);
+}
+
 
 md-icon.btn-icon {
     color: white !important;
@@ -464,6 +573,36 @@ md-icon.btn-icon {
 
 .md-button.md-dashboard.md-warn {
     background-color: var(--color-warn);
+}
+.md-button.md-dashboard.md-warn:not([disabled]):hover {
+	border-color: var(--color-warn);
+    background-color: transparent;
+}
+.md-button.md-dashboard.md-warn:not([disabled]):hover .btn-label {
+	color: var(--color-warn);
+}
+
+.md-button.md-dashboard.confirm:not([disabled]) {
+    background-color: var(--color-primary);
+}
+.md-button.md-dashboard.confirm:not([disabled]):hover {
+	border-color: var(--color-primary);
+    background-color: transparent;
+}
+.md-button.md-dashboard.confirm:not([disabled]):hover .btn-label {
+	color: var(--color-primary);
+}
+
+/* Team Settings */
+.team-uploader {
+	display: none !important;
+}
+/*icon upload*/
+md-progress-linear .md-container {
+	background-color: #eeeeee;
+}
+md-progress-linear .md-bar {
+	background-color: var(--color-text-light);
 }
 
 /* ----------- Manager Users -------------- */

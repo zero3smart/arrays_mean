@@ -48,7 +48,9 @@ router.get('/dataset/get/:id', ctrlDataset.get);
 router.get('/dataset/getAdditionalSources/:id', ctrlDataset.getAdditionalSourcesWithSchemaID);
 router.post('/dataset/update', ctrlDataset.update);
 router.put('/dataset/publish/', ctrlDataset.publish);
+router.put('/dataset/skipImageScraping',ctrlDataset.skipImageScraping);
 router.post('/dataset/removeSubdataset', ctrlDataset.removeSubdataset);
+router.get('/dataset/reimportDatasets/:id',ctrlDataset.getDependencyDatasetsForReimporting);
 
 router.get('/dataset/getAssetUploadSignedUrl/:id', ctrlDataset.signedUrlForAssetsUpload);
 
@@ -63,11 +65,10 @@ router.get('/dataset/getAvailableDesignatedFields', ctrlDataset.getAvailableDesi
 router.get('/dataset/getAvailableMatchFns', ctrlDataset.getAvailableMatchFns);
 
 // dataset import
-router.get('/dataset/initializeToImport/:id', ctrlDataset.initializeToImport);
-router.get('/dataset/preImport/:id', ctrlDataset.preImport);
-router.get('/dataset/scrapeImages/:id', ctrlDataset.scrapeImages);
+router.get('/dataset/preImport/:id', ctrlDataset.preImport);;
 router.get('/dataset/importProcessed/:id',ctrlDataset.importProcessed);
 router.get('/dataset/postImport/:id', ctrlDataset.postImport);
+router.get('/dataset/scrapeImages/:id', ctrlDataset.scrapeImages)
 
 
 //manage users

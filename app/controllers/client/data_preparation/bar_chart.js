@@ -50,10 +50,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
 
-            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
             (dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName,dataSourceDescription) :
              dataSourceDescription.fe_views.views.barChart.defaultGroupByColumnName;
-           
+
 
 
 
@@ -74,12 +74,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var stackBy = urlQuery.stackBy; // the human readable col name - real col name derived below
             var defaultStackByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName] || dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName;
-            
 
-            var stackBy_realColumnName =  stackBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(stackBy,dataSourceDescription) : 
+
+            var stackBy_realColumnName =  stackBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(stackBy,dataSourceDescription) :
             (dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName,dataSourceDescription) :
             dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName;
-           
+
 
 
 
@@ -112,7 +112,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             for (var colName in raw_rowObjects_coercionSchema) {
                 var colValue = raw_rowObjects_coercionSchema[colName];
                 if (colValue.operation == "ToInteger") {
-                    
+
                     var isExcluded = dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[colName];
                     if (!isExcluded) {
                         var humanReadableColumnName = colName;
@@ -132,14 +132,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
 
             if (colNames_orderedForAggregateByDropdown) {
-                if (colNames_orderedForAggregateByDropdown.length > 0)
-                    defaultAggregateByColumnName_humanReadable = colNames_orderedForAggregateByDropdown[0];
                 if (colNames_orderedForAggregateByDropdown.length == 1)
                     colNames_orderedForAggregateByDropdown = undefined;
             }
-
-      
-
 
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
             (typeof dataSourceDescription.fe_views.views.barChart.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
@@ -443,16 +438,29 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            });
+
             batch.end(function (err) {
                 if (err) return callback(err);
 
-              
+
                 //
                 var data =
                 {
                     env: process.env,
 
-                    user: req.user,
+                    user: user,
 
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,

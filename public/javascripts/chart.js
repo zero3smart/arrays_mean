@@ -190,8 +190,16 @@ legendListLink.append('span')
 			return colors[colorIndex];
 		});
 
+
+
+
+
+
 legendListLink.attr('class', 'legend-list-link')
-	.attr('href', '#')
+	.attr('href','javascript:;')
+	.on('click',function() {
+		document.location.hash = '';
+	})
 	.on('mouseover', function(d, i) {
 		d3.select(this)
 			.classed('active', true);
