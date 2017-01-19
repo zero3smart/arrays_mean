@@ -9,8 +9,11 @@ if (cluster.isMaster) {
 
     require('./queue-init');
 
+
     var clusterWorkerSize = process.env.WEB_CONCURRENCY || require('os').cpus().length;
-    console.log('master pid %s', process.pid);
+
+
+    console.log('master pid %s, total Workers: %s ', process.pid,clusterWorkerSize);
     for (var i = 0; i < clusterWorkerSize; i ++) {
         cluster.fork();
     }

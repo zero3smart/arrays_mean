@@ -30,6 +30,7 @@ function _initJob(datasetId,jobName,cb) {
 
 module.exports.initJob = _initJob
 
+
 var datasource_description = require('./app/models/descriptions');
 
 
@@ -137,11 +138,9 @@ if (cluster.isMaster) {
 
 	    })
 	})
-
-
-
-
-
 }
+
+
+module.exports.queue = queue;
 
 

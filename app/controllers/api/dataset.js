@@ -21,13 +21,7 @@ var processing = require('../../libs/datasources/processing');
 
 var raw_row_objects = require('../../models/raw_row_objects');
 
-
-var kue = require('kue');
-
-var queue = kue.createQueue({
-    redis: process.env.REDIS_URL
-});
-
+var queue = require.main.require('./queue-init').queue;
 
 var initJob = require.main.require('./queue-init').initJob;
 
