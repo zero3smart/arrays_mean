@@ -219,7 +219,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 ]);
                 var doneFn = function (err, results) {
 
-                    console.log(results[0])
                     if (err) return done(err);
 
 
@@ -275,15 +274,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     {$limit: limitToNResults}
                 ]);
 
-                // console.log(pagedDocs_aggregationOperators);
-
-
-
 
                 var doneFn = function (err, _docs) {
-
-                    console.log(_docs[1]);
-
 
                     if (err) return done(err);
 
@@ -297,7 +289,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     done();
                 };
 
-                // console.log(pagedDocs_aggregationOperators)
 
                 // Next, get the full set of sorted results
                 processedRowObjects_mongooseModel

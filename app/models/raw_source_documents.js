@@ -23,7 +23,7 @@ RawSourceDocument_model.on('index', function (error) {
     if (error != null) {
         winston.error("❌  MongoDB index build error for '" + modelName + "':", error);
     } else {
-        winston.info("✅  Built indices for '" + modelName + "'");
+        // winston.info("✅  Built indices for '" + modelName + "'");
         // Don't let app start listening until indices built; Coordinate via 
         // mongoose client
         mongoose_client.FromModel_IndexHasBeenBuiltForSchemeWithModelNamed(modelName);

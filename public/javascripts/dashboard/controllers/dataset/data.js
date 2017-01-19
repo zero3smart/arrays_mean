@@ -1182,21 +1182,34 @@ angular.module('arraysApp')
                         var setFields1 = imageScraping1.setFields || [],
                             setFields2 = imageScraping2.setFields || [];
 
-                        if (!$scope.$parent.$parent.dataset.fe_excludeFields[fieldName]) {
-                            $scope.$parent.$parent.dataset.fe_excludeFields[fieldName] = false;
-
-                            if ($scope.$parent.$parent.dataset.dirty == 4) {
-                                $scope.$parent.$parent.dataset.dirty = 3;
-                            }
-                        }
-
+    
                         return setFields1.map(function(field) {
+
+                            if (!$scope.$parent.$parent.dataset.fe_excludeFields[field]) {
+                                $scope.$parent.$parent.dataset.fe_excludeFields[field] = false;
+
+                                if ($scope.$parent.$parent.dataset.dirty == 4) {
+                                    $scope.$parent.$parent.dataset.dirty = 3;
+                                }
+                            }
+
+
                             return {
                                 name: field.newFieldName,
                                 sample: null,
                                 custom: true
                             }
                         }).concat(setFields2.map(function(field) {
+                            
+                            if (!$scope.$parent.$parent.dataset.fe_excludeFields[field]) {
+                                $scope.$parent.$parent.dataset.fe_excludeFields[field] = false;
+
+                                if ($scope.$parent.$parent.dataset.dirty == 4) {
+                                    $scope.$parent.$parent.dataset.dirty = 3;
+                                }
+                            }
+
+
                             return {
                                 name: field.newFieldName,
                                 sample: null,

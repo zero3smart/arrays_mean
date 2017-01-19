@@ -54,7 +54,7 @@ angular.module('arraysApp')
 
                             $timeout(function() {
                                 getJobStatus(id)
-                            }, 2000);
+                            }, 1000);
 
                         } else {
                             errorHandler(response);
@@ -143,7 +143,7 @@ angular.module('arraysApp')
 
                            $timeout(function() {
                                 getJobStatus(id)
-                            }, 2000);
+                            }, 1000);
 
                         } else {
                             errorHandler(response);
@@ -159,7 +159,7 @@ angular.module('arraysApp')
                         
                         $timeout(function() {
                             getJobStatus(id)
-                        }, 2000);
+                        }, 1000);
 
 
                     } else {
@@ -184,7 +184,7 @@ angular.module('arraysApp')
 
                                 $timeout(function() {
                                     getJobStatus(id)
-                                }, 2000);
+                                }, 1000);
                                 
                             } else {
                                 errorHandler(response);

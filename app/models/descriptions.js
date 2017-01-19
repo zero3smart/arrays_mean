@@ -268,6 +268,39 @@ var _GetDescriptions = function (fn) {
 
 datasource_description.GetDescriptions = _GetDescriptions;
 
+var _datasetsNeedToReimport = function (currentSourceId,currentSourceUID,currentSourceImportRevision,cb) {
+
+    datasource_description.find({_otherSources: currentSourceId},function(err,relatedSources) {
+        if (err) return cb(err);
+        if (!relatedSources) return cb(null,{datasets:[]});
+        var datasetsNeedToReimport = [];
+        relatedSources.forEach(function(src) {
+            if (src.relationshipFields) {
+
+                for (var i = 0; i < src.relationshipFields.length; i++) {
+
+                    if (src.relationshipFields[i].relationship == true && 
+                        src.relationshipFields[i].by.ofOtherRawSrcUID == currentSourceUID && 
+                        src.relationshipFields[i].by.andOtherRawSrcImportRevision == currentSourceImportRevision) {
+                        datasetsNeedToReimport.push(src);
+                    }
+
+                 }
+
+            }
+
+
+        })
+        cb(null,{datasets:datasetsNeedToReimport});
+
+
+    })
+
+}
+
+
+datasource_description.datasetsNeedToReimport = _datasetsNeedToReimport;
+
 
 var _GetDescriptionsToSetupByIds = function (Ids, fn) {
 

@@ -286,9 +286,11 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
 
         // var bulkOperation_ofTheseProcessedRowObjects = nativeCollection_ofTheseProcessedRowObjects.initializeUnorderedBulkOp();
 
+
         var unwindQuery =  {
           $unwind: '$' + "rowParams." + withLocalField
         };
+
 
         var groupQuery = {$group:{}};
         groupQuery.$group["_id"] = "$rowParams." + withLocalField
@@ -322,6 +324,7 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
             }
 
             var updateQuery = {$set:{}};
+
 
             if (!storingReference) {
                 updateQuery.$set["rowParams." + generateFieldNamed] = doc.rowParams[obtainingValueFromField_orUndefined];
