@@ -991,9 +991,11 @@ angular.module('arraysApp')
                 };
 
                 $scope.removeJoin = function(index) {
+
+                    console.log($scope.dataset.relationshipFields[index])
                     var fieldName = $scope.dataset.relationshipFields[index].field;
                     if ($scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames) {
-                         delete $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[field];
+                         delete $scope.dataset.fe_objectShow_customHTMLOverrideFnsByColumnNames[fieldName];
                     }
                     $scope.dataset.relationshipFields.splice(index, 1);
                     $scope.dialog.form.$setDirty();

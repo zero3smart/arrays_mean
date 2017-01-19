@@ -17,6 +17,14 @@
             
                 </div>
 
+                 <div ng-show="job.state == 'inactive'">
+
+                    <div>⏳ [{{datasetsToProcess[job.data.id].uid}}] In queue {{job.type | jobTask}} </u> Task  <span ng-show="job.log" > : {{job.log}}</span> </div>
+            
+                </div>
+
+
+
                 <div ng-show="job.state=='complete'">
                     ✅ [{{datasetsToProcess[job.data.id].uid}}]  Completed {{job.type | jobTask }} Task
                 </div>

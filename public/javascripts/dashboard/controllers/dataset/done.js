@@ -16,7 +16,9 @@ angular.module('arraysApp')
 
             function getJobAndLog (datasetId) {
 
-                if (!$scope.jobs[$scope.jobs.length-1].state || $scope.jobs[$scope.jobs.length-1].state == 'active') {
+    
+                if (!$scope.jobs[$scope.jobs.length-1].state || $scope.jobs[$scope.jobs.length-1].state == 'active' ||
+                    $scope.jobs[$scope.jobs.length-1].state == 'in active') {
         
                     Job.get({id:$scope.currentJobId}).$promise.then(function(job) {
 
