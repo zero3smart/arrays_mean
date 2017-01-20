@@ -1,6 +1,10 @@
-<header>
+<header layout="row" layout-align="start center">
     <h1 ng-if="$state.is('dashboard.dataset.list') == true">Dataset Settings</h1>
     <h1 ng-if="$state.is('dashboard.dataset.list') == false">{{ dataset.title | replaceTitlePlaceholder }}</h1> <!-- quick check if _test_ -->
+    <span flex></span>
+    <md-button ng-click="" class="md-dashboard md-dashboard-header" md-no-ink ng-if="$state.is('dashboard.dataset.list') == false">
+        <span class="btn-label">Primary Action</span>
+    </md-button>
 </header>
 
 <div class="array-content dataset">
