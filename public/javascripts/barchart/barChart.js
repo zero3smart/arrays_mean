@@ -76,16 +76,16 @@ function BarChart(selector, dataSet, options) {
 
     // all of this logic is for determining the width for the viewBox
     var dimension = this._container.node().getBoundingClientRect();
-    var divElement = document.getElementById("bar-chart")
-    var parentDivWidth = document.getElementById("padding-affects-bar-chart").clientWidth
-    var divPadding = parentDivWidth - dimension.width
-    var realDimensionWidth = dimension.width - divPadding
-    var barPaddingWidth = self._categoryData.length * this._padding 
+    var divElement = document.getElementById("bar-chart");
+    var parentDivWidth = document.getElementById("padding-affects-bar-chart").clientWidth;
+    var divPadding = parentDivWidth - dimension.width;
+    var realDimensionWidth = dimension.width - divPadding;
+    var barPaddingWidth = self._categoryData.length * this._padding; 
 
     if(((self._categoryData.length * (realDimensionWidth/20)) + barPaddingWidth) < realDimensionWidth || options.horizontal == true) {
-        var svgWidth = realDimensionWidth
+        var svgWidth = realDimensionWidth;
     } else {
-        var svgWidth = Math.max((self._categoryData.length * (realDimensionWidth/20)) - barPaddingWidth)
+        var svgWidth = Math.max((self._categoryData.length * (realDimensionWidth/20)) - barPaddingWidth);
     }
 
     // /*Set a minimum width for the barchart in cases where # of labels exceeds 18*/
@@ -98,7 +98,7 @@ function BarChart(selector, dataSet, options) {
     this._outerHeight = dimension.height;
     this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
-    this._svgWidth = svgWidth
+    this._svgWidth = svgWidth;
 
     this._svg = this._container.append('svg')
         .attr('height', this._outerHeight)
@@ -108,19 +108,19 @@ function BarChart(selector, dataSet, options) {
         .attr('viewBox', '0 0 '+ this._svgWidth + ' ' + this._outerHeight);
 
     this._canvas = this._svg.append('g')
-        .attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')')
+        .attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')');
 
     this._xAxisContainer = this._canvas.append('g')
       .attr('class', 'axis axis-x')
       .attr('transform', this.getXAxisTransform())
-      .call(this.getXAxis())
+      .call(this.getXAxis());
 
     //Rotate horizontal bar chart x-axis labels
     this.rotateLabel();
 
     this._yAxisContainer = this._canvas.append('g')
       .attr('class', 'axis axis-y')
-      .call(this.getYAxis())
+      .call(this.getYAxis());
 
     /**
      * Append bar's series.
