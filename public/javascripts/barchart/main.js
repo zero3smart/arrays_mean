@@ -1,27 +1,27 @@
 $(document).ready(function() {
     var barChart;
     function renderBarChart() {
-        options = getCookies()
+        options = getCookies();
         barChart = BarChart.getInstance('#bar-chart', graphData, options);
     }
 
     function getCookies () {
-        var options = {}
-        var cookiesArray = document.cookie.split(";", 3)
+        var options = {};
+        var cookiesArray = document.cookie.split(";", 4);
         for(var i = 0; i < cookiesArray.length; i++) {
-            var key = cookiesArray[i].split("=")[0]
+            var key = cookiesArray[i].split("=")[0];
             if(key[0] == " ") {
-                key = key.slice(1)
+                key = key.slice(1);
             }
-            var value = cookiesArray[i].split("=")[1]
+            var value = cookiesArray[i].split("=")[1];
             if(value == "undefined" || value == "false") {
-                value = false
+                value = false;
             } else {
-                value = true
+                value = true;
             }
-            options[key] = value
+            options[key] = value;
         }
-        return options
+        return options;
     }
 
     // Handle of the "view by" - graph orientation, normalization
@@ -54,21 +54,21 @@ $(document).ready(function() {
 
     $('#orientation').click(function(){
         options.horizontal = !options.horizontal;
-        setCookies(options)
+        setCookies(options);
         updateBarChartControls();
         renderBarChart();
     });
 
     $('#normalization').click(function(){
         options.normalize = !options.normalize;
-        setCookies(options)
+        setCookies(options);
         updateBarChartControls();
         renderBarChart();
     });
 
     $('#sort-direction').click(function(){
         options.sortDirection = !options.sortDirection;
-        setCookies(options)
+        setCookies(options);
         updateBarChartControls();
         barChart.updateSortDirection(options.sortDirection);
     });
@@ -80,9 +80,10 @@ $(document).ready(function() {
     };
 
     setCookies = function (options) {
-        document.cookie = "horizontal=" + options['horizontal'] +";"
-        document.cookie = "padding=" + options['padding'] + ";"
-        document.cookie = "sortDirection=" + options['sortDirection'] +";"
+        document.cookie = "horizontal=" + options['horizontal'] +";";
+        document.cookie = "padding=" + options['padding'] + ";";
+        document.cookie = "sortDirection=" + options['sortDirection'] +";";
+        document.cookie = "normalize=" + options['normalize'] + ";";
     }
 
     /**
