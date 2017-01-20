@@ -82,7 +82,7 @@ function BarChart(selector, dataSet, options) {
     var realDimensionWidth = dimension.width - divPadding
     var barPaddingWidth = self._categoryData.length * this._padding 
 
-    if(((self._categoryData.length * (realDimensionWidth/20)) + barPaddingWidth) < realDimensionWidth) {
+    if(((self._categoryData.length * (realDimensionWidth/20)) + barPaddingWidth) < realDimensionWidth || options.horizontal == true) {
         var svgWidth = realDimensionWidth
     } else {
         var svgWidth = Math.max((self._categoryData.length * (realDimensionWidth/20)) - barPaddingWidth)
@@ -94,9 +94,6 @@ function BarChart(selector, dataSet, options) {
     } else {
         this._outerWidth = realDimensionWidth;
     }
-
-    // this enables graph scrolling
-    divElement.style = "overflow: scroll;"
 
     this._outerHeight = dimension.height;
     this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
