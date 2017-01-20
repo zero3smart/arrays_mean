@@ -57,10 +57,7 @@
             <md-checkbox name="visible" ng-model="dataset.fe_visible">Visible</md-checkbox>
         </md-input-container>
 
-        <div layout="row" layout-align="space-between center">
-            <md-button ui-sref="dashboard.dataset.list" class="md-dashboard" target="_self" md-no-ink>
-                <span class="btn-label">Back</span>
-            </md-button>
+        <div layout="row" layout-align="end center">
             <md-button class="md-dashboard confirm" type="submit" ng-disabled="settingsForm.$invalid || submitting" md-no-ink>
                 <span class="btn-label">Next</span>
             </md-button>

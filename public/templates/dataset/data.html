@@ -1,6 +1,24 @@
 <md-content layout-padding ng-if="dataset.uid" md-no-ink>
     <form name="vm.dataForm" ng-submit="submitForm(!vm.dataForm.$invalid )">
 
+        <h2>Actions</h2>
+        <div layout="row" layout-align="space-between center">
+            <a ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
+                Add Field
+            </a>
+            <a ng-click="openNestedDialog()">
+                Nest Fields
+            </a>
+            <a ng-click="openFabricatedFilterDialog()">
+                Edit Filters
+            </a>
+            <a ng-click="openImageScrapingDialog()">
+                Image Scraping
+            </a>
+            <a ng-click="openJoinDialog()">
+                Join Dataset
+            </a>
+        </div>
 
         <md-input-container class="md-block" flex-gt-sm>
             <label>Object Title</label>
@@ -11,7 +29,7 @@
                     {{column.name}}
                 </md-option>
             </md-select>
-    </md-input-container>
+        </md-input-container>
 
         <fieldset class="standard">
             <!-- <legend>Fields</legend> -->
@@ -87,42 +105,7 @@
             </table>
         </fieldset>
 
-        <div layout="column">
-            <md-button class="md-raised"
-                       ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
-                Add Field
-            </md-button>
-        </div>
-
-        <div layout="column">
-            <md-button class="md-raised" ng-click="openNestedDialog()">
-                Nest Fields
-            </md-button>
-        </div>
-
-        <div layout="column">
-            <md-button class="md-raised" ng-click="openFabricatedFilterDialog()">
-                Edit Filters
-            </md-button>
-        </div>
-
-        <div layout="column">
-            <md-button class="md-raised" ng-click="openImageScrapingDialog()">
-                Image Scraping
-            </md-button>
-        </div>
-
-        <div layout="column">
-            <md-button class="md-raised" ng-click="openJoinDialog()">
-                Join Dataset
-            </md-button>
-        </div>
-
-
-        <div layout="row" layout-align="space-between center">
-            <md-button class="md-dashboard" ng-click="reset()" ng-disabled="!vm.dataForm.$dirty">
-                <span class="btn-label">Reset</span>
-            </md-button>
+        <div layout="row" layout-align="end center">
             <md-button class="md-dashboard confirm" type="submit" ng-disabled="vm.dataForm.$invalid">
                 <span class="btn-label">Next</span>
             </md-button>
