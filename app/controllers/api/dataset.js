@@ -331,7 +331,7 @@ function getAllDatasetsWithQuery(query, res) {
         if (err) {
              return res.status(500).send(err);
         }
-        return res.status(200).send({datasets: datasets});
+        return res.status(200).json({datasets: datasets});
     })
 }
 
@@ -584,7 +584,7 @@ module.exports.get = function (req, res) {
 
 
                 _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
-                    if (err) return res.status(500).send(err);
+                    if (err) return res.status(500).json(err);
 
                     req.session.columns[req.params.id] = columns;
                     description.columns = columns;
@@ -666,7 +666,7 @@ module.exports.getAdditionalSourcesWithSchemaID = function (req, res) {
         .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, sources) {
             if (err) return res.status(500).send( "Error getting the additional datasources with schema id : " + req.params.id);
-            return res.json({
+            return res.status(200).json({
                 sources: sources.map(function (source) {
                     return datasource_description.Consolidate_descriptions_hasSchema(source);
                 })
@@ -687,7 +687,7 @@ module.exports.publish = function (req, res) {
 module.exports.skipImageScraping = function(req,res) {
     datasource_description.findByIdAndUpdate(req.body.id, {$set: {skipImageScraping: req.body.skipImageScraping}},function(err,savedDesc) {
          if (err) {
-            res.status(500).send({error: err.message});
+            res.status(500).json({error: err.message});
         } else {
             res.status(200).send('ok');
         }

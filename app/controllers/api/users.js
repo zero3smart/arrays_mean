@@ -52,7 +52,6 @@ module.exports.get = function (req, res) {
     var id = req.params.id;
     if (id == 'currentUser') {
         if (!req.user) {
-            console.log("no current user");
 
             res.status(401).send({error: 'unauthorized'});
         } else {
@@ -62,16 +61,15 @@ module.exports.get = function (req, res) {
                 .populate('defaultLoginTeam')
                 .exec(function (err, user) {
 
-        
+
 
                     var token = jwt.sign({_id: user._id}, process.env.SESSION_SECRET);
                     var role;
             
 
                     if (!user.defaultLoginTeam || user._team.length == 0) {
-                        return res.status(401).send({error: 'unauthorized'});
+                        return res.status(401).json({error: 'unauthorized'});
                     }
-
 
 
                     if (user.isSuperAdmin()) {
@@ -102,7 +100,7 @@ module.exports.get = function (req, res) {
                         defaultLoginTeam: user.defaultLoginTeam
                     }
 
-                    return res.status(200).send(userInfo);
+                    return res.status(200).json(userInfo);
                     
                 })
         }
@@ -140,9 +138,9 @@ var _checkIfUserIsEditor = function(teamDatasourceDescriptions, userEditors) {
 module.exports.create = function (req, res) {
     User.create(req.body, function (err, user) {
         if (err) {
-            res.send(err);
+            res.status(500).send(err);
         } else {
-            res.json(user);
+            res.status(200).json(user);
         }
     })
 }
