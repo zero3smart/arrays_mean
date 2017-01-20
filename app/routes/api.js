@@ -11,6 +11,10 @@ var ctrlDataset = require('../controllers/api/dataset');
 var ctrlUsers = require('../controllers/api/users');
 var ctrlTeam = require('../controllers/api/team');
 var ctrlView = require('../controllers/api/views');
+var ctrlBillingAccount = require('../controllers/api/billing/account');
+var ctrlBillingInfo = require('../controllers/api/billing/billingInfo');
+var ctrlPlans = require('../controllers/api/billing/plans');
+var ctrlSubscriptions = require('../controllers/api/billing/subscriptions');
 var ejwt = require('express-jwt');
 
 var auth = ejwt({
@@ -94,6 +98,20 @@ router.get('/team/loadIcons', ctrlTeam.loadIcons);
 router.get('/team/getAssetUploadSignedUrl/:id', ctrlTeam.signedUrlForAssetsUpload);
 router.put('/team/:id', ctrlTeam.update);
 router.put('/team/admin/:id',ctrlTeam.switchAdmin);
+
+// billing, account & subscriptions settings
+router.post('/billing/account', ctrlBillingAccount.create);
+router.get('/billing/account', ctrlBillingAccount.get);
+router.post('/billing/billinginfo', ctrlBillingInfo.create);
+router.get('/billing/billinginfo', ctrlBillingInfo.get);
+router.put('/billing/billinginfo', ctrlBillingInfo.update);
+router.get('/billing/plans/:plan_code', ctrlPlans.get);
+router.get('/billing/plans', ctrlPlans.getAll);
+router.post('/billing/subscriptions', ctrlSubscriptions.create);
+router.get('/billing/subscriptions', ctrlSubscriptions.getAll);
+router.put('/billing/subscriptions/:subscrId', ctrlSubscriptions.update);
+router.put('/billing/subscriptions/:subscrId/cancel', ctrlSubscriptions.cancel);
+router.put('/billing/subscriptions/:subscrId/reactivate', ctrlSubscriptions.reactivate);
 
 
 module.exports = router;

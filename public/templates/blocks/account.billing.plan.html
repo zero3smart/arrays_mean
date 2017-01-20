@@ -1,5 +1,6 @@
-<p>
-    Arrays {{testUser.plan.name}} ({{testUser.billingCycle}}): {{ testUser.paidDatasets | pluralize:'Dataset':'Datasets' }}<br />
-    Cost per Dataset: {{testUser.plan.cost[testUser.billingCycle] | currency}}<br />
-    <strong>Total per month:</strong> {{ testUser.plan.cost[testUser.billingCycle] * testUser.paidDatasets | currency }}
+<p ng-if="subscription">
+    {{ subscription.plan.name }}: {{ subscription.quantity._ | pluralize: 'Dataset' : 'Datasets' }}<br />
+    Cost per Dataset: {{ plan.unit_amount_in_cents.USD._ / 100 | currency }}<br />
+    <strong>Total per month:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency }}<br />
+    <strong ng-if="subscription.canceled_at._">Subscription ends {{ subscription.current_period_ends_at._ | date: 'MM/dd/yyyy' }}</strong>
 </p>

@@ -48,6 +48,7 @@
     "mongoose-findorcreate": "^0.1.2",
     "mongoose-integer": "^0.1.1",
     "multer": "^1.2.0",
+    "node-recurly": "git+https://github.com/cgerrior/node-recurly.git",
     "nodemailer": "^2.6.4",
     "nodemailer-ses-transport": "^1.5.0",
     "nunjucks-comma-filter": "^1.0.0",

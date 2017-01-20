@@ -2,17 +2,18 @@
     <h2>Plan Summary</h2>
 
     <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
-    <p ng-if="testUser.p === 'trial'">Your free trial expires in <strong>6</strong> days.&emsp;<a ui-sref="dashboard.account.upgradePro">Upgrade Now</a></p>
+    <p ng-if="subscription.trial_days_left > 0 && !subscription.canceled_at._">Your free trial expires in <strong>{{ subscription.trial_days_left | pluralize: "day" : "days" }}</strong>.&emsp;<a ui-sref="dashboard.account.upgradePro">Upgrade Now</a></p>
 
-    <p>Credit Card (Visa)&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
+    <p ng-if="billing.exists">{{ paymentMethod }}&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
+    <p ng-if="!billing.exists"><a ui-sref="dashboard.account.payment">Add Payment Info</a></p>
 
-    <div ng-if="testUser.p !== 'trial'">
+    <div ng-if="subscription.trial_days_left > 0 && !subscription.canceled_at._">
     <hr>
 
         <form name="billingForm">
             <md-input-container>
                 <label>Datasets</label>
-                <input name="datasets" required type="number" min="1" step="1" ng-model="testUser.paidDatasets" ng-pattern="/^[0-9]{1,7}$/"/>
+                <input name="datasets" required type="number" min="1" step="1" ng-model="subscription.quantity._" ng-pattern="/^[0-9]{1,7}$/"/>
                 <div ng-messages="billingForm.datasets.$error">
                     <div ng-message="pattern">Please enter an integer greater than 0.</div>
                 </div>
@@ -23,24 +24,32 @@
                     <span class="btn-label">Save and Update Monthly Billing Amount</span>
                 </md-button>
 
-                <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'annual')">
-                    <span class="btn-label">Pay Yearly (${{testUser.paidDatasets * 99}} / mo)</span>
+                <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'annual')" ng-if="subscription.plan.plan_code != 'arrays-pro-yearly'">
+                    <span class="btn-label">Pay Yearly (${{ subscription.quantity._ * 99 }} / mo)</span>
                 </md-button>
             </div>
         </form>
 
     </div>
 
-    <div ng-if="testUser.p !== 'enterprise'">
+    <div ng-if="!subscription.canceled_at._">
         <hr>
 
-        <div ng-if="testUser.p === 'trial'">
+        <div ng-if="!subscription.trial_days_left && billing.exists">
+            <h3>Start Free Trial of Arrays Pro</h3>
+
+            <md-button ui-sref="dashboard.account.startProTrial" class="md-dashboard">
+                <span class="btn-label">Learn More</span>
+            </md-button>
+        </div>
+
+        <!--<div ng-if="subscription.trial_days_left > 0">
             <h3>Upgrade to Arrays Pro</h3>
 
             <md-button ui-sref="dashboard.account.upgradePro" class="md-dashboard">
                 <span class="btn-label">Learn More</span>
             </md-button>
-        </div>
+        </div>-->
 
         <h3>Upgrade to Arrays Enterprise</h3>
 
@@ -49,8 +58,16 @@
         </md-button>
     </div>
 
+    <div ng-if="subscription.canceled_at._">
+        <h3>Reactivate Canceled Subscription</h3>
+
+        <md-button class="md-dashboard" ng-click="reactivateCanceledSubscription()">
+            <span class="btn-label">Reactivate Subscription</span>
+        </md-button>
+    </div>
+
     <hr>
 
-    <a ui-sref="dashboard.account.close" class="warn">Close Account</a>
+    <a ui-sref="dashboard.account.cancel" class="warn" ng-if="subscription && !subscription.canceled_at._">Cancel Subscription</a>
 
 </md-content>
