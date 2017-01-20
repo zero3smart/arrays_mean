@@ -83,6 +83,9 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions,job, fn)
     async.eachSeries(
         dataSourceDescriptions,
         function (dataSourceDescription, eachCb) {
+
+            processed_row_objects.initializeBackgroundIndexBuilding(dataSourceDescription);
+
             _postProcess(i, dataSourceDescription,job,eachCb);
             i++;
         },

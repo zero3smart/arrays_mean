@@ -79,6 +79,23 @@ var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (srcDocPKey) {
 
 module.exports.Lazy_Shared_ProcessedRowObject_MongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext;
 
+
+module.exports.initializeBackgroundIndexBuilding = function(description) {
+
+    var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+    var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed).Model.collection;
+
+    for (var i = 0; i < description.relationshipFields.length; i++) {
+        var buildField = description.relationshipFields[i].by.withLocalField;
+        var createIndexQuery = {};
+        createIndexQuery["rowParams." + buildField] = 1;
+        mongooseContext_ofTheseProcessedRowObjects.createIndex(createIndexQuery, {background: true})
+
+        winston.info("🔁  initialize index building for field: " + buildField);
+    }
+
+}
+
 module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSource_uid,
                                                                    dataSource_importRevision,
                                                                    dataSource_title,
