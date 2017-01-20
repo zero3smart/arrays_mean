@@ -47,7 +47,9 @@
     }
 
     .navbar .share-link.btn-splash:hover {
-        background-color: #ffffff;
+        /*Nullify hover effects from .btn-splash*/
+        background-color: #000;
+        color: #fff;
     }
 }
 
