@@ -822,7 +822,13 @@ module.exports.reverseDataToBeDisplayableVal = _reverseDataToBeDisplayableVal;
 
 //
 var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescription) {
-    var displayableVal = originalVal;
+    // console.log(originalVal);
+    // console.log("!!!!!!!!!!!!!")
+    // console.log(typeof(originalVal))
+    var dateToFormat = new Date(originalVal)
+    var displayableVal = dateToFormat.toISOString();
+    // console.log(displayableVal)
+    // console.log(moment(displayableVal, moment.ISO_8601).isValid())
     // var prototypeName = Object.prototype.toString.call(originalVal);
     // if (prototypeName === '[object Date]') {
     // }
@@ -840,12 +846,12 @@ var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescrip
                 if (originalVal == null || originalVal == "") {
                     return originalVal; // do not attempt to format
                 }
-                displayableVal = moment(originalVal, moment.ISO_8601).utc().format("MMM DD, YYYY HH:mm:ss");
+                var newDateValue = moment(displayableVal, moment.ISO_8601).utc().format("MM DD, YYYY HH:mm:ss");
             }
         }
     }
     //
-    return displayableVal;
+    return newDateValue;
 };
 module.exports.convertDateToBeRecognizable = _convertDateToBeRecognizable;
 
