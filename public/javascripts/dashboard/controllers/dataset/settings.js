@@ -7,9 +7,9 @@ angular.module('arraysApp')
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
             if (!dataset.fe_visible) {dataset.fe_visible = false;}
 
-            if (!dataset.url) {
-                dataset.url = $scope.convertToURLSafe(dataset.title);
-            }
+            // if (!dataset.url) {
+            //     dataset.url = $scope.convertToURLSafe(dataset.title);
+            // }
             if (!dataset.importRevision) {dataset.importRevision = 1;}
 
             $scope.$parent.$parent.dataset = dataset;
@@ -51,7 +51,7 @@ angular.module('arraysApp')
                         $scope.submitting = false;
                     }, function (error) {
 
-                        console.log(error);
+                        // console.log(error);
 
                         $mdToast.show(
                             $mdToast.simple()
@@ -62,6 +62,6 @@ angular.module('arraysApp')
                         $scope.submitting = false;
                     });
                 }
-            }
+            };
         }
     ]);
