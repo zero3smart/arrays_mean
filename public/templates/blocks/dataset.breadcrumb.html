@@ -1,45 +1,45 @@
 <nav class="dataset-breadcrumb clearfix" role="navigation" aria-label="navigation links">
 
-    <button ng-click="navigate('dashboard.dataset.settings')"
-        ng-class="{active: currentStep == 'dashboard.dataset.settings'}">
-        <span class="nav-item-icon" ng-class="dataset._id ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
-        <span class="nav-item-label">1. General Settings</span>
-    </button>
-
     <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.upload')" ng-disabled="!dataset._id"
         ng-class="{active: currentStep == 'dashboard.dataset.upload'}">
-        <span class="nav-item-icon" ng-class="dataset.format ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
-        <span class="nav-item-label">2. Upload Data</span>
+        <span class="nav-item-label">Data Source</span>
     </button>
 
     <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.data')" ng-disabled="!dataset.uid"
         ng-class="{active: currentStep == 'dashboard.dataset.data'}">
-        <span class="nav-item-icon" ng-class="(dataset.fe_designatedFields) ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
-        <span class="nav-item-label">3. Format Data</span>
+        <span class="nav-item-label">Format Data</span>
     </button>
 
-    <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.views')" ng-disabled="!dataset.fe_designatedFields"
+    <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.views')" ng-disabled="!dataset.fe_designatedFields.objectTitle"
         ng-class="{active: currentStep == 'dashboard.dataset.views'}">
-        <span class="nav-item-icon" ng-class="(dataset.fe_visible && dataset.fe_listed && dataset.fe_views.default_view) || (!dataset.fe_listed && !dataset.fe_visible) ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
-        <span class="nav-item-label">4. Format Views</span>
+        <span class="nav-item-label">Format Views</span>
+    </button>
+
+    <button ng-click="navigate('dashboard.dataset.settings')"
+        ng-class="{active: currentStep == 'dashboard.dataset.settings'}" ng-disabled="!dataset.fe_views.default_view">
+        <span class="nav-item-label">Publish</span>
     </button>
 
     <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.done')" ng-disabled=" (dataset.fe_visible && !dataset.fe_views.default_view)"
         ng-class="{active: currentStep == 'dashboard.dataset.done'}">
 
-        <span class="nav-item-icon" ng-class="( (!dataset.fe_visible || dataset.fe_views.default_view) && dataset.imported) ? 'icon-check-on' : 'icon-check-off'" aria-hidden="true"></span>
-        <span class="nav-item-label">5. Done!</span>
+        <span class="nav-item-label">[import]</span>
+
     </button>
 
 </nav>
-
+<!-- ds: {{dataset}}<br /> -->
+<!-- id: {{dataset._id}}<br /> -->
+<!-- uid: {{dataset.uid}} -->
 <!-- <md-nav-bar md-selected-nav-item="currentStep" md-no-ink role="navigation" aria-label="navigation links">
-    <md-nav-item md-nav-click="navigate('dashboard.dataset.settings')" name="settings" value="settings"
-        >Data Source</md-nav-item>
-    <md-nav-item md-nav-click="navigate('dashboard.dataset.data')" name="data" value="data"
-        ng-disabled="!dataset.uid">Format Data</md-nav-item>
-    <md-nav-item md-nav-click="navigate('dashboard.dataset.views')" name="views" value="views"
-        ng-disabled="!dataset.fe_designatedFields">Format Views</md-nav-item>
-    <md-nav-item md-nav-click="navigate('dashboard.dataset.done')" name="done" value="done"
-        ng-disabled="!dataset.fe_views.default_view">Publish</md-nav-item>
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.upload')" name="upload" value="upload">
+        Data Source</md-nav-item>
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.data')" name="data" value="data">
+        Format Data</md-nav-item>
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.views')" name="views" value="views">
+        Format Views</md-nav-item>
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.settings')" name="settings" value="settings">
+        Publish</md-nav-item>
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.done')" name="done" value="done">
+        (import)</md-nav-item>
 </md-nav-bar> -->

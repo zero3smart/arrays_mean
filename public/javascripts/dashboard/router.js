@@ -93,6 +93,9 @@ angular.module('arraysApp')
                                 } else {
                                     return [];
                                 }
+                            }],
+                            nullDatasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
+                                return DatasetService.getDatasetsWithQuery({uid:null});
                             }]
                         }
                     })
@@ -143,6 +146,16 @@ angular.module('arraysApp')
                            
 
                                 
+                            }]
+                        }
+                    })
+                    .state('dashboard.dataset.new', {
+                        url: '/new',
+                        controller: 'DatasetNewCtrl',
+                        templateUrl: 'templates/dataset/new.html',
+                        resolve: {
+                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
+                                return DatasetService.get($stateParams.id);
                             }]
                         }
                     })

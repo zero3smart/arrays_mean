@@ -82,3 +82,10 @@ app.filter('omit',function() {
         return copy;
     }
 })
+
+app.filter('replaceTitlePlaceholder',function() {
+    return function(input) {
+        var cleanTitle = input.indexOf('_temp_') ? input : 'New Dataset';
+        return cleanTitle;
+    }
+})

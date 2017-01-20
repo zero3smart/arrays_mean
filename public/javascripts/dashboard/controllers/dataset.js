@@ -39,4 +39,8 @@ angular.module('arraysApp')
         		}
         	};
 
+            $scope.convertToURLSafe = function(input) {
+                return input.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
+            };
+
 }]);

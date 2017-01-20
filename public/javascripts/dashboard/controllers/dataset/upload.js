@@ -5,7 +5,8 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Upload';
             $scope.progressMode = "determinate";
-            
+            $scope.addingAdditionalDatasource = false;
+
             $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
                 return initSource(additionalDatasource)
             });
@@ -58,6 +59,7 @@ angular.module('arraysApp')
                         );
 
                         additionalDatasource._id = response.id;
+                        $scope.addingAdditionalDatasource = false;
                     } else {
                         $mdToast.show(
                             $mdToast.simple()
@@ -87,7 +89,7 @@ angular.module('arraysApp')
 
             });
 
-            //right now only for uploading banner, later maybe icons. 
+            //right now only for uploading banner, later maybe icons.
             $scope.imageUploader = new FileUploader({
                 method: 'PUT',
                 disableMultipart: true,
@@ -142,6 +144,14 @@ angular.module('arraysApp')
 
             // CALLBACKS
 
+            $scope.uploader.onBeforeUploadItem = function(item) {
+                // temporary title based on name of main dataset, for clean looking uid
+                var tempTitle = item.file.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
+                dataset.title = tempTitle;
+                dataset.uid = tempTitle;
+                DatasetService.save(dataset);
+            };
+
             function onWhenAddingFileFailed(item, filter, options) {
                 // console.info('onWhenAddingFileFailed', item, filter, options);
                 if (filter.name == 'queueLimit') {
@@ -179,7 +189,7 @@ angular.module('arraysApp')
                                 .hideDelay(3000)
                         );
                     })
-                    
+
                     // $state.transitionTo('dashboard.dataset.data', {id: response.id}, {
                     //     reload: true,
                     //     inherit: false,
@@ -213,6 +223,7 @@ angular.module('arraysApp')
                     return;
                 }
 
+                $scope.addingAdditionalDatasource = true;
                 $scope.additionalDatasources.push(initSource({}));
             };
 

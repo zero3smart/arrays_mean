@@ -16,7 +16,19 @@
             </div>
         </md-input-container>
 
-        <md-input-container class="md-block">
+        <!-- <md-input-container class="md-block md-input-has-placeholder">
+            <label>URL</label>
+            <div layout="row" layout-align="start center">
+                <span class="input-prepend">{{team.subdomain}}.arrays.co/</span>
+                <input required name="url" ng-model="dataset.url" ng-pattern="/^[a-z0-9\-\_]*$/" />
+            </div>
+            <div ng-messages="settingsForm.url.$error">
+                <p ng-message="required">This field is required.</p>
+			    <p ng-message="pattern">Must be lowercase and contain no whitespace.</p>
+            </div>
+        </md-input-container> -->
+
+        <!-- <md-input-container class="md-block">
             <label>Import Revision (Only Available at the first import)</label>
             <input type="number" min="1" required name="importRevision"
                    ng-model="dataset.importRevision" ng-readonly="dataset.imported"/>
@@ -24,7 +36,7 @@
                 <div ng-message="required">This is required.</div>
                 <div ng-message="min">You should input at least 1.</div>
             </div>
-        </md-input-container>
+        </md-input-container> -->
         <md-input-container class="md-block md-color-picker">
             <label>Brand Color</label>
             <div md-color-picker ng-model="dataset.brandColor"></div>
@@ -33,7 +45,7 @@
 
         <md-input-container class="md-block">
             <label>Source URL</label>
-            <md-chips ng-model="dataset.urls" name="url" md-enable-chip-edit="true"
+            <md-chips ng-model="dataset.urls" name="source_urls" md-enable-chip-edit="true"
                       placeholder="Enter a URL" secondary-placeholder="Add URL"></md-chips>
         </md-input-container>
 
@@ -45,7 +57,7 @@
             <md-checkbox name="visible" ng-model="dataset.fe_visible">Visible</md-checkbox>
         </md-input-container>
 
-        <div layout="row" layout-align="space-between center" class="panel-footer">
+        <div layout="row" layout-align="space-between center">
             <md-button ui-sref="dashboard.dataset.list" class="md-dashboard" target="_self" md-no-ink>
                 <span class="btn-label">Back</span>
             </md-button>
