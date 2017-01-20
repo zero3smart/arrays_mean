@@ -100,6 +100,8 @@ function BarChart(selector, dataSet, options) {
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
     this._svgWidth = svgWidth;
 
+    divElement.style = "overflow: scroll;"
+
     this._svg = this._container.append('svg')
         .attr('height', this._outerHeight)
         .attr('style', 'width: ' + this._svgWidth + 'px;')
