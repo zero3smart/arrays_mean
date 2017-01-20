@@ -10,8 +10,10 @@ angular.module('arraysApp')
 
             ////
             var uniquePlaceholder = Date.now();
+
             if (!dataset.title) {dataset.title = '_temp_' + uniquePlaceholder;}
-            if (!dataset.description) {dataset.description = '_temp_' + uniquePlaceholder;}
+            // if (!dataset.description) {dataset.description = '_temp_' + uniquePlaceholder;}
+
             // if (!dataset.uid) {dataset.uid = uniquePlaceholder;}
             if (!dataset.importRevision) {dataset.importRevision = 1;}
 
@@ -19,11 +21,14 @@ angular.module('arraysApp')
 
                 // if (isValid) {
                     $scope.submitting = true;
+
                     if (!dataset.author) {
+
                         dataset.author = $scope.user._id;
                         dataset._team = $scope.team._id;
                         dataset.fe_displayTitleOverrides = {};
                     }
+
                     dataset.updatedBy = $scope.user._id;
 
 
