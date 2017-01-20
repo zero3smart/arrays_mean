@@ -1,4 +1,4 @@
-<nav class="dataset-breadcrumb clearfix" role="navigation" aria-label="navigation links">
+<nav class="dataset-breadcrumb clearfix" role="navigation" aria-label="navigation links" style="border-bottom: 1px solid #eeeeee !important;">
 
     <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.upload')" ng-disabled="!dataset._id"
         ng-class="{active: currentStep == 'dashboard.dataset.upload'}">
@@ -17,7 +17,7 @@
 
     <button ng-click="navigate('dashboard.dataset.settings')"
         ng-class="{active: currentStep == 'dashboard.dataset.settings'}" ng-disabled="!dataset.fe_views.default_view">
-        <span class="nav-item-label">Publish</span>
+        <span class="nav-item-label">Display</span>
     </button>
 
     <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.done')" ng-disabled=" (dataset.fe_visible && !dataset.fe_views.default_view)"
@@ -28,9 +28,6 @@
     </button>
 
 </nav>
-<!-- ds: {{dataset}}<br /> -->
-<!-- id: {{dataset._id}}<br /> -->
-<!-- uid: {{dataset.uid}} -->
 <!-- <md-nav-bar md-selected-nav-item="currentStep" md-no-ink role="navigation" aria-label="navigation links">
     <md-nav-item md-nav-click="navigate('dashboard.dataset.upload')" name="upload" value="upload">
         Data Source</md-nav-item>

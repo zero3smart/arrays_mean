@@ -1,6 +1,14 @@
 <md-content layout-padding>
     <div>
 
+        <md-input-container class="md-block">
+            <label>Title</label>
+            <input required name="title" ng-model="dataset.title">
+            <div ng-messages="settingsForm.title.$error">
+                <div ng-message="required">This is required.</div>
+            </div>
+        </md-input-container>
+
         <h2>Select Your Data Source</h2>
 
         <div ng-hide="dataset.uid">

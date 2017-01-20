@@ -73,6 +73,10 @@ md-select:not([disabled]):focus .md-select-value {
 
 /**/
 
+h1 {
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
 h2 {
     font-size: 24px;
 }
@@ -135,6 +139,10 @@ md-content.md-default-theme, md-content {
 
 .dashboard-content .array-content {
     padding: 15px 0;
+}
+
+.md-button.md-dashboard.md-dashboard-header {
+    margin-top: 11px;
 }
 
 .md-button.md-dashboard.primary-action {

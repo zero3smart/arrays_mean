@@ -1,12 +1,12 @@
 <md-content layout-padding md-no-ink>
     <form name="settingsForm" ng-submit="submitForm(settingsForm.$valid)" novalidate>
-        <md-input-container class="md-block">
+        <!-- <md-input-container class="md-block">
             <label>Title</label>
             <input required name="title" ng-model="dataset.title">
             <div ng-messages="settingsForm.title.$error">
                 <div ng-message="required">This is required.</div>
             </div>
-        </md-input-container>
+        </md-input-container> -->
 
         <md-input-container class="md-block">
             <label>Description</label>
@@ -57,10 +57,7 @@
             <md-checkbox name="visible" ng-model="dataset.fe_visible">Visible</md-checkbox>
         </md-input-container>
 
-        <div layout="row" layout-align="space-between center">
-            <md-button ui-sref="dashboard.dataset.list" class="md-dashboard" target="_self" md-no-ink>
-                <span class="btn-label">Back</span>
-            </md-button>
+        <div layout="row" layout-align="end center">
             <md-button class="md-dashboard confirm" type="submit" ng-disabled="settingsForm.$invalid || submitting" md-no-ink>
                 <span class="btn-label">Next</span>
             </md-button>
