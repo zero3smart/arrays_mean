@@ -7,11 +7,9 @@ angular.module('arraysApp')
             if (!dataset.fe_visible) {dataset.fe_visible = false;}
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
+            //var uniquePlaceholder = Date.now();
 
-            ////
-            var uniquePlaceholder = Date.now();
-
-            if (!dataset.title) {dataset.title = '_temp_' + uniquePlaceholder;}
+            // if (!dataset.title) {dataset.title = '_temp_' + uniquePlaceholder;}
             // if (!dataset.description) {dataset.description = '_temp_' + uniquePlaceholder;}
 
             // if (!dataset.uid) {dataset.uid = uniquePlaceholder;}

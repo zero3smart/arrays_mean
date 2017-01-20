@@ -24,6 +24,7 @@ angular.module('arraysApp')
                 uploader.onWhenAddingFileFailed = onWhenAddingFileFailed;
 
                 uploader.onAfterAddingFile = function(item) {
+
                     if (!additionalDatasource.dataset_uid)
                         additionalDatasource.dataset_uid = item.file.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
 
@@ -145,9 +146,10 @@ angular.module('arraysApp')
             // CALLBACKS
 
             $scope.uploader.onBeforeUploadItem = function(item) {
+
+
                 // temporary title based on name of main dataset, for clean looking uid
-                var tempTitle = item.file.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
-                dataset.title = tempTitle;
+                var tempTitle = dataset.title.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
                 dataset.uid = tempTitle;
                 DatasetService.save(dataset);
             };

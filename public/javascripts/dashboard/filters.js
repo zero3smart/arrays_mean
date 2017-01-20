@@ -85,7 +85,9 @@ app.filter('omit',function() {
 
 app.filter('replaceTitlePlaceholder',function() {
     return function(input) {
-        var cleanTitle = input.indexOf('_temp_') ? input : 'New Dataset';
-        return cleanTitle;
+        if (!input || input == '') {
+            return 'New Dataset';
+        }
+        return input;
     }
 })
