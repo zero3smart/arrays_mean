@@ -22,8 +22,7 @@
 
 
         <div layout="row" layout-align="end center" class="panel-footer" ng-if="dirty">
-
-        <md-checkbox name="selectAll_showFields" ng-model="dataset.skipImageScraping" ng-change="toggleImageScraping()" aria-label="Select All">
+        <md-checkbox name="selectAll_showFields" ng-model="dataset.skipImageScraping" ng-change="toggleImageScraping()" aria-label="Select All" ng-if="user.role=='superAdmin'">
             Skip Image Scraping
         </md-checkbox>
 
