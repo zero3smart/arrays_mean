@@ -319,7 +319,7 @@ module.exports.save = function(req, res) {
 module.exports.defaultLoginTeam = function(req,res) {
     var teamId = req.params.teamId;
     if (!teamId) {
-        return res.send(new Error("No teamId given"));
+        return res.status(500).send(new Error("No teamId given"));
     } 
     if (!req.user) {
         return res.status(401).send("unauthorized");
@@ -327,7 +327,7 @@ module.exports.defaultLoginTeam = function(req,res) {
         User.findByIdAndUpdate(req.user,{$set: {defaultLoginTeam: teamId}})
         .exec(function(err,result) {
             if (err) return res.send(err);
-            res.json(result);
+            return res.status(200).json(result);
         })
     }
 }

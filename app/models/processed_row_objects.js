@@ -333,10 +333,13 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
                 updateQuery.$addToSet["rowParams."+ generateFieldNamed] = doc["_id"]; 
             }
 
+
+
             nativeCollection_ofTheseProcessedRowObjects.update(findMatch,updateQuery,{multi:true});
 
 
             if (count !== 0 && count % 1000 == 0) {
+
                 winston.info("✅  processed " + count + " records of the joined field " + generateFieldNamed);
                 job.log("✅  processed " + count + " records of the joined field " + generateFieldNamed);
             }
@@ -350,6 +353,8 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
 
 
             if (count % 1000 !== 0) {
+
+
                 winston.info("✅  processed " + count  + " records of the joined field " + generateFieldNamed);
                 job.log("✅  processed " + count+ " records of the joined field " + generateFieldNamed);
             }
@@ -358,7 +363,8 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
             var setToNull = {};
             setToNull["rowParams." + generateFieldNamed] = {$exists: false}
             var setTo = {$set:{}};
-            setTo.$set["rowParams."+ generateFieldNamed] = null
+            setTo.$set["rowParams."+ generateFieldNamed] = null;
+
             nativeCollection_ofTheseProcessedRowObjects.update(setToNull,setTo,{multi:true},function(err) {
                 if (err) {
                     winston.error("❌ [" + (new Date()).toString() + "] Error while saving generated fields of processed row objects: ", err);

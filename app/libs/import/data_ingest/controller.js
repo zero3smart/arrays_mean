@@ -154,7 +154,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
 
                     job.log("🔁  Now generating fields by joining datasets ");
 
-                    async.each(
+                    async.eachSeries(
                         dataSourceDescription.relationshipFields,
                         function (description, cb) {
                             var by = description.by;

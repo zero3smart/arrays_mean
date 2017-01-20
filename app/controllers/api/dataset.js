@@ -322,15 +322,19 @@ queue.worker.process('postImport',function(job,done) {
 
 function getAllDatasetsWithQuery(query, res) {
 
+  
     datasource_description.find({$and: [{schema_id: {$exists: false}}, query]}, {
         _id: 1,
         uid: 1,
         title: 1,
         importRevision: 1
     }, function (err, datasets) {
+
         if (err) {
              return res.status(500).send(err);
         }
+
+
         return res.status(200).json({datasets: datasets});
     })
 }
