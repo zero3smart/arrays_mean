@@ -1,0 +1,53 @@
+<md-content md-no-ink>
+<!-- <form name="vm.websiteForm" ng-submit="submitForm(vm.websiteForm.$valid && vm.websiteForm.$dirty)" novalidate> -->
+    <md-input-container class="md-block" flex="50">
+        <label>Title</label>
+        <input required name="title" ng-model="team.title" maxlength="48">
+        <div ng-messages="vm.websiteForm.title.$error">
+            <div ng-message="required">This is required.</div>
+        </div>
+    </md-input-container>
+
+    <md-input-container class="md-block" flex="50">
+        <label>Description</label>
+        <textarea name="description" ng-model="team.description"></textarea>
+    </md-input-container>
+
+    <div layout="row">
+        <md-input-container flex="50">
+            <label>Subdomain</label>
+            <input value="{{team.subdomain}}.arrays.co" disabled><!--ng-model="team.subdomain" -->
+        </md-input-container>
+        <!-- <span>.arrays.co.arrays.co</span> -->
+    </div>
+
+    <div>
+        <label>Team Logo</label>
+        <div flex="50">
+            <img class="img-responsive" ng-if="team.logo" ng-src="{{team.logo}}">
+        </div>
+        <button class="" disabled>
+            <span class="btn-label">{{team.logo ? 'Update' : 'Upload'}}</span>
+        </button>
+    </div>
+
+    <div class="formInput">
+        <label>Team Masthead</label>
+        <div flex="50">
+            <img class="img-responsive" ng-if="team.logo_header" ng-src="{{team.logo_header}}">
+        </div>
+        <button class="" disabled>
+            <span class="btn-label">{{team.logo_header ? 'Update' : 'Upload'}}</span>
+        </button>
+    </div>
+
+    <div layout="row" layout-align="end center">
+        <md-button class="md-dashboard" type="submit" ng-disabled="vm.websiteForm.$invalid || !vm.websiteForm.$dirty">
+            <span class="btn-label">Save</span>
+        </md-button>
+    </div>
+
+    <a href="" ng-if="user.role=='superAdmin'">Delete Team</a>
+
+</form>
+</md-content>

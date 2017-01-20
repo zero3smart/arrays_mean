@@ -55,6 +55,7 @@
   * Execute `grunt build` to rebuild the main CSS file, style.min.css
   * Execute `grunt watch` to start LiveReload which will rebuild the css and reload the page whenever a CSS, HTML, or JS file is saved
 
+
 ### V. Creating your `.env.development` and `.env.production` files
 
 Environment-related secrets such as the production password database are not committed to this repository as a security-related best practice.
@@ -127,3 +128,4 @@ $ heroku git:remote -a arrays
   * Add in any comments for clarity and click "Create pull request".
 
 4. Once you're ready to start a new branch, go back to step 1. Note: It's important to start the new branch off 'develop' as each time you create one, it inherits from the branch you're currently on.
+

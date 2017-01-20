@@ -1,8 +1,11 @@
 var moment = require('moment');
 var url = require('url');
-var datatypes = require('../app/lib/datasources/datatypes.js');
+var datatypes = require('../app/libs/datasources/datatypes.js');
 
-module.exports = function (nunjucks_env) {
+module.exports = function (nunjucks_env,env) {
+
+
+
     nunjucks_env.addFilter('comma', require('nunjucks-comma-filter'));
     // General/shared
     nunjucks_env.addFilter('dateFormattedAs_monthDayYear', function (date) {
@@ -291,5 +294,23 @@ module.exports = function (nunjucks_env) {
     // Object Row Coercion Data Type
     nunjucks_env.addFilter('fieldDataType_coercion_toString', function(field) {
         return datatypes.fieldDataType_coercion_toString(field);
+    });
+
+    var protocol =  env.USE_SSL === 'true' ? 'https://' : 'http://';
+    var host = env.HOST? env.HOST: 'localhost:9080';
+
+    nunjucks_env.addGlobal('siteBaseURL',protocol + host);
+
+    nunjucks_env.addGlobal('explore_url', protocol + 'explore.' + host);
+
+
+    nunjucks_env.addGlobal('addSubdomain', function(strSubdomain) {
+        var siteBaseUrl = nunjucks_env.getGlobal('siteBaseURL');
+
+        if (!siteBaseUrl) return '/team/' + strSubdomain;
+        var result = url.parse(siteBaseUrl);
+        var urlParts = result.host.replace('www.', '');
+        urlParts = [strSubdomain].concat(urlParts);
+        return result.protocol + '//' + urlParts.join('.');
     });
 };

@@ -2,11 +2,46 @@ var winston = require('winston');
 var moment = require('moment');
 var _ = require('lodash');
 
-var importedDataPreparation = require('../../lib/datasources/imported_data_preparation');
+var importedDataPreparation = require('../../libs/datasources/imported_data_preparation');
 var cached_values = require('../../models/cached_values');
-var datatypes = require('../../lib/datasources/datatypes');
+var datatypes = require('../../libs/datasources/datatypes');
 var config = require('./config.js');
 //
+
+
+var _findItemInArrayOfObject = function(ArrayOfObj,targetKey) {
+
+    if (typeof ArrayOfObj != 'undefined' && Array.isArray(ArrayOfObj)) {
+        for (var i = 0; i < ArrayOfObj.length; i++) {
+            var currentKey = ArrayOfObj[i].key;
+            if (currentKey == targetKey) {
+                return ArrayOfObj[i];
+            }
+        }
+
+    }
+  
+    return null;
+}
+
+module.exports.findItemInArrayOfObject = _findItemInArrayOfObject;
+
+
+var _convertArrayObjectToObject = function(ArrayOfObj) {
+    var obj = {};
+    if (typeof ArrayOfObj != 'undefined' && Array.isArray(ArrayOfObj)) {
+        for (var i = 0 ; i< ArrayOfObj.length; i++) {
+            var key = ArrayOfObj[i].key;
+            obj[key] = ArrayOfObj[i].value;
+        }
+    }
+    return obj;
+}
+
+module.exports.convertArrayObjectToObject = _convertArrayObjectToObject;
+
+
+
 var _routePathByAppendingQueryStringToVariationOfBase = function (routePath_variation, queryString, routePath_base) {
     if (routePath_variation === routePath_base) {
         routePath_variation += "?";
@@ -56,6 +91,8 @@ var _activeFilter_matchOp_orErrDescription_fromMultiFilter = function (dataSourc
                 filterVal = filterVals[j];
             }
 
+
+            
             if (typeof filterVal === 'string' || typeof filterVal === 'number') {
 
                 matchConditions = _activeFilter_matchCondition_orErrDescription(dataSourceDescription, filterCol, filterVal);
@@ -82,6 +119,8 @@ var _activeFilter_matchOp_orErrDescription_fromMultiFilter = function (dataSourc
 module.exports.activeFilter_matchOp_orErrDescription_fromMultiFilter = _activeFilter_matchOp_orErrDescription_fromMultiFilter;
 
 //
+
+
 var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescription, filterCol, filterVal) {
     var matchConditions = undefined;
     var isAFabricatedFilter = false; // finalize
@@ -102,12 +141,29 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
 
                         var reformQuery = {};
 
+                        var nin = [];
+
+                        // catching user input for null and empty string
+
+                        choice["match"].nin.map(function(ninField) {
+                            if (ninField == 'null') {
+                                nin.push(null);
+                            } else if (ninField == '""') {
+                                nin.push("");
+                            } else {
+                                nin.push(ninField);
+                            }
+                        })
+
+
 
                         reformQuery[choice["match"].field] = {
                             $exists: choice["match"].exist,
-                            $nin: choice["match"].nin
-
+                            $nin: nin
                         }
+
+
+                        console.log(nin);
 
                         matchConditions = [{$match: reformQuery}];
 
@@ -137,16 +193,23 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
         var isDate = raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[realColumnName]
             && raw_rowObjects_coercionSchema[realColumnName].operation === "ToDate";
 
+      
         if (!isDate) {
             var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
+    
+
             var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
+      
             if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
-                var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[filterVal];
-                if (typeof overrideValue === 'undefined') {
+
+                var valueByOverride = oneToOneOverrideWithValuesByTitle_forThisColumn.find(function(singleValue) {
+                    return singleValue.override == filterVal;
+                });
+                if (typeof valueByOverride === 'undefined') {
                     var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
                     winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
                 } else {
-                    realFilterValue = overrideValue;
+                    realFilterValue = valueByOverride.value;
                 }
             }
             if (typeof realFilterValue === 'string') {
@@ -187,22 +250,28 @@ var _activeFilterRange_matchCondition_orErrDescription = function (dataSourceDes
         var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
         var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
         if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
-            var overrideValueMin = oneToOneOverrideWithValuesByTitle_forThisColumn[filterValMin];
-            if (typeof overrideValueMin === 'undefined') {
+            var valueByOverrideMin = oneToOneOverrideWithValuesByTitle_forThisColumn.find(function(valueByOverride) {
+                return valueByOverride.override = filterValMin;
+            });
+
+            if (typeof valueByOverrideMin === 'undefined') {
                 var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterValMin " + filterValMin;
                 winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
                 throw new Error("Undefined match condition");
             } else {
-                realFilterValueMin = overrideValueMin;
+                realFilterValueMin = valueByOverrideMin.value;
             }
 
-            var overrideValueMax = oneToOneOverrideWithValuesByTitle_forThisColumn[filterValMax];
-            if (typeof overrideValueMax === 'undefined') {
+            var valueByOverrideMax = oneToOneOverrideWithValuesByTitle_forThisColumn.find(function(valueByOverride) {
+                return valueByOverride.override = filterValMax;
+            });
+
+            if (typeof valueByOverrideMax === 'undefined') {
                 var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterValMax " + filterValMax;
                 winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
                 throw new Error("Undefined match condition");
             } else {
-                realFilterValueMax = overrideValueMax;
+                realFilterValueMax = valueByOverrideMax.value;
             }
         }
     } else {
@@ -226,7 +295,6 @@ var _activeFilterRange_matchCondition_orErrDescription = function (dataSourceDes
             _id: 1,
             pKey: 1,
             srcDocPKey: 1,
-            rowIdxInDoc: 1,
             rowParams: 1,
             matchingField: {
                 $cond: {
@@ -277,6 +345,8 @@ var _activeFilterOR_matchCondition_orErrDescription = function (dataSourceDescri
                             matchConditions = [{$match: reformQuery}];
 
 
+
+
                             break; // found the applicable filter choice
                         }
                     }
@@ -310,12 +380,15 @@ var _activeFilterOR_matchCondition_orErrDescription = function (dataSourceDescri
                 var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName || {};
                 var oneToOneOverrideWithValuesByTitle_forThisColumn = oneToOneOverrideWithValuesByTitleByFieldName[realColumnName];
                 if (oneToOneOverrideWithValuesByTitle_forThisColumn) {
-                    var overrideValue = oneToOneOverrideWithValuesByTitle_forThisColumn[realFilterValue];
-                    if (typeof overrideValue === 'undefined') {
+                    var valueByOverride = oneToOneOverrideWithValuesByTitle_forThisColumn.find(function(valueByOverride) {
+                        return valueByOverride.override = realFilterValue;
+                    });
+
+                    if (typeof valueByOverride === 'undefined') {
                         var errString = "Missing override value for overridden column " + realColumnName + " and incoming filterVal " + filterVal;
                         winston.error("❌  " + errString); // we'll just use the value they entered - maybe a user is manually editing the URL
                     } else {
-                        realFilterValue = overrideValue;
+                        realFilterValue = valueByOverride.value;
                     }
                 }
                 if (typeof realFilterValue === 'string') {
@@ -429,7 +502,6 @@ var _activeSearch_matchOp_orErrDescription = function (dataSourceDescription, se
             _id: '$_id',
             pKey: {'$first': '$pKey'},
             srcDocPKey: {'$first': '$srcDocPKey'},
-            rowIdxInDoc: {'$first': '$rowIdxInDoc'},
             rowParams: {'$first': '$rowParams'},
             wordExistence: {'$first': '$wordExistence'}
         }
@@ -451,7 +523,6 @@ var _neededFilterValues = function(dataSourceDescription) {
         excluding["limitedUniqValsByColName." + dataSourceDescription.fe_filters.fieldsNotAvailable[i]] = 0
     }
     return excluding;
-
 
 }
 
@@ -525,9 +596,15 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
 
         var finalizedUniqueFieldValuesByFieldName = [];
 
+
+   
+
         _.forOwn(uniqueFieldValuesByFieldName, function (columnValue, columnName) {
+
+
             /* getting illegal values list */
             var illegalValues = [];
+
 
             if (dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey) {
 
@@ -535,6 +612,7 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                     illegalValues = illegalValues.concat(dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey._all);
                 }
                 var illegalValuesForThisKey = dataSourceDescription.fe_filters.valuesToExcludeByOriginalKey[columnName];
+
                 if (illegalValuesForThisKey) {
                     illegalValues = illegalValues.concat(illegalValuesForThisKey);
                 }
@@ -545,40 +623,61 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
             var revertType = false;
             var overwriteValue = false;
 
-            var row = columnValue;
+            var row = columnValue.slice();
             if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[columnName]) {
                 row = [];
                 revertType = true;
             }
 
+
+
             if (typeof dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName !== 'undefined' &&
                 dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName]) {
+                var oneToOneOverrideWithValuesByTitleByFieldName = dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName];
                 overwriteValue = true;
             }
+         
+            var spliceCount = 0;
 
+ 
             columnValue.forEach(function(rowValue,index) {
+
+ 
+
+                if (rowValue == null || typeof rowValue == 'undefined' || rowValue == "") {
+                    return;
+                }
 
                 var existsInIllegalValueList = illegalValues.indexOf(rowValue);
 
                 if (existsInIllegalValueList == -1) {
+ 
                     if (revertType) {
                         row.push(datatypes.OriginalValue(raw_rowObjects_coercionSchema[columnName], rowValue));
                     }
 
                     if (overwriteValue) {
-                        _.forOwn(dataSourceDescription.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[columnName],function(value,key) {
-                            if (value == rowValue) {
-                                row[index] = key
-                            }
-                        })
+                        var valueByOverride = oneToOneOverrideWithValuesByTitleByFieldName.find(function(item) {
+                            return item.value == rowValue;
+                        });
+
+                  
+                        if (valueByOverride) row[index] = valueByOverride.override;
                     }
 
-                } else {
-                    if (!revertType) row.splice(index,1);
+               }
+                else {
+                    if (!revertType)  {
+                        row.splice(index-spliceCount,1);
+                        spliceCount++;
+                    }
                 }
-            })
+            });
 
-            if (dataSourceDescription.fe_filters.fieldsSortableByInteger && dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) { // Sort by integer
+
+            // Sort by integer
+            if (dataSourceDescription.fe_filters.fieldsSortableByInteger &&
+                dataSourceDescription.fe_filters.fieldsSortableByInteger.indexOf(columnName) != -1) {
 
                 row.sort(function (a, b) {
                     a = a.replace(/\D/g, '');
@@ -588,26 +687,45 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                     return a - b;
                 });
 
-            } else {
+            } else if (raw_rowObjects_coercionSchema[columnName] &&
+                raw_rowObjects_coercionSchema[columnName].operation == 'ToDate') {
 
                 row.sort(function(a, b) {
-                    var A = a.toUpperCase();
-                    var B = b.toUpperCase();
+                    var dateA = new Date(a);
+                    var dateB = new Date(b);
+                    return dateA > dateB ? 1 : -1;
+                });
 
-                    if (A < B) {
-                        return -1;
-                    }
-                    if (A > B) {
-                        return 1;
+            } else if ( (raw_rowObjects_coercionSchema[columnName] &&
+                raw_rowObjects_coercionSchema[columnName].operation !== 'ToFloat' &&
+                raw_rowObjects_coercionSchema[columnName].operation !== 'ToInteger') ||
+                !raw_rowObjects_coercionSchema[columnName]) {
+
+                row.sort(function (a, b) {
+                    if (a !== null && b !== null) {
+                        var A = a.toString().toUpperCase();
+                        var B = b.toString().toUpperCase();
+
+                        if (A < B) {
+                            return -1;
+                        }
+                        if (A > B) {
+                            return 1;
+                        }
                     }
 
                     // names must be equal
                     return 0;
                 });
-
+            } else {
+                row.sort(function(a,b) {
+                    return a - b;
+                })
             }
 
-            if (dataSourceDescription.fe_filters.fieldsSortableInReverseOrder && dataSourceDescription.fe_filters.fieldsSortableInReverseOrder.indexOf(columnName) != -1) { // Sort in reverse order
+            // Sort in reverse order
+            if (dataSourceDescription.fe_filters.fieldsSortableInReverseOrder &&
+                dataSourceDescription.fe_filters.fieldsSortableInReverseOrder.indexOf(columnName) != -1) {
                 row.reverse();
             }
 
@@ -615,7 +733,6 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
                 name: columnName,
                 values: row
             });
-
         });
 
         finalizedUniqueFieldValuesByFieldName.sort(function(a, b) {
@@ -775,10 +892,16 @@ function _filterObjFromQueryParams(queryParams) {
 module.exports.filterObjFromQueryParams = _filterObjFromQueryParams;
 
 function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupBy_realColumnName, viewType) {
+
+    var obj = _convertArrayObjectToObject(dataSourceDescription.fe_views.views[viewType]["valuesToExcludeByOriginalKey"]);
     //
-    var fe_valuesToExcludeByOriginalKey = dataSourceDescription.fe_views.views[viewType]["valuesToExcludeByOriginalKey"];
-    if (fe_valuesToExcludeByOriginalKey != null && typeof fe_valuesToExcludeByOriginalKey !== 'undefined') {
+    var fe_valuesToExcludeByOriginalKey = obj;
+    if (fe_valuesToExcludeByOriginalKey != null) {
         if (fe_valuesToExcludeByOriginalKey._all) {
+            //escape double quote
+            if (originalVal == "" &&  fe_valuesToExcludeByOriginalKey._all.indexOf('\"\"') !== -1) {
+                return null;
+            }
             if (fe_valuesToExcludeByOriginalKey._all.indexOf(originalVal) !== -1) {
                 return null; // do not push to list
             }

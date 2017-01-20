@@ -1,0 +1,43 @@
+<form name="emailForm" class="signup col-xs-12 col-sm-8 col-md-7" ng-submit='createUser()' novalidate>
+	
+		<div class="form-group" ng-class="{ 'has-error': emailForm.email.$touched && emailForm.email.$invalid}">
+			<p class="text-center signuptext">What is your email address?</p>
+
+	  		<div class="input-group">
+			  <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+			  <input name="email" type="email" class="form-control" ng-model="user.email" 
+			  ng-model-options="{updateOn:'blur'}" unique-email required>
+
+
+			</div>
+			 <div class="help-block" ng-messages="emailForm.email.$error" ng-if="emailForm.email.$touched">
+			    <p ng-message="required">Your email is required.</p>
+			    <p ng-message="email">Your email is not valid.</p>
+			    <p ng-message="emailAvailable">We found this email in our system.<a href='/auth/login' target="_blank">Login?</a></p>
+			</div>
+		</div>
+
+		<div class="float-parent">
+			<button type="submit" class="btn btn-success pull-right" ng-disabled="emailForm.$invalid" >Continue > </button>
+		</div>
+
+	<div ng-if="user._team" class="alert alert-warning reminder-message">
+
+		<div ng-if="!user.activated && user._team">
+			<strong><i class="fa fa-exclamation"></i></strong> 
+			 You have registered but have not yet activated the account. You could always <a ng-click="sendActivationEmail()" class="alert-link pointer"> resend the activation email</a>.
+		</div>
+
+		<div ng-if="user.activated && user._team">
+			<strong><i class="fa fa-exclamation"></i></strong> 
+			 You already have an account with us. Please <a href="#" class="alert-link pointer"> sign in here</a>.
+		</div>
+
+	</div>
+
+
+
+</form>
+
+
+

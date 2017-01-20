@@ -1,0 +1,149 @@
+<md-dialog aria-label="Fabricated Filters : ({{ dataset.title }})" class="field-dialog">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>Fabricated Filters : ({{ dataset.title }})</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <span class="icon-close-big" aria-label="Close dialog"></span>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-dialog-content>
+        <form name="dialog.form">
+            <md-content layout-padding>
+                <fieldset class="standard">
+                    <legend>Fabricated</legend>
+                    <div ng-repeat="fabricated in dataset.fe_filters.fabricated">
+                        <div layout="row">
+                            <md-input-container flex="45">
+                                <label>Title</label>
+                                <input type="text" name="fabricatedTitle_{{$index}}" ng-model="fabricated.title"
+                                       ng-change="verifyUniqueFabricated(fabricated, $index)" required>
+                                <div ng-messages="dialog.form['fabricatedTitle_' + $index].$error">
+                                    <div ng-message="required">This is required.</div>
+                                    <div ng-message="unique">Must be unique.</div>
+                                </div>
+                            </md-input-container>
+
+                            <md-input-container flex="45">
+                                <label>Value</label>
+                                <input type="text" name="fabricatedValue_{{$index}}"
+                                       ng-model="fabricated.choices[0].title"
+                                       ng-change="verifyUniqueFabricated(fabricated, $index)" required>
+                                <div ng-messages="dialog.form['fabricatedValue_' + $index].$error">
+                                    <div ng-message="required">This is required.</div>
+                                    <div ng-message="unique">Must be unique.</div>
+                                </div>
+                            </md-input-container>
+
+                            <div flex="10">
+                                <md-button class="md-raised" ng-click="removeFabricated(fabricated);"
+                                           aria-label="Remove Fabricated"><span
+                                        class="glyphicon glyphicon-remove"></span></md-button>
+                            </div>
+                        </div>
+
+                        <div layout="row">
+                            <md-input-container class="md-block" flex="50">
+                                <label>Field</label>
+                                <md-select required name="field_{{$index}}" ng-model="fabricated.choices[0].match.field">
+                                    <md-option ng-repeat="column in colsAvailable" value="{{column}}">
+                                        {{column}}
+                                    </md-option>
+                                    <md-option ng-repeat="customField in customFieldsToProcess" value="{{customField.fieldName}}">
+                                        {{customField.fieldName}}
+                                    </md-option>
+                                </md-select>
+                                <div ng-messages="dialog.form.field.$error">
+                                    <div ng-message="required">This is required.</div>
+                                </div>
+                            </md-input-container>
+
+                            <md-input-container class="md-block" flex="50">
+                                <label>Exclude Values</label>
+                                <md-chips required ng-model="fabricated.choices[0].match.nin"
+                                          name="fabricatedExcludeValues_{{$index}}"
+                                          md-enable-chip-edit="true"
+                                          placeholder="Enter a Value" secondary-placeholder="+Value">
+                                </md-chips>
+                                <div ng-messages="dialog.form['fabricatedExcludeValues_'+ $index].$error">
+                                    <div ng-message="required">This is required.</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+                    </div>
+
+                    <md-button class="md-raised" ng-click="addFabricated()"><span
+                            class="glyphicon glyphicon-plus"></span>Add more
+                    </md-button>
+                </fieldset>
+            </md-content>
+
+
+            <md-content layout-padding>
+                <fieldset class="standard">
+                    <legend>Default Filter</legend>
+                    <div layout="row"
+                         ng-repeat="default in data.defaultFilters">
+                        <md-input-container flex="45">
+                            <label>Name</label>
+                            <md-select name="defaultName_{{$index}}"
+                                       ng-model="default.name" required>
+                                <md-option ng-repeat="fab in dataset.fe_filters.fabricated" ng-value="fab.title">
+                                    {{fab.title}}
+                                </md-option>
+                              <!--   <md-option ng-repeat="filterChoice in fab.choices" value="{{fabricated.title}}" ng-if="dataset.fe_filters.fabricated">
+                                    {{filterChoice.title}}
+                                </md-option> -->
+                            </md-select>
+                            <div ng-messages="dialog.form.defaultName.$error">
+                                <div ng-message="required">This is required.</div>
+                            </div>
+                        </md-input-container>
+
+                        <md-input-container flex="45">
+                            <label>Value</label>
+                          <!--   <input type="text" name="defaultValue_{{$index}}" ng-model="default.value"
+                                   ng-change="verifyUniqueDefaultFilter(default, $index)" required>
+ -->
+
+
+                            <md-select name="defaultValue_{{$index}}"
+                                       ng-model="default.value" ng-change="verifyUniqueDefaultFilter(default,$index)" required>
+                    
+                                <md-option ng-repeat="filterChoice in dataset.fe_filters.fabricated[indexInFabricatedFilter(default.name)].choices" value="{{filterChoice.title}}" >
+                                    {{filterChoice.title}}
+                                </md-option>
+                            </md-select>
+
+
+                            <div ng-messages="dialog.form['defaultValue_' + $index].$error">
+                                <div ng-message="required">This is required.</div>
+                                <div ng-message="unique">Must be unique.</div>
+                            </div>
+                        </md-input-container>
+
+                        <div flex="10">
+                            <md-button class="md-raised" ng-click="removeDefaultFilter($index)" aria-label="Remove Default Filter"><span
+                                    class="glyphicon glyphicon-remove"></span></md-button>
+                        </div>
+                    </div>
+                    <md-button class="md-raised" ng-click="addDefaultFilter()"><span
+                            class="glyphicon glyphicon-plus"></span>Add more
+                    </md-button>
+                </fieldset>
+            </md-content>
+
+            <md-dialog-actions layout="row" layout-align="end center">
+                <md-button class="md-raised" ng-click="reset()" ng-disabled="!dialog.form.$dirty">
+                    Reset
+                </md-button>
+                <md-button class="md-raised" ng-click="save()"
+                           ng-disabled="!dialog.form.$dirty || dialog.form.$invalid">
+                    Save
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog-content>
+</md-dialog>

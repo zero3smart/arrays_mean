@@ -1,0 +1,112 @@
+<md-content layout-padding>
+    <md-input-container class="md-block" flex-gt-sm>
+        <md-checkbox name="filterNotAvailable" ng-model="data.filterNotAvailable" ng-change="setDirty(3)"
+                     aria-label="Filter Not Available">
+            Not Available
+        </md-checkbox>
+    </md-input-container>
+
+<!--     <md-input-container class="md-block" flex-gt-sm>
+        <md-checkbox name="commaSeparatedAsIndividual" ng-model="data.commaSeparatedAsIndividual"
+                     aria-label="Filter Comma Separated">
+            Comma Separated As Individual
+        </md-checkbox>
+    </md-input-container>
+ -->
+    <md-input-container class="md-block" flex-gt-sm>
+        <md-checkbox name="multipleSelection" ng-model="data.multipleSelection"
+                     aria-label="Filter Multiple Selection">
+            Allow Multiple Selection
+        </md-checkbox>
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm>
+        <md-checkbox name="sortableByInt" ng-model="data.sortableByInt"
+                     aria-label="Filter Sortable By Integer">
+            Sortable By Integer
+        </md-checkbox>
+    </md-input-container>
+
+    <md-input-container class="md-block" flex-gt-sm>
+        <md-checkbox name="sortableInReverse" ng-model="data.sortableInReverse"
+                     aria-label="Filter Sortable In Reverse Order">
+            Sortable In Reverse Order
+        </md-checkbox>
+    </md-input-container>
+
+
+
+
+    <fieldset class="standard" ng-if="customFieldIndex == undefined">
+        <legend>One To One Override Values By Title</legend>
+        <div layout="row"
+             ng-repeat="valueByOverride in dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName]">
+            <md-input-container flex="45">
+                <label>Value</label>
+                <input type="text" name="overrideValue_{{$index}}"
+                       ng-model="valueByOverride.value"
+                       ng-change="verifyUniqueValueOverride(valueByOverride, $index)" required>
+                <div ng-messages="dialog.fieldForm.overrideValue.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="unique">Must be unique.</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container flex="45">
+                <label>Override</label>
+                <input type="text" name="overrideValueTitle_{{$index}}" ng-model="valueByOverride.override"
+                       ng-change="verifyUniqueValueOverride(valueByOverride, $index)" required>
+                <div ng-messages="dialog.fieldForm.overrideValueTitle.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="unique">Must be unique.</div>
+                </div>
+            </md-input-container>
+
+            <div flex="10">
+                <md-button class="md-raised" ng-click="removeOneToOneOverride(valueByOverride)" aria-label="Remove OneToOneOverride"><span
+                        class="glyphicon glyphicon-remove"></span></md-button>
+            </div>
+        </div>
+        <md-button class="md-raised" ng-click="addOneToOneOverride()"><span
+                class="glyphicon glyphicon-plus"></span>Add more
+        </md-button>
+    </fieldset>
+
+    <fieldset class="standard" ng-if="customFieldIndex == undefined">
+        <legend>Values to Exclude by Original Key</legend>
+        <md-input-container class="md-block md-padding">
+            <label>All</label>
+            <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey._all"
+                      name="valuesToExcludeAll"
+                      md-enable-chip-edit="true"
+                      placeholder="Enter a Value" secondary-placeholder="+Value" ng-trim="false">
+                <md-chip-template>
+                    {{$chip}}
+                    <em>(All)</em>
+                </md-chip-template>
+            </md-chips>
+        </md-input-container>
+
+        <md-input-container class="md-block md-padding">
+            <label>{{fieldName}}</label>
+            <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey[fieldName]"
+                      name="valuesToExcludeSelf"
+                      md-enable-chip-edit="true"
+                      placeholder="Enter a Value" secondary-placeholder="+Value"
+                      ng-trim="false">
+                <md-chip-template>
+                    {{$chip}}
+                    <em>({{fieldName}})</em>
+                </md-chip-template>
+            </md-chips>
+        </md-input-container>
+    </fieldset>
+
+    <md-input-container class="md-block" flex-gt-sm ng-if="customFieldIndex == undefined">
+        <label>Keywords</label>
+        <md-chips ng-model="data.keywords.choices" name="keywords"
+                  md-enable-chip-edit="true"
+                  placeholder="Enter a Keyword" secondary-placeholder="+Keyword">
+        </md-chips>
+    </md-input-container>
+</md-content>

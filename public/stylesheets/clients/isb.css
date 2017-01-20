@@ -1,6 +1,11 @@
 /* @override 
 	http://localhost:9080/stylesheets/clients/isb.css */
 
+
+/*.icon-tile {
+    width:90px !important;
+    height:90px;
+}*/
 .icon-tile-isb-brain {
     background-image: url(/images/clients/isb/brain.svg);
 }
@@ -35,11 +40,11 @@
 
 /* @group Quantity Queries */
 
-.gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+2) ~ span:last-child {
+.gallery-item-text-inner [class^="icon-tile"]:nth-last-child(n+2) ~ img:last-child {
     margin-right: 0;
 }
 
-.gallery-item-text-inner [class^="icon-tile-isb-"]:nth-last-child(n+3) ~ span:last-child {
+.gallery-item-text-inner [class^="icon-tile"]:nth-last-child(n+3) ~ img:last-child {
     margin-right: 0;
 }
 
@@ -47,7 +52,7 @@
 
 /* @group Object Show */
 
-.object-header-icons span {
+.object-header-icons img {
     margin-right: 15px;
 }
 
@@ -66,21 +71,3 @@
 }
 
 /* @end Custom Navbar Color */
-
-/* @group Timeline Icons */
-
-.timeline-link span {
-    display: none;
-    margin-top: 10px;
-    margin-left: 10px;
-    min-width: 60px;
-    min-height: 60px;
-    width: 60px;
-    height: 60px;
-}
-
-.timeline-link span:first-child {
-    display: block;
-}
-
-/* @end Timeline Icons */

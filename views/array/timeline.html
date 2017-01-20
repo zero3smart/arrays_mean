@@ -25,10 +25,10 @@
 
         {% if view_description %}
             <div class="array-description-wrapper">
-                <p class="array-description">{{ view_description | truncate(80) }}</p>
-                <a href="#expanded"><p class="array-description-expand">Read more</p></a>
-                <p class="array-description-full">{{ view_description }}
-                <a href="#"><p class="array-description-collapse">less</p></a>
+                <p class="array-description">{{ view_description| truncate(80) }}</p>
+               <a href="javascript:;" onclick="document.location.hash='expanded';"><p class='array-description-expand'>Read more</p></a>
+                <p class="array-description-full">{{ view_description}}
+                <a href="javascript:;" onclick="document.location.hash='';"><p class="array-description-collapse">less</p></a>
             </div>
         {% endif %}
 
@@ -158,7 +158,7 @@
                                                                 {% endif %}
                                                                 {% set sortByDateRange = sortBy if sortBy else defaultSortByColumnName_humanReadable %}
                                                                 {% set filterObjForThisFilterColVal = filterObj | constructedFilterObj(sortByDateRange, filterDateRange | dump, false) %}
-                                                                <a href="{{ ('/array/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="timeline-view-all-link color-brand-hover">
+                                                                <a href="{{ ('/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="timeline-view-all-link color-brand-hover">
                                                                     <span class="timeline-view-all-label">View all</span>
                                                                     <span class="timeline-view-all-count">{{ group.total }}</span>
                                                                 </a>
@@ -210,9 +210,9 @@
 {% block inlineScript %}
     {{ super() }}
 
-    <script type="text/javascript" src="/javascripts/vendors/scrollmagic/ScrollMagic.js"></script>
-    <script type="text/javascript" src="/javascripts/module/gallery.js"></script>
-    <script type="text/javascript" src="/javascripts/module/timeline.js"></script>
+    <script type="text/javascript" src="/vendors/scrollmagic/scrollmagic/minified/ScrollMagic.min.js"></script>
+    <script type="text/javascript" src="/javascripts/gallery.js"></script>
+    <script type="text/javascript" src="/javascripts/timeline.js"></script>
 
 
     <script>

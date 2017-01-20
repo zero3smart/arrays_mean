@@ -1,0 +1,125 @@
+<md-content layout-padding ng-if="dataset.uid" md-no-ink>
+    <form name="vm.dataForm" ng-submit="submitForm(!vm.dataForm.$invalid )">
+
+
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>ObjectTitle</label>
+            <md-select name="ObjectTitle"
+                       ng-model="data.fe_designatedFields.objectTitle"
+                       >
+                <md-option ng-repeat="column in dataset.columns track by column.name" value="{{column.name}}">
+                    {{column.name}}
+                </md-option>
+            </md-select>
+    </md-input-container>
+
+        <fieldset class="standard">
+            <legend>Fields</legend>
+            <div class="fields-container">
+                <div class="field-row-header field">
+                    <div class="handler"></div>
+                    <div class="order">Order</div>
+                    <div class="exclude">
+                        Include
+                        <md-button ng-model="excludeAll" aria-label="Include/Exclude All" ng-click="toggleExclude(excludeAll)">
+                            {{ excludeAll ? 'Exclude All' : 'Include All' }}
+                        </md-button>
+                    </div>
+                    <div class="name">Column Name</div>
+                    <div class="override">Override</div>
+                    <div class="type">Type</div>
+                    <div class="sample">Sample</div>
+                </div>
+                <ul ui-sortable="fieldSortableOptions" ng-model="data.fields" class="fields">
+                    <li ng-repeat="field in data.fields" class="field"
+                        ng-class="{'custom': field.custom}"
+                        ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex)">
+                        <div class="handler"><span class="glyphicon glyphicon-move"></span></div>
+                        <div class="order">
+                            {{
+                            dataset.fe_fieldDisplayOrder.indexOf(field.name) != -1 ?
+                                dataset.fe_fieldDisplayOrder.indexOf(field.name) : ''
+                            }}
+                        </div>
+                        <div class="exclude">
+                            <md-checkbox name="fe_excludeFields_{{$index}}"
+                                         ng-model="dataset.fe_excludeFields[field.name]"
+                                         ng-true-value="false"
+                                         ng-false-value="true"
+                                         aria-label="Exclude {{field.name}}"
+                                         ng-click="$event.stopPropagation();" ng-change="setDirty(3)"></md-checkbox>
+                        </div>
+                        <div class="name">{{ field.name }}</div>
+                        <div class="override">{{ dataset.fe_displayTitleOverrides[field.name] }}</div>
+                        <div class="type">
+                            <md-select ng-if="!field.custom"
+                                       name="raw_rowObjects_coercionScheme"
+                                       ng-model="coercionScheme[field.name]"
+                                       ng-model-options="{trackBy: '$value | typeCoercionToString'}"
+                                       ng-click="$event.stopPropagation()"
+                                       ng-change="changeCoercionSchemeByOperation(field.name)"
+                                       aria-label="Type - {{field.name}}" placeholder="String">
+                                <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="{{coercion}}">
+                                    {{coercion | typeCoercionToString}}
+                                </md-option>
+                            </md-select>
+                            <b ng-if="field.customField">
+                                {{ (field.customField.fieldType | capitalize) }}
+                            </b>
+
+                            <b ng-if="field.custom">Custom</b>
+                        </div>
+                        <div class="sample">
+                            <span ng-if="!field.custom">{{ field.sample | limitTo: 200 }}{{ field.sample.length > 200 ? '...' : '' }}</span>
+                            <span ng-if="field.customField" ng-repeat="mergeField in field.customField.fieldsToMergeIntoArray" >{{mergeField}} <span
+                            ng-if="!$last">,</span> </span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </fieldset>
+
+        <div layout="column">
+            <md-button class="md-raised"
+                       ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
+                Add a New Custom Field
+            </md-button>
+        </div>
+
+        <div layout="column">
+            <md-button class="md-raised" ng-click="openNestedDialog()">
+                Click Here to Edit if Nested
+            </md-button>
+        </div>
+
+        <div layout="column">
+            <md-button class="md-raised" ng-click="openFabricatedFilterDialog()">
+                Click Here to Edit Fabricated And Default Filter
+            </md-button>
+        </div>
+
+        <div layout="column">
+            <md-button class="md-raised" ng-click="openImageScrapingDialog()">
+                Click Here if you need to generate a Image URL Field by Scraping
+            </md-button>
+        </div>
+
+        <div layout="column">
+            <md-button class="md-raised" ng-click="openJoinDialog()">
+                Click Here if you need to join any Dataset
+            </md-button>
+        </div>
+
+
+        <div layout="row" layout-align="space-between center" class="panel-footer">
+            <md-button class="md-dashboard" ng-click="reset()" ng-disabled="!vm.dataForm.$dirty">
+                <span class="btn-label">Reset</span>
+            </md-button>
+            <md-button class="md-dashboard confirm" type="submit" ng-disabled="vm.dataForm.$invalid">
+                <span class="btn-label">Next</span>
+            </md-button>
+        </div>
+    </form>
+</md-content>
+
+<ng-include src="'/templates/blocks/dataset.empty.html'" ng-if="!dataset.uid"></ng-include>

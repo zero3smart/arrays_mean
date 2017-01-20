@@ -109,9 +109,9 @@ Temporary Items
 *.csv
 
 
-## custom generated user folder */
-user/
-
+#dump
+dump/
+dump.*
 
 ##csv files ###
 *.csv

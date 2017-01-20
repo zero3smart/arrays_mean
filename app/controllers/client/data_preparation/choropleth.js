@@ -3,12 +3,13 @@ var fs = require('fs');
 var Batch = require('batch');
 var _ = require('lodash');
 //
-var importedDataPreparation = require('../../../lib/datasources/imported_data_preparation');
-var datatypes = require('../../../lib/datasources/datatypes');
+var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
+var datatypes = require('../../../libs/datasources/datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+var User = require('../../../models/users');
 
 // Prepare country geo data cache
 var __countries_geo_json_str = fs.readFileSync(__dirname + '/../../../../public/data/world.geo.json/countries.geo.json', 'utf8');
@@ -58,7 +59,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.choropleth.defaultMapByColumnName] ||
             dataSourceDescription.fe_views.views.choropleth.defaultMapByColumnName;
             //
-            var routePath_base = "/array/" + source_pKey + "/choropleth";
+            var routePath_base = "/" + source_pKey + "/choropleth";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
@@ -181,15 +182,31 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 processedRowObjects_mongooseModel.aggregate(aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            });
+
             batch.end(function (err) {
                 if (err) return callback(err);
 
                 //
+
+
                 var data =
                 {
                     env: process.env,
 
-                    user: req.user,
+                    user: user,
+          
 
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,

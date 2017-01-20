@@ -141,6 +141,7 @@
     line-height: 1em;
 }
 
+
 .gallery-item-text-link::before {
     position: relative;
     display: block;

@@ -1,0 +1,121 @@
+
+
+<form class="col-xs-8 signup" name="infoForm" ng-submit="registerUser()" novalidate>
+		<div class="form-group">
+			<label>Email</label>
+	  		<div class="input-group">
+			  <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+			  <input ng-model="user.email" type="text" class="form-control" disabled>
+			</div>
+		</div>
+
+		<div class="form-group" ng-class="{ 'has-error': infoForm.firstname.$touched && infoForm.firstname.$invalid}">
+			<label>First Name</label>
+
+	  		<div class="input-group">
+			  <span class="input-group-addon"><i class="fa fa-user"></i></span>
+			  <input name="firstname" ng-model="user.firstName" type="text" class="form-control" required>
+			</div>
+
+			 <div class="help-block" ng-messages="infoForm.firstname.$error" ng-if="infoForm.firstname.$touched">
+			    <p ng-message="required">First Name is required.</p>
+			</div>
+		</div>
+
+
+
+
+		<div class="form-group"  ng-class="{ 'has-error': infoForm.lastname.$touched && infoForm.lastname.$invalid}">
+			<label>Last Name</label>
+
+	  		<div class="input-group">
+			  <span class="input-group-addon"><i class="fa fa-user"></i></span>
+			  <input name="lastname" ng-model="user.lastName" type="text" class="form-control" required>
+			</div>
+
+			<div class="help-block" ng-messages="infoForm.lastname.$error" ng-if="infoForm.lastname.$touched">
+			    <p ng-message="required">Last Name is required.</p>
+			</div>
+		</div>
+
+
+		<div ng-if="user.provider=='local' && (!user.hash || !user.salt)" class="form-group"
+		 ng-class="{ 'has-error': infoForm.password.$touched && infoForm.password.$invalid}" >
+
+
+			<label>Password</label>
+			<a class="pull-right pointer">
+				<i class="fa fa-question-circle"></i>
+				 <md-tooltip md-visible="showPasswordToolTip" md-direction="bottom">
+		            Min length 8 characters, Max length 20 characters, must contain at least one upper, lower case letter and
+		            one non-alpha character (a number or a symbol).
+		          </md-tooltip>
+
+			</a>
+
+	  		<div class="input-group">
+			  <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+			  <input type="password" name="password" ng-model="user.password" class="form-control" ng-minlength="8"
+			  ng-maxlength="20" ng-pattern="/(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z])/">
+			</div>
+
+
+			 <div class="help-block" ng-messages="infoForm.password.$error" ng-if="infoForm.password.$touched">
+				    <p ng-message="minlength || maxlength"> Your password must be between 8 to 20 characters</p>
+				    <p ng-message="pattern">Must contain one lower, upper letter and one non-alpha character.</p>
+
+			</div>
+
+		</div>
+
+		<div ng-if="user.provider=='local' && (!user.hash || !user.salt) " class="form-group" ng-class="{ 'has-error': infoForm.verifyPassword.$touched && infoForm.verifyPassword.$invalid}">
+			<label>Verify Password</label>
+	  		<div class="input-group">
+			  <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+			  <input type="password" name="verifyPassword" ng-model="user.verifyPassword" password-checker match-target="user.password" class="form-control" required>
+			</div>
+
+			<div class="help-block" ng-messages="infoForm.verifyPassword.$error" ng-if="infoForm.verifyPassword.$touched">
+				    <p ng-message="required"> Please confirm your password.</p>
+				    <p ng-message="match">Your password does not match.</p>
+			</div>
+
+
+		</div>
+
+		<div class="form-group">
+			<label>Team Title</label><small class="pull-right" ng-hide="invitedUser">You can change this later</small>
+	  		<div class="input-group">
+			  <span class="input-group-addon"><i class="fa fa-group"></i></span>
+			  <input ng-model='user._team.title' ng-disabled="invitedUser" ng-model-options="{updateOn:'blur'}" type="text" class="form-control">
+			</div>
+		</div>
+		<subdomain-suggestion ng-hide="invitedUser" team-title='user._team.title' subdomain='user._team.subdomain'></subdomain-suggestion>
+
+		<div class="form-group" ng-class="{ 'has-error': infoForm.subdomain.$touched && infoForm.subdomain.$invalid}">
+	 		<label>Your subdomain</label>
+
+	  		<div class="input-group">
+
+				  <span class="input-group-addon"><i class="fa fa-mouse-pointer"></i></span>
+				  <input ng-disabled="invitedUser" name="subdomain" ng-model-options="{updateOn:'blur'}"  ng-model="user._team.subdomain" unique-subdomain
+				  type="text" class="form-control" ng-pattern="/^[a-z0-9\-]*$/" required>
+				  <span class="input-group-addon">.arrays.co</span>
+			</div>
+
+			 <div class="help-block" ng-messages="infoForm.subdomain.$error" ng-if="infoForm.subdomain.$touched">
+			    <p ng-message="required">A subdomain is required.</p>
+			    <p ng-message="subdomainAvailable">This subdomain is reserved.</p>
+			    <p ng-message="pattern">Must be lowercase and contains no whitespace or special character.</p>
+			</div>
+		</div>
+
+		<div>
+			<button type="submit" class="btn btn-success pull-right"
+			ng-disabled="infoForm.$invalid">Register</button>
+		</div>
+
+
+
+
+</form>

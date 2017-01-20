@@ -85,3 +85,10 @@
     background-color: #ffffff;
     content: "";
 }
+
+.md-dialog-backdrop.md-opaque {
+    z-index: 1100;
+}
+.md-dialog-container {
+    z-index: 1100;
+}

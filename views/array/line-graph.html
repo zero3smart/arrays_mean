@@ -23,11 +23,11 @@
         </header><!-- .array-header -->
 
         {% if view_description %}
-            <div class="array-description-wrapper">
-                <p class="array-description">{{ view_description | truncate(80) }}</p>
-                <a href="#expanded"><p class="array-description-expand">Read more</p></a>
-                <p class="array-description-full">{{ view_description }}
-                <a href="#"><p class="array-description-collapse">less</p></a>
+           <div class="array-description-wrapper">
+                <p class="array-description">{{ view_description| truncate(80) }}</p>
+               <a href="javascript:;" onclick="document.location.hash='expanded';"><p class='array-description-expand'>Read more</p></a>
+                <p class="array-description-full">{{ view_description}}
+                <a href="javascript:;" onclick="document.location.hash='';"><p class="array-description-collapse">less</p></a>
             </div>
         {% endif %}
 
@@ -110,7 +110,7 @@
                                     var default_view  = '{{ mapping_default_view if mapping_default_view else "gallery"}}';
                                     var words = default_view.split(/(?=[A-Z])/);
                                     var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
-                                    redirectBaseUrl = '/array/{{ mapping_source_pKey }}/' + default_view_url;
+                                    redirectBaseUrl = '/{{ mapping_source_pKey }}/' + default_view_url;
                                     {% if embedded %}
                                     redirectBaseUrl += '{{ "?embed=true" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
                                     {% else %}
@@ -157,17 +157,17 @@
 {% block inlineScript %}
     {{ super() }}
 
-    <script type="text/javascript" src="/javascripts/vendors/lodash/lodash.js"></script>
-    <script type="text/javascript" src="/javascripts/vendors/d3/d3.js"></script>
-    <script type="text/javascript" src="/javascripts/vendors/moment/moment.js"></script>
+    <script type="text/javascript" src="/vendors/lodash/dist/lodash.js"></script>
+    <script type="text/javascript" src="/vendors/d3/d3.js"></script>
+    <script type="text/javascript" src="/vendors/moment/moment.js"></script>
 
     <script type="text/javascript" src="/javascripts/tooltip.js"></script>
-    <script type="text/javascript" src="/javascripts/module/scatterplot/main.js"></script>
-    <script type="text/javascript" src="/javascripts/module/linechart/main.js"></script>
-    <script type="text/javascript" src="/javascripts/module/linechart/base.js"></script>
-    <script type="text/javascript" src="/javascripts/module/linechart/viewport.js"></script>
-    <script type="text/javascript" src="/javascripts/module/linechart/navigation.js"></script>
-    <script type="text/javascript" src="/javascripts/module/linechart/chart.js"></script>
+    <script type="text/javascript" src="/javascripts/scatterplot/main.js"></script>
+    <script type="text/javascript" src="/javascripts/linechart/main.js"></script>
+    <script type="text/javascript" src="/javascripts/linechart/base.js"></script>
+    <script type="text/javascript" src="/javascripts/linechart/viewport.js"></script>
+    <script type="text/javascript" src="/javascripts/linechart/navigation.js"></script>
+    <script type="text/javascript" src="/javascripts/linechart/chart.js"></script>
     <script>
         var graphData = {{graphData | dump | safe}};
         var lineChart = new linechart.chart(graphData , options).render("#linechart");

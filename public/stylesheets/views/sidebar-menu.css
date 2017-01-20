@@ -1,0 +1,111 @@
+/* Menu Nav Bar */
+
+.dashboard-content {
+    /*transition: left 400ms ease-in-out, width 400ms ease-in-out;*/
+    /*left: 0;*/
+    position: relative;
+    width: 100%;
+}
+
+.sidebar-menu {
+    margin-top: var(--navbar-height-mobile);
+    padding: 15px;
+    width: 100%;
+}
+@media (min-width: 768px) {
+    .sidebar-menu {
+        margin-top: var(--navbar-height-tablet);
+    }
+}
+/*not collapsed*/
+@media (min-width: 960px)  {
+    .sidebar-menu {
+        /*h1 + 15px*/
+        padding-top: calc(78px + 15px);
+        width: var(--sidebar-width);
+    }
+}
+
+md-sidenav {
+    position: fixed !important;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.md-sidenav-backdrop {
+    position: fixed !important;
+}
+@media (min-width: 960px)  {
+    md-sidenav {
+        position: relative !important;
+    }
+}
+/*dont do a transition when resizing the window*/
+/*md-sidenav.md-closed-add,*/
+/*md-sidenav.md-closed-remove,*/
+/*md-sidenav.md-closed-add.md-closed-add-active,*/
+/*md-sidenav.md-closed-remove.md-closed-remove-active,*/
+md-sidenav.md-locked-open-remove-active,
+md-sidenav.md-closed.md-locked-open-add-active {
+    transition: none !important;
+}
+
+/*menu items*/
+
+.sidebar-menu .nav > li > a {
+    position: relative;
+    /*letter-spacing: 2px;*/
+    /*font-size: 1.1em;*/
+    font-size: 16px;
+    line-height: 1em;
+
+    display: inline-block;
+    margin-bottom: 1px;
+    padding: 12px;
+    width: 100%;
+    /*color: #fff;*/
+    color: var(--color-text-dark);
+    border-radius: 4px;
+}
+
+.sidebar-menu .nav > li > a:hover,
+.sidebar-menu .nav > li.active > a,
+.sidebar-menu .nav > li > a:focus {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+
+.sidebar-menu .nav .sidebar-label {
+    /* style as if disabled, for now */
+    color: var(--color-text-med);
+    pointer-events: none;
+}
+
+.sidebar-menu .nav .sidebar-link {
+    background-color: transparent;
+    color: var(--color-primary);
+}
+
+.sidebar-menu hr {
+    margin: 12px;
+}
+
+.dashboard-menu-toggle svg {
+	width: 18px;
+	/*height: 24px;*/
+}
+ul.nav.active .dashboard-menu-toggle svg g {
+    fill: white;
+}
+
+@media (min-width: 768px)  {
+	.navbar-nav > li > a.dashboard-menu-toggle {
+	    padding: 20px;
+		padding-top: 22px;
+	}
+	.dashboard-menu-toggle svg {
+		width: 24px;
+	}
+}
+
+
+/* Menu Nav Bar */

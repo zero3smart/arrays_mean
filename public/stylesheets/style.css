@@ -6,6 +6,7 @@
 @import url('base/bootstrap-chosen.css');
 @import url('base/spectrum.css');
 
+
 /* @end Base */
 /* @group Lib */
 /* @end Lib */
@@ -14,7 +15,8 @@
 @import url('layout/embedded.css');
 /* @end Layout */
 /* @group Lib */
-@import url('lib/bootstrap-colorpicker/bootstrap-colorpicker.min.css');
+@import url('../vendors/angular-material/angular-material.min.css');
+@import url('../vendors/md-color-picker/dist/mdColorPicker.min.css');
 /* @end Lib */
 /* @group Module */
 @import url('module/header-bar.css');
@@ -38,8 +40,13 @@
 @import url('views/linechart.css');
 @import url('views/word-cloud.css');
 @import url('views/pie-set.css');
-@import url('views/admin.css');
+@import url('views/dashboard.css');
+@import url('views/sidebar-menu.css');
 @import url('views/bar-chart.css');
+
+@import url('views/login.css');
+@import url('views/signup.css');
+
 /* @end Views */
 /* @group Clients */
 @import url('clients/isb.css');

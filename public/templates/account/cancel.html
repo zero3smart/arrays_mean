@@ -1,0 +1,23 @@
+<md-content md-no-ink>
+    <h2>Cancel your {{ subscription.plan.name }} Subscription</h2>
+
+    <p>
+        If at any time you are not satisfied with the service, please let us know and we will do our best to resolve the situation.
+        You may email us any time at <a href="mailto:support@arrays.co">support@arrays.co</a>.
+    </p>
+
+    <p class="warn">
+        Important: Your subscription will remain active until the end of this billing cycle on {{ subscription.current_period_ends_at._ | date: 'MM/dd/yyyy' }}.
+    </p>
+
+    <p>Are you sure you want to cancel your subscription?</p>
+
+    <md-button class="md-dashboard md-warn" ng-click="cancelSubscription()">
+        <span class="btn-label">Cancel Your Subscription</span>
+    </md-button>
+
+    <md-button class="md-dashboard" ui-sref="dashboard.account.billing">
+        <span class="btn-label">Keep your subscription</span>
+    </md-button>
+
+</md-content>

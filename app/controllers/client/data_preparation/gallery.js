@@ -2,12 +2,13 @@ var winston = require('winston');
 var Batch = require('batch');
 var _ = require('lodash');
 //
-var importedDataPreparation = require('../../../lib/datasources/imported_data_preparation');
-var datatypes = require('../../../lib/datasources/datatypes');
+var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
+var datatypes = require('../../../libs/datasources/datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+var User = require('../../../models/users');
 
 module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
@@ -24,6 +25,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
         .then(function (dataSourceDescription) {
+
+
 
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
                 callback(new Error("No data source with that source pkey " + source_pKey), null);
@@ -44,41 +47,29 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (galleryViewSettings.galleryItemConditionsForIconWhenMissingImage) {
                 var cond = galleryViewSettings.galleryItemConditionsForIconWhenMissingImage;
 
-                var checkConditionAndApplyClasses = function (conditions, value, opr) {
+                var checkConditionAndApplyClasses = function (conditions, value,multiple) {
 
+
+                    if (typeof value == 'undefined' || value == "" || value == null) {
+                        return '<span class="icon-tile-null"></span>';
+                    }
                     for (var i = 0; i < conditions.length; i++) {
-                        if (conditions[i].operator == "in" && Array.isArray(conditions[i].value)) {
-
-                            if (conditions[i].value.indexOf(value) > 0) {
-
-                                var string = conditions[i].applyClasses.toString();
-
-                                var classes = string.replace(",", " ");
-
-                                return '<span class="' + classes + '"></span>';
-                            }
-                        }
-
-                        if (conditions[i].operator == "equal") {
 
 
-                            if (opr !== null) {
-
-                                if (opr == "trim") {
-                                    value = value.trim();
+                        if (value == conditions[i].value) {
+                            if (conditions[i].applyIconFromUrl) {
+                                if (multiple) {
+                                    return "<img class='icon-tile category-icon-2' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
                                 }
-                            }
 
-                            if (conditions[i].value == value) {
-
-                                var string = conditions[i].applyClasses.toString();
-
-                                var classes = string.replace(",", " ");
-
-                                return '<span class="' + classes + '"></span>';
+                                return "<img class='icon-tile' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
+                            } else if (conditions[i].applyClass) {
+                                // hard coded color-gender , as it is the only default icon category for now
+                                return "<span class='" + conditions[i].applyClass + " color-gender'></span>";
                             }
                         }
                     }
+                    return null;
                 };
 
                 galleryItem_htmlWhenMissingImage = function (rowObject) {
@@ -88,13 +79,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
                     var fieldValue = rowObject["rowParams"][fieldName];
-                    if (Array.isArray(fieldValue) === true) {
-                        var opr = null;
 
-                        if (cond.operationForEachValue) opr = cond.operationForEachValue;
+
+                    if (Array.isArray(fieldValue) === true) {
+
 
                         for (var i = 0; i < fieldValue.length; i++) {
-                            htmlElem += checkConditionAndApplyClasses(conditions, fieldValue[i], opr);
+                            htmlElem += checkConditionAndApplyClasses(conditions, fieldValue[i],true);
                         }
 
                     } else if (typeof fieldValue == "string") {
@@ -103,6 +94,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
                     return htmlElem;
                 };
+                
+                var returnAbsURLorBuildURL = function(url) {
+                    if (url.slice(0, 5) == "https") {
+                        return url
+                    } else {
+                        urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
+                        return urlToReturn
+                    }
+                }
             }
 
             var page = urlQuery.page;
@@ -123,16 +123,20 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             //
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
-            var routePath_base = "/array/" + source_pKey + "/gallery";
+            var routePath_base = "/" + source_pKey + "/gallery";
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
             var truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill = func.new_truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill(dataSourceDescription);
             //
+
+
             var filterObj = func.filterObjFromQueryParams(urlQuery);
 
           
 
             var isFilterActive = Object.keys(filterObj).length != 0;
+
+
             //
             var searchCol = urlQuery.searchCol;
             var searchQ = urlQuery.searchQ;
@@ -147,6 +151,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     return;
                 }
+
                 wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
             }
             if (isFilterActive) {
@@ -193,6 +198,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
+               
                     done();
                 });
             });
@@ -209,6 +215,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 ]);
                 var doneFn = function (err, results) {
                     if (err) return done(err);
+
 
                     if (results == undefined || results == null || results.length == 0) { // 0
                     } else {
@@ -231,7 +238,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         _id: 1,
                         pKey: 1,
                         srcDocPKey: 1,
-                        rowIdxInDoc: 1,
                         size: {
                             $cond: {
                                 if: {$isArray: "$" + sortBy_realColumnName_path},
@@ -244,11 +250,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 // Exclude the nested pages fields to reduce the amount of data returned
                 var rowParamsfields = Object.keys(sampleDoc.rowParams);
+
+
                 rowParamsfields.forEach(function (rowParamsField) {
                     if (dataSourceDescription.fe_nestedObject == null || rowParamsField.indexOf(dataSourceDescription.fe_nestedObject.prefix) == -1) {
                         projects['$project']['rowParams.' + rowParamsField] = 1;
                     }
                 });
+
+                // projects['$project']['rowParams.imgURL_gridThumb'] = 1
 
                 var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
                     projects,
@@ -259,6 +269,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     {$limit: limitToNResults}
                 ]);
 
+
+
+
                 var doneFn = function (err, _docs) {
                     if (err) return done(err);
 
@@ -267,8 +280,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         docs = [];
                     }
 
+
+
                     done();
                 };
+
+                // console.log(pagedDocs_aggregationOperators)
 
                 // Next, get the full set of sorted results
                 processedRowObjects_mongooseModel
@@ -278,15 +295,30 @@ module.exports.BindData = function (req, urlQuery, callback) {
             });
 
 
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            });
+
+
             batch.end(function (err) {
 
-                if (err) return callback(err);
+                if (err) return callback(err);        
+          
 
                 var data =
                 {
                     env: process.env,
 
-                    user: req.user,
+                    user: user,
 
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
@@ -298,7 +330,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                    view_description: dataSourceDescription.fe_views.views.gallery.description ? dataSourceDescription.fe_view.views.gallery.description : "",
+                    view_description: dataSourceDescription.fe_views.views.gallery.description ? dataSourceDescription.fe_views.views.gallery.description : "",
                     //
                     pageSize: config.pageSize < nonpagedCount ? config.pageSize : nonpagedCount,
                     onPageNum: pageNumber,
@@ -311,6 +343,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
                     humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
                     //
+                    scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
                     hasThumbs: hasThumbs,
                     fieldKey_medThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.medThumbImageURL : undefined,
                     //
@@ -334,8 +367,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     //
                     routePath_base: routePath_base,
                     // multiselectable filter fields
-                    multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable
+                    multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
+                    //image url
+                    // aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
+                    // folder: "/assets/images/",
+                    // uid: dataSourceDescription.uid,
+                    returnAbsURLorBuildURL: returnAbsURLorBuildURL
                 };
+
                 callback(null, data);
             });
 

@@ -22,11 +22,15 @@
         {% if view_description %}
             <div class="array-description-wrapper">
                 <p class="array-description">{{ view_description| truncate(80) }}</p>
-                <a href="#expanded"><p class="array-description-expand">Read more</p></a>
+               <a href="javascript:;" onclick="document.location.hash='expanded';"><p class='array-description-expand'>Read more</p></a>
                 <p class="array-description-full">{{ view_description}}
-                <a href="#"><p class="array-description-collapse">less</p></a>
+                <a href="javascript:;" onclick="document.location.hash='';"><p class="array-description-collapse">less</p></a>
             </div>
         {% endif %}
+
+ 
+
+
 
         <div id="array-controls" class="array-controls">
             <div class="container-fluid">
@@ -122,7 +126,10 @@
 
                         <div class="gallery">
                             <ul class="gallery-grid">
+
+                             
                                 {% for doc in docs %}
+
                                     {% if hasThumbs and doc.rowParams[fieldKey_medThumbImageURL] %}
                                         {% include "../partials/gallery_item_image.html" %}
                                     {% else %}
@@ -167,6 +174,6 @@
 {% block inlineScript %}
     {{ super() }}
 
-    <script type="text/javascript" src="/javascripts/vendors/scrollmagic/ScrollMagic.js"></script>
-    <script type="text/javascript" src="/javascripts/module/gallery.js"></script>
+    <script type="text/javascript" src="/vendors/scrollmagic/scrollmagic/minified/ScrollMagic.min.js"></script>
+    <script type="text/javascript" src="/javascripts/gallery.js"></script>
 {% endblock %}

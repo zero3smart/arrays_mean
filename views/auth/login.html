@@ -1,13 +1,10 @@
 {% extends "../homepage/homepage.html" %}
 
-{% block headSuffix %}
-    <title>Arrays</title>
-{% endblock %}
-
-{% block auth %}
+{% block content %}
     {{ super() }}
 
     <script>
-        lock.show();
+        $('#login-modal').modal('show');
     </script>
+
 {% endblock %}

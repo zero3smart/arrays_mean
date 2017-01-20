@@ -1,0 +1,87 @@
+<md-content md-no-ink ng-cloak>
+    <h2>Billing Information</h2>
+
+    <form name="billing_info" novalidate>
+
+        <div ng-cloak>
+            <md-content>
+                <md-tabs md-dynamic-height md-no-padding md-selected="selectedTab">
+                    <md-tab label="Credit Card" md-on-select="onTabChanges('credit_card')">
+                        <md-content>
+                            <ng-include src="'templates/account/payment.card.html'"></ng-include>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="Bank Account" md-on-select="onTabChanges('bank_account')">
+                        <md-content>
+                            <ng-include src="'templates/account/payment.bank.html'"></ng-include>
+                        </md-content>
+                    </md-tab>
+            </md-content>
+        </div>
+
+        <h3>Billing Address</h3><br />
+
+        <ng-form name="billing_address">
+
+            <md-input-container class="md-block">
+                <label>Country</label>
+                <md-select ng-model="billing.country" required>
+                    <md-option ng-repeat="country in countries" value="{{country.code}}">{{country.name}}</md-option>
+                </md-select>
+            </md-input-container>
+
+            <md-input-container class="md-block">
+                <label>Address</label>
+                <input ng-model="billing.address1" required />
+            </md-input-container>
+
+            <md-input-container class="md-block">
+                <label>Address 2</label>
+                <!-- tooltip: Suite, Apt no -->
+                <input ng-model="billing.address2" />
+            </md-input-container>
+
+            <md-input-container class="md-block">
+                <label>City</label>
+                <input ng-model="billing.city" required />
+            </md-input-container>
+
+            <div layout="row">
+                <md-input-container>
+                    <label>State</label>
+                    <md-select ng-model="billing.state" required>
+                        <md-option ng-repeat="aState in availableStates" value="{{aState.abbreviation}}">{{aState.name}}</md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container>
+                    <label>Zip Code</label>
+                    <input ng-model="billing.zip" required ng-minlength="5" ng-maxlength="16" maxlength="16" />
+                </md-input-container>
+            </div>
+        </ng-form>
+    </form>
+
+    <div layout="row">
+        <ul>
+            <li ng-repeat="error in errors">
+                {{ error.$.field }}: {{ error._ }}
+            </li>
+        </ul>
+    </div>
+
+    <div layout="row" layout-align="space-between center">
+
+        <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard" ng-click="updateBillingInfo($event)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
+            <span class="btn-label">Update Billing Information</span>
+        </md-button>
+
+        <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard" ng-click="updateBillingInfo($event)" ng-disabled="billing_info.payment_bank.$invalid">
+            <span class="btn-label">Update Billing Information</span>
+        </md-button>
+
+        <md-button class="md-dashboard" ui-sref="dashboard.account.billing">
+            <span class="btn-label">Cancel</span>
+        </md-button>
+    </div>
+
+</md-content>

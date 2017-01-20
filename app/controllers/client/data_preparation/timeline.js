@@ -3,12 +3,13 @@ var moment = require('moment');
 var Batch = require('batch');
 var _ = require('lodash');
 //
-var importedDataPreparation = require('../../../lib/datasources/imported_data_preparation');
-var datatypes = require('../../../lib/datasources/datatypes');
+var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
+var datatypes = require('../../../libs/datasources/datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
+var User = require('../../../models/users');
 //
 module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
@@ -58,7 +59,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
             // dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
 
-
             var groupedResultsLimit = config.timelineGroupSize;
             var groupsLimit = config.timelineGroups;
             var groupByDateFormat;
@@ -68,15 +68,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
             var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName] || dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName;
 
-
-            var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) : 
+            var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) :
             dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName
-    
-
-
 
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
-            var routePath_base = "/array/" + source_pKey + "/timeline";
+            var routePath_base = "/" + source_pKey + "/timeline";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
@@ -205,10 +201,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         nonpagedCount = results.length;
                     }
 
-
-
                     done();
                 };
+
                 processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
             });
 
@@ -235,8 +230,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     $project: {
                         _id: 1,
                         pKey: 1,
-                        srcDocPKey: 1,
-                        rowIdxInDoc: 1
+                        srcDocPKey: 1
                     }
                 };
 
@@ -328,76 +322,88 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage) {
                 var cond = dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage;
 
-                var checkConditionAndApplyClasses = function (conditions, value, opr) {
+                var checkConditionAndApplyClasses = function (conditions, value,multiple) {
+
+                    if (typeof value == 'undefined' || value == "" || value == null) {
+                        return '<span class="icon-tile-null"></span>';
+                    }
                     for (var i = 0; i < conditions.length; i++) {
-                        if (conditions[i].operator == "in" && Array.isArray(conditions[i].value)) {
-
-                            if (conditions[i].value.indexOf(value) > 0) {
-
-                                var string = conditions[i].applyClasses.toString();
-
-                                var classes = string.replace(",", " ");
 
 
-                                return '<span class="' + classes + '"></span>';
-                            }
-                        }
-                        if (conditions[i].operator == "equal") {
+                        if (value == conditions[i].value) {
 
-
-                            if (opr !== null) {
-
-                                if (opr == "trim") {
-                                    value = value.trim();
+                            if (conditions[i].applyIconFromUrl) {
+                                if (multiple) {
+                                    return "<img class='icon-tile category-icon-2' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
                                 }
+
+                                return "<img class='icon-tile' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
+                            } else if (conditions[i].applyClass) {
+                                // hard coded color-gender , as it is the only default icon category for now
+                                return "<span class='" + conditions[i].applyClass + " color-gender'></span>";
                             }
-
-                            if (conditions[i].value == value) {
-
-                                var string = conditions[i].applyClasses.toString();
-
-
-                                var classes = string.replace(",", " ");
-
-                                return '<span class="' + classes + '"></span>';
-                            }
+                           
                         }
                     }
-                }
+                    return null;
+                };
 
                 var galleryItem_htmlWhenMissingImage = function (rowObject) {
                     var fieldName = cond.field;
                     var conditions = cond.conditions;
                     var htmlElem = "";
-                    var fieldValue = rowObject["rowParams"][fieldName];
-                    if (Array.isArray(fieldValue) == true) {
-                        var opr = null
 
-                        if (cond.operationForEachValue) opr = cond.operationForEachValue
+
+                    var fieldValue = rowObject["rowParams"][fieldName];
+
+
+                    if (Array.isArray(fieldValue) === true) {
+
 
                         for (var i = 0; i < fieldValue.length; i++) {
-                            htmlElem += checkConditionAndApplyClasses(conditions, fieldValue[i], opr);
+                            htmlElem += checkConditionAndApplyClasses(conditions, fieldValue[i],true);
                         }
 
                     } else if (typeof fieldValue == "string") {
-                        htmlElem = checkConditionAndApplyClasses(conditions, fieldValue)
+                        htmlElem = checkConditionAndApplyClasses(conditions, fieldValue);
 
                     }
                     return htmlElem;
+                };
+            }
+
+            var returnAbsURLorBuildURL = function(url) {
+                if (url.slice(0, 5) == "https") {
+                    return url
+                } else {
+                    return "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
                 }
             }
 
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            });
 
             batch.end(function (err) {
                 if (err) return callback(err);
 
-                //
+           
+
                 var data =
                 {
                     env: process.env,
 
-                    user: req.user,
-
+                    user: user,
+           
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
@@ -415,6 +421,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     fieldKey_objectTitle: dataSourceDescription.fe_designatedFields.objectTitle,
                     humanReadableColumnName_objectTitle: importedDataPreparation.HumanReadableColumnName_objectTitle,
                     //
+                    scrapedImages: dataSourceDescription.imageScraping.length ? true : false,
                     hasThumbs: hasThumbs,
                     fieldKey_medThumbImageURL: hasThumbs ? dataSourceDescription.fe_designatedFields.medThumbImageURL : undefined,
                     //
@@ -450,7 +457,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
 
-                    tooltipDateFormat: dataSourceDescription.fe_views.views.timeline.tooltipDateFormat || null
+                    tooltipDateFormat: dataSourceDescription.fe_views.views.timeline.tooltipDateFormat || null,
+
+                    aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
+                    folder: "/assets/images/",
+                    uid: dataSourceDescription.uid,
+                    returnAbsURLorBuildURL: returnAbsURLorBuildURL
+
                 };
 
 

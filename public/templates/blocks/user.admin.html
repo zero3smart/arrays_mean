@@ -1,0 +1,26 @@
+<md-dialog md-no-ink aria-label="Make Team Admin">
+    <aa-toolbar title="Make Team Admin" class="warn"></aa-toolbar>
+
+    <md-dialog-content layout-padding>
+        <md-content layout="column">
+            <p>
+                Are you sure you want to make
+                <span ng-if="(person.firstName || person.lastName)"><strong>{{person.firstName}} {{person.lastName}}</strong></span>
+                <span ng-if="!(person.firstName || person.lastName)"><strong>{{ person.email }}</strong></span>
+                the admin for <strong>{{team.title}}</strong>?
+            </p>
+            <p>
+                Accepting this change will transfer admin privileges to this user and remove your account from the team.
+            </p>
+        </md-content>
+        <md-dialog-actions layout="row" layout-align="end center">
+            <md-button class="md-dashboard md-warn" ng-click="hide()">
+                <span class="btn-label">Make Team Admin</span>
+            </md-button>
+            <md-button class="md-dashboard" ng-click="cancel()">
+                Cancel
+            </md-button>
+        </md-dialog-actions>
+    </md-dialog-content>
+
+</md-dialog>

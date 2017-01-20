@@ -2,13 +2,14 @@ var winston = require('winston');
 var Batch = require('batch');
 var _ = require('lodash');
 //
-var importedDataPreparation = require('../../../lib/datasources/imported_data_preparation');
-var datatypes = require('../../../lib/datasources/datatypes');
+var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
+var datatypes = require('../../../libs/datasources/datatypes');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
 var _ = require("lodash");
+var User = require('../../../models/users');
 
 /**
  *
@@ -43,9 +44,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName] ||
             dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName;
 
-        
 
-            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) : 
+
+            var groupBy_realColumnName =  groupBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
             (dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName,dataSourceDescription) :
              dataSourceDescription.fe_views.views.pieSet.defaultGroupByColumnName
 
@@ -56,9 +57,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var defaultChartByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName] ||
             dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName;
 
-           
 
-            var chartBy_realColumnName =  chartBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartBy,dataSourceDescription) : 
+
+            var chartBy_realColumnName =  chartBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(chartBy,dataSourceDescription) :
             (dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName,dataSourceDescription) :
              dataSourceDescription.fe_views.views.pieSet.defaultChartByColumnName
 
@@ -68,7 +69,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             //
-            var routePath_base = "/array/" + source_pKey + "/pie-set";
+            var routePath_base = "/" + source_pKey + "/pie-set";
             var sourceDocURL = dataSourceDescription.urls && dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
@@ -97,8 +98,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             for (var colName in raw_rowObjects_coercionSchema) {
                 var colValue = raw_rowObjects_coercionSchema[colName];
                 if (colValue.operation == "ToInteger") {
-                    var index = typeof dataSourceDescription.fe_excludeFields == 'undefined' || (dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields.length == 0) ? -1 : dataSourceDescription.fe_excludeFields.indexOf(colName);
-                    if (index == -1 ) {
+                    var isExcluded = dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[colName];
+                    if (!isExcluded) {
                         var humanReadableColumnName = colName;
                         if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
                             humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
@@ -114,13 +115,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
             }
             if (aggregateBy_humanReadable_available) {
-                if (aggregateBy_humanReadable_available.length > 0)
-                    defaultAggregateByColumnName_humanReadable = aggregateBy_humanReadable_available[0];
                 if (aggregateBy_humanReadable_available.length == 1)
                     aggregateBy_humanReadable_available = undefined;
             }
-
-           
 
             var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
             (typeof dataSourceDescription.fe_views.views.pieSet.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
@@ -330,6 +327,32 @@ module.exports.BindData = function (req, urlQuery, callback) {
             });
 
 
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            });
+
+            var user = null;
+            batch.push(function(done) {
+                if (req.user) {
+                    User.findById(req.user, function(err, doc) {
+                        if (err) return done(err);
+                        user = doc;
+                        done();
+                    })
+                } else {
+                    done();
+                }
+            });
+
             batch.end(function (err) {
                 if (err) return callback(err);
 
@@ -348,12 +371,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     return flatResults[key];
                 });
 
-                //
+
+
                 var data =
                 {
                     env: process.env,
 
-                    user: req.user,
+                    user: user,
 
                     arrayTitle: dataSourceDescription.title,
                     array_source_key: source_pKey,

@@ -1,0 +1,57 @@
+<md-content layout-padding md-no-ink>
+    <form name="settingsForm" ng-submit="submitForm(settingsForm.$valid)" novalidate>
+        <md-input-container class="md-block">
+            <label>Title</label>
+            <input required name="title" ng-model="dataset.title">
+            <div ng-messages="settingsForm.title.$error">
+                <div ng-message="required">This is required.</div>
+            </div>
+        </md-input-container>
+
+        <md-input-container class="md-block">
+            <label>Description</label>
+            <textarea required name="description" ng-model="dataset.description"></textarea>
+            <div ng-messages="settingsForm.description.$error">
+                <div ng-message="required">This is required.</div>
+            </div>
+        </md-input-container>
+
+        <md-input-container class="md-block">
+            <label>Import Revision (Only Available at the first import)</label>
+            <input type="number" min="1" required name="importRevision"
+                   ng-model="dataset.importRevision" ng-readonly="dataset.imported"/>
+            <div ng-messages="settingsForm.importRevision.$error">
+                <div ng-message="required">This is required.</div>
+                <div ng-message="min">You should input at least 1.</div>
+            </div>
+        </md-input-container>
+        <md-input-container class="md-block md-color-picker">
+            <label>Brand Color</label>
+            <div md-color-picker ng-model="dataset.brandColor"></div>
+        </md-input-container>
+
+
+        <md-input-container class="md-block">
+            <label>Source URL</label>
+            <md-chips ng-model="dataset.urls" name="url" md-enable-chip-edit="true"
+                      placeholder="Enter a URL" secondary-placeholder="Add URL"></md-chips>
+        </md-input-container>
+
+        <md-input-container class="md-block">
+            <md-checkbox name="listed" ng-model="dataset.fe_listed">Listed</md-checkbox>
+        </md-input-container>
+
+        <md-input-container class="md-block">
+            <md-checkbox name="visible" ng-model="dataset.fe_visible">Visible</md-checkbox>
+        </md-input-container>
+
+        <div layout="row" layout-align="space-between center" class="panel-footer">
+            <md-button ui-sref="dashboard.dataset.list" class="md-dashboard" target="_self" md-no-ink>
+                <span class="btn-label">Back</span>
+            </md-button>
+            <md-button class="md-dashboard confirm" type="submit" ng-disabled="settingsForm.$invalid || submitting" md-no-ink>
+                <span class="btn-label">Next</span>
+            </md-button>
+        </div>
+    </form>
+</md-content>
