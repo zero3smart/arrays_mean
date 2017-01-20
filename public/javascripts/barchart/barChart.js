@@ -74,22 +74,40 @@ function BarChart(selector, dataSet, options) {
         return defaultMinHeight;
     });
 
+    // all of this logic is for determining the width for the viewBox
     var dimension = this._container.node().getBoundingClientRect();
+    var divElement = document.getElementById("bar-chart");
+    var parentDivWidth = document.getElementById("padding-affects-bar-chart").clientWidth;
+    var divPadding = parentDivWidth - dimension.width;
+    var realDimensionWidth = dimension.width - divPadding;
+    var barPaddingWidth = self._categoryData.length * this._padding; 
 
-    /*Set a minimum width for the barchart in cases where # of labels exceeds 18*/
-    if (dimension.width < 580 & self._categoryData.length > 16) {
-        this._outerWidth = 580;
+    if(((self._categoryData.length * (realDimensionWidth/20)) + barPaddingWidth) < realDimensionWidth || options.horizontal == true) {
+        var svgWidth = realDimensionWidth;
+    } else {
+        var svgWidth = Math.max((self._categoryData.length * (realDimensionWidth/20)) - barPaddingWidth);
     }
-    else {
-        this._outerWidth = dimension.width;
-    }  
+
+    // /*Set a minimum width for the barchart in cases where # of labels exceeds 18*/
+    if (realDimensionWidth < 580 & self._categoryData.length > 16) {
+        this._outerWidth = 580;
+    } else {
+        this._outerWidth = realDimensionWidth;
+    }
+
     this._outerHeight = dimension.height;
     this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
+    this._svgWidth = svgWidth;
+
+    divElement.style = "overflow: scroll;"
 
     this._svg = this._container.append('svg')
-        .attr('width', this._outerWidth)
-        .attr('height', this._outerHeight);
+        .attr('height', this._outerHeight)
+        .attr('style', 'width: ' + this._svgWidth + 'px;')
+        .attr('id', 'barChart-svg')
+        .attr('preserveAspectRatio', 'xMinYMin')
+        .attr('viewBox', '0 0 '+ this._svgWidth + ' ' + this._outerHeight);
 
     this._canvas = this._svg.append('g')
         .attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')');
@@ -97,14 +115,13 @@ function BarChart(selector, dataSet, options) {
     this._xAxisContainer = this._canvas.append('g')
       .attr('class', 'axis axis-x')
       .attr('transform', this.getXAxisTransform())
-      .call(this.getXAxis())
+      .call(this.getXAxis());
 
     //Rotate horizontal bar chart x-axis labels
     this.rotateLabel();
 
     this._yAxisContainer = this._canvas.append('g')
       .attr('class', 'axis axis-y')
-      .attr('transform', this.getYAxisTransform())
       .call(this.getYAxis());
 
     /**
