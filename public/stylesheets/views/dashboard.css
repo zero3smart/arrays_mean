@@ -321,12 +321,12 @@ ul.aa-color-picker {
 .aa-color-picker li.selected:before {
 	position: absolute;
 	content: '';
-	border-radius: 100%;
-	top: 25%;
-	left: 25%;
-	width: 50%;
-	height: 50%;
+	top: 12.5%;
+	left: 12.5%;
+	width: 75%;
+	height: 75%;
 	background-color: white;
+	border-radius: 100%;
 }
 .aa-color-picker li.selected,
 .aa-color-picker li:hover,

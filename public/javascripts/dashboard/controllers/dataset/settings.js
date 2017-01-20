@@ -17,12 +17,13 @@ angular.module('arraysApp')
                 '#EF0069',
                 '#00DAE5',
                 '#009E9D',
-                '#7A00F6'
+                '#7A00F6',
+                '#dddddd',
+                '#4A4A4A'
             ];
-            $scope.selected = dataset.brandColor || $scope.colors[0];
+            if(!dataset.brandColor) { dataset.brandColor = $scope.colors[0]; }
 
             $scope.pickColor = function(color) {
-                $scope.selected = color;
                 dataset.brandColor = color;
             }
 
