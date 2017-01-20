@@ -52,6 +52,8 @@ module.exports.get = function (req, res) {
     var id = req.params.id;
     if (id == 'currentUser') {
         if (!req.user) {
+            console.log("no current user");
+
             res.status(401).send({error: 'unauthorized'});
         } else {
             var userId = req.user;
@@ -60,56 +62,50 @@ module.exports.get = function (req, res) {
                 .populate('defaultLoginTeam')
                 .exec(function (err, user) {
 
+                    console.log("current user came back");
+
+
+
                     var token = jwt.sign({_id: user._id}, process.env.SESSION_SECRET);
                     var role;
-                    var batch = new Batch();
+            
 
-                    batch.concurrency(1);
-                    batch.push(function (done) {
+                    if (!user.defaultLoginTeam || user._team.length == 0) {
+                        return res.status(401).send({error: 'unauthorized'});
+                    }
 
-                        if (!user.defaultLoginTeam || user._team.length == 0) {
-                            return res.status(401).send({error: 'unauthorized'});
-                        }
 
-                        if (user.isSuperAdmin()) {
-                            role = 'superAdmin';
-                        } else if (user.defaultLoginTeam.admin && user.defaultLoginTeam.admin == userId) {
-                            role = 'admin'
+
+                    if (user.isSuperAdmin()) {
+                        role = 'superAdmin';
+                    } else if (user.defaultLoginTeam.admin && user.defaultLoginTeam.admin == userId) {
+                        role = 'admin'
+                    } else {
+                        var isEditor = _checkIfUserIsEditor(user.defaultLoginTeam.datasourceDescriptions,user._editors);
+                        if (isEditor) {
+                            role = 'editor';
                         } else {
-                            var isEditor = _checkIfUserIsEditor(user.defaultLoginTeam.datasourceDescriptions,user._editors);
-                            if (isEditor) {
-                                role = 'editor';
-                            } else {
-                                role = 'viewer';
-                            }
+                            role = 'viewer';
                         }
-                        done();
+                    }
+                    
+                    var userInfo = {
+                        _id: user._id,
+                        provider: user.provider,
+                        email: user.email,
+                        _team: user._team,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        _editors : user._editors,
+                        _viewers: user._viewers,
+                        authToken: token,
+                        invited: user.invited,
+                        role: role,
+                        defaultLoginTeam: user.defaultLoginTeam
+                    }
 
-                    })
-
-                    batch.end(function (err) {
-
-                        if (err) {
-                            console.log(err);
-                            res.status(500).send(err);
-                        } else {
-                            var userInfo = {
-                                _id: user._id,
-                                provider: user.provider,
-                                email: user.email,
-                                _team: user._team,
-                                firstName: user.firstName,
-                                lastName: user.lastName,
-                                _editors : user._editors,
-                                _viewers: user._viewers,
-                                authToken: token,
-                                invited: user.invited,
-                                role: role,
-                                defaultLoginTeam: user.defaultLoginTeam
-                            }
-                            return res.json(userInfo);
-                        }
-                    })
+                    return res.status(200).send(userInfo);
+                    
                 })
         }
 
