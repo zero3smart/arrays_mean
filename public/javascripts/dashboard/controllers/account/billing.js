@@ -175,7 +175,7 @@ angular.module('arraysApp')
                 $scope.cancel = function() {
                     $mdDialog.cancel();
                 };
-                $scope.updateQuantitity = function() {
+                $scope.updateQuantity = function() {
                     var subscrId = $scope.subscription.uuid;
                     Subscriptions.update({ subscrId: subscrId }, { quantity: $scope.subscription.quantity._ })
                     .$promise.then(function(res) {
