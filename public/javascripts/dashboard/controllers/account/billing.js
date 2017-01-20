@@ -20,7 +20,7 @@ angular.module('arraysApp')
             // Get account info from Recurly
             Account.get()
             .$promise.then(function(res) {
-                console.log(res.data);
+                // console.log(res.data);
 
                 // If no account, make new one
                 if (res.data.error) {
@@ -46,7 +46,7 @@ angular.module('arraysApp')
             function getBilling() {
                 Billing.get()
                 .$promise.then(function(res) {
-                    console.log(res.data);
+                    // console.log(res.data);
 
                     if (res.data.error) {
                         $scope.billing.exists = false;
@@ -81,7 +81,7 @@ angular.module('arraysApp')
             function getSubscriptions() {
                 Subscriptions.get()
                 .$promise.then(function(res) {
-                    console.log(res.data);
+                    // console.log(res.data);
 
                     if (res.data.error) {
                         
@@ -107,14 +107,14 @@ angular.module('arraysApp')
             function getPlans() {
                 Plans.get()
                 .$promise.then(function(res) {
-                    console.log(res.data.plans.plan);
+                    // console.log(res.data.plans.plan);
 
                     $scope.plans = res.data.plans.plan;
 
                     $scope.plan = getPlanFromPlans($scope.subscription.plan.plan_code, res.data.plans.plan);
                     $scope.annualplan = getPlanFromPlans('arrays-pro-yearly', res.data.plans.plan);
 
-                    console.log($scope.annualplan);
+                    // console.log($scope.annualplan);
                 });
             }
 
@@ -179,19 +179,19 @@ angular.module('arraysApp')
                     var subscrId = $scope.subscription.uuid;
                     Subscriptions.update({ subscrId: subscrId }, { quantity: $scope.subscription.quantity._ })
                     .$promise.then(function(res) {
-                        console.log(res.data);
+                        // console.log(res.data);
                         $mdDialog.hide();
                     });
                 };
                 $scope.updatePlanCode = function(plan_code) {
-                    console.log(plan_code);
+                    // console.log(plan_code);
                     var subscrId = $scope.subscription.uuid;
                     Subscriptions.update({ subscrId: subscrId }, {
                         quantity: $scope.subscription.quantity._,
                         plan_code: plan_code
                     })
                     .$promise.then(function(res) {
-                        console.log(res.data);
+                        // console.log(res.data);
                         getSubscriptions();
                         $mdDialog.hide();
                     });
@@ -206,12 +206,12 @@ angular.module('arraysApp')
             $scope.updateBillingInfo = function(ev) {
                 Billing.update(null, $scope.billing)
                 .$promise.then(function(res) {
-                    console.log(res);
+                    // console.log(res);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
                         $state.go('dashboard.account.billing');
                     } else {
-                        console.log(res.data);
+                        // console.log(res.data);
                         $scope.errors = res.data.errors.error;
                     }
                 }, function(err) {});
@@ -220,12 +220,12 @@ angular.module('arraysApp')
             $scope.startTrialSubscription = function(plan_code) {
                 Subscriptions.save({ 'plan_code': plan_code })
                 .$promise.then(function(res) {
-                    console.log(res.data);
+                    // console.log(res.data);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
                         $state.go('dashboard.account.billing');
                     } else {
-                        console.log(res.data);
+                        // console.log(res.data);
                     }
                 });
             };
@@ -234,7 +234,7 @@ angular.module('arraysApp')
                 var subscrId = $scope.subscription.uuid;
                 Subscriptions.cancel({ subscrId: subscrId })
                 .$promise.then(function(res) {
-                    console.log(res.data);
+                    // console.log(res.data);
                     $state.go('dashboard.account.billing');
                 });
             };
@@ -243,7 +243,7 @@ angular.module('arraysApp')
                 var subscrId = $scope.subscription.uuid;
                 Subscriptions.reactivate({ subscrId: subscrId })
                 .$promise.then(function(res) {
-                    console.log(res.data);
+                    // console.log(res.data);
                     getSubscriptions();
                 });
             };
