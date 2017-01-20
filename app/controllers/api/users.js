@@ -62,9 +62,7 @@ module.exports.get = function (req, res) {
                 .populate('defaultLoginTeam')
                 .exec(function (err, user) {
 
-                    console.log("current user came back");
-
-
+        
 
                     var token = jwt.sign({_id: user._id}, process.env.SESSION_SECRET);
                     var role;

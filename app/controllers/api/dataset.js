@@ -331,7 +331,7 @@ function getAllDatasetsWithQuery(query, res) {
         if (err) {
              return res.status(500).send(err);
         }
-        return res.json({datasets: datasets});
+        return res.status(200).send({datasets: datasets});
     })
 }
 
@@ -588,14 +588,14 @@ module.exports.get = function (req, res) {
 
                     req.session.columns[req.params.id] = columns;
                     description.columns = columns;
-                    return res.json({dataset: description});
+                    return res.status(200).json({dataset: description});
                 });
 
             } else {
 
                 if (req.session.columns[req.params.id]) description.columns = req.session.columns[req.params.id];
 
-                return res.json({dataset: description});
+                return res.status(200).json({dataset: description});
             }
         });
 };
