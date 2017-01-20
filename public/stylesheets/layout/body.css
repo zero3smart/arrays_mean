@@ -25,6 +25,28 @@
     }
 }
 
+/* @share button*/
+.navbar .share-link.btn-splash {
+    display: none;
+}
+
+@media screen and (min-width: 768px) {
+    .dropdown-menu .share-link {
+        display: none;
+    }
+
+    .navbar .share-link.btn-splash {
+        display: block;
+        color: #ffffff;
+        background-color: #000000;
+        border: none;
+        margin-top: 13px;
+        margin-bottom: 0;
+        padding: 8px 20px;
+    }
+}
+
+
 /* @group Footer */
 
 .site-footer {

@@ -198,6 +198,7 @@ linechart.viewport.prototype = Object.create(linechart.base.prototype);
  * @param {String} selector
  * @returns {linechart.viewport}
  */
+var mouseLeft = true 
 linechart.viewport.prototype.render = function (container) {
     /*
      * Stash reference to this object.
@@ -240,6 +241,7 @@ linechart.viewport.prototype.render = function (container) {
         .data(this._data)
         .enter()
         .append('g')
+        .attr('pointer-events', 'none')
         .attr('class', 'series');
     /*
      * Render empty line.
@@ -263,12 +265,20 @@ linechart.viewport.prototype.render = function (container) {
         .attr('x', 0)
         .attr('y', 0)
         .style('fill', 'transparent')
-        .on('mouseover', function () {
-            self._mouseEnterEventHandler();
-        }).on('mouseout', function () {
-            self._mouseOutEventHandler();
+        .on('mouseenter', function () {
+            if(mouseLeft == true) {
+                self._mouseEnterEventHandler();
+            } else {
+                setTimeout(function () {
+                    self._mouseEnterEventHandler();
+                }, 2000)
+            }
+        }).on('mouseleave', function () {
+            setTimeout(function () {
+                self._mouseOutEventHandler();
+            }, 2000);
         }).on('mousemove', function () {
-            self._mouseMoveEventHandler();
+            self._mouseMoveEventHandler(self._options.redirectBaseUrl);
         }).on('click', function () {
             if (self._options.redirectBaseUrl) {
                 /*
@@ -302,25 +312,25 @@ linechart.viewport.prototype.render = function (container) {
 };
 
 
+
 /**
  * Viewport mouse enter event handler.
  * @private
  */
 linechart.viewport.prototype._mouseEnterEventHandler = function () {
+    mouseLeft = false
     /*
      * Append tooltip to the document body.
      */
     this._tooltip.setOn(this._svg.node())
         .setWidth(335)
         .setOffset('top', -10);
-
     /*
      * Append x-axis highlight to the document body.
      */
     this._xAxisHighlight.setOn(this._svg.node(), 'xaxis-highlight')
         .setWidth(60)
-        .setOffset('top', -this._innerHeight - 30);
-
+        .setOffset('top', -this._innerHeight - 30)
     /*
      * Show line pointer.
      */
@@ -333,6 +343,7 @@ linechart.viewport.prototype._mouseEnterEventHandler = function () {
  * @private
  */
 linechart.viewport.prototype._mouseOutEventHandler = function () {
+    mouseLeft = true
     /*
      * Hide tooltip.
      */
@@ -357,7 +368,8 @@ linechart.viewport.prototype._mouseOutEventHandler = function () {
  * Viewport mouse move event handler.
  * @private
  */
-linechart.viewport.prototype._mouseMoveEventHandler = function () {
+linechart.viewport.prototype._mouseMoveEventHandler = function (redirectBaseUrl) {
+
     /*
      * Stash reference to this object.
      */
@@ -470,10 +482,24 @@ linechart.viewport.prototype._mouseMoveEventHandler = function () {
      * Update tooltip content.
      */
     this._xAxisHighlight.setContent(
-            '<div class="default-tooltip-content">' +
+            '<div class="default-tooltip-content" id="default-tooltip-content-date" style="font-weight: bold;">' +
             moment(date, moment.ISO_8601).format(this._options.outputInFormat) +
             '</div>')
         .show();
+
+    var element = document.getElementById('default-tooltip-content-date')
+
+    clickFunction = function() {
+        if (redirectBaseUrl) {
+            var index = self._bisectDate(self._datesDomain, date.getTime());
+            date = new Date(self._datesDomain[index]);
+
+            window.location.href = redirectBaseUrl +
+                moment(date, moment.ISO_8601).format(self._options.outputInFormat);
+        }
+    }
+    element.onclick = clickFunction
+
 };
 
 
