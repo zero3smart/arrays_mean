@@ -228,16 +228,22 @@ angular.module('arraysApp')
                 $scope.additionalDatasources.push(initSource({}));
             };
 
-            $scope.removeSource = function(datasetId) {
-                DatasetService.deleteSource(datasetId)
-                .then(function(data) {
+            $scope.removeSource = function(dataset) {
+                DatasetService.deleteSource(dataset._id)
+                .then(function(response) {
 
-                    $mdToast.show(
-                        $mdToast.simple()
-                            .textContent('data was removed successfully!')
-                            .position('top right')
-                            .hideDelay(5000)
-                    );
+                    if (response.status == 200) {
+                        dataset.fileName = null;
+                        $scope.uploader.queue = [];
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('data source was removed successfully!')
+                                .position('top right')
+                                .hideDelay(5000)
+                        );
+
+                    }
+
 
 
                 })

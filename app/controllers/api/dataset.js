@@ -387,7 +387,7 @@ module.exports.deleteSource = function(req,res) {
     datasource_description.findById(req.params.id)
     .populate('_team')
     .exec(function(err,description) {
-        var key = req.query.team + '/datasets/' + req.query.uid + '/datasources/' + req.query.uid + '_v' + req.query.revision;
+        var key = description._team.subdomain + '/datasets/' + description.uid + '/datasources/' + description.uid + '_v' + description.importRevision;
         datasource_file_service.deleteObject(key,function(err,result) {
             if (err) return res.status(500).json(err);
             description.fileName = null;
@@ -884,7 +884,7 @@ module.exports.upload = function (req, res) {
     
                 if (err) return done(err);
                 description = doc;
-                description_title = description.title;
+                description_title = description.title
                 done();
             })
     });
@@ -924,8 +924,6 @@ module.exports.upload = function (req, res) {
         });
     }
 
-    console.log(req.files.length);
-
 
     _.forEach(req.files, function (file) {
 
@@ -952,10 +950,10 @@ module.exports.upload = function (req, res) {
             // Verify that the file is readable & in the valid format.
             _readDatasourceColumnsAndSampleRecords(description, fs.createReadStream(file.path), function (err, columns) {
                 if (err) {
-                    winston.error("❌  Error validating datasource : " + description_title + " : error " + err.message);
+                    winston.error("❌  Error validating datasource : " + file.originalname + " : error " + err.message);
                     return done(err);
                 }
-                winston.info("✅  File validation okay : " + description_title);
+                winston.info("✅  File validation okay : " + file.originalname);
 
                 // Store columnNames and firstRecords for latter call on dashboard pages
                 if (!req.session.columns) req.session.columns = {};
@@ -964,12 +962,12 @@ module.exports.upload = function (req, res) {
                 req.session.columns[description.id] = columns;
 
                 // Upload datasource to AWS S3
-                if (!description.uid) description.uid = req.body.tempUID;
-                
+                if (!description.uid) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
+                description.title = req.body.tempTitle;
                 var newFileName = datasource_file_service.fileNameToUpload(description);
                 datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, description._team.subdomain, description.uid, function (err) {
                     if (err) {
-                        winston.error("❌  Error during uploading the dataset into AWS : " + description_title + " (" + err.message + ")");
+                        winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
                     }
                     done(err);
                 });
@@ -977,14 +975,14 @@ module.exports.upload = function (req, res) {
         });
 
         batch.push(function (done) {
-            winston.info("✅  Uploaded datasource : " + description_title);
+            winston.info("✅  Uploaded datasource : " + file.originalname);
 
             if (!child) {
                 description.dirty = 1; // Full Import with image scraping
 
                 description.save(function (err, updatedDescription) {
                     if (err)
-                        winston.error("❌  Error saving the dataset into the database : " + description_title + " (" + err.message + ")");
+                        winston.error("❌  Error saving the dataset into the database : " + file.originalname + " (" + err.message + ")");
                     done(err);
                 });
             } else {
