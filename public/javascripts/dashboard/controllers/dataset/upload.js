@@ -107,6 +107,11 @@ angular.module('arraysApp')
                     }
                 };
 
+                uploader.removeAndReset = function(fileItem) {
+                    uploader.removeFromQueue(fileItem);
+                    $scope.addingAdditionalDatasource = false;
+                };
+
                 additionalDatasource.uploader = uploader;
                 additionalDatasource.progressMode = 'determinate';
                 return additionalDatasource;
