@@ -846,7 +846,7 @@ var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescrip
                 if (originalVal == null || originalVal == "") {
                     return originalVal; // do not attempt to format
                 }
-                var newDateValue = moment(displayableVal, moment.ISO_8601).utc().format("MM DD, YYYY HH:mm:ss");
+                var newDateValue = moment(displayableVal, moment.ISO_8601).utc().format(coersionSchemeOfKey.outputFormat);
             }
         }
     }

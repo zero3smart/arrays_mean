@@ -60,8 +60,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             var groupBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
             raw_rowObjects_coercionSchema[groupBy_realColumnName].operation == "ToDate");
-            console.log(groupBy_isDate);
-            console.log(raw_rowObjects_coercionSchema[groupBy_realColumnName]);
             var groupBy_outputInFormat = '';
 
             var findOutputFormatObj = func.findItemInArrayOfObject(dataSourceDescription.fe_views.views.barChart.outputInFormat,groupBy_realColumnName);
@@ -318,7 +316,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
 
                 var doneFn = function (err, _multigroupedResults) {
-                    // console.log(_multigroupedResults);
                     if (err) return done(err);
 
                     if (_multigroupedResults == undefined || _multigroupedResults == null) _multigroupedResults = [];
@@ -327,14 +324,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     var _multigroupedResults_object = {};
 
                     _.each(_multigroupedResults, function (el) {
-                        // console.log('el is ');
-                        // console.log(el);
 
-                        console.log(el.category);
-                        // console.log('el.category is ' + el.category);
                         var category = el.category;
-                        // console.log(Date.parse(category))
-                        // console.log('category is ' + category);
+
                         if (_multigroupedResults_object[category] === undefined) {
                             _multigroupedResults_object[category] = [];
                         }
@@ -343,23 +335,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         _multigroupedResults_object[category].push(el);
                     });
 
-
-                    // console.log(_multigroupedResults_object);
-
                     _.forOwn(_multigroupedResults_object, function (_groupedResults, category) {
-
-                        // console.log(category);
-                        // console.log(_groupedResults);
-                        // console.log("--------------")
-                        // console.log(category + '')
 
 
                         var displayableCategory;
                         if (groupBy_isDate) {
                             displayableCategory = func.convertDateToBeRecognizable(category, groupBy_realColumnName, dataSourceDescription);
-                            // console.log(category);
-                            // console.log('displayable category is');
-                            // console.log(displayableCategory);
                         } else {
                             displayableCategory = func.ValueToExcludeByOriginalKey(
                                 category, dataSourceDescription, groupBy_realColumnName, 'barChart');
@@ -372,8 +353,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         _.each(_groupedResults, function (el, i) {
                             //
                             if (el.label) {
-                            // console.log('el.label')
-                            // console.log(el.label);
 
                                 var displayableLabel;
 
@@ -416,13 +395,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             }
                         });
                         var lowercasedLabels = Object.keys(summedValuesByLowercasedLabels);
-                        // console.log('lowercasedlabels')
-                        // console.log(lowercasedLabels);
                         var groupedResults = [];
 
                         _.each(lowercasedLabels, function (key, i, arr) {
-                            // console.log('key is')
-                            // console.log(key);
                             var summedValue = summedValuesByLowercasedLabels[key];
                             var reconstitutedDisplayableTitle = key;
                             var titleWithMostMatchesAndMatchCount = titleWithMostMatchesAndMatchAggregateByLowercasedTitle[key];
@@ -434,8 +409,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             } else {
                                 reconstitutedDisplayableTitle = titleWithMostMatchesAndMatchCount.label;
                             }
-                            // console.log('recondisplaytitle');
-                            // console.log(reconstitutedDisplayableTitle);
                             groupedResults.push({
                                 value: summedValue,
                                 label: reconstitutedDisplayableTitle
@@ -444,8 +417,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         });
 
                         stackedResultsByGroup[displayableCategory] = groupedResults;
-                        // console.log('stackedResultsByGroup');
-                        // console.log(stackedResultsByGroup);
 
                     });
 
@@ -458,11 +429,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             if (groupBy_isDate) {
                                 var offsetTime = new Date(category);
                                 offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                                console.log('offsetTime');
-                                console.log(offsetTime);
-                                if (raw_rowObjects_coercionSchema[groupBy_realColumnName].outputFormat == 'YYYY') {
-                                    console.log('yep');
-                                }
+                                offsetTime = func.convertDateToBeRecognizable(offsetTime, groupBy_realColumnName, dataSourceDescription);
                                 graphData.categories.push(offsetTime);
                             } else {
                                 graphData.categories.push(category);
