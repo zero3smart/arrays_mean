@@ -36,12 +36,9 @@
             <table class="fields-container">
                 <thead class="field-row-header field"><tr layout="row" flex>
                     <th flex="10" aa-tooltip="Drag to re-order">Order</th>
-                    <th flex="10">
-                        Include
-                        <span ng-model="excludeAll" aria-label="Include/Exclude All" ng-click="toggleExclude(excludeAll)"
-                            class="incl-excl-all" aa-tooltip="{{ excludeAll ? 'Exclude All' : 'Include All' }}">
-                            <i class="fa {{ excludeAll ? 'fa-remove' : 'fa-check' }}" aria-hidden="true"></i> all
-                        </span>
+                    <th flex="10" class="incl-excl-all" aa-tooltip="{{ excludeAll ? 'Exclude All' : 'Include All' }}">
+                        Include<br />
+                        <md-checkbox ng-model="excludeAll" ng-change="toggleExclude(!excludeAll)" md-no-ink aria-label="Include/Exclude All"></md-checkbox>
                     </th>
                     <th flex="30">Column Name</th>
                     <th flex="15">Type</th>
