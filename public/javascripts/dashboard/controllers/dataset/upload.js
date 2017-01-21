@@ -4,7 +4,7 @@ angular.module('arraysApp')
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Upload';
-            $scope.progressMode = "determinate";
+            $scope.progressMode = 'determinate';
             $scope.addingAdditionalDatasource = false;
 
             $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
@@ -12,12 +12,12 @@ angular.module('arraysApp')
             });
 
             $scope.verifyUID = function() {
-                if (dataset.title == "" || typeof dataset.title == 'undefined' || dataset.title == null) {
+                if (dataset.title == '' || typeof dataset.title == 'undefined' || dataset.title == null) {
                     $scope.uploadForm.title.$setValidity('unique',true);
                     return;
                 }
 
-                var uid = dataset.title.toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
+                var uid = dataset.title.toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
 
                 DatasetService.search({uid:uid, _team: $scope.team._id})
                 .then(function(response) {
@@ -35,13 +35,13 @@ angular.module('arraysApp')
                             $scope.uploadForm.title.$setValidity('unique',true);
                         }
                     }
-                })
+                });
 
 
 
 
 
-            }
+            };
 
             function initSource(additionalDatasource) {
                 var uploader = new FileUploader({
@@ -58,7 +58,7 @@ angular.module('arraysApp')
                 uploader.onAfterAddingFile = function(item) {
 
                     if (!additionalDatasource.dataset_uid)
-                        additionalDatasource.dataset_uid = item.file.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
+                        additionalDatasource.dataset_uid = item.file.name.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
 
                     item.formData[0].dataset_uid = additionalDatasource.dataset_uid;
                 };
@@ -70,16 +70,16 @@ angular.module('arraysApp')
                         var additionalDatasource = $scope.additionalDatasources.find(function(a) {
                             return a.uploader == self;
                         });
-                        additionalDatasource.progressMode = "indeterminate";
+                        additionalDatasource.progressMode = 'indeterminate';
                     }
                 };
 
-                uploader.onCompleteItem = function(fileItem, response, status, headers) {
+                uploader.onCompleteItem = function(fileItem, response, status) {
                     var self = this;
                     var additionalDatasource = $scope.additionalDatasources.find(function(a) {
                         return a.uploader == self;
                     });
-                    additionalDatasource.progressMode = "determinate";
+                    additionalDatasource.progressMode = 'determinate';
 
                     if (status != 200 || response == '') return;
 
@@ -108,7 +108,7 @@ angular.module('arraysApp')
                 };
 
                 additionalDatasource.uploader = uploader;
-                additionalDatasource.progressMode = "determinate";
+                additionalDatasource.progressMode = 'determinate';
                 return additionalDatasource;
             }
 
@@ -128,8 +128,8 @@ angular.module('arraysApp')
                 disableMultipart: true,
                 filters: [
                     {
-                        name: "imageFilter",
-                        fn: function (item, options) {
+                        name: 'imageFilter',
+                        fn: function (item) {
                             var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
                             return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
                         }
@@ -138,7 +138,7 @@ angular.module('arraysApp')
 
             });
 
-            $scope.imageUploader.onCompleteItem = function (fileItem, response, status, header) {
+            $scope.imageUploader.onCompleteItem = function (fileItem, response, status) {
                 if (status == 200) {
                     var reload = false;
                     if (dataset.banner) {
@@ -164,7 +164,7 @@ angular.module('arraysApp')
             };
 
             $scope.imageUploader.onAfterAddingFile = function (fileItem) {
-                console.log(fileItem);
+                // console.log(fileItem);
                 if ($scope.imageUploader.queue.length > 0) {
                     $scope.imageUploader.queue[0] = fileItem;
                 }
@@ -186,7 +186,7 @@ angular.module('arraysApp')
 
             };
 
-            function onWhenAddingFileFailed(item, filter, options) {
+            function onWhenAddingFileFailed(item, filter) {
                 // console.info('onWhenAddingFileFailed', item, filter, options);
                 if (filter.name == 'queueLimit') {
                     this.clearQueue();
@@ -199,13 +199,13 @@ angular.module('arraysApp')
             $scope.uploader.onProgressAll = function(progress) {
                 // TODO: Need to calculate the uploading progress into the AWS
                 if (progress == 100) {
-                    $scope.progressMode = "indeterminate";
+                    $scope.progressMode = 'indeterminate';
                 }
             };
 
 
-            $scope.uploader.onCompleteItem = function (fileItem, response, status, headers) {
-                $scope.progressMode = "determinate";
+            $scope.uploader.onCompleteItem = function (fileItem, response, status) {
+                $scope.progressMode = 'determinate';
 
                 if (status != 200 || response == '') return;
 
@@ -218,7 +218,7 @@ angular.module('arraysApp')
 
                     $mdToast.show(
                         $mdToast.simple()
-                            .textContent('Dataset uploaded successfully!')
+                            .textContent('Data source uploaded successfully!')
                             .position('top right')
                             .hideDelay(3000)
                     );
@@ -270,7 +270,7 @@ angular.module('arraysApp')
                         $scope.uploader.queue = [];
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent('data source was removed successfully!')
+                                .textContent('Data source removed successfully!')
                                 .position('top right')
                                 .hideDelay(5000)
                         );
@@ -279,9 +279,9 @@ angular.module('arraysApp')
 
 
 
-                })
+                });
 
-            }
+            };
 
             $scope.removeAdditionalDatasource = function () {
                 var length = $scope.additionalDatasources.length;
@@ -333,14 +333,14 @@ angular.module('arraysApp')
                 })
                 .then(function () {
                         // clear all
-                    }, function(error) {
-                        $mdToast.show(
+                }, function(error) {
+                    $mdToast.show(
                             $mdToast.simple()
                                 .textContent(error)
                                 .position('top right')
                                 .hideDelay(3000)
                         );
-                    }
+                }
                 );
             };
 

@@ -2,36 +2,17 @@
     <md-content layout-padding>
         <div>
 
-            <md-input-container class="md-block">
-                <label>Title</label>
-                <input required name="title" ng-model="dataset.title" ng-change="verifyUID()">
-
-                <div ng-messages="uploadForm.title.$error">
-                    <div ng-message="required">This is required.</div>
-                    <div ng-message="unique"> The title is used. Choose something else.</div>
-                </div>
-
-
-            </md-input-container>
-
             <h2>Select Your Data Source</h2>
-
-
 
             <div ng-hide="dataset.fileName">
                 <label>Upload spreadsheet</label>
                 <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
 
-
-
                 <input type="file" id="datafile" nv-file-select="" uploader="uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" class="team-uploader" ng-disabled=" !uploadForm.$valid || uploader.queue.length > 0" />
-
 
                  <label for="datafile" class="md-button md-dashboard primary-action" ng-disabled=" !uploadForm.$valid || uploader.queue.length > 0" >
                     Choose File
-                </label>
-
-
+                 </label>
             </div>
 
             <p class="instructions" ng-if="dataset.fileName">Dataset(s)</p>
@@ -49,7 +30,7 @@
 
                 </li>
             </ul>
-            <ul class="dashboard-list user-list" ng-cloak>
+            <ul class="dashboard-list user-list" ng-if="!dataset.fileName || dataset.fileName == null" ng-cloak>
                 <li ng-repeat="item in uploader.queue track by $index" layout="row" layout-align="space-between center">
 
                     <span ng-class="{'pending': item.isUploading }" flex="50">

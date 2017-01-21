@@ -34,12 +34,13 @@ angular.module('arraysApp')
                     DatasetService.save(dataset).then(function (response) {
 
                         if (response.status == 200) {
-                            $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent('New Dataset was created successfully!')
-                                    .position('top right')
-                                    .hideDelay(3000)
-                            );
+                            // not truly created until main datasource is uploaded
+                            // $mdToast.show(
+                            //     $mdToast.simple()
+                            //         .textContent('New Dataset was created successfully!')
+                            //         .position('top right')
+                            //         .hideDelay(3000)
+                            // );
 
                             $state.transitionTo('dashboard.dataset.upload', {id: response.data.id}, {
                                 reload: true,
