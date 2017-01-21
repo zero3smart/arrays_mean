@@ -261,7 +261,7 @@ angular.module('arraysApp')
                 $scope.additionalDatasources.push(initSource({}));
             };
 
-            $scope.removeSource = function(dataset) {
+            $scope.removeSource = function(dataset, notify) {
                 DatasetService.deleteSource(dataset._id)
                 .then(function(response) {
 
@@ -269,13 +269,14 @@ angular.module('arraysApp')
                         var toastFileName = dataset.fileName;
                         dataset.fileName = null;
                         $scope.uploader.queue = [];
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent(toastFileName + ' removed successfully!')
-                                .position('top right')
-                                .hideDelay(5000)
-                        );
-
+                        if(notify) {
+                            $mdToast.show(
+                                $mdToast.simple()
+                                    .textContent(toastFileName + ' removed successfully!')
+                                    .position('top right')
+                                    .hideDelay(5000)
+                            );
+                        }
                     }
 
 
@@ -284,15 +285,17 @@ angular.module('arraysApp')
 
             };
 
-            $scope.removeAdditionalDatasource = function (additionalDatasource) {
+            $scope.removeAdditionalDatasource = function (additionalDatasource, notify) {
                 if (additionalDatasource._id) {
                     DatasetService.removeSubdataset(additionalDatasource._id).then(function () {
-                        $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent(additionalDatasource.fileName + ' was removed successfully!')
-                                    .position('top right')
-                                    .hideDelay(5000)
-                            );
+                        if(notify) {
+                            $mdToast.show(
+                                    $mdToast.simple()
+                                        .textContent(additionalDatasource.fileName + ' was removed successfully!')
+                                        .position('top right')
+                                        .hideDelay(5000)
+                                );
+                        }
                         $scope.additionalDatasources.splice(length - 1, 1);
                     }, function (error) {
                         $mdToast.show(
@@ -326,16 +329,25 @@ angular.module('arraysApp')
                     }
                 })
                 .then(function () {
-                        // clear all
+                    var addlDatasources = $scope.additionalDatasources;
+                    $scope.removeSource(dataset, false);
+                    for (var i = 0; i < addlDatasources.length; i++) {
+                        $scope.removeAdditionalDatasource(addlDatasources[i], false);
+                    }
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent('All data sources successfully cleared!')
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
                 }, function(error) {
                     $mdToast.show(
-                            $mdToast.simple()
-                                .textContent(error)
-                                .position('top right')
-                                .hideDelay(3000)
-                        );
-                }
-                );
+                        $mdToast.simple()
+                            .textContent(error)
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+                });
             };
 
         }]);
