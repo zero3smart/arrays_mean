@@ -92,7 +92,7 @@ VerticalBarChart.prototype.rotateLabel = function () {
             .attr("dy", "-.2em")
             .attr("transform", "rotate(-90)" );
     } else {
-        return this._xAxisContainer.selectAll("text")
+        return this._xAxisContainer.selectAll("g")
         .style("display", "none")
     }
 };

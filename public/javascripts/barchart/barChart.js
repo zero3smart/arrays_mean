@@ -88,7 +88,7 @@ function BarChart(selector, dataSet, options) {
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
 
     // anything beyond this and the x-axis labels get too squished
-    if(this._outerWidth/self._categoryData.length < 16 && options.horizontal == false || this._outerHeight/self._categoryData.length < 18 && options.horizontal == true) {
+    if(this._outerWidth/self._categoryData.length < 15 && options.horizontal == false || this._outerHeight/self._categoryData.length < 18 && options.horizontal == true) {
         this._showLabels = false
     } else {
         this._showLabels = true

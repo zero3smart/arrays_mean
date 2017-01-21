@@ -2,6 +2,9 @@ $(document).ready(function() {
     var barChart;
     function renderBarChart() {
         options = getCookies();
+        if(!options.hasOwnProperty("horizontal")) {
+            options["horizontal"] = false;
+        }
         barChart = BarChart.getInstance('#bar-chart', graphData, options);
     }
 
@@ -19,7 +22,11 @@ $(document).ready(function() {
             } else {
                 value = true;
             }
-            options[key] = value;
+            if(key == "horizontal" || key == "padding" || key == "sortDirection" || key == "normalize") {
+                options[key] = value;
+            } else {
+                continue;
+            }
         }
         return options;
     }
