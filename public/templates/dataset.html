@@ -10,7 +10,7 @@
 <div class="array-content dataset">
 
     <ng-include src="'templates/blocks/dataset.breadcrumb.html'"
-                ng-if="$state.is('dashboard.dataset.list') == false"></ng-include>
+                ng-if="$state.is('dashboard.dataset.list') == false && $state.is('dashboard.dataset.new') == false"></ng-include>
 
     <div ui-view class="ext-content"></div>
 

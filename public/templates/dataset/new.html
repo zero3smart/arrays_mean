@@ -1,0 +1,16 @@
+<md-content layout-padding md-no-ink>
+    <form name="newDSForm" ng-submit="submitForm(newDSForm.$valid)" novalidate>
+        <md-input-container class="md-block">
+            <label>Title</label>
+            <input required name="title" ng-model="dataset.title">
+            <div ng-messages="newDSForm.title.$error">
+                <div ng-message="required">This is required.</div>
+            </div>
+        </md-input-container>
+        <div layout="row" layout-align="end center">
+            <md-button class="md-dashboard confirm" type="submit" ng-disabled="settingsForm.$invalid || submitting" md-no-ink>
+                <span class="btn-label">Next</span>
+            </md-button>
+        </div>
+    </form>
+</md-content>
