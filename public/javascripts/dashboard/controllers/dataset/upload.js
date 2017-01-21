@@ -8,7 +8,7 @@ angular.module('arraysApp')
             $scope.addingAdditionalDatasource = false;
 
             $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
-                return initSource(additionalDatasource)
+                return initSource(additionalDatasource);
             });
 
             function initSource(additionalDatasource) {
@@ -122,8 +122,8 @@ angular.module('arraysApp')
                                 .textContent('Image upload successfully!')
                                 .position('top right')
                                 .hideDelay(3000)
-                        )
-                    })
+                        );
+                    });
                 }
             };
 
@@ -140,7 +140,7 @@ angular.module('arraysApp')
                     .then(function (urlInfo) {
                         fileItem.url = urlInfo.putUrl;
                         fileItem.publicUrl = urlInfo.publicUrl;
-                    })
+                    });
             };
 
             // CALLBACKS
@@ -190,7 +190,7 @@ angular.module('arraysApp')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
-                    })
+                    });
 
                     // $state.transitionTo('dashboard.dataset.data', {id: response.id}, {
                     //     reload: true,
@@ -256,5 +256,38 @@ angular.module('arraysApp')
                     }
                 }
             };
-        }
-    ]);
+
+            $scope.clearAll = function (id, title, ev) {
+                $mdDialog.show({
+                    templateUrl: 'templates/blocks/dataset.clearall.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    locals: {
+                        title: title,
+                    },
+                    controller: function($scope, $mdDialog) {
+                        $scope.title = title;
+                        $scope.hide = function() {
+                            $mdDialog.hide();
+                        };
+                        $scope.cancel = function() {
+                            $mdDialog.cancel();
+                        };
+                    }
+                })
+                .then(function () {
+                        // clear all
+                    }, function(error) {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent(error)
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    }
+                );
+            };
+
+        }]);

@@ -1,0 +1,23 @@
+<md-dialog md-no-ink aria-label="Clear All Data">
+    <aa-toolbar title="Clear All Data" class="warn"></aa-toolbar>
+
+    <md-dialog-content layout-padding>
+        <md-content layout="column">
+            <p>
+                Clearing all your data sources will delete any data currently stored in your dataset.
+            </p>
+            <p>
+                Are you sure you want to clear all data sources?
+            </p>
+        </md-content>
+        <md-dialog-actions layout="row" layout-align="end center">
+            <md-button class="md-dashboard md-warn" ng-click="hide()">
+                <span class="btn-label">Clear All</span>
+            </md-button>
+            <md-button class="md-dashboard" ng-click="cancel()">
+                Cancel
+            </md-button>
+        </md-dialog-actions>
+    </md-dialog-content>
+
+</md-dialog>

@@ -188,13 +188,8 @@
         </div> -->
         <div layout="row" layout-align="space-between center" ng-hide="!dataset.uid">
             <p>
-                <a href="" class="warn">Clear All</a>
+                <a ng-click="clearAll()" class="warn">Clear All</a>
             </p>
-
-            <!-- Important: Clearing all your data sources will delete any data currently stored in your dataset.
-            Are you sure you want to clear all data sources?
-            CLEAR ALL
-            CANCEL -->
 
             <!-- if init wizard -->
             <md-button class="md-dashboard confirm" ng-click="navigate('dashboard.dataset.data')" md-no-ink>
