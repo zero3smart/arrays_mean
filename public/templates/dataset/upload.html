@@ -73,7 +73,7 @@
                     <li layout="row" layout-align="space-between center">
 
                         <span flex="50">
-                            <span class="dashboard-list-name">{{ additionalDatasource.fileName }}uploaded</span>
+                            <span class="dashboard-list-name">{{ additionalDatasource.fileName }}</span>
                         </span>
 
                         <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeAdditionalDatasource(additionalDatasource)">
@@ -82,7 +82,7 @@
 
                     </li>
                 </ul>
-                <div ng-repeat="item in additionalDatasource.uploader.queue track by $index">
+                <div ng-repeat="item in additionalDatasource.uploader.queue track by $index" ng-if="!additionalDatasource.fileName">
                     <ul class="dashboard-list user-list" ng-cloak>
                         <li layout="row" layout-align="space-between center">
 

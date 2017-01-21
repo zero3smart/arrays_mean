@@ -93,6 +93,7 @@ angular.module('arraysApp')
 
                         additionalDatasource._id = response.id;
                         $scope.addingAdditionalDatasource = false;
+                        additionalDatasource.fileName = fileItem.file.name; // force uploaded/uploading list changes
                     } else {
                         $mdToast.show(
                             $mdToast.simple()
