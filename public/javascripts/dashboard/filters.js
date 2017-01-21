@@ -16,7 +16,7 @@ app.filter('capitalize', function () {
     };
 });
 
-app.filter('pluralize', function () {
+app.filter('appendPluralized', function () {
     return function (input, singular, plural) {
         if (input === undefined) {
             return;
@@ -29,6 +29,23 @@ app.filter('pluralize', function () {
         }
         else {
             return input + ' ' + plural;
+        }
+    };
+});
+
+app.filter('pluralize', function () {
+    return function (input, singular, plural) {
+        if (input === undefined) {
+            return;
+        }
+        else if (input === 0) {
+            return 'No ' + plural;
+        }
+        else if (input === 1) {
+            return singular;
+        }
+        else {
+            return plural;
         }
     };
 });

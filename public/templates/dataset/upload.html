@@ -2,7 +2,7 @@
     <md-content layout-padding>
         <div>
 
-            <h2>Select Your Data Source</h2>
+            <h2>Select Your Data Source(s)</h2>
 
             <div ng-hide="dataset.fileName">
                 <label>Upload spreadsheet</label>
@@ -15,13 +15,13 @@
                  </label>
             </div>
 
-            <p class="instructions" ng-if="dataset.fileName">Dataset(s)</p>
+            <p class="instructions" ng-if="dataset.fileName">Datasets</p>
 
             <ul class="dashboard-list user-list" ng-cloak>
                 <li ng-if="dataset.fileName" layout="row" layout-align="space-between center">
 
-                    <span flex="50">
-                        <span class="dashboard-list-name">{{dataset.fileName}}</span>
+                    <span flex="50" class="dashboard-list-name">
+                        <strong>{{dataset.fileName}}</strong>
                     </span>
 
                     <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeSource(dataset)">
@@ -69,14 +69,14 @@
                         Choose File
                     </label>
                 </div>
-                <ul class="dashboard-list user-list" ng-if="additionalDatasource.dataset_uid && !additionalDatasource.uploader.queue.length" ng-cloak>
+                <ul class="dashboard-list user-list" ng-if="additionalDatasource.fileName" ng-cloak>
                     <li layout="row" layout-align="space-between center">
 
                         <span flex="50">
-                            <span class="dashboard-list-name">{{ additionalDatasource.dataset_uid }}</span>
+                            <span class="dashboard-list-name">{{ additionalDatasource.fileName }}uploaded</span>
                         </span>
 
-                        <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5">
+                        <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeAdditionalDatasource(additionalDatasource)">
                             <i class="fa fa-remove" aria-hidden="true"></i>
                         </span>
 
