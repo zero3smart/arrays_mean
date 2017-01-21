@@ -11,6 +11,38 @@ angular.module('arraysApp')
                 return initSource(additionalDatasource);
             });
 
+            $scope.verifyUID = function() {
+                if (dataset.title == "" || typeof dataset.title == 'undefined' || dataset.title == null) {
+                    $scope.uploadForm.title.$setValidity('unique',true);
+                    return;
+                }
+
+                var uid = dataset.title.toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
+
+                DatasetService.search({uid:uid, _team: $scope.team._id})
+                .then(function(response) {
+                    if (response.status == 200) {
+
+                        if (response.data.length > 0) {
+
+                            if (response.data.length == 1 && response.data[0]._id == dataset._id) {
+                                $scope.uploadForm.title.$setValidity('unique',true);
+                                return;
+                            }
+                            $scope.uploadForm.title.$setValidity('unique',false);
+
+                        } else {
+                            $scope.uploadForm.title.$setValidity('unique',true);
+                        }
+                    }
+                })
+
+
+
+
+
+            }
+
             function initSource(additionalDatasource) {
                 var uploader = new FileUploader({
                     url: '/api/dataset/upload',
@@ -145,13 +177,13 @@ angular.module('arraysApp')
 
             // CALLBACKS
 
+
+
+
             $scope.uploader.onBeforeUploadItem = function(item) {
 
+                item.formData[0].tempTitle =  dataset.title;
 
-                // temporary title based on name of main dataset, for clean looking uid
-                var tempTitle = dataset.title.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
-                dataset.uid = tempTitle;
-                DatasetService.save(dataset);
             };
 
             function onWhenAddingFileFailed(item, filter, options) {
@@ -171,26 +203,26 @@ angular.module('arraysApp')
                 }
             };
 
+
             $scope.uploader.onCompleteItem = function (fileItem, response, status, headers) {
                 $scope.progressMode = "determinate";
-
-
 
                 if (status != 200 || response == '') return;
 
                 if (!response.error && response.id) {
+
                     dataset.uid = response.uid;
 
                     dataset.dirty = 1;
+                    dataset.fileName = fileItem.file.name;
 
-                    DatasetService.save(dataset).then(function () {
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Dataset uploaded successfully!')
-                                .position('top right')
-                                .hideDelay(3000)
-                        );
-                    });
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent('Dataset uploaded successfully!')
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+
 
                     // $state.transitionTo('dashboard.dataset.data', {id: response.id}, {
                     //     reload: true,
@@ -228,6 +260,28 @@ angular.module('arraysApp')
                 $scope.addingAdditionalDatasource = true;
                 $scope.additionalDatasources.push(initSource({}));
             };
+
+            $scope.removeSource = function(dataset) {
+                DatasetService.deleteSource(dataset._id)
+                .then(function(response) {
+
+                    if (response.status == 200) {
+                        dataset.fileName = null;
+                        $scope.uploader.queue = [];
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('data source was removed successfully!')
+                                .position('top right')
+                                .hideDelay(5000)
+                        );
+
+                    }
+
+
+
+                })
+
+            }
 
             $scope.removeAdditionalDatasource = function () {
                 var length = $scope.additionalDatasources.length;

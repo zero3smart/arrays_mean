@@ -291,6 +291,12 @@ module.exports = function (nunjucks_env,env) {
         }).join(' ');
     });
 
+    nunjucks_env.addFilter('splitSubdomain',function(srcDocPKey) {
+        var i = srcDocPKey.indexOf('-');
+        var substring = srcDocPKey.substring(i+1,srcDocPKey.length);
+        return substring;
+    })
+
     // Object Row Coercion Data Type
     nunjucks_env.addFilter('fieldDataType_coercion_toString', function(field) {
         return datatypes.fieldDataType_coercion_toString(field);

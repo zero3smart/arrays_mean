@@ -81,8 +81,9 @@ module.exports.BindData = function (req, callback) {
 
 
         async.each(teamDescription.datasourceDescriptions, function (dataSourceDescription, innerCallback) {
+            
 
-            var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription, raw_source_documents);
+            var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription,teamDescription.subdomain);
 
 
             raw_source_documents.Model.findOne({
@@ -112,7 +113,7 @@ module.exports.BindData = function (req, callback) {
 
                 
                     var s = {
-                        key: source_pKey,
+                        key:  source_pKey,
                         sourceDoc: doc,
                         title: dataSourceDescription.title,
                         brandColor: dataSourceDescription.brandColor,

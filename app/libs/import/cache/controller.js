@@ -60,7 +60,8 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_title = dataSourceDescription.title;
     var dataSource_importRevision = dataSourceDescription.importRevision;
-    var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+    var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(
+        dataSourceDescription._team.subdomain,dataSource_uid, dataSource_importRevision);
     //
     var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceRevision_pKey);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;

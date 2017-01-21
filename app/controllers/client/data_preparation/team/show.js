@@ -18,7 +18,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
     {
 
         var err = null;
-        var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription);
+        var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription,teamDescription.subdomain);
 
         raw_source_documents.Model.findOne({
             primaryKey: source_pKey

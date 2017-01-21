@@ -1,10 +1,10 @@
-<form name="uploadForm">
+<form name="uploadForm" autocomplete="off">
     <md-content layout-padding>
         <div>
 
             <md-input-container class="md-block">
                 <label>Title</label>
-                <input required name="title" ng-model="dataset.title">
+                <input required name="title" ng-model="dataset.title" ng-change="verifyUID()">
 
                 <div ng-messages="uploadForm.title.$error">
                     <div ng-message="required">This is required.</div>
@@ -16,32 +16,34 @@
 
             <h2>Select Your Data Source</h2>
 
-            <div ng-hide="dataset.uid">
+
+
+            <div ng-hide="dataset.fileName">
                 <label>Upload spreadsheet</label>
                 <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
+
+
 
                 <input type="file" id="datafile" nv-file-select="" uploader="uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" class="team-uploader" ng-disabled=" !uploadForm.$valid || uploader.queue.length > 0" />
 
 
                  <label for="datafile" class="md-button md-dashboard primary-action" ng-disabled=" !uploadForm.$valid || uploader.queue.length > 0" >
-                    {{ dataset.uid ? 'Replace File' : 'Choose File' }}
+                    Choose File
                 </label>
-
-
 
 
             </div>
 
-            <p class="instructions" ng-if="dataset.uid">Dataset(s)</p>
+            <p class="instructions" ng-if="dataset.fileName">Dataset(s)</p>
 
-            <ul class="dashboard-list user-list" ng-if="!uploader.queue.length" ng-cloak>
-                <li ng-if="dataset.uid" layout="row" layout-align="space-between center">
+            <ul class="dashboard-list user-list" ng-cloak>
+                <li ng-if="dataset.fileName" layout="row" layout-align="space-between center">
 
                     <span flex="50">
-                        <span class="dashboard-list-name">{{ dataset.uid }}</span>
+                        <span class="dashboard-list-name">{{dataset.fileName}}</span>
                     </span>
 
-                    <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5">
+                    <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeSource(dataset)">
                         <i class="fa fa-remove" aria-hidden="true"></i>
                     </span>
 
@@ -70,8 +72,8 @@
                 </li>
             </ul>
             <md-button class="md-dashboard confirm" style="margin-top: 30px" ng-click="uploader.uploadAll()"
-                ng-if="uploader.queue.length > 0 && !dataset.uid"
-                ng-disabled="uploader.isUploading">
+                ng-if="uploader.queue.length > 0 && !dataset.fileName"
+                ng-disabled="uploader.isUploading || !uploadForm.$valid ">
                 <span class="btn-label">Import Data</span>
             </md-button>
 
@@ -131,7 +133,7 @@
 
             </div>
 
-            <div ng-if="dataset.uid && !addingAdditionalDatasource">
+            <div ng-if="dataset.fileName && !addingAdditionalDatasource">
                 <md-input-container>
                     <md-button class="md-dashboard" ng-click="addNewDatasource()">
                         <span class="btn-label">Combine With Another Datasource</span></md-button>
@@ -200,7 +202,7 @@
                 </tbody>
             </table>
         </div> -->
-        <div layout="row" layout-align="space-between center" ng-hide="!dataset.uid">
+        <div layout="row" layout-align="space-between center" ng-hide="!dataset.fileName">
             <p>
                 <a ng-click="clearAll()" class="warn">Clear All</a>
             </p>

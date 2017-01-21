@@ -26,6 +26,23 @@
             });
         };
 
+        var search = function(queryObj) {
+            var formURL = "";
+            var first = true;
+            for (var obj in queryObj) {
+                if (first) {
+                    formURL += '?';
+                    first = false;
+                } else {
+                   formURL += '&'
+
+                }
+                formURL += obj + '=' + queryObj[obj];
+            }
+
+            return $http.get('api/dataset' + formURL);
+        }
+
         var publish = function(id,isPublic) {
             var body = {
                 id: id,
@@ -57,6 +74,10 @@
         var save = function(dataset) {
             return $http.post('api/dataset/update', dataset)
         };
+
+        var deleteSource = function(id) {
+            return $http.delete('api/dataset/source/' + id);
+        }
 
         var preImport = function(id) {
             return $http.get('api/dataset/preImport/' + id);
@@ -143,10 +164,13 @@
             })
        }
 
+
         return {
             removeSubdataset: removeSubdataset,
+            deleteSource: deleteSource,
             remove: remove,
             get: get,
+            search: search,
             getAdditionalSources: getAdditionalSources,
             getReimportDatasets: getReimportDatasets,
             save: save,
