@@ -324,13 +324,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     var _multigroupedResults_object = {};
 
                     _.each(_multigroupedResults, function (el) {
-
                         var category = el.category;
-
                         if (_multigroupedResults_object[category] === undefined) {
                             _multigroupedResults_object[category] = [];
                         }
-
 
                         _multigroupedResults_object[category].push(el);
                     });
@@ -353,7 +350,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         _.each(_groupedResults, function (el, i) {
                             //
                             if (el.label) {
-
                                 var displayableLabel;
 
                                 displayableLabel = func.ValueToExcludeByOriginalKey(
@@ -377,8 +373,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         _.each(finalizedButNotCoalesced_groupedResults, function (el) {
                             var label = el.label;
                             var value = el.value;
-
-
                             var label_toLowerCased = label.toString().toLowerCase();
                             //
                             var existing_valueSum = summedValuesByLowercasedLabels[label_toLowerCased] || 0;
