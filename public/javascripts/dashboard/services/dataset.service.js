@@ -26,6 +26,23 @@
             });
         };
 
+        var search = function(queryObj) {
+            var formURL = "";
+            var first = true;
+            for (var obj in queryObj) {
+                if (first) {
+                    formURL += '?';
+                    first = false;
+                } else {
+                   formURL += '&'
+
+                }
+                formURL += obj + '=' + queryObj[obj];
+            }
+
+            return $http.get('api/dataset' + formURL);
+        }
+
         var publish = function(id,isPublic) {
             var body = {
                 id: id,
@@ -153,6 +170,7 @@
             deleteSource: deleteSource,
             remove: remove,
             get: get,
+            search: search,
             getAdditionalSources: getAdditionalSources,
             getReimportDatasets: getReimportDatasets,
             save: save,

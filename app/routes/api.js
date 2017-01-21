@@ -38,6 +38,7 @@ router.use(auth, function (err, req, res, next) {
 router.post('/admin/invite', ctrlAdmin.invite);
 
 // dataset settings
+router.get('/dataset', ctrlDataset.search);
 router.post('/dataset/getDatasetsWithQuery',ctrlDataset.getDatasetsWithQuery);
 router.post('/dataset/remove', ctrlDataset.remove);
 router.get('/dataset/get/:id', ctrlDataset.get);

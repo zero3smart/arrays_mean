@@ -133,6 +133,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
     processed_row_objects.InsertProcessedDatasetFromRawRowObjects
     (
         job,
+        dataSourceDescription._team.subdomain,
         dataSource_uid,
         dataSource_importRevision,
         dataSource_title,
@@ -251,9 +252,11 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.title;
     var dataset_uid = dataSourceDescription.dataset_uid;
+    var dataSource_team_subdomain = dataSourceDescription._team.subdomain;
 
 
-    var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+    var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_team_subdomain,
+        dataSource_uid, dataSource_importRevision);
     var forThisDataSource_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(srcDoc_pKey);
     var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.Model.modelName;
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.Model.model;
@@ -296,6 +299,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             eachCtx.nativeCollection = forThisDataSource_nativeCollection;
 
             processed_row_objects.EnumerateProcessedDataset(
+                dataSource_team_subdomain,
                 dataSource_uid,
                 dataSource_importRevision,
                 dataset_uid,

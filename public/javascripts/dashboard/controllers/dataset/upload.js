@@ -11,6 +11,38 @@ angular.module('arraysApp')
                 return initSource(additionalDatasource)
             });
 
+            $scope.verifyUID = function() {
+                if (dataset.title == "" || typeof dataset.title == 'undefined' || dataset.title == null) {
+                    $scope.uploadForm.title.$setValidity('unique',true);
+                    return;
+                }
+
+                var uid = dataset.title.toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
+
+                DatasetService.search({uid:uid, _team: $scope.team._id})
+                .then(function(response) {
+                    if (response.status == 200) {
+
+                        if (response.data.length > 0) {
+
+                            if (response.data.length == 1 && response.data[0]._id == dataset._id) {
+                                $scope.uploadForm.title.$setValidity('unique',true);
+                                return;
+                            }
+                            $scope.uploadForm.title.$setValidity('unique',false);
+
+                        } else {
+                            $scope.uploadForm.title.$setValidity('unique',true);
+                        }
+                    }
+                })
+
+
+
+
+
+            }
+
             function initSource(additionalDatasource) {
                 var uploader = new FileUploader({
                     url: '/api/dataset/upload',

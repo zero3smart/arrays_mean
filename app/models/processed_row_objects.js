@@ -82,7 +82,8 @@ module.exports.Lazy_Shared_ProcessedRowObject_MongooseContext = _Lazy_Shared_Pro
 
 module.exports.initializeBackgroundIndexBuilding = function(description) {
 
-    var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+    var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(
+        description._team.subdomain,description.uid, description.importRevision);
     var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed).Model.collection;
 
     for (var i = 0; i < description.relationshipFields.length; i++) {
@@ -96,7 +97,7 @@ module.exports.initializeBackgroundIndexBuilding = function(description) {
 
 }
 
-module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSource_uid,
+module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSource_team_subdomain,dataSource_uid,
                                                                    dataSource_importRevision,
                                                                    dataSource_title,
                                                                    dataset_uid,
@@ -104,7 +105,7 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Pre-generating whole processed row objects collection from raw row objects of \"" + dataSource_title + "\".");
 
-        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_team_subdomain,dataSource_uid, dataSource_importRevision);
         //
         var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
@@ -160,14 +161,15 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
     });
 };
 
-module.exports.GenerateProcessedDatasetFromRawRowObjects = function (dataSource_uid,
+module.exports.GenerateProcessedDatasetFromRawRowObjects = function (dataSource_team_subdomain,dataSource_uid,
                                                                      dataSource_importRevision,
                                                                      dataSource_title,
                                                                      callback) {
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Pre-generating whole processed row objects collection from raw row objects of \"" + dataSource_title + "\".");
 
-        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_team_subdomain,
+            dataSource_uid, dataSource_importRevision);
         //
         var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
@@ -673,7 +675,7 @@ module.exports.GenerateFieldsByJoining = function (dataSource_uid,
 //     });
 // };
 
-module.exports.EnumerateProcessedDataset = function (dataSource_uid,
+module.exports.EnumerateProcessedDataset = function (dataSource_team_subdomain,dataSource_uid,
                                                      dataSource_importRevision,
                                                      dataset_uid,
                                                      eachFn,
@@ -685,7 +687,7 @@ module.exports.EnumerateProcessedDataset = function (dataSource_uid,
     // completeFn: () -> Void
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
 
-        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_team_subdomain,dataSource_uid, dataSource_importRevision);
         //
         var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;

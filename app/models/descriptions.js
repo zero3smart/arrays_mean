@@ -361,9 +361,14 @@ var _GetDescriptionsToSetupByIds = function (Ids, fn) {
 datasource_description.GetDescriptionsToSetup = _GetDescriptionsToSetupByIds;
 
 
-var _GetDescriptionsWith_uid_importRevision = function (uid, revision, fn) {
+var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid, revision, fn) {
+   
+    
     this.findOne({uid: uid, importRevision: revision, fe_visible: true})
-        .populate('_team')
+        .populate({
+            path: '_team',
+            match: { 'subdomain' : subdomain}
+        })
         .lean()
         .exec(function (err, descriptions) {
             if (err) {
@@ -375,9 +380,11 @@ var _GetDescriptionsWith_uid_importRevision = function (uid, revision, fn) {
         })
 };
 
-datasource_description.GetDescriptionsWith_uid_importRevision = _GetDescriptionsWith_uid_importRevision;
+datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDescriptionsWith_subdomain_uid_importRevision;
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
+
+
 
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
         .then(function (datasourceDescription) {

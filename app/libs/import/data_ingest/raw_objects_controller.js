@@ -15,7 +15,8 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.title;
-    var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+    var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(
+        dataSourceDescription._team.subdomain, dataSource_uid, dataSource_importRevision);
 
 
     var format = dataSourceDescription.format;
@@ -204,6 +205,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
                 parse(cachedLines + line, {delimiter: delimiter, relax: true, skip_empty_lines: true}, function (err, output) {
                     if (err || !output || output.length == 0) {
                         winston.info("❌  Error encountered during saving the line " + lineNr + " of document: ", sourceDocumentTitle);
+                        console.log(err);
                         cachedLines = cachedLines + line;
                         return readStream.resume();
                     }

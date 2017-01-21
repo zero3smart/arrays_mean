@@ -4,7 +4,7 @@
 
             <md-input-container class="md-block">
                 <label>Title</label>
-                <input required name="title" ng-model="dataset.title">
+                <input required name="title" ng-model="dataset.title" ng-change="verifyUID()">
 
                 <div ng-messages="uploadForm.title.$error">
                     <div ng-message="required">This is required.</div>

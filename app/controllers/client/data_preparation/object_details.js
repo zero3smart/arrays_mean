@@ -13,7 +13,7 @@ var User = require('../../../models/users');
 module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
     var self = this;
 
-
+  
 
     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
         .then(function (dataSourceDescription) {
@@ -173,7 +173,6 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                                         fieldToAcquire = fieldToAcquire + "rowParams." + wantedfield[i] + " ";
                                                     }
                                                 }
-                                                console.log("here");
                                                 done();
                                             })
                                     })
@@ -326,6 +325,10 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                         return "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
                     }
                 }
+
+                var i = source_pKey.indexOf('-');
+                var splitSubdomain = source_pKey.substring(i+1,source_pKey.length);
+          
               
                 //
                 var data =
@@ -336,7 +339,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                
 
                     arrayTitle: dataSourceDescription.title,
-                    array_source_key: source_pKey,
+                    array_source_key: splitSubdomain,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
                     default_filterJSON: default_filterJSON,

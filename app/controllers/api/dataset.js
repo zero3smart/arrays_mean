@@ -51,7 +51,8 @@ queue.worker.process('preImport',function(job,done) {
                 if (description.schema_id) { //merge with parent description
                     description = datasource_description.Consolidate_descriptions_hasSchema(description);
                 } else {
-                     srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+                     srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(
+                        description._team.subdomain,description.uid, description.importRevision);
                 }
                 done();
             });
@@ -202,7 +203,8 @@ queue.worker.process('importProcessed',function(job,done) {
              if (description.schema_id) { //merge with parent description
                 description = datasource_description.Consolidate_descriptions_hasSchema(description);
             } else {
-                srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+                srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description._team.subdomain,
+                    description.uid, description.importRevision);
             }
 
             done();
@@ -357,6 +359,17 @@ module.exports.getDependencyDatasetsForReimporting = function(req,res) {
 
 } 
 
+module.exports.search = function(req,res) {
+
+
+    datasource_description.find(req.query,function (err, foundDescriptions) {
+        if (err) {
+            res.send({error: err.message});
+        } else {
+            return res.status(200).json(foundDescriptions);
+        }
+    })
+}
 
 module.exports.getDatasetsWithQuery = function(req,res) {
     var query = req.body;
@@ -417,7 +430,8 @@ module.exports.remove = function (req, res) {
             if (!data) return done(new Error('No datasource exists : ' + req.body.id));
 
             description = data;
-            srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
+            srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(
+                description._team.subdomain,description.uid, description.importRevision);
             done();
         });
     });

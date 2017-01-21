@@ -10,6 +10,7 @@ var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
 router.get('/', function (req, res) {
 
 
+
  
     if (req.subdomains.length == 0 || (req.subdomains.length == 1 && req.subdomains[0] == 'www')) {
          var bindData =
@@ -40,6 +41,7 @@ router.get('/', function (req, res) {
 
             if (!teamDescriptions || teamDescriptions.length == 0
                 || (err && err.message == 'No SubDomain Asked!')) {
+
                 var bindData =
                 {
                     env: process.env
