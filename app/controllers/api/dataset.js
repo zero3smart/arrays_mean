@@ -379,6 +379,26 @@ module.exports.signedUrlForAssetsUpload = function (req, res) {
 
 };
 
+module.exports.deleteSource = function(req,res) {
+    if (!req.params.id) {
+        return res.status(500).json({err: 'Invalid parameter'});
+    }
+
+    datasource_description.findById(req.params.id)
+    .populate('_team')
+    .exec(function(err,description) {
+        var key = req.query.team + '/datasets/' + req.query.uid + '/datasources/' + req.query.uid + '_v' + req.query.revision;
+        datasource_file_service.deleteObject(key,function(err,result) {
+            if (err) return res.status(500).json(err);
+            description.fileName = null;
+            description.save();
+            return res.status(200).json(result);
+        })
+
+    })
+
+}
+
 module.exports.remove = function (req, res) {
     if (!req.body.id) return res.status(500).send('No ID given');
 
@@ -863,7 +883,6 @@ module.exports.upload = function (req, res) {
             .exec(function (err, doc) {
     
                 if (err) return done(err);
-
                 description = doc;
                 description_title = description.title;
                 done();
@@ -905,7 +924,13 @@ module.exports.upload = function (req, res) {
         });
     }
 
+    console.log(req.files.length);
+
+
     _.forEach(req.files, function (file) {
+
+        
+
         batch.push(function (done) {
     
             if (file.mimetype == 'text/csv' || file.mimetype == 'application/octet-stream'
@@ -919,6 +944,7 @@ module.exports.upload = function (req, res) {
                 } else {
                     return done(new Error('Invalid File Format : ' + file.mimetype + ', ' + ext));
                 }
+                description.fileName = file.originalname
             } else {
                 return done(new Error('Invalid File Format : ' + file.mimetype + ', ' + ext));
             }
@@ -938,7 +964,8 @@ module.exports.upload = function (req, res) {
                 req.session.columns[description.id] = columns;
 
                 // Upload datasource to AWS S3
-                if (!description.uid) description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
+                if (!description.uid) description.uid = req.body.tempUID;
+                
                 var newFileName = datasource_file_service.fileNameToUpload(description);
                 datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, description._team.subdomain, description.uid, function (err) {
                     if (err) {
@@ -961,10 +988,12 @@ module.exports.upload = function (req, res) {
                     done(err);
                 });
             } else {
+
                 var findQuery = {_id: description.id};
                 // TODO: Need to update the selected fields only!
                 var updateQuery = {
                     format: description.format,
+                    fileName: description.fileName,
                     dirty: 1,
                     imported: false,
                     $unset: {

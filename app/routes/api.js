@@ -56,6 +56,9 @@ router.get('/dataset/getAssetUploadSignedUrl/:id', ctrlDataset.signedUrlForAsset
 router.post('/dataset/upload', upload.array('file', 12), ctrlDataset.upload);
 router.get('/dataset/download/:id', ctrlDataset.download);
 
+
+router.delete('/dataset/source/:id', ctrlDataset.deleteSource);
+
 // dataset format data
 router.get('/dataset/getAvailableTypeCoercions', ctrlDataset.getAvailableTypeCoercions);
 router.get('/dataset/getAvailableDesignatedFields', ctrlDataset.getAvailableDesignatedFields);

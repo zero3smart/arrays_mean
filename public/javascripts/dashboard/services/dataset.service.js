@@ -58,6 +58,10 @@
             return $http.post('api/dataset/update', dataset)
         };
 
+        var deleteSource = function(id) {
+            return $http.delete('api/dataset/source/' + id);
+        }
+
         var preImport = function(id) {
             return $http.get('api/dataset/preImport/' + id);
         };
@@ -143,8 +147,10 @@
             })
        }
 
+
         return {
             removeSubdataset: removeSubdataset,
+            deleteSource: deleteSource,
             remove: remove,
             get: get,
             getAdditionalSources: getAdditionalSources,

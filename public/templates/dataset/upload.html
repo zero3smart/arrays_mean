@@ -32,16 +32,16 @@
 
             </div>
 
-            <p class="instructions" ng-if="dataset.uid">Dataset(s)</p>
+            <p class="instructions" ng-if="dataset.fileName">Dataset(s)</p>
 
             <ul class="dashboard-list user-list" ng-cloak>
-                <li ng-if="dataset.uid" layout="row" layout-align="space-between center">
+                <li ng-if="dataset.fileName" layout="row" layout-align="space-between center">
 
                     <span flex="50">
-                        <span class="dashboard-list-name">Main data source</span>
+                        <span class="dashboard-list-name">{{dataset.fileName}}</span>
                     </span>
 
-                    <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5">
+                    <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeSource(dataset._id)">
                         <i class="fa fa-remove" aria-hidden="true"></i>
                     </span>
 

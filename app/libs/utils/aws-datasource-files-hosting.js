@@ -40,8 +40,7 @@ function _fileNameToUpload(datasourceDescription) {
 module.exports.fileNameToUpload = _fileNameToUpload;
 
 function _getDatasource(description) {
-    var fileName = _fileNameToUpload(description);
-
+    var fileName = _fileNameToUpload(description)
 
 
     var key = description._team.subdomain +  '/datasets/' + description.uid + '/datasources/' + fileName;
@@ -93,4 +92,21 @@ function _deleteDataset(description,cb) {
     })
 }
 
+
+
+
 module.exports.deleteDataset = _deleteDataset;
+
+
+function _deleteObject(key,cb) {
+    var params = {
+        Bucket : bucket,
+        Key: key
+    }
+    s3.deleteObject(params,function(err,data) {
+        if (err) return cb(err);
+        return cb(null,data);
+    })
+}
+
+module.exports.deleteObject = _deleteObject;

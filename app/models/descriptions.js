@@ -31,6 +31,7 @@ var DatasourceDescription_scheme = Schema({
     fe_listed: {type: Boolean, default: false},
 
     useCustomView: {type: Boolean, default: false},
+    fileName: String,
     
     raw_rowObjects_coercionScheme: Object,
     fe_excludeFields: Object,
