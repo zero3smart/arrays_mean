@@ -24,7 +24,7 @@
                         <strong>{{dataset.fileName}}</strong>
                     </span>
 
-                    <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeSource(dataset, true)">
+                    <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeSourceDialog(dataset, removeSource, $event)">
                         <i class="fa fa-remove" aria-hidden="true"></i>
                     </span>
 
@@ -76,7 +76,7 @@
                             <span class="dashboard-list-name">{{ additionalDatasource.fileName }}</span>
                         </span>
 
-                        <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeAdditionalDatasource(additionalDatasource, true)">
+                        <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeSourceDialog(additionalDatasource, removeAdditionalDatasource, $event)">
                             <i class="fa fa-remove" aria-hidden="true"></i>
                         </span>
 

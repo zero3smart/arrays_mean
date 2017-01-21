@@ -308,6 +308,31 @@ angular.module('arraysApp')
                 }
             };
 
+            $scope.removeSourceDialog = function(datasource, callback, ev) {
+                $mdDialog.show({
+                    templateUrl: 'templates/blocks/dataset.removesource.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    // locals: {
+                    //     title: datasource.fileName,
+                    // },
+                    controller: function($scope, $mdDialog) {
+                        $scope.title = datasource.fileName;
+                        $scope.hide = function() {
+                            $mdDialog.hide();
+                        };
+                        $scope.cancel = function() {
+                            $mdDialog.cancel();
+                        };
+                    }
+                })
+                .then(function () {
+                    callback(datasource, true);
+                });
+            };
+
             $scope.clearAll = function (id, title, ev) {
                 $mdDialog.show({
                     templateUrl: 'templates/blocks/dataset.clearall.html',
