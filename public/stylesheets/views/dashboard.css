@@ -646,6 +646,7 @@ md-icon.btn-icon {
     padding: 0 1em;
 }
 
+/*warn*/
 .md-button.md-dashboard.md-warn {
     background-color: var(--color-warn);
 }
@@ -657,6 +658,12 @@ md-icon.btn-icon {
 	color: var(--color-warn);
 }
 
+/*cancel, netural color*/
+.md-button.md-dashboard.cancel:not([disabled]):hover {
+	background: var(--color-text-light);
+}
+
+/*confirm*/
 .md-button.md-dashboard.confirm:not([disabled]) {
     background-color: var(--color-primary);
 }
