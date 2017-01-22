@@ -12,14 +12,8 @@
                 Please re-configure and re-import any dependent datasets as needed.
             </p>
         </md-content>
-        <md-dialog-actions layout="row" layout-align="end center">
-            <md-button class="md-dashboard md-warn" ng-click="hide()">
-                <span class="btn-label">Remove Dataset</span>
-            </md-button>
-            <md-button class="md-dashboard cancel" ng-click="cancel()">
-                Cancel
-            </md-button>
-        </md-dialog-actions>
+
+        <aa-dialog-actions warn="Remove Dataset" cancel=""></aa-dialog-actions>
     </md-dialog-content>
 
 </md-dialog>
