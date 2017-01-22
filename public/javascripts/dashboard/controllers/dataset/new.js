@@ -1,19 +1,12 @@
 angular.module('arraysApp')
 
-    .controller('DatasetNewCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast',
-        function($scope, $state, dataset, DatasetService, $mdToast) {
+    .controller('DatasetNewCtrl', ['$scope', '$state', 'dataset', 'datasetTitles', 'DatasetService', '$mdToast',
+        function($scope, $state, dataset, datasetTitles, DatasetService, $mdToast) {
 
-            // if (!dataset.fe_listed) {dataset.fe_listed = false;}
-            // if (!dataset.fe_visible) {dataset.fe_visible = false;}
+            $scope.datasetTitles = datasetTitles; // for checking if title in use
+
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
-            // //var uniquePlaceholder = Date.now();
-            //
-            // // if (!dataset.title) {dataset.title = '_temp_' + uniquePlaceholder;}
-            // // if (!dataset.description) {dataset.description = '_temp_' + uniquePlaceholder;}
-            //
-            // // if (!dataset.uid) {dataset.uid = uniquePlaceholder;}
-            // if (!dataset.importRevision) {dataset.importRevision = 1;}
 
             $scope.submitForm = function(isValid) {
 
@@ -29,24 +22,16 @@ angular.module('arraysApp')
 
                     dataset.updatedBy = $scope.user._id;
 
-
-
                     DatasetService.save(dataset).then(function (response) {
 
                         if (response.status == 200) {
-                            // not truly created until main datasource is uploaded
-                            // $mdToast.show(
-                            //     $mdToast.simple()
-                            //         .textContent('New Dataset was created successfully!')
-                            //         .position('top right')
-                            //         .hideDelay(3000)
-                            // );
 
                             $state.transitionTo('dashboard.dataset.upload', {id: response.data.id}, {
                                 reload: true,
                                 inherit: false,
                                 notify: true
                             });
+
                         }
                         $scope.submitting = false;
                     }, function (error) {
