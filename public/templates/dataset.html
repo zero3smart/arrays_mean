@@ -4,7 +4,7 @@
     <span flex></span>
     <md-button class="md-dashboard md-dashboard-header confirm" md-no-ink
         ng-if="$state.is('dashboard.dataset.list') == false"
-        ng-disabled="!primaryAction.valid"
+        ng-disabled="primaryAction.disabled"
         ng-click="primaryAction.do()">
         <span class="btn-label">{{ primaryAction.text }}</span>
     </md-button>

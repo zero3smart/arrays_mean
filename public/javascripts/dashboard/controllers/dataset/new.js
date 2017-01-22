@@ -9,11 +9,12 @@ angular.module('arraysApp')
             $scope.primaryAction.text = 'Next';
             $scope.$watch('newDSForm.$valid', function(validity) {
                 if (validity !== undefined) {
-                    $scope.primaryAction.valid = validity;
+                    $scope.formValidity = validity;
+                    $scope.primaryAction.disabled = !validity;
                 }
             });
             $scope.primaryAction.do = function() {
-                $scope.submitForm($scope.primaryAction.valid);
+                $scope.submitForm($scope.formValidity);
             };
 
             $scope.submitForm = function(isValid) {

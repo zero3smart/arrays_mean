@@ -7,6 +7,14 @@ angular.module('arraysApp')
             $scope.progressMode = 'determinate';
             $scope.addingAdditionalDatasource = false;
 
+            $scope.primaryAction.text = 'Next';
+            $scope.$watch('dataset.fileName', function(hasFile) {
+                $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
+            });
+            $scope.primaryAction.do = function() {
+                $scope.$parent.navigate('dashboard.dataset.data');
+            };
+
             $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
                 return initSource(additionalDatasource);
             });
