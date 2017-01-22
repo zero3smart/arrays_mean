@@ -264,15 +264,15 @@ body.md-toast-animating {
     border-radius: 4px;
     text-transform: none;
 }
-.team-list .md-button:hover,
-.team-list .md-button:focus {
-    background-color: var(--color-primary);
-    color: #fff;
+.team-list .md-button:not([disabled]):hover,
+.team-list .md-button:not([disabled]):focus {
+    background-color: #eeeeee;
+    color: var(--color-text-dark);
 }
 /* current team */
 .team-list .md-button:disabled {
-    color: var(--color-primary);
-    background-color: transparent;
+    background-color: var(--color-primary);
+    color: #fff;
 }
 
 .subdomain-append,

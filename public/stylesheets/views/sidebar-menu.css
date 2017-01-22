@@ -67,11 +67,15 @@ md-sidenav.md-closed.md-locked-open-add-active {
     border-radius: 4px;
 }
 
-.sidebar-menu .nav > li > a:hover,
-.sidebar-menu .nav > li.active > a,
-.sidebar-menu .nav > li > a:focus {
+.sidebar-menu .nav > li.active > a {
     background-color: var(--color-primary);
     color: #fff;
+}
+
+.sidebar-menu .nav > li:not(.active) > a:hover,
+.sidebar-menu .nav > li:not(.active) > a:focus {
+    background-color: #eeeeee;
+    color: var(--color-text-dark);
 }
 
 .sidebar-menu .nav .sidebar-label {
