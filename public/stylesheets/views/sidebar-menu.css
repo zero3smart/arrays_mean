@@ -78,6 +78,14 @@ md-sidenav.md-closed.md-locked-open-add-active {
     color: var(--color-text-dark);
 }
 
+/*treat View Website as link*/
+.sidebar-menu .nav > li.website > a:hover,
+.sidebar-menu .nav > li.website > a:focus {
+    background-color: transparent;
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
 .sidebar-menu .nav .sidebar-label {
     /* style as if disabled, for now */
     color: var(--color-text-med);
