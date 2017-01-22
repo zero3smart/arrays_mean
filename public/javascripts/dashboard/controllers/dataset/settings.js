@@ -3,6 +3,16 @@ angular.module('arraysApp')
     .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService',
         function($scope, $state, dataset, DatasetService, $mdToast, FileUploader, AssetService) {
 
+            $scope.primaryAction.text = 'Publish';
+            $scope.$watch('settingsForm.$valid', function(validity) {
+                if (validity !== undefined) {
+                    $scope.formValidity = validity;
+                    $scope.primaryAction.disabled = !validity;
+                }
+            });
+            $scope.primaryAction.do = function() {
+                $scope.submitForm($scope.formValidity);
+            };
 
             // still needed now that this step comes later?
 
