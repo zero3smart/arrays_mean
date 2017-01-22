@@ -155,19 +155,6 @@ angular.module('arraysApp')
                         controller: 'DatasetNewCtrl',
                         templateUrl: 'templates/dataset/new.html',
                         resolve: {
-                            datasetTitles: ['DatasetService', 'AuthService', '$q', function (DatasetService, AuthService, $q) {
-                                var user = AuthService.currentUser(),
-                                    deferred = $q.defer();
-                                DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id, uid: {$exists: true}})
-                                .then(function(datasets) {
-                                    var newdata = datasets.reduce(function(titles, dataset){
-                                        titles.push(dataset.title);
-                                        return titles;
-                                    }, []);
-                                    deferred.resolve(newdata);
-                                });
-                                return deferred.promise;
-                            }],
                             dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
                             }]

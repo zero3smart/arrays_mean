@@ -1,9 +1,7 @@
 angular.module('arraysApp')
 
-    .controller('DatasetNewCtrl', ['$scope', '$state', 'dataset', 'datasetTitles', 'DatasetService', '$mdToast',
-        function($scope, $state, dataset, datasetTitles, DatasetService, $mdToast) {
-
-            $scope.datasetTitles = datasetTitles; // for checking if title in use
+    .controller('DatasetNewCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast',
+        function($scope, $state, dataset, DatasetService, $mdToast) {
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
@@ -46,4 +44,34 @@ angular.module('arraysApp')
                     });
                 }
             };
+        }])
+        .directive('uniqueTitle',['DatasetService', 'AuthService', '$q', function (DatasetService, AuthService, $q) {
+            return {
+                restrict: 'A',
+                require: 'ngModel',
+                link: function(scope,elem,attr,model) {
+
+                    model.$asyncValidators.titleAvailable = function(modelValue,viewValue) {
+                        var value = modelValue|| viewValue;
+                        var user = AuthService.currentUser(),
+                            deferred = $q.defer();
+                        DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id, uid: {$exists: true}})
+                        .then(function(datasets) {
+                            var datasetTitles = datasets.reduce(function(titles, dataset){
+                                titles.push(dataset.title);
+                                return titles;
+                            }, []);
+
+                            if (datasetTitles.indexOf(value)) {
+                                deferred.resolve(true);
+                            } else {
+                                deferred.reject(false);
+                            }
+                        });
+                        return deferred.promise;
+                    };
+
+                }
+            };
+
         }]);
