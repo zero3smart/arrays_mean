@@ -7,6 +7,7 @@ module.exports.HumanReadableColumnName_objectTitle = humanReadableColumnName_obj
 function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription,TeamSubdomain) {
     var uid = dataSourceDescription.uid;
     var importRevision = dataSourceDescription.importRevision;
+    
     var subdomain;
     if (TeamSubdomain) {
         subdomain = TeamSubdomain;

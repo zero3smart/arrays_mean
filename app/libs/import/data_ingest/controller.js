@@ -483,7 +483,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         winston.info("✅  [" + (new Date()).toString() + "] Saved custom fields.");
 
         if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
-            var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
 
             raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
                 if (err) {

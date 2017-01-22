@@ -1,4 +1,4 @@
-angular.module('arraysApp')
+ angular.module('arraysApp')
     .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'additionalDatasources', 'FileUploader', '$mdToast', '$mdDialog', '$state', 'AuthService', 'DatasetService', 'AssetService',
         function ($scope, dataset, additionalDatasources, FileUploader, $mdToast, $mdDialog, $state, AuthService, DatasetService, AssetService) {
 
@@ -245,7 +245,7 @@ angular.module('arraysApp')
             };
 
             $scope.addNewDatasource = function () {
-                if (!dataset.uid) {
+                if (!dataset.fileName) {
                     $mdDialog.show(
                         $mdDialog.alert()
                             .clickOutsideToClose(true)

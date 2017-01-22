@@ -24,6 +24,8 @@ var raw_row_objects = require('../../models/raw_row_objects');
 var queue = require.main.require('./queue-init')();
 
 
+ var kue = require('kue');
+
 /*  start queue functions */
 
 
@@ -321,6 +323,7 @@ queue.worker.process('postImport',function(job,done) {
 
 function getAllDatasetsWithQuery(query, res) {
 
+
   
     datasource_description.find({$and: [{schema_id: {$exists: false}}, query]}, {
         _id: 1,
@@ -332,6 +335,7 @@ function getAllDatasetsWithQuery(query, res) {
         if (err) {
              return res.status(500).send(err);
         }
+
 
 
         return res.status(200).json({datasets: datasets});
@@ -359,6 +363,35 @@ module.exports.getDependencyDatasetsForReimporting = function(req,res) {
 
 } 
 
+
+module.exports.killJob = function(req,res) {
+
+   
+
+
+    var JobId = req.params.id;
+
+    kue.Job.get(JobId,function(err,job){
+        if (err) {
+            console.log(err);
+            return res.status(500).json(err);
+        }
+        var dataset = job.data.id;
+        datasource_description.update({_id: dataset},{$set:{jobId:0}},function(err) {
+             if (err) {
+                console.log(err);
+                return res.status(500).json(err);
+            }
+    
+             job.remove();
+             return res.status(200).send('ok');
+
+        })
+    })
+
+
+   
+}
 module.exports.search = function(req,res) {
 
 
@@ -430,7 +463,8 @@ module.exports.remove = function (req, res) {
             if (!data) return done(new Error('No datasource exists : ' + req.body.id));
 
             description = data;
-            srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(
+
+            if (description.uid) srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(
                 description._team.subdomain,description.uid, description.importRevision);
             done();
         });
@@ -438,56 +472,84 @@ module.exports.remove = function (req, res) {
 
     // Remove processed row object
     batch.push(function (done) {
-        mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey, function (err) {
-            // Consider that the collection might not exist since it's in the importing process.
-            if (err && err.code != 26) return done(err);
 
-            winston.info("✅  Removed processed row object : " + srcDocPKey + ", error: " + err);
+        if (!description.uid) {
             done();
-        });
+        } else {
+             mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey, function (err) {
+            // Consider that the collection might not exist since it's in the importing process.
+                if (err && err.code != 26) return done(err);
 
+                winston.info("✅  Removed processed row object : " + srcDocPKey + ", error: " + err);
+                done();
+            });
+
+
+        }
+       
     });
 
 
     // Remove raw row object
     batch.push(function (done) {
 
-        mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey, function (err) {
-            // Consider that the collection might not exist since it's in the importing process.
-            if (err && err.code != 26) return done(err);
-
-            winston.info("✅  Removed raw row object : " + srcDocPKey + ", error: " + err);
+        if (!description.uid) {
             done();
-        })
+        } else {
+            mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey, function (err) {
+                // Consider that the collection might not exist since it's in the importing process.
+                if (err && err.code != 26) return done(err);
 
+                winston.info("✅  Removed raw row object : " + srcDocPKey + ", error: " + err);
+                done();
+            })
+
+
+        }
+
+        
     });
 
     // Remove source document
     batch.push(function (done) {
+        if (!description.uid) {
+            done();
 
-        raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function (err, document) {
-            if (err) return done(err);
-            if (!document) return done();
+        } else {
 
-            winston.info("✅  Removed raw source document : " + srcDocPKey + ", error: " + err);
-            document.remove(done);
-        });
+            raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function (err, document) {
+                if (err) return done(err);
+                if (!document) return done();
+
+                winston.info("✅  Removed raw source document : " + srcDocPKey + ", error: " + err);
+                document.remove(done);
+            });
+
+        }
+
     });
 
     //Remove cache filter
     batch.push(function(done) {
+        if (!description.uid) {
+            done();
+        } else {
+            cached_values.findOne({srcDocPKey: srcDocPKey},function(err,document) {
+                if (err) return done(err);
+                
+                if (!document) return done();
+                 winston.info("✅  Removed cached unique values : " + srcDocPKey + ", error: " + err);
+                 document.remove(done);
+            })
 
-        cached_values.findOne({srcDocPKey: srcDocPKey},function(err,document) {
-            if (err) return done(err);
-            
-            if (!document) return done();
-             winston.info("✅  Removed cached unique values : " + srcDocPKey + ", error: " + err);
-             document.remove(done);
-        })
+        }
+
+        
     });
 
     //Pull from team's datasourceDescriptions
     batch.push(function(done) {
+        if (!description.uid) return done();
         Team.update({_id:description._team},{$pull:{datasourceDescriptions:description._id}},done);
     })
 
@@ -597,6 +659,8 @@ module.exports.remove = function (req, res) {
 };
 
 module.exports.get = function (req, res) {
+
+
 
     if (!req.params.id)
         return res.status(500).send('No ID given');
@@ -899,6 +963,13 @@ module.exports.upload = function (req, res) {
                 if (err) return done(err);
                 description = doc;
                 description_title = description.title
+
+                doc.fileName = null;
+
+                doc.title = req.body.tempTitle;
+
+                doc.save();
+
                 done();
             })
     });
@@ -976,8 +1047,11 @@ module.exports.upload = function (req, res) {
                 req.session.columns[description.id] = columns;
 
                 // Upload datasource to AWS S3
+
+    
                 if (!description.uid) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
-                description.title = req.body.tempTitle;
+
+
                 var newFileName = datasource_file_service.fileNameToUpload(description);
                 datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, description._team.subdomain, description.uid, function (err) {
                     if (err) {
@@ -993,10 +1067,9 @@ module.exports.upload = function (req, res) {
 
             if (!child) {
                 description.dirty = 1; // Full Import with image scraping
-
                 description.save(function (err, updatedDescription) {
                     if (err)
-                        winston.error("❌  Error saving the dataset into the database : " + file.originalname + " (" + err.message + ")");
+                        winston.error("❌  Error saving the dataset into the database, UID:  " + description.uid + " (" + err.message + ")");
                     done(err);
                 });
             } else {

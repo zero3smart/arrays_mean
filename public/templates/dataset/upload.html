@@ -39,8 +39,10 @@
             <ul class="dashboard-list user-list" ng-cloak>
                 <li ng-if="dataset.fileName" layout="row" layout-align="space-between center">
 
+
+
                     <span flex="50">
-                        <span class="dashboard-list-name">{{dataset.fileName}}</span>
+                        <span class="dashboard-list-name">{{ (importing) ? 'Importing: ' + dataset.fileName : dataset.fileName}}</span>
                     </span>
 
                     <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeSource(dataset)">
@@ -79,6 +81,8 @@
                 <span class="btn-label">Import Data</span>
             </md-button>
 
+
+{{additionalDatasources}}
             <div ng-if="dataset.uid && addingAdditionalDatasource" ng-repeat="additionalDatasource in additionalDatasources" style="margin-top: 15px">
                 <label>Upload spreadsheet</label>
                 <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
@@ -194,7 +198,7 @@
             </p>
 
             <!-- if init wizard -->
-            <md-button class="md-dashboard confirm" ng-click="navigate('dashboard.dataset.data')" md-no-ink>
+            <md-button ng-disabled="!dataset.uid" class="md-dashboard confirm" ng-click="navigate('dashboard.dataset.data')" md-no-ink>
                 <span class="btn-label">Next</span>
             </md-button>
         </div>

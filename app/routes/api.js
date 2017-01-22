@@ -59,6 +59,7 @@ router.get('/dataset/download/:id', ctrlDataset.download);
 
 
 router.delete('/dataset/source/:id', ctrlDataset.deleteSource);
+router.delete('/dataset/job/:id' ,ctrlDataset.killJob);
 
 // dataset format data
 router.get('/dataset/getAvailableTypeCoercions', ctrlDataset.getAvailableTypeCoercions);

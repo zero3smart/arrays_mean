@@ -11,7 +11,17 @@ angular.module('arraysApp')
 
         	$scope.navigate = function(step) {
 
-                DatasetService.save($scope.dataset)
+                 var finalizedDataset = angular.copy($scope.dataset);
+                delete finalizedDataset.columns;
+                delete finalizedDataset._team;
+                if ($scope.dataset.author) {
+                    delete finalizedDataset.author;
+                }
+
+
+
+
+                DatasetService.save(finalizedDataset)
                 .then(function() {
                     $scope.currentStep = step;
                     switch (step) {

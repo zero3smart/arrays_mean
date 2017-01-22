@@ -51,7 +51,10 @@ angular.module('arraysApp')
                 });
             }
 
+
             $scope.select = function (id) {
+    
+
                 $state.go('dashboard.dataset.upload', {id: id});
             };
 

@@ -13,7 +13,8 @@ var RawSourceDocument_scheme = Schema({
     numberOfRows: Number,
     dateOfLastImport: Date
 });
-RawSourceDocument_scheme.index({importUID: 1, revisionNumber: 1}, {unique: true});
+
+RawSourceDocument_scheme.index({importUID: 1, revisionNumber: 1}, {unique: false});
 RawSourceDocument_scheme.index({importUID: 1}, {unique: false});
 RawSourceDocument_scheme.index({revisionNumber: 1}, {unique: false});
 //
@@ -47,7 +48,12 @@ module.exports.New_templateForPersistableObject = function (sourceDocumentRevisi
 };
 
 module.exports.NewCustomPrimaryKeyStringWithComponents = function (teamSubdomain, dataSource_uid, dataSource_importRevisionNumber) {
-    return teamSubdomain + '-' + dataSource_uid + "-r" + dataSource_importRevisionNumber;
+    if (teamSubdomain) {
+         return teamSubdomain + '-' + dataSource_uid + "-r" + dataSource_importRevisionNumber;
+    } else {
+         return dataSource_uid + "-r" + dataSource_importRevisionNumber;
+    }
+   
 };
 
 module.exports.UpsertWithOnePersistableObjectTemplate = function (append,persistableObjectTemplate, fn) {

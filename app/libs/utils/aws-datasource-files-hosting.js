@@ -8,19 +8,35 @@ var s3 = new aws.S3();
 
 
 function _uploadDataSource(filePath, newFilename, contentType,teamSubdomin, datasetUID, cb) {
-    fs.readFile(filePath, function (err, data) {
-        if (err) return cb(err);
 
-        var params = {
-            Bucket: bucket,
-            Key:   teamSubdomin + "/datasets/" + datasetUID + "/datasources/" + newFilename,
-            ContentType: contentType,
-            Body: data,
-            ACL: "private"
-        };
 
-        s3.putObject(params, cb);
-    });
+
+    var file = fs.createReadStream(filePath);
+    var params = {
+        Bucket: bucket,
+        Key:   teamSubdomin + "/datasets/" + datasetUID + "/datasources/" + newFilename,
+        ContentType: contentType,
+        Body: file,
+        ACL: "private"
+    };
+
+    s3.upload(params,cb);
+    
+    // fs.readFile(filePath, function (err, data) {
+    //     if (err) return cb(err);
+
+    //     var params = {
+    //         Bucket: bucket,
+    //         Key:   teamSubdomin + "/datasets/" + datasetUID + "/datasources/" + newFilename,
+    //         ContentType: contentType,
+    //         Body: data,
+    //         ACL: "private"
+    //     };
+
+    //     // console.log("uploading file -> ",params);
+
+    //     s3.putObject(params, cb);
+    // });
 }
 module.exports.uploadDataSource = _uploadDataSource;
 
