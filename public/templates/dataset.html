@@ -2,8 +2,11 @@
     <h1 ng-if="$state.is('dashboard.dataset.list') == true">Dataset Settings</h1>
     <h1 ng-if="$state.is('dashboard.dataset.list') == false">{{ dataset.title ? dataset.title : 'New Dataset' }}</h1> <!-- quick check if _test_ -->
     <span flex></span>
-    <md-button ng-click="" class="md-dashboard md-dashboard-header" md-no-ink ng-if="$state.is('dashboard.dataset.list') == false" ng-disabled="true">
-        <span class="btn-label">Primary Action</span>
+    <md-button class="md-dashboard md-dashboard-header confirm" md-no-ink
+        ng-if="$state.is('dashboard.dataset.list') == false"
+        ng-disabled="!primaryAction.valid"
+        ng-click="primaryAction.do()">
+        <span class="btn-label">{{ primaryAction.text }}</span>
     </md-button>
 </header>
 

@@ -6,6 +6,16 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
+            $scope.primaryAction.text = 'Next';
+            $scope.$watch('newDSForm.$valid', function(validity) {
+                if (validity !== undefined) {
+                    $scope.primaryAction.valid = validity;
+                }
+            });
+            $scope.primaryAction.do = function() {
+                $scope.submitForm($scope.primaryAction.valid);
+            };
+
             $scope.submitForm = function(isValid) {
 
                 if (isValid) {
