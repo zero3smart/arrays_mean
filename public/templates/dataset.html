@@ -2,8 +2,8 @@
     <h1 ng-if="$state.is('dashboard.dataset.list') == true">Dataset Settings</h1>
     <h1 ng-if="$state.is('dashboard.dataset.list') == false">{{ dataset.title ? dataset.title : 'New Dataset' }}</h1> <!-- quick check if _test_ -->
     <span flex></span>
-    <md-button class="md-dashboard md-dashboard-header confirm" md-no-ink
-        ng-if="$state.is('dashboard.dataset.list') == false"
+    <md-button class="md-dashboard md-dashboard-header" md-no-ink
+        ng-class="{ 'confirm': !$state.is('dashboard.dataset.list') }"
         ng-disabled="primaryAction.disabled"
         ng-click="primaryAction.do()">
         <span class="btn-label">{{ primaryAction.text }}</span>
@@ -13,7 +13,7 @@
 <div class="array-content dataset">
 
     <ng-include src="'templates/blocks/dataset.breadcrumb.html'"
-                ng-if="$state.is('dashboard.dataset.list') == false && $state.is('dashboard.dataset.new') == false"></ng-include>
+                ng-if="!$state.is('dashboard.dataset.list') && !$state.is('dashboard.dataset.new') && !$state.is('dashboard.dataset.done')"></ng-include>
 
     <div ui-view class="ext-content"></div>
 

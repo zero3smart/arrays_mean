@@ -25,7 +25,7 @@ angular.module('arraysApp')
             if (!dataset.importRevision) {dataset.importRevision = 1;}
 
             $scope.$parent.$parent.dataset = dataset;
-            $scope.$parent.$parent.currentNavItem = 'Settings';
+            $scope.$parent.$parent.currentNavItem = 'settings';
 
 
 

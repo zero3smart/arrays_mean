@@ -367,7 +367,10 @@ md-tooltip .md-content {
 
 /* Dataset Breadcrumb */
 
-.dataset-breadcrumb button {
+._md-nav-button-text.placeholder {
+	color: var(--color-text-light);
+}
+/*.dataset-breadcrumb button {
     float: left;
     width: 20%;
     margin: 0;
@@ -379,7 +382,7 @@ md-tooltip .md-content {
 }
 .dataset-breadcrumb button:disabled {
     color: #9B9B9B;
-}
+}*/
 
 .dataset-breadcrumb span {
     font-family: var(--font-family-calibre);

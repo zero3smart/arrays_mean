@@ -25,7 +25,7 @@ angular.module('arraysApp')
                 }
             }
 
-            $scope.$parent.$parent.currentNavItem = 'Views';
+            $scope.$parent.$parent.currentNavItem = 'views';
 
             if (!$scope.$parent.$parent.dataset.fe_views) {
                 $scope.$parent.$parent.dataset.fe_views = {};

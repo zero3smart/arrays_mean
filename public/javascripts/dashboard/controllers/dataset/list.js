@@ -5,6 +5,12 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = {};
             $scope.datasets = datasets;
 
+            $scope.primaryAction.text = 'New Dataset';
+            $scope.primaryAction.disabled = false; // can limit here based on billing
+            $scope.primaryAction.do = function() {
+                $scope.add();
+            };
+
             $scope.remove = function (id, title, ev) {
                 $mdDialog.show({
                     templateUrl: 'templates/blocks/dataset.delete.html',
