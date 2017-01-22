@@ -27,11 +27,11 @@
        </md-button>
    </div>
 
-   <!-- <div layout="column" layout-gt-sm="row"> -->
-    <div flex="50">
+   <div class="team-images" layout="column" layout-gt-sm="row">
+    <div flex="40">
         <label>Team Logo</label>
         <div>
-            <img class="img-responsive" ng-if="team.logo" ng-src="{{team.logo}}">
+            <img class="img-responsive team-logo" ng-if="team.logo" ng-src="{{team.logo}}">
         </div>
 
         <input type="file" id="team_logo" nv-file-select="" uploader="logoUploader" class="team-uploader">
@@ -40,11 +40,11 @@
             {{team.logo ? 'Update' : 'Add'}}
         </label>
     </div>
-
-    <div flex="50">
+    <div flex="10"></div>
+    <div flex="40">
         <label>Team Masthead</label>
         <div>
-            <img class="img-responsive" ng-if="team.logo_header" ng-src="{{team.logo_header}}">
+            <img class="img-responsive team-header" ng-if="team.logo_header" ng-src="{{team.logo_header}}">
         </div>
 
         <input type="file" id="team_logo_header" nv-file-select="" uploader="logo_headerUploader" class="team-uploader">
@@ -53,7 +53,7 @@
             {{team.logo_header ? 'Update' : 'Add'}}
         </label>
     </div>
-<!-- </div> -->
+</div>
 
     <!-- <a href="" class="warn" ng-if="user.role=='superAdmin'">Delete Team</a> -->
 

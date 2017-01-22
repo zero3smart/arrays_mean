@@ -685,8 +685,20 @@ md-icon.btn-icon {
 }
 
 /* Team Settings */
+.team-images {
+	margin-top: 30px;
+	padding-top: 30px;
+	border-top: 1px solid #eeeeee; /*match <hr>*/
+}
 .team-uploader {
 	display: none !important;
+}
+.team-logo, .team-header {
+	margin-bottom: 15px;
+}
+.team-images .md-button {
+	/*stack on mobile view*/
+	margin-bottom: 30px;
 }
 /*icon upload*/
 md-progress-linear .md-container {
