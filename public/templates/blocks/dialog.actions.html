@@ -1,8 +1,8 @@
 <md-dialog-actions layout="row" layout-align="end center">
-    <md-button ng-if="warn" class="md-dashboard md-warn" ng-click="$parent.hide()">
+    <md-button ng-if="warn" class="md-dashboard md-warn" ng-click="$parent.$parent.hide()">
         <span class="btn-label">{{warn}}</span>
     </md-button>
-    <md-button ng-if="confirm" class="md-dashboard confirm" ng-click="$parent.hide()">
+    <md-button ng-if="confirm" class="md-dashboard confirm" ng-click="$parent.$parent.hide()">
         <span class="btn-label">{{confirm}}</span>
     </md-button>
     <md-button class="md-dashboard cancel" ng-click="$parent.cancel()">

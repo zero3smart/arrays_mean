@@ -76,6 +76,9 @@ aa-dialog-actions,
 .layout-padding aa-dialog-actions {
 	padding: 0;
 }
+aa-dialog-actions .md-button:last-child {
+	margin-left: 8px;
+}
 
 /**/
 
