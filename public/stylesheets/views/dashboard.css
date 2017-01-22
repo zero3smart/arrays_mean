@@ -582,7 +582,7 @@ md-dialog.field-dialog .md-dialog-content {
     padding-bottom: 10px;
 }
 md-dialog {
-    min-width: 66%;
+    width: 45em;
 }
 
 md-dialog fieldset legend,
