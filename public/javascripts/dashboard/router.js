@@ -2,33 +2,33 @@
 
 angular.module('arraysApp')
     .run(
-        ['$rootScope', '$state', '$stateParams',
-            function ($rootScope, $state, $stateParams) {
-                $rootScope.$state = $state;
-                $rootScope.$stateParams = $stateParams;
+    ['$rootScope', '$state', '$stateParams',
+        function ($rootScope, $state, $stateParams) {
+            $rootScope.$state = $state;
+            $rootScope.$stateParams = $stateParams;
 
-                $rootScope.$on('$stateChangeError',function(event, toState,toParams,fromState,fromParams,error) {
-                    event.preventDefault();
-                    if (error.importing == true) {
-                        $state.go('dashboard.dataset.done', {id: error.datasetId});
-                    }
-                })
-            }
-        ]
+            $rootScope.$on('$stateChangeError',function(event, toState,toParams,fromState,fromParams,error) {
+                event.preventDefault();
+                if (error.importing == true) {
+                    $state.go('dashboard.dataset.done', {id: error.datasetId});
+                }
+            });
+        }
+    ]
     )
     .config(
-        ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider',
-            function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+    ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider',
+        function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
-                $urlRouterProvider
+            $urlRouterProvider
                     .otherwise('/dashboard/account/profile');
 
-                $stateProvider
+            $stateProvider
                     .state('dashboard', {
                         abstract: true,
                         url: '/dashboard',
-                        templateUrl: "templates/dashboard.html",
-                        controller: "AdminCtrl",
+                        templateUrl: 'templates/dashboard.html',
+                        controller: 'AdminCtrl',
                         resolve: {
                             auth: function (AuthService) {
                                 return AuthService.ensureLogIn();
@@ -89,16 +89,17 @@ angular.module('arraysApp')
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
                                     return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id, fileName: {$exists: true}});
                                 } else if (user.role == 'editor') {
-                                    return DatasetService.getDatasetsWithQuery({_id: {$in: user._editors}, _team:user.defaultLoginTeam._id, 
-                                            fileName: {$exists: true}});
+
+                                    return DatasetService.getDatasetsWithQuery({_id: {$in: user._editors}, _team:user.defaultLoginTeam._id,
+                                        uid: {$exists: true}});
+
                                 } else {
                                     return [];
                                 }
                             }],
-                            nullDatasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
 
-                                var user = AuthService.currentUser();
-                                return DatasetService.getDatasetsWithQuery({uid:null,fileName:{$exists:false},author: user._id});
+                            nullDatasets: ['DatasetService', 'AuthService', function (DatasetService) {
+                                return DatasetService.getDatasetsWithQuery({uid:{$exists: false}});
                             }]
                         }
                     })
@@ -109,7 +110,7 @@ angular.module('arraysApp')
                         resolve: {
                             dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {
 
-            
+
 
                                 if ($stateParams.id) {
                                     var deferred = $q.defer();
@@ -130,15 +131,15 @@ angular.module('arraysApp')
                                                             return false;
 
                                                         }
-                                                    })
+                                                    });
 
                                                 }
                                                 deferred.resolve(data);
 
-                                            })
+                                            });
                                         }
-                                        
-                                    })
+
+                                    });
                                     return deferred.promise;
 
                                 } else {
@@ -146,9 +147,9 @@ angular.module('arraysApp')
                                 }
 
 
-                           
 
-                                
+
+
                             }]
                         }
                     })
@@ -296,7 +297,7 @@ angular.module('arraysApp')
                             datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
                                 var user = AuthService.currentUser();
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
-                                    return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id})
+                                    return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id});
                                 } else {
                                     return [];
                                 }
@@ -310,8 +311,8 @@ angular.module('arraysApp')
                     });
 
                 // use the HTML5 History API
-                $locationProvider.html5Mode(true);
-                $httpProvider.interceptors.push('TokenInterceptor');
+            $locationProvider.html5Mode(true);
+            $httpProvider.interceptors.push('TokenInterceptor');
 
-            }
-        ]);
+        }
+    ]);

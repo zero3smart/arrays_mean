@@ -49,7 +49,7 @@ angular.module('arraysApp')
                 }, function () {
                     // console.log('You decided to keep your dataset.');
                 });
-            }
+            };
 
 
             $scope.select = function (id) {
@@ -62,19 +62,14 @@ angular.module('arraysApp')
                 $state.go('dashboard.dataset.new');
             };
 
-            // remove uid = null (abandoned datasets)
+            // remove abandoned datasets (have no uid)
             for (var i = 0; i < nullDatasets.length; i++) {
                 var null_id = nullDatasets[i]._id;
                 DatasetService.remove(null_id).then(function(response) {
-                    if (response.status === 200) {
-                        $scope.datasets = $scope.datasets.filter(function(a) {
-                            return a._id !== null_id;
-                        });
-                        // console.log('Removed null dataset');
-                    }
+                    // console.log('Dataset without uid removed');
                 }, function(error) {
                     // console.log(error);
                 });
             }
 
-    }]);
+        }]);

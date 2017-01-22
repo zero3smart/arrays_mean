@@ -3,21 +3,23 @@ angular.module('arraysApp')
     .controller('DatasetNewCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast',
         function($scope, $state, dataset, DatasetService, $mdToast) {
 
-            if (!dataset.fe_listed) {dataset.fe_listed = false;}
-            if (!dataset.fe_visible) {dataset.fe_visible = false;}
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
-            //var uniquePlaceholder = Date.now();
 
-            // if (!dataset.title) {dataset.title = '_temp_' + uniquePlaceholder;}
-            // if (!dataset.description) {dataset.description = '_temp_' + uniquePlaceholder;}
+            $scope.primaryAction.text = 'Next';
+            $scope.$watch('newDSForm.$valid', function(validity) {
+                if (validity !== undefined) {
+                    $scope.formValidity = validity;
+                    $scope.primaryAction.disabled = !validity;
+                }
+            });
+            $scope.primaryAction.do = function() {
+                $scope.submitForm($scope.formValidity);
+            };
 
-            // if (!dataset.uid) {dataset.uid = uniquePlaceholder;}
-            if (!dataset.importRevision) {dataset.importRevision = 1;}
+            $scope.submitForm = function(isValid) {
 
-            // $scope.submitForm = function(isValid) {
-
-                // if (isValid) {
+                if (isValid) {
                     $scope.submitting = true;
 
                     if (!dataset.author) {
@@ -29,28 +31,19 @@ angular.module('arraysApp')
 
                     dataset.updatedBy = $scope.user._id;
 
-
-
                     DatasetService.save(dataset).then(function (response) {
 
-                       if (response.status == 200) {
-                            // $mdToast.show(
-                            //     $mdToast.simple()
-                            //         .textContent(dataset._id ? 'Dataset updated successfully!' : 'New Dataset was created successfully!')
-                            //         .position('top right')
-                            //         .hideDelay(3000)
-                            // );
+                        if (response.status == 200) {
 
                             $state.transitionTo('dashboard.dataset.upload', {id: response.data.id}, {
                                 reload: true,
                                 inherit: false,
                                 notify: true
                             });
-                       }
+
+                        }
                         $scope.submitting = false;
                     }, function (error) {
-
-                        console.log(error);
 
                         $mdToast.show(
                             $mdToast.simple()
@@ -60,6 +53,36 @@ angular.module('arraysApp')
                         );
                         $scope.submitting = false;
                     });
-                // }
-            // }
-    }]);
+                }
+            };
+        }])
+        .directive('uniqueTitle',['DatasetService', 'AuthService', '$q', function (DatasetService, AuthService, $q) {
+            return {
+                restrict: 'A',
+                require: 'ngModel',
+                link: function(scope,elem,attr,model) {
+
+                    model.$asyncValidators.titleAvailable = function(modelValue,viewValue) {
+                        var value = (modelValue || viewValue).toLowerCase().replace(/[^A-Z0-9]+/ig, '_'); // same as uid in upload.js
+                        var user = AuthService.currentUser(),
+                            deferred = $q.defer();
+                        DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id, uid: {$exists: true}})
+                        .then(function(datasets) {
+                            var datasetTitles = datasets.reduce(function(titles, dataset){
+                                titles.push(dataset.title.toLowerCase().replace(/[^A-Z0-9]+/ig, '_')); // same as uid in upload.js
+                                return titles;
+                            }, []);
+
+                            if (datasetTitles.indexOf(value)) {
+                                deferred.resolve(true);
+                            } else {
+                                deferred.reject(false);
+                            }
+                        });
+                        return deferred.promise;
+                    };
+
+                }
+            };
+
+        }]);

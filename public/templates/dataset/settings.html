@@ -42,9 +42,21 @@
             <div md-color-picker ng-model="dataset.brandColor"></div>
         </md-input-container>
 
+        <div>
+            <label>Banner</label>
+
+            <div flex="50">
+                <img class="img-responsive" ng-if="dataset.banner" ng-src="{{dataset.banner}}">
+            </div>
+
+            <input id="banner" type="file" nv-file-select="" uploader="imageUploader" class="team-uploader">
+            <label for="banner" class="md-button md-dashboard primary-action" ng-disabled="imageUploader.queue.length > 0">
+               Choose File
+            </label>
+        </div>
 
         <md-input-container class="md-block">
-            <label>Source URL</label>
+            <label>Source URL(s)</label>
             <md-chips ng-model="dataset.urls" name="source_urls" md-enable-chip-edit="true"
                       placeholder="Enter a URL" secondary-placeholder="Add URL"></md-chips>
         </md-input-container>
@@ -57,7 +69,7 @@
             <md-checkbox name="visible" ng-model="dataset.fe_visible">Visible</md-checkbox>
         </md-input-container>
 
-        <div layout="row" layout-align="end center">
+        <div layout="row" layout-align="end center" class="hidden-submit">
             <md-button class="md-dashboard confirm" type="submit" ng-disabled="settingsForm.$invalid || submitting" md-no-ink>
                 <span class="btn-label">Next</span>
             </md-button>

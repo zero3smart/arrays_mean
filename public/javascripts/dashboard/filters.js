@@ -5,7 +5,7 @@ app.filter('dotless', function () {
         if (input) {
             return input.replace(/\./g, '_');
         }
-    }
+    };
 });
 
 app.filter('capitalize', function () {
@@ -13,10 +13,10 @@ app.filter('capitalize', function () {
         if (input != null)
             input = input.toLowerCase();
         return input.substring(0, 1).toUpperCase() + input.substring(1);
-    }
+    };
 });
 
-app.filter('pluralize', function () {
+app.filter('appendPluralized', function () {
     return function (input, singular, plural) {
         if (input === undefined) {
             return;
@@ -30,7 +30,24 @@ app.filter('pluralize', function () {
         else {
             return input + ' ' + plural;
         }
-    }
+    };
+});
+
+app.filter('pluralize', function () {
+    return function (input, singular, plural) {
+        if (input === undefined) {
+            return;
+        }
+        else if (input === 0) {
+            return 'No ' + plural;
+        }
+        else if (input === 1) {
+            return singular;
+        }
+        else {
+            return plural;
+        }
+    };
 });
 
 app.filter('typeCoercionToString', function () {
@@ -51,15 +68,14 @@ app.filter('typeCoercionToString', function () {
         } else {
             return 'String'; // 'Unknown'
         }
-    }
+    };
 });
 
 app.filter('viewToName',function() {
     return function(input) {
-        return input.split(/(?=[A-Z])/).join("-").toLowerCase();
-    }
-})
-
+        return input.split(/(?=[A-Z])/).join('-').toLowerCase();
+    };
+});
 
 app.filter('jobTask', function() {
     return function(input) {
@@ -72,22 +88,13 @@ app.filter('jobTask', function() {
         } else if (input == 'scrapeImages') {
             return 'Image Scraping';
         }
-    }
-})
+    };
+});
 
 app.filter('omit',function() {
     return function(input,keyName) {
         var copy = angular.copy(input);
         delete copy[keyName];
         return copy;
-    }
-})
-
-app.filter('replaceTitlePlaceholder',function() {
-    return function(input) {
-        if (!input || input == '') {
-            return 'New Dataset';
-        }
-        return input;
-    }
-})
+    };
+});

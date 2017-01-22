@@ -71,6 +71,19 @@ md-select:not([disabled]):focus .md-select-value {
 	border-color: var(--color-primary) !important;
 }
 
+/*Arrays app*/
+aa-dialog-actions,
+.layout-padding aa-dialog-actions {
+	padding: 0;
+}
+aa-dialog-actions .md-button:last-child {
+	margin-left: 8px;
+}
+
+.hidden-submit {
+	/*keep for form validity but let primaryAction do the work*/
+	display: none;
+}
 /**/
 
 h1 {
@@ -264,15 +277,15 @@ body.md-toast-animating {
     border-radius: 4px;
     text-transform: none;
 }
-.team-list .md-button:hover,
-.team-list .md-button:focus {
-    background-color: var(--color-primary);
-    color: #fff;
+.team-list .md-button:not([disabled]):hover,
+.team-list .md-button:not([disabled]):focus {
+    background-color: #eeeeee;
+    color: var(--color-text-dark);
 }
 /* current team */
 .team-list .md-button:disabled {
-    color: var(--color-primary);
-    background-color: transparent;
+    background-color: var(--color-primary);
+    color: #fff;
 }
 
 .subdomain-append,
@@ -307,6 +320,9 @@ md-input-invalid.subdomain-append {
     color: var(--color-text-dark);
     font-size: 16px;
     text-transform: none;
+}
+.md-nav-bar .md-button.md-focused {
+	background-color: transparent;
 }
 
 /*match sidebar button height*/
@@ -390,7 +406,27 @@ md-tooltip .md-content {
 
 /* Dataset Settings */
 .dataset .md-chips {
-    padding: 0;
+    padding-left: 0;
+}
+.dataset .md-chips.md-focused {
+	box-shadow: 0 2px var(--color-primary);
+}
+
+/*chip selected*/
+.dataset .md-chips md-chip.md-focused {
+	background-color: var(--color-text-med);
+}
+.dataset .md-chips md-chip.md-focused md-icon {
+	color: white;
+}
+
+.md-chips md-chip md-icon,
+.md-chips.md-focused md-chip md-icon {
+    color: var(--color-text-med);
+}
+.md-chips .md-errors-spacer {
+	/*known issue, md-errors-spacer may be deprecated soon*/
+	display: none;
 }
 
 .dataset md-input-container.md-color-picker {
@@ -420,6 +456,12 @@ md-tooltip .md-content {
 .fields-container {
     overflow-x: auto;
 }
+.fields-container,
+.fields-container thead,
+.fields-container tbody,
+.fields-container tr {
+	 width: 100%;
+ }
 
 .dataset .field-row-header {
 }
@@ -432,11 +474,12 @@ md-tooltip .md-content {
 .dataset .field {
     display: flex;
     border-bottom: 1px solid #e5e5e5;
-
-	overflow-wrap: break-word;
-	word-wrap: break-word;
-	-ms-word-break: break-all;
-	word-break: break-word;
+}
+.dataset .field,
+.dataset .sample {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+    overflow: hidden;
 }
 .dataset .field:after {
     content: "";
@@ -455,11 +498,15 @@ md-tooltip .md-content {
     font-weight: bold;
 }
 
-.incl-excl-all {
-	color: var(--color-text-light);
+.incl-excl-all md-checkbox {
+	margin-bottom: 0;
 }
-.incl-excl-all:hover {
-	color: var(--color-primary);
+.incl-excl-all md-checkbox.md-checked .md-icon {
+	background-color: transparent;
+	border-color: var(--color-text-light);
+}
+.incl-excl-all md-checkbox.md-checked .md-icon:after {
+	border-color: var(--color-text-light);
 }
 
 /*.dataset .field > .handler {
@@ -551,7 +598,7 @@ md-dialog.field-dialog .md-dialog-content {
     padding-bottom: 10px;
 }
 md-dialog {
-    min-width: 66%;
+    width: 45em;
 }
 
 md-dialog fieldset legend,
@@ -612,6 +659,7 @@ md-icon.btn-icon {
     padding: 0 1em;
 }
 
+/*warn*/
 .md-button.md-dashboard.md-warn {
     background-color: var(--color-warn);
 }
@@ -623,6 +671,12 @@ md-icon.btn-icon {
 	color: var(--color-warn);
 }
 
+/*cancel, netural color*/
+.md-button.md-dashboard.cancel:not([disabled]):hover {
+	background: var(--color-text-light);
+}
+
+/*confirm*/
 .md-button.md-dashboard.confirm:not([disabled]) {
     background-color: var(--color-primary);
 }
@@ -635,8 +689,23 @@ md-icon.btn-icon {
 }
 
 /* Team Settings */
+.team-images {
+	margin-top: 30px;
+	padding-top: 30px;
+	border-top: 1px solid #eeeeee; /*match <hr>*/
+}
 .team-uploader {
 	display: none !important;
+}
+.team-logo, .team-header {
+	margin-bottom: 15px;
+}
+.team-image-actions {
+	/*stack on mobile view*/
+	margin-bottom: 30px;
+}
+.team-image-actions span {
+	padding-left: 15px;
 }
 /*icon upload*/
 md-progress-linear .md-container {
