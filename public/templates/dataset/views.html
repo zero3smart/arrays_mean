@@ -2,7 +2,7 @@
     <form name="vm.viewsForm" ng-submit="submitForm(!vm.viewsForm.$invalid)">
         <md-input-container class="md-block" flex-gt-sm>
             <label>Default View</label>
-            <md-select ng-required="dataset.fe_visible&&dataset.fe_listed" name="default"
+            <md-select required name="default"
                        ng-model="data.default_view" ng-change="makeViewVisible()">
                 <md-option ng-repeat="view in views" value="{{view.name}}">
                     {{view.displayAs}}
@@ -30,6 +30,10 @@
                     <td ng-click="openViewDialog($event, view._id)" class="view-name" ng-class="{default_view: data.default_view === view.name}" >
                         <span class="{{ view.icon }}"></span>
                         {{ view.displayAs}}
+                    </td>
+                    <td class="dashboard-list-icon" aa-tooltip="Edit View Settings"
+                        ng-click="openViewDialog($event, view._id)">
+                        <i class="fa fa-pencil" aria-hidden="true"></i>
                     </td>
                 </tr>
                 </tbody>
