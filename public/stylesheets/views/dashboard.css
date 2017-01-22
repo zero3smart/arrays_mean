@@ -696,9 +696,12 @@ md-icon.btn-icon {
 .team-logo, .team-header {
 	margin-bottom: 15px;
 }
-.team-images .md-button {
+.team-image-actions {
 	/*stack on mobile view*/
 	margin-bottom: 30px;
+}
+.team-image-actions span {
+	padding-left: 15px;
 }
 /*icon upload*/
 md-progress-linear .md-container {
