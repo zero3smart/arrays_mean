@@ -122,67 +122,6 @@
             </div>
         </div>
 
-        <!-- <div>
-            <md-toolbar layout="row">
-                <div class="md-toolbar-tools">Banner</div>
-            </md-toolbar>
-
-            <div flex="50">
-                <img class="img-responsive" ng-if="dataset.banner" ng-src="{{dataset.banner}}">
-            </div>
-
-            <label>Choose image</label>
-            <input type="file" nv-file-select="" uploader="imageUploader">
-
-            <table class="table upload">
-                <thead>
-                <tr>
-                    <th width="50%">Image Name</th>
-                    <th ng-show="imageUploader.isHTML5">Size</th>
-                    <th ng-show="imageUploader.isHTML5">Progress</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-
-                <tr ng-if="imageUploader.queue[0]">
-                    <td><strong>{{ imageUploader.queue[0].file.name }}</strong></td>
-                    <td ng-show="imageUploader.isHTML5" nowrap>{{ imageUploader.queue[0].file.size/1024/1024|number:2 }}
-                        MB
-                    </td>
-                    <td ng-show="imageUploader.isHTML5" class="progress-container">
-                        <md-progress-linear md-mode="determinate"
-                                            value="{{imageUploader.queue[0].progress}}"></md-progress-linear>
-                    </td>
-
-
-                    <td class="text-center">
-                        <span ng-show="imageUploader.queue[0].isSuccess" class="text-success"><i
-                                class="glyphicon glyphicon-ok"></i></span>
-                        <span ng-show="imageUploader.queue[0].isCancel" class="text-warning"><i
-                                class="glyphicon glyphicon-ban-circle"></i></span>
-                        <span ng-show="imageUploader.queue[0].isError" class="text-danger"><i
-                                class="glyphicon glyphicon-remove"></i></span>
-                    </td>
-                    <td nowrap class="no-padding-vertical">
-
-                        <md-button class="md-raised" ng-click="imageUploader.queue[0].upload()"
-                                   ng-disabled="imageUploader.queue[0].isReady || imageUploader.queue[0].isUploading || imageUploader.queue[0].isSuccess">
-                            Upload
-                        </md-button>
-                        <md-button class="md-raised" ng-click="imageUploader.queue[0].cancel()"
-                                   ng-disabled="!imageUploader.queue[0].isUploading">
-                            Cancel
-                        </md-button>
-                        <md-button class="md-raised" ng-click="imageUploader.queue[0].remove()">
-                            Remove
-                        </md-button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div> -->
         <div layout="row" layout-align="space-between center" ng-hide="!dataset.fileName">
             <p>
                 <a ng-click="clearAll()" class="warn">Clear All</a>

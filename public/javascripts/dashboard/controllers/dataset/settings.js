@@ -1,7 +1,7 @@
 angular.module('arraysApp')
 
-    .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast',
-        function($scope, $state, dataset, DatasetService, $mdToast) {
+    .controller('DatasetSettingsCtrl', ['$scope', '$state', 'dataset', 'DatasetService', '$mdToast', 'FileUploader', 'AssetService',
+        function($scope, $state, dataset, DatasetService, $mdToast, FileUploader, AssetService) {
 
 
             // still needed now that this step comes later?
@@ -19,7 +19,7 @@ angular.module('arraysApp')
 
 
 
-           $scope.submitForm = function(isValid) {
+            $scope.submitForm = function(isValid) {
 
                 if (isValid) {
                     $scope.submitting = true;
@@ -34,7 +34,7 @@ angular.module('arraysApp')
 
                     DatasetService.save(dataset).then(function (response) {
 
-                       if (response.status == 200) {
+                        if (response.status == 200) {
                             $mdToast.show(
                                 $mdToast.simple()
                                     .textContent(dataset._id ? 'Dataset updated successfully!' : 'New Dataset was created successfully!')
@@ -47,7 +47,7 @@ angular.module('arraysApp')
                                 inherit: false,
                                 notify: true
                             });
-                       }
+                        }
                         $scope.submitting = false;
                     }, function (error) {
 
@@ -63,5 +63,61 @@ angular.module('arraysApp')
                     });
                 }
             };
+
+            // banner upload
+            $scope.imageUploader = new FileUploader({
+                method: 'PUT',
+                disableMultipart: true,
+                filters: [
+                    {
+                        name: 'imageFilter',
+                        fn: function (item) {
+                            var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+                            return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+                        }
+                    }
+                ],
+
+            });
+
+            $scope.imageUploader.onCompleteItem = function (fileItem, response, status) {
+                if (status == 200) {
+                    var reload = false;
+                    if (dataset.banner) {
+                        reload = true;
+                    }
+                    dataset.banner = fileItem.publicUrl;
+                    DatasetService.save(dataset).then(function () {
+                        if (reload) {
+                            dataset.banner = dataset.banner + '?' + new Date().getTime();
+                        }
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Image upload successfully!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    });
+                }
+            };
+
+            $scope.imageUploader.onBeforeUploadItem = function (item) {
+                item.headers['Content-Type'] = item.file.type;
+            };
+
+            $scope.imageUploader.onAfterAddingFile = function (fileItem) {
+                // console.log(fileItem);
+                if ($scope.imageUploader.queue.length > 0) {
+                    $scope.imageUploader.queue[0] = fileItem;
+                }
+                AssetService.getPutUrlForDatasetAssets($scope.dataset._id, fileItem.file.type, fileItem.file.name)
+                    .then(function (urlInfo) {
+                        fileItem.url = urlInfo.putUrl;
+                        fileItem.publicUrl = urlInfo.publicUrl;
+                        $scope.imageUploader.uploadAll();
+
+                    });
+            };
+
         }
     ]);
