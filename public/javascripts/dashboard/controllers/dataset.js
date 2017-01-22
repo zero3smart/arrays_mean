@@ -9,7 +9,9 @@ angular.module('arraysApp')
                     $scope.currentStep = toState.name;
                 });
 
-            $scope.primaryAction = {};
+            $scope.primaryAction = {
+                disabled: true
+            };
 
             $scope.navigate = function(step) {
 
