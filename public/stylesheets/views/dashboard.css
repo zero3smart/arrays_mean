@@ -308,6 +308,9 @@ md-input-invalid.subdomain-append {
     font-size: 16px;
     text-transform: none;
 }
+.md-nav-bar .md-button.md-focused {
+	background-color: transparent;
+}
 
 /*match sidebar button height*/
 .md-nav-bar {
