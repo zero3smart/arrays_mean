@@ -80,6 +80,10 @@ aa-dialog-actions .md-button:last-child {
 	margin-left: 8px;
 }
 
+.hidden-submit {
+	/*keep for form validity but let primaryAction do the work*/
+	display: none;
+}
 /**/
 
 h1 {
