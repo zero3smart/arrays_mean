@@ -52,13 +52,13 @@ angular.module('arraysApp')
                 link: function(scope,elem,attr,model) {
 
                     model.$asyncValidators.titleAvailable = function(modelValue,viewValue) {
-                        var value = modelValue|| viewValue;
+                        var value = (modelValue || viewValue).toLowerCase().replace(/[^A-Z0-9]+/ig, '_'); // same as uid in upload.js
                         var user = AuthService.currentUser(),
                             deferred = $q.defer();
                         DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id, uid: {$exists: true}})
                         .then(function(datasets) {
                             var datasetTitles = datasets.reduce(function(titles, dataset){
-                                titles.push(dataset.title);
+                                titles.push(dataset.title.toLowerCase().replace(/[^A-Z0-9]+/ig, '_')); // same as uid in upload.js
                                 return titles;
                             }, []);
 
