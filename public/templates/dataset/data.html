@@ -34,7 +34,8 @@
         <fieldset class="standard">
             <!-- <legend>Fields</legend> -->
             <table class="fields-container">
-                <thead class="field-row-header field"><tr layout="row" flex>
+                <thead class="field-row-header field">
+                <tr layout="row" layout-align="space-between start">
                     <th flex="10" aa-tooltip="Drag to re-order">Order</th>
                     <th flex="10" class="incl-excl-all" aa-tooltip="{{ excludeAll ? 'Exclude All' : 'Include All' }}">
                         Include<br />
@@ -44,7 +45,8 @@
                     <th flex="15">Type</th>
                     <th flex="30">Sample</th>
                     <th flex="5"></th>
-                </tr></thead>
+                </tr>
+                </thead>
                 <tbody ui-sortable="fieldSortableOptions" ng-model="data.fields" class="fields">
                     <tr ng-repeat="field in data.fields" class="field"
                         ng-class="{'custom': field.custom}" flex>
@@ -89,7 +91,7 @@
                             <b ng-if="field.custom">Custom</b>
                         </td>
                         <td class="sample" flex="30">
-                            <span ng-if="!field.custom">{{ field.sample | limitTo: 200 }}{{ field.sample.length > 200 ? '...' : '' }}</span>
+                            <span ng-if="!field.custom">{{ field.sample | limitTo:35 }}</span>
                             <span ng-if="field.customField" ng-repeat="mergeField in field.customField.fieldsToMergeIntoArray" >{{mergeField}} <span
                             ng-if="!$last">,</span> </span>
                         </td>
