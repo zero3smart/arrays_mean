@@ -84,6 +84,31 @@ aa-dialog-actions .md-button:last-child {
 	/*keep for form validity but let primaryAction do the work*/
 	display: none;
 }
+
+.new-dataset-form {
+	margin-top: -15px;
+}
+.new-dataset-form md-input-container {
+	margin-top: 22px;
+	margin-bottom: 11px;
+	font-size: 41px;
+	line-height: 1.1em;
+	padding: 0;
+}
+.new-dataset-form input,
+.new-dataset-form input.ng-empty {
+	font-size: 41px;
+	line-height: 1.1em;
+	height: 45px;
+}
+.new-dataset-form .md-errors-spacer {
+	display: none;
+}
+.new-dataset-form .error-messages {
+	position: absolute;
+	top: 100%;
+}
+
 /**/
 
 h1 {
