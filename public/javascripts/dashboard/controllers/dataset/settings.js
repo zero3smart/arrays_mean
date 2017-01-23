@@ -19,6 +19,9 @@ angular.module('arraysApp')
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
             if (!dataset.fe_visible) {dataset.fe_visible = false;}
 
+            var original_feVisible = dataset.fe_visible;
+
+
             // if (!dataset.url) {
             //     dataset.url = $scope.convertToURLSafe(dataset.title);
             // }
@@ -26,6 +29,12 @@ angular.module('arraysApp')
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'settings';
+
+            $scope.promptCacheFilter = function() {
+                if (original_feVisible !== dataset.fe_visible && (dataset.dirty == 0 || dataset.dirty == 4)) {
+                    dataset.dirty = 3;
+                }
+            }
 
 
 
@@ -40,9 +49,12 @@ angular.module('arraysApp')
                     }
                     dataset.updatedBy = $scope.user._id;
 
+                    var finalizedDataset = angular.copy(dataset);
+                    delete finalizedDataset.columns;
 
 
-                    DatasetService.save(dataset).then(function (response) {
+
+                    DatasetService.save(finalizedDataset).then(function (response) {
 
                         if (response.status == 200) {
                             $mdToast.show(

@@ -4,6 +4,8 @@
 
             <h2>Select Your Data Source(s)</h2>
 
+
+
             <div ng-hide="dataset.fileName">
                 <label>Upload spreadsheet</label>
                 <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
@@ -63,7 +65,7 @@
    
 
             <div ng-if="dataset.fileName" ng-repeat="additionalDatasource in additionalDatasources">
-                <div ng-if="!additionalDatasource.dataset_uid" style="margin-top: 15px">
+                <div ng-if="!additionalDatasource.fileName" style="margin-top: 15px">
                     <label>Upload spreadsheet</label>
                     <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
                     <input type="file" id="adddatafile" nv-file-select="" uploader="additionalDatasource.uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" class="team-uploader" />
@@ -72,7 +74,7 @@
                         Choose File
                     </label>
                 </div>
-                <ul class="dashboard-list user-list" ng-if="additionalDatasource.fileName" ng-cloak>
+                <ul class="dashboard-list user-list" ng-if="additionalDatasource._id" ng-cloak>
                     <li layout="row" layout-align="space-between center">
 
                         <span flex="50">
@@ -85,7 +87,11 @@
 
                     </li>
                 </ul>
-                <div ng-repeat="item in additionalDatasource.uploader.queue track by $index" ng-if="!additionalDatasource.fileName">
+
+
+
+
+                <div ng-repeat="item in additionalDatasource.uploader.queue track by $index" ng-if="!additionalDatasource._id">
                     <ul class="dashboard-list user-list" ng-cloak>
                         <li layout="row" layout-align="space-between center">
 

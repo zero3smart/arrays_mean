@@ -404,6 +404,8 @@ angular.module('arraysApp')
 
             function NestedDialogController($scope, $mdDialog, $filter, dataset, additionalDatasources) {
 
+                console.log(additionalDatasources);
+
 
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
@@ -572,6 +574,8 @@ angular.module('arraysApp')
                         });
                         $scope.dataset.fe_nestedObject.valueOverrides[elem.field] = valueOverrides;
                     });
+
+
 
 
 

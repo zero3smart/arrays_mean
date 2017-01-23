@@ -1,6 +1,7 @@
 angular.module('arraysApp')
     .controller('DatasetCtrl', ['$scope', '$location', '$state', '$rootScope','DatasetService',
         function($scope, $location, $state, $rootScope,DatasetService) {
+       
             $scope.currentStep = $state.current.name;
 
             //Keep track of state when navigating without breadcrumbs
@@ -15,16 +16,18 @@ angular.module('arraysApp')
 
             $scope.navigate = function(step) {
 
-                 var finalizedDataset = angular.copy($scope.dataset);
-                delete finalizedDataset.columns;
-                delete finalizedDataset._team;
-                if ($scope.dataset.author) {
-                    delete finalizedDataset.author;
-                }
+                console.log($scope);
+
+                //  var finalizedDataset = angular.copy($scope.dataset);
+                // delete finalizedDataset.columns;
+                // delete finalizedDataset._team;
+                // if ($scope.dataset.author) {
+                //     delete finalizedDataset.author;
+                // }
 
 
-                DatasetService.save(finalizedDataset)
-                .then(function() {
+                // DatasetService.save(finalizedDataset)
+                // .then(function() {
                     $scope.currentStep = step;
                     switch (step) {
                     case 'dashboard.dataset.settings':
@@ -53,7 +56,7 @@ angular.module('arraysApp')
                         break;
                     }
 
-                });
+                // });
 
 
             };

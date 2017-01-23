@@ -102,7 +102,7 @@ module.exports.IncreaseNumberOfRawRows = function (datasetId, numberOfRows, fn) 
         if (err) {
             winston.error("❌ [" + (new Date()).toString() + "] Error while increasing the number of raw rows in a raw source document: ", err);
         } else {
-            winston.info("✅  [" + (new Date()).toString() + "] Increased the number of raw rows in a source document object with pKey \"" + pKey + "\".");
+            winston.info("✅  [" + (new Date()).toString() + "] Increased the number of raw rows in a source document object with datasetId : " + datasetId);
         }
         fn(err, doc);
     });

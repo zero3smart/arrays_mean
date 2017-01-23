@@ -36,10 +36,8 @@ angular.module('arraysApp')
 
                 uploader.onAfterAddingFile = function(item) {
 
-                    if (!additionalDatasource.dataset_uid)
-                        additionalDatasource.dataset_uid = item.file.name.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
-
-                    item.formData[0].dataset_uid = additionalDatasource.dataset_uid;
+                    if (!additionalDatasource.fileName)
+                        additionalDatasource.fileName = item.file.name;
                 };
 
                 uploader.onProgressAll = function(progress) {
@@ -93,6 +91,8 @@ angular.module('arraysApp')
                 };
 
                 additionalDatasource.uploader = uploader;
+
+
                 additionalDatasource.progressMode = 'determinate';
                 return additionalDatasource;
             }
