@@ -3,6 +3,7 @@
     <h1 ng-if="!$state.is('dashboard.dataset.list')">{{ dataset.title ? dataset.title : 'New Dataset' }}</h1>
     <span flex></span>
     <md-button class="md-dashboard md-dashboard-header" md-no-ink
+        ng-if="!$state.is('dashboard.dataset.done')"
         ng-class="{ 'confirm': !$state.is('dashboard.dataset.list') }"
         ng-disabled="primaryAction.disabled"
         ng-click="primaryAction.do()">
