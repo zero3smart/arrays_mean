@@ -64,7 +64,7 @@ var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (objectId) {
     Scheme.index({srcDocPKey: 1}, {unique: false});
     //
     var ModelName = New_RowObjectsModelName(objectId);
-    var Model = mongoose.model(ModelName, Scheme);
+    var Model = mongoose.model(ModelName, Scheme,ModelName.toLowerCase());
     //
     mongooseContext =
     {

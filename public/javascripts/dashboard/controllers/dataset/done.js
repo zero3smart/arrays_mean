@@ -128,6 +128,8 @@ angular.module('arraysApp')
 
                 if (datasourceIndex < $scope.additionalDatasources.length) {
 
+                     $scope.currentWorkingDataset = $scope.additionalDatasources[datasourceIndex];
+
                     if ($scope.dirty == 3) {
 
                         postImport($scope.additionalDatasources[datasourceIndex]._id);
@@ -276,9 +278,12 @@ angular.module('arraysApp')
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.additionalDatasources = additionalDatasources;
+            $scope.currentWorkingDataset;
             $scope.$parent.$parent.currentNavItem = 'Done';
             $scope.importLogger = [];
             $scope.datasetsToProcess = [];
+            $scope.currentWorkingDataset = $scope.$parent.$parent.dataset;
+
 
             $scope.datasetsToProcess[$scope.$parent.$parent.dataset._id] = {uid: $scope.$parent.$parent.dataset.uid};
 
@@ -332,7 +337,7 @@ angular.module('arraysApp')
             $scope.killCurrentJob = function() {
 
                 if ($scope.currentJobId !== null) {
-                    DatasetService.killJob($scope.currentJobId)
+                    DatasetService.killJob($scope.currentWorkingDataset._id)
                         .then(function(res) {
                             if (res.status == 200 && res.data == 'ok') {
                                 $scope.inProgress = false;

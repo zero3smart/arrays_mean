@@ -1,11 +1,32 @@
 $(document).ready(function() {
     var barChart;
     function renderBarChart() {
+        options = getCookies();
         barChart = BarChart.getInstance('#bar-chart', graphData, options);
     }
 
+    function getCookies () {
+        var options = {};
+        var cookiesArray = document.cookie.split(";", 4);
+        for(var i = 0; i < cookiesArray.length; i++) {
+            var key = cookiesArray[i].split("=")[0];
+            if(key[0] == " ") {
+                key = key.slice(1);
+            }
+            var value = cookiesArray[i].split("=")[1];
+            if(value == "undefined" || value == "false") {
+                value = false;
+            } else {
+                value = true;
+            }
+            options[key] = value;
+        }
+        return options;
+    }
+
     // Handle of the "view by" - graph orientation, normalization
-    function updateBarChartControls(options) {
+    function updateBarChartControls() {
+        options = getCookies()
         if (options.horizontal) {
             $('#orientation .horizontal').show();
             $('#orientation .vertical').hide();
@@ -33,19 +54,22 @@ $(document).ready(function() {
 
     $('#orientation').click(function(){
         options.horizontal = !options.horizontal;
-        updateBarChartControls(options);
+        setCookies(options);
+        updateBarChartControls();
         renderBarChart();
     });
 
     $('#normalization').click(function(){
         options.normalize = !options.normalize;
-        updateBarChartControls(options);
+        setCookies(options);
+        updateBarChartControls();
         renderBarChart();
     });
 
     $('#sort-direction').click(function(){
         options.sortDirection = !options.sortDirection;
-        updateBarChartControls(options);
+        setCookies(options);
+        updateBarChartControls();
         barChart.updateSortDirection(options.sortDirection);
     });
 
@@ -54,6 +78,13 @@ $(document).ready(function() {
     window.onresize = function() {
         renderBarChart();
     };
+
+    setCookies = function (options) {
+        document.cookie = "horizontal=" + options['horizontal'] +";";
+        document.cookie = "padding=" + options['padding'] + ";";
+        document.cookie = "sortDirection=" + options['sortDirection'] +";";
+        document.cookie = "normalize=" + options['normalize'] + ";";
+    }
 
     /**
      * Toggle legend
