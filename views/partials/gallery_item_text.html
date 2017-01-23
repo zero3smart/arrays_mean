@@ -1,5 +1,5 @@
 <li class="gallery-item gallery-item-text">
-	<a href="/{{ doc.srcDocPKey | splitSubdomain }}/{{ doc._id }}{{ '?embed=true' if embedded }}" class="gallery-item-text-link">
+	<a href="/{{ array_source_key }}/{{ doc._id }}{{ '?embed=true' if embedded }}" class="gallery-item-text-link">
 		<div class="gallery-item-text-inner">
             {% if fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}
                 {{ fe_galleryItem_htmlForIconFromRowObjWhenMissingImage(doc) | safe }}

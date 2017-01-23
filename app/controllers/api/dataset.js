@@ -37,7 +37,6 @@ queue.worker.process('preImport',function(job,done) {
     batch.concurrency(1);
 
     var description;
-    var srcDocPKey;
 
     batch.push(function (done) {
 
@@ -52,9 +51,6 @@ queue.worker.process('preImport',function(job,done) {
 
                 if (description.schema_id) { //merge with parent description
                     description = datasource_description.Consolidate_descriptions_hasSchema(description);
-                } else {
-                     srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(
-                        description._team.subdomain,description.uid, description.importRevision);
                 }
                 done();
             });
@@ -67,11 +63,11 @@ queue.worker.process('preImport',function(job,done) {
 
         if (!description.dataset_uid) {
 
-            raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function (err, document) {
+            raw_source_documents.Model.findOne({primaryKey: description._id}, function (err, document) {
                 if (err) return done(err);
                 if (!document) return done();
 
-                winston.info("✅  Removed raw source document : " + srcDocPKey + ", error: " + err);
+                winston.info("✅  Removed raw source document : " + description._id + ", error: " + err);
                 document.remove(done);
                 done();
             });
@@ -87,11 +83,11 @@ queue.worker.process('preImport',function(job,done) {
 
         if (!description.dataset_uid) {
 
-             mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey, function (err) {
+             mongoose_client.dropCollection('rawrowobjects-' + description._id, function (err) {
                 // Consider that the collection might not exist since it's in the importing process.
                 if (err && err.code != 26) return done(err);
 
-                winston.info("✅  Removed raw row object : " + srcDocPKey + ", error: " + err);
+                winston.info("✅  Removed raw row object : " + description._id + ", error: " + err);
                 done();
             })
 
@@ -185,10 +181,9 @@ queue.worker.process('importProcessed',function(job,done) {
     batch.concurrency(1);
 
     var description;
-    var srcDocPKey;
 
 
-    // ----> find srcPkey
+    // ----> consolidate if its child dataset
 
 
     batch.push(function (done) {
@@ -204,10 +199,7 @@ queue.worker.process('importProcessed',function(job,done) {
 
              if (description.schema_id) { //merge with parent description
                 description = datasource_description.Consolidate_descriptions_hasSchema(description);
-            } else {
-                srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description._team.subdomain,
-                    description.uid, description.importRevision);
-            }
+            } 
 
             done();
         });
@@ -219,11 +211,11 @@ queue.worker.process('importProcessed',function(job,done) {
     batch.push(function (done) {
         if (!description.dataset_uid) {
 
-            mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey, function (err) {
+            mongoose_client.dropCollection('processedrowobjects-' + description._id, function (err) {
                 // Consider that the collection might not exist since it's in the importing process.
                 if (err && err.code != 26) return done(err);
 
-                winston.info("✅  Removed processed row object : " + srcDocPKey + ", error: " + err);
+                winston.info("✅  Removed processed row object : " + description._id + ", error: " + err);
                 done();
             });
 
@@ -235,12 +227,12 @@ queue.worker.process('importProcessed',function(job,done) {
 
     batch.push(function(done) {
         if (!description.dataset_uid) { 
-            var raw_row_objects_forThisDescription = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey).forThisDataSource_RawRowObject_model
+            var raw_row_objects_forThisDescription = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(description._id).forThisDataSource_RawRowObject_model
             raw_row_objects_forThisDescription.count(function(err,numberOfDocs) {
                 if (err) return done(err);
 
-                raw_source_documents.Model.update({primaryKey: srcDocPKey},{$set: {numberOfRows: numberOfDocs}},function(err) {
-                     winston.info("✅  Updated raw source document number of rows to the raw doc count : " + srcDocPKey);
+                raw_source_documents.Model.update({primaryKey: description._id},{$set: {numberOfRows: numberOfDocs}},function(err) {
+                     winston.info("✅  Updated raw source document number of rows to the raw doc count : " + description._id);
                     done(err);
                 })
             })
@@ -355,7 +347,7 @@ module.exports.getDependencyDatasetsForReimporting = function(req,res) {
         var importRevision = currentSource.importRevision;
         
 
-        datasource_description.datasetsNeedToReimport(req.params.id,uid,importRevision,function(err,jsonObj) {
+        datasource_description.datasetsNeedToReimport(req.params.id,function(err,jsonObj) {
             if (err) return res.status(500).send(err);
             return res.json(jsonObj);
         })
@@ -463,9 +455,6 @@ module.exports.remove = function (req, res) {
             if (!data) return done(new Error('No datasource exists : ' + req.body.id));
 
             description = data;
-
-            if (description.uid) srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(
-                description._team.subdomain,description.uid, description.importRevision);
             done();
         });
     });
@@ -473,83 +462,61 @@ module.exports.remove = function (req, res) {
     // Remove processed row object
     batch.push(function (done) {
 
-        if (!description.uid) {
+         mongoose_client.dropCollection('processedrowobjects-' + description._id, function (err) {
+        // Consider that the collection might not exist since it's in the importing process.
+            if (err && err.code != 26) return done(err);
+
+            winston.info("✅  Removed processed row object : " + description._id + ", error: " + err);
             done();
-        } else {
-             mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey, function (err) {
-            // Consider that the collection might not exist since it's in the importing process.
-                if (err && err.code != 26) return done(err);
+        });
 
-                winston.info("✅  Removed processed row object : " + srcDocPKey + ", error: " + err);
-                done();
-            });
-
-
-        }
-       
     });
 
 
     // Remove raw row object
     batch.push(function (done) {
 
-        if (!description.uid) {
-            done();
-        } else {
-            mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey, function (err) {
-                // Consider that the collection might not exist since it's in the importing process.
-                if (err && err.code != 26) return done(err);
-
-                winston.info("✅  Removed raw row object : " + srcDocPKey + ", error: " + err);
-                done();
-            })
-
-
-        }
-
         
+        mongoose_client.dropCollection('rawrowobjects-' + description._id, function (err) {
+            // Consider that the collection might not exist since it's in the importing process.
+            if (err && err.code != 26) return done(err);
+
+            winston.info("✅  Removed raw row object : " + description._id + ", error: " + err);
+            done();
+        })
+
     });
 
     // Remove source document
     batch.push(function (done) {
-        if (!description.uid) {
-            done();
+        
 
-        } else {
+        raw_source_documents.Model.findOne({primaryKey: description._id}, function (err, document) {
+            if (err) return done(err);
+            if (!document) return done();
 
-            raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function (err, document) {
-                if (err) return done(err);
-                if (!document) return done();
+            winston.info("✅  Removed raw source document : " + description._id + ", error: " + err);
+            document.remove(done);
+        });
 
-                winston.info("✅  Removed raw source document : " + srcDocPKey + ", error: " + err);
-                document.remove(done);
-            });
-
-        }
+        
 
     });
 
     //Remove cache filter
     batch.push(function(done) {
-        if (!description.uid) {
-            done();
-        } else {
-            cached_values.findOne({srcDocPKey: srcDocPKey},function(err,document) {
-                if (err) return done(err);
-                
-                if (!document) return done();
-                 winston.info("✅  Removed cached unique values : " + srcDocPKey + ", error: " + err);
-                 document.remove(done);
-            })
-
-        }
-
         
+        cached_values.findOne({srcDocPKey: description._id},function(err,document) {
+            if (err) return done(err);
+            
+            if (!document) return done();
+             winston.info("✅  Removed cached unique values : " + description._id + ", error: " + err);
+             document.remove(done);
+        })
     });
 
     //Pull from team's datasourceDescriptions
     batch.push(function(done) {
-        if (!description.uid) return done();
         Team.update({_id:description._team},{$pull:{datasourceDescriptions:description._id}},done);
     })
 
@@ -679,7 +646,7 @@ module.exports.get = function (req, res) {
 
             if (!req.session.columns) req.session.columns = {};
 
-            if (description.uid && !req.session.columns[req.params.id]) {
+            if (description.uid && description.fileName && !req.session.columns[req.params.id]) {
 
 
                 _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
@@ -700,18 +667,12 @@ module.exports.get = function (req, res) {
 };
 
 module.exports.loadDatasourceColumnsForMapping = function (req, res) {
-    if (!req.params.pKey) return res.status(500).send('Invalid parameter.');
-
-    var split = req.params.pKey.split("-");
-
-    
-
-
-    var query = {uid: split[0], importRevision: parseInt(split[1].substring(1))};
+    if (!req.params.id) return res.status(500).send('Invalid parameter.');
 
 
 
-    datasource_description.findOne(query)
+
+    datasource_description.findById(req.params.id)
         .populate('_team')
         .lean()
         .exec(function (err, description) {
@@ -1044,7 +1005,7 @@ module.exports.upload = function (req, res) {
                 if (!req.session.columns) req.session.columns = {};
                 // TODO: Do we need to save the columns for the additional datasource,
                 // since it should be same as the master datasource???
-                req.session.columns[description.id] = columns;
+                req.session.columns[description._id] = columns;
 
                 // Upload datasource to AWS S3
 
@@ -1052,8 +1013,8 @@ module.exports.upload = function (req, res) {
                 if (!description.uid) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
 
 
-                var newFileName = datasource_file_service.fileNameToUpload(description);
-                datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, description._team.subdomain, description.uid, function (err) {
+
+                datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, description._id, function (err) {
                     if (err) {
                         winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
                     }
@@ -1074,7 +1035,7 @@ module.exports.upload = function (req, res) {
                 });
             } else {
 
-                var findQuery = {_id: description.id};
+                var findQuery = {_id: description._id};
                 // TODO: Need to update the selected fields only!
                 var updateQuery = {
                     format: description.format,
@@ -1107,7 +1068,7 @@ module.exports.upload = function (req, res) {
             return res.end(JSON.stringify({error: err.message}));
         }
 
-        return res.end(JSON.stringify({id: description.id,uid:description.uid}));
+        return res.end(JSON.stringify({id: description._id,uid:description.uid}));
     });
 };
 

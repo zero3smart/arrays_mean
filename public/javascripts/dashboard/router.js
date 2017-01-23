@@ -87,19 +87,14 @@ angular.module('arraysApp')
                             datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
                                 var user = AuthService.currentUser();
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
-                                    return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id, fileName: {$exists: true}});
+                                    return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id});
                                 } else if (user.role == 'editor') {
 
-                                    return DatasetService.getDatasetsWithQuery({_id: {$in: user._editors}, _team:user.defaultLoginTeam._id,
-                                        uid: {$exists: true}});
+                                    return DatasetService.getDatasetsWithQuery({_id: {$in: user._editors}, _team:user.defaultLoginTeam._id});
 
                                 } else {
                                     return [];
                                 }
-                            }],
-
-                            nullDatasets: ['DatasetService', 'AuthService', function (DatasetService) {
-                                return DatasetService.getDatasetsWithQuery({uid:{$exists: false}});
                             }]
                         }
                     })
@@ -170,14 +165,11 @@ angular.module('arraysApp')
                         resolve: {
                             dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {
 
-
-                               
-
                                 var deferred = $q.defer();
                                 DatasetService.get($stateParams.id)
                                 .then(function(data) {
 
-
+                    
                                     if (data.jobId !== 0) {
                                         deferred.reject({importing: true, datasetId: data._id});
                                     } else {
@@ -186,14 +178,9 @@ angular.module('arraysApp')
                                 })
                                 return deferred.promise;
 
-                                // return DatasetService.get($stateParams.id);
                             }],
                             additionalDatasources: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams
                                 ,$q) {
-                                // if ($stateParams.id)
-                                //     return DatasetService.getAdditionalSources($stateParams.id);
-                                // else
-                                //     return [];
                                 var deferred = $q.defer();
                                 DatasetService.getAdditionalSources($stateParams.id)
                                 .then(function(additionalDatasets) {

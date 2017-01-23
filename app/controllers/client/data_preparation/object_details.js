@@ -3,6 +3,7 @@ var Batch = require('batch');
 var queryString = require('querystring');
 //
 var importedDataPreparation = require('../../../libs/datasources/imported_data_preparation');
+var datasource_description = require('../../../models/descriptions');
 var raw_source_documents = require('../../../models/raw_source_documents');
 var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
@@ -18,7 +19,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
     importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
         .then(function (dataSourceDescription) {
 
-            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
 
             var rowObject;
@@ -30,14 +31,9 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
             batch.concurrency(1);
 
             batch.push(function (done) {
-                var query =
-                {
-                    _id: rowObject_id,
-                    srcDocPKey: source_pKey
-                };
+       
 
-
-                processedRowObjects_mongooseModel.findOne(query, function (err, _rowObject) {
+                processedRowObjects_mongooseModel.findById(rowObject_id, function (err, _rowObject) {
                     if (err) return done(err);
 
                     rowObject = _rowObject;
@@ -114,14 +110,11 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                         batch.push(function (done) {
                             if (afterImportingAllSources_generate_description.relationship == true) {
 
-                                var by = afterImportingAllSources_generate_description.by;
-                                //this is the field we'll use to link to the other dataset
-                                relationshipSource_uid = by.ofOtherRawSrcUID;
-                                relationshipSource_importRevision = by.andOtherRawSrcImportRevision;
-                                var relationshipSource_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(relationshipSource_uid, relationshipSource_importRevision);
 
+                                var by = afterImportingAllSources_generate_description.by;
+                    
                             
-                                var rowObjectsOfRelationship_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(relationshipSource_pKey);
+                                var rowObjectsOfRelationship_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(by.joinDataset);
                                 var rowObjectsOfRelationship_mongooseModel = rowObjectsOfRelationship_mongooseContext.Model;
                                 var field = afterImportingAllSources_generate_description.field;
                                 var isSingular = afterImportingAllSources_generate_description.singular;
@@ -135,11 +128,11 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                                 }
 
 
+
+
                                 relationshipField = field;
                                 var fieldToAcquire ={ srcDocPKey:1,_id:1};
                                 var needObjectTitle = true;
-
-
 
                                 if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined'
                                     && dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field] && 
@@ -148,52 +141,38 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
 
                                     needObjectTitle = false;
 
+
                                     var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField;
                                     for(var i=0; i<wantedfield.length; i++) {
                                         fieldToAcquire["rowParams." + wantedfield[i]] = 1;
                                     }
                                 } 
 
-
-                                if (needObjectTitle) {
-                                    batch.push(function(done) {
-                                        importedDataPreparation.DataSourceDescriptionWithPKey(relationshipSource_pKey)
-                                            .then(function(relationship_dataset) {
-
-
-
-                                                var objectTitle = relationship_dataset.fe_designatedFields.objectTitle;
-
-                                                fieldToAcquire["rowParams." + objectTitle] = 1;
-
-                                                if (typeof dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames !== 'undefined') {
-                                                    fieldToAcquire ={ srcDocPKey:1,_id:1};
-                                                    var wantedfield = dataSourceDescription.fe_objectShow_customHTMLOverrideFnsByColumnNames[field].showField;
-                                                    for(var i=0; i<wantedfield.length; i++) {
-                                                        fieldToAcquire = fieldToAcquire + "rowParams." + wantedfield[i] + " ";
-                                                    }
-                                                }
-                                                done();
-                                            })
-                                    })
-                                }
-
-
-
-                                rowObjectsOfRelationship_mongooseModel.find(findQuery)
-                                .select(fieldToAcquire)
-                                .exec(function (err, hydrationFetchResults) {
+                                datasource_description.findById(by.joinDataset,function(err,joinDS) {
                                     if (err) return done(err);
-                                    var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
+                           
 
-                                    rowObject.rowParams[field] = hydrationValue; // a doc or list of docs
-                
-                                    done();
-                                });
+                                   relationshipSource_uid = joinDS.uid;
+                                   relationshipSource_importRevision = joinDS.importRevision;
+                                   if (needObjectTitle) {
+                                        var objectTitle = joinDS.fe_designatedFields.objectTitle;
+                                        fieldToAcquire["rowParams." + objectTitle] = 1;
+                                    
 
+                                   }
+                                   rowObjectsOfRelationship_mongooseModel.find(findQuery)
+                                        .select(fieldToAcquire)
+                                        .exec(function (err, hydrationFetchResults) {
+                                            if (err) return done(err);
+                                            var hydrationValue = isSingular ? hydrationFetchResults[0] : hydrationFetchResults;
 
+                                            rowObject.rowParams[field] = hydrationValue; // a doc or list of docs
+                        
+                                            done();
+                                        });
 
-
+                                })
+                            
                             } else {
                                 done(); // nothing to hydrate
                             }
@@ -309,6 +288,9 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 }
 
                 var buildObjectLink = function(columnName, value, id) {
+
+                
+                    
                     return relationshipSource_uid + "-r" + relationshipSource_importRevision + "/" + id;
                 }
 

@@ -6,18 +6,12 @@ var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 //
 var RawSourceDocument_scheme = Schema({
-    primaryKey: {type: String, index: true}, // NOTE: This primaryKey is made by NewCustomPrimaryKeyStringWithComponents
-    revisionNumber: Number,
-    importUID: String,
-    title: String,
+    primaryKey: {type: String, index: true}, // NOTE: This primaryKey is the dataset id
     numberOfRows: Number,
     dateOfLastImport: Date
 });
 
-RawSourceDocument_scheme.index({importUID: 1, revisionNumber: 1}, {unique: false});
-RawSourceDocument_scheme.index({importUID: 1}, {unique: false});
-RawSourceDocument_scheme.index({revisionNumber: 1}, {unique: false});
-//
+
 var modelName = 'RawSourceDocument';
 var RawSourceDocument_model = mongoose.model(modelName, RawSourceDocument_scheme);
 RawSourceDocument_model.on('index', function (error) {
@@ -35,35 +29,21 @@ module.exports.ModelName = modelName;
 
 module.exports.Model = RawSourceDocument_model;
 
-module.exports.New_templateForPersistableObject = function (sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows) {
+module.exports.New_templateForPersistableObject = function (datasetId , parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows) {
     return {
-        primaryKey: sourceDocumentRevisionKey,
-        title: sourceDocumentTitle,
-        importUID: importUID,
-        revisionNumber: revisionNumber,
+        primaryKey: datasetId,
         parsed_rowObjectsById: parsed_rowObjectsById,
         parsed_orderedRowObjectPrimaryKeys: parsed_orderedRowObjectPrimaryKeys,
         numberOfRows: numberOfRows
     }
 };
 
-module.exports.NewCustomPrimaryKeyStringWithComponents = function (teamSubdomain, dataSource_uid, dataSource_importRevisionNumber) {
-    if (teamSubdomain) {
-         return teamSubdomain + '-' + dataSource_uid + "-r" + dataSource_importRevisionNumber;
-    } else {
-         return dataSource_uid + "-r" + dataSource_importRevisionNumber;
-    }
-   
-};
 
 module.exports.UpsertWithOnePersistableObjectTemplate = function (append,persistableObjectTemplate, fn) {
     winston.log("📡  [" + (new Date()).toString() + "] Going to save source document.");
 
     var updatedDocument = {};
     updatedDocument['primaryKey'] = persistableObjectTemplate.primaryKey;
-    if (persistableObjectTemplate.title) updatedDocument['title'] = persistableObjectTemplate.title;
-    if (persistableObjectTemplate.revisionNumber) updatedDocument['revisionNumber'] = persistableObjectTemplate.revisionNumber;
-    if (persistableObjectTemplate.importUID) updatedDocument['importUID'] = persistableObjectTemplate.importUID;
     var numberOfRowsUpdateQuery = {};
     if (persistableObjectTemplate.numberOfRows && !append )  {
         updatedDocument["numberOfRows"] =  persistableObjectTemplate.numberOfRows
@@ -100,7 +80,7 @@ module.exports.UpsertWithOnePersistableObjectTemplate = function (append,persist
     });
 };
 
-module.exports.IncreaseNumberOfRawRows = function (pKey, numberOfRows, fn) {
+module.exports.IncreaseNumberOfRawRows = function (datasetId, numberOfRows, fn) {
 
     winston.log("📡  [" + (new Date()).toString() + "] Going to increase the number of raw rows in the source document.");
 
@@ -108,7 +88,7 @@ module.exports.IncreaseNumberOfRawRows = function (pKey, numberOfRows, fn) {
 
     var findOneAndUpdate_queryParameters =
     {
-        primaryKey: pKey
+        primaryKey: datasetId
     };
 
     RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {

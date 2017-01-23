@@ -123,7 +123,7 @@ module.exports = function() {
 		                            });
 		                        } else {
 
-		                            datasource_description.datasetsNeedToReimport(dataset._id,dataset.uid,dataset.importRevision,function(err,jsonObj) {
+		                            datasource_description.datasetsNeedToReimport(dataset._id,function(err,jsonObj) {
 		                                if (err) return;
 		                                dataset.jobId = 0;
 		                                dataset.save();

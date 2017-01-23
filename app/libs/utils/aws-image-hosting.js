@@ -9,9 +9,9 @@ var fs = require('fs');
 
 function _uploadToS3(key,response,readFromFile,callback) {
     var hostedFilePublicUrl = _appendKeyToBucket(key);
-    if (readFromFile) {
 
-    }
+
+  
     var payload = { 
         Bucket:bucket,
         Key: key,

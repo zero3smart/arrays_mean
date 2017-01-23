@@ -7,14 +7,14 @@ var s3 = new aws.S3();
 
 
 
-function _uploadDataSource(filePath, newFilename, contentType,teamSubdomin, datasetUID, cb) {
+function _uploadDataSource(filePath, newFilename, contentType,teamSubdomin, datasetId, cb) {
 
 
 
     var file = fs.createReadStream(filePath);
     var params = {
         Bucket: bucket,
-        Key:   teamSubdomin + "/datasets/" + datasetUID + "/datasources/" + newFilename,
+        Key:   teamSubdomin + "/datasets/" + datasetId + "/datasources/" + newFilename,
         ContentType: contentType,
         Body: file,
         ACL: "private"
@@ -22,44 +22,17 @@ function _uploadDataSource(filePath, newFilename, contentType,teamSubdomin, data
 
     s3.upload(params,cb);
     
-    // fs.readFile(filePath, function (err, data) {
-    //     if (err) return cb(err);
-
-    //     var params = {
-    //         Bucket: bucket,
-    //         Key:   teamSubdomin + "/datasets/" + datasetUID + "/datasources/" + newFilename,
-    //         ContentType: contentType,
-    //         Body: data,
-    //         ACL: "private"
-    //     };
-
-    //     // console.log("uploading file -> ",params);
-
-    //     s3.putObject(params, cb);
-    // });
 }
 module.exports.uploadDataSource = _uploadDataSource;
 
 
 
 
-function _fileNameToUpload(datasourceDescription) {
-    
-    var fileName = datasourceDescription.uid;
-    if (datasourceDescription.dataset_uid)
-        fileName += '__' + datasourceDescription.dataset_uid;
-
-    fileName += '_v' + datasourceDescription.importRevision;
-
-    return fileName;
-}
-module.exports.fileNameToUpload = _fileNameToUpload;
-
 function _getDatasource(description) {
-    var fileName = _fileNameToUpload(description)
 
 
-    var key = description._team.subdomain +  '/datasets/' + description.uid + '/datasources/' + fileName;
+
+    var key = description._team.subdomain +  '/datasets/' + description._id + '/datasources/' + description.fileName;
 
     var param = {
         Bucket: bucket,
@@ -80,7 +53,7 @@ function _deleteDataset(description,cb) {
     var team_subdomain = description._team.subdomain;
     var param = {
         Bucket: bucket,
-        Prefix: team_subdomain + '/datasets/' +  description.uid + "/"
+        Prefix: team_subdomain + '/datasets/' +  description.id + "/"
     }
     s3.listObjects(param,function(err,data) {
         if (err) {

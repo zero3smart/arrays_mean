@@ -5,7 +5,8 @@
         <span class="nav-item-label">Data Source</span>
     </button>
 
-    <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.data')" ng-disabled="!dataset.fileName || !dataset.uid"
+    <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.data')" ng-disabled="!dataset.fileName || !dataset.uid || 
+    !dataset.fe_displayTitleOverrides"
         ng-class="{active: currentStep == 'dashboard.dataset.data'}">
         <span class="nav-item-label">Format Data</span>
     </button>

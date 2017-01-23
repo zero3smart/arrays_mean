@@ -7,8 +7,8 @@ var processing = require('../libs/datasources/processing');
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 
-var New_RowObjectsModelName = function (srcDocPKey) {
-    return 'ProcessedRowObjects-' + srcDocPKey;
+var New_RowObjectsModelName = function (objectId) {
+    return 'ProcessedRowObjects-' + objectId;
 };
 
 var MongooseContextsBySrcDocPKey = {};
@@ -47,10 +47,10 @@ module.exports.New_templateForPersistableObject = function (rowObject_primaryKey
 };
 
 
-var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (srcDocPKey) {
+var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (objectId) {
 
 
-    var mongooseContext = MongooseContextsBySrcDocPKey[srcDocPKey];
+    var mongooseContext = MongooseContextsBySrcDocPKey[objectId];
     if (mongooseContext && typeof mongooseContext !== 'undefined') { // lazy cache, to avoid mongoose model re-definition error
         return mongooseContext;
     }
@@ -63,7 +63,7 @@ var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (srcDocPKey) {
     Scheme.index({pKey: 1, srcDocPKey: 1}, {unique: true});
     Scheme.index({srcDocPKey: 1}, {unique: false});
     //
-    var ModelName = New_RowObjectsModelName(srcDocPKey);
+    var ModelName = New_RowObjectsModelName(objectId);
     var Model = mongoose.model(ModelName, Scheme);
     //
     mongooseContext =
@@ -72,7 +72,7 @@ var _Lazy_Shared_ProcessedRowObject_MongooseContext = function (srcDocPKey) {
         ModelName: ModelName,
         Model: Model
     };
-    MongooseContextsBySrcDocPKey[srcDocPKey] = mongooseContext;
+    MongooseContextsBySrcDocPKey[objectId] = mongooseContext;
 
     return mongooseContext;
 };
@@ -82,9 +82,12 @@ module.exports.Lazy_Shared_ProcessedRowObject_MongooseContext = _Lazy_Shared_Pro
 
 module.exports.initializeBackgroundIndexBuilding = function(description) {
 
-    var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(
-        description._team.subdomain,description.uid, description.importRevision);
-    var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed).Model.collection;
+    if (!description.relationshipFields || description.relationshipFields.length == 0) {
+        return;
+    }
+
+
+    var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(description._id).Model.collection;
 
     for (var i = 0; i < description.relationshipFields.length; i++) {
         var buildField = description.relationshipFields[i].by.withLocalField;
@@ -97,7 +100,7 @@ module.exports.initializeBackgroundIndexBuilding = function(description) {
 
 }
 
-module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSource_team_subdomain,dataSource_uid,
+module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSource_team_subdomain,dataset_id,
                                                                    dataSource_importRevision,
                                                                    dataSource_title,
                                                                    dataset_uid,
@@ -105,12 +108,10 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Pre-generating whole processed row objects collection from raw row objects of \"" + dataSource_title + "\".");
 
-        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_team_subdomain,dataSource_uid, dataSource_importRevision);
-        //
-        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(dataset_id);
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
         //
-        var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(dataset_id);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
 
@@ -168,8 +169,6 @@ module.exports.GenerateProcessedDatasetFromRawRowObjects = function (dataSource_
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Pre-generating whole processed row objects collection from raw row objects of \"" + dataSource_title + "\".");
 
-        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_team_subdomain,
-            dataSource_uid, dataSource_importRevision);
         //
         var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
@@ -277,14 +276,13 @@ module.exports.GenerateProcessedDatasetFromRawRowObjects = function (dataSource_
     });
 }
 
-module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,dataSource_uid,
+module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,datasetId,
                                                                         dataSource_importRevision,
                                                                         dataSource_title,
                                                                         generateFieldNamed,
                                                                         isSingular,
                                                                         findingMatchOnField,
-                                                                        ofOtherRawSrcUID,
-                                                                        andOtherRawSrcImportRevision,
+                                                                        joinDatasetId,
                                                                         withLocalField,
                                                                         obtainingValueFromField_orUndefined,
                                                                         or_formingRelationship,
@@ -294,12 +292,11 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
         winston.info("🔁  Generating field \"" + generateFieldNamed
             + "\" of \"" + dataSource_title
             + "\" by joining on \"" + findingMatchOnField
-            + "\" of data source \"" + ofOtherRawSrcUID + "\" revision \"" + andOtherRawSrcImportRevision + "\".");
+            + "\" of data source \"" + joinDatasetId + "\".");
 
-        var pKey_ofFromDataSourceDoc = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(ofOtherRawSrcUID, andOtherRawSrcImportRevision);
-        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+        
     
-        var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(datasetId);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
 
@@ -325,7 +322,7 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
             storingReference = false;
         } 
 
-        var cursor = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofFromDataSourceDoc).Model.find({})
+        var cursor = _Lazy_Shared_ProcessedRowObject_MongooseContext(joinDatasetId).Model.find({})
         .select(select).cursor();
 
         var count = 0;
@@ -675,7 +672,7 @@ module.exports.GenerateFieldsByJoining = function (dataSource_uid,
 //     });
 // };
 
-module.exports.EnumerateProcessedDataset = function (dataSource_team_subdomain,dataSource_uid,
+module.exports.EnumerateProcessedDataset = function (dataSource_team_subdomain,datasetId,
                                                      dataSource_importRevision,
                                                      dataset_uid,
                                                      eachFn,
@@ -687,9 +684,8 @@ module.exports.EnumerateProcessedDataset = function (dataSource_team_subdomain,d
     // completeFn: () -> Void
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
 
-        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_team_subdomain,dataSource_uid, dataSource_importRevision);
-        //
-        var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+      
+        var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(datasetId);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
         //
@@ -967,6 +963,8 @@ function proceedToPersistHostedImageURLOrNull_forKey(err, job,mongooseModel, doc
         persistedCb(err);
         return;
     }
+
+
     if (hostedURLOrNull != null) {
         var hostedURLChunks = hostedURLOrNull.split('.')
         var hostedFileExtension = hostedURLChunks[hostedURLChunks.length - 1];    
@@ -974,9 +972,9 @@ function proceedToPersistHostedImageURLOrNull_forKey(err, job,mongooseModel, doc
 
     var docUpdate = {};
     if (lastFieldKey == true) {
-        docUpdate["rowParams.imageScraped"] = true
+        docUpdate["rowParams.imageScraped" ] = true
     }
-    var relativeURLPortion = hostedURLOrNull == null? null : docQuery.srcDocPKey + "/" + docQuery.pKey + '__' + fieldKey + "." + hostedFileExtension;
+    var relativeURLPortion = hostedURLOrNull == null? null : docQuery.pKey + '__' + fieldKey + "." + hostedFileExtension;
     docUpdate["rowParams." + fieldKey] = relativeURLPortion; // save the relative path
     mongooseModel.update(docQuery, {$set: docUpdate}, function (err, result) {
         winston.info("📝  Saved " + hostedURLOrNull + " as " + relativeURLPortion + " at " + fieldKey);
@@ -1043,7 +1041,7 @@ function updateDocWithImageUrl(job,folder,mongooseModel, doc, scrapedObject, set
             var hostingOpts = {
                 overwrite: true
             }
-            var destinationFilenameSansExt = doc.srcDocPKey + "/" + doc.pKey + "__" + key;
+            var destinationFilenameSansExt = doc.pKey + "__" + key;
             var resize = setFields[index].resize;
 
             // winston.info("🔁  Download/host and store hosted url for original " + finalized_imageSourceURLForSize)
@@ -1118,7 +1116,7 @@ function updateDocWithImageUrl(job,folder,mongooseModel, doc, scrapedObject, set
 
 
 module.exports.GenerateImageURLFieldsByScraping
-    = function (job,dataSource_team_subdomain,dataSource_uid,
+    = function (job,dataSource_team_subdomain,datasetId,
                 dataSource_importRevision,
                 dataSource_title,
                 dataset_uid,
@@ -1130,10 +1128,8 @@ module.exports.GenerateImageURLFieldsByScraping
 
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Generating fields by scraping images for \"" + dataSource_title + "\".");
-        //
-        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
-        //
-        var mongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+       
+        var mongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext(datasetId);
         var mongooseModel = mongooseContext.Model;
 
         var datasetQuery = {};
@@ -1146,7 +1142,7 @@ module.exports.GenerateImageURLFieldsByScraping
 
         // datasetQuery["rowParams.Artist"] = "Le Corbusier (Charles-Édouard Jeanneret), Pierre Jeanneret";
 
-        var folder =  dataSource_team_subdomain + '/datasets/' + dataSource_uid + '/assets/images/';
+        var folder =  dataSource_team_subdomain + '/datasets/' + datasetId + '/assets/images/';
 
 
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously

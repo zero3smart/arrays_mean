@@ -39,6 +39,7 @@ router.post('/admin/invite', ctrlAdmin.invite);
 
 // dataset settings
 router.get('/dataset', ctrlDataset.search);
+
 router.post('/dataset/getDatasetsWithQuery',ctrlDataset.getDatasetsWithQuery);
 router.post('/dataset/remove', ctrlDataset.remove);
 router.get('/dataset/get/:id', ctrlDataset.get);
@@ -90,7 +91,7 @@ router.get('/view/:id', ctrlView.get);
 
 
 //datasourceMapping in format view
-router.get('/dataset/getMappingDatasourceCols/:pKey', ctrlDataset.loadDatasourceColumnsForMapping);
+router.get('/dataset/getMappingDatasourceCols/:id', ctrlDataset.loadDatasourceColumnsForMapping);
 
 //teams, website setting info
 router.post('/team', ctrlTeam.create);

@@ -32,6 +32,7 @@ router.get('/', function (req, res) {
         });
 
     } else {
+
           teams.GetTeamBySubdomain(req, function (err, teamDescriptions) {
             if (err && err.message != 'No SubDomain Asked!') {
                 winston.error("❌  Error getting bind data during authorizing : ", err);

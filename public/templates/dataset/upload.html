@@ -60,13 +60,9 @@
             </md-button>
 
 
-            <div ng-if="dataset.uid && addingAdditionalDatasource" ng-repeat="additionalDatasource in additionalDatasources" style="margin-top: 15px">
-                <label>Upload spreadsheet</label>
-                <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
-                <input type="file" id="adddatafile" nv-file-select="" uploader="additionalDatasource.uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" class="team-uploader" />
+   
 
-
-            <div ng-if="dataset.uid" ng-repeat="additionalDatasource in additionalDatasources">
+            <div ng-if="dataset.fileName" ng-repeat="additionalDatasource in additionalDatasources">
                 <div ng-if="!additionalDatasource.dataset_uid" style="margin-top: 15px">
                     <label>Upload spreadsheet</label>
                     <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
@@ -121,6 +117,8 @@
 
             </div>
 
+
+
             <div ng-if="dataset.fileName && !addingAdditionalDatasource">
                 <md-input-container>
                     <md-button class="md-dashboard" ng-click="addNewDatasource()">
@@ -130,9 +128,11 @@
         </div>
 
         <div layout="row" layout-align="space-between center" ng-hide="!dataset.fileName">
-            <p>
+
+            <!--  let comment this, not fully tested with joining multiple datasets, hence not useful for now and not implemented -->
+        <!--     <p>
                 <a ng-click="clearAll()" class="warn">Clear All</a>
-            </p>
+            </p> -->
 
             <!-- if init wizard -->
 

@@ -18,10 +18,10 @@ module.exports.BindData = function (req, teamDescription, callback) {
     {
 
         var err = null;
-        var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription,teamDescription.subdomain);
+ 
 
         raw_source_documents.Model.findOne({
-            primaryKey: source_pKey
+            primaryKey: dataSourceDescription._id
         }, function (err, doc) {
             if (err)
                 return callback(err, null);
@@ -46,7 +46,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
             var authorDisplayName = dataSourceDescription.author.firstName + " " + dataSourceDescription.author.lastName;
 
             var sourceDescription = {
-                key: source_pKey,
+                key: dataSourceDescription.uid + '-r' + dataSourceDescription.importRevision,
                 sourceDoc: doc,
                 title: dataSourceDescription.title,
                 brandColor: dataSourceDescription.brandColor,

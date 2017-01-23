@@ -23,8 +23,6 @@ angular.module('arraysApp')
                 }
 
 
-
-
                 DatasetService.save(finalizedDataset)
                 .then(function() {
                     $scope.currentStep = step;

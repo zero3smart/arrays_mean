@@ -269,7 +269,7 @@ var _GetDescriptions = function (fn) {
 
 datasource_description.GetDescriptions = _GetDescriptions;
 
-var _datasetsNeedToReimport = function (currentSourceId,currentSourceUID,currentSourceImportRevision,cb) {
+var _datasetsNeedToReimport = function (currentSourceId,cb) {
 
     datasource_description.find({_otherSources: currentSourceId},function(err,relatedSources) {
         if (err) return cb(err);
@@ -281,8 +281,7 @@ var _datasetsNeedToReimport = function (currentSourceId,currentSourceUID,current
                 for (var i = 0; i < src.relationshipFields.length; i++) {
 
                     if (src.relationshipFields[i].relationship == true && 
-                        src.relationshipFields[i].by.ofOtherRawSrcUID == currentSourceUID && 
-                        src.relationshipFields[i].by.andOtherRawSrcImportRevision == currentSourceImportRevision) {
+                        src.relationshipFields[i].by.joinDataset == currentSourceId) {
                         datasetsNeedToReimport.push(src);
                     }
 
@@ -383,6 +382,8 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid,
 datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDescriptionsWith_subdomain_uid_importRevision;
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
+
+    
 
 
 

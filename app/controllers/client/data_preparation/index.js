@@ -83,11 +83,9 @@ module.exports.BindData = function (req, callback) {
         async.each(teamDescription.datasourceDescriptions, function (dataSourceDescription, innerCallback) {
             
 
-            var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription,teamDescription.subdomain);
-
 
             raw_source_documents.Model.findOne({
-                primaryKey: source_pKey
+                primaryKey: dataSourceDescription._id
             }, function (err, doc) {
 
                 if (err) {
@@ -113,7 +111,7 @@ module.exports.BindData = function (req, callback) {
 
                 
                     var s = {
-                        key:  source_pKey,
+                        key:  dataSourceDescription.uid + '-r' + dataSourceDescription.importRevision,
                         sourceDoc: doc,
                         title: dataSourceDescription.title,
                         brandColor: dataSourceDescription.brandColor,

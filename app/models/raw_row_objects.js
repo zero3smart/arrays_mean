@@ -7,8 +7,8 @@ var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 var mongooseContextsBySrcDocPKey = {};
 
-var _New_RowObjectsModelName = function (srcDocPKey) {
-    return 'RawRowObjects-' + srcDocPKey;
+var _New_RowObjectsModelName = function (objectId) {
+    return 'RawRowObjects-' + objectId;
 };
 
 var _Lazy_Shared_RawRowObject_MongooseContext = function (srcDocPKey) {
@@ -129,9 +129,9 @@ module.exports.RemoveRows = function (description, fn) {
     winston.info("📡  [" + (new Date()).toString() + "] Deleting parsed rows for \"" + description.title + "\".");
 
     var pKeyPrefix = description.dataset_uid;
-    var srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
 
-    var forThisDataSource_mongooseContext = _Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey);
+
+    var forThisDataSource_mongooseContext = _Lazy_Shared_RawRowObject_MongooseContext(description._id);
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.forThisDataSource_RawRowObject_model;
     //
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
@@ -140,7 +140,7 @@ module.exports.RemoveRows = function (description, fn) {
 
         var bulkOperationQueryFragment =
         {
-            srcDocPKey: srcDocPKey
+            srcDocPKey: description._id
         };
         if (pKeyPrefix) bulkOperationQueryFragment.pKeyPrefix = {
             $regex: "^" + pKeyPrefix + "-",
