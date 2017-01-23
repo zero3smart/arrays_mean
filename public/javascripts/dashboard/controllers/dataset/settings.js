@@ -31,6 +31,10 @@ angular.module('arraysApp')
                 if(!dataset.fe_visible) {
                     dataset.isPublic = false;
                     dataset.fe_listed = false;
+                } else {
+                    if(dataset.imported) {
+                        DatasetService.publish($scope.$parent.$parent.dataset._id, dataset.isPublic);
+                    }
                 }
             };
 
