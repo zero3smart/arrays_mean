@@ -75,11 +75,11 @@
                             {% endif %}
 
                             {% if view_visibility.mapView.visible == true %}
-                            <li class="background-color-brand-hover menu-item-choropleth {{ " active
+                            <li class="background-color-brand-hover menu-item-map-view {{ " active
                             " if currentView == "map-view" }}"><a href="/{{ array_source_key }}/{{ 'map-view' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
-				}) }}"><span class="icon-choropleth color-brand" aria-hidden="true"></span> Map View</a></li>
+				}) }}"><span class="icon-map-view color-brand" aria-hidden="true"></span> Map View</a></li>
                             {% endif %}
 
                             {% if view_visibility.pieChart.visible == true %}
