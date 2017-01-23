@@ -27,6 +27,7 @@
                                     {% endif %}
 
                                     {% if not rowObject.rowParams[fieldKey_originalImageURL] and fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}
+
                                         <div class="object-header-icons">
                                             {{ fe_galleryItem_htmlForIconFromRowObjWhenMissingImage(rowObject) | safe }}
                                         </div>

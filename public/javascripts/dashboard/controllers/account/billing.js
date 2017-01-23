@@ -1,46 +1,135 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http',
-        function($scope, $mdDialog, $state, $http) {
+    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', 'Account', 'Billing', 'Subscriptions', 'Plans', 
+        function($scope, $mdDialog, $state, $http, Account, Billing, Subscriptions, Plans) {
+
+            $scope.errors = {};
+
+            // Default to Credit Card tab selected
+            $scope.selectedTab = 0;
+            $scope.paymentMethod = '';
+
+            // Set defaults for empty fields
+            $scope.billing = {
+                month: 01,
+                year: 2016,
+
+                country: 'US'
+            };
+
+
+            // Get account info from Recurly
+            Account.get()
+            .$promise.then(function(res) {
+                // console.log(res.data);
+
+                // If no account, make new one
+                if (res.data.error) {
+                    newAccount();
+                } else if (res.data.account) {
+                    getBilling();
+                    getSubscriptions();
+                }
+            });
+
+
+            // Create new billing account in Recurly
+            function newAccount() {
+                Account.save()
+                .$promise.then(function(res) {
+                    getBilling();
+                    getSubscriptions();
+                });
+            }
+
+
+            // Get billing info from Recurly
+            function getBilling() {
+                Billing.get()
+                .$promise.then(function(res) {
+                    // console.log(res.data);
+
+                    if (res.data.error) {
+                        $scope.billing.exists = false;
+                    } else if (res.data.billing_info) {
+
+                        $scope.billing.exists = true;
+
+                        var billingInfo = res.data.billing_info;
+
+                        // Filter out blank fields coming back from Recurly
+                        for (var field in billingInfo) {
+                            if ( typeof billingInfo[field] === 'string' ) {
+                                $scope.billing[field] = billingInfo[field];
+                            }
+                        }
+
+                        // Set tab based on payment method
+                        if (billingInfo.account_type) {
+                            $scope.selectedTab = 1;
+                            $scope.paymentMethod = 'Bank Account';
+                        } else {
+                            $scope.selectedTab = 0;
+                            $scope.paymentMethod = 'Credit Card (' + billingInfo.card_type + ')';
+                            $scope.billing.numberPlaceholder = billingInfo.first_six + 'XXXXXX' + billingInfo.last_four;
+                        }
+                    }
+                }, function(err) {});
+            }
+
+
+            //Get subscriptions info from Recurly
+            function getSubscriptions() {
+                Subscriptions.get()
+                .$promise.then(function(res) {
+                    // console.log(res.data);
+
+                    if (res.data.error) {
+                        
+                    } else if (res.data.subscriptions.subscription) {
+
+                        $scope.subscription = res.data.subscriptions.subscription;
+                        $scope.subscription.quantity._ = parseInt(res.data.subscriptions.subscription.quantity._);
+
+                        // Calculate trial days remaining
+                        var now = new Date();
+                        var end = new Date($scope.subscription.trial_ends_at._);
+                        var timeDiff = Math.abs(end.getTime() - now.getTime());
+                        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                        $scope.subscription.trial_days_left = diffDays;
+
+                        getPlans();
+                    }
+                });
+            }
+
+
+            //Get plans info from Recurly
+            function getPlans() {
+                Plans.get()
+                .$promise.then(function(res) {
+                    // console.log(res.data.plans.plan);
+
+                    $scope.plans = res.data.plans.plan;
+
+                    $scope.plan = getPlanFromPlans($scope.subscription.plan.plan_code, res.data.plans.plan);
+                    $scope.annualplan = getPlanFromPlans('arrays-pro-yearly', res.data.plans.plan);
+
+                    // console.log($scope.annualplan);
+                });
+            }
+
+
+            // Get current plan
+            function getPlanFromPlans(plan_code, plans) {
+                var currentPlan = plans.filter(function(plan) {
+                    return plan.plan_code === plan_code;
+                });
+
+                return currentPlan[0];
+            }
+
 
             $scope.$parent.currentNavItem = 'billing';
-
-            //
-            // for testing
-            //
-            // display name, cost per dataset
-            $scope.testPlans = {
-                trial: {
-                    name: 'Pro',
-                    cost: { // per month
-                        trial: 0,
-                        month: 0,
-                        year: 0
-                    }
-                },
-                pro: {
-                    name: 'Pro',
-                    cost: { // per month
-                        month: 149,
-                        year: 99
-                    }
-                },
-                // enterprise: {
-                //     name: 'Enterprise',
-                // }
-            };
-            // for testing, to attach to user
-            $scope.testUser = {};
-
-            $scope.testUser.p = 'pro';
-            $scope.testUser.plan = $scope.testPlans[$scope.testUser.p];
-            $scope.testUser.paidDatasets = 2; // not the current number but the allowed, paid number
-            $scope.testUser.billingCycle = 'month';
-
-            // $scope.testUser.p = 'trial';
-            // $scope.testUser.plan = $scope.testPlans[$scope.testUser.p];
-            // $scope.testUser.paidDatasets = 1;
-            // $scope.testUser.billingCycle = 'trial';
-
 
             //
             // also for testing only--does Schema or Recurly have its own JSON data for countries/states?
@@ -65,15 +154,20 @@ angular.module('arraysApp')
                     // clickOutsideToClose: true,
                     fullscreen: true,
                     locals: {
-                        testPlans: $scope.testPlans,
-                        testUser: $scope.testUser
+                        billing: $scope.billing,
+                        plan: $scope.plan,
+                        annualplan: $scope.annualplan,
+                        subscription: $scope.subscription,
+                        Subscriptions: Subscriptions
                     }
                 });
             };
 
-            function BillingDialogController($scope, $mdDialog, testPlans, testUser) {
-                $scope.testPlans = testPlans;
-                $scope.testUser = testUser;
+            function BillingDialogController($scope, $mdDialog, billing, plan, annualplan, subscription, Subscriptions) {
+                $scope.billing = billing;
+                $scope.plan = plan;
+                $scope.annualplan = annualplan;
+                $scope.subscription = subscription;
 
                 $scope.hide = function() {
                     $mdDialog.hide();
@@ -81,9 +175,77 @@ angular.module('arraysApp')
                 $scope.cancel = function() {
                     $mdDialog.cancel();
                 };
-                $scope.answer = function(answer) {
-                    $mdDialog.hide(answer);
+                $scope.updateQuantity = function() {
+                    var subscrId = $scope.subscription.uuid;
+                    Subscriptions.update({ subscrId: subscrId }, { quantity: $scope.subscription.quantity._ })
+                    .$promise.then(function(res) {
+                        // console.log(res.data);
+                        $mdDialog.hide();
+                    });
+                };
+                $scope.updatePlanCode = function(plan_code) {
+                    // console.log(plan_code);
+                    var subscrId = $scope.subscription.uuid;
+                    Subscriptions.update({ subscrId: subscrId }, {
+                        quantity: $scope.subscription.quantity._,
+                        plan_code: plan_code
+                    })
+                    .$promise.then(function(res) {
+                        // console.log(res.data);
+                        getSubscriptions();
+                        $mdDialog.hide();
+                    });
                 };
             }
+
+            // Set whether using credit card or bank account depending on which tab is selected
+            $scope.onTabChanges = function(currentTab){
+                $scope.billing.payment_type = currentTab;
+            };
+
+            $scope.updateBillingInfo = function(ev) {
+                Billing.update(null, $scope.billing)
+                .$promise.then(function(res) {
+                    // console.log(res);
+
+                    if (res.statusCode === 200 || res.statusCode === 201) {
+                        $state.go('dashboard.account.billing');
+                    } else {
+                        // console.log(res.data);
+                        $scope.errors = res.data.errors.error;
+                    }
+                }, function(err) {});
+            };
+
+            $scope.startTrialSubscription = function(plan_code) {
+                Subscriptions.save({ 'plan_code': plan_code })
+                .$promise.then(function(res) {
+                    // console.log(res.data);
+
+                    if (res.statusCode === 200 || res.statusCode === 201) {
+                        $state.go('dashboard.account.billing');
+                    } else {
+                        // console.log(res.data);
+                    }
+                });
+            };
+
+            $scope.cancelSubscription = function() {
+                var subscrId = $scope.subscription.uuid;
+                Subscriptions.cancel({ subscrId: subscrId })
+                .$promise.then(function(res) {
+                    // console.log(res.data);
+                    $state.go('dashboard.account.billing');
+                });
+            };
+
+            $scope.reactivateCanceledSubscription = function() {
+                var subscrId = $scope.subscription.uuid;
+                Subscriptions.reactivate({ subscrId: subscrId })
+                .$promise.then(function(res) {
+                    // console.log(res.data);
+                    getSubscriptions();
+                });
+            };
 
     }]);

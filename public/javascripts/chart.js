@@ -197,7 +197,12 @@ legendListLink.append('span')
 
 legendListLink.attr('class', 'legend-list-link')
 	.attr('href','javascript:;')
-	.on('click',function() {
+	.on('click',function(d) {
+		var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1? '&' : '?';
+		var filterObjForThisFilterColVal = constructedFilterObj(filterObj, groupBy, d.label, false);
+		var filterJSONString = $.param(filterObjForThisFilterColVal);
+		var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterJSONString;
+		window.location = urlForFilterValue;
 		document.location.hash = '';
 	})
 	.on('mouseover', function(d, i) {

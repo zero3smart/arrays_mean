@@ -43,6 +43,13 @@
         margin-top: 13px;
         margin-bottom: 0;
         padding: 8px 20px;
+        box-shadow: none;
+    }
+
+    .navbar .share-link.btn-splash:hover {
+        /*Nullify hover effects from .btn-splash*/
+        background-color: #000;
+        color: #fff;
     }
 }
 

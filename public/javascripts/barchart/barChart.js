@@ -64,32 +64,40 @@ function BarChart(selector, dataSet, options) {
 
     // Vertically-responsive
     var container = $(this._container.node());
-    container.height($(window).height() - container.offset().top - 30);
 
     const defaultMinHeight = 460;
     container.css('min-height', function() {
-        if (options.horizontal)
-            return Math.max(self._categoryData.length * 30, defaultMinHeight);
-
         return defaultMinHeight;
     });
 
     var dimension = this._container.node().getBoundingClientRect();
 
-    /*Set a minimum width for the barchart in cases where # of labels exceeds 18*/
+    this._showLabels;
+
+
+
+    // /*Set a minimum width for the barchart in cases where # of labels exceeds 18*/
     if (dimension.width < 580 & self._categoryData.length > 16) {
         this._outerWidth = 580;
-    }
-    else {
+    } else {
         this._outerWidth = dimension.width;
-    }  
-    this._outerHeight = dimension.height;
+    }
+
     this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
+    this._outerHeight = window.innerHeight - container.offset().top - 30;
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
 
+    // anything beyond this and the x-axis labels get too squished
+    if(this._outerWidth/self._categoryData.length < 16 && options.horizontal == false || this._outerHeight/self._categoryData.length < 18 && options.horizontal == true) {
+        this._showLabels = false
+    } else {
+        this._showLabels = true
+    }
+
+
     this._svg = this._container.append('svg')
+        .attr('height', this._outerHeight)
         .attr('width', this._outerWidth)
-        .attr('height', this._outerHeight);
 
     this._canvas = this._svg.append('g')
         .attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')');
@@ -99,13 +107,18 @@ function BarChart(selector, dataSet, options) {
       .attr('transform', this.getXAxisTransform())
       .call(this.getXAxis())
 
-    //Rotate horizontal bar chart x-axis labels
-    this.rotateLabel();
+    if(options.horizontal == false) {
+        this.rotateLabel();
+    }
 
     this._yAxisContainer = this._canvas.append('g')
       .attr('class', 'axis axis-y')
       .attr('transform', this.getYAxisTransform())
       .call(this.getYAxis());
+
+    if(options.horizontal == true) {
+        this.rotateLabel();
+    }
 
     /**
      * Append bar's series.
@@ -126,7 +139,7 @@ function BarChart(selector, dataSet, options) {
         .style('fill', function(d, i, j) {
             return self._colors[d.label];
         }).on('mouseenter', function(d, i, j) {
-            self._barMouseEnterEventHandler(this, d, i, j);
+            self._barMouseEnterEventHandler(this, i, j, categoriesAndData);
         }).on('mouseout', function(d, i, j) {
             self._barMouseOutEventHandler(this, d, i, j);
         }).on('click', function(d, j, i){
@@ -153,8 +166,13 @@ function BarChart(selector, dataSet, options) {
 
     legendListLink.attr('class', 'legend-list-link')
         .attr('href','javascript:;')
-        .on('click',function() {
-            document.location.hash = '';
+        .on('click',function(d) {
+            var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1? '&' : '?';
+            var filterObjForThisFilterColVal = constructedFilterObj(filterObj, stackBy, d.label, false);
+            var filterJSONString = $.param(filterObjForThisFilterColVal);
+            var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterJSONString;
+
+            window.location = urlForFilterValue;
         })
         .on('mouseover', function(d, i) {
             d3.select(this)
@@ -312,7 +330,10 @@ BarChart.prototype.getValueFormatter = function() {
  * @param {Integer} i - bar number within series
  * @param {Integer} j - series number
  */
-BarChart.prototype._barMouseEnterEventHandler = function(barElement, barData, i, j) {
+BarChart.prototype._barMouseEnterEventHandler = function(barElement, i, j, categoriesAndData) {
+    var label = categoriesAndData[j][1][0].label;
+    var value = categoriesAndData[j][1][0].value;
+    var category = categoriesAndData[j][0];
 
     this._canvas.selectAll('rect.bar')
         .filter(function() {
@@ -326,9 +347,10 @@ BarChart.prototype._barMouseEnterEventHandler = function(barElement, barData, i,
     this._tooltip.setContent(
         '<div>' +
             '<div class="scatterplot-tooltip-title">' +
-                '<div>' + barData.label + '</div>' +
+                '<div>' + category + '</div>' +
             '</div>' +
-            '<div class="scatterplot-tooltip-content">' + formatter(barData.value) + '</div>' +
+            '<div class="scatterplot-tooltip-content">' + label + '</div>' + 
+            '<div class="scatterplot-tooltip-content">' + formatter(value) + '</div>' +
         '</div>')
         .setPosition('top')
         .show(barElement);

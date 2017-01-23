@@ -1,5 +1,5 @@
 <md-content md-no-ink>
-    <h2>Close your Arrays account</h2>
+    <h2>Cancel your {{ subscription.plan.name }} Subscription</h2>
 
     <p>
         If at any time you are not satisfied with the service, please let us know and we will do our best to resolve the situation.
@@ -7,18 +7,17 @@
     </p>
 
     <p class="warn">
-        Important: Closing your account will delete the team you administer and all associated datasets and users.
-        Please only close your account if you are sure that you no longer wish to use Arrays.
+        Important: Your subscription will remain active until the end of this billing cycle on {{ subscription.current_period_ends_at._ | date: 'MM/dd/yyyy' }}.
     </p>
 
-    <p>Are you sure you want to close your account?</p>
+    <p>Are you sure you want to cancel your subscription?</p>
 
     <md-button class="md-dashboard md-warn" ng-click="cancelSubscription()">
-        <span class="btn-label">Close Your Account</span>
+        <span class="btn-label">Cancel Your Subscription</span>
     </md-button>
 
     <md-button class="md-dashboard" ui-sref="dashboard.account.billing">
-        <span class="btn-label">Cancel</span>
+        <span class="btn-label">Keep your subscription</span>
     </md-button>
 
 </md-content>

@@ -8,18 +8,18 @@
 
 1. Install brew
 
-	* [Homebrew](http://brew.sh)
+  * [Homebrew](http://brew.sh)
 
 2. Install Node.JS & NPM: 
-	* [Install Node.js and npm using Homebrew on OS X](https://changelog.com/install-node-js-with-homebrew-on-os-x/), 
-	* [How to Install Node.js and NPM on a Mac](http://blog.teamtreehouse.com/install-node-js-npm-mac)
+  * [Install Node.js and npm using Homebrew on OS X](https://changelog.com/install-node-js-with-homebrew-on-os-x/), 
+  * [How to Install Node.js and NPM on a Mac](http://blog.teamtreehouse.com/install-node-js-npm-mac)
 
 3. Install nodemon for development (optional)
     * Execute `npm install -g nodemon`
 
 4. Install MongoDB: 
-	* [Install MongoDB Community Edition on OS X](https://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
-	
+  * [Install MongoDB Community Edition on OS X](https://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
+  
     Note: If you already have Mongo installed, be sure you have >= v3.2 with `brew update && brew upgrade mongodb`
     
 5. Run the MongoDB daemon by executing `monogod` in a Terminal window
@@ -54,6 +54,7 @@
   * Change directory (`cd [the path to]/arrays`) into your local clone of this repository
   * Execute `grunt build` to rebuild the main CSS file, style.min.css
   * Execute `grunt watch` to start LiveReload which will rebuild the css and reload the page whenever a CSS, HTML, or JS file is saved
+
 
 ### V. Creating your `.env.development` and `.env.production` files
 
