@@ -24,6 +24,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var source_pKey = urlQuery.source_key;
     var collectionPKey = req.subdomains[0] + '-' + source_pKey;
 
+
     importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
         .then(function (dataSourceDescription) {
 
@@ -41,7 +42,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
             var galleryViewSettings = dataSourceDescription.fe_views.views.gallery;
 
-            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(collectionPKey);
+            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
 
             var galleryItem_htmlWhenMissingImage;
@@ -104,7 +105,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 if (url.slice(0, 5) == "https") {
                     return url
                 } else {
-                    urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
+                    urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription._id + "/assets/images/" + url
                     return urlToReturn
                 }
             }
@@ -180,7 +181,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain source document
             batch.push(function (done) {
-                raw_source_documents.Model.findOne({primaryKey: collectionPKey}, function (err, _sourceDoc) {
+                raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, _sourceDoc) {
                     if (err) return done(err);
 
                     sourceDoc = _sourceDoc;
@@ -200,7 +201,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain Top Unique Field Values For Filtering
             batch.push(function (done) {
-                func.topUniqueFieldValuesForFiltering(collectionPKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+                func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;

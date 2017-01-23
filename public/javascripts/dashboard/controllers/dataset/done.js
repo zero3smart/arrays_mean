@@ -16,11 +16,16 @@ angular.module('arraysApp')
 
             function getJobAndLog (datasetId) {
 
+                if ($scope.jobs.length == 0) {
+                    return;
+                }
+
     
                 if (!$scope.jobs[$scope.jobs.length-1].state || $scope.jobs[$scope.jobs.length-1].state == 'active' ||
                     $scope.jobs[$scope.jobs.length-1].state == 'inactive') {
         
                     Job.get({id:$scope.currentJobId}).$promise.then(function(job) {
+
 
                         job.log = $scope.jobs[$scope.jobs.length -1].log;
 
@@ -70,13 +75,16 @@ angular.module('arraysApp')
             function refreshForm() {
                 $scope.dirty = 0;
                 $scope.imported = true;
+
             }
 
 
 
             function getJobStatus (datasetId) {
+
                 DatasetService.getJobStatus(datasetId)
                 .then(function(job) { 
+
 
                     if (job.id == 0) {
 
@@ -105,6 +113,9 @@ angular.module('arraysApp')
                     }
 
                     $scope.$parent.$parent.dataset = dataset;
+
+                    dataset.dirty = 0;
+                    dataset.imported = true;
 
                 } else {
 
@@ -204,6 +215,7 @@ angular.module('arraysApp')
                 
                 $scope.inProgress = false;
                 refreshForm();
+
 
                 $mdToast.show(
                     $mdToast.simple()
@@ -316,6 +328,24 @@ angular.module('arraysApp')
                 }
                 
             });
+
+            $scope.killCurrentJob = function() {
+
+                if ($scope.currentJobId !== null) {
+                    DatasetService.killJob($scope.currentJobId)
+                        .then(function(res) {
+                            if (res.status == 200 && res.data == 'ok') {
+                                $scope.inProgress = false;
+                                $scope.jobs = [];
+                                $scope.currentJobId = null;
+                            }
+
+                        })
+                }
+
+              
+
+            }
 
 
 

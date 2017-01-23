@@ -6,17 +6,6 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
-            // $scope.primaryAction.text = 'Next';
-            // $scope.$watch('newDSForm.$valid', function(validity) {
-            //     if (validity !== undefined) {
-            //         $scope.formValidity = validity;
-            //         $scope.primaryAction.disabled = !validity;
-            //     }
-            // });
-            // $scope.primaryAction.do = function() {
-            //     $scope.submitForm($scope.formValidity);
-            // };
-
             $scope.submitForm = function(isValid) {
 
                 if (isValid) {
@@ -26,8 +15,8 @@ angular.module('arraysApp')
 
                         dataset.author = $scope.user._id;
                         dataset._team = $scope.team._id;
-                        dataset.fe_displayTitleOverrides = {};
                     }
+                    dataset.uid = dataset.title.toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
 
                     dataset.updatedBy = $scope.user._id;
 
@@ -56,6 +45,8 @@ angular.module('arraysApp')
                 }
             };
         }])
+
+
         .directive('uniqueTitle',['DatasetService', 'AuthService', '$q', function (DatasetService, AuthService, $q) {
             return {
                 restrict: 'A',
@@ -64,20 +55,24 @@ angular.module('arraysApp')
 
                     model.$asyncValidators.titleAvailable = function(modelValue,viewValue) {
                         var value = (modelValue || viewValue).toLowerCase().replace(/[^A-Z0-9]+/ig, '_'); // same as uid in upload.js
-                        var user = AuthService.currentUser(),
-                            deferred = $q.defer();
-                        DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id, uid: {$exists: true}})
-                        .then(function(datasets) {
-                            var datasetTitles = datasets.reduce(function(titles, dataset){
-                                titles.push(dataset.title.toLowerCase().replace(/[^A-Z0-9]+/ig, '_')); // same as uid in upload.js
-                                return titles;
-                            }, []);
+                        var team = AuthService.currentTeam();
+                        var deferred = $q.defer();
 
-                            if (datasetTitles.indexOf(value)) {
-                                deferred.resolve(true);
-                            } else {
-                                deferred.reject(false);
+                        DatasetService.search({uid: value, _team: team._id})
+                        .then(function(response) {
+                            if (response.status == 200) {
+                                if (response.data.length > 0) {
+                                    if (response.data.length == 1 && response.data[0]._id == dataset._id) {
+                                        deferred.resolve(true);
+                                    } else {
+                                        deferred.reject(false);
+                                    }
+
+                                } else {
+                                    deferred.resolve(true);
+                                }
                             }
+
                         });
                         return deferred.promise;
                     };

@@ -528,10 +528,10 @@ var _neededFilterValues = function(dataSourceDescription) {
 
 }
 
-var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescription, callback) {
+var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callback) {
 
     var excludeValues = _neededFilterValues(dataSourceDescription);
-    cached_values.findOne({srcDocPKey: source_pKey},excludeValues,function (err, doc) {
+    cached_values.findOne({srcDocPKey: dataSourceDescription._id},excludeValues,function (err, doc) {
         if (err) {
             callback(err, null);
 
@@ -539,13 +539,13 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
         }
         
         if (doc == null) {
-            callback(new Error('Missing cached values document for srcDocPKey: ' + source_pKey), null);
+            callback(new Error('Missing cached values document for srcDocPKey: ' + dataSourceDescription._id), null);
 
             return;
         }
         var uniqueFieldValuesByFieldName = doc.limitedUniqValsByColName;
         if (uniqueFieldValuesByFieldName == null || typeof uniqueFieldValuesByFieldName === 'undefined') {
-            callback(new Error('Unexpectedly missing uniqueFieldValuesByFieldName for srcDocPKey: ' + source_pKey), null);
+            callback(new Error('Unexpectedly missing uniqueFieldValuesByFieldName for srcDocPKey: ' + dataSourceDescription._id), null);
 
             return;
         }

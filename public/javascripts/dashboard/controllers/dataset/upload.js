@@ -1,6 +1,8 @@
+
 angular.module('arraysApp')
     .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'additionalDatasources', 'FileUploader', '$mdToast', '$mdDialog', '$state', 'AuthService', 'DatasetService',
         function ($scope, dataset, additionalDatasources, FileUploader, $mdToast, $mdDialog, $state, AuthService, DatasetService) {
+
 
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'upload';
@@ -19,37 +21,6 @@ angular.module('arraysApp')
                 return initSource(additionalDatasource);
             });
 
-            $scope.verifyUID = function() {
-                if (dataset.title == '' || typeof dataset.title == 'undefined' || dataset.title == null) {
-                    $scope.uploadForm.title.$setValidity('unique',true);
-                    return;
-                }
-
-                var uid = dataset.title.toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
-
-                DatasetService.search({uid:uid, _team: $scope.team._id})
-                .then(function(response) {
-                    if (response.status == 200) {
-
-                        if (response.data.length > 0) {
-
-                            if (response.data.length == 1 && response.data[0]._id == dataset._id) {
-                                $scope.uploadForm.title.$setValidity('unique',true);
-                                return;
-                            }
-                            $scope.uploadForm.title.$setValidity('unique',false);
-
-                        } else {
-                            $scope.uploadForm.title.$setValidity('unique',true);
-                        }
-                    }
-                });
-
-
-
-
-
-            };
 
             function initSource(additionalDatasource) {
                 var uploader = new FileUploader({
@@ -198,7 +169,7 @@ angular.module('arraysApp')
             };
 
             $scope.addNewDatasource = function () {
-                if (!dataset.uid) {
+                if (!dataset.fileName) {
                     $mdDialog.show(
                         $mdDialog.alert()
                             .clickOutsideToClose(true)

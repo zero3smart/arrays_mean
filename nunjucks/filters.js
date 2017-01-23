@@ -292,9 +292,13 @@ module.exports = function (nunjucks_env,env) {
     });
 
     nunjucks_env.addFilter('splitSubdomain',function(srcDocPKey) {
-        var i = srcDocPKey.indexOf('-');
-        var substring = srcDocPKey.substring(i+1,srcDocPKey.length);
-        return substring;
+        if (srcDocPKey.split('-').length == 3) {
+            var i = srcDocPKey.indexOf('-');
+            var substring = srcDocPKey.substring(i+1,srcDocPKey.length);
+            return substring;
+        }
+        return srcDocPKey;
+   
     })
 
     // Object Row Coercion Data Type

@@ -29,9 +29,9 @@ module.exports = function() {
 	    })
 	}
 
-	var _initJobForAppendedDatasets = function(child) {
+	var _initJobForAppendedDatasets = function(child,dirty,task) {
 
-		childrenDatasets.forEach(function(dataset,index) {
+		child.forEach(function(dataset,index) {
 
             if (dirty == 1) {
 
@@ -123,7 +123,7 @@ module.exports = function() {
 		                            });
 		                        } else {
 
-		                            datasource_description.datasetsNeedToReimport(dataset._id,dataset.uid,dataset.importRevision,function(err,jsonObj) {
+		                            datasource_description.datasetsNeedToReimport(dataset._id,function(err,jsonObj) {
 		                                if (err) return;
 		                                dataset.jobId = 0;
 		                                dataset.save();
@@ -134,7 +134,7 @@ module.exports = function() {
 		                    } else {
 		                        dataset.jobId = 0;
 		                        dataset.save();
-		                        _initJobForAppendedDatasets(childrenDatasets);
+		                        _initJobForAppendedDatasets(childrenDatasets,dirty,task);
 		                        
 		                        
 		                    }

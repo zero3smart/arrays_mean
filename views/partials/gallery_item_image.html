@@ -1,5 +1,5 @@
 <li class="gallery-item gallery-item-image">
-	<a href="/{{ doc.srcDocPKey | splitSubdomain }}/{{ doc._id }}{{ '?embed=true' if embedded }}">
+	<a href="/{{ array_source_key  }}/{{ doc._id }}{{ '?embed=true' if embedded }}">
         {% set subdomain = team.subdomain | lower %}
         <!-- again, this is a hacky solution for moma that we will need to remove down the line -->
         {% set url = returnAbsURLorBuildURL(doc.rowParams[fieldKey_medThumbImageURL]) %}

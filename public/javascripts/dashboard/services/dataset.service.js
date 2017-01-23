@@ -16,6 +16,9 @@
 
         var get = function(id) {
             // New Dataset
+
+    
+
             if (!id) return {
                 urls: []
             };
@@ -163,6 +166,9 @@
                 return [];
             })
        }
+       var killJob = function(id) {
+            return $http.delete('api/dataset/job/' + id);
+       }
 
 
         return {
@@ -170,6 +176,7 @@
             deleteSource: deleteSource,
             remove: remove,
             get: get,
+            killJob: killJob,
             search: search,
             getAdditionalSources: getAdditionalSources,
             getReimportDatasets: getReimportDatasets,

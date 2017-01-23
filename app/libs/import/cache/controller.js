@@ -60,10 +60,9 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_title = dataSourceDescription.title;
     var dataSource_importRevision = dataSourceDescription.importRevision;
-    var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(
-        dataSourceDescription._team.subdomain,dataSource_uid, dataSource_importRevision);
+   
     //
-    var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceRevision_pKey);
+    var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
     processedRowObjects_mongooseModel.findOne({}, function (err, sampleDoc) {
@@ -123,8 +122,7 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
                 {$limit : limitToNTopValues} // To escape that aggregation result exceeds maximum document size (16MB)
             ]).allowDiskUse(true).exec(function (err, results) {
 
-                // console.log(results);
-
+    
                 if (err) {
                     cb(err);
 
@@ -132,8 +130,7 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
                 }
                 if (results == undefined || results == null || results.length == 0) {
 
-                    console.log(key);
-                    callback(new Error('Unexpectedly empty unique field value aggregation'));
+                    callback(new Error('Unexpectedly empty unique field value aggregation for field named: %s ', key));
 
                     return;
                 }
@@ -163,11 +160,11 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
 
             var persistableDoc =
             {
-                srcDocPKey: dataSourceRevision_pKey,
+                srcDocPKey: dataSourceDescription._id,
                 limitedUniqValsByColName: uniqueFieldValuesByFieldName
             };
             var cached_values = require('../../../models/cached_values');
-            cached_values.findOneAndUpdate({srcDocPKey: dataSourceRevision_pKey}, persistableDoc, {
+            cached_values.findOneAndUpdate({srcDocPKey: dataSourceDescription._id}, persistableDoc, {
                 upsert: true,
                 new: true
             }, function (err, doc) {

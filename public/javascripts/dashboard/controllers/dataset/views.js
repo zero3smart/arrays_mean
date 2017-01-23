@@ -29,7 +29,10 @@ angular.module('arraysApp')
 
             if (!$scope.$parent.$parent.dataset.fe_views) {
                 $scope.$parent.$parent.dataset.fe_views = {};
+                $scope.$parent.$parent.dataset.fe_views.default_view = 'gallery';
                 $scope.$parent.$parent.dataset.fe_views.views = {};
+                $scope.$parent.$parent.dataset.fe_views.views.gallery = {visible: true};
+
             }
 
             var colsAvailable = dataset.columns.map(function(column) {

@@ -1,5 +1,5 @@
 angular.module('arraysApp')
-    .controller('DatasetListCtrl', ['$scope', '$mdDialog', '$state', '$mdToast', 'DatasetService', 'datasets', 'nullDatasets',
+    .controller('DatasetListCtrl', ['$scope', '$mdDialog', '$state', '$mdToast', 'DatasetService', 'datasets', 
         function ($scope, $mdDialog, $state, $mdToast, DatasetService, datasets, nullDatasets) {
 
             $scope.$parent.$parent.dataset = {};
@@ -57,7 +57,10 @@ angular.module('arraysApp')
                 });
             };
 
+
             $scope.select = function (id) {
+    
+
                 $state.go('dashboard.dataset.upload', {id: id});
             };
 
@@ -65,14 +68,6 @@ angular.module('arraysApp')
                 $state.go('dashboard.dataset.new');
             };
 
-            // remove abandoned datasets (have no uid)
-            for (var i = 0; i < nullDatasets.length; i++) {
-                var null_id = nullDatasets[i]._id;
-                DatasetService.remove(null_id).then(function(response) {
-                    // console.log('Dataset without uid removed');
-                }, function(error) {
-                    // console.log(error);
-                });
-            }
+
 
         }]);

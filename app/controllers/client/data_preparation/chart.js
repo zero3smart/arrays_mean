@@ -35,7 +35,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
 
             var chartViewSettings = dataSourceDescription.fe_views.views.chart;
-            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(collectionPKey);
+            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
@@ -122,7 +122,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain source document
             batch.push(function (done) {
-                raw_source_documents.Model.findOne({primaryKey: collectionPKey}, function (err, _sourceDoc) {
+                raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, _sourceDoc) {
                     if (err) return done(err);
 
                     sourceDoc = _sourceDoc;
@@ -142,7 +142,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain Top Unique Field Values For Filtering
             batch.push(function (done) {
-                func.topUniqueFieldValuesForFiltering(collectionPKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+                func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;

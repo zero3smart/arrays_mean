@@ -4,22 +4,24 @@ var humanReadableColumnName_objectTitle = "Object Title";
 
 module.exports.HumanReadableColumnName_objectTitle = humanReadableColumnName_objectTitle;
 
-function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription,TeamSubdomain) {
-    var uid = dataSourceDescription.uid;
-    var importRevision = dataSourceDescription.importRevision;
-    var subdomain;
-    if (TeamSubdomain) {
-        subdomain = TeamSubdomain;
-    }
+// function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription,TeamSubdomain) {
+//     var uid = dataSourceDescription.uid;
+//     var importRevision = dataSourceDescription.importRevision;
+    
+//     var subdomain;
+//     if (TeamSubdomain) {
+//         subdomain = TeamSubdomain;
+//     }
 
-    var pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(subdomain,uid, importRevision);
+//     var pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(subdomain,uid, importRevision);
 
-    return pKey;
-};
-module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromDataSourceDescription;
+//     return pKey;
+// };
+// module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromDataSourceDescription;
 
 
 var _dataSourceDescriptionWithPKey = function (source_pKey) {
+
 
     var split = source_pKey.split("-");
     if (split.length != 3) {

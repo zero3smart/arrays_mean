@@ -1,6 +1,8 @@
 <!-- <md-content layout-padding ng-if=" (dataset.fe_listed && dataset.fe_visible && dataset.fe_views.default_view) || (!dataset.fe_listed&&!dataset.fe_visible) "> -->
 <md-content layout-padding>
     <div>
+
+ 
         <h2 ng-if="dirty">You're almost done!<br/>Your data must be imported for some of the changes to take effect.</h2>
 
         <md-content class="md-block md-padding" ng-show="inProgress">
@@ -54,6 +56,12 @@
             <md-button class="md-raised pull-right" ng-click="importData()" ng-disabled="inProgress"><span
                     class="glyphicon glyphicon-import"></span>{{ inProgress ? 'Importing' : 'Import' }}
             </md-button>
+
+            <md-button class="md-raised pull-right" ng-click="killCurrentJob()" ng-disabled="!inProgress || !currentJobId"><span
+                    class="glyphicon glyphicon-import"></span> Kill
+            </md-button>
+
+
         </div>
     </div>
 
