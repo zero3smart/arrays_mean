@@ -255,6 +255,11 @@ body.md-toast-animating {
     padding: 0;
     list-style: none;
 }
+.dashboard-list a:visited,
+.dashboard-list a:focus,
+.dashboard-list a:hover {
+	color: var(--color-primary);
+}
 .dashboard-list > li, div, span {
 	outline: 0;
 }
@@ -722,8 +727,13 @@ md-icon.btn-icon {
 	padding-top: 30px;
 	border-top: 1px solid #eeeeee; /*match <hr>*/
 }
+
+.aa-file-select input,
 .team-uploader {
 	display: none !important;
+}
+.aa-file-select-close {
+	margin-top: 11px;
 }
 .team-logo, .team-header {
 	margin-bottom: 15px;
