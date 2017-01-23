@@ -4,6 +4,7 @@
 function BarChart(selector, dataSet, options) {
 
     this._categories = dataSet.categories;
+
     this._categoryData = $.extend(true, [], this._categories);
     this._data = dataSet.data;
     this._options = options;

@@ -329,11 +329,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             _multigroupedResults_object[category] = [];
                         }
 
-
                         _multigroupedResults_object[category].push(el);
                     });
 
                     _.forOwn(_multigroupedResults_object, function (_groupedResults, category) {
+
 
                         var displayableCategory;
                         if (groupBy_isDate) {
@@ -423,6 +423,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             if (groupBy_isDate) {
                                 var offsetTime = new Date(category);
                                 offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                                offsetTime = func.convertDateToBeRecognizable(offsetTime, groupBy_realColumnName, dataSourceDescription);
                                 graphData.categories.push(offsetTime);
                             } else {
                                 graphData.categories.push(category);
