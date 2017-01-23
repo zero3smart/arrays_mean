@@ -114,7 +114,9 @@ angular.module('arraysApp')
             });
 
             $scope.uploader.removeAndReset = function(fileItem) {
-                $scope.uploader.removeFromQueue(fileItem);
+                if(fileItem) {
+                    $scope.uploader.removeFromQueue(fileItem);
+                }
                 $scope.addingSourceType = '';
             };
 

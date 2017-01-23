@@ -732,6 +732,13 @@ md-icon.btn-icon {
 .team-uploader {
 	display: none !important;
 }
+.aa-file-select-file {
+	font-weight: bold;
+	padding-left: 0.5em;
+}
+.aa-file-select-file.no-file {
+	font-weight: normal;
+}
 .aa-file-select-close {
 	margin-top: 11px;
 }
