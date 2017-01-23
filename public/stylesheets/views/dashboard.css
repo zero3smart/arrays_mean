@@ -84,6 +84,31 @@ aa-dialog-actions .md-button:last-child {
 	/*keep for form validity but let primaryAction do the work*/
 	display: none;
 }
+
+.new-dataset-form {
+	margin-top: -15px;
+}
+.new-dataset-form md-input-container {
+	margin-top: 22px;
+	margin-bottom: 11px;
+	font-size: 41px;
+	line-height: 1.1em;
+	padding: 0;
+}
+.new-dataset-form input,
+.new-dataset-form input.ng-empty {
+	font-size: 41px;
+	line-height: 1.1em;
+	height: 45px;
+}
+.new-dataset-form .md-errors-spacer {
+	display: none;
+}
+.new-dataset-form .error-messages {
+	position: absolute;
+	top: 100%;
+}
+
 /**/
 
 h1 {
@@ -367,7 +392,10 @@ md-tooltip .md-content {
 
 /* Dataset Breadcrumb */
 
-.dataset-breadcrumb button {
+._md-nav-button-text.placeholder {
+	color: var(--color-text-light);
+}
+/*.dataset-breadcrumb button {
     float: left;
     width: 20%;
     margin: 0;
@@ -379,7 +407,7 @@ md-tooltip .md-content {
 }
 .dataset-breadcrumb button:disabled {
     color: #9B9B9B;
-}
+}*/
 
 .dataset-breadcrumb span {
     font-family: var(--font-family-calibre);

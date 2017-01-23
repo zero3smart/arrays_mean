@@ -1,7 +1,7 @@
 angular.module('arraysApp')
     .controller('DatasetDataCtrl', ['$scope', '$state', '$q', 'DatasetService', 'AuthService', '$mdToast', '$mdDialog', '$filter', 'dataset', 'additionalDatasources', 'availableTypeCoercions', 'availableDesignatedFields',
         function ($scope, $state, $q, DatasetService, AuthService, $mdToast, $mdDialog, $filter, dataset, additionalDatasources, availableTypeCoercions, availableDesignatedFields) {
-            $scope.$parent.$parent.currentNavItem = 'Data';
+            $scope.$parent.$parent.currentNavItem = 'data';
             $scope.availableTypeCoercions = availableTypeCoercions;
 
 
@@ -43,8 +43,6 @@ angular.module('arraysApp')
             $scope.additionalDatasources = angular.copy(additionalDatasources);
 
             $scope.data = {};
-
-            $scope.$parent.$parent.currentNavItem = 'Data';
 
             $scope.availableTypeCoercions = availableTypeCoercions;
 

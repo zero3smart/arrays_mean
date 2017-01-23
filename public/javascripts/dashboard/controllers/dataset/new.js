@@ -6,18 +6,18 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
-            $scope.primaryAction.text = 'Next';
 
-            $scope.$watch('newDSForm.$valid', function(validity) {
-                if (validity !== undefined) {
-                    $scope.formValidity = validity;
-                    $scope.primaryAction.disabled = !validity;
-                }
-            });
-            
-            $scope.primaryAction.do = function() {
-                $scope.submitForm($scope.formValidity);
-            };
+            // $scope.primaryAction.text = 'Next';
+            // $scope.$watch('newDSForm.$valid', function(validity) {
+            //     if (validity !== undefined) {
+            //         $scope.formValidity = validity;
+            //         $scope.primaryAction.disabled = !validity;
+            //     }
+            // });
+            // $scope.primaryAction.do = function() {
+            //     $scope.submitForm($scope.formValidity);
+            // };
+
 
             $scope.submitForm = function(isValid) {
 

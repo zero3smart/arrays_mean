@@ -5,7 +5,7 @@ angular.module('arraysApp')
 
 
             $scope.$parent.$parent.dataset = dataset;
-            $scope.$parent.$parent.currentNavItem = 'Upload';
+            $scope.$parent.$parent.currentNavItem = 'upload';
             $scope.progressMode = 'determinate';
             $scope.addingAdditionalDatasource = false;
 
