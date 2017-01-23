@@ -8,10 +8,26 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
+            $scope.colors = [
+                // ['#FA2A00','#FFFFFF'] // brandColor, iconColor
+                '#FA2A00',
+                '#FEB600',
+                '#79F800',
+                '#005CFF',
+                '#FE00FF',
+                '#EF0069',
+                '#00DAE5',
+                '#009E9D',
+                '#7A00F6',
+                '#dddddd',
+                '#4A4A4A'
+            ];
+            if(!dataset.brandColor) { dataset.brandColor = $scope.colors[0]; }
 
+            $scope.pickColor = function(color) {
+                dataset.brandColor = color;
+            }
 
-
-    
            $scope.submitForm = function(isValid) {
 
                 if (isValid) {
@@ -27,7 +43,7 @@ angular.module('arraysApp')
 
                     DatasetService.save(dataset).then(function (response) {
 
-                       if (response.status == 200) {           
+                       if (response.status == 200) {
                             $mdToast.show(
                                 $mdToast.simple()
                                     .textContent(dataset._id ? 'Dataset updated successfully!' : 'New Dataset was created successfully!')
