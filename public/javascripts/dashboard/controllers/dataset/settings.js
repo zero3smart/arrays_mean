@@ -27,7 +27,12 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'settings';
 
-
+            $scope.updatePublishSettings = function() {
+                if(!dataset.fe_visible) {
+                    dataset.isPublic = false;
+                    dataset.fe_listed = false;
+                }
+            };
 
             $scope.submitForm = function(isValid) {
 

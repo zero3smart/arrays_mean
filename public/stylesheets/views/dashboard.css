@@ -438,6 +438,24 @@ md-tooltip .md-content {
 
 
 /* Dataset Settings */
+.dataset .publish-settings md-switch[disabled] .md-label,
+.dataset .publish-settings md-switch:disabled .md-label {
+	color: var(--color-text-light);
+}
+md-switch.md-default-theme.md-checked .md-thumb,
+md-switch.md-checked .md-thumb {
+	background-color: var(--color-primary);
+}
+md-switch.md-focused:not([disabled]):not(.md-checked) .md-thumb:before,
+md-switch.md-checked.md-focused .md-thumb:before {
+	background-color: transparent;
+}
+md-switch.md-checked .md-bar {
+	/*disabled color*/
+	background-color: rgba(0,0,0,0.12);
+	/*background-color: var(--color-text-light);*/
+}
+
 .dataset .md-chips {
     padding-left: 0;
 }
