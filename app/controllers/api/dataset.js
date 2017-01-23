@@ -358,32 +358,42 @@ module.exports.getDependencyDatasetsForReimporting = function(req,res) {
 
 module.exports.killJob = function(req,res) {
 
-   
+    var batch = new Batch();
+    batch.concurrency(1);
 
+    var datasetId = req.params.id;
 
-    var JobId = req.params.id;
+    batch.push(function(done) {
 
-    kue.Job.get(JobId,function(err,job){
-        if (err) {
-            console.log(err);
-            return res.status(500).json(err);
-        }
-        var dataset = job.data.id;
-        datasource_description.update({_id: dataset},{$set:{jobId:0}},function(err) {
-             if (err) {
-                console.log(err);
-                return res.status(500).json(err);
+        datasource_description.findById(datasetId,function(err,dataset){
+            if (dataset.jobId !== 0) {
+                batch.push(function(done) {
+                    kue.Job.get(dataset.jobId,function(err,job) {
+                        if (err && err.message.indexOf("doesnt exist") == -1) {
+                            done(err);
+                        } else {
+                            batch.push(function(done) {
+                                job.remove(done);
+                            })
+                        }
+                        done();
+                    })
+                })
+                dataset.jobId = 0;
+                dataset.save(done);
             }
-    
-             job.remove();
-             return res.status(200).send('ok');
-
         })
+
     })
-
-
-   
+    batch.end(function(err) {
+        if (err) {
+            return res.status(500).json(err);  
+        } 
+        return res.status(200).send('ok');
+    })
 }
+
+
 module.exports.search = function(req,res) {
 
 
@@ -561,8 +571,8 @@ module.exports.remove = function (req, res) {
 
     batch.push(function(done) {
 
-        datasource_description.find({_otherSources:description._id,"relationshipFields.by.andOtherRawSrcImportRevision":description.importRevision,
-            "relationshipFields.by.ofOtherRawSrcUID":description.uid},function(err,docs) {
+        datasource_description.find({_otherSources:description._id,"relationshipFields.by.joinDataset":description._id.toString()},function(err,docs) {
+
             if (err) {
                 done(err);
             } else {
@@ -579,9 +589,9 @@ module.exports.remove = function (req, res) {
 
                         docs[i].relationshipFields = docs[i].relationshipFields.filter(function(field) {
                           
-                            return field.by.andOtherRawSrcImportRevision !== description.importRevision && 
-                                field.by.ofOtherRawSrcUID !== description.uid
+                            return field.by.joinDataset !== description._id.toString();
                         })
+                        docs[i].dirty = 1;
                         docs[i].save(done);
                     })
                     batch.end(function(err) {

@@ -26,7 +26,8 @@ var _Lazy_Shared_RawRowObject_MongooseContext = function (srcDocPKey) {
     forThisDataSource_RawRowObject_scheme.index({srcDocPKey: 1}, {unique: false});
     //
     var forThisDataSource_rowObjects_modelName = _New_RowObjectsModelName(srcDocPKey);
-    var forThisDataSource_RawRowObject_model = mongoose.model(forThisDataSource_rowObjects_modelName, forThisDataSource_RawRowObject_scheme);
+    var forThisDataSource_RawRowObject_model = mongoose.model(forThisDataSource_rowObjects_modelName, forThisDataSource_RawRowObject_scheme,
+        forThisDataSource_rowObjects_modelName.toLowerCase());
     //
     mongooseContext =
     {
