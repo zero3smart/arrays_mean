@@ -94,8 +94,16 @@ angular.module('arraysApp')
                 };
 
                 uploader.removeAndReset = function(fileItem) {
-                    uploader.removeFromQueue(fileItem);
-                    $scope.addingAdditionalDatasource = false;
+                    // $scope.addingAdditionalDatasource = false;
+                    if(fileItem) {
+                        uploader.removeFromQueue(fileItem);
+                    }
+                    additionalDatasource.sourceType = '';
+                };
+
+                additionalDatasource.sourceType = '';
+                additionalDatasource.setSourceType = function(type) {
+                    additionalDatasource.sourceType = type;
                 };
 
                 additionalDatasource.uploader = uploader;

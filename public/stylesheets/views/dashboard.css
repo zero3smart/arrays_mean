@@ -732,6 +732,17 @@ md-icon.btn-icon {
 .team-uploader {
 	display: none !important;
 }
+.aa-file-select-source {
+	border: none;
+}
+.aa-file-select-source li {
+	padding: 0;
+	margin: 0;
+	border: none;
+}
+.aa-file-select-source li:last-child {
+	border: none;
+}
 .aa-file-select-file {
 	font-weight: bold;
 	padding-left: 0.5em;
