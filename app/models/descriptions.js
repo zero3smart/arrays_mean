@@ -108,7 +108,7 @@ var deepPopulate = require('mongoose-deep-populate')(mongoose);
 DatasourceDescription_scheme.plugin(integerValidator);
 DatasourceDescription_scheme.plugin(deepPopulate, {whitelist: ['_otherSources', '_otherSources._team', 'schema_id', '_team', 'schema_id._team']});
 
-var datasource_description = mongoose.model('DatasourceDescription', DatasourceDescription_scheme);
+var datasource_description = mongoose.model('DatasourceDescription', DatasourceDescription_scheme,'datasourcedescriptions');
 
 /* -----------   helper function ----------- */
 var _mergeObject = function (obj1, obj2) {
