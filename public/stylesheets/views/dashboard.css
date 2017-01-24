@@ -743,10 +743,12 @@ md-icon.btn-icon {
 .md-button.md-dashboard.confirm:not([disabled]) {
     background-color: var(--color-primary);
 }
+.md-button.md-dashboard.confirm:not([disabled]):focus,
 .md-button.md-dashboard.confirm:not([disabled]):hover {
 	border-color: var(--color-primary);
     background-color: transparent;
 }
+.md-button.md-dashboard.confirm:not([disabled]):focus .btn-label,
 .md-button.md-dashboard.confirm:not([disabled]):hover .btn-label {
 	color: var(--color-primary);
 }
