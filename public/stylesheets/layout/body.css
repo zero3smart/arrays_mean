@@ -46,7 +46,8 @@
         box-shadow: none;
     }
 
-    .navbar .share-link.btn-splash:hover {
+    .navbar .share-link.btn-splash:hover,
+    .navbar .share-link.btn-splash:focus {
         /*Nullify hover effects from .btn-splash*/
         background-color: #000;
         color: #fff;

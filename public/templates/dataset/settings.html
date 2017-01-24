@@ -36,23 +36,21 @@
                 <div ng-message="required">This is required.</div>
                 <div ng-message="min">You should input at least 1.</div>
             </div>
-        </md-input-container> -->
-        <md-input-container class="md-block md-color-picker">
-            <label>Brand Color</label>
-            <div md-color-picker ng-model="dataset.brandColor"></div>
+
         </md-input-container>
 
+         <md-input-container class="md-block md-color-picker">
+            <label>Brand Color</label>
+            <div md-color-picker ng-model="dataset.brandColor"></div>
+        </md-input-container> -->
+
         <div>
-            <label>Banner</label>
 
-            <div flex="50">
-                <img class="img-responsive" ng-if="dataset.banner" ng-src="{{dataset.banner}}">
-            </div>
-
-            <input id="banner" type="file" nv-file-select="" uploader="imageUploader" class="team-uploader">
-            <label for="banner" class="md-button md-dashboard primary-action" ng-disabled="imageUploader.queue.length > 0">
-               Choose File
-            </label>
+            <label>Brand Color</label>
+            <ul class="aa-color-picker" flex layout="row" layout-align="space-between center">
+                <li ng-repeat="color in colors" flex="5" ng-click="pickColor(color)" ng-style="{'background-color':color};" ng-class="{'selected': dataset.brandColor == color}">
+                </li>
+            </ul>
         </div>
 
         <md-input-container class="md-block">
