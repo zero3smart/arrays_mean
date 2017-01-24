@@ -7,11 +7,15 @@ var queue = kue.createQueue({
 	redis: process.env.REDIS_URL
 });
 
+
+
+
 module.exports = function() {
 
-	
 
 	var _initJob = function(datasetId,jobName,cb) {
+
+
 
 		var job = queue.create(jobName, {
 	        id: datasetId
@@ -19,9 +23,12 @@ module.exports = function() {
 	    .save(function(err) {
 	        if (err) return cb(err);
 	        else {
+
 	            datasource_description.findOneAndUpdate({_id: datasetId},{$set:{jobId: job.id}},{new: true},function(err,updatedDataset) {
+
 	                if (err) return cb(err);
 	                else {
+
 	                    return cb(null,updatedDataset.jobId);
 	                }
 	            });
@@ -37,7 +44,7 @@ module.exports = function() {
 
                 if (task == 'scrapeImages' || task == 'importProcessed') {
 
-                    _initJob(dataset.id,'preImport',function(err) {
+                    _initJob(dataset._id,'preImport',function(err) {
                         if (err) winston.error('❌ in initializing job preImport on child dataset');
                         return;
                     });
@@ -47,7 +54,7 @@ module.exports = function() {
 
                 if (task == 'scrapeImages' || task == 'postImport' || task == 'importProcessed') {
 
-                    _initJob(dataset.id,'importProcessed',function(err) {
+                    _initJob(dataset._id,'importProcessed',function(err) {
                         if (err) winston.error('❌ in initializing job preImport on child dataset');
                         return;
                     });
@@ -62,7 +69,7 @@ module.exports = function() {
             ds.dirty = 1;
             ds.save();
 
-            _initJob(ds.id,'preImport',function(err) {
+            _initJob(ds._id,'preImport',function(err) {
                 if (err) winston.error('❌ in initializing job scrapeImages on job completion');
                 return;
             });

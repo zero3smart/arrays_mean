@@ -69,9 +69,6 @@
 
                 </li>
             </ul>
-<!--  -->
-<!--  -->
-<!--  -->
             <div ng-if="dataset.fileName" ng-repeat="additionalDatasource in additionalDatasources" class="no-padding">
                 <ul class="dashboard-list user-list" ng-if="additionalDatasource.fileName" ng-cloak>
                     <li layout="row" layout-align="space-between center">
@@ -120,7 +117,6 @@
                         </div>
                         <div ng-repeat="item in additionalDatasource.uploader.queue track by $index" ng-show="additionalDatasource.uploader.isUploading">
                             <div layout="row" layout-align="space-between center">
-
                             <span ng-class="{'pending': item.isUploading }" flex="50">
                                 <span class="dashboard-list-name">{{ item.file.name }}</span>
                             </span>

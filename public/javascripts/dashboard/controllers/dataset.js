@@ -1,6 +1,7 @@
 angular.module('arraysApp')
-    .controller('DatasetCtrl', ['$scope', '$location', '$state', '$rootScope','DatasetService',
-        function($scope, $location, $state, $rootScope,DatasetService) {
+    .controller('DatasetCtrl', ['$scope', '$location', '$state', '$rootScope','DatasetService','$q',
+        function($scope, $location, $state, $rootScope,DatasetService,$q) {
+       
             $scope.currentStep = $state.current.name;
 
             //Keep track of state when navigating without breadcrumbs
@@ -15,16 +16,17 @@ angular.module('arraysApp')
 
             $scope.navigate = function(step) {
 
-                 var finalizedDataset = angular.copy($scope.dataset);
-                delete finalizedDataset.columns;
-                delete finalizedDataset._team;
-                if ($scope.dataset.author) {
-                    delete finalizedDataset.author;
+                var errorHandler = function (error) {
+                        $mdToast.show(
+                        $mdToast.simple()
+                            .textContent(error)
+                            .position('top right')
+                            .hideDelay(5000)
+                    );
                 }
 
+                var done = function() {
 
-                DatasetService.save(finalizedDataset)
-                .then(function() {
                     $scope.currentStep = step;
                     switch (step) {
                     case 'dashboard.dataset.settings':
@@ -52,8 +54,60 @@ angular.module('arraysApp')
                         }
                         break;
                     }
+                }
 
-                });
+
+
+                var queue = [];
+
+                    var finalizedDataset = angular.copy($scope.dataset);
+                    delete finalizedDataset.columns;
+                    delete finalizedDataset.__v;
+
+                    queue.push(DatasetService.save(finalizedDataset));
+
+                   if ($scope.additionalDatasources) {
+
+                        $scope.additionalDatasources.forEach(function(datasource) {
+                            var finalizedDatasource = angular.copy(datasource);
+                            delete finalizedDatasource.fn_new_rowPrimaryKeyFromRowObject;
+                            delete finalizedDatasource.raw_rowObjects_coercionScheme;
+                            delete finalizedDatasource._otherSources;
+                            delete finalizedDatasource._team;
+                            delete finalizedDatasource.title;
+                            delete finalizedDatasource.__v;
+                            delete finalizedDatasource.importRevision;
+                            delete finalizedDatasource.author;
+                            delete finalizedDatasource.updatedBy;
+                            delete finalizedDatasource.brandColor;
+                            delete finalizedDatasource.customFieldsToProcess;
+                            delete finalizedDatasource.urls;
+                            delete finalizedDatasource.description;
+                            delete finalizedDatasource.fe_designatedFields;
+                            delete finalizedDatasource.fe_excludeFields;
+                            delete finalizedDatasource.fe_displayTitleOverrides;
+                            delete finalizedDatasource.fe_fieldDisplayOrder;
+                            delete finalizedDatasource.imageScraping;
+                            delete finalizedDatasource.isPublic;
+                            delete finalizedDatasource.fe_views;
+                            delete finalizedDatasource.fe_filters;
+                            delete finalizedDatasource.fe_objectShow_customHTMLOverrideFnsByColumnNames;
+
+
+
+                            queue.push(DatasetService.save(finalizedDatasource));
+                        });
+
+
+
+
+                   }
+
+                 
+
+                    $q.all(queue)
+                        .then(done)
+                        .catch(errorHandler);
 
 
             };

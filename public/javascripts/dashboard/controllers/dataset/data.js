@@ -2,6 +2,9 @@ angular.module('arraysApp')
     .controller('DatasetDataCtrl', ['$scope', '$state', '$q', 'DatasetService', 'AuthService', '$mdToast', '$mdDialog', '$filter', 'dataset', 'additionalDatasources', 'availableTypeCoercions', 'availableDesignatedFields',
         function ($scope, $state, $q, DatasetService, AuthService, $mdToast, $mdDialog, $filter, dataset, additionalDatasources, availableTypeCoercions, availableDesignatedFields) {
             $scope.$parent.$parent.currentNavItem = 'data';
+    
+
+
             $scope.availableTypeCoercions = availableTypeCoercions;
 
 
@@ -40,7 +43,7 @@ angular.module('arraysApp')
             if (!dataset.fe_designatedFields) dataset.fe_designatedFields = {};
 
             $scope.$parent.$parent.dataset = angular.copy(dataset);
-            $scope.additionalDatasources = angular.copy(additionalDatasources);
+            $scope.$parent.$parent.additionalDatasources = angular.copy(additionalDatasources);
 
             $scope.data = {};
 
@@ -384,14 +387,16 @@ angular.module('arraysApp')
                     fullscreen: true, // Only for -xs, -sm breakpoints.
                     locals: {
                         dataset: $scope.$parent.$parent.dataset,
-                        additionalDatasources: $scope.additionalDatasources
+                        additionalDatasources: $scope.$parent.$parent.additionalDatasources
                     }
                 })
                     .then(function (result) {
 
 
+
+
                         $scope.$parent.$parent.dataset = result.dataset;
-                        $scope.additionalDatasources = result.additionalDatasources;
+                        $scope.$parent.$parent.additionalDatasources = result.additionalDatasources;
 
                         $scope.coercionScheme = angular.copy(result.dataset.raw_rowObjects_coercionScheme);
                         sortColumnsByDisplayOrder();
@@ -572,6 +577,8 @@ angular.module('arraysApp')
                         });
                         $scope.dataset.fe_nestedObject.valueOverrides[elem.field] = valueOverrides;
                     });
+
+
 
 
 
@@ -1365,7 +1372,7 @@ angular.module('arraysApp')
 
                     queue.push(DatasetService.save(finalizedDataset));
 
-                    $scope.additionalDatasources.forEach(function(datasource) {
+                    $scope.$parent.$parent.additionalDatasources.forEach(function(datasource) {
                         var finalizedDatasource = angular.copy(datasource);
                         delete finalizedDatasource.fn_new_rowPrimaryKeyFromRowObject;
                         delete finalizedDatasource.raw_rowObjects_coercionScheme;

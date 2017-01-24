@@ -61,7 +61,7 @@ queue.worker.process('preImport',function(job,done) {
     
     batch.push(function (done) {
 
-        if (!description.dataset_uid) {
+        if (!description.schema_id) {
 
             raw_source_documents.Model.findOne({primaryKey: description._id}, function (err, document) {
                 if (err) return done(err);
@@ -81,7 +81,7 @@ queue.worker.process('preImport',function(job,done) {
     // Remove raw row object
     batch.push(function (done) {
 
-        if (!description.dataset_uid) {
+        if (!description.schema_id) {
 
              mongoose_client.dropCollection('rawrowobjects-' + description._id, function (err) {
                 // Consider that the collection might not exist since it's in the importing process.
@@ -181,6 +181,7 @@ queue.worker.process('importProcessed',function(job,done) {
     batch.concurrency(1);
 
     var description;
+    var hasSchema = false;
 
 
     // ----> consolidate if its child dataset
@@ -198,6 +199,7 @@ queue.worker.process('importProcessed',function(job,done) {
             description = data;
 
              if (description.schema_id) { //merge with parent description
+                hasSchema = true;
                 description = datasource_description.Consolidate_descriptions_hasSchema(description);
             } 
 
@@ -209,7 +211,7 @@ queue.worker.process('importProcessed',function(job,done) {
     // --> remove processed row object
 
     batch.push(function (done) {
-        if (!description.dataset_uid) {
+        if (!hasSchema) {
 
             mongoose_client.dropCollection('processedrowobjects-' + description._id, function (err) {
                 // Consider that the collection might not exist since it's in the importing process.
@@ -226,7 +228,7 @@ queue.worker.process('importProcessed',function(job,done) {
 
 
     batch.push(function(done) {
-        if (!description.dataset_uid) { 
+        if (!hasSchema) { 
             var raw_row_objects_forThisDescription = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(description._id).forThisDataSource_RawRowObject_model
             raw_row_objects_forThisDescription.count(function(err,numberOfDocs) {
                 if (err) return done(err);
@@ -807,6 +809,8 @@ module.exports.update = function (req, res) {
                 }
                 winston.info("🔁  Updating the dataset " + description_title + "...");
 
+     
+
 
                 _.forOwn(req.body, function (value, key) {
                     if (key != '_id' && ((!doc.schema_id && !_.isEqual(value, doc._doc[key]))
@@ -817,9 +821,17 @@ module.exports.update = function (req, res) {
                         doc[key] = value;
                         if (typeof value === 'object')
                             doc.markModified(key);
+
                     }
                 });
 
+                // console.log(doc);
+
+                if (!doc.schema_id) {
+                    doc.uid = doc.title.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
+                }
+
+             
 
                 doc.save(function (err, updatedDoc) {
                     if (err) return res.status(500).send(err);
@@ -839,6 +851,7 @@ module.exports.update = function (req, res) {
                             fe_filters: 1,
                             fe_fieldDisplayOrder: 1,
                             urls: 1,
+
                             importRevision: 1
                         } };
                         datasource_description.findOneAndUpdate(findQuery, updateQuery, {upsert: true, new: true},
@@ -914,6 +927,7 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 }
 
 module.exports.upload = function (req, res) {
+
     if (!req.body.id) return res.status(500).send('No ID given');
 
     var child = req.body.child;
@@ -922,26 +936,30 @@ module.exports.upload = function (req, res) {
     batch.concurrency(1);
     var description, schema_description, description_title;
 
+
     res.writeHead(200, {'Content-Type': 'application/json'});
     res.connection.setTimeout(0);
 
     batch.push(function (done) {
+
 
         datasource_description.findById(req.body.id)
             .populate('_team')
             .exec(function (err, doc) {
     
                 if (err) return done(err);
+                //description refering to the master/parent dataset
                 description = doc;
                 description_title = description.title
 
-                doc.fileName = null;
-
-                doc.title = req.body.tempTitle;
-
-                doc.save();
-
+                if (!child) {
+                    doc.fileName = null;
+                    doc.title = req.body.tempTitle;
+                    doc.save();
+                }
                 done();
+
+
             })
     });
 
@@ -949,11 +967,10 @@ module.exports.upload = function (req, res) {
         batch.push(function (done) {
             schema_description = description;
 
-            var findQuery = {dataset_uid: req.body.dataset_uid, schema_id: req.body.id};
+            var findQuery = {schema_id: req.body.id};
             // Inherited fields from the schema should be undefined
             // TODO: Is there anyway to update the selected fields only?
             var insertQuery = {
-                dataset_uid: req.body.dataset_uid,
                 schema_id: req.body.id,
                 fe_listed: false,
                 fe_visible: false,
@@ -969,9 +986,11 @@ module.exports.upload = function (req, res) {
                     importRevision: 1
                 }
             };
+
             datasource_description.findOneAndUpdate(findQuery, insertQuery, {upsert: true, new: true}, function(err, doc) {
                 if (err) return done(err);
                 doc.schema_id = schema_description;
+                // description now referencing the child
                 description = datasource_description.Consolidate_descriptions_hasSchema(doc);
 
                 description_title = description.title + "(" + description.dataset_uid + ")";
@@ -1020,14 +1039,13 @@ module.exports.upload = function (req, res) {
                 // Upload datasource to AWS S3
 
     
-                if (!description.uid) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
-
-
+                if (!description.uid && !child) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
 
                 datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, description._id, function (err) {
                     if (err) {
                         winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
                     }
+
                     done(err);
                 });
             });

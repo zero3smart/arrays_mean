@@ -21,7 +21,6 @@ var DatasourceDescription_scheme = Schema({
     importRevision: {type: Number, integer: true, default: 1},
     schema_id: {type: Schema.Types.ObjectId, ref: 'DatasourceDescription'},
     banner: String,
-    dataset_uid: String, // It is not changeable once it's generated automaticlly when creating a descrpition
     format: String,
     title: String,
     brandColor: String,
@@ -109,7 +108,7 @@ var deepPopulate = require('mongoose-deep-populate')(mongoose);
 DatasourceDescription_scheme.plugin(integerValidator);
 DatasourceDescription_scheme.plugin(deepPopulate, {whitelist: ['_otherSources', '_otherSources._team', 'schema_id', '_team', 'schema_id._team']});
 
-var datasource_description = mongoose.model('DatasourceDescription', DatasourceDescription_scheme);
+var datasource_description = mongoose.model('DatasourceDescription', DatasourceDescription_scheme,'datasourcedescriptions');
 
 /* -----------   helper function ----------- */
 var _mergeObject = function (obj1, obj2) {

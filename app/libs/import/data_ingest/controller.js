@@ -247,7 +247,7 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
 
 
 var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexInList, dataSourceDescription,job, callback) {
-    var dataSource_uid = dataSourceDescription.uid;
+
     var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.title;
     var dataset_uid = dataSourceDescription.dataset_uid;
@@ -346,6 +346,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                             pKey: rowDoc.pKey, // the specific row
                             srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                         };
+
+                        
                         eachCtx.nativeCollection.remove(bulkOperationQueryFragment);
                         // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
                     });
@@ -481,7 +483,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
         if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
 
-            raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
+            raw_source_documents.IncreaseNumberOfRawRows(dataSourceDescription._id, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
                 if (err) {
                     winston.error('❌ Error when modifying number of rows in raw source documents: %s', err);
                 }
@@ -491,30 +493,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         } else {
             cb(null);
         }
-   
-        // eachCtx.mergeFieldsIntoCustomField_BulkOperation.execute(function (err, result) {
 
-        //     if (err) {
-        //         winston.error("❌ [" + (new Date()).toString() + "] Error while saving custom fields  : ", err);
-        //     } else {
-
-        //         winston.info("✅  [" + (new Date()).toString() + "] Saved custom fields.");
-
-        //         if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
-
-        //             var srcDoc_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
-
-        //             raw_source_documents.IncreaseNumberOfRawRows(srcDoc_pKey, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
-        //                 console.log(err)
-        //                 cb(err);
-        //             })
-
-        //         } else {
-        //             cb(err);
-        //         }
-
-        //     }
-        // });
     }
 
 

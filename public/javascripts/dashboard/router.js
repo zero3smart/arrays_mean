@@ -117,44 +117,7 @@ angular.module('arraysApp')
 
 
 
-                                if ($stateParams.id) {
-                                    var deferred = $q.defer();
-                                    DatasetService.get($stateParams.id)
-                                    .then(function(data) {
-
-                                        if (data.jobId !== 0) {
-                                            deferred.reject({importing: true, datasetId: data._id});
-                                        } else {
-
-                                            DatasetService.getAdditionalSources($stateParams.id)
-                                            .then(function(additionalDatasets) {
-
-                                                if (additionalDatasets.length > 0) {
-                                                    additionalDatasets.map(function(datasets) {
-                                                        if (datasets.jobId !== 0) {
-                                                            deferred.reject({importing: true, datasetId: data._id});
-                                                            return false;
-
-                                                        }
-                                                    });
-
-                                                }
-                                                deferred.resolve(data);
-
-                                            });
-                                        }
-
-                                    });
-                                    return deferred.promise;
-
-                                } else {
-                                    return {urls: []};
-                                }
-
-
-
-
-
+                                return DatasetService.get($stateParams.id);
                             }]
                         }
                     })
