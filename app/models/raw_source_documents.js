@@ -6,24 +6,19 @@ var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 //
 var RawSourceDocument_scheme = Schema({
-    primaryKey: {type: String, index: true}, // NOTE: This primaryKey is made by NewCustomPrimaryKeyStringWithComponents
-    revisionNumber: Number,
-    importUID: String,
-    title: String,
+    primaryKey: {type: String, index: true}, // NOTE: This primaryKey is the dataset id
     numberOfRows: Number,
     dateOfLastImport: Date
 });
-RawSourceDocument_scheme.index({importUID: 1, revisionNumber: 1}, {unique: true});
-RawSourceDocument_scheme.index({importUID: 1}, {unique: false});
-RawSourceDocument_scheme.index({revisionNumber: 1}, {unique: false});
-//
+
+
 var modelName = 'RawSourceDocument';
 var RawSourceDocument_model = mongoose.model(modelName, RawSourceDocument_scheme);
 RawSourceDocument_model.on('index', function (error) {
     if (error != null) {
         winston.error("❌  MongoDB index build error for '" + modelName + "':", error);
     } else {
-        winston.info("✅  Built indices for '" + modelName + "'");
+        // winston.info("✅  Built indices for '" + modelName + "'");
         // Don't let app start listening until indices built; Coordinate via 
         // mongoose client
         mongoose_client.FromModel_IndexHasBeenBuiltForSchemeWithModelNamed(modelName);
@@ -34,30 +29,21 @@ module.exports.ModelName = modelName;
 
 module.exports.Model = RawSourceDocument_model;
 
-module.exports.New_templateForPersistableObject = function (sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows) {
+module.exports.New_templateForPersistableObject = function (datasetId , parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows) {
     return {
-        primaryKey: sourceDocumentRevisionKey,
-        title: sourceDocumentTitle,
-        importUID: importUID,
-        revisionNumber: revisionNumber,
+        primaryKey: datasetId,
         parsed_rowObjectsById: parsed_rowObjectsById,
         parsed_orderedRowObjectPrimaryKeys: parsed_orderedRowObjectPrimaryKeys,
         numberOfRows: numberOfRows
     }
 };
 
-module.exports.NewCustomPrimaryKeyStringWithComponents = function (dataSource_uid, dataSource_importRevisionNumber) {
-    return dataSource_uid + "-r" + dataSource_importRevisionNumber;
-};
 
 module.exports.UpsertWithOnePersistableObjectTemplate = function (append,persistableObjectTemplate, fn) {
     winston.log("📡  [" + (new Date()).toString() + "] Going to save source document.");
 
     var updatedDocument = {};
     updatedDocument['primaryKey'] = persistableObjectTemplate.primaryKey;
-    if (persistableObjectTemplate.title) updatedDocument['title'] = persistableObjectTemplate.title;
-    if (persistableObjectTemplate.revisionNumber) updatedDocument['revisionNumber'] = persistableObjectTemplate.revisionNumber;
-    if (persistableObjectTemplate.importUID) updatedDocument['importUID'] = persistableObjectTemplate.importUID;
     var numberOfRowsUpdateQuery = {};
     if (persistableObjectTemplate.numberOfRows && !append )  {
         updatedDocument["numberOfRows"] =  persistableObjectTemplate.numberOfRows
@@ -94,7 +80,7 @@ module.exports.UpsertWithOnePersistableObjectTemplate = function (append,persist
     });
 };
 
-module.exports.IncreaseNumberOfRawRows = function (pKey, numberOfRows, fn) {
+module.exports.IncreaseNumberOfRawRows = function (datasetId, numberOfRows, fn) {
 
     winston.log("📡  [" + (new Date()).toString() + "] Going to increase the number of raw rows in the source document.");
 
@@ -102,7 +88,7 @@ module.exports.IncreaseNumberOfRawRows = function (pKey, numberOfRows, fn) {
 
     var findOneAndUpdate_queryParameters =
     {
-        primaryKey: pKey
+        primaryKey: datasetId
     };
 
     RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {
@@ -116,7 +102,7 @@ module.exports.IncreaseNumberOfRawRows = function (pKey, numberOfRows, fn) {
         if (err) {
             winston.error("❌ [" + (new Date()).toString() + "] Error while increasing the number of raw rows in a raw source document: ", err);
         } else {
-            winston.info("✅  [" + (new Date()).toString() + "] Increased the number of raw rows in a source document object with pKey \"" + pKey + "\".");
+            winston.info("✅  [" + (new Date()).toString() + "] Increased the number of raw rows in a source document object with datasetId : " + datasetId);
         }
         fn(err, doc);
     });
