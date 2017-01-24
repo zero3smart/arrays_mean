@@ -45,7 +45,7 @@ angular.module('arraysApp')
                 if (original_feVisible !== dataset.fe_visible && (dataset.dirty == 0 || dataset.dirty == 4)) {
                     dataset.dirty = 3;
                 }
-            }
+            };
 
             $scope.submitForm = function(isValid) {
 
