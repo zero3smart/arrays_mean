@@ -6,8 +6,21 @@
         <md-content layout-padding>
             <form name="viewForm">
 
+                <p>Configure what your {{viewDisplayName}} view looks like below.</p>
+
                 <!-- for testing -->
                 <!-- <aa-view-config-menus></aa-view-config-menus> -->
+
+                <label>Enter a description for this view</label>
+
+                <p>
+                    The description will appear at the top of the view. For example, you can use it to describe what viewers can see.
+                </p>
+
+                <md-input-container class="md-block">
+                    <textarea ng-model="data.description"
+                        md-maxlength="500" rows="3" aria-label="{{viewDisplayName}} Description"></textarea>
+                </md-input-container>
 
                 <div layout="row">
                     <md-input-container class="md-block" flex-gt-sm>
@@ -24,22 +37,6 @@
                         </md-checkbox>
                     </md-input-container>
                </div>
-
-               <label>Name</label>
-                <md-input-container class="md-block" flex-gt-sm>
-
-
-                    <input type="text" ng-model="viewDisplayName" readonly="readonly" aria-label="Display Name {{viewName}}">
-                </md-input-container>
-
-                <label>Description</label>
-                <md-input-container class="md-block" flex-gt-sm>
-                    <textarea class="md-block" md-maxlength="500" rows="3" aria-label="Description {{viewName}}"
-                           ng-model="data.description"></textarea>
-                </md-input-container>
-
-
-
 
             <div ng-repeat="setting in viewSetting">
 
