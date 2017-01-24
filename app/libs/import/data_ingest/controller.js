@@ -107,19 +107,13 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions,job, fn)
 var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
     var datasetId = dataSourceDescription._id;
     var dataSource_importRevision = dataSourceDescription.importRevision;
-    var dataSource_title = dataSourceDescription.title;
-    var dataset_uid = dataSourceDescription.dataset_uid;
+    var dataSource_title = dataSourceDescription.fileName;
+    var parentId = dataSourceDescription.schemaId;
 
+  
+    winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
 
-    if (dataSourceDescription.dataset_uid) { 
-
-        winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\" (appended dataset: " + 
-            dataSourceDescription.dataset_uid + ")");
-
-    } else {
-         winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
-
-    }
+    
     job.log("🔁  Post-processing \"" + dataSource_title + "\"");
 
 
@@ -137,7 +131,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
         datasetId,
         dataSource_importRevision,
         dataSource_title,
-        dataset_uid,
+        parentId,
         function (err) {
             if (err) {
                 winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
@@ -216,7 +210,7 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
                 processed_row_objects.GenerateImageURLFieldsByScraping(job,dataSourceDescription._team.subdomain,dataSourceDescription._id,
                     dataSourceDescription.importRevision,
                     dataSourceDescription.title,
-                    dataSourceDescription.dataset_uid,
+                    dataSourceDescription.schemaId,
                     description.htmlSourceAtURLInField,
                     description.setFields,
                     cb);
@@ -250,7 +244,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.title;
-    var dataset_uid = dataSourceDescription.dataset_uid;
+    var dataset_parentId = dataSourceDescription.schemaId;
     var dataSource_team_subdomain = dataSourceDescription._team.subdomain;
 
 
@@ -299,7 +293,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                 dataSource_team_subdomain,
                 dataSourceDescription._id,
                 dataSource_importRevision,
-                dataset_uid,
+                dataset_parentId,
                 function (doc, eachCb) {
                     afterGeneratingProcessedRowObjects_eachRowFn(eachCtx, doc, eachCb);
                 },

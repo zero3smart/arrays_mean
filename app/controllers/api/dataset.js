@@ -246,6 +246,7 @@ queue.worker.process('importProcessed',function(job,done) {
 
     batch.end(function (err) {
         if (err) return done(err);
+
         import_controller.PostProcessRawObjects([description],job,function(err) {
              if (err) {
                 console.log('err in queue processing import processed job : %s',err);

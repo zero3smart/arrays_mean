@@ -83,14 +83,9 @@ angular.module('arraysApp')
             function getJobStatus(datasetId) {
 
 
-                console.log("getJOb")
                 DatasetService.getJobStatus(datasetId)
                 .then(function(job) { 
-                    console.log("getting Job Status");
-                    console.log(datasetId);
-
-                    console.log(job);
-
+                   
 
                     if (job.id == 0) {
 

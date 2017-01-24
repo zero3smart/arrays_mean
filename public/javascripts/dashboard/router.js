@@ -158,9 +158,9 @@ angular.module('arraysApp')
                                 DatasetService.getAdditionalSources($stateParams.id)
                                 .then(function(additionalDatasets) {
                                     if (additionalDatasets.length > 0) {
-                                        additionalDatasets.map(function(datasets) {
-                                            if (datasets.jobId !== 0) {
-                                                deferred.reject({importing: true, datasetId: data._id});
+                                        additionalDatasets.map(function(dataset) {
+                                            if (dataset.jobId !== 0) {
+                                                deferred.reject({importing: true, datasetId: dataset._id});
                                                 return false;
 
                                             }
