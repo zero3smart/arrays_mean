@@ -90,7 +90,7 @@
                                                         {%- endfor %}
 
                                                         {%if teamDesc.urls.length > 0 %}<span class="source-divider hidden-xs"></span>{%endif%}
-                                                        <span class="source-count hidden-xs">{{ teamDesc.sourceDoc.numberOfRows | comma }} Record{{ "s" if teamDesc.sourceDoc.numberOfRows != 1 else "" }}</span>
+                                                        <span class="source-count hidden-xs">{{ teamDesc.sourceDoc.numberOfRows | comma }} Item{{ "s" if teamDesc.sourceDoc.numberOfRows != 1 else "" }}</span>
                                                         <span class="source-divider hidden-xs"></span>
                                                         <span class="source-updated hidden-xs">Last Updated {{ teamDesc.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
                                                     </div>
