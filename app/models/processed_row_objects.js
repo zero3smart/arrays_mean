@@ -120,7 +120,7 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
 
         var updateDocs = [];
 
-        var datasetQuery = parentId ? {pKey: {$regex: "^" + parentId + "-"}} : {pKey: {$regex: /^\d+$/ }};
+        var datasetQuery = parentId ? {pKey: {$regex: "^" + dataset_id + "-"}} : {pKey: {$regex: /^\d+$/ }};
 
 
         var cursor = mongooseModel_ofRawRowObjectsBeingProcessed.find(datasetQuery).cursor()
@@ -687,8 +687,9 @@ module.exports.EnumerateProcessedDataset = function (dataSource_team_subdomain,d
     // completeFn: () -> Void
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
 
-      
-        var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(datasetId);
+        var iterateDataset = datasetId;
+        if (parentId) iterateDataset = parentId;
+        var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(iterateDataset);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
         //
@@ -700,7 +701,7 @@ module.exports.EnumerateProcessedDataset = function (dataSource_team_subdomain,d
 
         var query = {};
         if (parentId && typeof parentId  === 'string' && parentId != '') {
-            query = {pKey: {$regex: "^" + parentId + "-"}};
+            query = {pKey: {$regex: "^" + datasetId + "-"}};
         }
         if (query_optl == null || typeof query_optl === 'undefined') {
             query = {};

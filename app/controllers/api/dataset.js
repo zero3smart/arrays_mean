@@ -61,7 +61,7 @@ queue.worker.process('preImport',function(job,done) {
     
     batch.push(function (done) {
 
-        if (!description.schema_id) {
+        if (!description.schemaId) {
 
             raw_source_documents.Model.findOne({primaryKey: description._id}, function (err, document) {
                 if (err) return done(err);
@@ -81,7 +81,7 @@ queue.worker.process('preImport',function(job,done) {
     // Remove raw row object
     batch.push(function (done) {
 
-        if (!description.schema_id) {
+        if (!description.schemaId) {
 
              mongoose_client.dropCollection('rawrowobjects-' + description._id, function (err) {
                 // Consider that the collection might not exist since it's in the importing process.

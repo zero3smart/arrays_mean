@@ -180,7 +180,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
             }
 
 
-            var rowObject_primaryKey = parentId ? parentId + "-" + (lineNr - 1) : "" + (lineNr - 1) ;
+            var rowObject_primaryKey = parentId ? datasetId + "-" + (lineNr - 1) : "" + (lineNr - 1) ;
 
 
             var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, insertTo , rowObject);
@@ -268,7 +268,8 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
 
                     winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
                     job.log("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
-                    var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(datasetId , parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
+
+                    var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(insertTo , /*parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, */ numberOfRows_inserted);
                     var append = parentId ? true: false;
                     raw_source_documents.UpsertWithOnePersistableObjectTemplate(append,stringDocumentObject, fn);
 
@@ -286,8 +287,12 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
 
                         numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
 
-                        var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(insertTo,  parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
+
+                        var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(insertTo,  /*parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, */ numberOfRows_inserted);
                         var append =  parentId ? true: false;
+
+                        
+
                         raw_source_documents.UpsertWithOnePersistableObjectTemplate(append,stringDocumentObject, fn);
                     });
                 }

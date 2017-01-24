@@ -36,9 +36,9 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
         return callback(null);
     }
 
-    if (dataSourceDescription.dataset_uid) {
+    if (dataSourceDescription.schemaId) {
           winston.info("🔁  " + indexInList + ": Generated post-import caches for \"" + dataSource_title + "\" (appended dataset: " + 
-            dataSourceDescription.dataset_uid + ")");
+            dataSourceDescription.fileName + ")");
     }
 
 
@@ -57,12 +57,15 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
 
 
 var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescription, callback) {
-    var dataSource_uid = dataSourceDescription.uid;
+ 
     var dataSource_title = dataSourceDescription.title;
     var dataSource_importRevision = dataSourceDescription.importRevision;
+
+    var collectionId = dataSourceDescription._id;
+    if (dataSourceDescription.schemaId) collectionId = dataSourceDescription.schemaId;
    
     //
-    var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
+    var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(collectionId);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
     processedRowObjects_mongooseModel.findOne({}, function (err, sampleDoc) {
@@ -160,11 +163,11 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
 
             var persistableDoc =
             {
-                srcDocPKey: dataSourceDescription._id,
+                srcDocPKey: collectionId,
                 limitedUniqValsByColName: uniqueFieldValuesByFieldName
             };
             var cached_values = require('../../../models/cached_values');
-            cached_values.findOneAndUpdate({srcDocPKey: dataSourceDescription._id}, persistableDoc, {
+            cached_values.findOneAndUpdate({srcDocPKey: collectionId}, persistableDoc, {
                 upsert: true,
                 new: true
             }, function (err, doc) {
