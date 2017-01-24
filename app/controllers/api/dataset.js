@@ -21,25 +21,15 @@ var processing = require('../../libs/datasources/processing');
 
 var raw_row_objects = require('../../models/raw_row_objects');
 
+var queue = require.main.require('./queue-init')();
 
 
-var kue = require('kue');
-
-var queue = kue.createQueue({
-    redis: process.env.REDIS_URL
-});
-
-
+ var kue = require('kue');
 
 /*  start queue functions */
-queue.on('job enqueue',function(id,type) {
-    console.log('Job %s got queued of type %s',id,type);
 
-}).on('job complete',function(id,result) {
-    console.log('Job %s completed with result %s', id, result);
-})
 
-queue.process('preImport',function(job,done) {
+queue.worker.process('preImport',function(job,done) {
 
     var id = job.data.id;
 
@@ -47,7 +37,6 @@ queue.process('preImport',function(job,done) {
     batch.concurrency(1);
 
     var description;
-    var srcDocPKey;
 
     batch.push(function (done) {
 
@@ -62,8 +51,6 @@ queue.process('preImport',function(job,done) {
 
                 if (description.schema_id) { //merge with parent description
                     description = datasource_description.Consolidate_descriptions_hasSchema(description);
-                } else {
-                     srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
                 }
                 done();
             });
@@ -74,13 +61,13 @@ queue.process('preImport',function(job,done) {
     
     batch.push(function (done) {
 
-        if (!description.dataset_uid) {
+        if (!description.schema_id) {
 
-            raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function (err, document) {
+            raw_source_documents.Model.findOne({primaryKey: description._id}, function (err, document) {
                 if (err) return done(err);
                 if (!document) return done();
 
-                winston.info("✅  Removed raw source document : " + srcDocPKey + ", error: " + err);
+                winston.info("✅  Removed raw source document : " + description._id + ", error: " + err);
                 document.remove(done);
                 done();
             });
@@ -94,13 +81,13 @@ queue.process('preImport',function(job,done) {
     // Remove raw row object
     batch.push(function (done) {
 
-        if (!description.dataset_uid) {
+        if (!description.schema_id) {
 
-             mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey, function (err) {
+             mongoose_client.dropCollection('rawrowobjects-' + description._id, function (err) {
                 // Consider that the collection might not exist since it's in the importing process.
                 if (err && err.code != 26) return done(err);
 
-                winston.info("✅  Removed raw row object : " + srcDocPKey + ", error: " + err);
+                winston.info("✅  Removed raw row object : " + description._id + ", error: " + err);
                 done();
             })
 
@@ -126,21 +113,66 @@ queue.process('preImport',function(job,done) {
 })
 
 
-queue.process('scrapeImages', function(job,done) {
+queue.worker.process('scrapeImages', function(job,done) {
     var id = job.data.id;
-    datasource_description.GetDescriptionsToSetup([id],function(descriptions) {
-        import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly(descriptions,job,function(err) {
-            if (err) {
-                console.log('err in queue processing scrape images job : %s',err);
-                return done(err);
-            }
+
+    var batch = new Batch();
+    batch.concurrency(1);
+
+    var description;
+    var description_schemaId;
+    batch.push(function(done) {
+        datasource_description.findById(id)
+        .lean()
+        .deepPopulate('schema_id _team schema_id._team')
+        .exec(function(err,data) {
+            if (err) return done(err);
+            if (!data) return done(new Error('No datasource exists : ' + uid));
+
+            description = data;
+
+             if (description.schema_id) { //merge with parent description
+                description_schemaId = description.schema_id.id;
+                description = datasource_description.Consolidate_descriptions_hasSchema(description);
+            } 
             done();
         })
     })
+
+    batch.push(function(done) {
+        import_controller.Import_dataSourceDescriptions__enteringImageScrapingDirectly([description],job,function(err) {
+            if (err) return done(err);
+            done();
+        })
+    })
+
+    batch.end(function(err) {
+
+        if (!err) {
+            var updateQuery =  {$set: {dirty:0,imported:true}};
+            var multi = {multi: true};
+            if (description.schema_id) {
+                 datasource_description.update({$or: [{_id:id}, {_id: description_schemaId}]}, updateQuery,multi,done);
+
+            } else {
+                 datasource_description.update({$or: [{_id:id}, {_otherSources: id}]}, updateQuery,multi,done);
+
+            }
+           
+            
+        }
+       
+
+    })
+
+
+
+
+
 })
 
 
-queue.process('importProcessed',function(job,done) {
+queue.worker.process('importProcessed',function(job,done) {
     var id = job.data.id;
 
     // need to delete processed row object
@@ -149,10 +181,10 @@ queue.process('importProcessed',function(job,done) {
     batch.concurrency(1);
 
     var description;
-    var srcDocPKey;
+    var hasSchema = false;
 
 
-    // ----> find srcPkey
+    // ----> consolidate if its child dataset
 
 
     batch.push(function (done) {
@@ -167,10 +199,9 @@ queue.process('importProcessed',function(job,done) {
             description = data;
 
              if (description.schema_id) { //merge with parent description
+                hasSchema = true;
                 description = datasource_description.Consolidate_descriptions_hasSchema(description);
-            } else {
-                srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
-            }
+            } 
 
             done();
         });
@@ -180,13 +211,13 @@ queue.process('importProcessed',function(job,done) {
     // --> remove processed row object
 
     batch.push(function (done) {
-        if (!description.dataset_uid) {
+        if (!hasSchema) {
 
-            mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey, function (err) {
+            mongoose_client.dropCollection('processedrowobjects-' + description._id, function (err) {
                 // Consider that the collection might not exist since it's in the importing process.
                 if (err && err.code != 26) return done(err);
 
-                winston.info("✅  Removed processed row object : " + srcDocPKey + ", error: " + err);
+                winston.info("✅  Removed processed row object : " + description._id + ", error: " + err);
                 done();
             });
 
@@ -197,12 +228,13 @@ queue.process('importProcessed',function(job,done) {
 
 
     batch.push(function(done) {
-        if (!description.dataset_uid) { 
-            var raw_row_objects_forThisDescription = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(srcDocPKey).forThisDataSource_RawRowObject_model
+        if (!hasSchema) { 
+            var raw_row_objects_forThisDescription = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(description._id).forThisDataSource_RawRowObject_model
             raw_row_objects_forThisDescription.count(function(err,numberOfDocs) {
                 if (err) return done(err);
-                raw_source_documents.Model.update({primaryKey: srcDocPKey},{$set: {numberOfRows: numberOfDocs}},function(err) {
-                     winston.info("✅  Updated raw source document number of rows to the raw doc count : " + srcDocPKey);
+
+                raw_source_documents.Model.update({primaryKey: description._id},{$set: {numberOfRows: numberOfDocs}},function(err) {
+                     winston.info("✅  Updated raw source document number of rows to the raw doc count : " + description._id);
                     done(err);
                 })
             })
@@ -211,10 +243,6 @@ queue.process('importProcessed',function(job,done) {
             done();
         }
     })
-
-
-
-
 
     batch.end(function (err) {
         if (err) return done(err);
@@ -228,7 +256,8 @@ queue.process('importProcessed',function(job,done) {
     });
 
 })
-queue.process('postImport',function(job,done) {
+
+queue.worker.process('postImport',function(job,done) {
     var id = job.data.id;
     var description;
 
@@ -285,21 +314,29 @@ queue.process('postImport',function(job,done) {
 
 /* end queue functions */
 
+
 function getAllDatasetsWithQuery(query, res) {
 
+
+  
     datasource_description.find({$and: [{schema_id: {$exists: false}}, query]}, {
         _id: 1,
         uid: 1,
         title: 1,
         importRevision: 1
     }, function (err, datasets) {
+
         if (err) {
              return res.status(500).send(err);
         }
-        return res.json({datasets: datasets});
-    })
 
+
+
+        return res.status(200).json({datasets: datasets});
+    })
 }
+
+
 
 
 module.exports.getDependencyDatasetsForReimporting = function(req,res) {
@@ -310,39 +347,66 @@ module.exports.getDependencyDatasetsForReimporting = function(req,res) {
         }
         var uid = currentSource.uid;
         var importRevision = currentSource.importRevision;
-        var datatsetsNeedReimport = [];
+        
 
-        datasource_description.find({_otherSources: req.params.id},function(err,relatedSources) {
-             if (err) return res.status(500).send(err);
-             var batch = new Batch();
-             batch.concurrency(5);
-
-            relatedSources.forEach(function(src) {
-                batch.push(function(done) {
-
-                    if (src.relationshipFields) {
-                        for (var i = 0; i < src.relationshipFields.length; i++) {
-                            if (src.relationshipFields[i].relationship == true && 
-                                src.relationshipFields[i].by.ofOtherRawSrcUID == uid && 
-                                src.relationshipFields[i].by.andOtherRawSrcImportRevision == importRevision) {
-                                datatsetsNeedReimport.push(src);
-                            }
-                         }
-
-                    }
-                    done();
-                })
-            })
-
-            batch.end(function(err) {
-                if (err) return res.status(500).send(err);
-                return res.json({datasets:datatsetsNeedReimport});
-            })  
+        datasource_description.datasetsNeedToReimport(req.params.id,function(err,jsonObj) {
+            if (err) return res.status(500).send(err);
+            return res.json(jsonObj);
         })
     })
 
 } 
 
+
+module.exports.killJob = function(req,res) {
+
+    var batch = new Batch();
+    batch.concurrency(1);
+
+    var datasetId = req.params.id;
+
+    batch.push(function(done) {
+
+        datasource_description.findById(datasetId,function(err,dataset){
+            if (dataset.jobId !== 0) {
+                batch.push(function(done) {
+                    kue.Job.get(dataset.jobId,function(err,job) {
+                        if (err && err.message.indexOf("doesnt exist") == -1) {
+                            done(err);
+                        } else {
+                            batch.push(function(done) {
+                                job.remove(done);
+                            })
+                        }
+                        done();
+                    })
+                })
+                dataset.jobId = 0;
+                dataset.save(done);
+            }
+        })
+
+    })
+    batch.end(function(err) {
+        if (err) {
+            return res.status(500).json(err);  
+        } 
+        return res.status(200).send('ok');
+    })
+}
+
+
+module.exports.search = function(req,res) {
+
+
+    datasource_description.find(req.query,function (err, foundDescriptions) {
+        if (err) {
+            res.send({error: err.message});
+        } else {
+            return res.status(200).json(foundDescriptions);
+        }
+    })
+}
 
 module.exports.getDatasetsWithQuery = function(req,res) {
     var query = req.body;
@@ -365,6 +429,26 @@ module.exports.signedUrlForAssetsUpload = function (req, res) {
 
 };
 
+module.exports.deleteSource = function(req,res) {
+    if (!req.params.id) {
+        return res.status(500).json({err: 'Invalid parameter'});
+    }
+
+    datasource_description.findById(req.params.id)
+    .populate('_team')
+    .exec(function(err,description) {
+        var key = description._team.subdomain + '/datasets/' + description.uid + '/datasources/' + description.uid + '_v' + description.importRevision;
+        datasource_file_service.deleteObject(key,function(err,result) {
+            if (err) return res.status(500).json(err);
+            description.fileName = null;
+            description.save();
+            return res.status(200).json(result);
+        })
+
+    })
+
+}
+
 module.exports.remove = function (req, res) {
     if (!req.body.id) return res.status(500).send('No ID given');
 
@@ -383,18 +467,18 @@ module.exports.remove = function (req, res) {
             if (!data) return done(new Error('No datasource exists : ' + req.body.id));
 
             description = data;
-            srcDocPKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(description.uid, description.importRevision);
             done();
         });
     });
 
     // Remove processed row object
     batch.push(function (done) {
-        mongoose_client.dropCollection('processedrowobjects-' + srcDocPKey, function (err) {
-            // Consider that the collection might not exist since it's in the importing process.
+
+         mongoose_client.dropCollection('processedrowobjects-' + description._id, function (err) {
+        // Consider that the collection might not exist since it's in the importing process.
             if (err && err.code != 26) return done(err);
 
-            winston.info("✅  Removed processed row object : " + srcDocPKey + ", error: " + err);
+            winston.info("✅  Removed processed row object : " + description._id + ", error: " + err);
             done();
         });
 
@@ -404,11 +488,12 @@ module.exports.remove = function (req, res) {
     // Remove raw row object
     batch.push(function (done) {
 
-        mongoose_client.dropCollection('rawrowobjects-' + srcDocPKey, function (err) {
+        
+        mongoose_client.dropCollection('rawrowobjects-' + description._id, function (err) {
             // Consider that the collection might not exist since it's in the importing process.
             if (err && err.code != 26) return done(err);
 
-            winston.info("✅  Removed raw row object : " + srcDocPKey + ", error: " + err);
+            winston.info("✅  Removed raw row object : " + description._id + ", error: " + err);
             done();
         })
 
@@ -416,24 +501,28 @@ module.exports.remove = function (req, res) {
 
     // Remove source document
     batch.push(function (done) {
+        
 
-        raw_source_documents.Model.findOne({primaryKey: srcDocPKey}, function (err, document) {
+        raw_source_documents.Model.findOne({primaryKey: description._id}, function (err, document) {
             if (err) return done(err);
             if (!document) return done();
 
-            winston.info("✅  Removed raw source document : " + srcDocPKey + ", error: " + err);
+            winston.info("✅  Removed raw source document : " + description._id + ", error: " + err);
             document.remove(done);
         });
+
+        
+
     });
 
     //Remove cache filter
     batch.push(function(done) {
-
-        cached_values.findOne({srcDocPKey: srcDocPKey},function(err,document) {
+        
+        cached_values.findOne({srcDocPKey: description._id},function(err,document) {
             if (err) return done(err);
             
             if (!document) return done();
-             winston.info("✅  Removed cached unique values : " + srcDocPKey + ", error: " + err);
+             winston.info("✅  Removed cached unique values : " + description._id + ", error: " + err);
              document.remove(done);
         })
     });
@@ -484,8 +573,8 @@ module.exports.remove = function (req, res) {
 
     batch.push(function(done) {
 
-        datasource_description.find({_otherSources:description._id,"relationshipFields.by.andOtherRawSrcImportRevision":description.importRevision,
-            "relationshipFields.by.ofOtherRawSrcUID":description.uid},function(err,docs) {
+        datasource_description.find({_otherSources:description._id,"relationshipFields.by.joinDataset":description._id.toString()},function(err,docs) {
+
             if (err) {
                 done(err);
             } else {
@@ -502,9 +591,9 @@ module.exports.remove = function (req, res) {
 
                         docs[i].relationshipFields = docs[i].relationshipFields.filter(function(field) {
                           
-                            return field.by.andOtherRawSrcImportRevision !== description.importRevision && 
-                                field.by.ofOtherRawSrcUID !== description.uid
+                            return field.by.joinDataset !== description._id.toString();
                         })
+                        docs[i].dirty = 1;
                         docs[i].save(done);
                     })
                     batch.end(function(err) {
@@ -550,6 +639,8 @@ module.exports.remove = function (req, res) {
 
 module.exports.get = function (req, res) {
 
+
+
     if (!req.params.id)
         return res.status(500).send('No ID given');
 
@@ -567,39 +658,33 @@ module.exports.get = function (req, res) {
 
             if (!req.session.columns) req.session.columns = {};
 
-            if (description.uid && !req.session.columns[req.params.id]) {
+            if (description.uid && description.fileName && !req.session.columns[req.params.id]) {
 
 
                 _readDatasourceColumnsAndSampleRecords(description, datasource_file_service.getDatasource(description).createReadStream(), function (err, columns) {
-                    if (err) return res.status(500).send(err);
+                    if (err) return res.status(500).json(err);
 
                     req.session.columns[req.params.id] = columns;
                     description.columns = columns;
-                    return res.json({dataset: description});
+                    return res.status(200).json({dataset: description});
                 });
 
             } else {
 
                 if (req.session.columns[req.params.id]) description.columns = req.session.columns[req.params.id];
 
-                return res.json({dataset: description});
+                return res.status(200).json({dataset: description});
             }
         });
 };
 
 module.exports.loadDatasourceColumnsForMapping = function (req, res) {
-    if (!req.params.pKey) return res.status(500).send('Invalid parameter.');
-
-    var split = req.params.pKey.split("-");
-
-    
-
-
-    var query = {uid: split[0], importRevision: parseInt(split[1].substring(1))};
+    if (!req.params.id) return res.status(500).send('Invalid parameter.');
 
 
 
-    datasource_description.findOne(query)
+
+    datasource_description.findById(req.params.id)
         .populate('_team')
         .lean()
         .exec(function (err, description) {
@@ -653,7 +738,7 @@ module.exports.getAdditionalSourcesWithSchemaID = function (req, res) {
         .deepPopulate('schema_id _team schema_id._team')
         .exec(function (err, sources) {
             if (err) return res.status(500).send( "Error getting the additional datasources with schema id : " + req.params.id);
-            return res.json({
+            return res.status(200).json({
                 sources: sources.map(function (source) {
                     return datasource_description.Consolidate_descriptions_hasSchema(source);
                 })
@@ -674,12 +759,13 @@ module.exports.publish = function (req, res) {
 module.exports.skipImageScraping = function(req,res) {
     datasource_description.findByIdAndUpdate(req.body.id, {$set: {skipImageScraping: req.body.skipImageScraping}},function(err,savedDesc) {
          if (err) {
-            res.status(500).send({error: err.message});
+            res.status(500).json({error: err.message});
         } else {
             res.status(200).send('ok');
         }
     })
 }
+
 
 module.exports.update = function (req, res) {
 
@@ -723,12 +809,8 @@ module.exports.update = function (req, res) {
                 }
                 winston.info("🔁  Updating the dataset " + description_title + "...");
 
+     
 
-
-                // if (doc.relationshipFields && doc.relationshipFields.length > 0) doc.dirty = 3;
-                // if (doc.customFieldsToProcess && doc.customFieldsToProcess.length > 0) doc.dirty = 3;
-                // if (doc.fe_nestedObject && doc.fe_nestedObject.fields.length > 0) doc.dirty = 3;
-                // if (doc.imageScraping && doc.imageScraping.length > 0) doc.dirty = 3
 
                 _.forOwn(req.body, function (value, key) {
                     if (key != '_id' && ((!doc.schema_id && !_.isEqual(value, doc._doc[key]))
@@ -736,43 +818,20 @@ module.exports.update = function (req, res) {
 
                         winston.info('  ✅ ' + key + ' with ' + JSON.stringify(value));
 
-                        // if (key == 'dirty') return;
-
                         doc[key] = value;
                         if (typeof value === 'object')
                             doc.markModified(key);
 
-                        // detect whether you need to re-import dataset to the system or not, and inform that the client
-
-                        // Only post-import cache
-                        // var keysForNeedToImport = [
-                        //     'fe_filters',
-                        //     'fe_excludeFields'
-                        // ];
-                        // if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 1)
-                        //     doc.dirty = 1;
-
-                        // // Import without image scrapping
-                        // keysForNeedToImport = [
-                        //     'importRevision',
-                        //     'raw_rowObjects_coercionScheme',
-                        //     'relationshipFields',
-                        //     'customFieldsToProcess',
-                        //     'fe_nestedObject'
-                        // ];
-                        // if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 2)
-                        //     doc.dirty = 2;
-
-                        // // Full Import
-                        // keysForNeedToImport = [
-                        //     'imageScraping',
-                        // ];
-                        // if (keysForNeedToImport.indexOf(key) != -1 && doc.dirty < 3)
-                        //     doc.dirty = 3;
                     }
                 });
 
+                // console.log(doc);
 
+                if (!doc.schema_id) {
+                    doc.uid = doc.title.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
+                }
+
+             
 
                 doc.save(function (err, updatedDoc) {
                     if (err) return res.status(500).send(err);
@@ -792,6 +851,7 @@ module.exports.update = function (req, res) {
                             fe_filters: 1,
                             fe_fieldDisplayOrder: 1,
                             urls: 1,
+
                             importRevision: 1
                         } };
                         datasource_description.findOneAndUpdate(findQuery, updateQuery, {upsert: true, new: true},
@@ -867,6 +927,7 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 }
 
 module.exports.upload = function (req, res) {
+
     if (!req.body.id) return res.status(500).send('No ID given');
 
     var child = req.body.child;
@@ -875,18 +936,30 @@ module.exports.upload = function (req, res) {
     batch.concurrency(1);
     var description, schema_description, description_title;
 
+
     res.writeHead(200, {'Content-Type': 'application/json'});
     res.connection.setTimeout(0);
 
     batch.push(function (done) {
+
+
         datasource_description.findById(req.body.id)
             .populate('_team')
             .exec(function (err, doc) {
+    
                 if (err) return done(err);
-
+                //description refering to the master/parent dataset
                 description = doc;
-                description_title = description.title;
+                description_title = description.title
+
+                if (!child) {
+                    doc.fileName = null;
+                    doc.title = req.body.tempTitle;
+                    doc.save();
+                }
                 done();
+
+
             })
     });
 
@@ -894,11 +967,10 @@ module.exports.upload = function (req, res) {
         batch.push(function (done) {
             schema_description = description;
 
-            var findQuery = {dataset_uid: req.body.dataset_uid, schema_id: req.body.id};
+            var findQuery = {schema_id: req.body.id};
             // Inherited fields from the schema should be undefined
             // TODO: Is there anyway to update the selected fields only?
             var insertQuery = {
-                dataset_uid: req.body.dataset_uid,
                 schema_id: req.body.id,
                 fe_listed: false,
                 fe_visible: false,
@@ -914,9 +986,11 @@ module.exports.upload = function (req, res) {
                     importRevision: 1
                 }
             };
+
             datasource_description.findOneAndUpdate(findQuery, insertQuery, {upsert: true, new: true}, function(err, doc) {
                 if (err) return done(err);
                 doc.schema_id = schema_description;
+                // description now referencing the child
                 description = datasource_description.Consolidate_descriptions_hasSchema(doc);
 
                 description_title = description.title + "(" + description.dataset_uid + ")";
@@ -925,9 +999,13 @@ module.exports.upload = function (req, res) {
         });
     }
 
-    _.forEach(req.files, function (file) {
-        batch.push(function (done) {
 
+    _.forEach(req.files, function (file) {
+
+        
+
+        batch.push(function (done) {
+    
             if (file.mimetype == 'text/csv' || file.mimetype == 'application/octet-stream'
                 || file.mimetype == 'text/tab-separated-values' || file.mimetype == 'application/vnd.ms-excel') {
                 var exts = file.originalname.split('.');
@@ -939,6 +1017,7 @@ module.exports.upload = function (req, res) {
                 } else {
                     return done(new Error('Invalid File Format : ' + file.mimetype + ', ' + ext));
                 }
+                description.fileName = file.originalname
             } else {
                 return done(new Error('Invalid File Format : ' + file.mimetype + ', ' + ext));
             }
@@ -946,45 +1025,49 @@ module.exports.upload = function (req, res) {
             // Verify that the file is readable & in the valid format.
             _readDatasourceColumnsAndSampleRecords(description, fs.createReadStream(file.path), function (err, columns) {
                 if (err) {
-                    winston.error("❌  Error validating datasource : " + description_title + " : error " + err.message);
+                    winston.error("❌  Error validating datasource : " + file.originalname + " : error " + err.message);
                     return done(err);
                 }
-                winston.info("✅  File validation okay : " + description_title);
+                winston.info("✅  File validation okay : " + file.originalname);
 
                 // Store columnNames and firstRecords for latter call on dashboard pages
                 if (!req.session.columns) req.session.columns = {};
                 // TODO: Do we need to save the columns for the additional datasource,
                 // since it should be same as the master datasource???
-                req.session.columns[description.id] = columns;
+                req.session.columns[description._id] = columns;
 
                 // Upload datasource to AWS S3
-                if (!description.uid) description.uid = imported_data_preparation.DataSourceUIDFromTitle(description.title);
-                var newFileName = datasource_file_service.fileNameToUpload(description);
-                datasource_file_service.uploadDataSource(file.path, newFileName, file.mimetype, description._team.subdomain, description.uid, function (err) {
+
+    
+                if (!description.uid && !child) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
+
+                datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, description._id, function (err) {
                     if (err) {
-                        winston.error("❌  Error during uploading the dataset into AWS : " + description_title + " (" + err.message + ")");
+                        winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
                     }
+
                     done(err);
                 });
             });
         });
 
         batch.push(function (done) {
-            winston.info("✅  Uploaded datasource : " + description_title);
+            winston.info("✅  Uploaded datasource : " + file.originalname);
 
             if (!child) {
                 description.dirty = 1; // Full Import with image scraping
-
                 description.save(function (err, updatedDescription) {
                     if (err)
-                        winston.error("❌  Error saving the dataset into the database : " + description_title + " (" + err.message + ")");
+                        winston.error("❌  Error saving the dataset into the database, UID:  " + description.uid + " (" + err.message + ")");
                     done(err);
                 });
             } else {
-                var findQuery = {_id: description.id};
+
+                var findQuery = {_id: description._id};
                 // TODO: Need to update the selected fields only!
                 var updateQuery = {
                     format: description.format,
+                    fileName: description.fileName,
                     dirty: 1,
                     imported: false,
                     $unset: {
@@ -1013,7 +1096,7 @@ module.exports.upload = function (req, res) {
             return res.end(JSON.stringify({error: err.message}));
         }
 
-        return res.end(JSON.stringify({id: description.id,uid:description.uid}));
+        return res.end(JSON.stringify({id: description._id,uid:description.uid}));
     });
 };
 
@@ -1060,48 +1143,50 @@ module.exports.download = function (req, res) {
 }
 
 
+
 module.exports.preImport = function (req, res) {
 
-    var job = queue.create('preImport', {
-        id: req.params.id
-    }).ttl(3600000)
-    .save(function(err) {
+    queue.initJob(req.params.id, 'preImport',function(err,jobId) {
         if (err) res.status(500).send(err);
-        res.json({jobId: job.id});
+        return res.status(200).send('ok');
     })
 }
+
+module.exports.getJobStatus = function(req,res) {
+    var datasetId = req.params.id;
+    datasource_description.findById(datasetId)
+    .select({jobId: 1})
+    .exec(function(err,queryingDataset) {
+        if (err) return res.status(500).send(err);
+        return res.json({id:queryingDataset.jobId});
+    })
+}
+
 
 module.exports.importProcessed = function(req, res) {
 
-    var job = queue.create('importProcessed', {
-        id: req.params.id
-    }).ttl(3600000)
-    .save(function(err) {
+     queue.initJob(req.params.id,'importProcessed',function(err,jobId) {
         if (err) res.status(500).send(err);
-        res.json({jobId: job.id});
+        return res.status(200).send('ok');
     })
 }
 
+
+
 module.exports.scrapeImages = function(req, res) {
-    var job = queue.create('scrapeImages', {
-        id: req.params.id
-    }).ttl(9000000)
-    .save(function(err) {
+
+     queue.initJob(req.params.id,'scrapeImages',function(err,jobId) {
         if (err) res.status(500).send(err);
-        res.json({jobId: job.id});
+        return res.status(200).send('ok');
     })
 }
 
 
 module.exports.postImport = function (req, res) {
 
-
-    var job = queue.create('postImport', {
-        id: req.params.id
-    }).ttl(3600000)
-    .save(function(err) {
+     queue.initJob(req.params.id,'postImport',function(err,jobId) {
         if (err) res.status(500).send(err);
-        res.json({jobId: job.id});
+        return res.status(200).send('ok');
     })
 };
 

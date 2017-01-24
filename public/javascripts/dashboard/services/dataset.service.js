@@ -16,6 +16,9 @@
 
         var get = function(id) {
             // New Dataset
+
+    
+
             if (!id) return {
                 urls: []
             };
@@ -25,6 +28,23 @@
                 return response.data.dataset;
             });
         };
+
+        var search = function(queryObj) {
+            var formURL = "";
+            var first = true;
+            for (var obj in queryObj) {
+                if (first) {
+                    formURL += '?';
+                    first = false;
+                } else {
+                   formURL += '&'
+
+                }
+                formURL += obj + '=' + queryObj[obj];
+            }
+
+            return $http.get('api/dataset' + formURL);
+        }
 
         var publish = function(id,isPublic) {
             var body = {
@@ -57,6 +77,10 @@
         var save = function(dataset) {
             return $http.post('api/dataset/update', dataset)
         };
+
+        var deleteSource = function(id) {
+            return $http.delete('api/dataset/source/' + id);
+        }
 
         var preImport = function(id) {
             return $http.get('api/dataset/preImport/' + id);
@@ -107,6 +131,14 @@
 
         };
 
+        var getJobStatus = function(id) {
+            return $http.get('api/dataset/jobStatus/' + id)
+            .then(function(response) {
+
+                return response.data;
+            })
+        }
+
         var getDatasetsWithQuery = function(query) {
             return $http.post('api/dataset/getDatasetsWithQuery',query)
             .then(function(response) {
@@ -134,16 +166,24 @@
                 return [];
             })
        }
+       var killJob = function(id) {
+            return $http.delete('api/dataset/job/' + id);
+       }
+
 
         return {
             removeSubdataset: removeSubdataset,
+            deleteSource: deleteSource,
             remove: remove,
             get: get,
+            killJob: killJob,
+            search: search,
             getAdditionalSources: getAdditionalSources,
             getReimportDatasets: getReimportDatasets,
             save: save,
             publish: publish,
             skipImageScraping: skipImageScraping,
+            getJobStatus: getJobStatus,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
             getAvailableDesignatedFields: getAvailableDesignatedFields,
             getAvailableMatchFns: getAvailableMatchFns,

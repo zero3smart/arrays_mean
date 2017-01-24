@@ -42,6 +42,8 @@ router.use(auth, function (err, req, res, next) {
 router.post('/admin/invite', ctrlAdmin.invite);
 
 // dataset settings
+router.get('/dataset', ctrlDataset.search);
+
 router.post('/dataset/getDatasetsWithQuery',ctrlDataset.getDatasetsWithQuery);
 router.post('/dataset/remove', ctrlDataset.remove);
 router.get('/dataset/get/:id', ctrlDataset.get);
@@ -51,6 +53,7 @@ router.put('/dataset/publish/', ctrlDataset.publish);
 router.put('/dataset/skipImageScraping',ctrlDataset.skipImageScraping);
 router.post('/dataset/removeSubdataset', ctrlDataset.removeSubdataset);
 router.get('/dataset/reimportDatasets/:id',ctrlDataset.getDependencyDatasetsForReimporting);
+router.get('/dataset/jobStatus/:id',ctrlDataset.getJobStatus);
 
 router.get('/dataset/getAssetUploadSignedUrl/:id', ctrlDataset.signedUrlForAssetsUpload);
 
@@ -58,6 +61,10 @@ router.get('/dataset/getAssetUploadSignedUrl/:id', ctrlDataset.signedUrlForAsset
 // dataset upload
 router.post('/dataset/upload', upload.array('file', 12), ctrlDataset.upload);
 router.get('/dataset/download/:id', ctrlDataset.download);
+
+
+router.delete('/dataset/source/:id', ctrlDataset.deleteSource);
+router.delete('/dataset/job/:id' ,ctrlDataset.killJob);
 
 // dataset format data
 router.get('/dataset/getAvailableTypeCoercions', ctrlDataset.getAvailableTypeCoercions);
@@ -88,7 +95,7 @@ router.get('/view/:id', ctrlView.get);
 
 
 //datasourceMapping in format view
-router.get('/dataset/getMappingDatasourceCols/:pKey', ctrlDataset.loadDatasourceColumnsForMapping);
+router.get('/dataset/getMappingDatasourceCols/:id', ctrlDataset.loadDatasourceColumnsForMapping);
 
 //teams, website setting info
 router.post('/team', ctrlTeam.create);

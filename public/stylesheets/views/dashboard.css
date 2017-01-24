@@ -18,6 +18,18 @@ html, body {
 
 /* md-input and container styles */
 
+md-input-container,
+md-input-container input,
+md-input-container textarea,
+md-input-container label {
+	font-family: var(--font-family-calibre);
+}
+
+label,
+md-input-container label {
+	color: var(--color-text-dark);
+}
+
 md-input-container label.md-required:after {
 	color: var(--color-warn) !important;
 }
@@ -42,6 +54,16 @@ md-input-container label.md-required:after {
 .md-input-invalid .md-input {
 	border-color: var(--color-warn) !important;
 }
+.input-prepend {
+	padding-top: 2px;
+}
+label .optional {
+	font-weight: normal;
+}
+.md-input-focused label .optional,
+.md-input-has-value label .optional {
+	display: none;
+}
 
 md-checkbox.md-checked .md-icon {
 	background-color: var(--color-primary);
@@ -61,8 +83,50 @@ md-select:not([disabled]):focus .md-select-value {
 	border-color: var(--color-primary) !important;
 }
 
+/*Arrays app*/
+aa-dialog-actions,
+.layout-padding aa-dialog-actions {
+	padding: 0;
+}
+aa-dialog-actions .md-button:last-child {
+	margin-left: 8px;
+}
+
+.hidden-submit {
+	/*keep for form validity but let primaryAction do the work*/
+	display: none;
+}
+
+.new-dataset-form {
+	margin-top: -15px;
+}
+.new-dataset-form md-input-container {
+	margin-top: 22px;
+	margin-bottom: 11px;
+	font-size: 41px;
+	line-height: 1.1em;
+	padding: 0;
+}
+.new-dataset-form input,
+.new-dataset-form input.ng-empty {
+	font-size: 41px;
+	line-height: 1.1em;
+	height: 45px;
+}
+.new-dataset-form .md-errors-spacer {
+	display: none;
+}
+.new-dataset-form .error-messages {
+	position: absolute;
+	top: 100%;
+}
+
 /**/
 
+h1 {
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
 h2 {
     font-size: 24px;
 }
@@ -125,6 +189,10 @@ md-content.md-default-theme, md-content {
 
 .dashboard-content .array-content {
     padding: 15px 0;
+}
+
+.md-button.md-dashboard.md-dashboard-header {
+    margin-top: 11px;
 }
 
 .md-button.md-dashboard.primary-action {
@@ -199,6 +267,11 @@ body.md-toast-animating {
     padding: 0;
     list-style: none;
 }
+.dashboard-list a:visited,
+.dashboard-list a:focus,
+.dashboard-list a:hover {
+	color: var(--color-primary);
+}
 .dashboard-list > li, div, span {
 	outline: 0;
 }
@@ -246,15 +319,15 @@ body.md-toast-animating {
     border-radius: 4px;
     text-transform: none;
 }
-.team-list .md-button:hover,
-.team-list .md-button:focus {
-    background-color: var(--color-primary);
-    color: #fff;
+.team-list .md-button:not([disabled]):hover,
+.team-list .md-button:not([disabled]):focus {
+    background-color: #eeeeee;
+    color: var(--color-text-dark);
 }
 /* current team */
 .team-list .md-button:disabled {
-    color: var(--color-primary);
-    background-color: transparent;
+    background-color: var(--color-primary);
+    color: #fff;
 }
 
 .subdomain-append,
@@ -265,6 +338,7 @@ md-input-invalid.subdomain-append {
 }
 
 .user-list li {
+	padding: 1em 0;
 	border-top: 1px solid #eeeeee; /*match <hr>*/
 }
 .user-list li:last-child {
@@ -288,6 +362,9 @@ md-input-invalid.subdomain-append {
     color: var(--color-text-dark);
     font-size: 16px;
     text-transform: none;
+}
+.md-nav-bar .md-button.md-focused {
+	background-color: transparent;
 }
 
 /*match sidebar button height*/
@@ -332,7 +409,10 @@ md-tooltip .md-content {
 
 /* Dataset Breadcrumb */
 
-.dataset-breadcrumb button {
+._md-nav-button-text.placeholder {
+	color: var(--color-text-light);
+}
+/*.dataset-breadcrumb button {
     float: left;
     width: 20%;
     margin: 0;
@@ -344,7 +424,7 @@ md-tooltip .md-content {
 }
 .dataset-breadcrumb button:disabled {
     color: #9B9B9B;
-}
+}*/
 
 .dataset-breadcrumb span {
     font-family: var(--font-family-calibre);
@@ -370,8 +450,46 @@ md-tooltip .md-content {
 
 
 /* Dataset Settings */
+.dataset .publish-settings md-switch[disabled] .md-label,
+.dataset .publish-settings md-switch:disabled .md-label {
+	color: var(--color-text-light);
+}
+md-switch.md-default-theme.md-checked .md-thumb,
+md-switch.md-checked .md-thumb {
+	background-color: var(--color-primary);
+}
+md-switch.md-focused:not([disabled]):not(.md-checked) .md-thumb:before,
+md-switch.md-checked.md-focused .md-thumb:before {
+	background-color: transparent;
+}
+md-switch.md-checked .md-bar {
+	/*disabled color*/
+	background-color: rgba(0,0,0,0.12);
+	/*background-color: var(--color-text-light);*/
+}
+
 .dataset .md-chips {
-    padding: 0;
+    padding-left: 0;
+}
+.dataset .md-chips.md-focused {
+	box-shadow: 0 2px var(--color-primary);
+}
+
+/*chip selected*/
+.dataset .md-chips md-chip.md-focused {
+	background-color: var(--color-text-med);
+}
+.dataset .md-chips md-chip.md-focused md-icon {
+	color: white;
+}
+
+.md-chips md-chip md-icon,
+.md-chips.md-focused md-chip md-icon {
+    color: var(--color-text-med);
+}
+.md-chips .md-errors-spacer {
+	/*known issue, md-errors-spacer may be deprecated soon*/
+	display: none;
 }
 
 .dataset md-input-container.md-color-picker {
@@ -429,6 +547,12 @@ ul.aa-color-picker {
 .fields-container {
     overflow-x: auto;
 }
+.fields-container,
+.fields-container thead,
+.fields-container tbody,
+.fields-container tr {
+	 width: 100%;
+ }
 
 .dataset .field-row-header {
 }
@@ -441,6 +565,12 @@ ul.aa-color-picker {
 .dataset .field {
     display: flex;
     border-bottom: 1px solid #e5e5e5;
+}
+.dataset .field,
+.dataset .sample {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+    overflow: hidden;
 }
 .dataset .field:after {
     content: "";
@@ -459,7 +589,18 @@ ul.aa-color-picker {
     font-weight: bold;
 }
 
-.dataset .field > .handler {
+.incl-excl-all md-checkbox {
+	margin-bottom: 0;
+}
+.incl-excl-all md-checkbox.md-checked .md-icon {
+	background-color: transparent;
+	border-color: var(--color-text-light);
+}
+.incl-excl-all md-checkbox.md-checked .md-icon:after {
+	border-color: var(--color-text-light);
+}
+
+/*.dataset .field > .handler {
     width: 4%;
     min-width: 20px;
 }
@@ -486,15 +627,15 @@ ul.aa-color-picker {
 .dataset .field > .sample {
     min-width: 180px;
     width: 38%;
-}
+}*/
 
 
 .dataset .field .exclude > md-checkbox {
     margin-bottom: 6px;
 }
-.dataset .field .exclude > md-switch {
+/*.dataset .field .exclude > md-switch {
     margin: 0;
-}
+}*/
 .dataset .field:not(.custom) .type {
     padding-top: 4px;
 }
@@ -504,18 +645,30 @@ ul.aa-color-picker {
 }
 
 .dataset .field:not(.field-row-header) {
-    cursor: pointer;
+    /*cursor: pointer;*/
     /*To protect flash issue while object is being updated*/
     /*-webkit-transition: box-shadow .4s cubic-bezier(.25,.8,.25,1),background-color .4s cubic-bezier(.25,.8,.25,1);*/
     /*transition: box-shadow .4s cubic-bezier(.25,.8,.25,1),background-color .4s cubic-bezier(.25,.8,.25,1);*/
 }
 
 .dataset .field:not(.field-row-header):hover {
-    background-color: var(--color-item-hover);
+    /*background-color: var(--color-item-hover);*/
+}
+.dataset .field:not(.field-row-header) .glyphicon {
+	display: none;
+}
+.dataset .field:not(.field-row-header):hover .glyphicon {
+	display: initial;
+}
+.dataset .field:not(.field-row-header) .field-order {
+	display: initial;
+}
+.dataset .field:not(.field-row-header):hover .field-order {
+	display: none;
 }
 
 .dataset .field:not(.field-row-header):focus {
-    background-color: var(--color-item-active);
+    /*background-color: var(--color-item-active);*/
 }
 
 
@@ -536,7 +689,7 @@ md-dialog.field-dialog .md-dialog-content {
     padding-bottom: 10px;
 }
 md-dialog {
-    min-width: 66%;
+    width: 45em;
 }
 
 md-dialog fieldset legend,
@@ -569,7 +722,9 @@ md-dialog fieldset legend,
     padding-right: 12px;
 }
 
-.md-button.md-dashboard:disabled {
+.md-button.md-dashboard[disabled],
+.md-button.md-dashboard:disabled,
+.md-button.md-dashboard.disabled {
     background: var(--color-text-light);
 }
 .md-button.md-dashboard:not([disabled]) {
@@ -578,10 +733,6 @@ md-dialog fieldset legend,
 .md-button.md-dashboard:not([disabled]):hover {
     background: var(--color-primary);
 }
-.md-button.md-dashboard.disabled {
-	background: var(--color-text-light);
-}
-
 
 md-icon.btn-icon {
     color: white !important;
@@ -599,6 +750,7 @@ md-icon.btn-icon {
     padding: 0 1em;
 }
 
+/*warn*/
 .md-button.md-dashboard.md-warn {
     background-color: var(--color-warn);
 }
@@ -610,20 +762,66 @@ md-icon.btn-icon {
 	color: var(--color-warn);
 }
 
+/*cancel, netural color*/
+.md-button.md-dashboard.cancel:not([disabled]):hover {
+	background: var(--color-text-light);
+}
+
+/*confirm*/
 .md-button.md-dashboard.confirm:not([disabled]) {
     background-color: var(--color-primary);
 }
+.md-button.md-dashboard.confirm:not([disabled]):focus,
 .md-button.md-dashboard.confirm:not([disabled]):hover {
 	border-color: var(--color-primary);
     background-color: transparent;
 }
+.md-button.md-dashboard.confirm:not([disabled]):focus .btn-label,
 .md-button.md-dashboard.confirm:not([disabled]):hover .btn-label {
 	color: var(--color-primary);
 }
 
 /* Team Settings */
+.team-images {
+	margin-top: 30px;
+	padding-top: 30px;
+	border-top: 1px solid #eeeeee; /*match <hr>*/
+}
+
+.aa-file-select input,
 .team-uploader {
 	display: none !important;
+}
+.aa-file-select-source {
+	border: none;
+}
+.aa-file-select-source li {
+	padding: 0;
+	margin: 0;
+	border: none;
+}
+.aa-file-select-source li:last-child {
+	border: none;
+}
+.aa-file-select-file {
+	font-weight: bold;
+	padding-left: 0.5em;
+}
+.aa-file-select-file.no-file {
+	font-weight: normal;
+}
+.aa-file-select-close {
+	margin-top: 11px;
+}
+.team-logo, .team-header {
+	margin-bottom: 15px;
+}
+.team-image-actions {
+	/*stack on mobile view*/
+	margin-bottom: 30px;
+}
+.team-image-actions span {
+	padding-left: 15px;
 }
 /*icon upload*/
 md-progress-linear .md-container {
