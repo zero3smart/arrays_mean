@@ -81,14 +81,20 @@ angular.module('arraysApp')
             function getSubscriptions() {
                 Subscriptions.get()
                 .$promise.then(function(res) {
-                    // console.log(res.data);
+                    console.log(res.data);
 
                     if (res.data.error) {
                         
                     } else if (res.data.subscriptions.subscription) {
 
-                        $scope.subscription = res.data.subscriptions.subscription;
-                        $scope.subscription.quantity._ = parseInt(res.data.subscriptions.subscription.quantity._);
+                        if (typeof res.data.subscriptions.subscription === 'object') { // If there's only one subscription
+                            $scope.subscription = res.data.subscriptions.subscription;
+                            $scope.subscription.quantity._ = parseInt(res.data.subscriptions.subscription.quantity._);
+                        } else { // If there are more than on subscriptions in the system
+                            var curSubscription = res.data.subscriptions.subscription[0];
+                            $scope.subscription = curSubscription;
+                            $scope.subscription.quantity._ = parseInt(curSubscription.quantity._);
+                        }
 
                         // Calculate trial days remaining
                         var now = new Date();
@@ -230,6 +236,21 @@ angular.module('arraysApp')
                 });
             };
 
+            $scope.startSubscription = function(plan_code) {
+                var now = new Date();
+                var isoNow = now.toISOString();
+                Subscriptions.save({ 'plan_code': plan_code, 'trial_ends_at': isoNow })
+                .$promise.then(function(res) {
+                    // console.log(res.data);
+
+                    if (res.statusCode === 200 || res.statusCode === 201) {
+                        $state.go('dashboard.account.billing');
+                    } else {
+                        // console.log(res.data);
+                    }
+                });
+            };
+
             $scope.cancelSubscription = function() {
                 var subscrId = $scope.subscription.uuid;
                 Subscriptions.cancel({ subscrId: subscrId })
@@ -239,7 +260,7 @@ angular.module('arraysApp')
                 });
             };
 
-            $scope.reactivateCanceledSubscription = function() {
+            $scope.reactivateSubscription = function() {
                 var subscrId = $scope.subscription.uuid;
                 Subscriptions.reactivate({ subscrId: subscrId })
                 .$promise.then(function(res) {
