@@ -26,8 +26,8 @@
     <li ng-if="user.role=='admin' || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'user'}">
         <a ui-sref="dashboard.user.list" role="button"> Manage Users</a>
     </li>
-    <li>
-        <a href="{{subdomain}}" role="button" class="sidebar-link" target="_blank" ng-click="updateSubdomain()"> View Website</a>
+    <li class="website">
+        <a href="{{subdomain}}" role="button" class="sidebar-link" target="_blank" ng-click="updateSubdomain()">View Website</a>
     </li>
 
 </ul>

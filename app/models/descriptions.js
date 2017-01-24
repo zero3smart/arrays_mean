@@ -21,7 +21,6 @@ var DatasourceDescription_scheme = Schema({
     importRevision: {type: Number, integer: true, default: 1},
     schema_id: {type: Schema.Types.ObjectId, ref: 'DatasourceDescription'},
     banner: String,
-    dataset_uid: String, // It is not changeable once it's generated automaticlly when creating a descrpition
     format: String,
     title: String,
     brandColor: String,
@@ -31,6 +30,7 @@ var DatasourceDescription_scheme = Schema({
     fe_listed: {type: Boolean, default: false},
 
     useCustomView: {type: Boolean, default: false},
+    fileName: String,
     
     raw_rowObjects_coercionScheme: Object,
     fe_excludeFields: Object,
@@ -85,12 +85,22 @@ var DatasourceDescription_scheme = Schema({
 
     imported: {type: Boolean, default: false},
     dirty: {type: Number, integer: true, default: 0},
-    skipImageScraping: {type: Boolean, default: false}
     //0: nth to do, imported
     //1: reimport from begining
     //2: starting from import processed
     //3: post import caching
     //4: only image scraping 
+
+    skipImageScraping: {type: Boolean, default: false},
+
+    jobId: {type: Number,integer: true, default: 0}
+
+    //0: no job has started, job has completed
+    //all others: related to the jobId in the queue
+
+
+    
+
 
 });
 
@@ -98,7 +108,7 @@ var deepPopulate = require('mongoose-deep-populate')(mongoose);
 DatasourceDescription_scheme.plugin(integerValidator);
 DatasourceDescription_scheme.plugin(deepPopulate, {whitelist: ['_otherSources', '_otherSources._team', 'schema_id', '_team', 'schema_id._team']});
 
-var datasource_description = mongoose.model('DatasourceDescription', DatasourceDescription_scheme);
+var datasource_description = mongoose.model('DatasourceDescription', DatasourceDescription_scheme,'datasourcedescriptions');
 
 /* -----------   helper function ----------- */
 var _mergeObject = function (obj1, obj2) {
@@ -258,6 +268,38 @@ var _GetDescriptions = function (fn) {
 
 datasource_description.GetDescriptions = _GetDescriptions;
 
+var _datasetsNeedToReimport = function (currentSourceId,cb) {
+
+    datasource_description.find({_otherSources: currentSourceId},function(err,relatedSources) {
+        if (err) return cb(err);
+        if (!relatedSources) return cb(null,{datasets:[]});
+        var datasetsNeedToReimport = [];
+        relatedSources.forEach(function(src) {
+            if (src.relationshipFields) {
+
+                for (var i = 0; i < src.relationshipFields.length; i++) {
+
+                    if (src.relationshipFields[i].relationship == true && 
+                        src.relationshipFields[i].by.joinDataset == currentSourceId) {
+                        datasetsNeedToReimport.push(src);
+                    }
+
+                 }
+
+            }
+
+
+        })
+        cb(null,{datasets:datasetsNeedToReimport});
+
+
+    })
+
+}
+
+
+datasource_description.datasetsNeedToReimport = _datasetsNeedToReimport;
+
 
 var _GetDescriptionsToSetupByIds = function (Ids, fn) {
 
@@ -317,9 +359,14 @@ var _GetDescriptionsToSetupByIds = function (Ids, fn) {
 datasource_description.GetDescriptionsToSetup = _GetDescriptionsToSetupByIds;
 
 
-var _GetDescriptionsWith_uid_importRevision = function (uid, revision, fn) {
+var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid, revision, fn) {
+   
+    
     this.findOne({uid: uid, importRevision: revision, fe_visible: true})
-        .populate('_team')
+        .populate({
+            path: '_team',
+            match: { 'subdomain' : subdomain}
+        })
         .lean()
         .exec(function (err, descriptions) {
             if (err) {
@@ -331,9 +378,13 @@ var _GetDescriptionsWith_uid_importRevision = function (uid, revision, fn) {
         })
 };
 
-datasource_description.GetDescriptionsWith_uid_importRevision = _GetDescriptionsWith_uid_importRevision;
+datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDescriptionsWith_subdomain_uid_importRevision;
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
+
+    
+
+
 
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
         .then(function (datasourceDescription) {

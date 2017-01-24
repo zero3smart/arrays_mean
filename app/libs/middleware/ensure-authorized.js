@@ -3,13 +3,22 @@ var datasourceDescriptions = require('../../models/descriptions');
 
 module.exports.ensureAuthorized = function(req, res, next) {
     // Ensure the user is authorized to the dataset
-    var sourceKey = req.params.source_key;
 
 
-    if (typeof sourceKey == 'undefined') {
+    var sourceKey;
+
+
+    if (typeof req.params.source_key == 'undefined') {
+
     	sourceKey = req.params[0] + req.params[1];
-    	sourceKey = sourceKey.substring(1);
+      
+
+    	sourceKey = req.subdomains[0] + '-' + sourceKey.substring(1);
+    } else {
+        sourceKey = req.subdomains[0] + '-' + req.params.source_key;
     }
+
+
 
 
     datasourceDescriptions.GetDatasourceByUserAndKey(req.user, sourceKey, function(err, datasource) {

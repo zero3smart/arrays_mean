@@ -15,7 +15,7 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
     var dataSource_uid = dataSourceDescription.uid;
     var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.title;
-    var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+    var datasetId = dataSourceDescription._id;
 
 
     var format = dataSourceDescription.format;
@@ -23,7 +23,7 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
     switch (format) {
         case "CSV":
         {
-            _new_parsed_StringDocumentObject_fromDataSourceDescription(job,indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, 'CSV', function (err) {
+            _new_parsed_StringDocumentObject_fromDataSourceDescription(job,indexInList, dataSourceDescription, dataSource_title, datasetId, 'CSV', function (err) {
                 if (err) return callback(err);
                 winston.info("✅  Saved document: ", dataSource_title);
                 return callback(null);
@@ -32,7 +32,7 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
         }
         case "TSV" :
         {
-            _new_parsed_StringDocumentObject_fromDataSourceDescription(job,indexInList, dataSourceDescription, dataSource_title, dataSourceRevision_pKey, 'TSV', function (err) {
+            _new_parsed_StringDocumentObject_fromDataSourceDescription(job,indexInList, dataSourceDescription, dataSource_title, datasetId , 'TSV', function (err) {
                 if (err) return callback(err);
                 winston.info("✅  Saved document: ", dataSource_title);
                 return callback(null);
@@ -48,7 +48,7 @@ module.exports.ParseAndImportRaw = function (indexInList, dataSourceDescription,
     };
 };
 
-var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,dataSourceIsIndexInList, description, sourceDocumentTitle, sourceDocumentRevisionKey, fileType, fn) {
+var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,dataSourceIsIndexInList, description, sourceDocumentTitle, datasetId , fileType, fn) {
     //
 
     var revisionNumber = description.importRevision;
@@ -176,7 +176,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
             var rowObject_primaryKey = description.dataset_uid ? description.dataset_uid + "-" + (lineNr - 1) : "" + (lineNr - 1) ;
 
 
-            var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, sourceDocumentRevisionKey, rowObject);
+            var parsedObject = raw_row_objects.New_templateForPersistableObject(rowObject_primaryKey, datasetId , rowObject);
             // winston.info("parsedObject " , parsedObject)
             if (parsed_rowObjectsById[rowObject_primaryKey] != null) {
                 winston.info("⚠️  Warning: An object with the same primary key, \""
@@ -195,6 +195,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
 
     readStream = readStream.pipe(es.split())
         .pipe(es.mapSync(function (line) {
+
                 // pause the readstream
                 readStream.pause();
 
@@ -202,7 +203,8 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
 
                 parse(cachedLines + line, {delimiter: delimiter, relax: true, skip_empty_lines: true}, function (err, output) {
                     if (err || !output || output.length == 0) {
-                        //winston.info("❌  Error encountered during saving the line " + lineNr + " of document: ", sourceDocumentTitle);
+                        winston.info("❌  Error encountered during saving the line " + lineNr + " of document: ", sourceDocumentTitle);
+                        console.log(err);
                         cachedLines = cachedLines + line;
                         return readStream.resume();
                     }
@@ -210,7 +212,11 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
                     cachedLines = '';
 
 
+
+
                     parser(output[0]);
+
+    
 
                     // process line here and call s.resume() when rdy
                     if (lineNr % 1000 == 0) {
@@ -219,7 +225,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
                         // Bulk for performance at volume
 
                         raw_row_objects.InsertManyPersistableObjectTemplates
-                        (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function (err, record) {
+                        (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, datasetId, sourceDocumentTitle, function (err, record) {
                             if (err) {
                                 winston.error("❌  Error: An error while saving raw row objects: ", err);
                                 return fn(err);
@@ -252,14 +258,14 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
 
                     winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
                     job.log("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
-                    var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
+                    var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(datasetId , parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
                     var append = description.dataset_uid? true: false;
                     raw_source_documents.UpsertWithOnePersistableObjectTemplate(append,stringDocumentObject, fn);
 
                 } else {
 
                     raw_row_objects.InsertManyPersistableObjectTemplates
-                    (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, sourceDocumentRevisionKey, sourceDocumentTitle, function (err) {
+                    (parsed_orderedRowObjectPrimaryKeys, parsed_rowObjectsById, datasetId, sourceDocumentTitle, function (err) {
                         if (err) {
                             winston.error("❌  Error: An error while saving raw row objects: ", err);
                             return fn(err);
@@ -270,7 +276,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
 
                         numberOfRows_inserted += parsed_orderedRowObjectPrimaryKeys.length;
 
-                        var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(sourceDocumentRevisionKey, sourceDocumentTitle, revisionNumber, importUID, parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
+                        var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(datasetId,  parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows_inserted);
                         var append = description.dataset_uid? true: false;
                         raw_source_documents.UpsertWithOnePersistableObjectTemplate(append,stringDocumentObject, fn);
                     });

@@ -60,6 +60,7 @@ $(document).ready(function () {
                 href += "?" + default_filterJSON;
             }
             window.location.href = baseUrl + href;
+
          }
     });
 
