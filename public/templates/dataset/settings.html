@@ -61,7 +61,7 @@
         </md-input-container>
 
         <div>
-            <label>Upload an image to showcase your dataset</label> <span>(optional)</span>
+            <label>Upload an image to showcase your dataset</label> <span class="optional" ng-if="!dataset.banner">(optional)</span>
 
             <div flex="50">
                 <img class="img-responsive" ng-if="dataset.banner" ng-src="{{dataset.banner}}" style="margin-bottom: 15px;">
@@ -77,12 +77,12 @@
         </div>
 
         <md-input-container class="md-block" style="margin-top: 45px;">
-            <label>Enter a description for your dataset (optional)</label>
+            <label>Enter a description for your dataset <span class="optional">(optional)</span></label>
             <textarea name="description" ng-model="dataset.description" rows="2"></textarea>
         </md-input-container>
 
         <md-input-container class="md-block">
-            <label>Enter a link to your source data (optional)</label>
+            <label>Enter a link to your source data <span class="optional">(optional)</span></label>
             <input type="url" name="source_urls" ng-model="dataset.urls[0]">
             <div ng-messages="settingsForm.source_urls.$error">
                 <div ng-message="url">Please enter a valid url.</div>

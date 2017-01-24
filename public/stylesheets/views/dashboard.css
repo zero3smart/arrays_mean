@@ -57,6 +57,13 @@ md-input-container label.md-required:after {
 .input-prepend {
 	padding-top: 2px;
 }
+label .optional {
+	font-weight: normal;
+}
+.md-input-focused label .optional,
+.md-input-has-value label .optional {
+	display: none;
+}
 
 md-checkbox.md-checked .md-icon {
 	background-color: var(--color-primary);
