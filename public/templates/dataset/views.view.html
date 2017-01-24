@@ -1,19 +1,15 @@
 <md-dialog aria-label="Format View : ({{ dataset.title }})" class="field-dialog">
-     <md-toolbar>
-        <div class="md-toolbar-tools">
-            <h2>Format View : ({{ dataset.title }})</h2>
-            <span flex></span>
-            <md-button class="md-icon-button" ng-click="cancel()">
-                <span class="icon-close-big" aria-label="Close dialog"></span>
-            </md-button>
-        </div>
-    </md-toolbar>
+    <aa-toolbar title="{{viewDisplayName}} Configuration"></aa-toolbar>
 
     <md-dialog-content>
 
         <md-content layout-padding>
-          <form name="viewForm">
-               <div layout="row" layout-xs="column" layout-sm="column" layout-align="space-between center">
+            <form name="viewForm">
+
+                <!-- for testing -->
+                <!-- <aa-view-config-menus></aa-view-config-menus> -->
+
+                <div layout="row">
                     <md-input-container class="md-block" flex-gt-sm>
 
                         <md-checkbox ng-model="data.visible" aria-label="Visible {{viewName}}">
@@ -27,10 +23,8 @@
                            <strong>Default</strong>
                         </md-checkbox>
                     </md-input-container>
-
-
-
                </div>
+
                <label>Name</label>
                 <md-input-container class="md-block" flex-gt-sm>
 
@@ -147,7 +141,7 @@
 
 
 
-                         <md-select ng-required='setting.require' ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
+                         <md-select ng-required="setting.require" ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
                           <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
                           <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType) | filter:
                                   excludeBy(data[setting.selectExcludeBy])" ng-value="col">
@@ -315,6 +309,7 @@
 
                         <md-option  ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
                                 {{col}}
+                            </md-option>
                         </md-select>
                         <div flex="20"></div>
 
