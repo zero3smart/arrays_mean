@@ -500,6 +500,34 @@ md-switch.md-checked .md-bar {
     right: -8px;
 }
 
+ul.aa-color-picker {
+	margin: 0;
+	margin-bottom: 30px;
+	padding: 0;
+	list-style: none;
+}
+.aa-color-picker li {
+	position: relative;
+	border-radius: 100%;
+	/*must match flex width*/
+	padding-bottom: 5%;
+}
+.aa-color-picker li.selected:before {
+	position: absolute;
+	content: '';
+	top: 12.5%;
+	left: 12.5%;
+	width: 75%;
+	height: 75%;
+	background-color: white;
+	border-radius: 100%;
+}
+.aa-color-picker li.selected,
+.aa-color-picker li:hover,
+.aa-color-picker li:focus {
+	outline: 0;
+}
+
 /* Dataset Upload */
 .dataset table.upload td {
     padding-top: 14px;
