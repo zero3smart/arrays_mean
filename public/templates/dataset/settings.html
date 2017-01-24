@@ -4,9 +4,8 @@
         <h2>Display Settings</h2>
         <p>Change your display and publishing settings below.</p>
 
-        <label>Publish settings</label>
-
         <md-input-container class="md-block publish-settings">
+            <label>Publish settings</label>
             <md-switch ng-model="dataset.fe_visible"
                 ng-change="updatePublishSettings()"
                 aria-label="Publish dataset">
@@ -77,9 +76,9 @@
             </div>
         </div>
 
-        <md-input-container class="md-block" md-no-float style="margin-top: 45px;">
+        <md-input-container class="md-block" style="margin-top: 45px;">
             <label>Enter a description for your dataset (optional)</label>
-            <textarea name="description" ng-model="dataset.description" rows="3" placeholder=""></textarea>
+            <textarea name="description" ng-model="dataset.description" rows="2"></textarea>
         </md-input-container>
 
         <md-input-container class="md-block">

@@ -25,6 +25,11 @@ md-input-container label {
 	font-family: var(--font-family-calibre);
 }
 
+label,
+md-input-container label {
+	color: var(--color-text-dark);
+}
+
 md-input-container label.md-required:after {
 	color: var(--color-warn) !important;
 }
