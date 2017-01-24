@@ -2,7 +2,7 @@
 <md-content layout-padding>
     <div>
 
- 
+
         <h2 ng-if="dirty">You're almost done!<br/>Your data must be imported for some of the changes to take effect.</h2>
 
         <md-content class="md-block md-padding" ng-show="inProgress">
@@ -17,13 +17,13 @@
                 <div ng-show="job.state == 'active'">
 
                     <div>⏳ [{{datasetsToProcess[job.data.id].uid}}] In Progress {{job.type | jobTask}} </u> Task  <span ng-show="job.log" > : {{job.log}}</span> </div>
-            
+
                 </div>
 
                  <div ng-show="job.state == 'inactive'">
 
                     <div>⏳ [{{datasetsToProcess[job.data.id].uid}}] In queue {{job.type | jobTask}} </u> Task  <span ng-show="job.log" > : {{job.log}}</span> </div>
-            
+
                 </div>
 
 
@@ -69,12 +69,7 @@
         <h2>Congratulations! You're all done!</h2>
 
         <div ng-if="dataset.fe_visible">
-            <h2>View your <strong><a href="{{subdomain}}/{{dataset.uid}}-r{{dataset.importRevision}}/{{dataset.fe_views.default_view | viewToName }}" target="_blank">array</a></strong></h2>
-
-            <md-switch md-invert ng-model="dataset.isPublic" ng-change="togglePublish()" aria-label="Switch 1">
-                <label>Private/Public</label>
-            </md-switch>
-
+            <h2><strong><a href="{{subdomain}}/{{dataset.uid}}-r{{dataset.importRevision}}/{{dataset.fe_views.default_view | viewToName }}" target="_blank">View your array</a></strong></h2>
         </div>
 
     </div>

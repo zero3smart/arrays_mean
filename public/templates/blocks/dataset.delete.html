@@ -1,19 +1,21 @@
-<md-dialog md-no-ink aria-label="Delete Dataset">
-    <aa-toolbar title="Delete Dataset" class="warn"></aa-toolbar>
+<md-dialog md-no-ink aria-label="Delete Collection">
+    <aa-toolbar title="Delete Collection" class="warn"></aa-toolbar>
 
     <md-dialog-content layout-padding>
         <md-content layout="column">
             <p>
-                Are you sure you want to delete the dataset
+                Are you sure you want to delete the collection
                 <span><strong>{{ title }}</strong></span>?
             </p>
             <p>
-                Dataset will be deleted permanently and any datasets with merged fields dependent on this dataset will not display properly.
-                Please re-configure and re-import any dependent datasets as needed.
+                Collection will be deleted permanently and any collections with merged fields dependent on this collection will not display properly.
+                Please re-configure and re-import any dependent collections as needed.
             </p>
         </md-content>
 
-        <aa-dialog-actions warn="Remove Dataset" cancel=""></aa-dialog-actions>
+
+        <aa-dialog-actions warn="Remove Collection" cancel=""></aa-dialog-actions>
+
     </md-dialog-content>
 
 </md-dialog>

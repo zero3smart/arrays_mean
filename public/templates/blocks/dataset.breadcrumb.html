@@ -1,55 +1,20 @@
-
-<nav class="dataset-breadcrumb clearfix" role="navigation" aria-label="navigation links" style="border-bottom: 1px solid #eeeeee !important;">
-
-    <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.upload')" ng-disabled="!dataset._id"
-        ng-class="{active: currentStep == 'dashboard.dataset.upload'}">
-        <span class="nav-item-label">Data Source</span>
-    </button>
-
-    <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.data')" ng-disabled="!dataset.fileName || !dataset.uid || 
-    !dataset.fe_displayTitleOverrides"
-        ng-class="{active: currentStep == 'dashboard.dataset.data'}">
-        <span class="nav-item-label">Format Data</span>
-    </button>
-
-    <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.views')" ng-disabled="!dataset.fe_designatedFields.objectTitle"
-        ng-class="{active: currentStep == 'dashboard.dataset.views'}">
-        <span class="nav-item-label">Format Views</span>
-    </button>
-
-    <button ng-click="navigate('dashboard.dataset.settings')"
-        ng-class="{active: currentStep == 'dashboard.dataset.settings'}" ng-disabled="!dataset.fe_views.default_view">
-        <span class="nav-item-label">Display</span>
-    </button>
-
-    <!-- <button type="button" aria-disabled="true" ng-click="navigate('dashboard.dataset.done')" ng-disabled=" (dataset.fe_visible && !dataset.fe_views.default_view)"
-        ng-class="{active: currentStep == 'dashboard.dataset.done'}">
-
-        <span class="nav-item-label">[import]</span>
-
-    </button> -->
-
-</nav>
-<!-- <md-nav-bar md-selected-nav-item="currentStep" md-no-ink role="navigation" aria-label="navigation links">
-=======
 <md-nav-bar md-selected-nav-item="currentNavItem" md-no-ink role="navigation" aria-label="navigation links">
->>>>>>> origin/john-dev-dataset_wf
     <md-nav-item md-nav-click="navigate('dashboard.dataset.upload')" name="upload" value="upload">
-        Data Source</md-nav-item>
+        Source</md-nav-item>
 
     <md-nav-item md-nav-click="navigate('dashboard.dataset.data')" name="data" value="data" ng-hide="!dataset.fileName">
-        Format Data</md-nav-item>
+        Content</md-nav-item>
         <li role="option" aria-selected="false" aria-hidden="false">
             <button class="_md-nav-button md-accent md-button md-unselected" type="button" disabled="disabled" ng-if="!dataset.fileName">
-            <span class="_md-nav-button-text placeholder"><span>Format Data</span></span>
+            <span class="_md-nav-button-text placeholder"><span>Content</span></span>
             </button>
         </li>
 
     <md-nav-item md-nav-click="navigate('dashboard.dataset.views')" name="views" value="views" ng-hide="!dataset.fe_designatedFields.objectTitle">
-        Format Views</md-nav-item>
+        Views</md-nav-item>
     <li role="option" aria-selected="false" aria-hidden="false">
         <button class="_md-nav-button md-accent md-button md-unselected" type="button" disabled="disabled" ng-if="!dataset.fe_designatedFields.objectTitle">
-        <span class="_md-nav-button-text placeholder"><span>Format Views</span></span>
+        <span class="_md-nav-button-text placeholder"><span>Views</span></span>
         </button>
     </li>
 
@@ -60,5 +25,4 @@
         <span class="_md-nav-button-text placeholder"><span>Display</span></span>
         </button>
     </li>
-
 </md-nav-bar>

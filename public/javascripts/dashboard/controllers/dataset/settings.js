@@ -22,21 +22,8 @@ angular.module('arraysApp')
             var original_feVisible = dataset.fe_visible;
 
 
-            // if (!dataset.url) {
-            //     dataset.url = $scope.convertToURLSafe(dataset.title);
-            // }
-            if (!dataset.importRevision) {dataset.importRevision = 1;}
+          $scope.colors = [
 
-            $scope.$parent.$parent.dataset = dataset;
-            $scope.$parent.$parent.currentNavItem = 'settings';
-
-            $scope.promptCacheFilter = function() {
-                if (original_feVisible !== dataset.fe_visible && (dataset.dirty == 0 || dataset.dirty == 4)) {
-                    dataset.dirty = 3;
-                }
-            }
-
-            $scope.colors = [
                 // ['#FA2A00','#FFFFFF'] // brandColor, iconColor
                 '#FA2A00',
                 '#FEB600',
@@ -58,6 +45,30 @@ angular.module('arraysApp')
             }
 
 
+            // if (!dataset.url) {
+            //     dataset.url = $scope.convertToURLSafe(dataset.title);
+            // }
+            if (!dataset.importRevision) {dataset.importRevision = 1;}
+
+            $scope.$parent.$parent.dataset = dataset;
+            $scope.$parent.$parent.currentNavItem = 'settings';
+
+            $scope.updatePublishSettings = function() {
+                if(!dataset.fe_visible) {
+                    dataset.isPublic = false;
+                    dataset.fe_listed = false;
+                } else {
+                    if(dataset.imported) {
+                        DatasetService.publish($scope.$parent.$parent.dataset._id, dataset.isPublic);
+                    }
+                }
+            };
+
+            $scope.promptCacheFilter = function() {
+                if (original_feVisible !== dataset.fe_visible && (dataset.dirty == 0 || dataset.dirty == 4)) {
+                    dataset.dirty = 3;
+                }
+            };
 
             $scope.submitForm = function(isValid) {
 

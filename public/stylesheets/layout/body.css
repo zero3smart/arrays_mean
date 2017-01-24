@@ -25,6 +25,10 @@
     }
 }
 
+.array.array-create.app-ready {
+    height: auto;
+}
+
 /* @share button*/
 .navbar .share-link.btn-splash {
     display: none;

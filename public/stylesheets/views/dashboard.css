@@ -25,6 +25,11 @@ md-input-container label {
 	font-family: var(--font-family-calibre);
 }
 
+label,
+md-input-container label {
+	color: var(--color-text-dark);
+}
+
 md-input-container label.md-required:after {
 	color: var(--color-warn) !important;
 }
@@ -51,6 +56,13 @@ md-input-container label.md-required:after {
 }
 .input-prepend {
 	padding-top: 2px;
+}
+label .optional {
+	font-weight: normal;
+}
+.md-input-focused label .optional,
+.md-input-has-value label .optional {
+	display: none;
 }
 
 md-checkbox.md-checked .md-icon {
@@ -255,6 +267,11 @@ body.md-toast-animating {
     padding: 0;
     list-style: none;
 }
+.dashboard-list a:visited,
+.dashboard-list a:focus,
+.dashboard-list a:hover {
+	color: var(--color-primary);
+}
 .dashboard-list > li, div, span {
 	outline: 0;
 }
@@ -433,6 +450,24 @@ md-tooltip .md-content {
 
 
 /* Dataset Settings */
+.dataset .publish-settings md-switch[disabled] .md-label,
+.dataset .publish-settings md-switch:disabled .md-label {
+	color: var(--color-text-light);
+}
+md-switch.md-default-theme.md-checked .md-thumb,
+md-switch.md-checked .md-thumb {
+	background-color: var(--color-primary);
+}
+md-switch.md-focused:not([disabled]):not(.md-checked) .md-thumb:before,
+md-switch.md-checked.md-focused .md-thumb:before {
+	background-color: transparent;
+}
+md-switch.md-checked .md-bar {
+	/*disabled color*/
+	background-color: rgba(0,0,0,0.12);
+	/*background-color: var(--color-text-light);*/
+}
+
 .dataset .md-chips {
     padding-left: 0;
 }
@@ -472,21 +507,17 @@ ul.aa-color-picker {
 	list-style: none;
 }
 .aa-color-picker li {
+	width: 30px;
+	height: 30px;
 	position: relative;
-	border-radius: 100%;
-	/*must match flex width*/
-	padding-bottom: 5%;
-}
-.aa-color-picker li.selected:before {
-	position: absolute;
-	content: '';
-	top: 12.5%;
-	left: 12.5%;
-	width: 75%;
-	height: 75%;
-	background-color: white;
+	border: 3px solid white;
 	border-radius: 100%;
 }
+.aa-color-picker li.selected {
+	/*border: 3px solid var(--color-text-dark);*/
+	border: 3px solid black;
+}
+
 .aa-color-picker li.selected,
 .aa-color-picker li:hover,
 .aa-color-picker li:focus {
@@ -736,10 +767,12 @@ md-icon.btn-icon {
 .md-button.md-dashboard.confirm:not([disabled]) {
     background-color: var(--color-primary);
 }
+.md-button.md-dashboard.confirm:not([disabled]):focus,
 .md-button.md-dashboard.confirm:not([disabled]):hover {
 	border-color: var(--color-primary);
     background-color: transparent;
 }
+.md-button.md-dashboard.confirm:not([disabled]):focus .btn-label,
 .md-button.md-dashboard.confirm:not([disabled]):hover .btn-label {
 	color: var(--color-primary);
 }
@@ -750,8 +783,31 @@ md-icon.btn-icon {
 	padding-top: 30px;
 	border-top: 1px solid #eeeeee; /*match <hr>*/
 }
+
+.aa-file-select input,
 .team-uploader {
 	display: none !important;
+}
+.aa-file-select-source {
+	border: none;
+}
+.aa-file-select-source li {
+	padding: 0;
+	margin: 0;
+	border: none;
+}
+.aa-file-select-source li:last-child {
+	border: none;
+}
+.aa-file-select-file {
+	font-weight: bold;
+	padding-left: 0.5em;
+}
+.aa-file-select-file.no-file {
+	font-weight: normal;
+}
+.aa-file-select-close {
+	margin-top: 11px;
 }
 .team-logo, .team-header {
 	margin-bottom: 15px;

@@ -7,7 +7,13 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'upload';
             $scope.progressMode = 'determinate';
-            $scope.addingAdditionalDatasource = false;
+
+            $scope.addingSourceType = ''; // ['csv', 'json', 'sql']
+            $scope.addSourceType = function(type) {
+                return $scope.addingSourceType = type;
+            };
+
+            $scope.addingAdditionalDatasource = false; // this can become addingAdditionalSourceType
 
             $scope.primaryAction.text = 'Next';
             $scope.$watch('dataset.fileName', function(hasFile) {
@@ -87,8 +93,16 @@ angular.module('arraysApp')
                 };
 
                 uploader.removeAndReset = function(fileItem) {
-                    uploader.removeFromQueue(fileItem);
-                    $scope.addingAdditionalDatasource = false;
+                    // $scope.addingAdditionalDatasource = false;
+                    if(fileItem) {
+                        uploader.removeFromQueue(fileItem);
+                    }
+                    additionalDatasource.sourceType = '';
+                };
+
+                additionalDatasource.sourceType = '';
+                additionalDatasource.setSourceType = function(type) {
+                    additionalDatasource.sourceType = type;
                 };
 
                 additionalDatasource.uploader = uploader;
@@ -108,6 +122,12 @@ angular.module('arraysApp')
 
             });
 
+            $scope.uploader.removeAndReset = function(fileItem) {
+                if(fileItem) {
+                    $scope.uploader.removeFromQueue(fileItem);
+                }
+                $scope.addingSourceType = '';
+            };
 
             // CALLBACKS
 

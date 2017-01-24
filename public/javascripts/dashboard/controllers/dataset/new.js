@@ -6,19 +6,6 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'Settings';
 
-
-            // $scope.primaryAction.text = 'Next';
-            // $scope.$watch('newDSForm.$valid', function(validity) {
-            //     if (validity !== undefined) {
-            //         $scope.formValidity = validity;
-            //         $scope.primaryAction.disabled = !validity;
-            //     }
-            // });
-            // $scope.primaryAction.do = function() {
-            //     $scope.submitForm($scope.formValidity);
-            // };
-
-
             $scope.submitForm = function(isValid) {
 
                 if (isValid) {
@@ -69,7 +56,7 @@ angular.module('arraysApp')
                     model.$asyncValidators.titleAvailable = function(modelValue,viewValue) {
                         var value = (modelValue || viewValue).toLowerCase().replace(/[^A-Z0-9]+/ig, '_'); // same as uid in upload.js
                         var team = AuthService.currentTeam();
-                            deferred = $q.defer();
+                        var deferred = $q.defer();
 
                         DatasetService.search({uid: value, _team: team._id})
                         .then(function(response) {
@@ -86,7 +73,7 @@ angular.module('arraysApp')
                                 }
                             }
 
-                        })
+                        });
                         return deferred.promise;
                     };
 
