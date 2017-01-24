@@ -132,7 +132,11 @@ var _mountRoutes_endPoints = function (app) {
 
 
 
+
+
+
         if (isNotRootDomain(req.subdomains)) {
+          
             if (isRouteForDataset) {
                 return next();
             } else {

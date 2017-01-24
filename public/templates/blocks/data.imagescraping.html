@@ -75,10 +75,12 @@
                                 <input type="number" min="1" name="resize_{{$index}}" ng-model="field.resize" />
                             </md-input-container>
 
+
                             <md-input-container ng-if="srcset" class="md-block" flex="50">
                                 <label>Size</label>
-                                <input type="number" min="1" name="resize_{{$index}}" ng-model="field.size" />
+                                <input type="number" min="1" name="size_{{$index}}" ng-model="field.size" />
                             </md-input-container>
+
 
                         </div>
 
@@ -87,7 +89,7 @@
                             <md-select name="designatedField_{{$index}}"
                                        ng-model="data.designatedFields[field.newFieldName]"
                                        aria-label="Designated Field - {{fieldName}}">
-                                <md-option ng-repeat="designatedField in availableDesignatedFields" ng-value="designatedField">
+                                <md-option ng-repeat="designatedField in availableDesignatedFields | filter: '!objectTitle' " ng-value="designatedField">
                                     {{designatedField}}
                                 </md-option>
                             </md-select>

@@ -37,7 +37,7 @@
                             <li class="team-list-item">
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="source_key" value="{{ source.key }}" class="hidden">
+                                        <input type="radio" name="source_key" value="{{ source.key | splitSubdomain }}" class="hidden">
                                         <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
                                         <input type="hidden" name="default_view" value="{{ source.default_view }}" class="hidden">
 

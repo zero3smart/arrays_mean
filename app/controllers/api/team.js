@@ -12,7 +12,7 @@ module.exports.getAll = function (req, res) {
             if (err) {
                 res.send({error:err.message});
             } else {
-                res.json(teams);
+                res.status(200).json(teams);
             }
         })
 
@@ -35,7 +35,7 @@ module.exports.search = function (req, res) {
         if (err) {
             res.send({error: err.message});
         } else {
-            res.json(foundTeams);
+            return res.status(200).json(foundTeams);
         }
 
     })

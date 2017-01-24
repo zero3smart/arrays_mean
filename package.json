@@ -13,7 +13,7 @@
   "scripts": {
     "start": "node app.js",
     "monitor": "nodemon app.js",
-    "postinstall": "grunt subgrunt && grunt postcss"
+    "postinstall": "git submodule init && git submodule update && grunt subgrunt && grunt postcss"
   },
   "dependencies": {
     "async": "^1.5.2",

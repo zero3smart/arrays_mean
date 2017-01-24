@@ -1,3 +1,4 @@
+
 <p ng-if="subscription">
     {{ subscription.plan.name }}: {{ subscription.quantity._ | pluralize: 'Dataset' : 'Datasets' }}<br />
     Cost per Dataset: {{ plan.unit_amount_in_cents.USD._ / 100 | currency }}<br />
