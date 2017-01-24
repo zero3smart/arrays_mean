@@ -83,6 +83,16 @@ md-select:not([disabled]):focus .md-select-value {
 	border-color: var(--color-primary) !important;
 }
 
+md-radio-button.md-checked .md-off {
+	border-color: var(--color-primary);
+}
+md-radio-button .md-on {
+	background-color: var(--color-primary);
+}
+.md-focused .md-checked .md-container:before {
+	background: transparent !important;
+}
+
 /*Arrays app*/
 aa-dialog-actions,
 .layout-padding aa-dialog-actions {
