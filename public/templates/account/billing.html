@@ -12,7 +12,7 @@
 
         <form name="billingForm">
             <md-input-container>
-                <label>Datasets</label>
+                <label>Collections</label>
                 <input name="datasets" required type="number" min="1" step="1" ng-model="subscription.quantity._" ng-pattern="/^[0-9]{1,7}$/"/>
                 <div ng-messages="billingForm.datasets.$error">
                     <div ng-message="pattern">Please enter an integer greater than 0.</div>
