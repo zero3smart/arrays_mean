@@ -825,7 +825,13 @@ module.exports.update = function (req, res) {
                     }
                 });
 
-                doc.uid = doc.title.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
+                // console.log(doc);
+
+                if (!doc.schema_id) {
+                    doc.uid = doc.title.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
+                }
+
+             
 
                 doc.save(function (err, updatedDoc) {
                     if (err) return res.status(500).send(err);

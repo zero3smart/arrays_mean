@@ -115,7 +115,9 @@ angular.module('arraysApp')
                         resolve: {
                             dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {
 
-                                return DatasetService.get({id: $stateParams.id});
+
+
+                                return DatasetService.get($stateParams.id);
                             }]
                         }
                     })
