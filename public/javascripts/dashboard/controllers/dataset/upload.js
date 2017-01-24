@@ -83,6 +83,7 @@ angular.module('arraysApp')
                         fileItem.isUploaded = false;
                         fileItem.isSuccess = false;
                     }
+
                 };
 
                 uploader.removeAndReset = function(fileItem) {
@@ -183,6 +184,7 @@ angular.module('arraysApp')
 
                 $scope.addingAdditionalDatasource = true;
                 $scope.additionalDatasources.push(initSource({}));
+
             };
 
             $scope.removeSource = function(dataset, notify) {
@@ -221,6 +223,7 @@ angular.module('arraysApp')
                                 );
                         }
                         $scope.additionalDatasources.splice(length - 1, 1);
+
                     }, function (error) {
                         $mdToast.show(
                                 $mdToast.simple()

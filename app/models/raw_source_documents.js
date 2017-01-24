@@ -68,9 +68,6 @@ module.exports.UpsertWithOnePersistableObjectTemplate = function (append,persist
         }
     }
 
-    console.log("upsert with one");
-    console.log(findOneAndUpdate_queryParameters);
-    console.log(query);
 
     RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, query, {
         upsert: true
@@ -94,8 +91,7 @@ module.exports.IncreaseNumberOfRawRows = function (datasetId, numberOfRows, fn) 
     {
         primaryKey: datasetId
     };
-    console.log(findOneAndUpdate_queryParameters)
-    console.log(numberOfRows);
+
 
     RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {
         $set: {dateOfLastImport: new Date()},

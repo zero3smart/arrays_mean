@@ -1042,7 +1042,11 @@ module.exports.upload = function (req, res) {
     
                 if (!description.uid && !child) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
 
-                datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, description._id, function (err) {
+                var uploadToDataset = description._id;
+
+                if (child) uploadToDataset = req.body.id;
+
+                datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, uploadToDataset, function (err) {
                     if (err) {
                         winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
                     }
@@ -1194,20 +1198,25 @@ module.exports.postImport = function (req, res) {
 module.exports.removeSubdataset = function(req, res) {
     if (!req.body.id) return res.status(500).send('Invalid parameter');
 
-    datasource_description.findById(req.body.id, function (err, doc) {
+    datasource_description.findById(req.body.id)
+    .deepPopulate('schema_id schema_id._team')
+    .exec(function(err,doc) {
         if (err) {
             winston.error("❌  Error encountered during find description : ", err);
            return res.status(500).send(err);
         }
-        if (!doc) return res.status(200).send('ok');
+        var key = doc.schema_id._team.subdomain + '/datasets/' + doc.schema_id._id + '/datasources/' + doc.fileName;
+        datasource_file_service.deleteObject(key,function(err,result) {
+            if (err) return res.status(500).json(err);
+            doc.remove(function(err) {
+                if (err) {
+                    winston.error("❌  Error encountered during remove description : ", err);
+                    return res.status(500).send(err);
+                }
+                return res.status(200).send('ok');
+            })
+        })
 
-        doc.remove(function(err) {
-            if (err) {
-                winston.error("❌  Error encountered during remove description : ", err);
-                return res.status(500).send(err);
-            }
-            winston.info("✅  Removed the datasource description : " + doc.id);
-            return res.status(200).send('ok');
-        });
-    });
+
+    })
 };

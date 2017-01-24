@@ -125,11 +125,6 @@ angular.module('arraysApp')
 
                 datasourceIndex ++;
 
-                console.log($scope.additionalDatasources);
-                console.log(datasourceIndex);
-
-
-
                 if (datasourceIndex < $scope.additionalDatasources.length) {
 
                      $scope.currentWorkingDataset = $scope.additionalDatasources[datasourceIndex];

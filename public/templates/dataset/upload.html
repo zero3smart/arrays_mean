@@ -27,7 +27,7 @@
 
                     </span>
 
-                    <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeSourceDialog(dataset, removeSource, $event)">
+                    <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-if="!additionalDatasources[0].fileName" ng-click="removeSourceDialog(dataset, removeSource, $event)">
                         <i class="fa fa-remove" aria-hidden="true"></i>
                     </span>
 
