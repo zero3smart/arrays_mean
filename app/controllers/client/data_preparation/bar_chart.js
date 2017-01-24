@@ -27,8 +27,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // embed
     // filters
     var source_pKey = urlQuery.source_key;
+    var collectionPKey = req.subdomains[0] + '-' + source_pKey;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
+    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
         .then(function (dataSourceDescription) {
 
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -42,7 +43,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 return;
             }
 
-            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
@@ -154,7 +155,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain source document
             batch.push(function (done) {
-                raw_source_documents.Model.findOne({primaryKey: source_pKey}, function (err, _sourceDoc) {
+                raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, _sourceDoc) {
                     if (err) return done(err);
 
                     sourceDoc = _sourceDoc;
@@ -174,7 +175,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain Top Unique Field Values For Filtering
             batch.push(function (done) {
-                func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+                func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
@@ -329,11 +330,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             _multigroupedResults_object[category] = [];
                         }
 
-
                         _multigroupedResults_object[category].push(el);
                     });
 
                     _.forOwn(_multigroupedResults_object, function (_groupedResults, category) {
+
 
                         var displayableCategory;
                         if (groupBy_isDate) {
@@ -423,6 +424,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                             if (groupBy_isDate) {
                                 var offsetTime = new Date(category);
                                 offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                                offsetTime = func.convertDateToBeRecognizable(offsetTime, groupBy_realColumnName, dataSourceDescription);
                                 graphData.categories.push(offsetTime);
                             } else {
                                 graphData.categories.push(category);

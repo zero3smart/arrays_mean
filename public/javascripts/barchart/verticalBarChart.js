@@ -61,7 +61,7 @@ VerticalBarChart.prototype._animateForSort = function () {
 
     // Copy-on-write since tweens are evaluated after a delay.
     var x0 = d3.scale.ordinal()
-        .rangeBands([0, this._svgWidth], this._padding)
+        .rangeBands([0, this._innerWidth], this._padding)
         .domain(newCategories)
         .copy();
 
@@ -84,25 +84,30 @@ VerticalBarChart.prototype._animateForSort = function () {
 };
 
 VerticalBarChart.prototype.rotateLabel = function () {
-    // rotate x-axis labels 90 degrees
-    return this._xAxisContainer.selectAll("text")  
-        .style("text-anchor", "end")
-        .attr("dx", "-.8em")
-        .attr("dy", "-.2em")
-        .attr("transform", "rotate(-90)" );
+    // rotate x-axis labels 90 degrees or hide
+    if(this._showLabels) {
+        return this._xAxisContainer.selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", "-.8em")
+            .attr("dy", "-.2em")
+            .attr("transform", "rotate(-90)" );
+    } else {
+        return this._xAxisContainer.selectAll("text")
+        .style("display", "none")
+    }
 };
 
 
 VerticalBarChart.prototype.getXScale = function () {
     return this._xScale = d3.scale.ordinal()
-        .rangeBands([0, this._svgWidth - 60], this._padding)
+        .rangeBands([0, this._innerWidth], this._padding)
         .domain(this._categories);
 };
 
 
 VerticalBarChart.prototype.getXAxis = function () {
     return d3.svg.axis()
-        .scale(this.getXScale(this._svgWidth))
+        .scale(this.getXScale(this._innerWidth))
         .orient('bottom');
 };
 

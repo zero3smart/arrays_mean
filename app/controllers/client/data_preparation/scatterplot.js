@@ -19,9 +19,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var self = this;
 
     var sourceKey = urlQuery.source_key;
-    var dataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(sourceKey);
+    var collectionPKey = req.subdomains[0] + '-' + source_pKey;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(sourceKey)
+ 
+    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
         .then(function (dataSourceDescription) {
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
                 callback(new Error("No data source with that source pkey " + sourceKey), null);
@@ -36,7 +37,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             /* Get somewhat mongoose context.
              */
             var processedRowObjects_mongooseContext = processed_row_objects
-                .Lazy_Shared_ProcessedRowObject_MongooseContext(sourceKey);
+                .Lazy_Shared_ProcessedRowObject_MongooseContext(collectionPKey);
             /*
              * Stash somewhat model reference.
              */
@@ -78,7 +79,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             /*
              * Run chain of function to collect necessary data.
              */
-            raw_source_documents.Model.findOne({primaryKey: sourceKey}, function (err, sourceDoc) {
+            raw_source_documents.Model.findOne({primaryKey: collectionPKey}, function (err, sourceDoc) {
                 /*
                  * Run query to mongo to obtain all rows which satisfy to specified filters set.
                  */

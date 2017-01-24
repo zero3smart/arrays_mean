@@ -67,11 +67,23 @@ md-sidenav.md-closed.md-locked-open-add-active {
     border-radius: 4px;
 }
 
-.sidebar-menu .nav > li > a:hover,
-.sidebar-menu .nav > li.active > a,
-.sidebar-menu .nav > li > a:focus {
+.sidebar-menu .nav > li.active > a {
     background-color: var(--color-primary);
     color: #fff;
+}
+
+.sidebar-menu .nav > li:not(.active) > a:hover,
+.sidebar-menu .nav > li:not(.active) > a:focus {
+    background-color: #eeeeee;
+    color: var(--color-text-dark);
+}
+
+/*treat View Website as link*/
+.sidebar-menu .nav > li.website > a:hover,
+.sidebar-menu .nav > li.website > a:focus {
+    background-color: transparent;
+    color: var(--color-primary);
+    text-decoration: underline;
 }
 
 .sidebar-menu .nav .sidebar-label {
