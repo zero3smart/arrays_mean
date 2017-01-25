@@ -29,13 +29,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 return;
             }
 
-            if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views.chart != null && typeof dataSourceDescription.fe_views.views.chart === 'undefined') {
+            if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views.pieChart != null && typeof dataSourceDescription.fe_views.views.pieChart === 'undefined') {
                 callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
                 return;
             }
 
-            var chartViewSettings = dataSourceDescription.fe_views.views.chart;
+
+            var chartViewSettings = dataSourceDescription.fe_views.views.pieChart;
             var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
+
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
@@ -55,7 +57,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
             //
-            var routePath_base = "/" + source_pKey + "/chart";
+            var routePath_base = "/" + source_pKey + "/pie-chart";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
@@ -225,7 +227,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     var finalizedButNotCoalesced_groupedResults = [];
                     _groupedResults.forEach(function (el, i, arr) {
                         var displayableVal = func.ValueToExcludeByOriginalKey(
-                            el.label, dataSourceDescription, groupBy_realColumnName, 'chart');
+                            el.label, dataSourceDescription, groupBy_realColumnName, 'pieChart');
                         if (!displayableVal) return;
 
                         finalizedButNotCoalesced_groupedResults.push({
@@ -267,7 +269,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     });
 
                     // Custom colors
-                    var colors = dataSourceDescription.fe_views.views.chart.colorsInPercentOrder ? dataSourceDescription.fe_views.views.chart.colorsInPercentOrder : {};
+                    var colors = dataSourceDescription.fe_views.views.pieChart.colorsInPercentOrder ? dataSourceDescription.fe_views.views.pieChart.colorsInPercentOrder : {};
 
 
 
@@ -338,7 +340,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                    view_description: dataSourceDescription.fe_views.views.chart.description ? dataSourceDescription.fe_views.views.chart.description : "",
+                    view_description: dataSourceDescription.fe_views.views.pieChart.description ? dataSourceDescription.fe_views.views.pieChart.description : "",
                     //
                     groupedResults: groupedResults,
                     groupBy: groupBy,
@@ -353,7 +355,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     isSearchActive: isSearchActive,
                     //
                     defaultGroupByColumnName_humanReadable: defaultGroupByColumnName_humanReadable,
-                    colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'chart', 'GroupBy'),
+                    colNames_orderedForGroupByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'pieChart', 'GroupBy'),
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     routePath_base: routePath_base,
