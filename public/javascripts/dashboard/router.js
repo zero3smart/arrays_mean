@@ -2,26 +2,33 @@
 
 angular.module('arraysApp')
     .run(
-        ['$rootScope', '$state', '$stateParams',
-            function ($rootScope, $state, $stateParams) {
-                $rootScope.$state = $state;
-                $rootScope.$stateParams = $stateParams;
-            }
-        ]
+    ['$rootScope', '$state', '$stateParams',
+        function ($rootScope, $state, $stateParams) {
+            $rootScope.$state = $state;
+            $rootScope.$stateParams = $stateParams;
+
+            $rootScope.$on('$stateChangeError',function(event, toState,toParams,fromState,fromParams,error) {
+                event.preventDefault();
+                if (error.importing == true) {
+                    $state.go('dashboard.dataset.done', {id: error.datasetId});
+                }
+            });
+        }
+    ]
     )
     .config(
-        ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider',
-            function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+    ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider',
+        function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
-                $urlRouterProvider
+            $urlRouterProvider
                     .otherwise('/dashboard/account/profile');
 
-                $stateProvider
+            $stateProvider
                     .state('dashboard', {
                         abstract: true,
                         url: '/dashboard',
-                        templateUrl: "templates/dashboard.html",
-                        controller: "AdminCtrl",
+                        templateUrl: 'templates/dashboard.html',
+                        controller: 'AdminCtrl',
                         resolve: {
                             auth: function (AuthService) {
                                 return AuthService.ensureLogIn();
@@ -92,7 +99,9 @@ angular.module('arraysApp')
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
                                     return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id});
                                 } else if (user.role == 'editor') {
+
                                     return DatasetService.getDatasetsWithQuery({_id: {$in: user._editors}, _team:user.defaultLoginTeam._id});
+
                                 } else {
                                     return [];
                                 }
@@ -104,6 +113,19 @@ angular.module('arraysApp')
                         controller: 'DatasetSettingsCtrl',
                         templateUrl: 'templates/dataset/settings.html',
                         resolve: {
+                            dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {
+
+
+
+                                return DatasetService.get($stateParams.id);
+                            }]
+                        }
+                    })
+                    .state('dashboard.dataset.new', {
+                        url: '/new',
+                        controller: 'DatasetNewCtrl',
+                        templateUrl: 'templates/dataset/new.html',
+                        resolve: {
                             dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
                             }]
@@ -114,14 +136,41 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset/upload.html',
                         controller: 'DatasetUploadCtrl',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
-                                return DatasetService.get($stateParams.id);
+                            dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {
+
+                                var deferred = $q.defer();
+                                DatasetService.get($stateParams.id)
+                                .then(function(data) {
+
+                    
+                                    if (data.jobId !== 0) {
+                                        deferred.reject({importing: true, datasetId: data._id});
+                                    } else {
+                                        deferred.resolve(data);
+                                    }
+                                })
+                                return deferred.promise;
+
                             }],
-                            additionalDatasources: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
-                                if ($stateParams.id)
-                                    return DatasetService.getAdditionalSources($stateParams.id);
-                                else
-                                    return [];
+                            additionalDatasources: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams
+                                ,$q) {
+                                var deferred = $q.defer();
+                                DatasetService.getAdditionalSources($stateParams.id)
+                                .then(function(additionalDatasets) {
+                                    if (additionalDatasets.length > 0) {
+                                        additionalDatasets.map(function(dataset) {
+                                            if (dataset.jobId !== 0) {
+                                                deferred.reject({importing: true, datasetId: dataset._id});
+                                                return false;
+
+                                            }
+                                        })
+
+                                    }
+                                    deferred.resolve(additionalDatasets);
+                                    
+                                })
+                                return deferred.promise;
                             }]
                         }
                     })
@@ -208,7 +257,7 @@ angular.module('arraysApp')
                             datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
                                 var user = AuthService.currentUser();
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
-                                    return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id})
+                                    return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id});
                                 } else {
                                     return [];
                                 }
@@ -222,8 +271,8 @@ angular.module('arraysApp')
                     });
 
                 // use the HTML5 History API
-                $locationProvider.html5Mode(true);
-                $httpProvider.interceptors.push('TokenInterceptor');
+            $locationProvider.html5Mode(true);
+            $httpProvider.interceptors.push('TokenInterceptor');
 
-            }
-        ]);
+        }
+    ]);

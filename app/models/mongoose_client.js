@@ -5,7 +5,7 @@ var dbURI = process.env.MONGODB_URI;
 
 if (!dbURI) dbURI = 'mongodb://localhost/arraysdb';
 //
-winston.info("💬  MongoDB URI: ", dbURI);
+// winston.info("💬  MongoDB URI: ", dbURI);
 mongoose.Promise = require('q').Promise;
 
 var options = { server: { socketOptions: { keepAlive: 1000, connectTimeoutMS: 30000 ,socketTimeoutMS: 200000} }, 
@@ -22,22 +22,22 @@ var erroredOnConnection = false;
 var connection = mongoose.connection;
 connection.on('error', function (err) {
     erroredOnConnection = true;
-    winston.error("❌  MongoDB connection error:", err);
+    // winston.error("❌  MongoDB connection error:", err);
 });
 connection.once('open', function () {
     isConnected = true;
-    winston.info("📡  Connected to " + process.env.NODE_ENV + " MongoDB.");
+    // winston.info("📡  Connected to " + process.env.NODE_ENV + " MongoDB.");
 });
 connection.on('disconnected',function() {
-    winston.error("❌  MongoDB disconnected");
+    // winston.error("❌  MongoDB disconnected");
 });
 connection.on('reconnected',function() {
-     winston.info("📡  Reconnected to " + process.env.NODE_ENV + " MongoDB.");
+     // winston.info("📡  Reconnected to " + process.env.NODE_ENV + " MongoDB.");
 })
 
 process.on('SIGINT',function() {
     connection.close(function() {
-        winston.info("⚠️  Mongoose connection closed due to app termination");
+        // winston.info("⚠️  Mongoose connection closed due to app termination");
         process.exit(0);
 
     })
@@ -54,7 +54,7 @@ function WhenMongoDBConnected(fn) {
         return;
     }
     var period_ms = 100;
-    winston.info("💬  Waiting " + period_ms + "ms until MongoDB is connected….");
+    // winston.info("💬  Waiting " + period_ms + "ms until MongoDB is connected….");
     setTimeout(function () {
         WhenMongoDBConnected(fn);
     }, period_ms);
@@ -81,7 +81,7 @@ function _mustBuildIndexes_areAllFinishedBuilding() {
 }
 function WhenIndexesHaveBeenBuilt(fn) {
     if (_mustBuildIndexes_areAllFinishedBuilding() == true) {
-        winston.info("💬  All indexes finished building.");
+        // winston.info("💬  All indexes finished building.");
         fn();
 
         return;

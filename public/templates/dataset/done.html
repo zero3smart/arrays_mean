@@ -1,17 +1,43 @@
-<md-content layout-padding ng-if=" (dataset.fe_listed && dataset.fe_visible && dataset.fe_views.default_view) || (!dataset.fe_listed&&!dataset.fe_visible) ">
+<!-- <md-content layout-padding ng-if=" (dataset.fe_listed && dataset.fe_visible && dataset.fe_views.default_view) || (!dataset.fe_listed&&!dataset.fe_visible) "> -->
+<md-content layout-padding>
     <div>
+
+
         <h2 ng-if="dirty">You're almost done!<br/>Your data must be imported for some of the changes to take effect.</h2>
 
         <md-content class="md-block md-padding" ng-show="inProgress">
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>
         </md-content>
 
+
         <md-content class="md-block" md-colors="{background: 'grey'}">
-            <p ng-repeat="logger in importLogger">{{logger}}
-                <div ng-if="jobs[currentJobId].state=='active'">
-                    <p ng-if="jobs[currentJobId].log" > {{jobs[currentJobId].log}} ..... </p>
+
+            <div ng-if="dirty" ng-repeat=" job in jobs">
+
+                <div ng-show="job.state == 'active'">
+
+                    <div>⏳ [{{datasetsToProcess[job.data.id].uid}}] In Progress {{job.type | jobTask}} </u> Task  <span ng-show="job.log" > : {{job.log}}</span> </div>
+
                 </div>
-            </p>
+
+                 <div ng-show="job.state == 'inactive'">
+
+                    <div>⏳ [{{datasetsToProcess[job.data.id].uid}}] In queue {{job.type | jobTask}} </u> Task  <span ng-show="job.log" > : {{job.log}}</span> </div>
+
+                </div>
+
+
+
+                <div ng-show="job.state=='complete'">
+                    ✅ [{{datasetsToProcess[job.data.id].uid}}]  Completed {{job.type | jobTask }} Task
+                </div>
+
+                <div ng-show="job.state=='failed'">
+                    ❌ [{{datasetsToProcess[job.data.id].uid}}] Task {{job.type| jobTask }} Failed : {{job.error}}
+                </div>
+
+
+            </div>
 
 
         </md-content>
@@ -21,8 +47,7 @@
 
 
         <div layout="row" layout-align="end center" class="panel-footer" ng-if="dirty">
-
-        <md-checkbox name="selectAll_showFields" ng-model="dataset.skipImageScraping" ng-change="toggleImageScraping()" aria-label="Select All">
+        <md-checkbox name="selectAll_showFields" ng-model="dataset.skipImageScraping" ng-change="toggleImageScraping()" aria-label="Select All" ng-if="user.role=='superAdmin'">
             Skip Image Scraping
         </md-checkbox>
 
@@ -31,6 +56,12 @@
             <md-button class="md-raised pull-right" ng-click="importData()" ng-disabled="inProgress"><span
                     class="glyphicon glyphicon-import"></span>{{ inProgress ? 'Importing' : 'Import' }}
             </md-button>
+
+            <md-button class="md-raised pull-right" ng-click="killCurrentJob()" ng-disabled="!inProgress || !currentJobId"><span
+                    class="glyphicon glyphicon-import"></span> Cancel
+            </md-button>
+
+
         </div>
     </div>
 
@@ -38,12 +69,7 @@
         <h2>Congratulations! You're all done!</h2>
 
         <div ng-if="dataset.fe_visible">
-            <h2>View your <strong><a href="{{subdomain}}/{{dataset.uid}}-r{{dataset.importRevision}}/{{dataset.fe_views.default_view | viewToName }}" target="_blank">array</a></strong></h2>
-
-            <md-switch md-invert ng-model="dataset.isPublic" ng-change="togglePublish()" aria-label="Switch 1">
-                <label>Private/Public</label>
-            </md-switch>
-
+            <h2><strong><a href="{{subdomain}}/{{dataset.uid}}-r{{dataset.importRevision}}/{{dataset.fe_views.default_view | viewToName }}" target="_blank">View your array</a></strong></h2>
         </div>
 
     </div>

@@ -1,22 +1,52 @@
 <md-content layout-padding md-no-ink>
     <form name="settingsForm" ng-submit="submitForm(settingsForm.$valid)" novalidate>
-        <md-input-container class="md-block">
+
+        <h2>Display Settings</h2>
+        <p>Change your display and publishing settings below.</p>
+
+        <md-input-container class="md-block publish-settings">
+            <label>Publish settings</label>
+            <md-switch ng-model="dataset.fe_visible"
+                ng-change="updatePublishSettings()"
+                aria-label="Publish dataset">
+                Publish dataset
+            </md-switch>
+            <md-switch ng-model="dataset.isPublic"
+                ng-change="updatePublishSettings()"
+                ng-disabled="!dataset.fe_visible"
+                aria-label="Make dataset public">
+                Open dataset up for public viewing
+            </md-switch>
+            <md-switch ng-model="dataset.fe_listed"
+                ng-change="updatePublishSettings()"
+                ng-disabled="!dataset.fe_visible || !dataset.isPublic"
+                aria-label="List dataset" style="display: inline">
+                List your dataset at&nbsp;
+            </md-switch>
+            <a href="https://explore.arrays.co/">explore.arrays.co</a>
+        </md-input-container>
+
+        <!-- <md-input-container class="md-block">
             <label>Title</label>
             <input required name="title" ng-model="dataset.title">
             <div ng-messages="settingsForm.title.$error">
                 <div ng-message="required">This is required.</div>
             </div>
-        </md-input-container>
+        </md-input-container> -->
 
-        <md-input-container class="md-block">
-            <label>Description</label>
-            <textarea required name="description" ng-model="dataset.description"></textarea>
-            <div ng-messages="settingsForm.description.$error">
-                <div ng-message="required">This is required.</div>
+        <!-- <md-input-container class="md-block md-input-has-placeholder">
+            <label>URL</label>
+            <div layout="row" layout-align="start center">
+                <span class="input-prepend">{{team.subdomain}}.arrays.co/</span>
+                <input required name="url" ng-model="dataset.url" ng-pattern="/^[a-z0-9\-\_]*$/" />
             </div>
-        </md-input-container>
+            <div ng-messages="settingsForm.url.$error">
+                <p ng-message="required">This field is required.</p>
+			    <p ng-message="pattern">Must be lowercase and contain no whitespace.</p>
+            </div>
+        </md-input-container> -->
 
-        <md-input-container class="md-block">
+        <!-- <md-input-container class="md-block">
             <label>Import Revision (Only Available at the first import)</label>
             <input type="number" min="1" required name="importRevision"
                    ng-model="dataset.importRevision" ng-readonly="dataset.imported"/>
@@ -24,31 +54,48 @@
                 <div ng-message="required">This is required.</div>
                 <div ng-message="min">You should input at least 1.</div>
             </div>
-        </md-input-container>
-        <md-input-container class="md-block md-color-picker">
+
+        </md-input-container> -->
+
+         <div>
             <label>Brand Color</label>
-            <div md-color-picker ng-model="dataset.brandColor"></div>
-        </md-input-container>
+            <ul class="aa-color-picker" flex layout="row" layout-align="start center">
+                <li ng-repeat="color in colors" ng-click="pickColor(color)" ng-style="{'background-color':color};" ng-class="{'selected': dataset.brandColor == color}">
+                </li>
+            </ul>
 
+        </div>
+
+        <div>
+            <label>Upload an image to showcase your dataset</label> <span class="optional" ng-if="!dataset.banner">(optional)</span>
+
+            <div flex="50">
+                <img class="img-responsive" ng-if="dataset.banner" ng-src="{{dataset.banner}}" style="margin-bottom: 15px;">
+            </div>
+
+            <input id="banner" type="file" nv-file-select="" uploader="imageUploader" class="team-uploader">
+            <div layout="row" layout-align="start center">
+                <label for="banner" class="md-button md-dashboard" ng-disabled="imageUploader.queue.length > 0">
+                   Choose File
+                </label>
+                <!-- <span class="aa-file-select-file" ng-class="{'no-file': !imageUploader.queue[0].file.name}">{{ imageUploader.queue[0].file.name || 'No file selected' }}</span> -->
+            </div>
+        </div>
+
+        <md-input-container class="md-block" style="margin-top: 45px;">
+            <label>Enter a description for your dataset <span class="optional">(optional)</span></label>
+            <textarea name="description" ng-model="dataset.description" rows="2"></textarea>
+        </md-input-container>
 
         <md-input-container class="md-block">
-            <label>Source URL</label>
-            <md-chips ng-model="dataset.urls" name="url" md-enable-chip-edit="true"
-                      placeholder="Enter a URL" secondary-placeholder="Add URL"></md-chips>
+            <label>Enter a link to your source data <span class="optional">(optional)</span></label>
+            <input type="url" name="source_urls" ng-model="dataset.urls[0]">
+            <div ng-messages="settingsForm.source_urls.$error">
+                <div ng-message="url">Please enter a valid url.</div>
+            </div>
         </md-input-container>
 
-        <md-input-container class="md-block">
-            <md-checkbox name="listed" ng-model="dataset.fe_listed">Listed</md-checkbox>
-        </md-input-container>
-
-        <md-input-container class="md-block">
-            <md-checkbox name="visible" ng-model="dataset.fe_visible">Visible</md-checkbox>
-        </md-input-container>
-
-        <div layout="row" layout-align="space-between center" class="panel-footer">
-            <md-button ui-sref="dashboard.dataset.list" class="md-dashboard" target="_self" md-no-ink>
-                <span class="btn-label">Back</span>
-            </md-button>
+        <div layout="row" layout-align="end center" class="hidden-submit">
             <md-button class="md-dashboard confirm" type="submit" ng-disabled="settingsForm.$invalid || submitting" md-no-ink>
                 <span class="btn-label">Next</span>
             </md-button>
