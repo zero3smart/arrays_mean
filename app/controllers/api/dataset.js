@@ -61,7 +61,7 @@ queue.worker.process('preImport',function(job,done) {
     
     batch.push(function (done) {
 
-        if (!description.schema_id) {
+        if (!description.schemaId) {
 
             raw_source_documents.Model.findOne({primaryKey: description._id}, function (err, document) {
                 if (err) return done(err);
@@ -81,7 +81,7 @@ queue.worker.process('preImport',function(job,done) {
     // Remove raw row object
     batch.push(function (done) {
 
-        if (!description.schema_id) {
+        if (!description.schemaId) {
 
              mongoose_client.dropCollection('rawrowobjects-' + description._id, function (err) {
                 // Consider that the collection might not exist since it's in the importing process.
@@ -246,6 +246,7 @@ queue.worker.process('importProcessed',function(job,done) {
 
     batch.end(function (err) {
         if (err) return done(err);
+
         import_controller.PostProcessRawObjects([description],job,function(err) {
              if (err) {
                 console.log('err in queue processing import processed job : %s',err);
@@ -967,9 +968,15 @@ module.exports.upload = function (req, res) {
         batch.push(function (done) {
             schema_description = description;
 
-            var findQuery = {schema_id: req.body.id};
+
+
+
+
+            // var findQuery = {schema_id: req.body.id};
             // Inherited fields from the schema should be undefined
             // TODO: Is there anyway to update the selected fields only?
+
+
             var insertQuery = {
                 schema_id: req.body.id,
                 fe_listed: false,
@@ -983,11 +990,15 @@ module.exports.upload = function (req, res) {
                     fe_filters: 1,
                     fe_fieldDisplayOrder: 1,
                     urls: 1,
-                    importRevision: 1
+                    importRevision: 1,
+                    useCustomview: 1,
+                    skipImageScraping: 1,
+
+
                 }
             };
 
-            datasource_description.findOneAndUpdate(findQuery, insertQuery, {upsert: true, new: true}, function(err, doc) {
+            datasource_description.create(insertQuery,function(err,doc) {
                 if (err) return done(err);
                 doc.schema_id = schema_description;
                 // description now referencing the child
@@ -995,7 +1006,17 @@ module.exports.upload = function (req, res) {
 
                 description_title = description.title + "(" + description.dataset_uid + ")";
                 done();
-            });
+            })
+
+            // datasource_description.findOneAndUpdate(findQuery, insertQuery, {upsert: true, new: true}, function(err, doc) {
+            //     if (err) return done(err);
+            //     doc.schema_id = schema_description;
+            //     // description now referencing the child
+            //     description = datasource_description.Consolidate_descriptions_hasSchema(doc);
+
+            //     description_title = description.title + "(" + description.dataset_uid + ")";
+            //     done();
+            // });
         });
     }
 
@@ -1041,7 +1062,11 @@ module.exports.upload = function (req, res) {
     
                 if (!description.uid && !child) description.uid = imported_data_preparation.DataSourceUIDFromTitle(req.body.tempTitle);
 
-                datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, description._id, function (err) {
+                var uploadToDataset = description._id;
+
+                if (child) uploadToDataset = req.body.id;
+
+                datasource_file_service.uploadDataSource(file.path, file.originalname, file.mimetype, description._team.subdomain, uploadToDataset, function (err) {
                     if (err) {
                         winston.error("❌  Error during uploading the dataset into AWS : " + file.originalname + " (" + err.message + ")");
                     }
@@ -1193,20 +1218,25 @@ module.exports.postImport = function (req, res) {
 module.exports.removeSubdataset = function(req, res) {
     if (!req.body.id) return res.status(500).send('Invalid parameter');
 
-    datasource_description.findById(req.body.id, function (err, doc) {
+    datasource_description.findById(req.body.id)
+    .deepPopulate('schema_id schema_id._team')
+    .exec(function(err,doc) {
         if (err) {
             winston.error("❌  Error encountered during find description : ", err);
            return res.status(500).send(err);
         }
-        if (!doc) return res.status(200).send('ok');
+        var key = doc.schema_id._team.subdomain + '/datasets/' + doc.schema_id._id + '/datasources/' + doc.fileName;
+        datasource_file_service.deleteObject(key,function(err,result) {
+            if (err) return res.status(500).json(err);
+            doc.remove(function(err) {
+                if (err) {
+                    winston.error("❌  Error encountered during remove description : ", err);
+                    return res.status(500).send(err);
+                }
+                return res.status(200).send('ok');
+            })
+        })
 
-        doc.remove(function(err) {
-            if (err) {
-                winston.error("❌  Error encountered during remove description : ", err);
-                return res.status(500).send(err);
-            }
-            winston.info("✅  Removed the datasource description : " + doc.id);
-            return res.status(200).send('ok');
-        });
-    });
+
+    })
 };

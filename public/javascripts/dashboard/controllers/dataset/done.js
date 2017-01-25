@@ -83,13 +83,11 @@ angular.module('arraysApp')
             function getJobStatus(datasetId) {
 
 
-                console.log('getJOb');
-                DatasetService.getJobStatus(datasetId)
-                .then(function(job) {
-                    console.log('getting Job Status');
-                    console.log(datasetId);
 
-                    console.log(job);
+                DatasetService.getJobStatus(datasetId)
+                .then(function(job) { 
+                   
+
 
                     if (job.id == 0) {
 
@@ -128,8 +126,6 @@ angular.module('arraysApp')
                 }
 
                 datasourceIndex ++;
-
-
 
                 if (datasourceIndex < $scope.additionalDatasources.length) {
 
@@ -237,6 +233,9 @@ angular.module('arraysApp')
 
                 var id = datasource._id;
 
+
+
+
                 if ($scope.additionalDatasources.length == 0) {
 
 
@@ -291,7 +290,7 @@ angular.module('arraysApp')
             $scope.currentWorkingDataset = $scope.$parent.$parent.dataset;
 
 
-            $scope.datasetsToProcess[$scope.$parent.$parent.dataset._id] = {uid: $scope.$parent.$parent.dataset.uid};
+            $scope.datasetsToProcess[$scope.$parent.$parent.dataset._id] = {uid: $scope.$parent.$parent.dataset.fileName};
 
 
             $scope.jobs = [];
@@ -303,15 +302,11 @@ angular.module('arraysApp')
                 $scope.additionalDatasources = $scope.additionalDatasources.concat(datasets);
 
                 $scope.additionalDatasources.map(function(ds) {
-                    if (ds.dataset_uid) {
-                        $scope.datasetsToProcess[ds._id] = {uid: ds.dataset_uid};
-                    } else {
-                        $scope.datasetsToProcess[ds._id] = {uid: ds.uid};
-                    }
-                });
 
 
-            });
+                    $scope.datasetsToProcess[ds._id] = {uid: ds.fileName}
+                })
+            })
 
 
 

@@ -103,21 +103,24 @@ module.exports.initializeBackgroundIndexBuilding = function(description) {
 module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSource_team_subdomain,dataset_id,
                                                                    dataSource_importRevision,
                                                                    dataSource_title,
-                                                                   dataset_uid,
+                                                                   parentId,
                                                                    callback) {
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Pre-generating whole processed row objects collection from raw row objects of \"" + dataSource_title + "\".");
 
-        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(dataset_id);
+
+        var insertTo = parentId || dataset_id
+
+        var mongooseContext_ofRawRowObjectsBeingProcessed = raw_row_objects.Lazy_Shared_RawRowObject_MongooseContext(insertTo);
         var mongooseModel_ofRawRowObjectsBeingProcessed = mongooseContext_ofRawRowObjectsBeingProcessed.forThisDataSource_RawRowObject_model;
         //
-        var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(dataset_id);
+        var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(insertTo);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
 
         var updateDocs = [];
 
-        var datasetQuery = dataset_uid ? {pKey: {$regex: "^" + dataset_uid + "-"}} : {pKey: {$regex: /^\d+$/ }};
+        var datasetQuery = parentId ? {pKey: {$regex: "^" + dataset_id + "-"}} : {pKey: {$regex: /^\d+$/ }};
 
 
         var cursor = mongooseModel_ofRawRowObjectsBeingProcessed.find(datasetQuery).cursor()
@@ -674,7 +677,7 @@ module.exports.GenerateFieldsByJoining = function (dataSource_uid,
 
 module.exports.EnumerateProcessedDataset = function (dataSource_team_subdomain,datasetId,
                                                      dataSource_importRevision,
-                                                     dataset_uid,
+                                                     parentId,
                                                      eachFn,
                                                      errFn,
                                                      completeFn,
@@ -684,8 +687,9 @@ module.exports.EnumerateProcessedDataset = function (dataSource_team_subdomain,d
     // completeFn: () -> Void
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
 
-      
-        var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(datasetId);
+        var iterateDataset = datasetId;
+        if (parentId) iterateDataset = parentId;
+        var mongooseContext_ofTheseProcessedRowObjects = _Lazy_Shared_ProcessedRowObject_MongooseContext(iterateDataset);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
         //
@@ -696,8 +700,8 @@ module.exports.EnumerateProcessedDataset = function (dataSource_team_subdomain,d
         //
 
         var query = {};
-        if (dataset_uid && typeof dataset_uid === 'string' && dataset_uid != '') {
-            query = {pKey: {$regex: "^" + dataset_uid + "-"}};
+        if (parentId && typeof parentId  === 'string' && parentId != '') {
+            query = {pKey: {$regex: "^" + datasetId + "-"}};
         }
         if (query_optl == null || typeof query_optl === 'undefined') {
             query = {};

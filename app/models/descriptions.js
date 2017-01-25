@@ -124,7 +124,8 @@ var _mergeObject = function (obj1, obj2) {
 
 var _consolidate_descriptions_hasSchema = function (description) {
     var desc = _.omit(description, ['schema_id'])
-    var schemaDesc = description.schema_id
+    var schemaDesc = description.schema_id;
+    desc.schemaId = schemaDesc._id;
     for (var attrname in schemaDesc) {
         if (desc[attrname]) {
             if (Array.isArray(desc[attrname])) {

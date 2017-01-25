@@ -29,18 +29,18 @@ module.exports.ModelName = modelName;
 
 module.exports.Model = RawSourceDocument_model;
 
-module.exports.New_templateForPersistableObject = function (datasetId , parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, numberOfRows) {
+module.exports.New_templateForPersistableObject = function (datasetId , /*parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys,*/ numberOfRows) {
     return {
         primaryKey: datasetId,
-        parsed_rowObjectsById: parsed_rowObjectsById,
-        parsed_orderedRowObjectPrimaryKeys: parsed_orderedRowObjectPrimaryKeys,
+        // parsed_rowObjectsById: parsed_rowObjectsById,
+        // parsed_orderedRowObjectPrimaryKeys: parsed_orderedRowObjectPrimaryKeys,
         numberOfRows: numberOfRows
     }
 };
 
 
 module.exports.UpsertWithOnePersistableObjectTemplate = function (append,persistableObjectTemplate, fn) {
-    winston.log("📡  [" + (new Date()).toString() + "] Going to save source document.");
+    winston.info("📡  [" + (new Date()).toString() + "] Going to save source document.");
 
     var updatedDocument = {};
     updatedDocument['primaryKey'] = persistableObjectTemplate.primaryKey;
@@ -68,6 +68,7 @@ module.exports.UpsertWithOnePersistableObjectTemplate = function (append,persist
         }
     }
 
+
     RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, query, {
         upsert: true
     }, function (err, doc) {
@@ -90,6 +91,7 @@ module.exports.IncreaseNumberOfRawRows = function (datasetId, numberOfRows, fn) 
     {
         primaryKey: datasetId
     };
+
 
     RawSourceDocument_model.findOneAndUpdate(findOneAndUpdate_queryParameters, {
         $set: {dateOfLastImport: new Date()},

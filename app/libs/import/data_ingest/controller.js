@@ -107,19 +107,13 @@ module.exports.PostProcessRawObjects = function (dataSourceDescriptions,job, fn)
 var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
     var datasetId = dataSourceDescription._id;
     var dataSource_importRevision = dataSourceDescription.importRevision;
-    var dataSource_title = dataSourceDescription.title;
-    var dataset_uid = dataSourceDescription.dataset_uid;
+    var dataSource_title = dataSourceDescription.fileName;
+    var parentId = dataSourceDescription.schemaId;
 
+  
+    winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
 
-    if (dataSourceDescription.dataset_uid) { 
-
-        winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\" (appended dataset: " + 
-            dataSourceDescription.dataset_uid + ")");
-
-    } else {
-         winston.info("🔁  " + indexInList + ": Post-processing \"" + dataSource_title + "\"");
-
-    }
+    
     job.log("🔁  Post-processing \"" + dataSource_title + "\"");
 
 
@@ -137,7 +131,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
         datasetId,
         dataSource_importRevision,
         dataSource_title,
-        dataset_uid,
+        parentId,
         function (err) {
             if (err) {
                 winston.error("❌  Error encountered while generating whole processed dataset \"" + dataSource_title + "\".");
@@ -216,7 +210,7 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
                 processed_row_objects.GenerateImageURLFieldsByScraping(job,dataSourceDescription._team.subdomain,dataSourceDescription._id,
                     dataSourceDescription.importRevision,
                     dataSourceDescription.title,
-                    dataSourceDescription.dataset_uid,
+                    dataSourceDescription.schemaId,
                     description.htmlSourceAtURLInField,
                     description.setFields,
                     cb);
@@ -249,12 +243,18 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
 var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexInList, dataSourceDescription,job, callback) {
 
     var dataSource_importRevision = dataSourceDescription.importRevision;
-    var dataSource_title = dataSourceDescription.title;
-    var dataset_uid = dataSourceDescription.dataset_uid;
+    var dataSource_title = dataSourceDescription.fileName;
+    var dataset_parentId = dataSourceDescription.schemaId;
     var dataSource_team_subdomain = dataSourceDescription._team.subdomain;
 
 
-    var forThisDataSource_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
+    var forThisDataSource_mongooseContext;
+    if (dataset_parentId) {
+        forThisDataSource_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataset_parentId);
+    } else {
+        forThisDataSource_mongooseContext =  processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
+    }
+
     var forThisDataSource_rowObjects_modelName = forThisDataSource_mongooseContext.Model.modelName;
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.Model.model;
     var forThisDataSource_nativeCollection = forThisDataSource_mongooseContext.Model.collection;
@@ -299,7 +299,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                 dataSource_team_subdomain,
                 dataSourceDescription._id,
                 dataSource_importRevision,
-                dataset_uid,
+                dataset_parentId,
                 function (doc, eachCb) {
                     afterGeneratingProcessedRowObjects_eachRowFn(eachCtx, doc, eachCb);
                 },
@@ -413,8 +413,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         }
 
         if (processedObjectCount !== 0 && processedObjectCount % 1000 == 0 ) {
-            winston.info("✅  processed " + processedObjectCount + " of eachRow operation  for \"" + dataSource_title + "\"." );
-            job.log("✅  parsed " + processedObjectCount  + " of eachRow operation  for \"" + dataSource_title + "\".");
+            winston.info("✅  processed " + processedObjectCount + " of eachRow operation  from \"" + dataSource_title + "\"." );
+            job.log("✅  parsed " + processedObjectCount  + " of eachRow operation  from \"" + dataSource_title + "\".");
         }
 
         processedObjectCount++;
@@ -483,7 +483,13 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
         if (typeof eachCtx.nested != 'undefined' && eachCtx.nested == true) {
 
-            raw_source_documents.IncreaseNumberOfRawRows(dataSourceDescription._id, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
+            var updateId = dataSourceDescription._id;
+            if (dataset_parentId) {
+                updateId = dataset_parentId
+            }
+
+
+            raw_source_documents.IncreaseNumberOfRawRows(updateId, eachCtx.numberOfInsertedRows - eachCtx.numberOfRows,function(err) {
                 if (err) {
                     winston.error('❌ Error when modifying number of rows in raw source documents: %s', err);
                 }

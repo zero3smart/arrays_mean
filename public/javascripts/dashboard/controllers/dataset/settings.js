@@ -21,7 +21,9 @@ angular.module('arraysApp')
 
             var original_feVisible = dataset.fe_visible;
 
+
           $scope.colors = [
+
                 // ['#FA2A00','#FFFFFF'] // brandColor, iconColor
                 '#FA2A00',
                 '#FEB600',
@@ -37,9 +39,11 @@ angular.module('arraysApp')
             ];
             if(!dataset.brandColor) { dataset.brandColor = $scope.colors[0]; }
 
+
             $scope.pickColor = function(color) {
                 dataset.brandColor = color;
             }
+
 
             // if (!dataset.url) {
             //     dataset.url = $scope.convertToURLSafe(dataset.title);
@@ -68,6 +72,7 @@ angular.module('arraysApp')
 
             $scope.submitForm = function(isValid) {
 
+
                 if (isValid) {
                     $scope.submitting = true;
                     if (!dataset.author) {
@@ -82,9 +87,11 @@ angular.module('arraysApp')
 
 
 
+
                     DatasetService.save(finalizedDataset).then(function (response) {
 
                         if (response.status == 200) {
+
                             $mdToast.show(
                                 $mdToast.simple()
                                     .textContent(dataset._id ? 'Dataset updated successfully!' : 'New Dataset was created successfully!')

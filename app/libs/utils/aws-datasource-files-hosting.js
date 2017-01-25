@@ -29,11 +29,11 @@ module.exports.uploadDataSource = _uploadDataSource;
 
 
 function _getDatasource(description) {
-
-
-
-    var key = description._team.subdomain +  '/datasets/' + description._id + '/datasources/' + description.fileName;
-
+    var key =  description._team.subdomain +  '/datasets/' + description._id + '/datasources/' + description.fileName;
+    if (description.schemaId) {
+         key = description._team.subdomain +  '/datasets/' + description.schemaId + '/datasources/' + description.fileName;
+    }
+    
     var param = {
         Bucket: bucket,
         Key:key
