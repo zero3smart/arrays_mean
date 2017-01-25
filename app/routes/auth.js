@@ -55,7 +55,8 @@ router.post('/login',function(req,res,next) {
 router.get('/login', function (req, res) {
  
     var info = req.flash();
-    res.render('auth/login', {
+
+    res.render('auth/login2', {
         env: process.env,
         flash: info
     });
