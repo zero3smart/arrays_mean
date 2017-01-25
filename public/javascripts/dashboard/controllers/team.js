@@ -41,8 +41,10 @@ angular
                     .$promise.then(function(data) { 
 
                         if (data.length == 0) {
+
                             if (/^[a-z0-9\-]*$/.test($scope.newTeam.subdomain)) {
                                 $scope.vm.teamForm.subdomain.$setValidity('unique', true);
+                                $scope.vm.teamForm.subdomain.$setValidity('pattern', true);
                             } else {
                                 $scope.vm.teamForm.subdomain.$setValidity('unique', true);
                                 $scope.vm.teamForm.subdomain.$setValidity('pattern', false);

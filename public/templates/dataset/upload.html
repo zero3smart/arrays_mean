@@ -9,9 +9,40 @@
                 <ul class="dashboard-list">
                     <li><a href="#" ng-click="addSourceType('csv')">Upload a spreadsheet</a></li>
                     <li><a href="#" ng-click="">Upload a JSON file</a></li>
-                    <li><a href="#" ng-click="">Connect to a SQL database</a></li>
+                    <li><a href="#" ng-click="addSourceType('database')">Connect to a database</a></li>
                 </ul>
             </div>
+
+             <div ng-if="addingSourceType=='database'">
+
+                <md-select flex="50" ng-model="dataset.connection.type">
+
+                    <md-option value="hadoop">
+                       Hadoop
+                    </md-option>
+
+                </md-select>
+
+                <md-input-container layout="row" flex="80" md-no-float>
+                    <input ng-model="dataset.connection.url"
+                    aria-label="Dataset Connection String" placeholder="Connection URL" autofocus>
+                </md-input-container>
+
+                <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="connectToDB()"
+                    ng-if="dataset.connection.url && dataset.connection.url.indexOf('://')>=0"
+                    ng-disabled="isConnecting || !dataset.connection.type ">
+                    <span class="btn-label">Connect</span>
+                </md-button>
+
+
+
+                <p class="aa-file-select-close"><a href="#" ng-click="uploader.removeAndReset(uploader.queue[0])">Go back</a></p>
+
+
+            </div>
+
+
+
 
             <div ng-if="addingSourceType == 'csv'" ng-hide="dataset.fileName" class="aa-file-select no-padding">
                 <label>Upload spreadsheet</label>

@@ -8,8 +8,14 @@ angular.module('arraysApp')
             $scope.$parent.$parent.currentNavItem = 'upload';
             $scope.progressMode = 'determinate';
 
-            $scope.addingSourceType = ''; // ['csv', 'json', 'sql']
+            $scope.addingSourceType = ''; // ['csv', 'json', 'database']
             $scope.addSourceType = function(type) {
+                if (type == 'database') {
+                    if (!dataset.connection) {
+                        dataset.connection = {};
+                        dataset.connection.type = 'hadoop';
+                    }
+                }
                 return $scope.addingSourceType = type;
             };
 
@@ -19,6 +25,10 @@ angular.module('arraysApp')
             $scope.$watch('dataset.fileName', function(hasFile) {
                 $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });
+            $scope.$watch('dataset.connectionString', function(hasConnection) {
+
+                $scope.primaryAction.disabled = !(hasConnection && hasConnection !== null);
+            });
             $scope.primaryAction.do = function() {
                 $scope.$parent.navigate('dashboard.dataset.data');
             };
@@ -26,6 +36,10 @@ angular.module('arraysApp')
             $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
                 return initSource(additionalDatasource);
             });
+
+            $scope.connectToDB = function() {
+                
+            }
 
 
             function initSource(additionalDatasource) {
