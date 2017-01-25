@@ -20,7 +20,11 @@ angular.module('arraysApp')
                 $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });
             $scope.primaryAction.do = function() {
-                $scope.$parent.navigate('dashboard.dataset.data');
+                $state.transitionTo('dashboard.dataset.data', {id: dataset._id}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
             };
 
             $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
