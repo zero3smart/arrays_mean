@@ -1,19 +1,29 @@
 <md-dialog aria-label="Format View : ({{ dataset.title }})" class="field-dialog">
-     <md-toolbar>
-        <div class="md-toolbar-tools">
-            <h2>Format View : ({{ dataset.title }})</h2>
-            <span flex></span>
-            <md-button class="md-icon-button" ng-click="cancel()">
-                <span class="icon-close-big" aria-label="Close dialog"></span>
-            </md-button>
-        </div>
-    </md-toolbar>
+    <aa-toolbar title="{{viewDisplayName}} Configuration"></aa-toolbar>
 
     <md-dialog-content>
 
         <md-content layout-padding>
-          <form name="viewForm">
-               <div layout="row" layout-xs="column" layout-sm="column" layout-align="space-between center">
+            <form name="viewForm">
+
+                <p>Configure what your {{viewDisplayName}} view looks like below.</p>
+
+                <!-- for testing -->
+                <!-- <aa-view-config-menus></aa-view-config-menus> -->
+                <!-- <aa-view-default-sort-order></aa-view-default-sort-order> -->
+
+                <label>Enter a description for this view</label>
+
+                <p>
+                    The description will appear at the top of the view. For example, you can use it to describe what viewers can see.
+                </p>
+
+                <md-input-container class="md-block">
+                    <textarea ng-model="data.description"
+                        md-maxlength="500" rows="3" aria-label="{{viewDisplayName}} Description"></textarea>
+                </md-input-container>
+
+                <div layout="row">
                     <md-input-container class="md-block" flex-gt-sm>
 
                         <md-checkbox ng-model="data.visible" aria-label="Visible {{viewName}}">
@@ -27,25 +37,7 @@
                            <strong>Default</strong>
                         </md-checkbox>
                     </md-input-container>
-
-
-
                </div>
-               <label>Name</label>
-                <md-input-container class="md-block" flex-gt-sm>
-
-
-                    <input type="text" ng-model="viewDisplayName" readonly="readonly" aria-label="Display Name {{viewName}}">
-                </md-input-container>
-
-                <label>Description</label>
-                <md-input-container class="md-block" flex-gt-sm>
-                    <textarea class="md-block" md-maxlength="500" rows="3" aria-label="Description {{viewName}}"
-                           ng-model="data.description"></textarea>
-                </md-input-container>
-
-
-
 
             <div ng-repeat="setting in viewSetting">
 
@@ -147,7 +139,7 @@
 
 
 
-                         <md-select ng-required='setting.require' ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
+                         <md-select ng-required="setting.require" ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
                           <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
                           <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType) | filter:
                                   excludeBy(data[setting.selectExcludeBy])" ng-value="col">
@@ -316,6 +308,7 @@
 
                         <md-option  ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
                                 {{col}}
+                            </md-option>
                         </md-select>
                         <div flex="20"></div>
 
