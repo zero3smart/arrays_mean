@@ -35,7 +35,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
 
 
-            var chartViewSettings = dataSourceDescription.fe_views.views.chart;
+            var chartViewSettings = dataSourceDescription.fe_views.views.pieChart;
             var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
 
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
