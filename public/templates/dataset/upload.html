@@ -71,8 +71,11 @@
 
                 </li>
             </ul>
+
+
             <div ng-if="dataset.fileName" ng-repeat="additionalDatasource in additionalDatasources" class="no-padding">
-                <ul class="dashboard-list user-list" ng-if="additionalDatasource.fileName" ng-cloak>
+
+                <ul class="dashboard-list user-list" ng-if="additionalDatasource._id" ng-cloak>
                     <li layout="row" layout-align="space-between center">
 
                         <span flex="50">
@@ -86,7 +89,8 @@
                     </li>
                 </ul>
                 <!-- <div > -->
-                <ul class="dashboard-list user-list" ng-if="!additionalDatasource.fileName" ng-cloak><!-- ng-if="!additionalDatasource.fileName" -->
+
+                <ul class="dashboard-list user-list" ng-if="!additionalDatasource._id" ng-cloak><!-- ng-if="!additionalDatasource.fileName" -->
                     <li>
                         <div ng-hide="additionalDatasource.uploader.isUploading">
                             <!-- <p>Select a data source to import from the options below.</p> -->
@@ -108,7 +112,7 @@
                                 </div>
 
                                 <md-button class="md-dashboard confirm" ng-click="additionalDatasource.uploader.uploadAll()"
-                                        ng-if="additionalDatasource.uploader.queue.length > 0 && !additionalDatasource.fileName"
+                                        ng-if="additionalDatasource.uploader.queue.length > 0"
                                        ng-disabled="item.isReady || item.isUploading"
                                        style="margin-top: 15px">
                                     <span class="btn-label">Import Data</span>
@@ -117,6 +121,7 @@
                                 <p class="aa-file-select-close"><a href="#" ng-click="additionalDatasource.uploader.removeAndReset(additionalDatasource.uploader.queue[0])">Go back</a></p>
                             </div>
                         </div>
+
                         <div ng-repeat="item in additionalDatasource.uploader.queue track by $index" ng-show="additionalDatasource.uploader.isUploading">
                             <div layout="row" layout-align="space-between center">
                             <span ng-class="{'pending': item.isUploading }" flex="50">
@@ -137,6 +142,7 @@
                             </span>
                             </div>
                         </div>
+
                     </li>
                 </ul>
                 <!-- </div> -->

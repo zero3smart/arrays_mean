@@ -968,9 +968,15 @@ module.exports.upload = function (req, res) {
         batch.push(function (done) {
             schema_description = description;
 
-            var findQuery = {schema_id: req.body.id};
+
+
+
+
+            // var findQuery = {schema_id: req.body.id};
             // Inherited fields from the schema should be undefined
             // TODO: Is there anyway to update the selected fields only?
+
+
             var insertQuery = {
                 schema_id: req.body.id,
                 fe_listed: false,
@@ -984,11 +990,15 @@ module.exports.upload = function (req, res) {
                     fe_filters: 1,
                     fe_fieldDisplayOrder: 1,
                     urls: 1,
-                    importRevision: 1
+                    importRevision: 1,
+                    useCustomview: 1,
+                    skipImageScraping: 1,
+
+
                 }
             };
 
-            datasource_description.findOneAndUpdate(findQuery, insertQuery, {upsert: true, new: true}, function(err, doc) {
+            datasource_description.create(insertQuery,function(err,doc) {
                 if (err) return done(err);
                 doc.schema_id = schema_description;
                 // description now referencing the child
@@ -996,7 +1006,17 @@ module.exports.upload = function (req, res) {
 
                 description_title = description.title + "(" + description.dataset_uid + ")";
                 done();
-            });
+            })
+
+            // datasource_description.findOneAndUpdate(findQuery, insertQuery, {upsert: true, new: true}, function(err, doc) {
+            //     if (err) return done(err);
+            //     doc.schema_id = schema_description;
+            //     // description now referencing the child
+            //     description = datasource_description.Consolidate_descriptions_hasSchema(doc);
+
+            //     description_title = description.title + "(" + description.dataset_uid + ")";
+            //     done();
+            // });
         });
     }
 
