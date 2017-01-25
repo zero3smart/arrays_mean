@@ -26,7 +26,7 @@ angular
 
             $scope.updateSubdomain();
 
-            $scope.explore_url = $location.protocol() +  "://explore." +  $location.host() + ":" + $location.port();
+            $scope.explore_url = $location.protocol() +  "://" +  $location.host() + ":" + $location.port();
 
             $scope.logout = function() {
                 AuthService.logout();

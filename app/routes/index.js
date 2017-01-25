@@ -1,4 +1,4 @@
-var winston = require('winston');
+ var winston = require('winston');
 var expressWinston = require('express-winston');
 var url = require('url');
 var path = require('path');
@@ -12,6 +12,8 @@ var async = require('async');
 
 
 var rootDomain = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+
+    rootDomain += "app.";
     rootDomain += process.env.HOST ? process.env.HOST : 'localhost:9080';
 
 var View = require('../models/views');
@@ -47,7 +49,7 @@ var _mountRoutes_ensureWWW = function (app) {
 
 function isNotRootDomain (subdomains) {
         
-    if (subdomains.length == 1 && subdomains[0] !== 'www') { // pattern: subdomain.arrays.co
+    if (subdomains.length == 1 && subdomains[0] !== 'app') { // pattern: subdomain.arrays.co
         return true;
     }  else {
         return false;
@@ -164,6 +166,7 @@ var _mountRoutes_endPoints = function (app) {
         res.redirect('/auth/login');
     });
     app.use('/signup',require('./signup'));
+    app.use('/schemaaccess', require('./auth'));
 
     app.use('/dashboard', require('./dashboard'));
     app.use('/api', require('./api'));

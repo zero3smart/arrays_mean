@@ -301,7 +301,7 @@ module.exports = function (nunjucks_env,env) {
 
     nunjucks_env.addGlobal('siteBaseURL',protocol + host);
 
-    nunjucks_env.addGlobal('explore_url', protocol + 'explore.' + host);
+    nunjucks_env.addGlobal('explore_url', protocol + 'app.' + host);
 
 
     nunjucks_env.addGlobal('addSubdomain', function(strSubdomain) {
