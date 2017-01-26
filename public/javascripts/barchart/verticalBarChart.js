@@ -14,7 +14,7 @@ VerticalBarChart.prototype = Object.create(BarChart.prototype);
 
 
 VerticalBarChart.prototype._animate = function () {
-
+    
     var self = this;
 
     this._bars.attr('width', function (d, i, j) {
@@ -85,7 +85,7 @@ VerticalBarChart.prototype._animateForSort = function () {
 
 VerticalBarChart.prototype.rotateLabel = function () {
     // rotate x-axis labels 90 degrees or hide
-    if(this._showLabels) {
+    if(this._showXLabels) {
         return this._xAxisContainer.selectAll("text")  
             .style("text-anchor", "end")
             .attr("dx", "-.8em")
@@ -93,7 +93,7 @@ VerticalBarChart.prototype.rotateLabel = function () {
             .attr("transform", "rotate(-90)" );
     } else {
         return this._xAxisContainer.selectAll("g")
-        .style("display", "none")
+        .style("visibility", "hidden")
     }
 };
 
