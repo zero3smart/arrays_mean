@@ -76,6 +76,34 @@
             return deferred.promise;
         };
 
+        var ensureIsAdmin = function () {
+
+            var deferred = $q.defer();
+            var user = currentUser();
+            if (isLoggedIn && (user.role === 'admin' || user.role === 'superAdmin') ) {
+                deferred.resolve();
+            } else {
+                deferred.reject();
+                $window.location.href="/dashboard/account/profile";
+            }
+
+            return deferred.promise;
+        };
+
+        var ensureActiveSubscription = function () {
+
+            var deferred = $q.defer();
+            var team = currentTeam();
+            if (isLoggedIn && (team.subscription.state === 'in_trial' || team.subscription.state === 'active') ) {
+                deferred.resolve();
+            } else {
+                deferred.reject();
+                $window.location.href="/dashboard/account/profile";
+            }
+
+            return deferred.promise;
+        };
+
         var allTeams = function() {
              if ($window.sessionStorage.teams) {
                 return JSON.parse($window.sessionStorage.teams);
@@ -242,6 +270,8 @@
             currentTeam: currentTeam,
             isLoggedIn: isLoggedIn,
             ensureLogIn: ensureLogin,
+            ensureIsAdmin: ensureIsAdmin,
+            ensureActiveSubscription: ensureActiveSubscription,
             allTeams: allTeams,
             // updateProfile: updateProfile,
             resendInvite:  resendInvite,
