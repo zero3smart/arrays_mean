@@ -40,7 +40,7 @@ angular.module('arraysApp')
             });
 
             $scope.connectToDB = function() {
-                
+                DatasetService.connectToRemoteDatasource(dataset.connection);
             }
 
 

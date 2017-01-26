@@ -36,7 +36,8 @@
 
 
                 <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="connectToDB()"
-                    ng-if="dataset.connection.url && dataset.connection.url.indexOf('://')>=0"
+                    ng-if="dataset.connection.url && dataset.connection.url.indexOf('://')>=0 && 
+                    dataset.connection.tableName"
                     ng-disabled="isConnecting || !dataset.connection.type ">
                     <span class="btn-label">Connect</span>
                 </md-button>
