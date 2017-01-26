@@ -1,0 +1,7 @@
+<label>Default Sort Order</label>
+
+<md-radio-group ng-model="testDefaultSortOrderModel" md-no-ink>
+    <md-radio-button ng-repeat="d in ['Ascending', 'Descending']" ng-value="d" aria-label="{{ d }}">
+         {{ d }}
+  </md-radio-button>
+</md-radio-group>

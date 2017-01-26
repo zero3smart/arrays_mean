@@ -66,6 +66,11 @@ angular.module('arraysApp')
 
             $scope.data.default_view = dataset.fe_views.default_view;
 
+            $scope.makeDefaultView = function(view) {
+                $scope.data.default_view = view.name;
+                $scope.makeViewVisible();
+            }
+
             $scope.makeViewVisible = function() {
                 if (!dataset.fe_views.views[$scope.data.default_view]) {
                     dataset.fe_views.views[$scope.data.default_view] = {visible: true};
