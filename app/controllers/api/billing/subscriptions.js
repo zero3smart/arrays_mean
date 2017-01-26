@@ -11,75 +11,101 @@ var recurly = new Recurly(recurlyConfig);
 
 var updateSubscriptionInDB = function(req, res, userId, response) {
     User.findById(userId)
-    .populate('defaultLoginTeam')
-    .exec(function(err, foundUser) {
-        if (foundUser.defaultLoginTeam.admin == userId) {
+        .populate('_team')
+        .populate('defaultLoginTeam')
+        .exec(function (err, user) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
 
-            Team.findByIdAndUpdate(foundUser.defaultLoginTeam._id)
-                .exec(function (err, team) {
-                    if (err) {
-                        return res.status(500).send(err);
-                    } else if (!team) {
-                        return res.status(404).send('Team not found.');
-                    } else {
+                if (!user.defaultLoginTeam || user._team.length === 0) {
+                    return res.status(401).send({error: 'unauthorized'});
+                }
 
-                        var subscription = response.data.subscription;
-                        
-                        team.subscription = {
-                            activated_at: subscription.activated_at._,
-                            canceled_at: subscription.canceled_at._,
-                            current_period_ends_at: subscription.current_period_ends_at._,
-                            current_period_started_at: subscription.current_period_started_at._,
-                            expires_at: subscription.expires_at._,
-                            plan: {
-                                name: subscription.plan.name,
-                                plan_code: subscription.plan.plan_code
-                            },
-                            quantity: subscription.quantity._,
-                            remaining_billing_cycles: subscription.remaining_billing_cycles._,
-                            state: subscription.state,
-                            total_billing_cycles: subscription.total_billing_cycles._,
-                            trial_days_left: subscription.trial_days_left,
-                            trial_ends_at: subscription.trial_ends_at._,
-                            trial_started_at: subscription.trial_started_at._,
-                            uuid: subscription.uuid
+                if (!user.isSuperAdmin() && !user.defaultLoginTeam.admin && user.defaultLoginTeam.admin != userId) {
+                    return res.status(401).send({error: 'unauthorized'});
+                }
 
-                        };
+                Team.findByIdAndUpdate(user.defaultLoginTeam._id)
+                    .exec(function (err, team) {
+                        if (err) {
+                            return res.status(500).send(err);
+                        } else if (!team) {
+                            return res.status(404).send('Team not found.');
+                        } else {
 
-                        team.save(function (err) {
-                            if (err) {
-                                res.status(500).send(err);
-                            } else {
-                                res.status(response.statusCode).json(response);
-                            }
-                        });
-                    }
-                });
+                            var subscription = response.data.subscription;
+                            
+                            team.subscription = {
+                                activated_at: subscription.activated_at._,
+                                canceled_at: subscription.canceled_at._,
+                                current_period_ends_at: subscription.current_period_ends_at._,
+                                current_period_started_at: subscription.current_period_started_at._,
+                                expires_at: subscription.expires_at._,
+                                plan: {
+                                    name: subscription.plan.name,
+                                    plan_code: subscription.plan.plan_code
+                                },
+                                quantity: subscription.quantity._,
+                                remaining_billing_cycles: subscription.remaining_billing_cycles._,
+                                state: subscription.state,
+                                total_billing_cycles: subscription.total_billing_cycles._,
+                                trial_days_left: subscription.trial_days_left,
+                                trial_ends_at: subscription.trial_ends_at._,
+                                trial_started_at: subscription.trial_started_at._,
+                                uuid: subscription.uuid
 
-        } else {
-            return res.status(401).send('unauthorized');
-        }
-    });
+                            };
+
+                            team.save(function (err) {
+                                if (err) {
+                                    res.status(500).send(err);
+                                } else {
+                                    res.status(response.statusCode).json(response);
+                                }
+                            });
+                        }
+                    });
+            }
+        });
 };
 
 module.exports.create = function(req, res) {
 
     var userId = req.user;
 
-    recurly.subscriptions.create({
-        plan_code: req.body.plan_code, // *required
-        account: {
-            account_code: userId       // *required
-        },
-        currency: 'USD'                // *required
+    User.findById(userId)
+        .populate('_team')
+        .populate('defaultLoginTeam')
+        .exec(function (err, user) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
 
-    }, function(err, response) {
-        if (err) {
-            res.status(err.statusCode).send(err);
-        } else {
-            updateSubscriptionInDB(req, res, userId, response);
-        }
-    });
+                if (!user.defaultLoginTeam || user._team.length === 0) {
+                    return res.status(401).send({error: 'unauthorized'});
+                }
+
+                if (!user.isSuperAdmin() && !user.defaultLoginTeam.admin && user.defaultLoginTeam.admin != userId) {
+                    return res.status(401).send({error: 'unauthorized'});
+                }
+
+                recurly.subscriptions.create({
+                    plan_code: req.body.plan_code, // *required
+                    account: {
+                        account_code: user.defaultLoginTeam._id.toString()  // *required
+                    },
+                    currency: 'USD'                // *required
+
+                }, function(err, response) {
+                    if (err) {
+                        res.status(err.statusCode).send(err);
+                    } else {
+                        updateSubscriptionInDB(req, res, userId, response);
+                    }
+                });
+            }
+        });
     
 };
 
@@ -87,13 +113,31 @@ module.exports.getAll = function(req, res) {
 
     var userId = req.user;
 
-    recurly.subscriptions.listByAccount(userId, {}, function(err, response) {
-        if (err) {
-            res.status(err.statusCode).send(err);
-        } else {
-            res.status(response.statusCode).json(response);
-        }
-    });
+    User.findById(userId)
+        .populate('_team')
+        .populate('defaultLoginTeam')
+        .exec(function (err, user) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+
+                if (!user.defaultLoginTeam || user._team.length === 0) {
+                    return res.status(401).send({error: 'unauthorized'});
+                }
+
+                if (!user.isSuperAdmin() && !user.defaultLoginTeam.admin && user.defaultLoginTeam.admin != userId) {
+                    return res.status(401).send({error: 'unauthorized'});
+                }
+
+                recurly.subscriptions.listByAccount(user.defaultLoginTeam._id.toString(), {}, function(err, response) {
+                    if (err) {
+                        res.status(err.statusCode).send(err);
+                    } else {
+                        res.status(response.statusCode).json(response);
+                    }
+                });
+            }
+        });
 };
 
 module.exports.update = function(req, res) {

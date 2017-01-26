@@ -229,7 +229,11 @@ angular.module('arraysApp')
                     // console.log(res.data);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
-                        $scope.$parent.team.subscription.state = 'in_trial';
+                        if ($scope.$parent.team.subscription) {
+                            $scope.$parent.team.subscription.state = 'in_trial';
+                        } else {
+                            $scope.$parent.team.subscription = { state: 'in_trial'};
+                        }
                         $state.go('dashboard.account.billing');
                     } else {
                         // console.log(res.data);
