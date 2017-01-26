@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', 'Account', 'Billing', 'Subscriptions', 'Plans', 
-        function($scope, $mdDialog, $state, $http, Account, Billing, Subscriptions, Plans) {
+    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', '$window', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 
+        function($scope, $mdDialog, $state, $http, $window, AuthService, Account, Billing, Subscriptions, Plans) {
 
             $scope.errors = {};
 
@@ -81,7 +81,7 @@ angular.module('arraysApp')
             function getSubscriptions() {
                 Subscriptions.get()
                 .$promise.then(function(res) {
-                    console.log(res.data);
+                    // console.log(res.data);
 
                     if (res.data.error) {
                         
@@ -229,6 +229,7 @@ angular.module('arraysApp')
                     // console.log(res.data);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
+                        $scope.$parent.team.subscription.state = 'in_trial';
                         $state.go('dashboard.account.billing');
                     } else {
                         // console.log(res.data);
@@ -244,6 +245,7 @@ angular.module('arraysApp')
                     // console.log(res.data);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
+                        $scope.$parent.team.subscription.state = 'active';
                         $state.go('dashboard.account.billing');
                     } else {
                         // console.log(res.data);
@@ -256,6 +258,7 @@ angular.module('arraysApp')
                 Subscriptions.cancel({ subscrId: subscrId })
                 .$promise.then(function(res) {
                     // console.log(res.data);
+                    $scope.$parent.team.subscription.state = 'canceled';
                     $state.go('dashboard.account.billing');
                 });
             };
@@ -265,6 +268,7 @@ angular.module('arraysApp')
                 Subscriptions.reactivate({ subscrId: subscrId })
                 .$promise.then(function(res) {
                     // console.log(res.data);
+                    $scope.$parent.team.subscription.state = 'active';
                     getSubscriptions();
                 });
             };
