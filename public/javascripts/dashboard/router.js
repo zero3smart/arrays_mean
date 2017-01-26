@@ -185,7 +185,12 @@ angular.module('arraysApp')
                     .state('dashboard.team', {
                         url: '/team',
                         controller: 'WebsiteCtrl as vm',
-                        templateUrl: 'templates/team.html'
+                        templateUrl: 'templates/team.html',
+                        resolve: {
+                            restrict: function(AuthService) {
+                                return AuthService.ensureIsAdmin();
+                            }
+                        }
                     })
                     .state('dashboard.team.settings', {
                         url: '/settings',
