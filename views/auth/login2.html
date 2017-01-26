@@ -1,9 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
-<body>
+<head>
+    {% include "../partials/base_header.html" %}
+      <!-- bootstrap -->
+    <script type="text/javascript" src="/vendors/bootstrap/bootstrap.js"></script>
+
+    {% block headSuffix %}{% endblock %}
+</head>
+
+<body class="login-page">
 {% include "../partials/login.modal.html" %}
 	<script>
-        $('#login-modal').modal('show');
+        $('#login-modal').addClass("in");
     </script>
     
 	<script type="text/javascript" src="/javascripts/main.js"></script>
