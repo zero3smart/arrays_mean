@@ -251,9 +251,7 @@ angular.module('arraysApp')
                     }
                 };
 
-
-
-                $scope.initIcons = function(settingName) {
+                var assignNestedDataValues = function(settingName) {
                     if (!$scope.data[settingName]) {
                         $scope.data[settingName] = {};
                     }
@@ -262,10 +260,21 @@ angular.module('arraysApp')
                         $scope.data[settingName].conditions.push({});
 
                     }
+                }
+
+
+
+                $scope.initIcons = function(settingName) {
+                    assignNestedDataValues(settingName);
 
 
                     $scope.loadIcons();
                 };
+
+
+                $scope.initBackgroundColors = function(settingName) {
+                    assignNestedDataValues(settingName);
+                }
 
 
 
