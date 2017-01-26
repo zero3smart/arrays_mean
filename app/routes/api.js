@@ -109,6 +109,7 @@ router.get('/team/loadIcons', ctrlTeam.loadIcons);
 router.get('/team/getAssetUploadSignedUrl/:id', ctrlTeam.signedUrlForAssetsUpload);
 router.put('/team/:id', ctrlTeam.update);
 router.put('/team/admin/:id',ctrlTeam.switchAdmin);
+router.delete('/team/:id',ctrlTeam.delete);
 
 // billing, account & subscriptions settings
 router.post('/billing/account', ctrlBillingAccount.create);
