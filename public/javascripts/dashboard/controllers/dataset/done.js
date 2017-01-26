@@ -365,14 +365,12 @@ angular.module('arraysApp')
             var datasourceIndex = -1;
 
             $scope.togglePublish = function() {
-                var isPublic = $scope.$parent.$parent.dataset.isPublic;
-                DatasetService.publish($scope.$parent.$parent.dataset._id, isPublic);
+                DatasetService.update($scope.$parent.$parent.dataset._id, {isPublic: $scope.$parent.$parent.dataset.isPublic});
             };
 
-
             $scope.toggleImageScraping = function() {
-                var skip = $scope.$parent.$parent.dataset.skipImageScraping;
-                DatasetService.skipImageScraping($scope.$parent.$parent.dataset._id,skip);
+                DatasetService.update($scope.$parent.$parent.dataset._id, {skipImageScraping: 
+                    $scope.$parent.$parent.dataset.skipImageScraping});
             };
 
 

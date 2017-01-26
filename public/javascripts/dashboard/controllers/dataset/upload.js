@@ -13,8 +13,10 @@ angular.module('arraysApp')
                 if (type == 'database') {
                     if (!dataset.connection) {
                         dataset.connection = {};
-                        dataset.connection.type = 'hadoop';
+                        dataset.connection.type = 'hadoop'; //default
                     }
+                } else {
+                    dataset.connection = null;
                 }
                 return $scope.addingSourceType = type;
             };
@@ -25,9 +27,9 @@ angular.module('arraysApp')
             $scope.$watch('dataset.fileName', function(hasFile) {
                 $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });
-            $scope.$watch('dataset.connectionString', function(hasConnection) {
+            $scope.$watch('dataset.connection', function(connection) {
 
-                $scope.primaryAction.disabled = !(hasConnection && hasConnection !== null);
+                $scope.primaryAction.disabled = !(connection && connection.type && connection.url && connection.tableName);
             });
             $scope.primaryAction.do = function() {
                 $scope.$parent.navigate('dashboard.dataset.data');

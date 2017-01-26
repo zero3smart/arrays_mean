@@ -59,7 +59,9 @@ angular.module('arraysApp')
                     dataset.fe_listed = false;
                 } else {
                     if(dataset.imported) {
-                        DatasetService.publish($scope.$parent.$parent.dataset._id, dataset.isPublic);
+                        DatasetService.update($scope.$parent.$parent.dataset._id,{isPublic: dataset.isPublic,
+                            fe_visible: dataset.fe_visible,fe_listed:dataset.fe_listed})
+                       
                     }
                 }
             };

@@ -15,7 +15,7 @@
 
              <div ng-if="addingSourceType=='database'">
 
-                <md-select flex="50" ng-model="dataset.connection.type">
+                <md-select  aria-label="Dataset Connection Url" flex="50" ng-model="dataset.connection.type">
 
                     <md-option value="hadoop">
                        Hadoop
@@ -27,6 +27,13 @@
                     <input ng-model="dataset.connection.url"
                     aria-label="Dataset Connection String" placeholder="Connection URL" autofocus>
                 </md-input-container>
+
+                <md-input-container layout="row" flex="80" md-no-float>
+                    <input ng-model="dataset.connection.tableName"
+                    aria-label="Dataset Connection Table Name" placeholder="Table Name" autofocus>
+                </md-input-container>
+
+
 
                 <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="connectToDB()"
                     ng-if="dataset.connection.url && dataset.connection.url.indexOf('://')>=0"
