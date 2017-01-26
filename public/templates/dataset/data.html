@@ -1,28 +1,19 @@
 <md-content layout-padding ng-if="dataset.uid" md-no-ink>
     <form name="vm.dataForm" ng-submit="submitForm(!vm.dataForm.$invalid )">
 
-        <h2>Actions</h2>
-        <div layout="row" layout-align="space-between center">
-            <a ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
-                Add Field
-            </a>
-            <a ng-click="openNestedDialog()">
-                Nest Fields
-            </a>
-            <a ng-click="openFabricatedFilterDialog()">
-                Edit Filters
-            </a>
-            <a ng-click="openImageScrapingDialog()">
-                Image Scraping
-            </a>
-            <a ng-click="openJoinDialog()">
-                Join Dataset
-            </a>
-        </div>
+        <h2>Format Your Content</h2>
 
+        <p>
+            You can make changes to your content below. (This step is optional.)
+        </p>
+
+        <!-- quickfix spacer -->
+        <div style="margin-top: 30px;"></div>
+
+        <!-- [ Set Item Title ] -->
+        <label>What field you want to use as the title for each item?</label>
         <md-input-container class="md-block" flex-gt-sm>
-            <label>Object Title</label>
-            <md-select required name="ObjectTitle"
+            <md-select required name="ObjectTitle" aria-label="Item title"
                        ng-model="data.fe_designatedFields.objectTitle"
                        >
                 <md-option ng-repeat="column in dataset.columns track by column.name" value="{{column.name}}">
@@ -30,6 +21,35 @@
                 </md-option>
             </md-select>
         </md-input-container>
+
+<div layout="row" layout-align="start center">
+        <md-button class="md-dashboard" ng-click="openFabricatedFilterDialog()">
+            <span class="btn-label">Edit Filters</span>
+        </md-button>
+
+        <!-- [ Open Editor ] -->
+
+        <!-- quickfix spacer -->
+        <span flex="5"></span>
+
+        <!-- [More v] -->
+        <md-select flex="25" placeholder="More actions" name="moreActions" ng-model="nullModel" aria-label="More actions">
+            <md-option value="Field" ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
+                Add a new field
+            </md-option>
+            <md-option value="Nested" ng-click="openNestedDialog()">
+                Group data together
+            </md-option>
+            <!-- <md-option value="ImageScraping" ng-click="openImageScrapingDialog()" ng-if="user.role=='superAdmin'">
+                Image Scraping
+            </md-option> -->
+            <md-option value="Join" ng-click="openJoinDialog()">
+                Join with another dataset
+            </md-option>
+        </md-select>
+</div>
+<!-- quickfix spacer -->
+<div style="margin-top: 30px;"></div>
 
         <fieldset class="standard">
             <!-- <legend>Fields</legend> -->
