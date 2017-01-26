@@ -10,6 +10,9 @@
         <!-- quickfix spacer -->
         <div style="margin-top: 30px;"></div>
 
+<div layout="row" layout-align="start center">
+
+    <div>
         <!-- [ Set Item Title ] -->
         <label>What field you want to use as the title for each item?</label>
         <md-input-container class="md-block" flex-gt-sm>
@@ -21,8 +24,11 @@
                 </md-option>
             </md-select>
         </md-input-container>
+    </div>
 
-<div layout="row" layout-align="start center">
+    <!-- quickfix spacer -->
+    <span flex="5"></span>
+
         <md-button class="md-dashboard" ng-click="openFabricatedFilterDialog()">
             <span class="btn-label">Edit Filters</span>
         </md-button>
