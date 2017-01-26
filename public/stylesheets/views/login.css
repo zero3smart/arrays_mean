@@ -110,5 +110,10 @@ div.signup-link {
     color: red;
 }
 
+/* Dedicated Login Page */
+.login-page #login-modal {
+    display: block !important;
+}
+
     
 
