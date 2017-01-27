@@ -311,6 +311,11 @@ body.md-toast-animating {
 .dashboard-list-icon:focus {
     color: var(--color-primary);
 }
+.dashboard-list-icon.disabled,
+.dashboard-list-icon.disabled:hover,
+.dashboard-list-icon.disabled:focus {
+	color: var(--color-text-light);
+}
 .dashboard-list-icon.view {
 	/*color: var(--color-text-light);*/
 	color: #eee;
