@@ -2,7 +2,7 @@
 	http://localhost:9080/stylesheets/module/choropleth.css */
 
 .array-choropleth .site-content {
-    height: 100vh;
+    height: 94vh;
 }
 
 #map {
@@ -15,6 +15,21 @@
 .array-choropleth .sort-bar {
     border-bottom-style: none;
 }
+
+/* @Description Div Wrapper */
+.map-description-wrapper {
+    background-color: #ffffff;
+    z-index: 1;
+    position: relative;
+    overflow: auto;
+    border-bottom: 1px solid var(--color-divider);
+}
+
+.map-description-wrapper {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
 
 /* @group Dropdown buttons */
 
