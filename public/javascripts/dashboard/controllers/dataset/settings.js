@@ -22,27 +22,27 @@ angular.module('arraysApp')
             var original_feVisible = dataset.fe_visible;
 
 
-          $scope.colors = [
-
-                // ['#FA2A00','#FFFFFF'] // brandColor, iconColor
-                '#FA2A00',
-                '#FEB600',
-                '#79F800',
-                '#005CFF',
-                '#FE00FF',
-                '#EF0069',
-                '#00DAE5',
-                '#009E9D',
-                '#7A00F6',
-                '#dddddd',
-                '#4A4A4A'
-            ];
-            if(!dataset.brandColor) { dataset.brandColor = $scope.colors[0]; }
-
-
-            $scope.pickColor = function(color) {
-                dataset.brandColor = color;
-            }
+        //   $scope.colors = [
+          //
+        //         // ['#FA2A00','#FFFFFF'] // brandColor, iconColor
+        //         '#FA2A00',
+        //         '#FEB600',
+        //         '#79F800',
+        //         '#005CFF',
+        //         '#FE00FF',
+        //         '#EF0069',
+        //         '#00DAE5',
+        //         '#009E9D',
+        //         '#7A00F6',
+        //         '#dddddd',
+        //         '#4A4A4A'
+        //     ];
+        //     if(!dataset.brandColor) { dataset.brandColor = $scope.colors[0]; }
+          //
+          //
+        //     $scope.pickColor = function(color) {
+        //         dataset.brandColor = color;
+        //     }
 
 
             // if (!dataset.url) {

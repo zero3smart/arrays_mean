@@ -1,8 +1,9 @@
-<md-content layout-padding md-no-ink>
-    <form name="settingsForm" ng-submit="submitForm(settingsForm.$valid)" novalidate>
+<form name="settingsForm" ng-submit="submitForm(settingsForm.$valid)" novalidate ng-if="dataset.uid">
+    <md-content layout-padding md-no-ink>
 
         <h2>Display Settings</h2>
-        <p>Change your display and publishing settings below.</p>
+
+        <p style="margin-bottom: 30px">Change your display and publishing settings below.</p>
 
         <md-input-container class="md-block" style="margin-top: 45px;">
             <label>Title</label>
@@ -13,25 +14,24 @@
         </md-input-container>
 
         <md-input-container class="md-block publish-settings">
-            <label>Publish settings</label>
+            <label style="margin-bottom: 15px">Privacy settings</label>
             <md-switch ng-model="dataset.fe_visible"
                 ng-change="updatePublishSettings()"
                 aria-label="Publish dataset">
-                Publish dataset
+                Make dataset public
             </md-switch>
             <md-switch ng-model="dataset.isPublic"
                 ng-change="updatePublishSettings()"
                 ng-disabled="!dataset.fe_visible"
                 aria-label="Make dataset public">
-                Open dataset up for public viewing
+                Allow anyone to view dataset (not only registered users)
             </md-switch>
             <md-switch ng-model="dataset.fe_listed"
                 ng-change="updatePublishSettings()"
                 ng-disabled="!dataset.fe_visible || !dataset.isPublic"
-                aria-label="List dataset" style="display: inline">
-                List your dataset at&nbsp;
+                aria-label="List dataset">
+                List your dataset at explore.arrays.co
             </md-switch>
-            <a href="https://explore.arrays.co/">explore.arrays.co</a>
         </md-input-container>
 
         <!-- <md-input-container class="md-block md-input-has-placeholder">
@@ -57,13 +57,9 @@
 
         </md-input-container> -->
 
-         <div>
-            <label>Brand Color</label>
-            <ul class="aa-color-picker" flex layout="row" layout-align="start center">
-                <li ng-repeat="color in colors" ng-click="pickColor(color)" ng-style="{'background-color':color};" ng-class="{'selected': dataset.brandColor == color}">
-                </li>
-            </ul>
-
+        <div>
+            <label>Select a color for your dataset</label>
+            <aa-color-picker selected="dataset.brandColor"></aa-color-picker>
         </div>
 
         <div>
@@ -78,7 +74,6 @@
                 <label for="banner" class="md-button md-dashboard" ng-disabled="imageUploader.queue.length > 0">
                    Choose File
                 </label>
-                <!-- <span class="aa-file-select-file" ng-class="{'no-file': !imageUploader.queue[0].file.name}">{{ imageUploader.queue[0].file.name || 'No file selected' }}</span> -->
             </div>
         </div>
 
@@ -100,5 +95,5 @@
                 <span class="btn-label">Next</span>
             </md-button>
         </div>
-    </form>
-</md-content>
+    </md-content>
+</form>
