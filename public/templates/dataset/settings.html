@@ -4,6 +4,14 @@
         <h2>Display Settings</h2>
         <p>Change your display and publishing settings below.</p>
 
+        <md-input-container class="md-block" style="margin-top: 45px;">
+            <label>Title</label>
+            <input required name="title" ng-model="dataset.title">
+            <div ng-messages="settingsForm.title.$error">
+                <div ng-message="required">This is required.</div>
+            </div>
+        </md-input-container>
+
         <md-input-container class="md-block publish-settings">
             <label>Publish settings</label>
             <md-switch ng-model="dataset.fe_visible"
@@ -25,14 +33,6 @@
             </md-switch>
             <a href="https://explore.arrays.co/">explore.arrays.co</a>
         </md-input-container>
-
-        <!-- <md-input-container class="md-block">
-            <label>Title</label>
-            <input required name="title" ng-model="dataset.title">
-            <div ng-messages="settingsForm.title.$error">
-                <div ng-message="required">This is required.</div>
-            </div>
-        </md-input-container> -->
 
         <!-- <md-input-container class="md-block md-input-has-placeholder">
             <label>URL</label>
