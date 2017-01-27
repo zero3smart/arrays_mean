@@ -456,8 +456,6 @@ module.exports.getAdditionalSourcesWithSchemaID = function (req, res) {
 
 module.exports.update = function(req,res) {
 
-    console.log(req.body);
-
     datasource_description.findByIdAndUpdate(req.params.id,{$set:req.body},function(err,savedDesc){
         if (err) return res.status(500).json({error: err.message});
         else {
@@ -511,13 +509,9 @@ module.exports.save = function (req, res) {
                     description_title = description.title + ' (' + doc.dataset_uid + ')';
                 }
                 winston.info("🔁  Updating the dataset " + description_title + "...");
-
-     
-
-
+                
                 _.forOwn(req.body, function (value, key) {
-                    console.log(value);
-                    console.log(doc[key]);
+    
                     if (key != '_id' && ((!doc.schema_id && !_.isEqual(value, doc[key]))
                         || (doc.schema_id && !_.isEqual(value, description[key])))) {
 

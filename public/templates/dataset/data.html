@@ -1,8 +1,8 @@
 <md-content layout-padding ng-if="dataset.uid" md-no-ink>
     <form name="vm.dataForm" ng-submit="submitForm(!vm.dataForm.$invalid )">
 
-        <h2>Actions</h2>
-        <div layout="row" layout-align="space-between center">
+        <h2 ng-hide="dataset.connection">Actions</h2>
+        <div layout="row" ng-hide="dataset.connection" layout-align="space-between center">
             <a ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
                 Add Field
             </a>
@@ -20,7 +20,7 @@
             </a>
         </div>
 
-        <md-input-container class="md-block" flex-gt-sm>
+        <md-input-container ng-hide="dataset.connection" class="md-block" flex-gt-sm>
             <label>Object Title</label>
             <md-select required name="ObjectTitle"
                        ng-model="data.fe_designatedFields.objectTitle"
@@ -36,7 +36,7 @@
             <table class="fields-container">
                 <thead class="field-row-header field">
                 <tr layout="row" layout-align="space-between start">
-                    <th flex="10" aa-tooltip="Drag to re-order">Order</th>
+                    <th flex="10" ng-hide="" aa-tooltip="Drag to re-order">Order</th>
                     <th flex="10" class="incl-excl-all" aa-tooltip="{{ excludeAll ? 'Exclude All' : 'Include All' }}">
                         Include<br />
                         <md-checkbox ng-model="excludeAll" ng-change="toggleExclude(!excludeAll)" md-no-ink aria-label="Include/Exclude All"></md-checkbox>

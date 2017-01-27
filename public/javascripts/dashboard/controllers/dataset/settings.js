@@ -167,7 +167,7 @@ angular.module('arraysApp')
             };
 
             $scope.imageUploader.onAfterAddingFile = function (fileItem) {
-                // console.log(fileItem);
+
                 if ($scope.imageUploader.queue.length > 0) {
                     $scope.imageUploader.queue[0] = fileItem;
                 }
