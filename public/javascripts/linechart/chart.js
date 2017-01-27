@@ -90,7 +90,7 @@ linechart.chart.prototype.resize = function () {
     /*
      * Change chart's container height. But min height is 400px.
      */
-    var height = Math.max(400, window.innerHeight - jQuery(this._container.node()).offset().top);
+    var height = Math.max(400, window.innerHeight - jQuery(this._container.node()).offset().top - $('.filter-tag').height());
     this._container.style('height', height + 'px');
     /*
      * Run each subchart resize procedure.

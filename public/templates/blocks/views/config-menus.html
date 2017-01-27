@@ -1,0 +1,21 @@
+<label>Configure Menus</label>
+
+<md-input-container class="md-block" flex="50">
+    <!-- use [] for testing -->
+    <md-select ng-model="testMenuModel" aria-label="Select Menu">
+        <md-option ng-value="opt" ng-repeat="opt in ['X-Axis', 'Y-Axis']">{{ opt }}</md-option>
+    </md-select>
+</md-input-container>
+
+<p>Include these fields in the {{testMenuModel}} menu:</p>
+<ul class="dashboard-list">
+    <!-- use [] for testing -->
+    <li ng-repeat="field in [1,2,3,4,5]" layout="row" layout-align="space-between center">
+        <md-checkbox ng-model="isChecked" aria-label="{{field}}">
+            Field name {{field}}
+        </md-checkbox>
+        <!-- use $index for testing -->
+        <span ng-if="!$index"><strong>Default</strong></span>
+        <a ng-if="$index">Set as default</a>
+    </li>
+</ul>

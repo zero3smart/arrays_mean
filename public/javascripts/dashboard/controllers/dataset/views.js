@@ -5,7 +5,16 @@ angular.module('arraysApp')
 
             $scope.$parent.$parent.views = views;
 
-
+            $scope.primaryAction.text = 'Next';
+            $scope.$watch('vm.viewsForm.$valid', function(validity) {
+                if (validity !== undefined) {
+                    $scope.formValidity = validity;
+                    $scope.primaryAction.disabled = !validity;
+                }
+            });
+            $scope.primaryAction.do = function() {
+                $scope.submitForm($scope.formValidity);
+            };
 
             $scope.customViews = [];
 
@@ -16,11 +25,14 @@ angular.module('arraysApp')
                 }
             }
 
-            $scope.$parent.$parent.currentNavItem = 'Views';
+            $scope.$parent.$parent.currentNavItem = 'views';
 
             if (!$scope.$parent.$parent.dataset.fe_views) {
-                 $scope.$parent.$parent.dataset.fe_views = {};
-                 $scope.$parent.$parent.dataset.fe_views.views = {};
+                $scope.$parent.$parent.dataset.fe_views = {};
+                $scope.$parent.$parent.dataset.fe_views.default_view = 'gallery';
+                $scope.$parent.$parent.dataset.fe_views.views = {};
+                $scope.$parent.$parent.dataset.fe_views.views.gallery = {visible: true};
+
             }
 
             var colsAvailable = dataset.columns.map(function(column) {
@@ -34,7 +46,7 @@ angular.module('arraysApp')
             })).concat(dataset.relationshipFields.map(function(field) {
                 return field.field;
 
-            }))
+            }));
             colsAvailable = colsAvailable.filter(function(fieldName){
                 return !$scope.dataset.fe_excludeFields[fieldName];
             });
@@ -45,14 +57,28 @@ angular.module('arraysApp')
 
             $scope.data.default_view = dataset.fe_views.default_view;
 
+            $scope.makeDefaultView = function(view) {
+                $scope.data.default_view = view.name;
+                $scope.makeViewVisible();
+            }
+
+            $scope.makeViewVisible = function() {
+                if (!dataset.fe_views.views[$scope.data.default_view]) {
+                    dataset.fe_views.views[$scope.data.default_view] = {visible: true};
+                } else {
+                    dataset.fe_views.views[$scope.data.default_view].visible = true;
+                }
+
+            };
+
 
 
             $scope.openViewDialog = function (evt, id) {
 
 
 
-            	viewResource.get({id:id},function(data) {
-                    
+                viewResource.get({id:id},function(data) {
+
                     $mdDialog.show({
                         controller: ViewDialogController,
                         templateUrl: 'templates/dataset/views.view.html',
@@ -68,21 +94,22 @@ angular.module('arraysApp')
                             viewSetting: data.settings,
                             colsAvailable: colsAvailable,
                             team: $scope.$parent.$parent.team,
-                            default_view: $scope.data.default_view
+                            default_view: $scope.data.default_view,
+                            reimportStep: data.reimportStep
                         }
                     })
                         .then(function (savedDataset) {
-                            $scope.$parent.$parent.dataset = savedDataset; 
+                            $scope.$parent.$parent.dataset = savedDataset;
 
                             $scope.data.default_view = savedDataset.fe_views.default_view;
                             $scope.vm.viewsForm.$setDirty();
                         }, function () {
-                            console.log('You cancelled the dialog.');
+                            // console.log('You cancelled the dialog.');
                         });
 
 
-                        
-            	})
+
+                });
             };
 
 
@@ -101,9 +128,9 @@ angular.module('arraysApp')
                     delete finalizedDataset.columns;
 
                     var useCustomView = false;
-                    
 
-            
+
+
 
                     for (var key in finalizedDataset.fe_views.views) {
 
@@ -113,10 +140,10 @@ angular.module('arraysApp')
                         }
                     }
 
-        
+
 
                     finalizedDataset.useCustomView = useCustomView;
-         
+
                     DatasetService.save(finalizedDataset)
                         .then(function (response) {
                             if (response.status == 200) {
@@ -128,14 +155,14 @@ angular.module('arraysApp')
                                         .hideDelay(3000)
                                 );
 
-                                $state.transitionTo('dashboard.dataset.done', {id: id}, {
+                                $state.transitionTo('dashboard.dataset.settings', {id: id}, {
                                     reload: true,
                                     inherit: false,
                                     notify: true
                                 });
 
                             }
-                         
+
                         }, function (error) {
                             $mdToast.show(
                                 $mdToast.simple()
@@ -149,34 +176,35 @@ angular.module('arraysApp')
 
 
             function ViewDialogController($scope, $mdDialog, $filter, viewName,belongsToTeam,viewDisplayName,dataset,viewSetting,colsAvailable,AssetService,
-                DatasetService,team,default_view) {
+                DatasetService,team,default_view,reimportStep) {
 
                 $scope.viewName = viewName;
                 $scope.viewDisplayName = viewDisplayName;
-				$scope.viewSetting = viewSetting;
+                $scope.viewSetting = viewSetting;
                 $scope.isDefault = false;
                 $scope.colsAvailable = colsAvailable;
                 $scope.otherAvailableDatasets = [];
                 $scope.otherDatasetsloaded = false;
                 $scope.otherDatasetCols = {};
                 $scope.isCustomView = belongsToTeam? true: false;
+                $scope.reimportStep = reimportStep;
 
 
-                $scope.availableForDuration = [ "Decade", "Year", "Month", "Day"];
+                $scope.availableForDuration = [ 'Decade', 'Year', 'Month', 'Day'];
 
                 $scope.loadIcons = function() {
 
                     AssetService.loadIcons()
                     .then(function(data) {
                         $scope.iconsUrl = data;
-                    })
+                    });
 
-                }
+                };
 
                 var getPkeyFromDatasource = function(title,importRevision) {
-                    var uid = title.toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
+                    var uid = title.toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
                     return uid + '-r' + importRevision;
-                }
+                };
 
 
 
@@ -197,7 +225,7 @@ angular.module('arraysApp')
                                         });
                                     }
                                 }
-                            })
+                            });
 
                     }
                 };
@@ -209,14 +237,12 @@ angular.module('arraysApp')
                         DatasetService.getMappingDatasourceCols(pKey)
                         .then(function(cols) {
                             $scope.otherDatasetCols[pKey] = cols.data;
-                            $scope.loading = false;                         
-                        })
+                            $scope.loading = false;
+                        });
                     }
-                }
+                };
 
-
-
-                $scope.initIcons = function(settingName) {
+                var assignNestedDataValues = function(settingName) {
                     if (!$scope.data[settingName]) {
                         $scope.data[settingName] = {};
                     }
@@ -225,21 +251,32 @@ angular.module('arraysApp')
                         $scope.data[settingName].conditions.push({});
 
                     }
-                  
-                  
-                    $scope.loadIcons();
                 }
 
 
 
-               var findDependency = function (settingName) {
+                $scope.initIcons = function(settingName) {
+                    assignNestedDataValues(settingName);
+
+
+                    $scope.loadIcons();
+                };
+
+
+                $scope.initBackgroundColors = function(settingName) {
+                    assignNestedDataValues(settingName);
+                }
+
+
+
+                var findDependency = function (settingName) {
                     for (var i = 0; i < viewSetting.length; i++) {
                         if (viewSetting[i].name == settingName) {
                             return {name: settingName, display: viewSetting[i].displayAs};
                         }
                     }
                     return null;
-                }
+                };
 
                 $scope.checkDependency = function(selectFrom) {
                     if (selectFrom == 'column' || selectFrom == 'duration') {
@@ -247,15 +284,15 @@ angular.module('arraysApp')
                     } else {
                         return findDependency(selectFrom);
                     }
-                }
+                };
 
 
                 $scope.makeRelative = function(Url) {
-                    subdomainIndex = Url.indexOf($scope.dataset._team.subdomain)
-                    sliceIndex = subdomainIndex + $scope.dataset._team.subdomain.length
-                    relativeUrl = Url.slice(sliceIndex)
-                    return relativeUrl
-                }  
+                    subdomainIndex = Url.indexOf($scope.dataset._team.subdomain);
+                    sliceIndex = subdomainIndex + $scope.dataset._team.subdomain.length;
+                    relativeUrl = Url.slice(sliceIndex);
+                    return relativeUrl;
+                };
 
 
                 $scope.reset = function () {
@@ -285,15 +322,15 @@ angular.module('arraysApp')
                 $scope.reset();
 
                 // $scope.data.default_view = default_view;
-    
+
 
                 $scope.addMore = function (field,pushType) {
                     if (pushType == 'object') {
                         field.push({});
                     } else {
-                        field.push("");
+                        field.push('');
                     }
-                }
+                };
 
                 $scope.DataTypeMatch = function(requireType) {
 
@@ -304,17 +341,17 @@ angular.module('arraysApp')
                                 $scope.dataset.raw_rowObjects_coercionScheme[col].operation) {
 
                                 var lowercase = $scope.dataset.raw_rowObjects_coercionScheme[col].operation.toLowerCase();
-    
-                                return lowercase.indexOf(requireType.toLowerCase()) >= 0
+
+                                return lowercase.indexOf(requireType.toLowerCase()) >= 0;
                             }
 
-                            return false;                       
+                            return false;
                         }
 
                         return true;
 
-                    }
-                }
+                    };
+                };
 
                 $scope.excludeBy = function(excludeValueArray) {
                     return function(Input) {
@@ -323,12 +360,12 @@ angular.module('arraysApp')
                             return excludeValueArray.indexOf(Input) == -1;
                         }
                         return true;
-                    }
-                }
+                    };
+                };
 
                 $scope.remove = function(setting,index) {
                     $scope.data[setting].splice(index,1);
-                }
+                };
 
 
                 $scope.notChosen= function(arrayOfObject,target,index) {
@@ -340,15 +377,15 @@ angular.module('arraysApp')
                         }
                     }
                     return true;
-                }
+                };
 
 
                 $scope.checkDuplicateKey = function(list,$index) {
                     return function(col) {
-                    
-                       return $scope.notChosen(list,col,$index);
-                    }
-                }
+
+                        return $scope.notChosen(list,col,$index);
+                    };
+                };
 
 
                 $scope.cancel = function () {
@@ -357,11 +394,13 @@ angular.module('arraysApp')
 
                 $scope.save = function () {
 
-
+                    if (typeof $scope.reimportStep !== 'undefined') {
+                        $scope.dataset.dirty = ($scope.dataset.dirty == 1) ? 1: $scope.reimportStep;
+                    }
 
                     if ($scope.isDefault == true) {
                         $scope.dataset.fe_views.default_view = viewName;
-                    } 
+                    }
 
                     if ($scope.isDefault) {
                         if ($scope.isCustomView) {
@@ -379,7 +418,7 @@ angular.module('arraysApp')
                         if ($scope.dataset.useCustomView) {
                             if (!$scope.data.visible) {
                                 $scope.dataset.useCustomView = false;
-                            } 
+                            }
                         } else {
                             if ($scope.data.visible || $scope.isDefault) {
                                 $scope.dataset.useCustomView = true;

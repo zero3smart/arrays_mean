@@ -22,7 +22,7 @@ for (var i = 0; i < numCountries; i++) {
     var geometry = countryFeature.geometry;
     cache_countryGeometryByLowerCasedCountryName[countryName.toLowerCase()] = geometry;
 }
-winston.info("💬  Cached " + Object.keys(cache_countryGeometryByLowerCasedCountryName).length + " geometries by country name.");
+// winston.info("💬  Cached " + Object.keys(cache_countryGeometryByLowerCasedCountryName).length + " geometries by country name.");
 
 __countries_geo_json_str = undefined; // free
 __countries_geo_json = undefined; // free
@@ -37,29 +37,30 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
+    var collectionPKey = req.subdomains[0] + '-' + source_pKey;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
+    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
         .then(function (dataSourceDescription) {
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
                 callback(new Error("No data source with that source pkey " + source_pKey), null);
 
                 return;
             }
-            if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.choropleth === 'undefined') {
+            if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.mapView === 'undefined') {
                 callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
 
                 return;
             }
 
 
-            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
             var mapBy = urlQuery.mapBy; // the human readable col name - real col name derived below
-            var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.choropleth.defaultMapByColumnName] ||
-            dataSourceDescription.fe_views.views.choropleth.defaultMapByColumnName;
+            var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.mapView.defaultMapByColumnName] ||
+            dataSourceDescription.fe_views.views.mapView.defaultMapByColumnName;
             //
-            var routePath_base = "/" + source_pKey + "/choropleth";
+            var routePath_base = "/" + source_pKey + "/map-view";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
@@ -83,7 +84,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain source document
             batch.push(function (done) {
-                raw_source_documents.Model.findOne({primaryKey: source_pKey}, function (err, _sourceDoc) {
+                raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, _sourceDoc) {
                     if (err) return done(err);
 
                     sourceDoc = _sourceDoc;
@@ -104,7 +105,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain Top Unique Field Values For Filtering
             batch.push(function (done) {
-                func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+                func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
@@ -215,7 +216,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                    view_description: dataSourceDescription.fe_views.views.choropleth.description ? dataSourceDescription.fe_views.views.choropleth.description : "",
+                    view_description: dataSourceDescription.fe_views.views.mapView.description ? dataSourceDescription.fe_views.views.mapView.description : "",
                     //
                     highestValue: highestValue,
                     featureCollection: {
@@ -235,7 +236,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     isSearchActive: isSearchActive,
                     //
                     defaultMapByColumnName_humanReadable: defaultMapByColumnName_humanReadable,
-                    colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'choropleth', 'MapBy'),
+                    colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'mapView', 'MapBy'),
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     routePath_base: routePath_base,

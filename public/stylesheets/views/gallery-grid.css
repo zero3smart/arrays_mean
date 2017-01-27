@@ -132,6 +132,35 @@
     right: 10px;
     bottom: 10px;
     left: 10px;
+    height: 80%;
+}
+
+.gallery-secondary-column-item {
+    margin-top: 5px;
+    max-height: 136px;
+    overflow: hidden;
+}
+
+.gallery-secondary-column-item h2 {
+    font-size: 34px;
+    line-height: 1;
+    margin-top: 0px;
+}
+
+.text-fade-overlay {
+    position: absolute;
+    top: 5px;
+    left: 0;
+    height: 136px;
+    width: 100%;
+    display: none;
+}
+
+img.icon-tile {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0 auto;
 }
 
 .gallery-item-text-inner [class^="icon-tile-"] {

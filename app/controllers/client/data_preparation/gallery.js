@@ -22,9 +22,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
+    var collectionPKey = req.subdomains[0] + '-' + source_pKey;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
+
+    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
         .then(function (dataSourceDescription) {
+
 
 
 
@@ -39,7 +42,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
             var galleryViewSettings = dataSourceDescription.fe_views.views.gallery;
 
-            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
 
             var galleryItem_htmlWhenMissingImage;
@@ -95,15 +98,62 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     return htmlElem;
                 };
                 
-                var returnAbsURLorBuildURL = function(url) {
-                    if (url.slice(0, 5) == "https") {
-                        return url
-                    } else {
-                        urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
-                        return urlToReturn
+
+            }
+
+            var galleryItemBackgroundColor;
+
+            if (galleryViewSettings.galleryItemConditionsForBackgroundColor) {
+                var cond = galleryViewSettings.galleryItemConditionsForBackgroundColor;
+
+                var determineContentColor = function(backgroundColor) {
+                    var r, g, b;
+
+                    r = parseInt('0x' + backgroundColor.slice(1,3));
+                    g = parseInt('0x' + backgroundColor.slice(3,5));
+                    b = parseInt('0x' + backgroundColor.slice(5,7));
+
+                    var totalColorValue = r + g + b;
+
+                    if (totalColorValue > 382) {
+                        return '#000000';
                     }
+
+                    return '#FFFFFF';
+                }
+
+                galleryItemBackgroundColor = function (rowObject) {
+                    var fieldName = cond.field;
+                    var conditions = cond.conditions;
+
+                    var fieldValue = rowObject["rowParams"][fieldName];
+
+                    for (var i = 0; i < conditions.length; i++) {
+                        if (conditions[i].value == fieldValue) {
+                            return {
+                                backgroundColor: conditions[i].backgroundColor,
+                                contentColor: determineContentColor(conditions[i].backgroundColor)
+                            };
+                        }
+                    }
+                    
+                    return {
+                        backgroundColor: '#FFFFFF',
+                        contentColor: '#000000'
+                    };
                 }
             }
+
+            var returnAbsURLorBuildURL = function(url) {
+                if (url.slice(0, 5) == "https") {
+                    return url
+                } else {
+                    urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription._id + "/assets/images/" + url
+                    return urlToReturn
+                }
+            }
+
+                
 
             var page = urlQuery.page;
             var pageNumber = page ? page : 1;
@@ -174,7 +224,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain source document
             batch.push(function (done) {
-                raw_source_documents.Model.findOne({primaryKey: source_pKey}, function (err, _sourceDoc) {
+                raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, _sourceDoc) {
                     if (err) return done(err);
 
                     sourceDoc = _sourceDoc;
@@ -194,7 +244,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain Top Unique Field Values For Filtering
             batch.push(function (done) {
-                func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+                func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
 
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
@@ -214,6 +264,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
                 ]);
                 var doneFn = function (err, results) {
+
                     if (err) return done(err);
 
 
@@ -258,7 +309,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
                 });
 
-                // projects['$project']['rowParams.imgURL_gridThumb'] = 1
+  
 
                 var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
                     projects,
@@ -270,9 +321,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 ]);
 
 
-
-
                 var doneFn = function (err, _docs) {
+
                     if (err) return done(err);
 
                     docs = _docs;
@@ -285,7 +335,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     done();
                 };
 
-                // console.log(pagedDocs_aggregationOperators)
 
                 // Next, get the full set of sorted results
                 processedRowObjects_mongooseModel
@@ -312,7 +361,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.end(function (err) {
 
                 if (err) return callback(err);        
-          
+
+
 
                 var data =
                 {
@@ -359,7 +409,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     uniqueFieldValuesByFieldName: uniqueFieldValuesByFieldName,
                     truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill: truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
                     //
+                    fe_galleryItem_useBackgroundColor: galleryViewSettings.defaultGalleryConditionalBackground,
                     fe_galleryItem_htmlForIconFromRowObjWhenMissingImage: galleryItem_htmlWhenMissingImage,
+                    fe_galleryItem_backgroundColorForRowObj: galleryItemBackgroundColor,
+                    fe_galleryItem_secondaryColumnDisplay: galleryViewSettings.secondaryColumnTileDisplay,
                     //
                     searchQ: searchQ,
                     searchCol: searchCol,

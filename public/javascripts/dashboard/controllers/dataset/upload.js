@@ -1,14 +1,36 @@
+
 angular.module('arraysApp')
-    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'additionalDatasources', 'FileUploader', '$mdToast', '$mdDialog', '$state', 'AuthService', 'DatasetService', 'AssetService',
-        function ($scope, dataset, additionalDatasources, FileUploader, $mdToast, $mdDialog, $state, AuthService, DatasetService, AssetService) {
+    .controller('DatasetUploadCtrl', ['$scope', 'dataset', 'additionalDatasources', 'FileUploader', '$mdToast', '$mdDialog', '$state', 'AuthService', 'DatasetService',
+        function ($scope, dataset, additionalDatasources, FileUploader, $mdToast, $mdDialog, $state, AuthService, DatasetService) {
+
 
             $scope.$parent.$parent.dataset = dataset;
-            $scope.$parent.$parent.currentNavItem = 'Upload';
-            $scope.progressMode = "determinate";
-            
-            $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
-                return initSource(additionalDatasource)
+            $scope.$parent.$parent.currentNavItem = 'upload';
+            $scope.progressMode = 'determinate';
+
+            $scope.addingSourceType = ''; // ['csv', 'json', 'sql']
+            $scope.addSourceType = function(type) {
+                return $scope.addingSourceType = type;
+            };
+
+            $scope.addingAdditionalDatasource = false; // this can become addingAdditionalSourceType
+
+            $scope.primaryAction.text = 'Next';
+            $scope.$watch('dataset.fileName', function(hasFile) {
+                $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });
+            $scope.primaryAction.do = function() {
+                $state.transitionTo('dashboard.dataset.data', {id: dataset._id}, {
+                    reload: true,
+                    inherit: false,
+                    notify: true
+                });
+            };
+
+            $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
+                return initSource(additionalDatasource);
+            });
+
 
             function initSource(additionalDatasource) {
                 var uploader = new FileUploader({
@@ -23,10 +45,9 @@ angular.module('arraysApp')
                 uploader.onWhenAddingFileFailed = onWhenAddingFileFailed;
 
                 uploader.onAfterAddingFile = function(item) {
-                    if (!additionalDatasource.dataset_uid)
-                        additionalDatasource.dataset_uid = item.file.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^A-Z0-9]+/ig, "_");
 
-                    item.formData[0].dataset_uid = additionalDatasource.dataset_uid;
+                    if (!additionalDatasource.fileName)
+                        additionalDatasource.fileName = item.file.name;
                 };
 
                 uploader.onProgressAll = function(progress) {
@@ -36,28 +57,30 @@ angular.module('arraysApp')
                         var additionalDatasource = $scope.additionalDatasources.find(function(a) {
                             return a.uploader == self;
                         });
-                        additionalDatasource.progressMode = "indeterminate";
+                        additionalDatasource.progressMode = 'indeterminate';
                     }
                 };
 
-                uploader.onCompleteItem = function(fileItem, response, status, headers) {
+                uploader.onCompleteItem = function(fileItem, response, status) {
                     var self = this;
                     var additionalDatasource = $scope.additionalDatasources.find(function(a) {
                         return a.uploader == self;
                     });
-                    additionalDatasource.progressMode = "determinate";
+                    additionalDatasource.progressMode = 'determinate';
 
                     if (status != 200 || response == '') return;
 
                     if (!response.error && response.id) {
                         $mdToast.show(
                             $mdToast.simple()
-                                .textContent(additionalDatasource.dataset_uid + ' was uploaded successfully!')
+                                .textContent(fileItem.file.name + ' was uploaded successfully!')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
 
                         additionalDatasource._id = response.id;
+                        $scope.addingAdditionalDatasource = false;
+                        additionalDatasource.fileName = fileItem.file.name; // force uploaded/uploading list changes
                     } else {
                         $mdToast.show(
                             $mdToast.simple()
@@ -70,10 +93,26 @@ angular.module('arraysApp')
                         fileItem.isUploaded = false;
                         fileItem.isSuccess = false;
                     }
+
+                };
+
+                uploader.removeAndReset = function(fileItem) {
+                    // $scope.addingAdditionalDatasource = false;
+                    if(fileItem) {
+                        uploader.removeFromQueue(fileItem);
+                    }
+                    additionalDatasource.sourceType = '';
+                };
+
+                additionalDatasource.sourceType = '';
+                additionalDatasource.setSourceType = function(type) {
+                    additionalDatasource.sourceType = type;
                 };
 
                 additionalDatasource.uploader = uploader;
-                additionalDatasource.progressMode = "determinate";
+
+
+                additionalDatasource.progressMode = 'determinate';
                 return additionalDatasource;
             }
 
@@ -87,62 +126,22 @@ angular.module('arraysApp')
 
             });
 
-            //right now only for uploading banner, later maybe icons. 
-            $scope.imageUploader = new FileUploader({
-                method: 'PUT',
-                disableMultipart: true,
-                filters: [
-                    {
-                        name: "imageFilter",
-                        fn: function (item, options) {
-                            var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
-                            return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
-                        }
-                    }
-                ],
-
-            });
-
-            $scope.imageUploader.onCompleteItem = function (fileItem, response, status, header) {
-                if (status == 200) {
-                    var reload = false;
-                    if (dataset.banner) {
-                        reload = true;
-                    }
-                    dataset.banner = fileItem.publicUrl;
-                    DatasetService.save(dataset).then(function () {
-                        if (reload) {
-                            dataset.banner = dataset.banner + '?' + new Date().getTime();
-                        }
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Image upload successfully!')
-                                .position('top right')
-                                .hideDelay(3000)
-                        )
-                    })
+            $scope.uploader.removeAndReset = function(fileItem) {
+                if(fileItem) {
+                    $scope.uploader.removeFromQueue(fileItem);
                 }
-            };
-
-            $scope.imageUploader.onBeforeUploadItem = function (item) {
-                item.headers['Content-Type'] = item.file.type;
-            };
-
-            $scope.imageUploader.onAfterAddingFile = function (fileItem) {
-                console.log(fileItem);
-                if ($scope.imageUploader.queue.length > 0) {
-                    $scope.imageUploader.queue[0] = fileItem;
-                }
-                AssetService.getPutUrlForDatasetAssets($scope.dataset._id, fileItem.file.type, fileItem.file.name)
-                    .then(function (urlInfo) {
-                        fileItem.url = urlInfo.putUrl;
-                        fileItem.publicUrl = urlInfo.publicUrl;
-                    })
+                $scope.addingSourceType = '';
             };
 
             // CALLBACKS
 
-            function onWhenAddingFileFailed(item, filter, options) {
+            $scope.uploader.onBeforeUploadItem = function(item) {
+
+                item.formData[0].tempTitle =  dataset.title;
+
+            };
+
+            function onWhenAddingFileFailed(item, filter) {
                 // console.info('onWhenAddingFileFailed', item, filter, options);
                 if (filter.name == 'queueLimit') {
                     this.clearQueue();
@@ -155,36 +154,30 @@ angular.module('arraysApp')
             $scope.uploader.onProgressAll = function(progress) {
                 // TODO: Need to calculate the uploading progress into the AWS
                 if (progress == 100) {
-                    $scope.progressMode = "indeterminate";
+                    $scope.progressMode = 'indeterminate';
                 }
             };
 
-            $scope.uploader.onCompleteItem = function (fileItem, response, status, headers) {
-                $scope.progressMode = "determinate";
 
-
+            $scope.uploader.onCompleteItem = function (fileItem, response, status) {
+                $scope.progressMode = 'determinate';
 
                 if (status != 200 || response == '') return;
 
                 if (!response.error && response.id) {
+
                     dataset.uid = response.uid;
 
                     dataset.dirty = 1;
+                    dataset.fileName = fileItem.file.name;
 
-                    DatasetService.save(dataset).then(function () {
-                        $mdToast.show(
-                            $mdToast.simple()
-                                .textContent('Dataset uploaded successfully!')
-                                .position('top right')
-                                .hideDelay(3000)
-                        );
-                    })
-                    
-                    // $state.transitionTo('dashboard.dataset.data', {id: response.id}, {
-                    //     reload: true,
-                    //     inherit: false,
-                    //     notify: true
-                    // });
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent(dataset.fileName + ' uploaded successfully!')
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+
                 } else {
                     // Error
                     $mdToast.show(
@@ -201,7 +194,7 @@ angular.module('arraysApp')
             };
 
             $scope.addNewDatasource = function () {
-                if (!dataset.uid) {
+                if (!dataset.fileName) {
                     $mdDialog.show(
                         $mdDialog.alert()
                             .clickOutsideToClose(true)
@@ -213,35 +206,124 @@ angular.module('arraysApp')
                     return;
                 }
 
+                $scope.addingAdditionalDatasource = true;
                 $scope.additionalDatasources.push(initSource({}));
+
             };
 
-            $scope.removeAdditionalDatasource = function () {
-                var length = $scope.additionalDatasources.length;
-                if (length > 0) {
-                    var additionalDatasource = $scope.additionalDatasources[length - 1];
-                    if (additionalDatasource._id) {
-                        var dataset_uid = additionalDatasource.dataset_uid;
-                        DatasetService.removeSubdataset(additionalDatasource._id).then(function () {
+            $scope.removeSource = function(dataset, notify) {
+                DatasetService.deleteSource(dataset._id)
+                .then(function(response) {
+
+                    if (response.status == 200) {
+                        var toastFileName = dataset.fileName;
+                        dataset.fileName = null;
+                        $scope.uploader.queue = [];
+                        if(notify) {
                             $mdToast.show(
                                 $mdToast.simple()
-                                    .textContent(dataset_uid + ' was removed successfully!')
+                                    .textContent(toastFileName + ' removed successfully!')
                                     .position('top right')
                                     .hideDelay(5000)
                             );
-                            $scope.additionalDatasources.splice(length - 1, 1);
-                        }, function (error) {
+                        }
+                    }
+
+
+
+                });
+
+            };
+
+            $scope.removeAdditionalDatasource = function (additionalDatasource, notify) {
+                if (additionalDatasource._id) {
+                    DatasetService.removeSubdataset(additionalDatasource._id).then(function () {
+                        if(notify) {
                             $mdToast.show(
+                                    $mdToast.simple()
+                                        .textContent(additionalDatasource.fileName + ' was removed successfully!')
+                                        .position('top right')
+                                        .hideDelay(5000)
+                                );
+                        }
+                        $scope.additionalDatasources.splice(length - 1, 1);
+
+                    }, function (error) {
+                        $mdToast.show(
                                 $mdToast.simple()
                                     .textContent(error)
                                     .position('top right')
                                     .hideDelay(5000)
                             );
-                        });
-                    } else {
-                        $scope.additionalDatasources.splice(length - 1, 1);
-                    }
+                    });
                 }
             };
-        }
-    ]);
+
+            $scope.removeSourceDialog = function(datasource, callback, ev) {
+                $mdDialog.show({
+                    templateUrl: 'templates/blocks/dataset.removesource.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    // locals: {
+                    //     title: datasource.fileName,
+                    // },
+                    controller: function($scope, $mdDialog) {
+                        $scope.title = datasource.fileName;
+                        $scope.hide = function() {
+                            $mdDialog.hide();
+                        };
+                        $scope.cancel = function() {
+                            $mdDialog.cancel();
+                        };
+                    }
+                })
+                .then(function () {
+                    callback(datasource, true);
+                });
+            };
+
+            $scope.clearAll = function (id, title, ev) {
+                $mdDialog.show({
+                    templateUrl: 'templates/blocks/dataset.clearall.html',
+                    parent: angular.element(document.body),
+                    targetEvent: ev,
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+                    locals: {
+                        title: title,
+                    },
+                    controller: function($scope, $mdDialog) {
+                        $scope.title = title;
+                        $scope.hide = function() {
+                            $mdDialog.hide();
+                        };
+                        $scope.cancel = function() {
+                            $mdDialog.cancel();
+                        };
+                    }
+                })
+                .then(function () {
+                    var addlDatasources = $scope.additionalDatasources;
+                    $scope.removeSource(dataset, false);
+                    for (var i = 0; i < addlDatasources.length; i++) {
+                        $scope.removeAdditionalDatasource(addlDatasources[i], false);
+                    }
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent('All data sources successfully cleared!')
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+                }, function(error) {
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent(error)
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+                });
+            };
+
+        }]);

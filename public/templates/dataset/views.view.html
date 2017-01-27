@@ -1,19 +1,29 @@
 <md-dialog aria-label="Format View : ({{ dataset.title }})" class="field-dialog">
-     <md-toolbar>
-        <div class="md-toolbar-tools">
-            <h2>Format View : ({{ dataset.title }})</h2>
-            <span flex></span>
-            <md-button class="md-icon-button" ng-click="cancel()">
-                <span class="icon-close-big" aria-label="Close dialog"></span>
-            </md-button>
-        </div>
-    </md-toolbar>
+    <aa-toolbar title="{{viewDisplayName}} Configuration"></aa-toolbar>
 
     <md-dialog-content>
 
         <md-content layout-padding>
-          <form name="viewForm">
-               <div layout="row" layout-xs="column" layout-sm="column" layout-align="space-between center">
+            <form name="viewForm">
+
+                <p>Configure what your {{viewDisplayName}} view looks like below.</p>
+
+                <!-- for testing -->
+                <!-- <aa-view-config-menus></aa-view-config-menus> -->
+                <!-- <aa-view-default-sort-order></aa-view-default-sort-order> -->
+
+                <label>Enter a description for this view</label>
+
+                <p>
+                    The description will appear at the top of the view. For example, you can use it to describe what viewers can see.
+                </p>
+
+                <md-input-container class="md-block">
+                    <textarea ng-model="data.description"
+                        md-maxlength="500" rows="3" aria-label="{{viewDisplayName}} Description"></textarea>
+                </md-input-container>
+
+                <div layout="row">
                     <md-input-container class="md-block" flex-gt-sm>
 
                         <md-checkbox ng-model="data.visible" aria-label="Visible {{viewName}}">
@@ -27,25 +37,7 @@
                            <strong>Default</strong>
                         </md-checkbox>
                     </md-input-container>
-
-
-
                </div>
-               <label>Name</label>
-                <md-input-container class="md-block" flex-gt-sm>
-
-
-                    <input type="text" ng-model="viewDisplayName" readonly="readonly" aria-label="Display Name {{viewName}}">
-                </md-input-container>
-
-                <label>Description</label>
-                <md-input-container class="md-block" flex-gt-sm>
-                    <textarea class="md-block" md-maxlength="500" rows="3" aria-label="Description {{viewName}}"
-                           ng-model="data.description"></textarea>
-                </md-input-container>
-
-
-
 
             <div ng-repeat="setting in viewSetting">
 
@@ -147,7 +139,7 @@
 
 
 
-                         <md-select ng-required='setting.require' ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
+                         <md-select ng-required="setting.require" ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
                           <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
                           <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType) | filter:
                                   excludeBy(data[setting.selectExcludeBy])" ng-value="col">
@@ -204,6 +196,7 @@
 
                 <div ng-if="setting.inputType == 'multivalueTextbox'" ng-init="data[setting.name]=data[setting.name]|| []">
                 <label>{{setting.displayAs}}</label>
+
 
                   <md-input-container class="md-block" >
                             <md-chips ng-model="data[setting.name]"
@@ -306,7 +299,7 @@
                </div>
 
 
-                <div ng-if="setting.inputType=='iconMapping'" ng-init="initIcons(setting.name)">
+                <div ng-if="setting.inputType=='iconMapping' && !data.defaultGalleryConditionalBackground" ng-init="initIcons(setting.name)">
                   <label>{{setting.displayAs}}</label>
                     <div layout="row">
 
@@ -315,6 +308,7 @@
 
                         <md-option  ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
                                 {{col}}
+                            </md-option>
                         </md-select>
                         <div flex="20"></div>
 
@@ -380,6 +374,109 @@
 
 
                   </div>
+
+
+
+                  <div ng-if="setting.inputType=='backgroundColorMapping' && data.defaultGalleryConditionalBackground" ng-init="initBackgroundColors(setting.name)">
+                    <label>{{setting.displayAs}}</label>
+                    <div layout="row">
+
+                      <md-select aria-label="{{setting.name}} for {{viewName}}" flex="30" class="md-block" ng-model="data[setting.name].field" ng-model-options="{updateOn:'blur'}">
+
+
+                      <md-option  ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
+                      {{col}}
+                      </md-option>
+                      </md-select>
+                      <div flex="20"></div>
+
+                    </div>
+
+
+
+                    <div ng-if="data[setting.name].field" ng-repeat="item in data[setting.name].conditions track by $index">
+                      <div layout="row">
+
+                        <md-input-container flex="50">
+                          <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
+                        </md-input-container>
+                        <md-input-container flex="50">
+                          <md-input-container aria-label="{{setting.name}} for {{viewName}}" class="md-color-picker" flex="50">
+                            <div md-color-picker ng-model="data[setting.name].conditions[$index].backgroundColor"></div>
+                          </md-input-container>
+                          <!-- <md-option  data-ng-repeat="icon_url in iconsUrl" data-ng-value="makeRelative(icon_url)" >
+                            <img class="iconMap" ng-src="{{icon_url}}">
+                          </md-option> -->
+                        </md-input-container>
+
+                      </div>
+
+                    </div>
+
+
+                    <md-button ng-if="data[setting.name].field" class="md-raised" ng-click="addMore(data[setting.name].conditions,'object')"><span
+                    class="glyphicon glyphicon-plus"></span>Add more
+                    </md-button>
+
+
+
+                  </div>
+
+
+
+
+                <div ng-if="setting.inputType == 'selectSecondaryColumn' && data.defaultGalleryConditionalBackground" ng-init="dep = checkDependency(setting.selectFrom);">
+                  <label>{{setting.displayAs}}</label>
+                    <small class="pull-right" ng-if="dep">
+                      Dropdown selections are based on {{dep.display}} </small>
+                      <small class="pull-right" ng-if="setting.restrictColumnDataType">
+                      Field type is restrcited to {{setting.restrictColumnDataType.toLowerCase()}}. </small><br ng-if="setting.restrictColumnDataType">
+                       <small class="pull-right" ng-if="setting.require">
+                      This is a required field. </small>
+
+                     <md-input-container class="md-block" flex-gt-sm>
+
+
+                        <md-select ng-if="setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name][setting.settingNestedField]">
+
+                          <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType
+                          && dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
+                          <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
+                                {{col}}
+                            </md-option>
+
+                            <md-option  ng-if="setting.selectFrom=='duration'" ng-repeat="dur in availableForDuration | filter:'!_all' | fitler: DataTypeMatch(setting.restrictColumnDataType)" ng-value="dur">
+                                {{dur}}
+                            </md-option>
+
+                            <md-option ng-if="dep" ng-repeat="opt in data[setting.selectFrom]" ng-value="opt">
+                              {{opt}}
+
+                            </md-option>
+
+
+                        </md-select>
+
+                         <md-select ng-required="setting.require" ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
+                          <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title"> Object Title</md-option>
+                          <md-option  ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType) | filter:
+                                  excludeBy(data[setting.selectExcludeBy])" ng-value="col">
+                                {{col}}
+                            </md-option>
+
+                            <md-option  ng-if="setting.selectFrom=='duration'" ng-repeat="dur in availableForDuration | filter:'!_all' && DataTypeMatch(setting.restrictColumnDataType)" ng-value="dur">
+                                {{dur}}
+                            </md-option>
+
+                            <md-option ng-if="dep" ng-repeat="opt in data[setting.selectFrom]" ng-value="opt">
+                              {{opt}}
+
+                            </md-option>
+
+                        </md-select>
+
+                    </md-input-container>
+                </div>
 
             </div>
 

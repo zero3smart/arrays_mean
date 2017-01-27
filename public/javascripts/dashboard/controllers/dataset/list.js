@@ -1,9 +1,15 @@
 angular.module('arraysApp')
     .controller('DatasetListCtrl', ['$scope', '$mdDialog', '$state', '$mdToast', 'DatasetService', 'datasets',
-        function ($scope, $mdDialog, $state, $mdToast, DatasetService, datasets) {
+        function ($scope, $mdDialog, $state, $mdToast, DatasetService, datasets, nullDatasets) {
 
             $scope.$parent.$parent.dataset = {};
             $scope.datasets = datasets;
+
+            $scope.primaryAction.text = 'New Collection';
+            $scope.primaryAction.disabled = false; // can limit here based on billing
+            $scope.primaryAction.do = function() {
+                $scope.add();
+            };
 
             $scope.remove = function (id, title, ev) {
                 $mdDialog.show({
@@ -49,14 +55,19 @@ angular.module('arraysApp')
                 }, function () {
                     // console.log('You decided to keep your dataset.');
                 });
-            }
+            };
+
 
             $scope.select = function (id) {
-                $state.go('dashboard.dataset.settings', {id: id});
+
+
+                $state.go('dashboard.dataset.upload', {id: id});
             };
 
             $scope.add = function() {
-                $state.go('dashboard.dataset.settings');
+                $state.go('dashboard.dataset.new');
             };
-        }]
-    );
+
+
+
+        }]);

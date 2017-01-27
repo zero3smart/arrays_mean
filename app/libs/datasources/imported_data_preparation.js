@@ -1,34 +1,43 @@
 var raw_source_documents = require('../../models/raw_source_documents');
 var _ = require('lodash');
-
 var humanReadableColumnName_objectTitle = "Object Title";
 
 module.exports.HumanReadableColumnName_objectTitle = humanReadableColumnName_objectTitle;
 
-function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription) {
-    var uid = dataSourceDescription.uid;
-    var importRevision = dataSourceDescription.importRevision;
-    var pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(uid, importRevision);
+// function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription,TeamSubdomain) {
+//     var uid = dataSourceDescription.uid;
+//     var importRevision = dataSourceDescription.importRevision;
+    
+//     var subdomain;
+//     if (TeamSubdomain) {
+//         subdomain = TeamSubdomain;
+//     }
 
-    return pKey;
-};
-module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromDataSourceDescription;
+//     var pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(subdomain,uid, importRevision);
+
+//     return pKey;
+// };
+// module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromDataSourceDescription;
 
 
 var _dataSourceDescriptionWithPKey = function (source_pKey) {
+
+
     var split = source_pKey.split("-");
-    if (split.length != 2) {
+    if (split.length != 3) {
         return new Promise(function (resolve, reject) {
             reject();
         });
     }
-    var uid = split[0];
-    var revision = split[1].substring(1);
+    var subdomain = split[0];
+    var uid = split[1];
+    var revision = split[2].substring(1);
 
     return new Promise(function (resolve, reject) {
         var dataSourceDescriptions = require('../../models/descriptions');
-        dataSourceDescriptions.GetDescriptionsWith_uid_importRevision(uid, revision, function (err, data) {
+        dataSourceDescriptions.GetDescriptionsWith_subdomain_uid_importRevision(subdomain,uid, revision, function (err, data) {
             if (err) reject(err);
+
             resolve(data);
         })
     })
