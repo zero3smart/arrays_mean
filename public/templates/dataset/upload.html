@@ -4,7 +4,9 @@
             <h2>Select Your Data Source</h2>
             <p class="instructions" ng-if="dataset.fileName">Datasets</p>
 
-            <div ng-hide="addingSourceType != '' || dataset.fileName">
+         
+
+            <div ng-hide="addingSourceType != '' || dataset.fileName || dataset.connection">
                 <p>Select a data source to import from the options below.</p>
                 <ul class="dashboard-list">
                     <li><a href="#" ng-click="addSourceType('csv')">Upload a spreadsheet</a></li>
@@ -13,7 +15,7 @@
                 </ul>
             </div>
 
-             <div ng-if="addingSourceType=='database'">
+             <div ng-if="addingSourceType=='database' || dataset.connection">
 
                 <md-select  aria-label="Dataset Connection Url" flex="50" ng-model="dataset.connection.type">
 
@@ -34,17 +36,18 @@
                 </md-input-container>
 
 
-
                 <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="connectToDB()"
                     ng-if="dataset.connection.url && dataset.connection.url.indexOf('://')>=0 && 
-                    dataset.connection.tableName"
+                    dataset.connection.tableName" ng-hide="isConnecting==false"
                     ng-disabled="isConnecting || !dataset.connection.type ">
-                    <span class="btn-label">Connect</span>
+                    <span class="btn-label"> {{ isConnecting ? 'Connecting' : 'Connect' }}</span>
                 </md-button>
 
+          
 
 
-                <p class="aa-file-select-close"><a href="#" ng-click="uploader.removeAndReset(uploader.queue[0])">Go back</a></p>
+
+                <p ng-show="isConnecting!==false" class="aa-file-select-close"><a href="#" ng-click="addSourceType('')">Go back</a></p>
 
 
             </div>

@@ -79,7 +79,7 @@ router.get('/dataset/importProcessed/:id',ctrlDataset.importProcessed);
 router.get('/dataset/postImport/:id', ctrlDataset.postImport);
 router.get('/dataset/scrapeImages/:id', ctrlDataset.scrapeImages)
 
-router.post('/dataset/connect',ctrlConnection.connect);
+router.post('/dataset/connect/:id',ctrlConnection.connect);
 
 
 //manage users

@@ -113,7 +113,6 @@ angular.module('arraysApp')
                         $scope.submitting = false;
                     }, function (error) {
 
-                        // console.log(error);
 
                         $mdToast.show(
                             $mdToast.simple()

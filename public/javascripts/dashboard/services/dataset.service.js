@@ -158,8 +158,8 @@
             return $http.delete('api/dataset/job/' + id);
        }
 
-       var connectToRemoteDatasource = function(connectionInfo) {
-            return $http.post('api/dataset/connect',connectionInfo);
+       var connectToRemoteDatasource = function(datasetId,connectionInfo) {
+            return $http.post('api/dataset/connect/' + datasetId,connectionInfo);
        }
 
 

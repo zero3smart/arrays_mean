@@ -41,9 +41,6 @@ function _readColumnsAndSample(tableName,fn) {
             console.log("Using connection: " + connObj. uuid);
             var conn = connObj.conn;
 
-            var jsonData;
-
-
             async.waterfall([
                 function(callback) {
                     conn.createStatement(function(err,statement) {
@@ -68,13 +65,22 @@ function _readColumnsAndSample(tableName,fn) {
                             callback(null,obj);
                         }
                     })
+                },
+                function(array,callback) {
+                    var data = [];
+                    var firstRecord = array[0];
+                    for (var col in firstRecord) {
+                        var column = col.split(".")[1];
+                        data.push({name: column,sample:firstRecord[col]});
+                    }
+                    callback(null,data);
                 }
-            ],function(err,jsonData) {
+            ],function(err,arrayOfCols) {
                 if (err) {
                     winston.error("Error reading remote data columns and records: %s",err);
                     return fn(err);
                 }
-                return fn(null,jsonData);
+                return fn(null,arrayOfCols);
             })
 
         }
@@ -101,8 +107,16 @@ module.exports.initConnection = function(req,res) {
             url: req.body.url
         };
 
+        // var jsonData = [{name:'abc',sample:'1'}];
+        // req.session.columns[req.params.id] = jsonData;
+
+        // return res.status(200).json({message: 'ok'});
+
+        // res.json([{name:'abc',sample:'1'}]);
+
    
         var JDBC = new jdbc(config)
+
 
         JDBC.initialize(function(err) {
             if (err) {
@@ -116,6 +130,9 @@ module.exports.initConnection = function(req,res) {
                 else {
                     console.log("successfully read columns and sample, data: %s",
                         JSON.stringify(data));
+                    if (!req.session.columns) req.session.columns = {};
+                    req.session.columns[req.params.id] = data;
+
                     return res.json(data);
                 }
 

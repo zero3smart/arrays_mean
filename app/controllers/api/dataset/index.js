@@ -361,7 +361,7 @@ module.exports.get = function (req, res) {
             if (description.schema_id) {
                 description = datasource_description.Consolidate_descriptions_hasSchema(description);
             }
-
+          
             if (!req.session.columns) req.session.columns = {};
 
             if (description.uid && description.fileName && !req.session.columns[req.params.id]) {
@@ -456,6 +456,8 @@ module.exports.getAdditionalSourcesWithSchemaID = function (req, res) {
 
 module.exports.update = function(req,res) {
 
+    console.log(req.body);
+
     datasource_description.findByIdAndUpdate(req.params.id,{$set:req.body},function(err,savedDesc){
         if (err) return res.status(500).json({error: err.message});
         else {
@@ -498,6 +500,8 @@ module.exports.save = function (req, res) {
             .populate('schema_id')
             .exec(function (err, doc) {
 
+
+
                 if (err) return res.status(500).send(err);
                 if (!doc) return res.status(500).send('Invalid Operation');
 
@@ -512,7 +516,9 @@ module.exports.save = function (req, res) {
 
 
                 _.forOwn(req.body, function (value, key) {
-                    if (key != '_id' && ((!doc.schema_id && !_.isEqual(value, doc._doc[key]))
+                    console.log(value);
+                    console.log(doc[key]);
+                    if (key != '_id' && ((!doc.schema_id && !_.isEqual(value, doc[key]))
                         || (doc.schema_id && !_.isEqual(value, description[key])))) {
 
                         winston.info('  ✅ ' + key + ' with ' + JSON.stringify(value));
@@ -524,14 +530,13 @@ module.exports.save = function (req, res) {
                     }
                 });
 
-                // console.log(doc);
+    
 
                 if (!doc.schema_id) {
                     doc.uid = doc.title.replace(/\.[^/.]+$/, '').toLowerCase().replace(/[^A-Z0-9]+/ig, '_');
                 }
 
              
-
                 doc.save(function (err, updatedDoc) {
                     if (err) return res.status(500).send(err);
                     if (!updatedDoc) return res.status(500).send('Invalid Operation');

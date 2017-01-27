@@ -22,11 +22,7 @@ var DatasourceDescription_scheme = Schema({
     schema_id: {type: Schema.Types.ObjectId, ref: 'DatasourceDescription'},
     banner: String,
     format: String, //csv, tsv, json
-    connection: { //for database connection
-        type: String, //e.g. hadoop
-        url: String //connection string
-
-    },
+    connection: Object,
     title: String,
     brandColor: String,
     urls: Array,
