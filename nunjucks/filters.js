@@ -296,6 +296,17 @@ module.exports = function (nunjucks_env,env) {
         return datatypes.fieldDataType_coercion_toString(field);
     });
 
+    nunjucks_env.addFilter('formatIntegerWithCommas', function(field) {
+        if (typeof field == 'number') {
+            var splitNum = field.toString().split('.'); 
+            var number = splitNum[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            var decimal = splitNum[1] ? '.' + splitNum[1] : '';
+            return number + decimal;
+        }
+        return field;
+
+    });
+
     var protocol =  env.USE_SSL === 'true' ? 'https://' : 'http://';
     var host = env.HOST? env.HOST: 'localhost:9080';
 
