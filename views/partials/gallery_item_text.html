@@ -7,7 +7,9 @@
 		<div class="gallery-item-text-inner">
 		{% if fe_galleryItem_secondaryColumnDisplay and fe_galleryItem_useBackgroundColor %}
 			<div class="gallery-secondary-column-item">
-				<h2 style="color:{{ fe_galleryItem_backgroundColorForRowObj(doc).contentColor | safe }};">{{ doc.rowParams[fe_galleryItem_secondaryColumnDisplay] if doc.rowParams[fe_galleryItem_secondaryColumnDisplay] else "(null)" }}</h2>
+				<h2 style="color:{{ fe_galleryItem_backgroundColorForRowObj(doc).contentColor | safe }};">
+				{{ doc.rowParams[fe_galleryItem_secondaryColumnDisplay] | formatIntegerWithCommas }}
+				</h2>
 				<div class="text-fade-overlay" style="background:linear-gradient(transparent 105px, {{ fe_galleryItem_backgroundColorForRowObj(doc).backgroundColor | safe }});"></div>
 			</div>
 		{% elif fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}
