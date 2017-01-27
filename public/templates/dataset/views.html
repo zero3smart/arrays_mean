@@ -1,5 +1,5 @@
-<md-content layout-padding ng-if="dataset.uid">
-    <form name="vm.viewsForm" ng-submit="submitForm(!vm.viewsForm.$invalid)">
+<form name="vm.viewsForm" ng-submit="submitForm(!vm.viewsForm.$invalid)" ng-if="dataset.uid">
+    <md-content layout-padding md-no-ink>
         <h2>Configure Your Views</h2>
 
         <p>Select and edit the views you want to include below:</p>
@@ -46,7 +46,7 @@
                 <span class="btn-label">Next</span>
             </md-button>
         </div>
-    </form>
-</md-content>
+    </md-content>
+</form>
 
 <!-- <ng-include src="'/templates/blocks/dataset.empty.html'" ng-if="!dataset.uid"></ng-include> -->

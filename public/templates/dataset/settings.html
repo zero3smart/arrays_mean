@@ -1,5 +1,5 @@
-<md-content layout-padding md-no-ink>
-    <form name="settingsForm" ng-submit="submitForm(settingsForm.$valid)" novalidate>
+<form name="settingsForm" ng-submit="submitForm(settingsForm.$valid)" novalidate ng-if="dataset.uid">
+    <md-content layout-padding md-no-ink>
 
         <h2>Display Settings</h2>
 
@@ -74,7 +74,6 @@
                 <label for="banner" class="md-button md-dashboard" ng-disabled="imageUploader.queue.length > 0">
                    Choose File
                 </label>
-                <!-- <span class="aa-file-select-file" ng-class="{'no-file': !imageUploader.queue[0].file.name}">{{ imageUploader.queue[0].file.name || 'No file selected' }}</span> -->
             </div>
         </div>
 
@@ -96,5 +95,5 @@
                 <span class="btn-label">Next</span>
             </md-button>
         </div>
-    </form>
-</md-content>
+    </md-content>
+</form>
