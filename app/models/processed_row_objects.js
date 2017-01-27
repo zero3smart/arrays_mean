@@ -100,13 +100,11 @@ module.exports.initializeBackgroundIndexBuilding = function(description) {
 
 }
 
-module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSource_team_subdomain,dataset_id,
-                                                                   dataSource_importRevision,
-                                                                   dataSource_title,
+module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataset_id,
                                                                    parentId,
                                                                    callback) {
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
-        winston.info("🔁  Pre-generating whole processed row objects collection from raw row objects of \"" + dataSource_title + "\".");
+        winston.info("🔁  Pre-generating whole processed row objects collection from raw row objects of \"" + dataset_id + "\".");
 
 
         var insertTo = parentId || dataset_id
@@ -143,8 +141,8 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataSourc
             })
           
             if (count % 1000 == 0 && count !== 0) {
-                winston.info("✅  parsed " + count + " of the row object documents  for \"" + dataSource_title + "\"." );
-                job.log("✅  parsed " + count + " of the row object documents  for \"" + dataSource_title + "\".");
+                winston.info("✅  parsed " + count + " of the row object documents  for \"" + insertTo + "\"." );
+                job.log("✅  parsed " + count + " of the row object documents  for \"" + insertTo + "\".");
             }
           
         }).on('error', function (err) {
@@ -280,8 +278,6 @@ module.exports.GenerateProcessedDatasetFromRawRowObjects = function (dataSource_
 }
 
 module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,datasetId,
-                                                                        dataSource_importRevision,
-                                                                        dataSource_title,
                                                                         generateFieldNamed,
                                                                         isSingular,
                                                                         findingMatchOnField,
@@ -293,7 +289,7 @@ module.exports.GenerateFieldsByJoining_comparingWithMatchFn = function (job,data
                                                                         callback) {
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
         winston.info("🔁  Generating field \"" + generateFieldNamed
-            + "\" of \"" + dataSource_title
+            + "\" of \"" + datasetId
             + "\" by joining on \"" + findingMatchOnField
             + "\" of data source \"" + joinDatasetId + "\".");
 
@@ -675,8 +671,7 @@ module.exports.GenerateFieldsByJoining = function (dataSource_uid,
 //     });
 // };
 
-module.exports.EnumerateProcessedDataset = function (dataSource_team_subdomain,datasetId,
-                                                     dataSource_importRevision,
+module.exports.EnumerateProcessedDataset = function (datasetId,
                                                      parentId,
                                                      eachFn,
                                                      errFn,
@@ -1121,9 +1116,6 @@ function updateDocWithImageUrl(job,folder,mongooseModel, doc, scrapedObject, set
 
 module.exports.GenerateImageURLFieldsByScraping
     = function (job,dataSource_team_subdomain,datasetId,
-                dataSource_importRevision,
-                dataSource_title,
-                dataset_uid,
                 htmlSourceAtURLInField,
                 setFields,
                 callback) {
@@ -1131,7 +1123,7 @@ module.exports.GenerateImageURLFieldsByScraping
     //
 
     mongoose_client.WhenMongoDBConnected(function () { // ^ we block because we're going to work with the native connection; Mongoose doesn't block til connected for any but its own managed methods
-        winston.info("🔁  Generating fields by scraping images for \"" + dataSource_title + "\".");
+        winston.info("🔁  Generating fields by scraping images for \"" + datasetId + "\".");
        
         var mongooseContext = _Lazy_Shared_ProcessedRowObject_MongooseContext(datasetId);
         var mongooseModel = mongooseContext.Model;
@@ -1150,7 +1142,6 @@ module.exports.GenerateImageURLFieldsByScraping
 
 
         mongooseModel.find(datasetQuery, function (err, docs) { // this returns all docs in memory but at least it's simple to iterate them synchronously
-            // var concurrencyLimit = 80; // at a time
 
             var selectors = _constructorSelector(setFields);
 
