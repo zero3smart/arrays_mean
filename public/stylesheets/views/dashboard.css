@@ -298,6 +298,9 @@ body.md-toast-animating {
     line-height: 30px;
     font-weight: 600;
 }
+.dashboard-list .custom {
+	font-weight: bold;
+}
 .user-list .pending {
 	color: var(--color-text-light);
 }
@@ -323,6 +326,9 @@ body.md-toast-animating {
 .dashboard-list-icon.view.default-view {
 	/*color: rgba(0,0,0,0.87);*/
 	color: var(--color-text-dark);
+}
+.dashboard-list md-checkbox {
+	margin-bottom: 0;
 }
 
 .team-list .md-button .dashboard-list-name,
@@ -588,6 +594,7 @@ ul.aa-color-picker {
 }
 .dataset .field,
 .dataset .sample {
+	color: var(--color-text-light);
 	text-overflow: ellipsis;
 	white-space: nowrap;
     overflow: hidden;
