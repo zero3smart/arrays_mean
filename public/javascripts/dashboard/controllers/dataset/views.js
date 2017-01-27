@@ -214,7 +214,7 @@ angular.module('arraysApp')
                     }
                 }
 
-                    var assignNestedDataValues = function(settingName) {
+                var assignNestedDataValues = function(settingName) {
                     if (!$scope.data[settingName]) {
                         $scope.data[settingName] = {};
                     }
