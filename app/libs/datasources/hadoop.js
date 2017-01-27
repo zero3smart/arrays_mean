@@ -2,7 +2,7 @@
 var jdbc = require('jdbc');
 var winston = require('winston');
 var jinst = require('jdbc/lib/jinst');
-var Batch = require('batch');
+var async = require('async');
 var path = require('path');
 var driverPath = path.join(__dirname,'/../drivers/');
 
@@ -43,39 +43,40 @@ function _readColumnsAndSample(tableName,fn) {
 
             var jsonData;
 
-            var batch = new Batch();
-            batch.concurrency(1);
 
-            batch.push(function(done) {
-
-                conn.createStatement(function(err,statement) {
-                    if (err) done(err);
-
-                    batch.push(function(done) {
-                        statement.executeQuery("SELECT TOP 1 FROM " + tableName,function(err,results) {
-                            if (err) done(err);
-                            batch.push(function(done) {
-                                results.toObjArray(function(err,obj) {
-                                    if (err) done(err);
-                                    jsonData = obj;
-                                    console.log(obj);
-                                    done();
-
-                                })
-                            })
-                        })
-                        done();
+            async.waterfall([
+                function(callback) {
+                    conn.createStatement(function(err,statement) {
+                        if (err) callback(err);
+                        else {
+                            callback(null,statement);
+                        }
                     })
-                })
-            })
-
-           batch.end(function(err) {
+                },
+                function(statement,callback) {
+                    statement.executeQuery("SELECT TOP 1 FROM " + tableName,function(err,results) {
+                        if (err) callback(err);
+                        else {
+                            callback(null,results);
+                        }
+                    })
+                },
+                function(results,callback) {
+                    results.toObjArray(function(err,obj) {
+                        if (err) callback(err);
+                        else {
+                            callback(null,obj);
+                        }
+                    })
+                }
+            ],function(err,jsonData) {
                 if (err) {
                     winston.error("Error reading remote data columns and records: %s",err);
-                    fn(err);
+                    return fn(err);
                 }
-                else fn(null,jsonData);
-           })
+                return fn(null,jsonData);
+            })
+
         }
     })
 }
