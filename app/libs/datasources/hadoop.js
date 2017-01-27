@@ -30,108 +30,93 @@ if (!jinst.isJvmCreated()) {
 
 var db;
 
- var config = {
-
-    url: 'jdbc:hive2://uslv-dhad-edg1a.amgen.com:10000/edl_training;AuthMech=1;KrbHostFQDN=uslv-dhad-edg1a.amgen.com;KrbRealm=HADOOP-DEV.AMGEN.COM;KrbServiceName=hive'
-};
 
 
 
+function _readColumnsAndSample(tableName,fn) {
+    db.reserve(function(err,connObj) {
 
+        if (connObj) {
 
-var JDBC = new jdbc(config);
+            console.log("Using connection: " + connObj. uuid);
+            var conn = connObj.conn;
 
-JDBC.initialize(function(err) {
-    winston.error("Error occured when initializing JDBC object");
-    console.log(err);
-});
+            var jsonData;
 
+            var batch = new Batch();
+            batch.concurrency(1);
 
+            batch.push(function(done) {
 
-// function _readColumnsAndSample(tableName,fn) {
-//     db.reserve(function(err,connObj) {
+                conn.createStatement(function(err,statement) {
+                    if (err) done(err);
 
-//         if (connObj) {
+                    batch.push(function(done) {
+                        statement.executeQuery("SELECT TOP 1 FROM " + tableName,function(err,results) {
+                            if (err) done(err);
+                            batch.push(function(done) {
+                                results.toObjArray(function(err,obj) {
+                                    if (err) done(err);
+                                    jsonData = obj;
+                                    done();
 
-//             console.log("Using connection: " + connObj. uuid);
-//             var conn = connObj.conn;
+                                })
+                            })
+                        })
+                    })
+                })
+            })
 
-//             var jsonData;
+           batch.end(function(err) {
+                if (err) {
+                    winston.error("Error reading remote data columns and records: %s",err);
+                    fn(err);
+                }
+                else fn(null,jsonData);
+           })
+        }
+    })
+}
 
-//             var batch = new Batch();
-//             batch.concurrency(1);
+module.exports.initConnection = function(req,res) {
 
-//             batch.push(function(done) {
+    if (db) {
+        winston.info("init connection: connection already made.");
+        _readColumnsAndSample(req.body.tableName,function(err,data) {
+            if (err) return res.status(500).send(err);
+            else {
+                console.log("successfully read columns and sample, data: %s",
+                    JSON.stringify(data));
+                return res.json(data);
+            }
+        })
+    } else {
+        winston.info("ready to init a new connection.");
 
-//                 conn.createStatement(function(err,statement) {
-//                     if (err) done(err);
+        var config = {
 
-//                     batch.push(function(done) {
-//                         statement.executeQuery("SELECT TOP 1 FROM " + tableName,function(err,results) {
-//                             if (err) done(err);
-//                             batch.push(function(done) {
-//                                 results.toObjArray(function(err,obj) {
-//                                     if (err) done(err);
-//                                     jsonData = obj;
-//                                     done();
-
-//                                 })
-//                             })
-//                         })
-//                     })
-//                 })
-//             })
-
-//            batch.end(function(err) {
-//                 if (err) {
-//                     winston.error("Error reading remote data columns and records: %s",err);
-//                     fn(err);
-//                 }
-//                 else fn(null,jsonData);
-//            })
-//         }
-//     })
-// }
-
-// module.exports.initConnection = function(req,res) {
-
-//     if (db) {
-//         winston.info("init connection: connection already made.");
-//         _readColumnsAndSample(req.body.tableName,function(err,data) {
-//             if (err) return res.status(500).send(err);
-//             else {
-//                 console.log("successfully read columns and sample, data: %s",
-//                     JSON.stringify(data));
-//                 return res.json(data);
-//             }
-//         })
-//     } else {
-//         winston.info("ready to init a new connection.");
-
-//         var config = {
-
-//             url: req.body.url
-//         };
+            url: req.body.url
+        };
 
    
-//         var JDBC = new jdbc(config)
+        var JDBC = new jdbc(config)
 
-//         JDBC.initialize(function(err) {
-//             if (err) {
-//                 console.log(err);
-//                 winston.error("Cannot initialize JDBC object");
-//                 return res.status(500).send(err);
-//             }
-//             db = JDBC;
-//             _readColumnsAndSample(req.body.tableName,function(err,data) {
-//                 if (err) return res.status(500).send(err);
-//                 else {
-//                     console.log("successfully read columns and sample, data: %s",
-//                         JSON.stringify(data));
-//                     return res.json(data);
-//                 }
+        JDBC.initialize(function(err) {
+            if (err) {
+                console.log(err);
+                winston.error("Cannot initialize JDBC object");
+                return res.status(500).send(err);
+            }
+            db = JDBC;
+            _readColumnsAndSample(req.body.tableName,function(err,data) {
+                if (err) return res.status(500).send(err);
+                else {
+                    console.log("successfully read columns and sample, data: %s",
+                        JSON.stringify(data));
+                    return res.json(data);
+                }
 
-//             })
-//         })
-//     }
-// }
+            })
+        })
+    }
+}
