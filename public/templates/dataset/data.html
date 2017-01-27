@@ -3,19 +3,11 @@
 
         <h2>Format Your Content</h2>
 
-        <p>
-            You can make changes to your content below. (This step is optional.)
-        </p>
-
         <!-- quickfix spacer -->
         <div style="margin-top: 30px;"></div>
 
-<div layout="row" layout-align="start center">
-
-    <div>
-        <!-- [ Set Item Title ] -->
-        <label>What field you want to use as the title for each item?</label>
-        <md-input-container class="md-block" flex-gt-sm>
+        <label>Select the field you'd like to use as a title for each item (required):</label>
+        <md-input-container class="md-block">
             <md-select required name="ObjectTitle" aria-label="Item title"
                        ng-model="data.fe_designatedFields.objectTitle"
                        >
@@ -24,38 +16,57 @@
                 </md-option>
             </md-select>
         </md-input-container>
-    </div>
 
-    <!-- quickfix spacer -->
-    <span flex="5"></span>
+        <p style="margin-top: 30px;">You can make changes to your content below.</p>
 
-        <md-button class="md-dashboard" ng-click="openFabricatedFilterDialog()">
-            <span class="btn-label">Edit Filters</span>
-        </md-button>
+        <div layout="row" layout-align="start center">
+            <md-button class="md-dashboard" ng-click="openFabricatedFilterDialog()">
+                <span class="btn-label">Edit Filters</span>
+            </md-button>
 
-        <!-- [ Open Editor ] -->
+            <span style="margin-right: 15px"></span>
 
-        <!-- quickfix spacer -->
-        <span flex="5"></span>
+            <!-- <md-button class="md-dashboard" ng-click="">
+                <span class="btn-label">Open Editor</span>
+            </md-button>
 
-        <!-- [More v] -->
-        <md-select flex="25" placeholder="More actions" name="moreActions" ng-model="nullModel" aria-label="More actions">
-            <md-option value="Field" ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
-                Add a new field
-            </md-option>
-            <md-option value="Nested" ng-click="openNestedDialog()">
-                Group data together
-            </md-option>
-            <!-- <md-option value="ImageScraping" ng-click="openImageScrapingDialog()" ng-if="user.role=='superAdmin'">
-                Image Scraping
-            </md-option> -->
-            <md-option value="Join" ng-click="openJoinDialog()">
-                Join with another dataset
-            </md-option>
-        </md-select>
-</div>
+            <span flex="5"></span> -->
+
+            <md-menu>
+                <md-button class="md-dashboard" aria-label="More actions menu" ng-click="$mdOpenMenu($event)">
+                    More&ensp;<i class="fa fa-caret-down" aria-hidden="true"></i>
+                    <span class="md-select-icon" aria-hidden="true"></span>
+                </md-button>
+                <md-menu-content width="4">
+                    <md-menu-item>
+
+                        <md-button ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
+                            Add a new field
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-click="openNestedDialog()">
+                            Group data together
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-click="openImageScrapingDialog()" ng-if="user.role=='superAdmin'">
+                            Image scraping
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-click="openJoinDialog()">
+                            Join with another dataset
+                        </md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+        </div>
+
 <!-- quickfix spacer -->
-<div style="margin-top: 30px;"></div>
+<p style="margin-top: 30px;">
+    ​​​​​​​We found these fields in your dataset:
+</p>
 
         <fieldset class="standard">
             <!-- <legend>Fields</legend> -->
