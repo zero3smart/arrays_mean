@@ -43,39 +43,49 @@ function _readColumnsAndSample(tableName,fn) {
 
             var jsonData;
 
-
-            async.waterfall([
-                function(callback) {
-                    conn.createStatement(function(err,statement) {
-                        if (err) callback(err);
-                        else {
-                            callback(null,statement);
-                        }
-                    })
-                },
-                function(statement,callback) {
-                    statement.executeQuery("SELECT TOP 1 FROM " + tableName,function(err,results) {
-                        if (err) callback(err);
-                        else {
-                            callback(null,results);
-                        }
-                    })
-                },
-                function(results,callback) {
+            conn.createStatement(function(err,statement) {
+                console.log(tableName);
+                statement.executeQuery("SELECT * FROM " + tableName,function(err,results) {
+                    console.log(results);
                     results.toObjArray(function(err,obj) {
-                        if (err) callback(err);
-                        else {
-                            callback(null,obj);
-                        }
+                        console.log(obj);
                     })
-                }
-            ],function(err,jsonData) {
-                if (err) {
-                    winston.error("Error reading remote data columns and records: %s",err);
-                    return fn(err);
-                }
-                return fn(null,jsonData);
+                })
             })
+
+
+            // async.waterfall([
+            //     function(callback) {
+            //         conn.createStatement(function(err,statement) {
+            //             if (err) callback(err);
+            //             else {
+            //                 callback(null,statement);
+            //             }
+            //         })
+            //     },
+            //     function(statement,callback) {
+            //         statement.executeQuery("SELECT TOP 1 FROM " + tableName,function(err,results) {
+            //             if (err) callback(err);
+            //             else {
+            //                 callback(null,results);
+            //             }
+            //         })
+            //     },
+            //     function(results,callback) {
+            //         results.toObjArray(function(err,obj) {
+            //             if (err) callback(err);
+            //             else {
+            //                 callback(null,obj);
+            //             }
+            //         })
+            //     }
+            // ],function(err,jsonData) {
+            //     if (err) {
+            //         winston.error("Error reading remote data columns and records: %s",err);
+            //         return fn(err);
+            //     }
+            //     return fn(null,jsonData);
+            // })
 
         }
     })
