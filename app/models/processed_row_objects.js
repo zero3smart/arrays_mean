@@ -154,7 +154,7 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataset_i
         }).on('end', function () {
 
 
-            winston.info("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects. Used " + process.memoryUsage().heapUsed + " heap memory. Inserted " + count + " processed rows for\"" + dataSource_title + "\".");
+            winston.info("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects. Used " + process.memoryUsage().heapUsed + " heap memory. Inserted " + count + " processed rows for\"" + dataset_id + "\".");
             job.log("✅  [" + (new Date()).toString() + "] Saved collection of processed row objects.")
     
             return callback(error)

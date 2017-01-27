@@ -17,7 +17,7 @@ angular.module('arraysApp')
             // still needed now that this step comes later?
 
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
-            if (!dataset.fe_visible) {dataset.fe_visible = false;}
+            if (!dataset.fe_visible) {dataset.fe_visible = true;}
 
             var original_feVisible = dataset.fe_visible;
 
@@ -54,11 +54,14 @@ angular.module('arraysApp')
             $scope.$parent.$parent.currentNavItem = 'settings';
 
             $scope.updatePublishSettings = function() {
+
                 if(!dataset.fe_visible) {
                     dataset.isPublic = false;
                     dataset.fe_listed = false;
                 } else {
                     if(dataset.imported) {
+
+
                         DatasetService.update($scope.$parent.$parent.dataset._id,{isPublic: dataset.isPublic,
                             fe_visible: dataset.fe_visible,fe_listed:dataset.fe_listed})
                        
