@@ -1,25 +1,44 @@
 <li class="gallery-item gallery-item-text">
-	{% if fe_galleryItem_useBackgroundColor %}
+{% if fe_galleryItem_useBackgroundColor %}
 	<a href="/{{ array_source_key }}/{{ doc._id }}{{ '?embed=true' if embedded }}" class="gallery-item-text-link" style="background-color:{{ fe_galleryItem_backgroundColorForRowObj(doc).backgroundColor | safe }};">
-	{% else %}
+{% else %}
 	<a href="/{{ array_source_key }}/{{ doc._id }}{{ '?embed=true' if embedded }}" class="gallery-item-text-link">
-	{% endif %}
+{% endif %}
 		<div class="gallery-item-text-inner">
-			{% if fe_galleryItem_secondaryColumnDisplay and fe_galleryItem_useBackgroundColor %}
-				<div class="gallery-secondary-column-item">
-					<h2 style="color:{{ fe_galleryItem_backgroundColorForRowObj(doc).contentColor | safe }};">{{ doc.rowParams[fe_galleryItem_secondaryColumnDisplay] if doc.rowParams[fe_galleryItem_secondaryColumnDisplay] else "(null)" }}</h2>
-					<div class="text-fade-overlay"></div>
-				</div>
-			{% elif fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}
-                {{ fe_galleryItem_htmlForIconFromRowObjWhenMissingImage(doc) | safe }}
-            {% endif %}
+		{% if fe_galleryItem_secondaryColumnDisplay and fe_galleryItem_useBackgroundColor %}
+			<div class="gallery-secondary-column-item">
+				<h2 style="color:{{ fe_galleryItem_backgroundColorForRowObj(doc).contentColor | safe }};">{{ doc.rowParams[fe_galleryItem_secondaryColumnDisplay] if doc.rowParams[fe_galleryItem_secondaryColumnDisplay] else "(null)" }}</h2>
+				<div class="text-fade-overlay" style="background:linear-gradient(transparent 105px, {{ fe_galleryItem_backgroundColorForRowObj(doc).backgroundColor | safe }});"></div>
+			</div>
+		{% elif fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}
+            {{ fe_galleryItem_htmlForIconFromRowObjWhenMissingImage(doc) | safe }}
+        {% endif %}
 		</div>
+
 		<div class="gallery-tooltip">
+		{% if fe_galleryItem_secondaryColumnDisplay %}
+			<div class="with-secondary-column">
+				<h2 class="gallery-title" style="color:{{ fe_galleryItem_backgroundColorForRowObj(doc).contentColor | safe }};">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</h2>
+				<div class="gallery-object-title-ellipses">
+					<h2 style="color:{{ fe_galleryItem_backgroundColorForRowObj(doc).contentColor | safe }};">…</h2>
+				</div>
+			</div>
+		{% else %}
+		<div class="gallery-tooltip">
+			<div>
 			{% if fe_galleryItem_backgroundColorForRowObj and fe_galleryItem_useBackgroundColor %}
-			<h2 class="gallery-title" style="color:{{ fe_galleryItem_backgroundColorForRowObj(doc).contentColor | safe }};">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</h2>
+				<h2 class="gallery-title" style="color:{{ fe_galleryItem_backgroundColorForRowObj(doc).contentColor | safe }};">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</h2>
+				<div class="gallery-object-title-ellipses">
+					<h2 style="color:{{ fe_galleryItem_backgroundColorForRowObj(doc).contentColor | safe }};">…</h2>
+				</div>
 			{% else %}
-			<h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</h2>
+				<h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</h2>
+				<div class="gallery-object-title-ellipses">
+					<h2>…</h2>
+				</div>
 			{% endif %}
+			</div>
+		{% endif %}
 		</div>
 	</a>
 </li>
