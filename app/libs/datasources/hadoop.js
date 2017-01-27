@@ -109,6 +109,13 @@ module.exports.initConnection = function(req,res) {
 
             url: req.body.url
         };
+
+        // var jsonData = [{name:'abc',sample:'1'},{name:'colms2',sample:"what is this???"},{name:"hello",sample:"hello"}];
+        // req.session.columns[req.params.id] = jsonData;
+
+        // return res.status(200).json({message: 'ok'});
+
+
    
         var JDBC = new jdbc(config)
 

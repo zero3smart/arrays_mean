@@ -1290,7 +1290,10 @@ angular.module('arraysApp')
                         });
 
                     $scope.vm.dataForm.$setDirty();
-                }
+                },
+
+                disabled: $scope.$parent.$parent.dataset.connection
+
             };
 
             $scope.saveRequiredFields = function() {
