@@ -33,14 +33,21 @@ HorizontalBarChart.prototype._animate = function() {
         });
 };
 
-HorizontalBarChart.prototype.rotateLabel = function() {
-    if(this._showLabels) {
+HorizontalBarChart.prototype.rotateYLabel = function() {
+    if(this._showYLabels) {
         return true;
     } else {
         return this._yAxisContainer.selectAll("g")
-        .style("display", "none")
+        .style("visibility", "hidden")
     }
 };
+
+HorizontalBarChart.prototype.rotateXLabel = function() {
+    if(this._showXLabels) {
+        return this._xAxisContainer.selectAll("g")
+        .style("visibility", "visible")
+    }
+}
 
 HorizontalBarChart.prototype._animateForSort = function() {
 
