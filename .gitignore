@@ -95,6 +95,9 @@ Temporary Items
 ### Espresso ###
 *.esproj
 
+## user folder
+user/
+
 
 ### JSHint ###
 *.jshintrc
