@@ -29,4 +29,38 @@ $(function () {
 			.addTo(controller);
 	 }
 
+	 function toggleDisplayValForArr(arr) {
+	 	for (var i = 0; i < arr.length; i++) {
+	 		arr[i].nextElementSibling.style.display = 'block';
+	 	}
+	 }
+
+	 // grab all h2 secondary column items, assign gallery title truncation height
+	 var galleryTitleThreshold, secondaryColumns, galleryTitles;
+
+	 secondaryColumns = document.querySelectorAll('.gallery-secondary-column-item h2');
+	 galleryTitleThreshold = secondaryColumns ? 44 : 66;
+
+	 galleryTitles = document.querySelectorAll('.gallery-title');
+
+	 //convert to array
+	 var secondaryColumnsArr, galleryTitlesArr; 
+
+	 secondaryColumnsArr = Array.prototype.slice.call(secondaryColumns);
+	 galleryTitlesArr = Array.prototype.slice.call(galleryTitles);
+
+	 // filter out elements below height threshold
+	 var overflowColumns, overflowGalleryTitles;
+
+	 overflowColumns = secondaryColumnsArr.filter(function(el) {
+  	 	return el.offsetHeight > 136;
+  	 });
+
+  	 overflowGalleryTitles = galleryTitlesArr.filter(function(el) {
+	 	return el.offsetHeight > galleryTitleThreshold;
+	 })
+
+	 toggleDisplayValForArr(overflowColumns);
+	 toggleDisplayValForArr(overflowGalleryTitles);
+
 });
