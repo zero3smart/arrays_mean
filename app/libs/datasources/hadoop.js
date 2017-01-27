@@ -58,11 +58,13 @@ function _readColumnsAndSample(tableName,fn) {
                                 results.toObjArray(function(err,obj) {
                                     if (err) done(err);
                                     jsonData = obj;
+                                    console.log(obj);
                                     done();
 
                                 })
                             })
                         })
+                        done();
                     })
                 })
             })
