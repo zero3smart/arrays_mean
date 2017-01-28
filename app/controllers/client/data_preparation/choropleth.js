@@ -130,12 +130,17 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
                 }
+
+                var totalQuery = {$sum: 1};
+                if (dataSourceDescription.uid == "women_s_march_turnouts") {
+                    totalQuery = {$sum: "$" + "rowParams.Estimate2 (high)"}
+                }
                 aggregationOperators = aggregationOperators.concat(
                     [
                         { // unique/grouping and summing stage
                             $group: {
                                 _id: "$" + "rowParams." + mapBy_realColumnName,
-                                total: {$sum: 1} // the count
+                                total: totalQuery
                             }
                         },
                         { // reformat
