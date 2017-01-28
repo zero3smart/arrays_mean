@@ -2,15 +2,24 @@
 <md-content layout-padding>
     <div>
 
+        <!-- <div > -->
+        <h2 ng-if="!dirty && imported">Your data has been successfully processed!</h2>
 
-        <h2 ng-if="dirty">You're almost done!<br/>Your data must be imported for some of the changes to take effect.</h2>
+        <!-- <div ng-if="dataset.fe_visible">
+        <h2><strong><a href="{{subdomain}}/{{dataset.uid}}-r{{dataset.importRevision}}/{{dataset.fe_views.default_view | viewToName }}" target="_blank">View your array</a></strong></h2>
+        </div> -->
 
-        <md-content class="md-block md-padding" ng-show="inProgress">
+        <!-- </div> -->
+
+        <h2 ng-if="dirty">
+            Your data is processing&hellip;
+        </h2>
+
+        <md-content class="md-block" ng-show="inProgress">
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>
         </md-content>
 
-
-        <md-content class="md-block" md-colors="{background: 'grey'}">
+        <!-- <md-content class="md-block" md-colors="{background: 'grey'}">
 
             <div ng-if="dirty" ng-repeat=" job in jobs">
 
@@ -40,18 +49,17 @@
             </div>
 
 
-        </md-content>
+        </md-content> -->
 
 
 
 
 
-        <div layout="row" layout-align="end center" class="panel-footer" ng-if="dirty">
+        <!-- <div layout="row" layout-align="end center" class="panel-footer" ng-if="dirty">
+
         <md-checkbox name="selectAll_showFields" ng-model="dataset.skipImageScraping" ng-change="toggleImageScraping()" aria-label="Select All" ng-if="user.role=='superAdmin'">
             Skip Image Scraping
         </md-checkbox>
-
-
 
             <md-button class="md-raised pull-right" ng-click="importData()" ng-disabled="inProgress"><span
                     class="glyphicon glyphicon-import"></span>{{ inProgress ? 'Importing' : 'Import' }}
@@ -61,17 +69,9 @@
                     class="glyphicon glyphicon-import"></span> Cancel
             </md-button>
 
-
-        </div>
-    </div>
-
-    <div ng-if="!dirty && imported">
-        <h2>Congratulations! You're all done!</h2>
-
-        <div ng-if="dataset.fe_visible">
-            <h2><strong><a href="{{subdomain}}/{{dataset.uid}}-r{{dataset.importRevision}}/{{dataset.fe_views.default_view | viewToName }}" target="_blank">View your array</a></strong></h2>
-        </div>
+        </div> -->
 
     </div>
+
 </md-content>
 <ng-include src="'/templates/blocks/dataset.empty.html'" ng-if=" (dataset.fe_listed && dataset.fe_visible && !dataset.fe_views.default_view) "></ng-include>
