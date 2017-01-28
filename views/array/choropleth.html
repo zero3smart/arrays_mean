@@ -24,88 +24,92 @@
             </div>
         </header><!-- .array-header -->
 
-        {% if view_description %}
         <div class="map-description-wrapper">
+        {% if view_description %}
+
             <div class="array-description-wrapper">
                 <p class="array-description">{{ view_description }}</p>
             </div>
-        </div>
+        
         {% endif %}
+        </div>
 
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-sm-12">
+        <div class="map-container">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
 
-                    <div class="sort-bar clearfix">
+                        <div class="sort-bar clearfix">
 
-                        <nav class="sort-bar-left pull-left" role="navigation">
-                            {{
-                            dropdown.default(
-                                'Map By',
-                                mapBy if mapBy else defaultMapByColumnName_humanReadable,
-                                colNames_orderedForMapByDropdown,
-                                routePath_base | constructedRoutePath(filterObj, {
-                                    searchCol: searchCol,
-                                    searchQ: searchQ,
-                                    mapBy: ''
-                                })
-                            )
-                            }}
-                        </nav>
+                            <nav class="sort-bar-left pull-left" role="navigation">
+                                {{
+                                dropdown.default(
+                                    'Map By',
+                                    mapBy if mapBy else defaultMapByColumnName_humanReadable,
+                                    colNames_orderedForMapByDropdown,
+                                    routePath_base | constructedRoutePath(filterObj, {
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        mapBy: ''
+                                    })
+                                )
+                                }}
+                            </nav>
 
-                        <div class="sort-bar-right pull-right">
-                            {{
-                            search.panel(
-                                routePath_base,
-                                searchCol if searchCol else "Object Title",
-                                colNames_orderedForSortByDropdown,
-                                searchQ if searchQ else "",
-                                sortBy,
-                                sortDir,
-                                filterObj
-                            )
-                            }}
+                            <div class="sort-bar-right pull-right">
+                                {{
+                                search.panel(
+                                    routePath_base,
+                                    searchCol if searchCol else "Object Title",
+                                    colNames_orderedForSortByDropdown,
+                                    searchQ if searchQ else "",
+                                    sortBy,
+                                    sortDir,
+                                    filterObj
+                                )
+                                }}
+                            </div>
+
                         </div>
 
                     </div>
+                </div><!-- .row -->
+            </div><!-- .container-fluid -->
 
-                </div>
-            </div><!-- .row -->
-        </div><!-- .container-fluid -->
+            {% if isFilterActive %}
+                {{
+                filter.default(displayTitleOverrides,
+                    routePath_base | constructedRoutePath(null, {
+                        searchCol: searchCol,
+                        searchQ: searchQ,
+                        mapBy: mapBy
+                    }),
+                    filterObj,
+                    truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
+                    false,
+                    'filter-bar-fixed-bottom'
+                )
+                }}
+            {% endif %}
 
-        {% if isFilterActive %}
-            {{
-            filter.default(displayTitleOverrides,
-                routePath_base | constructedRoutePath(null, {
-                    searchCol: searchCol,
-                    searchQ: searchQ,
-                    mapBy: mapBy
-                }),
-                filterObj,
-                truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
-                false,
-                'filter-bar-fixed-bottom'
-            )
-            }}
-        {% endif %}
+            <script type="text/javascript">
+                var templateOutput_topValue = {{ highestValue if highestValue else 0 }};
+                var geoData = {{ featureCollection | dump | safe }};
 
-        <script type="text/javascript">
-            var templateOutput_topValue = {{ highestValue if highestValue else 0 }};
-            var geoData = {{ featureCollection | dump | safe }};
+                var filterObj = {{ filterObj | dump | safe }};
+                var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
+                        searchCol: searchCol,
+                        searchQ: searchQ,
+                        mapBy: mapBy
+                }) | safe }}";
+                var mapBy = '{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}';
+            </script>
 
-            var filterObj = {{ filterObj | dump | safe }};
-            var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
-                    searchCol: searchCol,
-                    searchQ: searchQ,
-                    mapBy: mapBy
-            }) | safe }}";
-            var mapBy = '{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}';
-        </script>
+            <div class="array-content">
 
-        <div class="array-content">
+                <div id="map"></div>
 
-            <div id="map"></div>
-
+            </div>
         </div>
 
     </section>

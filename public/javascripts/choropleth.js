@@ -1,4 +1,10 @@
 /**
+*Set Map's container div height
+**/
+var offsetY = document.getElementsByClassName("map-description-wrapper")[0].offsetTop + document.getElementsByClassName("map-description-wrapper")[0].clientHeight;
+document.getElementsByClassName('map-container')[0].style.height = window.innerHeight - 75 - offsetY + "px";
+
+/**
  * Initialize variables
  */
 var layer = 'contour',
@@ -137,3 +143,4 @@ map.on('load', function () {
         window.location = urlForFilterValue;
     });
 });
+
