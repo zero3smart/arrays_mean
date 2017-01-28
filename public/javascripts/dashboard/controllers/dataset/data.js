@@ -862,6 +862,10 @@ angular.module('arraysApp')
                     $scope.dialog.form.$setDirty();
                 };
 
+                $scope.toggleShowAdvanced = function(field) {
+                    field.showAdvanced = !field.showAdvanced; // #flip_it
+                }
+
                 $scope.verifyUniqueHtmlSource = function (imageScraping, index) {
                     var unique = true;
                     $scope.dataset.imageScraping.forEach(function (_imageScraping) {
@@ -872,6 +876,15 @@ angular.module('arraysApp')
                     });
 
                     $scope.dialog.form['imageScrapingField_' + index].$setValidity('unique', unique);
+
+                    // if newFieldName is blank, auto assign name // for demo
+                    // don't change if exists -- change in the format field modal
+                    imageScraping.setFields.forEach(function (field, i) {
+                        if(field.newFieldName === '') {
+                            var sourceFieldName = imageScraping.htmlSourceAtURLInField;
+                            field.newFieldName = sourceFieldName + '_scraped_' + i;
+                        }
+                    });
                 };
 
                 $scope.verifyValidNewFieldName = function (fieldName, index) {
@@ -1294,7 +1307,7 @@ angular.module('arraysApp')
             $scope.saveRequiredFields = function() {
                 $scope.$parent.$parent.dataset.fn_new_rowPrimaryKeyFromRowObject = $scope.data.fn_new_rowPrimaryKeyFromRowObject;
                 for(designatedField in $scope.data.fe_designatedFields) {
-                    $scope.$parent.$parent.dataset.fe_designatedFields[designatedField] = $scope.data.fe_designatedFields[designatedField];
+                        $scope.$parent.$parent.dataset.fe_designatedFields[designatedField] = $scope.data.fe_designatedFields[designatedField];
                 }
             };
 

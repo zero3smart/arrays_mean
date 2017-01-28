@@ -32,7 +32,9 @@
                         </span>
                     </div>
 
-                    <fieldset ng-repeat="field in imageScraping.setFields" class="md-padding">
+                    <fieldset ng-repeat="field in imageScraping.setFields">
+                    {{ field.newFieldName || 'New scraped field' }}&ensp;<a href="#" ng-click="toggleShowAdvanced(field)">Advanced</a>
+                    <div ng-hide="!field.showAdvanced">
                         <div layout="row">
                             <md-input-container class="md-block" flex>
                                 <label>New Field Name</label>
@@ -98,16 +100,17 @@
                             <label>Selector</label>
                             <input type="text" name="selector_{{$index}}" ng-model="field.selector"/>
                         </md-input-container>
+
+                    </div>
                     </fieldset>
 
 
 
-
-                    <div layout="row" layout-align="end center">
-                        <md-button class="md-dashboard" ng-click="addField(imageScraping.setFields)">
-                               Add another field
-                        </md-button>
-                    </div>
+                    <p style="margin-top: 8px">
+                        <a href="" class="md-dashboard" ng-click="addField(imageScraping.setFields)">
+                            Add another field
+                        </a>
+                    </p>
                 </div>
 
             </md-content>
