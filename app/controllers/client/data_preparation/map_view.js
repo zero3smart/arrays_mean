@@ -136,7 +136,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         { // unique/grouping and summing stage
                             $group: {
                                 _id: "$" + "rowParams." + mapBy_realColumnName,
-                                total: {$sum: 1} // the count
+                                // total: {$sum: 1} // the count
+                                total: {$sum: "$" + "rowParams.Estimate2 (high)"}
                             }
                         },
                         { // reformat

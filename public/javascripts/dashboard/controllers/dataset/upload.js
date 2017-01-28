@@ -32,8 +32,11 @@ angular.module('arraysApp')
                 $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });
             $scope.$watch('isConnecting', function(connecting) {
+                if (!dataset.fileName) {
+                    $scope.primaryAction.disabled = (connecting !== false)
+                }
                 
-                $scope.primaryAction.disabled = (connecting !== false)
+                
 
             });
             $scope.primaryAction.do = function() {
