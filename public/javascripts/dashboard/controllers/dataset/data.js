@@ -98,7 +98,7 @@ angular.module('arraysApp')
                     }, function () {
 
 
-                        console.log('You cancelled the field dialog.');
+                        // console.log('You cancelled the field dialog.');
                     });
             };
 
@@ -403,7 +403,7 @@ angular.module('arraysApp')
 
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
-                        console.log('You cancelled the nested dialog.');
+                        // console.log('You cancelled the nested dialog.');
                     });
             };
 
@@ -654,7 +654,7 @@ angular.module('arraysApp')
                         $scope.$parent.$parent.dataset = savedDataset;
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
-                        console.log('You cancelled the fabricated filter dialog.');
+                        // console.log('You cancelled the fabricated filter dialog.');
                     });
             };
 
@@ -793,7 +793,7 @@ angular.module('arraysApp')
                         sortColumnsByDisplayOrder();
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
-                        console.log('You cancelled the image scraping dialog.');
+                        // console.log('You cancelled the image scraping dialog.');
                     });
             };
 
@@ -936,7 +936,7 @@ angular.module('arraysApp')
 
                         $scope.vm.dataForm.$setDirty();
                     }, function () {
-                        console.log('You cancelled the dataset join dialog.');
+                        // console.log('You cancelled the dataset join dialog.');
                     });
             };
 
@@ -958,7 +958,7 @@ angular.module('arraysApp')
                         $scope.availableMatchFns = availableMatchFns;
                     })
                     .catch(function(error) {
-                        console.error(error);
+                        // console.error(error);
                     });
 
                 var user = AuthService.currentUser();
@@ -966,13 +966,13 @@ angular.module('arraysApp')
                     DatasetService.getDatasetsWithQuery({_team: user.defaultLoginTeam._id})
                         .then(initializeDatasets)
                         .catch(function(error) {
-                            console.error(error);
+                            // console.error(error);
                         });
                 } else if (user.role == 'editor') {
                     DatasetService.getDatasetsWithQuery({_id: {$in: user._editors}, _team: user.defaultLoginTeam._id})
                         .then(initializeDatasets)
                         .catch(function(error) {
-                            console.error(error);
+                            // console.error(error);
                         });
                 } else {
                     $scope.datasets = [];
@@ -1166,7 +1166,7 @@ angular.module('arraysApp')
                     $scope.data.foreignDataset.forEach(function(source, index) {
 
                         if ($scope.dataset.relationshipFields[index] !== undefined) {
-                            $scope.dataset.relationshipFields[index].by.joinDataset = source._id
+                            $scope.dataset.relationshipFields[index].by.joinDataset = source._id;
                             var field_name = $scope.dataset.relationshipFields[index].field;
 
                             if ($scope.dataset._otherSources.indexOf(source._id) == -1 )
