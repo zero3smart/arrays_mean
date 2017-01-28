@@ -93,8 +93,9 @@
         var ensureActiveSubscription = function () {
 
             var deferred = $q.defer();
+            var user = currentUser();
             var team = currentTeam();
-            if (isLoggedIn && (team.subscription.state === 'in_trial' || team.subscription.state === 'active') ) {
+            if (isLoggedIn && (user.role === 'superAdmin' || team.subscription.state === 'in_trial' || team.subscription.state === 'active') ) {
                 deferred.resolve();
             } else {
                 deferred.reject();
