@@ -24,13 +24,13 @@
                 ng-change="updatePublishSettings()"
                 ng-disabled="!dataset.fe_visible"
                 aria-label="Make dataset public">
-                Allow anyone to view dataset (not only registered users)
+                Allow anyone to view visualization (not only registered users)
             </md-switch>
             <md-switch ng-model="dataset.fe_listed"
                 ng-change="updatePublishSettings()"
                 ng-disabled="!dataset.fe_visible || !dataset.isPublic"
                 aria-label="List dataset">
-                List your dataset at explore.arrays.co
+                List your visualization on arrays.co
             </md-switch>
         </md-input-container>
 
@@ -58,12 +58,12 @@
         </md-input-container> -->
 
         <div>
-            <label>Select a color for your dataset</label>
+            <label>Select a color for your visualization page</label>
             <aa-color-picker selected="dataset.brandColor"></aa-color-picker>
         </div>
 
         <div>
-            <label>Upload an image to showcase your dataset</label> <span class="optional" ng-if="!dataset.banner">(optional)</span>
+            <label>Upload an image to showcase your visualization</label> <span class="optional" ng-if="!dataset.banner">(optional)</span>
 
             <div flex="50">
                 <img class="img-responsive" ng-if="dataset.banner" ng-src="{{dataset.banner}}" style="margin-bottom: 15px;">
@@ -78,7 +78,7 @@
         </div>
 
         <md-input-container class="md-block" style="margin-top: 45px;">
-            <label>Enter a description for your dataset <span class="optional">(optional)</span></label>
+            <label>Enter a description for your visualization <span class="optional">(optional)</span></label>
             <textarea name="description" ng-model="dataset.description" rows="2"></textarea>
         </md-input-container>
 
