@@ -15,11 +15,11 @@
 
         <md-input-container class="md-block publish-settings">
             <label style="margin-bottom: 15px">Privacy settings</label>
-            <md-switch ng-model="dataset.fe_visible"
+            <!-- <md-switch ng-model="dataset.fe_visible"
                 ng-change="updatePublishSettings()"
                 aria-label="Publish dataset">
                 Make dataset public
-            </md-switch>
+            </md-switch> -->
             <md-switch ng-model="dataset.isPublic"
                 ng-change="updatePublishSettings()"
                 ng-disabled="!dataset.fe_visible"
