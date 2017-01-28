@@ -2,7 +2,7 @@ angular.module('arraysApp')
     .controller('DatasetDataCtrl', ['$scope', '$state', '$q', 'DatasetService', 'AuthService', '$mdToast', '$mdDialog', '$filter', 'dataset', 'additionalDatasources', 'availableTypeCoercions', 'availableDesignatedFields',
         function ($scope, $state, $q, DatasetService, AuthService, $mdToast, $mdDialog, $filter, dataset, additionalDatasources, availableTypeCoercions, availableDesignatedFields) {
             $scope.$parent.$parent.currentNavItem = 'data';
-    
+
 
 
             $scope.availableTypeCoercions = availableTypeCoercions;
@@ -799,20 +799,19 @@ angular.module('arraysApp')
 
             function ImageScrapingDialogController($scope, $mdDialog, $filter, dataset) {
 
-            
+
 
                 $scope.reset = function () {
                     $scope.dataset = angular.copy(dataset);
                     $scope.data = {};
 
-                    if (!$scope.dataset.imageScraping) $scope.dataset.imageScraping = [];
+                    if (!$scope.dataset.imageScraping) { $scope.dataset.imageScraping = []; }
 
                     for (var i = 0; i < $scope.dataset.imageScraping.length ; i++) {
                         $scope.dataset.imageScraping[i].setFields.map(function(field) {
                             var fieldName = field.newFieldName;
                             delete $scope.dataset.fe_excludeFields[fieldName];
-                        })
-
+                        });
                     }
 
                     $scope.availableDesignatedFields = availableDesignatedFields;
@@ -841,6 +840,8 @@ angular.module('arraysApp')
                         ]
                     });
                 };
+
+                if (!$scope.dataset.imageScraping.length) { $scope.addImageToScrap(); }
 
                 $scope.removeImageToScrap = function (index) {
                     $scope.dataset.imageScraping.splice(index, 1);
@@ -898,7 +899,7 @@ angular.module('arraysApp')
 
                 $scope.save = function () {
 
-                   
+
 
 
                     for (var fieldName in $scope.data.designatedFields) {
@@ -988,7 +989,7 @@ angular.module('arraysApp')
                     });
 
                     $scope.dataset.relationshipFields.forEach(function(relationshipField, index) {
-                    
+
                         DatasetService.getMappingDatasourceCols(relationshipField.by.joinDataset)
                             .then(function(response) {
                                 if (response.status == 200) {
@@ -1219,7 +1220,7 @@ angular.module('arraysApp')
 
                         return setFields1.map(function(field) {
 
-                          
+
                             if (!$scope.$parent.$parent.dataset.fe_excludeFields[field.newFieldName]) {
                                 $scope.$parent.$parent.dataset.fe_excludeFields[field.newFieldName] = false;
                             }
@@ -1232,7 +1233,7 @@ angular.module('arraysApp')
                             };
                         }).concat(setFields2.map(function(field) {
 
-                        
+
                             if (!$scope.$parent.$parent.dataset.fe_excludeFields[field.newFieldName]) {
                                 $scope.$parent.$parent.dataset.fe_excludeFields[field.newFieldName] = false;
 

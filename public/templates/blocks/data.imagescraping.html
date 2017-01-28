@@ -1,13 +1,5 @@
-<md-dialog aria-label="Image Scraping : ({{ dataset.title }})" class="field-dialog">
-    <md-toolbar>
-        <div class="md-toolbar-tools">
-            <h2>Image Scraping : ({{ dataset.title }})</h2>
-            <span flex></span>
-            <md-button class="md-icon-button" ng-click="cancel()">
-                <span class="icon-close-big" aria-label="Close dialog"></span>
-            </md-button>
-        </div>
-    </md-toolbar>
+<md-dialog md-no-ink aria-label="Image Scraping" class="field-dialog">
+    <aa-toolbar title="Image Scraping" class=""></aa-toolbar>
 
     <md-dialog-content>
         <form name="dialog.form">
@@ -15,7 +7,7 @@
                 <div ng-repeat="imageScraping in dataset.imageScraping">
                     <div layout="row">
                         <md-input-container flex>
-                            <label>Html Source URL Field</label>
+                            <label>URL Source Field</label>
 
                             <md-select required name="imageScrapingField_{{$index}}"
                                        ng-model="imageScraping.htmlSourceAtURLInField"
@@ -30,7 +22,7 @@
                             </div>
                         </md-input-container>
 
-                         
+
                         <div layout-align="end center">
                             <md-button class="md-raised" ng-click="removeImageToScrap($index);"
                                        aria-label="Remove Image To Scrap"><span
@@ -70,7 +62,7 @@
                             </div>
 
 
-                            <md-input-container ng-if="!srcset"class="md-block" flex="50">
+                            <md-input-container ng-if="!srcset" class="md-block" flex="50">
                                 <label>Resize</label>
                                 <input type="number" min="1" name="resize_{{$index}}" ng-model="field.resize" />
                             </md-input-container>
@@ -99,34 +91,38 @@
                         <md-input-container class="md-block">
                             <label>Selector</label>
                             <input type="text" name="selector_{{$index}}" ng-model="field.selector"/>
-                        </md-input-container> 
+                        </md-input-container>
                     </fieldset>
 
 
 
 
-                    <div layout="row" layout-align="end center" >
-                        <md-button class="md-raised"
-                                   ng-click="addField(imageScraping.setFields)"><span
-                                class="glyphicon glyphicon-plus"></span>Add another field
+                    <div layout="row" layout-align="end center">
+                        <md-button class="md-dashboard" ng-click="addField(imageScraping.setFields)">
+                               Add another field
                         </md-button>
                     </div>
                 </div>
 
-                <md-button class="md-raised" ng-click="addImageToScrap()"><span
-                        class="glyphicon glyphicon-plus"></span>Add more images to scrape
-                </md-button>
             </md-content>
 
-            <md-dialog-actions layout="row" layout-align="end center">
-                <md-button class="md-raised" ng-click="reset()" ng-disabled="!dialog.form.$dirty">
-                    Reset
+            <md-dialog-actions layout="row" layout-align="space-between center" style="padding-left: 8px">
+
+                <md-button class="md-dashboard" ng-click="addImageToScrap()">
+                    Add more images to scrape
                 </md-button>
-                <md-button class="md-raised" ng-click="save()"
-                           ng-disabled="!dialog.form.$dirty || dialog.form.$invalid">
-                    Save
-                </md-button>
+
+                <div>
+                    <md-button class="md-dashboard cancel" ng-click="reset()" ng-disabled="!dialog.form.$dirty" style="margin-right: 8px;">
+                        <span class="btn-label">Reset</span>
+                    </md-button>
+                    <md-button class="md-dashboard confirm" ng-click="save()"
+                               ng-disabled="!dialog.form.$dirty || dialog.form.$invalid">
+                        <span class="btn-label">Save</span>
+                    </md-button>
+                </div>
             </md-dialog-actions>
+            <!-- <aa-dialog-actions confirm="Save" cancel=""></aa-dialog-actions> -->
         </form>
     </md-dialog-content>
 </md-dialog>
