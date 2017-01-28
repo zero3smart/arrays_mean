@@ -1,4 +1,4 @@
-<form name="settingsForm" ng-submit="submitForm(settingsForm.$valid)" novalidate ng-if="dataset.uid">
+<form name="vm.settingsForm" ng-submit="submitForm(vm.settingsForm.$valid)" novalidate ng-if="dataset.uid">
     <md-content layout-padding md-no-ink>
 
         <h2>Display Settings</h2>
@@ -8,7 +8,7 @@
         <md-input-container class="md-block" style="margin-top: 45px;">
             <label>Title</label>
             <input required name="title" ng-model="dataset.title">
-            <div ng-messages="settingsForm.title.$error">
+            <div ng-messages="vm.settingsForm.title.$error">
                 <div ng-message="required">This is required.</div>
             </div>
         </md-input-container>
@@ -85,13 +85,13 @@
         <md-input-container class="md-block">
             <label>Enter a link to your source data <span class="optional">(optional)</span></label>
             <input type="url" name="source_urls" ng-model="dataset.urls[0]">
-            <div ng-messages="settingsForm.source_urls.$error">
+            <div ng-messages="vm.settingsForm.source_urls.$error">
                 <div ng-message="url">Please enter a valid url.</div>
             </div>
         </md-input-container>
 
         <div layout="row" layout-align="end center" class="hidden-submit">
-            <md-button class="md-dashboard confirm" type="submit" ng-disabled="settingsForm.$invalid || submitting" md-no-ink>
+            <md-button class="md-dashboard confirm" type="submit" ng-disabled="vm.settingsForm.$invalid || submitting" md-no-ink>
                 <span class="btn-label">Next</span>
             </md-button>
         </div>
