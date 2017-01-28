@@ -79,7 +79,7 @@
                             " if currentView == "choropleth" }}"><a href="/{{ array_source_key }}/{{ 'choropleth' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
-				}) }}"><span class="icon-choropleth color-brand" aria-hidden="true"></span> Choropleth</a></li>
+				}) }}"><span class="icon-choropleth color-brand" aria-hidden="true"></span> Map</a></li>
                             {% endif %}
 
                             {% if view_visibility.chart.visible == true %}
@@ -112,7 +112,7 @@
                             " if currentView == "word-cloud" }}"><a href="/{{ array_source_key }}/{{ 'word-cloud' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
-				}) }}"><span class="icon-word-cloud color-brand" aria-hidden="true"></span> Word cloud</a></li>
+				}) }}"><span class="icon-word-cloud color-brand" aria-hidden="true"></span> Word Cloud</a></li>
                             {% endif %}
                             {% if view_visibility.lineGraph.visible == true %}
                             <li class="background-color-brand-hover menu-item-line-graph {{ " active
@@ -120,7 +120,7 @@
 					searchQ: searchQ,
 					searchCol: searchCol
 
-				}) }}"><span class="icon-line-graph color-brand" aria-hidden="true"></span> Line graph</a></li>
+				}) }}"><span class="icon-line-graph color-brand" aria-hidden="true"></span> Line Graph</a></li>
                             {% endif %}
                             {% if view_visibility.pieSet.visible == true %}
                             <li class="background-color-brand-hover menu-item-pie-set {{ " active

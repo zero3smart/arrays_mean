@@ -5,6 +5,10 @@
     height: 94vh;
 }
 
+.map-container {
+    position: relative;
+}
+
 #map {
     position: absolute;
     top: 0;
