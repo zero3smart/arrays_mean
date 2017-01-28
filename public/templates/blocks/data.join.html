@@ -1,7 +1,7 @@
 <md-dialog aria-label="Datset Join : ({{ dataset.title }})" class="field-dialog">
     <md-toolbar>
         <div class="md-toolbar-tools">
-            <h2>Collection Join : ({{ dataset.title }})</h2>
+            <h2>Dataset Join : ({{ dataset.title }})</h2>
             <span flex></span>
             <md-button class="md-icon-button" ng-click="cancel()">
                 <span class="icon-close-big" aria-label="Close dialog"></span>
@@ -58,7 +58,7 @@
 
                         <div layout="row" flex="55">
                             <md-input-container flex="50">
-                                <label>Foreign Collection</label>
+                                <label>Foreign Dataset</label>
                                 <md-select required name="foreignDataset_{{$index}}"
                                            ng-model="data.foreignDataset[$index]"
                                            ng-change="loadColumnsForDataset($index)">

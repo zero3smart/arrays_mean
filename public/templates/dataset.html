@@ -1,7 +1,7 @@
 
 <header layout="row" layout-align="start center" ng-if="!$state.is('dashboard.dataset.new')">
-    <h1 ng-if="$state.is('dashboard.dataset.list') == true">Collection Settings</h1>
-    <h1 ng-if="$state.is('dashboard.dataset.list') == false">{{ dataset.title ? dataset.title : 'New Collection' }}</h1>
+    <h1 ng-if="$state.is('dashboard.dataset.list') == true">Visualization Settings</h1>
+    <h1 ng-if="$state.is('dashboard.dataset.list') == false">{{ dataset.title ? dataset.title : 'New Visualization' }}</h1>
     <span flex></span>
     <md-button class="md-dashboard md-dashboard-header" md-no-ink
         ng-if="!$state.is('dashboard.dataset.done')"

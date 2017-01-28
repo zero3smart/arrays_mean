@@ -3,7 +3,7 @@
         <div layout="row" layout-align="space-between center">
             <md-input-container flex="66" md-no-float>
                 <input required name="title" ng-model="dataset.title" unique-title
-                    aria-label="Collection Title" placeholder="Collection Name" autofocus>
+                    aria-label="Visualization Title" placeholder="Visualization Name" autofocus>
                 <div ng-messages="newDSForm.title.$error" class="error-messages">
                     <div ng-message="required">This is required.</div>
                     <div ng-message="titleAvailable">This title is already used on your team.</div>
