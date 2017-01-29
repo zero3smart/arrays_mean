@@ -385,6 +385,12 @@ md-input-invalid.subdomain-append {
 	padding-right: 15px;
 }
 
+.dashboard-list li.li-disabled {
+	color: var(--color-text-light);
+	/*bg doesnt work well with li border and left/right margin*/
+	/*background: #eee;*/
+}
+
 /* Angular Material tabs and nav bars */
 
 .md-nav-bar .md-button,
