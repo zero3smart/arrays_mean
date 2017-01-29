@@ -5,7 +5,7 @@
         <p>Select and edit the views you want to include below:</p>
 
         <ul class="dashboard-list user-list" ng-cloak>
-            <li ng-repeat="view in views" layout="row" layout-align="space-between center">
+            <li ng-repeat="view in views | orderBy:'name'" layout="row" layout-align="space-between center">
 
                 <md-checkbox ng-model="dataset.fe_views.views[view.name].visible"
                     flex="10" style="margin-bottom: 0"
