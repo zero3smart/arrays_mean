@@ -55,6 +55,8 @@ router.post('/login',function(req,res,next) {
 router.get('/login', function (req, res) {
     if (req.user) {
         User.findById(req.user,function(err,user) {
+           
+
             if (user) {
                 if (!user.defaultLoginTeam || user._team.length == 0) {
                     return res.redirect('/signup/info/' + req.user);
@@ -62,6 +64,12 @@ router.get('/login', function (req, res) {
                 } else {
                     return res.redirect('/dashboard');
                 }
+            } else {
+                res.render('auth/login', {
+                    env: process.env,
+                    flash: info
+                });
+
             }
         })
     

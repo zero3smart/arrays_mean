@@ -26,6 +26,17 @@ module.exports.create = function (req, res) {
         if (err) {
             res.send({error: err.message});
         } else {
+            if (req.user) {
+
+                User.findById(req.user,function(err,user) {
+                    if (err) {
+                        res.send({error: err.message});
+                    } else {
+                        user._team.push(createdTeam._id);
+                        user.save();
+                    }
+                });
+            }
             res.json(createdTeam);
         }
     })
@@ -155,7 +166,19 @@ module.exports.delete = function(req,res) {
 
         batch.push(function(done) {
             if (!unauthorized) {
-                datasource_description.remove({_team: teamToDelete._id},done);
+
+                datasource_description.find({_team:teamToDelete._id},function(err,datasets) {
+                    if (err) done(err);
+                    else {
+                    
+                        datasets.forEach(function(dataset) {
+                            dataset.remove();
+                        })
+                        done();
+                    }
+                })
+
+
             } else {
                 done();
             }
@@ -181,6 +204,11 @@ module.exports.delete = function(req,res) {
                                   
                                     if (user.defaultLoginTeam == teamToDelete._id.toString()) {
                                         user.defaultLoginTeam = null;
+                                        if (user._team.length == 0) {
+                                            user.defaultLoginTeam = null
+                                        } else {
+                                            user.defaultLoginTeam = user._team[0];
+                                        }
                                     }
 
                                     user.markModified('defaultLoginTeam');
@@ -193,7 +221,6 @@ module.exports.delete = function(req,res) {
                         } else {
                             done();
                         }
-                      
                     }
 
                 })
@@ -213,7 +240,7 @@ module.exports.delete = function(req,res) {
             }
             if (unauthorized)  res.status(401).send({error:'unauthorized'});
             else {
-                return res.status(200).json({message: 'ok'});
+                return res.json({message: 'ok'});
             }
         })
 
@@ -221,7 +248,6 @@ module.exports.delete = function(req,res) {
     } else {
         res.status(401).send({error:'unauthorized'});
     }
-    
 }
 
 
