@@ -33,12 +33,20 @@ HorizontalBarChart.prototype._animate = function() {
         });
 };
 
-HorizontalBarChart.prototype.rotateLabel = function() {
-    if(this._showLabels) {
+HorizontalBarChart.prototype.rotateYLabel = function() {
+    if(this._showYLabels) {
         return true;
     } else {
-        return this._yAxisContainer.selectAll("g")
-        .style("display", "none")
+        return this._yAxisContainer
+        .selectAll("g")
+        .style("visibility", "hidden")
+    }
+};
+
+HorizontalBarChart.prototype.rotateXLabel = function() {
+    if(this._showXLabels) {
+        return this._xAxisContainer.selectAll("g")
+        .style("visibility", "visible")
     }
 };
 
@@ -117,7 +125,7 @@ HorizontalBarChart.prototype.getXAxisTransform = function() {
 HorizontalBarChart.prototype.getYScale = function() {
     
     return this._yScale = d3.scale.ordinal()
-        .rangeRoundBands([0, this._innerHeight], this._padding)
+        .rangeBands([0, this._innerHeight], this._padding)
         .domain(this._categories);
 };
 
