@@ -5,11 +5,16 @@
         <p>Select and edit the views you want to include below:</p>
 
         <ul class="dashboard-list user-list" ng-cloak>
-            <li ng-repeat="view in views" layout="row" layout-align="space-between center">
+            <li ng-repeat="view in views | orderBy:'name'" layout="row" layout-align="space-between center"
+                ng-class="{'li-disabled': !dataset.fe_views.views[view.name].visible }">
 
+                <span flex="10"
+                    aa-tooltip="{{ data.default_view == view.name ? 'Default view must be visible' : (dataset.fe_views.views[view.name].visible ? 'Set view as not visible' : 'Set view as visible') }}">
                 <md-checkbox ng-model="dataset.fe_views.views[view.name].visible"
-                    flex="10" style="margin-bottom: 0"
+                    ng-disabled="data.default_view == view.name"
+                    class="view-visible"
                     aria-label="{{view.name}} Visibility" md-no-ink></md-checkbox>
+                </span>
 
                 <span flex="10"
                     class="dashboard-list-icon view"
@@ -20,7 +25,7 @@
                 </span>
 
                 <div flex="10" class="list-thumb">
-                    <img ng-src="/images/image-not-found-sm.png" />
+                    <span class="{{ view.icon }}"></span>
                 </div>
 
                 <span flex ng-click="openViewDialog($event, view._id)">{{ view.displayAs }}</span>

@@ -110,7 +110,7 @@ angular.module('arraysApp')
                     })
                     .state('dashboard.dataset.settings', {
                         url: '/settings/:id',
-                        controller: 'DatasetSettingsCtrl',
+                        controller: 'DatasetSettingsCtrl as vm',
                         templateUrl: 'templates/dataset/settings.html',
                         resolve: {
                             dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {
@@ -140,7 +140,7 @@ angular.module('arraysApp')
                                 DatasetService.get($stateParams.id)
                                 .then(function(data) {
 
-                    
+
                                     if (data.jobId !== 0) {
                                         deferred.reject({importing: true, datasetId: data._id});
                                     } else {
@@ -166,7 +166,7 @@ angular.module('arraysApp')
 
                                     }
                                     deferred.resolve(additionalDatasets);
-                                    
+
                                 })
                                 return deferred.promise;
                             }]

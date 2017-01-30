@@ -51,7 +51,8 @@ md-sidenav.md-closed.md-locked-open-add-active {
 
 /*menu items*/
 
-.sidebar-menu .nav > li > a {
+.sidebar-menu .nav > li > a,
+.sidebar-menu .nav > li > span {
     position: relative;
     /*letter-spacing: 2px;*/
     /*font-size: 1.1em;*/
@@ -65,6 +66,8 @@ md-sidenav.md-closed.md-locked-open-add-active {
     /*color: #fff;*/
     color: var(--color-text-dark);
     border-radius: 4px;
+
+    transition: background-color 0.3s, color 0.15s;
 }
 
 .sidebar-menu .nav > li.active > a {
@@ -79,22 +82,14 @@ md-sidenav.md-closed.md-locked-open-add-active {
 }
 
 /*treat View Website as link*/
-.sidebar-menu .nav > li.website > a:hover,
-.sidebar-menu .nav > li.website > a:focus {
-    background-color: transparent;
+.sidebar-menu .nav li.sidebar-link > span > a:hover {
     color: var(--color-primary);
-    text-decoration: underline;
 }
 
 .sidebar-menu .nav .sidebar-label {
     /* style as if disabled, for now */
     color: var(--color-text-med);
     pointer-events: none;
-}
-
-.sidebar-menu .nav .sidebar-link {
-    background-color: transparent;
-    color: var(--color-primary);
 }
 
 .sidebar-menu hr {
