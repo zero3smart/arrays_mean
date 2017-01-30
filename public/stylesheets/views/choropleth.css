@@ -1,10 +1,6 @@
 /* @override 
 	http://localhost:9080/stylesheets/module/choropleth.css */
 
-.array-choropleth .site-content {
-    height: 94vh;
-}
-
 .map-container {
     position: relative;
 }

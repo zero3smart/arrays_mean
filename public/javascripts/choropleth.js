@@ -1,8 +1,9 @@
 /**
-*Set Map's container div height
+*Set container height for MapGL canvas
 **/
-var offsetY = document.getElementsByClassName("map-description-wrapper")[0].offsetTop + document.getElementsByClassName("map-description-wrapper")[0].clientHeight;
-document.getElementsByClassName('map-container')[0].style.height = window.innerHeight - 75 - offsetY + "px";
+//.navbar-brand-container is fixed so it's height needs to be part of the calculation
+var offsetY = document.getElementsByClassName("map-container")[0].offsetTop + document.getElementsByClassName("navbar-brand-container")[0].clientHeight;  
+document.getElementsByClassName('map-container')[0].style.height = window.innerHeight - offsetY + "px";
 
 /**
  * Initialize variables
