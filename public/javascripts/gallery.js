@@ -4,7 +4,7 @@ $(function () {
      */
     var controller = new ScrollMagic.Controller();
 
-    console.log('here');
+
 	/**
 	 * Set array header pin
 	 */
