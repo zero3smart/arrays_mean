@@ -85,19 +85,37 @@ function BarChart(selector, dataSet, options) {
 
     this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
     this._outerHeight = window.innerHeight - container.offset().top - 30;
+
+    // minimum height for mobile view
+    if(this._outerHeight < defaultMinHeight) {
+        this._outerHeight = defaultMinHeight
+    }
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
 
     // anything beyond this and the x-axis labels get too squished
-    if(this._outerWidth/self._categoryData.length < 15 && options.horizontal == false || this._outerHeight/self._categoryData.length < 18 && options.horizontal == true) {
-        this._showLabels = false
-    } else {
-        this._showLabels = true
+    if(options.horizontal == false) {
+        this._showYLabels = true;
+        if(this._outerWidth/self._categoryData.length < 16) {
+            this._showXLabels = false;
+        } else {
+            this._showXLabels = true;
+        }
+    } else if(options.horizontal == true) {
+        this._showXLabels = true;
+        if(this._outerHeight/self._categoryData.length < 18) {
+            this._showYLabels = false;
+            this._margin.left = 10;
+        } else {
+            this._showYLabels = true;
+        }
     }
 
 
     this._svg = this._container.append('svg')
         .attr('height', this._outerHeight)
         .attr('width', this._outerWidth)
+        .attr('viewbox', '0, 0, ' + this._outerWidth + ', ' + this._outerHeight)
+        .attr('preserveAspectRatio', 'none')
 
     this._canvas = this._svg.append('g')
         .attr('transform', 'translate(' + this._margin.left + ', ' + this._margin.top + ')');
@@ -117,7 +135,8 @@ function BarChart(selector, dataSet, options) {
       .call(this.getYAxis());
 
     if(options.horizontal == true) {
-        this.rotateLabel();
+        this.rotateYLabel();
+        this.rotateXLabel();
     }
 
     /**
