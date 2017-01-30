@@ -4,6 +4,7 @@ angular.module('arraysApp')
 
             $scope.progressMode = "determinate";
 
+
             function newUploader(assetType, formName) {
                 var _uploader = new FileUploader({
                     method: 'PUT',

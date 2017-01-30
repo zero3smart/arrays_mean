@@ -3,7 +3,8 @@
 
         <h2>Format Your Content</h2>
 
-        <md-input-container class="md-block" md-no-asterisk style="margin-top: 45px">
+
+        <md-input-container ng-hide="dataset.connection" class="md-block" md-no-asterisk style="margin-top: 45px">
             <label>Select the field you'd like to use as a title for each item</label>
             <md-select required name="ObjectTitle" aria-label="Item title"
                        ng-model="data.fe_designatedFields.objectTitle"
@@ -14,10 +15,12 @@
             </md-select>
         </md-input-container>
 
-        <h3>You can make changes to your content below.</h3>
+
+        <h3 ng-hide="dataset.connection">You can make changes to your content below.</h3>
+
 
         <div layout="row" layout-align="start center">
-            <md-button class="md-dashboard" ng-click="openFabricatedFilterDialog()">
+            <md-button ng-hide="dataset.connection" class="md-dashboard" ng-click="openFabricatedFilterDialog()">
                 <span class="btn-label">Edit Filters</span>
             </md-button>
 
@@ -30,7 +33,7 @@
             <span flex="5"></span> -->
 
             <md-menu>
-                <md-button class="md-dashboard" aria-label="More actions menu" ng-click="$mdOpenMenu($event)">
+                <md-button ng-hide="dataset.connection" class="md-dashboard" aria-label="More actions menu" ng-click="$mdOpenMenu($event)">
                     More&ensp;<i class="fa fa-caret-down" aria-hidden="true"></i>
                     <span class="md-select-icon" aria-hidden="true"></span>
                 </md-button>
@@ -61,18 +64,20 @@
             </md-menu>
         </div>
 
+
         <p>We found these fields in your data source:</p>
 
         <ul class="dashboard-list user-list" ui-sortable="fieldSortableOptions" ng-model="data.fields">
+
             <li ng-repeat="field in data.fields" ng-class="{'custom': field.custom}"
                 layout="row" layout-align="space-between center">
 
-                <span class="order dashboard-list-icon" aa-tooltip="Drag to re-order" flex="10">
+                <span class="order dashboard-list-icon" ng-hide="dataset.connection" aa-tooltip="Drag to re-order" flex="10">
                     <span class="glyphicon glyphicon-move"></span>
                 </span>
 
                 <!-- aa-tooltip="Include/Exclude" -->
-                <md-checkbox name="fe_excludeFields_{{$index}}"
+                <md-checkbox ng-hide="dataset.connection" name="fe_excludeFields_{{$index}}"
                              ng-model="dataset.fe_excludeFields[field.name]"
                              ng-true-value="false"
                              ng-false-value="true"
@@ -90,7 +95,7 @@
                     </span>
                 </span>
 
-                <span class="dashboard-list-icon" flex="5" aa-tooltip="Edit field"
+                <span ng-hide="dataset.connection" class="dashboard-list-icon" flex="5" aa-tooltip="Edit field"
                     ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex)">
                     <i class="fa fa-pencil" aria-hidden="true"></i>
                 </span>

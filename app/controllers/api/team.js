@@ -3,6 +3,8 @@ var User = require('../../models/users')
 var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
 var _ = require('lodash');
 var Batch = require('batch');
+var datasource_file_service = require('../../libs/utils/aws-datasource-files-hosting');
+var datasource_description = require('../../models/descriptions');
 
 
 module.exports.getAll = function (req, res) {
@@ -24,6 +26,17 @@ module.exports.create = function (req, res) {
         if (err) {
             res.send({error: err.message});
         } else {
+            if (req.user) {
+
+                User.findById(req.user,function(err,user) {
+                    if (err) {
+                        res.send({error: err.message});
+                    } else {
+                        user._team.push(createdTeam._id);
+                        user.save();
+                    }
+                });
+            }
             res.json(createdTeam);
         }
     })
@@ -110,6 +123,134 @@ module.exports.loadIcons = function (req, res) {
         res.status(401).send({error:'unauthorized'});
     }
 }
+
+
+
+module.exports.delete = function(req,res) {
+
+
+    if (req.user) {
+        var batch = new Batch();
+        batch.concurrency(1);
+
+        var teamToDelete;
+
+        var unauthorized = false;
+
+        batch.push(function(done) {
+            Team.findById(req.params.id,function(err,team) {
+                if (err) done(err);
+                else {
+                    teamToDelete = team;
+                    // if (team.admin == req.user) done(); //comment out, can team admin delete team?
+                    batch.push(function(done) {
+                        User.findById(req.user,function(err,user) {
+                            if (err) done(err);
+                            else {
+
+                                console.log(user);
+                                if (user.isSuperAdmin()) done();
+                                else {
+                                    unauthorized = true;
+                                    done();
+                                }
+                            }
+                        })
+                    })
+                    done();
+
+                }
+                
+            })
+        })
+
+        batch.push(function(done) {
+            if (!unauthorized) {
+
+                datasource_description.find({_team:teamToDelete._id},function(err,datasets) {
+                    if (err) done(err);
+                    else {
+                    
+                        datasets.forEach(function(dataset) {
+                            dataset.remove();
+                        })
+                        done();
+                    }
+                })
+
+
+            } else {
+                done();
+            }
+        })
+
+        batch.push(function(done) {
+            datasource_file_service.deleteTeam(teamToDelete.subdomain,done);
+        })
+
+        batch.push(function(done) {
+            if (!unauthorized) {
+                User.find({_team: teamToDelete._id},function(err,allusers) {
+                    if (err) done(err);
+                    else {
+
+                        if (allusers) {
+
+                            allusers.forEach(function(user) {
+
+                                var index = user._team.indexOf(teamToDelete._id);
+                                if (index >= 0) {
+                                    user._team.splice(index,1);
+                                  
+                                    if (user.defaultLoginTeam == teamToDelete._id.toString()) {
+                                        user.defaultLoginTeam = null;
+                                        if (user._team.length == 0) {
+                                            user.defaultLoginTeam = null
+                                        } else {
+                                            user.defaultLoginTeam = user._team[0];
+                                        }
+                                    }
+
+                                    user.markModified('defaultLoginTeam');
+                                    user.markModified('_team');
+                                    user.save();
+                                } 
+                            })
+                            done();
+
+                        } else {
+                            done();
+                        }
+                    }
+
+                })
+            } else {
+                done();
+            }
+        })
+
+        batch.push(function(done) {
+            teamToDelete.remove(done);
+        })
+
+        batch.end(function(err) {
+            if (err) {
+                console.log(err);
+                return res.status(500).send(err);
+            }
+            if (unauthorized)  res.status(401).send({error:'unauthorized'});
+            else {
+                return res.json({message: 'ok'});
+            }
+        })
+
+
+    } else {
+        res.status(401).send({error:'unauthorized'});
+    }
+}
+
+
 
 
 module.exports.switchAdmin = function(req,res) {

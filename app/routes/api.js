@@ -7,7 +7,8 @@ var upload = multer({dest: path.join(__dirname, '../../tmp')});
 
 var unless = require('express-unless');
 var ctrlAdmin = require('../controllers/api/admin');
-var ctrlDataset = require('../controllers/api/dataset');
+var ctrlDataset = require('../controllers/api/dataset/index');
+var ctrlConnection = require('../controllers/api/dataset/remote');
 var ctrlUsers = require('../controllers/api/users');
 var ctrlTeam = require('../controllers/api/team');
 var ctrlView = require('../controllers/api/views');
@@ -48,9 +49,10 @@ router.post('/dataset/getDatasetsWithQuery',ctrlDataset.getDatasetsWithQuery);
 router.post('/dataset/remove', ctrlDataset.remove);
 router.get('/dataset/get/:id', ctrlDataset.get);
 router.get('/dataset/getAdditionalSources/:id', ctrlDataset.getAdditionalSourcesWithSchemaID);
-router.post('/dataset/update', ctrlDataset.update);
-router.put('/dataset/publish/', ctrlDataset.publish);
-router.put('/dataset/skipImageScraping',ctrlDataset.skipImageScraping);
+router.post('/dataset/save', ctrlDataset.save);
+router.put('/dataset/update/:id',ctrlDataset.update);
+
+
 router.post('/dataset/removeSubdataset', ctrlDataset.removeSubdataset);
 router.get('/dataset/reimportDatasets/:id',ctrlDataset.getDependencyDatasetsForReimporting);
 router.get('/dataset/jobStatus/:id',ctrlDataset.getJobStatus);
@@ -76,6 +78,8 @@ router.get('/dataset/preImport/:id', ctrlDataset.preImport);;
 router.get('/dataset/importProcessed/:id',ctrlDataset.importProcessed);
 router.get('/dataset/postImport/:id', ctrlDataset.postImport);
 router.get('/dataset/scrapeImages/:id', ctrlDataset.scrapeImages)
+
+router.post('/dataset/connect/:id',ctrlConnection.connect);
 
 
 //manage users
@@ -105,6 +109,7 @@ router.get('/team/loadIcons', ctrlTeam.loadIcons);
 router.get('/team/getAssetUploadSignedUrl/:id', ctrlTeam.signedUrlForAssetsUpload);
 router.put('/team/:id', ctrlTeam.update);
 router.put('/team/admin/:id',ctrlTeam.switchAdmin);
+router.delete('/team/:id',ctrlTeam.delete);
 
 // billing, account & subscriptions settings
 router.post('/billing/account', ctrlBillingAccount.create);
