@@ -72,6 +72,13 @@ md-checkbox .md-container:before {
 	/*remove the persistent ink on focus*/
 	content: none;
 }
+/*for default view, disabled*/
+md-checkbox.md-checked[disabled].view-visible .md-icon {
+	background-color: var(--color-primary);
+}
+md-checkbox.md-checked[disabled].view-visible .md-icon:after {
+	border-color: white;
+}
 
 md-option  {
 	color: var(--color-text-med) !important;
@@ -385,6 +392,12 @@ md-input-invalid.subdomain-append {
 	padding-right: 15px;
 }
 
+.dashboard-list li.li-disabled {
+	color: var(--color-text-light);
+	/*bg doesnt work well with li border and left/right margin*/
+	/*background: #eee;*/
+}
+
 /* Angular Material tabs and nav bars */
 
 .md-nav-bar .md-button,
@@ -614,17 +627,6 @@ ul.aa-color-picker {
 
 .dataset .field.custom {
     font-weight: bold;
-}
-
-.incl-excl-all md-checkbox {
-	margin-bottom: 0;
-}
-.incl-excl-all md-checkbox.md-checked .md-icon {
-	background-color: transparent;
-	border-color: var(--color-text-light);
-}
-.incl-excl-all md-checkbox.md-checked .md-icon:after {
-	border-color: var(--color-text-light);
 }
 
 /*.dataset .field > .handler {
