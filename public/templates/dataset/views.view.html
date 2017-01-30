@@ -92,7 +92,7 @@
             <md-option ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
                 {{col}}
             </md-option>
-            <md-option ng-if="setting.selectFrom=='duration'" ng-repeat="dur in availableForDuration | filter:'!_all' | fitler: DataTypeMatch(setting.restrictColumnDataType)" ng-value="dur">
+            <md-option ng-if="setting.selectFrom=='duration'" ng-repeat="dur in availableForDuration | filter:'!_all' | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="dur">
                 {{dur}}
             </md-option>
             <md-option ng-if="dep" ng-repeat="opt in data[setting.selectFrom]" ng-value="opt">
