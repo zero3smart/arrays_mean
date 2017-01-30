@@ -1,4 +1,4 @@
-{% set currentView = "map-view" %}
+{% set currentView = "map" %}
 
 {% extends "../layout/array.html" %}
 
@@ -52,6 +52,22 @@
                                 })
                             )
                             }}
+                             {% if aggregateBy_humanReadable_available %}
+                                {{
+                                dropdown.sortbar(
+                                    'Aggregate By',
+                                    aggregateBy if aggregateBy else defaultAggregateByColumnName_humanReadable,
+                                    aggregateBy_humanReadable_available,
+                                    routePath_base | constructedRoutePath(filterObj, {
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        groupBy: groupBy,
+                                        aggregateBy: ''
+                                    })
+                                )
+                                }}
+                            {% endif %}
+                            
                         </nav>
 
                         <div class="sort-bar-right pull-right">
@@ -116,5 +132,5 @@
     {{ super() }}
 
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.js'></script>
-    <script type="text/javascript" src="/javascripts/map-view.js"></script>
+    <script type="text/javascript" src="/javascripts/map.js"></script>
 {% endblock %}

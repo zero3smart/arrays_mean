@@ -11,6 +11,9 @@ var imported_data_preparation = require('../libs/datasources/imported_data_prepa
 var import_controller = require('../libs/import/data_ingest/controller');
 var User = require('../models/users');
 
+var raw_source_documents = require('../models/raw_source_documents');
+var cached_values = require('../models/cached_values');
+
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
 //
@@ -109,7 +112,68 @@ var deepPopulate = require('mongoose-deep-populate')(mongoose);
 DatasourceDescription_scheme.plugin(integerValidator);
 DatasourceDescription_scheme.plugin(deepPopulate, {whitelist: ['_otherSources', '_otherSources._team', 'schema_id', '_team', 'schema_id._team']});
 
+DatasourceDescription_scheme.pre('remove',function(next) {
+    var thisId = this._id;
+
+
+
+    if (!this.schema_id) {
+        
+        async.parallel([
+            function(callback) {
+                mongoose_client.dropCollection('rawrowobjects-' + thisId, function (err) {
+                    // Consider that the collection might not exist since it's in the importing process.
+                    if (err && err.code != 26) return callback(err);
+                    winston.info("✅  Removed raw row object : " + thisId );
+                    callback(null);
+                })
+            },
+            function(callback) {
+                mongoose_client.dropCollection('processedrowobjects-' + thisId, function (err) {
+                // Consider that the collection might not exist since it's in the importing process.
+                    if (err && err.code != 26) return done(err);
+
+                    winston.info("✅  Removed processed row object : " + thisId);
+                    callback(null);
+                });
+            },
+            function(callback) {
+
+                raw_source_documents.Model.remove({primaryKey: thisId},function(err) {
+
+                    if (err) return callback(err);
+                    winston.info("✅  Removed raw source document : " + thisId);
+                    callback(null);
+
+                })
+
+            },
+            function(callback) {
+
+                cached_values.remove({srcDocPKey: thisId},function(err) {
+                    if (err) return callback(err);
+                    winston.info("✅  Removed cached unique values : " + thisId) ;
+                    callback(null);
+                })
+            }
+
+        ],function(err){
+
+            if (err) console.log(err);
+            next();
+        })
+
+    } else {
+        next();
+    }
+    
+})
+
+
 var datasource_description = mongoose.model('DatasourceDescription', DatasourceDescription_scheme,'datasourcedescriptions');
+
+
+
 
 /* -----------   helper function ----------- */
 var _mergeObject = function (obj1, obj2) {

@@ -4,9 +4,8 @@ angular.module('arraysApp')
         function($scope, $state, dataset, DatasetService, $mdToast, FileUploader, AssetService) {
 
             $scope.primaryAction.text = 'Publish';
-            $scope.primaryAction.disabled = false;
 
-            $scope.$watch('settingsForm.$valid', function(validity) {
+            $scope.$watch('vm.settingsForm.$valid', function(validity) {
 
                 if (validity !== undefined) {
                     $scope.formValidity = validity;
@@ -22,30 +21,6 @@ angular.module('arraysApp')
 
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
             if (!dataset.fe_visible) {dataset.fe_visible = true;}
-
-
-
-        //   $scope.colors = [
-          //
-        //         // ['#FA2A00','#FFFFFF'] // brandColor, iconColor
-        //         '#FA2A00',
-        //         '#FEB600',
-        //         '#79F800',
-        //         '#005CFF',
-        //         '#FE00FF',
-        //         '#EF0069',
-        //         '#00DAE5',
-        //         '#009E9D',
-        //         '#7A00F6',
-        //         '#dddddd',
-        //         '#4A4A4A'
-        //     ];
-        //     if(!dataset.brandColor) { dataset.brandColor = $scope.colors[0]; }
-          //
-          //
-        //     $scope.pickColor = function(color) {
-        //         dataset.brandColor = color;
-        //     }
 
 
             // if (!dataset.url) {

@@ -32,6 +32,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // urlQuery keys:
     // source_key
     // mapBy
+    // aggregateby
     // searchQ
     // searchCol
     // embed
@@ -46,7 +47,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 return;
             }
-            if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.mapView === 'undefined') {
+            if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.map === 'undefined') {
                 callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
 
                 return;
@@ -57,10 +58,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
             var mapBy = urlQuery.mapBy; // the human readable col name - real col name derived below
-            var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.mapView.defaultMapByColumnName] ||
-            dataSourceDescription.fe_views.views.mapView.defaultMapByColumnName;
+            var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultMapByColumnName] ||
+            dataSourceDescription.fe_views.views.map.defaultMapByColumnName;
             //
-            var routePath_base = "/" + source_pKey + "/map-view";
+            var routePath_base = "/" + source_pKey + "/map";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
@@ -76,7 +77,59 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
 
 
-            //
+           
+            var aggregateBy = urlQuery.aggregateBy;
+            var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName] ||
+            dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName ;
+
+
+         
+
+            // Aggregate By Available
+            var aggregateBy_humanReadable_available = undefined;
+
+            var raw_rowObjects_coercionSchema = dataSourceDescription.raw_rowObjects_coercionScheme;
+
+
+            for (var colName in raw_rowObjects_coercionSchema) {
+                var colValue = raw_rowObjects_coercionSchema[colName];
+                if (colValue.operation == "ToInteger") {
+
+
+                    var isExcluded = dataSourceDescription.fe_excludeFields && dataSourceDescription.fe_excludeFields[colName];
+                    if (!isExcluded) {
+                        var humanReadableColumnName = colName;
+                        if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
+                            humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
+
+                        if (!aggregateBy_humanReadable_available) {
+                            aggregateBy_humanReadable_available = [];
+                            aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                        }
+
+
+
+                        aggregateBy_humanReadable_available.push(humanReadableColumnName);
+                    }
+                }
+            }
+
+            
+
+
+            if (aggregateBy_humanReadable_available) {
+                if (aggregateBy_humanReadable_available.length == 1)
+                    aggregateBy_humanReadable_available = undefined;
+            }
+
+            var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
+            (typeof dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
+            dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
+
+
+
+           
+
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures = [], highestValue = 0;
 
             var batch = new Batch();
@@ -131,13 +184,20 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
                 }
+
+                var totalQuery = {$sum: 1};
+
+
+                if (aggregateBy_realColumnName && aggregateBy_realColumnName != config.aggregateByDefaultColumnName) {
+                    totalQuery["$sum"] = "$rowParams." + aggregateBy_realColumnName
+                }
+
                 aggregationOperators = aggregationOperators.concat(
                     [
                         { // unique/grouping and summing stage
                             $group: {
                                 _id: "$" + "rowParams." + mapBy_realColumnName,
-                                // total: {$sum: 1} // the count
-                                total: {$sum: "$" + "rowParams.Estimate2 (high)"}
+                                total: totalQuery
                             }
                         },
                         { // reformat
@@ -217,7 +277,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                    view_description: dataSourceDescription.fe_views.views.mapView.description ? dataSourceDescription.fe_views.views.mapView.description : "",
+                    view_description: dataSourceDescription.fe_views.views.map.description ? dataSourceDescription.fe_views.views.mapP.description : "",
                     //
                     highestValue: highestValue,
                     featureCollection: {
@@ -237,12 +297,17 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     isSearchActive: isSearchActive,
                     //
                     defaultMapByColumnName_humanReadable: defaultMapByColumnName_humanReadable,
-                    colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'mapView', 'MapBy'),
+                    colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'map', 'MapBy'),
                     colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     routePath_base: routePath_base,
                     // multiselectable filter fields
-                    multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable
+                    multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
+
+                    aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
+                    defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
+                    aggregateBy: aggregateBy
+
                 };
                 callback(err, data);
             });

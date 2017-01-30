@@ -1,6 +1,5 @@
 var winston = require('winston');
 var datasource_description = require('../../../models/descriptions');
-var cached_values = require('../../../models/cached_values');
 var mongoose_client = require('../../../models/mongoose_client');
 var Team = require('../../../models/teams');
 var User = require('../../../models/users');
@@ -14,7 +13,6 @@ var datasource_file_service = require('../../../libs/utils/aws-datasource-files-
 var imported_data_preparation = require('../../../libs/datasources/imported_data_preparation');
 var datatypes = require('../../../libs/datasources/datatypes');
 var s3ImageHosting = require('../../../libs/utils/aws-image-hosting');
-var raw_source_documents = require('../../../models/raw_source_documents');
 
 var processing = require('../../../libs/datasources/processing');
 
@@ -177,61 +175,6 @@ module.exports.remove = function (req, res) {
         });
     });
 
-    // Remove processed row object
-    batch.push(function (done) {
-
-         mongoose_client.dropCollection('processedrowobjects-' + description._id, function (err) {
-        // Consider that the collection might not exist since it's in the importing process.
-            if (err && err.code != 26) return done(err);
-
-            winston.info("✅  Removed processed row object : " + description._id + ", error: " + err);
-            done();
-        });
-
-    });
-
-
-    // Remove raw row object
-    batch.push(function (done) {
-
-        
-        mongoose_client.dropCollection('rawrowobjects-' + description._id, function (err) {
-            // Consider that the collection might not exist since it's in the importing process.
-            if (err && err.code != 26) return done(err);
-
-            winston.info("✅  Removed raw row object : " + description._id + ", error: " + err);
-            done();
-        })
-
-    });
-
-    // Remove source document
-    batch.push(function (done) {
-        
-
-        raw_source_documents.Model.findOne({primaryKey: description._id}, function (err, document) {
-            if (err) return done(err);
-            if (!document) return done();
-
-            winston.info("✅  Removed raw source document : " + description._id + ", error: " + err);
-            document.remove(done);
-        });
-
-        
-
-    });
-
-    //Remove cache filter
-    batch.push(function(done) {
-        
-        cached_values.findOne({srcDocPKey: description._id},function(err,document) {
-            if (err) return done(err);
-            
-            if (!document) return done();
-             winston.info("✅  Removed cached unique values : " + description._id + ", error: " + err);
-             document.remove(done);
-        })
-    });
 
     //Pull from team's datasourceDescriptions
     batch.push(function(done) {
@@ -248,8 +191,7 @@ module.exports.remove = function (req, res) {
 
     // Remove datasource description with schema_id
     batch.push(function (done) {
-        // winston.info("✅  Removed datasource description : " + description.title);
-
+     
         datasource_description.find({schema_id: description._id})
         .populate('_team')
         .exec(function (err, results) {
@@ -271,11 +213,6 @@ module.exports.remove = function (req, res) {
 
         });
     });
-
-
-   
-
-
 
     batch.push(function(done) {
 
@@ -312,21 +249,10 @@ module.exports.remove = function (req, res) {
     })
 
 
-
-     batch.push(function(done) {
-        datasource_description.update({_otherSources: description._id}, {
-            $pull: {
-                "_otherSources" : description._id
-            }
-        },{multi: true},done);
-    })
-
-
     // Remove datasource description
     batch.push(function (done) {
         description.remove(done);
     });
-
 
 
     batch.push(function(done) {

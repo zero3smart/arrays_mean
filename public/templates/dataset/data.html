@@ -1,11 +1,11 @@
-
 <form name="vm.dataForm" ng-submit="submitForm(!vm.dataForm.$invalid )" ng-if="dataset.uid">
     <md-content layout-padding md-no-ink>
 
         <h2>Format Your Content</h2>
 
-        <label ng-hide="dataset.connection">Select the field you'd like to use as a title for each item (required)</label>
-        <md-input-container ng-hide="dataset.connection" class="md-block" md-no-asterisk>
+
+        <md-input-container ng-hide="dataset.connection" class="md-block" md-no-asterisk style="margin-top: 45px">
+            <label>Select the field you'd like to use as a title for each item</label>
             <md-select required name="ObjectTitle" aria-label="Item title"
                        ng-model="data.fe_designatedFields.objectTitle"
                        >
@@ -16,7 +16,7 @@
         </md-input-container>
 
 
-        <p ng-hide="dataset.connection">You can make changes to your content below.</p>
+        <h3 ng-hide="dataset.connection">You can make changes to your content below.</h3>
 
 
         <div layout="row" layout-align="start center">
@@ -64,11 +64,11 @@
             </md-menu>
         </div>
 
-<!-- quickfix spacer -->
-<p>
-    ​​​​​​​We found these fields in your dataset:
-</p>
-    <ul class="dashboard-list user-list" ui-sortable="fieldSortableOptions" ng-model="data.fields">
+
+        <p>We found these fields in your data source:</p>
+
+        <ul class="dashboard-list user-list" ui-sortable="fieldSortableOptions" ng-model="data.fields">
+
             <li ng-repeat="field in data.fields" ng-class="{'custom': field.custom}"
                 layout="row" layout-align="space-between center">
 

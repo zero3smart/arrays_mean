@@ -5,22 +5,6 @@ angular.module('arraysApp')
             $scope.progressMode = "determinate";
 
 
-            $scope.deleteTeam = function() {
-                //show warning, ask for confirmation
-                Team.delete({id:$scope.team._id}).$promise
-                .then(function(response){
-                       if (response.status == 200 && response.data.message == 'ok') {
-                             $mdToast.show(
-                                $mdToast.simple()
-                                    .textContent('Team deleted successfully!')
-                                    .position('top right')
-                                    .hideDelay(3000)
-                            );
-                       }
-
-                })
-            }
-
             function newUploader(assetType, formName) {
                 var _uploader = new FileUploader({
                     method: 'PUT',
