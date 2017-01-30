@@ -60,7 +60,7 @@ angular.module('arraysApp')
             $scope.makeDefaultView = function(view) {
                 $scope.data.default_view = view.name;
                 $scope.makeViewVisible();
-            }
+            };
 
             $scope.makeViewVisible = function() {
                 if (!dataset.fe_views.views[$scope.data.default_view]) {
@@ -72,10 +72,7 @@ angular.module('arraysApp')
             };
 
 
-
             $scope.openViewDialog = function (evt, id) {
-
-
 
                 viewResource.get({id:id},function(data) {
 
@@ -91,7 +88,7 @@ angular.module('arraysApp')
                             belongsToTeam : data._team,
                             viewDisplayName: data.displayAs,
                             dataset: $scope.$parent.$parent.dataset,
-                            viewSetting: data.settings,
+                            viewSetting: data.settingsTabs,
                             colsAvailable: colsAvailable,
                             team: $scope.$parent.$parent.team,
                             default_view: $scope.data.default_view,
@@ -111,7 +108,7 @@ angular.module('arraysApp')
 
                 });
             };
-
+            // $scope.openViewDialog(null, "581942ad8f220a84e42ef52c"); // open first modal, for testing only
 
             $scope.reset = function () {
                 $scope.data.default_view = $scope.$parent.$parent.dataset.fe_views.default_view;
@@ -251,7 +248,7 @@ angular.module('arraysApp')
                         $scope.data[settingName].conditions.push({});
 
                     }
-                }
+                };
 
 
 
@@ -265,7 +262,7 @@ angular.module('arraysApp')
 
                 $scope.initBackgroundColors = function(settingName) {
                     assignNestedDataValues(settingName);
-                }
+                };
 
 
 
