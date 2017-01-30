@@ -4,11 +4,11 @@
     <md-dialog-content>
         <form name="viewForm">
             <md-content md-no-ink>
-                <md-tabs md-selected="selectedIndex" md-dynamic-height md-border-bottom>
-                    <md-tab ng-repeat="tab in viewSetting" label="{{tab.name}}">
+                <!-- <md-tabs md-selected="selectedIndex" md-dynamic-height md-border-bottom> -->
+                    <!-- <md-tab ng-repeat="tab in ['Layout','Menus','Colors']" label="{{tab}}"> -->
                         <md-content layout-padding>
 
-                            <div ng-if="tab.name == 'Layout'">
+                            <!-- <div ng-if="tab == 'Layout'"> -->
                                 <label>Enter a description for this view</label>
                                 <p>
                                     The description will appear at the top of the view. For example, you can use it to describe what viewers can see.
@@ -17,9 +17,9 @@
                                     <textarea ng-model="data.description"
                                         md-maxlength="500" rows="3" aria-label="{{viewDisplayName}} Description"></textarea>
                                 </md-input-container>
-                            </div>
+                            <!-- </div> -->
 
-                            <div ng-repeat="setting in tab.settings">
+                            <div ng-repeat="setting in viewSetting">
 <!--  -->
 
 <div ng-if="setting.inputType == 'textbox'">
@@ -362,9 +362,10 @@
                             </div>
 
                         </md-content>
-                    </md-tab>
-                    <md-tab></md-tab><!-- dummy tab hack -->
-                </md-tabs>
+                    <!-- </md-tab> -->
+                    <!-- dummy tab hack -->
+                    <!-- <md-tab></md-tab> -->
+                <!-- </md-tabs> -->
             </md-content>
         </form>
     </md-dialog-content>

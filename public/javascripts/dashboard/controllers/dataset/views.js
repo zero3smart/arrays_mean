@@ -88,7 +88,7 @@ angular.module('arraysApp')
                             belongsToTeam : data._team,
                             viewDisplayName: data.displayAs,
                             dataset: $scope.$parent.$parent.dataset,
-                            viewSetting: data.settingsTabs,
+                            viewSetting: data.settings,
                             colsAvailable: colsAvailable,
                             team: $scope.$parent.$parent.team,
                             default_view: $scope.data.default_view,
