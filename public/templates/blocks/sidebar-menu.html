@@ -8,14 +8,16 @@
         <a ui-sref="dashboard.account.profile" role="button"> Account Settings</a>
     </li>
 
-    <li ng-if="user.role=='admin' || user.role=='superAdmin' || user._team.length > 1" ng-class="{'active': currentMenuItem === 'teams'}">
+
+
+    <li ng-if="!isEnterprise && (user.role=='admin' || user.role=='superAdmin' || user._team.length > 1 ) " ng-class="{'active': currentMenuItem === 'teams'}">
         <a ui-sref="dashboard.teams" role="button">Manage Teams</a>
     </li>
 
     <hr>
 
     <li class="sidebar-label">
-        <a class="sidebar-label">{{team.subdomain}}.arrays.co</a>
+        <a class="sidebar-label">{{team.subdomain + '.' + host}}</a>
     </li>
     <li ng-if="user.role=='admin' || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'team'}">
         <a ui-sref="dashboard.team.settings" role="button">Team Settings</a>

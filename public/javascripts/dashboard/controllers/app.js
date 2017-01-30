@@ -18,15 +18,23 @@ angular
 
             $scope.user = AuthService.currentUser();
             $scope.teams = AuthService.allTeams();
+            $scope.isEnterprise = true;
+            $scope.host = $location.host() + ":" + $location.port();
+
+            if ($location.host().indexOf('arrays.co') >= 0) {
+                $scope.isEnterprise = false;
+            }
 
             $scope.updateSubdomain = function() {
                 $scope.team = AuthService.currentTeam();
-                $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $location.host() + ":" + $location.port();
+                $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $scope.host;
             }
+
+
 
             $scope.updateSubdomain();
 
-            $scope.explore_url = $location.protocol() +  "://explore." +  $location.host() + ":" + $location.port();
+            $scope.explore_url = $location.protocol() +  "://explore." +  $scope.host ;
 
             $scope.logout = function() {
                 AuthService.logout();

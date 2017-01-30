@@ -5,6 +5,7 @@ var cluster = require('cluster');
 
 
 if (cluster.isMaster) {
+    
 
     require('./queue-init')();
 

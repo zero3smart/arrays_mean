@@ -100,7 +100,7 @@
 				  <span class="input-group-addon"><i class="fa fa-mouse-pointer"></i></span>
 				  <input ng-disabled="invitedUser" name="subdomain" ng-model-options="{updateOn:'blur'}"  ng-model="user._team.subdomain" unique-subdomain
 				  type="text" class="form-control" ng-pattern="/^[a-z0-9\-]*$/" required>
-				  <span class="input-group-addon">.arrays.co</span>
+				  <span class="input-group-addon">{{"." + host}}</span>
 			</div>
 
 			 <div class="help-block" ng-messages="infoForm.subdomain.$error" ng-if="infoForm.subdomain.$touched">
