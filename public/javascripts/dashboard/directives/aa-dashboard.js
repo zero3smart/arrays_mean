@@ -33,7 +33,8 @@ angular.module('arraysApp')
         return {
             restrict: 'E',
             scope: {
-                selected: '='
+                selected: '=',
+                unlist: '=?' // optional
             },
             templateUrl: 'templates/blocks/colorpicker.html',
             link: function(scope) {
@@ -50,10 +51,13 @@ angular.module('arraysApp')
                     '#dddddd',
                     '#4A4A4A'
                 ];
+
+                scope.unlist = scope.unlist || [];
+
                 scope.pick = function(color) {
                     scope.selected = color;
                 };
-                if(!scope.selected) { scope.selected = scope.colors[0]; }
+                // if(!scope.selected) { scope.selected = scope.colors[0]; } // do not set default
             }
         };
     })
@@ -61,15 +65,21 @@ angular.module('arraysApp')
         return {
             restrict: 'E',
             scope: {
+                colors: "="
             },
             templateUrl: 'templates/blocks/multicolorpicker.html',
             link: function(scope) {
-                scope.dummyColors = [];
+                // scope.$watch('colors', function() {
+                //     console.log('change');
+                //     if (scope.colors[scope.colors.length - 1] !== '') {
+                //         scope.addingColor = false;
+                //     }
+                // });
 
-                scope.addDummyColor = function() {
-                    if (scope.dummyColors[scope.dummyColors.length - 1] !== '') {
+                scope.addColor = function() {
+                    if (scope.colors[scope.colors.length - 1] !== '') {
                         scope.addingColor = true;
-                        scope.dummyColors.push('');
+                        scope.colors.push('');
                     }
                 };
             }
