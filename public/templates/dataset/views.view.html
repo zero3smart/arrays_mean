@@ -113,18 +113,29 @@
                 </li>
             </ul>
         <!--  -->
-        <!-- {{data[setting.selectExcludeBy]}} -->
-        <ul ng-required="setting.require" ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
+        <ul class="dashboard-list user-list" ng-if="!setting.settingNestedField">
             <li ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title">
                 Object Title
             </li>
-            <li ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
+            <li ng-if="setting.selectFrom=='column'"
+                ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)"
+                layout="row" layout-align="start center"
+                >
                 <md-checkbox name="Include/exclude"
                              ng-checked="data[setting.selectExcludeBy].indexOf(col) == -1"
                              ng-click="includeExcludeCol(col,data[setting.selectExcludeBy])"
-                             aria-label="Include/exclude">
-                    {{col}}
+                             aria-label="Include/exclude"
+                             flex="10">
                 </md-checkbox>
+                <span flex="10"
+                    class="dashboard-list-icon view"
+                    ng-class="{'default-view': data[setting.name] == col}"
+                    ng-click="(data[setting.selectExcludeBy].indexOf(col) == -1) ? (data[setting.name] = col) : angular.noop()"
+                    >
+                    <!-- aa-tooltip="{{ data.default_view == view.name ? 'Default view' : 'Set as default view' }}" -->
+                    <i class="fa fa-lg fa-home" aria-hidden="true"></i>
+                </span>
+                <span>{{col}}</span>
             </li>
             <li  ng-if="setting.selectFrom=='duration'" ng-repeat="dur in availableForDuration | filter:'!_all' && DataTypeMatch(setting.restrictColumnDataType)" ng-value="dur">
                 {{dur}} (dur)
