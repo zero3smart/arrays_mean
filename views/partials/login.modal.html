@@ -62,6 +62,10 @@
                  </div>
             </form>
 
+            {% if env.NODE_ENV !== 'enterprise' %}
+
+
+
 
             <div class="row loginOr">
               <div class="col-xs-12">
@@ -87,6 +91,11 @@
                   </a>
                </div>
             </div>
+
+            {% endif %}
+
+
+
 
          </div>
       </div>
