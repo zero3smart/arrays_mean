@@ -11,7 +11,6 @@
             $http.get('api/team/deleteImage/' + id + key)
                 .success(function (data) {
                     if(!data.error) {
-                        console.log("no error back here")
                         return deferred.resolve(data);
                     } else {
                         return deferred.reject(data.error);
@@ -25,10 +24,7 @@
             var deferred = $q.defer();
             $http.get('/api/team/loadIcons')
                 .success(function(data) {
-                    console.log(data)
-                    console.log("load icons asset service")
                     if (!data.error) {
-
                         return deferred.resolve(data.iconsUrl);
                     } else {
                         return deferred.reject(data.error);

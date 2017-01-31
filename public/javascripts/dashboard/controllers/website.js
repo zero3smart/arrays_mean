@@ -75,8 +75,10 @@ angular.module('arraysApp')
 
                         $scope.team[asset] = fileItem.uploadUrls[asset].publicUrl + '?' + new Date().getTime();
 
-                        var iconUrl = fileItem["uploadUrls"]["icon"]["publicUrl"]
-                        $scope.iconsUrl.push(iconUrl)
+                        if(fileItem.assetType == "icon") {
+                            var iconUrl = fileItem["uploadUrls"]["icon"]["publicUrl"]
+                            $scope.iconsUrl.push(iconUrl)    
+                        }
 
                         if (this.formName) {
                             if ($scope.vm[formName].$pristine) {
