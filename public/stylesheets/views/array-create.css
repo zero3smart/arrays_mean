@@ -18,6 +18,10 @@
     border-bottom-color: var(--color-divider);
 }
 
+.section-array-create .section-header.explore-header {
+    border-bottom: none;
+}
+
 .section-array-create .section-title {
     margin-top: 0;
     text-align: center;
@@ -213,4 +217,39 @@
 
 .array-description-collapse {
     display: none;
+}
+
+.explore-tile .panel {
+    width: 100%;
+    cursor: pointer;
+}
+
+/* Potentially move into new file exclusively for index-page */
+.explore-tile-body .explore-tile-header {
+    padding: 15px;
+    height: 170px;
+    color: #FFFFFF;
+    position: relative;
+}
+
+.explore-tile-header h2 {
+    margin: 0em;
+    max-height: 61px;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.explore-tile-meta-wrapper {
+    padding: 15px;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    font-weight: 600;
+}
+
+.explore-tile-banner-image {
+    height: 295px;
+    width: 100%;
+    background-size: cover;
 }
