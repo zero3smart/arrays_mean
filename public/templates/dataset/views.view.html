@@ -289,6 +289,15 @@
     </md-switch>
 </div>
 
+<!-- Default sort order -->
+<div ng-if="setting.inputType=='toggleRadio'">
+    <label>{{setting.displayAs}}</label>
+    <md-radio-group ng-model="data[setting.name]" md-no-ink>
+        <md-radio-button ng-value="false" aria-label="Default ascending order">Ascending</md-radio-button>
+        <md-radio-button ng-value="true" aria-label="Default descending order">Descending</md-radio-button>
+    </md-radio-group>
+</div>
+
 <div ng-if="setting.inputType=='multiColorpicker'" ng-init="data[setting.name] = data[setting.name] || []">
     <label>{{setting.displayAs}}</label>
     <p>{{setting.description}}</p>
