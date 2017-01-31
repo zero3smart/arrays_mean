@@ -21,7 +21,7 @@ angular
 
             $scope.isEnterprise = false
             
-            $scope.host = $location.host() + ":" + $location.port();
+            $scope.host = $location.host()
             $scope.explore_url = $location.protocol() +  "://explore." +  $scope.host ;
 
 
@@ -34,9 +34,9 @@ angular
                 $scope.team = AuthService.currentTeam();
                 
                 if ($scope.isEnterprise) {
-                    $scope.subdomain = $scope.explore_url;
+                    $scope.subdomain = $scope.explore_url  + ":" + $location.port();
                 } else {
-                    $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $scope.host;
+                    $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $scope.host  + ":" + $location.port();
 
                 }
                

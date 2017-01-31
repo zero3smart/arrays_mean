@@ -90,9 +90,9 @@
 			  <input ng-model='user._team.title' ng-disabled="invitedUser" ng-model-options="{updateOn:'blur'}" type="text" class="form-control">
 			</div>
 		</div>
-		<subdomain-suggestion ng-hide="invitedUser" team-title='user._team.title' subdomain='user._team.subdomain'></subdomain-suggestion>
+		<subdomain-suggestion ng-hide="invitedUser || isEnterprise " team-title='user._team.title' subdomain='user._team.subdomain'></subdomain-suggestion>
 
-		<div class="form-group" ng-class="{ 'has-error': infoForm.subdomain.$touched && infoForm.subdomain.$invalid}">
+		<div ng-hide="isEnterprise" class="form-group" ng-class="{ 'has-error': infoForm.subdomain.$touched && infoForm.subdomain.$invalid}">
 	 		<label>Your subdomain</label>
 
 	  		<div class="input-group">

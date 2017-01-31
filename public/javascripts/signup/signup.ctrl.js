@@ -32,8 +32,13 @@
 	signupModule.controller('signupCtrl',['$scope','$stateParams','User','$state','$location',function($scope,$stateParams,User,$state,
 		$location) {
 
-		$scope.host = $location.host() + ":" + $location.port();
-		
+		$scope.host = $location.host();
+		$scope.isEnterprise = false;
+
+		if ($location.host().indexOf('arrays.co') == -1) {
+			$scope.isEnterprise = true;
+		}
+
 		var userId = $stateParams.id;
 		$scope.invitedUser = false;
 		$scope.showPasswordToolTip = false;
