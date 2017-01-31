@@ -195,10 +195,10 @@
             <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
         </md-input-container>
 
-        <!-- <aa-color-picker selected="item.value" ng-if="setting.valueInputType=='colorpicker'"></aa-color-picker> -->
-        <md-input-container flex="65" ng-if="setting.valueInputType=='colorpicker'" class="md-color-picker">
+        <aa-color-picker selected="item.value" ng-if="setting.valueInputType=='colorpicker'"></aa-color-picker>
+        <!-- <md-input-container flex="65" ng-if="setting.valueInputType=='colorpicker'" class="md-color-picker">
             <div md-color-picker md-color-clear-button="false" ng-model="item.value"></div>
-        </md-input-container>
+        </md-input-container> -->
 
         <div flex="10">
             <md-button class="md-raised" ng-click="remove(setting.name,$index)" aria-label="Remove {{setting.name}} For {{viewName}}"><span class="glyphicon glyphicon-remove"></span></md-button>
@@ -217,14 +217,15 @@
     </md-switch>
 </div>
 
-<div ng-if="setting.inputType=='multiColorpicker' && tab == 'Colors'" ng-init="data[setting.name] = data[setting.name] || []">
+<div ng-if="setting.inputType=='multiColorpicker'" ng-init="data[setting.name] = data[setting.name] || []">
     <label>{{setting.displayAs}}</label>
     <p>{{setting.description}}</p>
-    <div layout="row" layout-wrap>
+    <div layout="column">
         <div ng-repeat="color in data[setting.name] track by $index">
-            <md-input-container class="md-color-picker">
+            <aa-color-picker selected="data[setting.name][$index]"></aa-color-picker>
+            <!-- <md-input-container class="md-color-picker">
                 <div md-color-picker ng-model="data[setting.name][$index]"></div>
-            </md-input-container>
+            </md-input-container> -->
         </div>
     </div>
 
@@ -303,12 +304,15 @@
     <div ng-if="data[setting.name].field" ng-repeat="item in data[setting.name].conditions track by $index">
         <div layout="row">
             <md-input-container flex="50">
-                <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
+                <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}" placeholder="Condition">
             </md-input-container>
             <md-input-container flex="50">
-                <md-input-container aria-label="{{setting.name}} for {{viewName}}" class="md-color-picker" flex="50">
+                <aa-color-picker selected="data[setting.name].conditions[$index].backgroundColor"></aa-color-picker>
+
+                <!-- <md-input-container aria-label="{{setting.name}} for {{viewName}}" class="md-color-picker" flex="50">
                     <div md-color-picker ng-model="data[setting.name].conditions[$index].backgroundColor"></div>
-                </md-input-container>
+                </md-input-container> -->
+
                 <!-- <md-option  data-ng-repeat="icon_url in iconsUrl" data-ng-value="makeRelative(icon_url)" >
                     <img class="iconMap" ng-src="{{icon_url}}">
                 </md-option> -->
