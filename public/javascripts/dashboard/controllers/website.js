@@ -21,6 +21,25 @@ angular.module('arraysApp')
 
             }
 
+            $scope.deleteIcon = function(url) {
+                console.log(url);
+                var key = url.split("amazonaws.com")[1]
+                AssetService.deleteImage($scope.team._id, key).then(function (data) {
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent('Icon deleted successfully!')
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+                    // get icons?
+                    AssetService.loadIcons()
+                    .then(function(data) {
+                        $scope.iconsUrl = data;
+                        console.log($scope.iconsUrl)
+                    })
+                });
+            }
+
             function newUploader(assetType, formName) {
                 var _uploader = new FileUploader({
                     method: 'PUT',
@@ -57,6 +76,9 @@ angular.module('arraysApp')
                         var asset = fileItem.assetType;
 
                         $scope.team[asset] = fileItem.uploadUrls[asset].publicUrl + '?' + new Date().getTime();
+
+                        var iconUrl = fileItem["uploadUrls"]["icon"]["publicUrl"]
+                        $scope.iconsUrl.push(iconUrl)
 
                         if (this.formName) {
                             if ($scope.vm[formName].$pristine) {

@@ -254,30 +254,30 @@ module.exports.delete = function(req,res) {
 
 module.exports.deleteImage = function (req, res) {
     if(req.user) {
-        console.log(req.params);
-        console.log(req.params.subdomain);
         var unset = {$unset: {}};
         if(req.params.type == "logo_header") {
             unset.$unset["logo_header"] = "";
         } else {
             unset.$unset["logo"] = "";
-        }
+        } 
         var key = req.params.subdomain + "/" + req.params.assets + "/" + req.params.type + "/" + req.params.filename;
         // delete the key from s3
         s3FileHosting.deleteObject(key, function(err, data) {
             if(err) {
                 res.status(500).send({error: err.message});
             } else {
-                console.log(unset)
-                Team.findByIdAndUpdate(req.params.id, unset, {new: true}, function (err, updatedDoc) {
-                    if(err) {
-                        console.log(err)
-                        return res.status(500).send({error: err.message});
-                    } else {
-                        console.log(updatedDoc)
-                        return res.json({doc: updatedDoc});
-                    }
-                })
+                // if the url is in the database
+                if(req.params.type == "logo" || req.params.type == "logo_header") {
+                    Team.findByIdAndUpdate(req.params.id, unset, {new: true}, function (err, updatedDoc) {
+                        if(err) {
+                            return res.status(500).send({error: err.message});
+                        } else {
+                            return res.json({doc: updatedDoc});
+                        }
+                    })
+                } else {
+                    return res.json({message: 'ok'});
+                }
             }
         })
     }  else {

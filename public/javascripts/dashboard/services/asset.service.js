@@ -11,6 +11,7 @@
             $http.get('api/team/deleteImage/' + id + key)
                 .success(function (data) {
                     if(!data.error) {
+                        console.log("no error back here")
                         return deferred.resolve(data);
                     } else {
                         return deferred.reject(data.error);
