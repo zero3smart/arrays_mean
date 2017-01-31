@@ -1368,6 +1368,7 @@ angular.module('arraysApp')
                 //Save settings primary key and object title as set in the ui
                 $scope.saveRequiredFields();
 
+            
                 if (isValid) {
 
                     var errorHandler = function (error) {

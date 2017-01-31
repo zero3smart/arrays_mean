@@ -11,11 +11,16 @@ router.get('/', function (req, res) {
 
     if (process.env.NODE_ENV == 'enterprise') {
 
+
         teams.GetTeamsAndDatasources(req.user,function(err,teamDescriptions) {
             if (err) {
                 winston.error("❌  Error getting bind data for Team show: ", err);
                 return res.status(500).send(err.response || 'Internal Server Error');
             } else {
+
+                console.log(teamDescriptions);
+
+                
                 team_show_controller.BindData(req,teamDescriptions[0],function(err,bindData) {
                     if (err) {
                         winston.error("❌  Error getting bind data for Team show: ", err);

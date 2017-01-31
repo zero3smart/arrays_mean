@@ -60,13 +60,12 @@ angular.module('arraysApp')
 
                         DatasetService.search({uid: value, _team: team._id})
                         .then(function(response) {
+                      
                             if (response.status == 200) {
                                 if (response.data.length > 0) {
-                                    if (response.data.length == 1 && response.data[0]._id == dataset._id) {
-                                        deferred.resolve(true);
-                                    } else {
-                                        deferred.reject(false);
-                                    }
+                                    
+                                    deferred.reject(false);
+                                    
 
                                 } else {
                                     deferred.resolve(true);

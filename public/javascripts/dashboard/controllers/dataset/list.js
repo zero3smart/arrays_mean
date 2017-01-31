@@ -5,7 +5,7 @@ angular.module('arraysApp')
             $scope.$parent.$parent.dataset = {};
             $scope.datasets = datasets;
 
-            $scope.primaryAction.text = 'New Visualization';
+            // $scope.primaryAction.text = 'New Visualization';
             $scope.primaryAction.disabled = false; // can limit here based on billing
             $scope.primaryAction.do = function() {
                 $scope.add();
