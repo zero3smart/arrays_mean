@@ -51,9 +51,15 @@ angular.module('arraysApp')
             return {
                 restrict: 'A',
                 require: 'ngModel',
+                scope: {    
+                    datasetId : '='
+
+                },
                 link: function(scope,elem,attr,model) {
 
                     model.$asyncValidators.titleAvailable = function(modelValue,viewValue) {
+
+
                         var value = (modelValue || viewValue).toLowerCase().replace(/[^A-Z0-9]+/ig, '_'); // same as uid in upload.js
                         var team = AuthService.currentTeam();
                         var deferred = $q.defer();
@@ -63,8 +69,13 @@ angular.module('arraysApp')
                       
                             if (response.status == 200) {
                                 if (response.data.length > 0) {
-                                    
-                                    deferred.reject(false);
+
+                                    if (response.data.length == 1 && scope.datasetId == response.data[0]._id) {
+                                        deferred.resolve(true);
+                                    } else {
+                                        deferred.reject(false);
+
+                                    }
                                     
 
                                 } else {
