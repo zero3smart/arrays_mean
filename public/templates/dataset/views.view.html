@@ -34,6 +34,7 @@
 
 <div ng-if="setting.inputType == 'datasetMapping' && setting.mappingType=='dataset'" ng-init="loadDatasetsForMapping();">
     <label>{{setting.displayAs}}</label>
+    <p>{{setting.description}}</p>
     <md-input-container class="md-block">
         <md-select aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name].pKey" ng-change="loadDatasetColumnsByPkey(data[setting.name].pKey)">
             <md-option ng-repeat="dataset in otherAvailableDatasets" ng-value="dataset.mappingPkey">
@@ -46,6 +47,7 @@
 
 <div ng-if="setting.inputType == 'datasetMapping' && setting.mappingType=='fields' && data[setting.name].pKey" ng-init="data[setting.name].mappings=[{key:'',value:''}]">
     <label>{{setting.displayAs}}</label>
+    <p>{{setting.description}}</p>
     <div ng-repeat="item in data[setting.name].mappings">
         <div layout="row">
             <md-input-container flex="40" >
@@ -74,6 +76,7 @@
 
 <div ng-if="setting.inputType == 'select'" ng-init="dep = checkDependency(setting.selectFrom);">
     <label>{{setting.displayAs}}</label>
+    <p>{{setting.description}}</p>
     <small class="pull-right" ng-if="dep">
         Dropdown selections are based on {{dep.display}}
     </small>
@@ -121,6 +124,7 @@
 
 <div ng-if="setting.inputType=='multiselect'">
     <label>{{setting.displayAs}}</label>
+    <p>{{setting.description}}</p>
     <md-input-container class="md-block" flex-gt-sm>
         <md-select multiple aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name]">
             <md-option  ng-if="setting.selectFrom=='column'  && !setting.restrictColumnDataType " ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType) | filter: excludeBy(data[setting.selectExcludeBy])" ng-value="col">
@@ -139,20 +143,22 @@
 
 <div ng-if="setting.inputType == 'multivalueTextbox'" ng-init="data[setting.name]=data[setting.name]|| []">
     <label>{{setting.displayAs}}</label>
-        <md-input-container class="md-block" >
-            <md-chips ng-model="data[setting.name]"
-                md-enable-chip-edit="true"
-                placeholder="Enter a Value" secondary-placeholder="+Value">
-                <md-chip-template>
-                    {{$chip}}
-                </md-chip-template>
-            </md-chips>
+    <p>{{setting.description}}</p>
+    <md-input-container class="md-block" >
+        <md-chips ng-model="data[setting.name]"
+            md-enable-chip-edit="true"
+            placeholder="Enter a Value" secondary-placeholder="+Value">
+            <md-chip-template>
+                {{$chip}}
+            </md-chip-template>
+        </md-chips>
     </md-input-container>
 </div>
 
 
 <div ng-if="setting.inputType=='keyValue'">
     <label>{{setting.displayAs}}</label>
+    <p>{{setting.description}}</p>
 
     <div ng-repeat=" item in data[setting.name] track by $index" layout="row">
         <md-input-container flex="25" >
@@ -189,7 +195,7 @@
             <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
         </md-input-container>
 
-
+        <!-- <aa-color-picker selected="item.value" ng-if="setting.valueInputType=='colorpicker'"></aa-color-picker> -->
         <md-input-container flex="65" ng-if="setting.valueInputType=='colorpicker'" class="md-color-picker">
             <div md-color-picker md-color-clear-button="false" ng-model="item.value"></div>
         </md-input-container>
@@ -213,6 +219,7 @@
 
 <div ng-if="setting.inputType=='multiColorpicker' && tab == 'Colors'" ng-init="data[setting.name] = data[setting.name] || []">
     <label>{{setting.displayAs}}</label>
+    <p>{{setting.description}}</p>
     <div layout="row" layout-wrap>
         <div ng-repeat="color in data[setting.name] track by $index">
             <md-input-container class="md-color-picker">
@@ -229,6 +236,7 @@
 
 <div ng-if="setting.inputType=='iconMapping' && !data.defaultGalleryConditionalBackground" ng-init="initIcons(setting.name)">
     <label>{{setting.displayAs}}</label>
+    <p>{{setting.description}}</p>
     <div layout="row">
         <md-select aria-label="{{setting.name}} for {{viewName}}" flex="30" class="md-block" ng-model="data[setting.name].field" ng-model-options="{updateOn:'blur'}">
             <md-option  ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
@@ -282,6 +290,7 @@
 
 <div ng-if="setting.inputType=='backgroundColorMapping' && data.defaultGalleryConditionalBackground" ng-init="initBackgroundColors(setting.name)">
     <label>{{setting.displayAs}}</label>
+    <p>{{setting.description}}</p>
     <div layout="row">
         <md-select aria-label="{{setting.name}} for {{viewName}}" flex="30" class="md-block" ng-model="data[setting.name].field" ng-model-options="{updateOn:'blur'}">
             <md-option  ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
@@ -314,6 +323,7 @@
 
 <div ng-if="setting.inputType == 'selectSecondaryColumn' && data.defaultGalleryConditionalBackground" ng-init="dep = checkDependency(setting.selectFrom);">
     <label>{{setting.displayAs}}</label>
+    <p>{{setting.description}}</p>
     <small class="pull-right" ng-if="dep">
         Dropdown selections are based on {{dep.display}}
     </small>
