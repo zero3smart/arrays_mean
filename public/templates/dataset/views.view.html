@@ -27,10 +27,18 @@
     <p>{{setting.description}}</p>
     <md-input-container class="md-block" flex-gt-sm>
         <input ng-if="!setting.expectedInputType" type="text" ng-model="data[setting.name]">
-        <input ng-if="setting.expectedInputType=='float'" min="0" step="0.1" type="number" ng-model="data[setting.name]">
     </md-input-container>
 </div>
 
+<div ng-if="setting.inputType == 'slider'">
+    <label>{{setting.displayAs}}</label>
+    <p>{{setting.description}}</p>
+    <md-input-container layout="row" layout-align="space-between center">
+        <md-slider ng-model="data[setting.name]" min="0" max="1" step="0.1" flex></md-slider>
+        <span flex="5"></span>
+        <span flex="5">{{ data[setting.name] * 100}}%</span>
+    </md-input-container>
+</div>
 
 <div ng-if="setting.inputType == 'datasetMapping' && setting.mappingType=='dataset'" ng-init="loadDatasetsForMapping();">
     <label>{{setting.displayAs}}</label>
