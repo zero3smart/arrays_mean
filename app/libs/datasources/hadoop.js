@@ -115,8 +115,6 @@ module.exports.initConnection = function(req,res) {
 
         // return res.status(200).json({message: 'ok'});
 
-
-   
         var JDBC = new jdbc(config)
 
         JDBC.initialize(function(err) {

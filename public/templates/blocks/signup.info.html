@@ -83,12 +83,19 @@
 
 		</div>
 
-		<div class="form-group">
+
+		<div class="form-group" ng-class="{ 'has-error': infoForm.teamTitle.$touched && infoForm.teamTitle.$invalid}">
 			<label>Team Title</label><small class="pull-right" ng-hide="invitedUser">You can change this later</small>
 	  		<div class="input-group">
-			  <span class="input-group-addon"><i class="fa fa-group"></i></span>
-			  <input ng-model='user._team.title' ng-disabled="invitedUser" ng-model-options="{updateOn:'blur'}" type="text" class="form-control">
+				<span class="input-group-addon"><i class="fa fa-group"></i></span>
+				<input required ng-model='user._team.title' name="teamTitle" ng-disabled="invitedUser" ng-model-options="{updateOn:'blur'}" type="text" class="form-control">
 			</div>
+
+			<div class="help-block" ng-messages="infoForm.teamTitle.$error" ng-if="infoForm.teamTitle.$touched">
+		    	<p ng-message="required">A team title is required.</p>
+			</div>
+
+				
 		</div>
 		<subdomain-suggestion ng-hide="invitedUser || isEnterprise " team-title='user._team.title' subdomain='user._team.subdomain'></subdomain-suggestion>
 
@@ -98,8 +105,8 @@
 	  		<div class="input-group">
 
 				  <span class="input-group-addon"><i class="fa fa-mouse-pointer"></i></span>
-				  <input ng-disabled="invitedUser" name="subdomain" ng-model-options="{updateOn:'blur'}"  ng-model="user._team.subdomain" unique-subdomain
-				  type="text" class="form-control" ng-pattern="/^[a-z0-9\-]*$/" required>
+				  <input ng-if="!isEnterprise" ng-disabled="invitedUser" name="subdomain" ng-model-options="{updateOn:'blur'}"  ng-model="user._team.subdomain" unique-subdomain
+				  type="text" class="form-control" ng-pattern="/^[a-z0-9\-]*$/" ng-required="!isEnterprise">
 				  <span class="input-group-addon">{{"." + host}}</span>
 			</div>
 
