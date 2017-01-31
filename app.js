@@ -5,15 +5,19 @@ var cluster = require('cluster');
 
 
 if (cluster.isMaster) {
-    
+
+
+
 
     require('./queue-init')();
+
+
 
 
     var clusterWorkerSize = process.env.WEB_CONCURRENCY || require('os').cpus().length;
 
 
-    console.log('master pid %s, total Workers: %s ', process.pid,clusterWorkerSize);
+    console.log('env %s, master pid %s, total Workers: %s ', process.env.NODE_ENV,process.pid,clusterWorkerSize);
     for (var i = 0; i < clusterWorkerSize; i ++) {
         cluster.fork();
     }

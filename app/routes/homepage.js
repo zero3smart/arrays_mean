@@ -9,9 +9,6 @@ var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
 
 router.get('/', function (req, res) {
 
-    console.log("here");
-    console.log(process.env.NODE_ENV)
-
     if (process.env.NODE_ENV == 'enterprise') {
 
         teams.GetTeamsAndDatasources(req.user,function(err,teamDescriptions) {

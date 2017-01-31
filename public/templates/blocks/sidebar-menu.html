@@ -16,9 +16,13 @@
 
     <hr>
 
-    <li class="sidebar-label">
+    <li ng-if="!isEnterprise" class="sidebar-label">
         <a class="sidebar-label">{{team.subdomain + '.' + host}}</a>
     </li>
+    <li ng-if="isEnterprise" class="sidebar-label">
+        <a class="sidebar-label">{{host}}</a>
+    </li>
+
     <li ng-if="user.role=='admin' || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'team'}">
         <a ui-sref="dashboard.team.settings" role="button">Team Settings</a>
     </li>

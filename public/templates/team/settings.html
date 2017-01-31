@@ -13,7 +13,7 @@
        <textarea name="description" ng-model="team.description"></textarea>
    </md-input-container>
 
-    <div layout="row">
+    <div ng-hide="isEnterprise" layout="row">
        <md-input-container flex="50">
            <label>Subdomain</label>
            <input value="{{team.subdomain}}.arrays.co" disabled><!--ng-model="team.subdomain" -->
