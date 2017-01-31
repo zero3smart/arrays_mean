@@ -18,6 +18,7 @@ angular
 
             $scope.user = AuthService.currentUser();
             $scope.teams = AuthService.allTeams();
+
             $scope.isEnterprise = false
             
             $scope.host = $location.host() + ":" + $location.port();
@@ -30,10 +31,11 @@ angular
             }
 
             $scope.updateSubdomain = function() {
+                $scope.team = AuthService.currentTeam();
+                
                 if ($scope.isEnterprise) {
                     $scope.subdomain = $scope.explore_url;
                 } else {
-                    $scope.team = AuthService.currentTeam();
                     $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $scope.host;
 
                 }
