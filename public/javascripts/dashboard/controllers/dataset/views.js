@@ -47,6 +47,7 @@ angular.module('arraysApp')
                 return field.field;
 
             }));
+            var colsAll = colsAvailable; // get all before filter
             colsAvailable = colsAvailable.filter(function(fieldName){
                 return !$scope.dataset.fe_excludeFields[fieldName];
             });
@@ -89,7 +90,9 @@ angular.module('arraysApp')
                             viewDisplayName: data.displayAs,
                             dataset: $scope.$parent.$parent.dataset,
                             viewSetting: data.settings,
+                            viewTabs: data.tabs,
                             colsAvailable: colsAvailable,
+                            colsAll: colsAll,
                             team: $scope.$parent.$parent.team,
                             default_view: $scope.data.default_view,
                             reimportStep: data.reimportStep
@@ -108,7 +111,16 @@ angular.module('arraysApp')
 
                 });
             };
-            // $scope.openViewDialog(null, "581942ad8f220a84e42ef52c"); // open first modal, for testing only
+            // open modal on load, for testing
+            // $scope.openViewDialog(null, "581942ad8f220a84e42ef52c"); // barChart
+            // $scope.openViewDialog(null, "581a83b24fc526c798a72559"); // lineGraph
+            // $scope.openViewDialog(null, "581b6a7dd1284154a885d09d"); // pieSet
+            // $scope.openViewDialog(null, "5817b73e4fc526c798a72554"); // gallery
+            // $scope.openViewDialog(null, "581af68aafb074615368829b"); // scatterplot
+            // $scope.openViewDialog(null, "5817b7cf4fc526c798a72555"); // timeline
+            // $scope.openViewDialog(null, "581d2b83d1284154a885d0b3"); // wordCloud
+            // $scope.openViewDialog(null, "5851e8fa9daaffbe4871bd04"); // map
+            // $scope.openViewDialog(null, "5851e8eb9daaffbe4871bd03"); // pieChart
 
             $scope.reset = function () {
                 $scope.data.default_view = $scope.$parent.$parent.dataset.fe_views.default_view;
@@ -172,14 +184,16 @@ angular.module('arraysApp')
             };
 
 
-            function ViewDialogController($scope, $mdDialog, $filter, viewName,belongsToTeam,viewDisplayName,dataset,viewSetting,colsAvailable,AssetService,
+            function ViewDialogController($scope, $mdDialog, $filter, viewName,belongsToTeam,viewDisplayName,dataset,viewSetting,viewTabs,colsAvailable,colsAll,AssetService,
                 DatasetService,team,default_view,reimportStep) {
 
                 $scope.viewName = viewName;
                 $scope.viewDisplayName = viewDisplayName;
                 $scope.viewSetting = viewSetting;
+                $scope.viewTabs = viewTabs;
                 $scope.isDefault = false;
                 $scope.colsAvailable = colsAvailable;
+                $scope.colsAll = colsAll;
                 $scope.otherAvailableDatasets = [];
                 $scope.otherDatasetsloaded = false;
                 $scope.otherDatasetCols = {};
