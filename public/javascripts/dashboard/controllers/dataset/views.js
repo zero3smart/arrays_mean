@@ -47,7 +47,6 @@ angular.module('arraysApp')
                 return field.field;
 
             }));
-            var colsAll = colsAvailable; // get all before filter
             colsAvailable = colsAvailable.filter(function(fieldName){
                 return !$scope.dataset.fe_excludeFields[fieldName];
             });
@@ -92,7 +91,6 @@ angular.module('arraysApp')
                             viewSetting: data.settings,
                             viewTabs: data.tabs,
                             colsAvailable: colsAvailable,
-                            colsAll: colsAll,
                             team: $scope.$parent.$parent.team,
                             default_view: $scope.data.default_view,
                             reimportStep: data.reimportStep
@@ -184,7 +182,7 @@ angular.module('arraysApp')
             };
 
 
-            function ViewDialogController($scope, $mdDialog, $filter, viewName,belongsToTeam,viewDisplayName,dataset,viewSetting,viewTabs,colsAvailable,colsAll,AssetService,
+            function ViewDialogController($scope, $mdDialog, $filter, viewName,belongsToTeam,viewDisplayName,dataset,viewSetting,viewTabs,colsAvailable,AssetService,
                 DatasetService,team,default_view,reimportStep) {
 
                 $scope.viewName = viewName;
@@ -193,7 +191,6 @@ angular.module('arraysApp')
                 $scope.viewTabs = viewTabs;
                 $scope.isDefault = false;
                 $scope.colsAvailable = colsAvailable;
-                $scope.colsAll = colsAll;
                 $scope.otherAvailableDatasets = [];
                 $scope.otherDatasetsloaded = false;
                 $scope.otherDatasetCols = {};
