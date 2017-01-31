@@ -22,7 +22,6 @@ angular.module('arraysApp')
             }
 
             $scope.deleteIcon = function(url) {
-                console.log(url);
                 var key = url.split("amazonaws.com")[1]
                 AssetService.deleteImage($scope.team._id, key).then(function (data) {
                     $mdToast.show(
@@ -35,7 +34,6 @@ angular.module('arraysApp')
                     AssetService.loadIcons()
                     .then(function(data) {
                         $scope.iconsUrl = data;
-                        console.log($scope.iconsUrl)
                     })
                 });
             }
@@ -129,7 +127,6 @@ angular.module('arraysApp')
                 AssetService.loadIcons()
                 .then(function(data) {
                     $scope.iconsUrl = data;
-                    console.log($scope.iconsUrl)
                 })
             }
 
