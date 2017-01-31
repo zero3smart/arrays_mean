@@ -20,6 +20,56 @@ angular
                 });
             };
 
+
+
+            $scope.deleteTeam = function(index) {
+                //show warning, ask for confirmation
+                var teamId = $scope.teams[index]._id;
+                var teamName = $scope.teams[index].title;
+
+                $mdDialog.show({
+                    templateUrl: 'templates/blocks/team.delete.html',
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+
+                    controller: function($scope,$mdDialog) {
+                        $scope.team = teamName;
+
+                        $scope.hide = function() {
+                            $mdDialog.hide();
+                        };
+                        $scope.cancel = function() {
+                            $mdDialog.cancel();
+                        };
+                    }
+                })
+                .then(function() {
+
+                    Team.delete({id:teamId}).$promise
+                        .then(function(response){
+                          
+                               if (response.message == 'ok') {
+                                    $scope.teams.splice(index,1);
+
+                                     $mdToast.show(
+                                        $mdToast.simple()
+                                            .textContent('Team deleted successfully!')
+                                            .position('top right')
+                                            .hideDelay(3000)
+                                    );
+                               }
+                        })
+                    
+
+                },function() {
+                    //dialog canceled
+                })
+            }
+
+
+
+
+
             function AddTeamDialogController($scope, $mdDialog, Team, user) {
                 $scope.newTeam = {};
                 $scope.newTeam.admin = user._id;
@@ -41,8 +91,10 @@ angular
                     .$promise.then(function(data) { 
 
                         if (data.length == 0) {
+
                             if (/^[a-z0-9\-]*$/.test($scope.newTeam.subdomain)) {
                                 $scope.vm.teamForm.subdomain.$setValidity('unique', true);
+                                $scope.vm.teamForm.subdomain.$setValidity('pattern', true);
                             } else {
                                 $scope.vm.teamForm.subdomain.$setValidity('unique', true);
                                 $scope.vm.teamForm.subdomain.$setValidity('pattern', false);

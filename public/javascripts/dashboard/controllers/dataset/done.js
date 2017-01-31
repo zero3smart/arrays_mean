@@ -1,7 +1,20 @@
 angular.module('arraysApp')
-    .controller('DatasetDoneCtrl', ['$scope', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q','Job','$timeout',
-        function($scope, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q,Job,$timeout) {
+    .controller('DatasetDoneCtrl', ['$scope', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q','Job','$timeout','$window',
+        function($scope, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q,Job,$timeout,$window) {
 
+            $scope.primaryAction.text = 'View Your Array';
+            $scope.$watch('dirty', function(dirty) {
+                $scope.primaryAction.disabled = dirty;
+                if(dirty) {
+                    $scope.importData();
+                }
+            });
+            $scope.primaryAction.do = function() {
+                var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' + dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase();
+                // {{subdomain}}/{{dataset.uid}}-r{{dataset.importRevision}}/{{dataset.fe_views.default_view | viewToName }}
+
+                $window.open(url, "_blank");
+            };
 
             //-- helper functions ---//
 
@@ -85,8 +98,8 @@ angular.module('arraysApp')
 
 
                 DatasetService.getJobStatus(datasetId)
-                .then(function(job) { 
-                   
+                .then(function(job) {
+
 
 
                     if (job.id == 0) {
@@ -365,14 +378,12 @@ angular.module('arraysApp')
             var datasourceIndex = -1;
 
             $scope.togglePublish = function() {
-                var isPublic = $scope.$parent.$parent.dataset.isPublic;
-                DatasetService.publish($scope.$parent.$parent.dataset._id, isPublic);
+                DatasetService.update($scope.$parent.$parent.dataset._id, {isPublic: $scope.$parent.$parent.dataset.isPublic});
             };
 
-
             $scope.toggleImageScraping = function() {
-                var skip = $scope.$parent.$parent.dataset.skipImageScraping;
-                DatasetService.skipImageScraping($scope.$parent.$parent.dataset._id,skip);
+                DatasetService.update($scope.$parent.$parent.dataset._id, {skipImageScraping: 
+                    $scope.$parent.$parent.dataset.skipImageScraping});
             };
 
 

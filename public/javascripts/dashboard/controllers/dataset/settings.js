@@ -4,11 +4,14 @@ angular.module('arraysApp')
         function($scope, $state, dataset, DatasetService, $mdToast, FileUploader, AssetService) {
 
             $scope.primaryAction.text = 'Publish';
-            $scope.$watch('settingsForm.$valid', function(validity) {
+
+            $scope.$watch('vm.settingsForm.$valid', function(validity) {
+
                 if (validity !== undefined) {
                     $scope.formValidity = validity;
                     $scope.primaryAction.disabled = !validity;
                 }
+
             });
             $scope.primaryAction.do = function() {
                 $scope.submitForm($scope.formValidity);
@@ -17,32 +20,7 @@ angular.module('arraysApp')
             // still needed now that this step comes later?
 
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
-            if (!dataset.fe_visible) {dataset.fe_visible = false;}
-
-            var original_feVisible = dataset.fe_visible;
-
-
-          $scope.colors = [
-
-                // ['#FA2A00','#FFFFFF'] // brandColor, iconColor
-                '#FA2A00',
-                '#FEB600',
-                '#79F800',
-                '#005CFF',
-                '#FE00FF',
-                '#EF0069',
-                '#00DAE5',
-                '#009E9D',
-                '#7A00F6',
-                '#dddddd',
-                '#4A4A4A'
-            ];
-            if(!dataset.brandColor) { dataset.brandColor = $scope.colors[0]; }
-
-
-            $scope.pickColor = function(color) {
-                dataset.brandColor = color;
-            }
+            if (!dataset.fe_visible) {dataset.fe_visible = true;}
 
 
             // if (!dataset.url) {
@@ -54,26 +32,27 @@ angular.module('arraysApp')
             $scope.$parent.$parent.currentNavItem = 'settings';
 
             $scope.updatePublishSettings = function() {
+
                 if(!dataset.fe_visible) {
                     dataset.isPublic = false;
                     dataset.fe_listed = false;
                 } else {
                     if(dataset.imported) {
-                        DatasetService.publish($scope.$parent.$parent.dataset._id, dataset.isPublic);
+
+
+                        DatasetService.update($scope.$parent.$parent.dataset._id,{isPublic: dataset.isPublic,
+                            fe_visible: dataset.fe_visible,fe_listed:dataset.fe_listed})
+                       
                     }
                 }
             };
 
-            $scope.promptCacheFilter = function() {
-                if (original_feVisible !== dataset.fe_visible && (dataset.dirty == 0 || dataset.dirty == 4)) {
-                    dataset.dirty = 3;
-                }
-            };
 
             $scope.submitForm = function(isValid) {
+               
 
 
-                if (isValid) {
+                // if (isValid) {
                     $scope.submitting = true;
                     if (!dataset.author) {
                         dataset.author = $scope.user._id;
@@ -108,7 +87,6 @@ angular.module('arraysApp')
                         $scope.submitting = false;
                     }, function (error) {
 
-                        // console.log(error);
 
                         $mdToast.show(
                             $mdToast.simple()
@@ -118,7 +96,7 @@ angular.module('arraysApp')
                         );
                         $scope.submitting = false;
                     });
-                }
+                // }
             };
 
             // banner upload
@@ -163,7 +141,7 @@ angular.module('arraysApp')
             };
 
             $scope.imageUploader.onAfterAddingFile = function (fileItem) {
-                // console.log(fileItem);
+
                 if ($scope.imageUploader.queue.length > 0) {
                     $scope.imageUploader.queue[0] = fileItem;
                 }

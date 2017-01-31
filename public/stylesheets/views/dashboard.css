@@ -72,6 +72,13 @@ md-checkbox .md-container:before {
 	/*remove the persistent ink on focus*/
 	content: none;
 }
+/*for default view, disabled*/
+md-checkbox.md-checked[disabled].view-visible .md-icon {
+	background-color: var(--color-primary);
+}
+md-checkbox.md-checked[disabled].view-visible .md-icon:after {
+	border-color: white;
+}
 
 md-option  {
 	color: var(--color-text-med) !important;
@@ -298,6 +305,9 @@ body.md-toast-animating {
     line-height: 30px;
     font-weight: 600;
 }
+.dashboard-list .custom {
+	font-weight: bold;
+}
 .user-list .pending {
 	color: var(--color-text-light);
 }
@@ -311,6 +321,11 @@ body.md-toast-animating {
 .dashboard-list-icon:focus {
     color: var(--color-primary);
 }
+.dashboard-list-icon.disabled,
+.dashboard-list-icon.disabled:hover,
+.dashboard-list-icon.disabled:focus {
+	color: var(--color-text-light);
+}
 .dashboard-list-icon.view {
 	/*color: var(--color-text-light);*/
 	color: #eee;
@@ -318,6 +333,9 @@ body.md-toast-animating {
 .dashboard-list-icon.view.default-view {
 	/*color: rgba(0,0,0,0.87);*/
 	color: var(--color-text-dark);
+}
+.dashboard-list md-checkbox {
+	margin-bottom: 0;
 }
 
 .team-list .md-button .dashboard-list-name,
@@ -372,6 +390,12 @@ md-input-invalid.subdomain-append {
 .user-dialog .profile-thumb {
 	width: 100%;
 	padding-right: 15px;
+}
+
+.dashboard-list li.li-disabled {
+	color: var(--color-text-light);
+	/*bg doesnt work well with li border and left/right margin*/
+	/*background: #eee;*/
 }
 
 /* Angular Material tabs and nav bars */
@@ -583,6 +607,7 @@ ul.aa-color-picker {
 }
 .dataset .field,
 .dataset .sample {
+	color: var(--color-text-light);
 	text-overflow: ellipsis;
 	white-space: nowrap;
     overflow: hidden;
@@ -602,17 +627,6 @@ ul.aa-color-picker {
 
 .dataset .field.custom {
     font-weight: bold;
-}
-
-.incl-excl-all md-checkbox {
-	margin-bottom: 0;
-}
-.incl-excl-all md-checkbox.md-checked .md-icon {
-	background-color: transparent;
-	border-color: var(--color-text-light);
-}
-.incl-excl-all md-checkbox.md-checked .md-icon:after {
-	border-color: var(--color-text-light);
 }
 
 /*.dataset .field > .handler {

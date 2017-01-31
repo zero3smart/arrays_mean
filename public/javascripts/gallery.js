@@ -4,7 +4,7 @@ $(function () {
      */
     var controller = new ScrollMagic.Controller();
 
-    console.log('here');
+
 	/**
 	 * Set array header pin
 	 */
@@ -30,20 +30,38 @@ $(function () {
 			.addTo(controller);
 	 }
 
-	 // grab all h2 secondary column items
-	 var secondaryColumns = document.querySelectorAll('.gallery-secondary-column-item h2');
+	 function toggleDisplayValForArr(arr) {
+	 	for (var i = 0; i < arr.length; i++) {
+	 		arr[i].nextElementSibling.style.display = 'block';
+	 	}
+	 }
+
+	 // grab all h2 secondary column items, assign gallery title truncation height
+	 var galleryTitleThreshold, secondaryColumns, galleryTitles;
+
+	 secondaryColumns = document.querySelectorAll('.gallery-secondary-column-item h2');
+	 galleryTitleThreshold = secondaryColumns ? 44 : 66;
+
+	 galleryTitles = document.querySelectorAll('.gallery-title');
+
 	 // convert to array
-	 var secondaryColumnsArr = Array.prototype.slice.call(secondaryColumns);
+	 var secondaryColumnsArr, galleryTitlesArr; 
+
+	 secondaryColumnsArr = Array.prototype.slice.call(secondaryColumns);
+	 galleryTitlesArr = Array.prototype.slice.call(galleryTitles);
+
 	 // filter out elements below height threshold
-	 var overflowColumns = secondaryColumnsArr.filter(function(el) {
+	 var overflowColumns, overflowGalleryTitles;
+
+	 overflowColumns = secondaryColumnsArr.filter(function(el) {
 	 	return el.offsetHeight > 136;
 	 });
 
-	 // apply style: item container background color -> overlay gradient background
-	 for (var i = 0; i < overflowColumns.length; i++) {
-	 	var backgroundColor = overflowColumns[i].parentNode.parentNode.parentNode.style.backgroundColor;
-	 	var overlay = overflowColumns[i].nextElementSibling;
-	 	overlay.style.background = 'linear-gradient(transparent 105px, ' + backgroundColor + ')';
-	 	overlay.style.display = 'block';
-	 }
+	 overflowGalleryTitles = galleryTitlesArr.filter(function(el) {
+	 	return el.offsetHeight > galleryTitleThreshold;
+	 })
+
+	 toggleDisplayValForArr(overflowColumns);
+	 toggleDisplayValForArr(overflowGalleryTitles);
+
 });

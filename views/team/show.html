@@ -62,7 +62,7 @@
                                                 <h2 class="panel-body-title">{{ source.title }}</h2>
                                                 <div class="panel-body-meta">
                                                     <div>
-                                                        <a class="panel-view-array color-brand">View Collection</a>
+                                                        <a class="panel-view-array color-brand">View Visualization</a>
                                                     </div>
                                                     {% set comma = joiner() %}
                                                     {% for url in source.urls -%}
@@ -85,8 +85,8 @@
                         </ul>
 
                         {% else %}
-                          <h1 class='array-title'>This team has no collections listed</h1>
-                          <h2><a href="/dashboard/dataset/list">Create a collection</a></h2>
+                          <h1 class='array-title'>This team has no visualizations listed</h1>
+                          <h2><a href="/dashboard/dataset/list">Create a visualization</a></h2>
 
                         {% endif %}
                     </form>

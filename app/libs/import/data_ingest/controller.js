@@ -127,10 +127,7 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
     processed_row_objects.InsertProcessedDatasetFromRawRowObjects
     (
         job,
-        dataSourceDescription._team.subdomain,
         datasetId,
-        dataSource_importRevision,
-        dataSource_title,
         parentId,
         function (err) {
             if (err) {
@@ -163,8 +160,6 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
                                     processed_row_objects.GenerateFieldsByJoining_comparingWithMatchFn(
                                         job,
                                         datasetId,
-                                        dataSource_importRevision,
-                                        dataSource_title,
                                         description.field,
                                         description.singular,
                                         by.findingMatchOnField,
@@ -298,7 +293,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             processed_row_objects.EnumerateProcessedDataset(
                 dataSource_team_subdomain,
                 dataSourceDescription._id,
-                dataSource_importRevision,
                 dataset_parentId,
                 function (doc, eachCb) {
                     afterGeneratingProcessedRowObjects_eachRowFn(eachCtx, doc, eachCb);

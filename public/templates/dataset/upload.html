@@ -1,17 +1,59 @@
 <form name="uploadForm" autocomplete="off">
-    <md-content layout-padding>
+    <md-content layout-padding md-no-ink>
 
             <h2>Select Your Data Source</h2>
-            <p class="instructions" ng-if="dataset.fileName">Datasets</p>
+            <p ng-if="dataset.fileName">Data Source(s)</p>
 
-            <div ng-hide="addingSourceType != '' || dataset.fileName">
+         
+
+            <div ng-hide="addingSourceType != '' || dataset.fileName || dataset.connection">
                 <p>Select a data source to import from the options below.</p>
                 <ul class="dashboard-list">
                     <li><a href="#" ng-click="addSourceType('csv')">Upload a spreadsheet</a></li>
                     <li><a href="#" ng-click="">Upload a JSON file</a></li>
-                    <li><a href="#" ng-click="">Connect to a SQL database</a></li>
+                    <li><a href="#" ng-click="addSourceType('database')">Connect to a database</a></li>
                 </ul>
             </div>
+
+             <div ng-if="addingSourceType=='database' || dataset.connection">
+
+                <md-select  aria-label="Dataset Connection Url" flex="50" ng-model="dataset.connection.type">
+
+                    <md-option value="hadoop">
+                       Hadoop
+                    </md-option>
+
+                </md-select>
+
+                <md-input-container layout="row" flex="80" md-no-float>
+                    <input ng-model="dataset.connection.url"
+                    aria-label="Dataset Connection String" placeholder="Connection URL" autofocus>
+                </md-input-container>
+
+                <md-input-container layout="row" flex="80" md-no-float>
+                    <input ng-model="dataset.connection.tableName"
+                    aria-label="Dataset Connection Table Name" placeholder="Table Name" autofocus>
+                </md-input-container>
+
+
+                <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="connectToDB()"
+                    ng-if="dataset.connection.url && dataset.connection.url.indexOf('://')>=0 && 
+                    dataset.connection.tableName" ng-hide="isConnecting==false"
+                    ng-disabled="isConnecting || !dataset.connection.type ">
+                    <span class="btn-label"> {{ isConnecting ? 'Connecting' : 'Connect' }}</span>
+                </md-button>
+
+          
+
+
+
+                <p ng-show="isConnecting!==false" class="aa-file-select-close"><a href="#" ng-click="addSourceType('')">Go back</a></p>
+
+
+            </div>
+
+
+
 
             <div ng-if="addingSourceType == 'csv'" ng-hide="dataset.fileName" class="aa-file-select no-padding">
                 <label>Upload spreadsheet</label>
@@ -64,7 +106,7 @@
                         <strong>{{dataset.fileName}}</strong>
                     </span>
 
-                    <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-if="!additionalDatasources[0].fileName" 
+                    <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-if="!additionalDatasources[0].fileName"
                        ng-click="removeSourceDialog(dataset, removeSource, $event)">
                         <i class="fa fa-remove" aria-hidden="true"></i>
                     </span>
@@ -153,7 +195,7 @@
         <div ng-if="dataset.fileName && !addingAdditionalDatasource">
             <md-input-container>
                 <md-button class="md-dashboard" ng-click="addNewDatasource()">
-                    <span class="btn-label">Combine With Another Datasource</span></md-button>
+                    <span class="btn-label">Combine with another data source</span></md-button>
             </md-input-container>
         </div>
 
@@ -172,5 +214,4 @@
         </div>
     </md-content>
 </form>
-
 <!-- <ng-include src="'/templates/blocks/dataset.empty.html'" ng-if="!dataset.title"></ng-include> -->

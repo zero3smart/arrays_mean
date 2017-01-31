@@ -98,7 +98,7 @@
         <md-select name="designatedField"
                    ng-model="data.designatedField"
                    aria-label="Designated Field - {{fieldName}}">
-            <md-option ng-repeat="field in availableDesignatedFields" ng-value="field">
+            <md-option ng-repeat="field in availableDesignatedFields | filter: '!objectTitle'" ng-value="field">
                 {{field}}
             </md-option>
         </md-select>

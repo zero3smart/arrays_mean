@@ -87,6 +87,35 @@ function _deleteDataset(description,cb) {
 module.exports.deleteDataset = _deleteDataset;
 
 
+function _deleteTeam(subdomain,cb) {
+    var param  = {
+        Bucket: bucket,
+        Prefix: subdomain + '/'
+    }
+
+    s3.listObjects(param,function(err,data) {
+        if (err) return cb(err);
+        if (!data.Contents) return cb();
+        if (data.Contents.length == 0 ) return cb();
+        param = {Bucket: bucket};
+        param.Delete = {Objects:[]};
+        data.Contents.forEach(function(content) {
+            param.Delete.Objects.push({Key: content.Key});
+        })
+        s3.deleteObjects(param,function(err,data) {
+            if (err) return cb(err);
+            if (!data.Contents) return cb();
+            if (data.Contents.length == 1000) return _deleteDataset(description,cb);
+            else {
+                return cb();
+            }
+        })
+    })
+}
+
+module.exports.deleteTeam = _deleteTeam;
+
+
 function _deleteObject(key,cb) {
     var params = {
         Bucket : bucket,
