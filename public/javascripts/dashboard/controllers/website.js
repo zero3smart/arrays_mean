@@ -4,10 +4,10 @@ angular.module('arraysApp')
 
             $scope.progressMode = "determinate";
 
-<<<<<<< Updated upstream
-=======
-            $scope.deleteFile = function(url) {
+            $scope.deleteFile = function(url, type) {
                 var keyWithEndBit = url.split("amazonaws.com")[1];
+                var assetType = keyWithEndBit.split("logo")
+                keyWithEndBit = assetType[0] + type + assetType[1]
                 var key = keyWithEndBit.split("?")[0];
                 AssetService.deleteImage($scope.team._id, key).then(function (data) {
                         $mdToast.show(
@@ -16,12 +16,10 @@ angular.module('arraysApp')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
-                        $scope.team = data;
+                        $scope.team = data["doc"];
                 });
 
             }
-
->>>>>>> Stashed changes
 
             function newUploader(assetType, formName) {
                 var _uploader = new FileUploader({

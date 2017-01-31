@@ -3,12 +3,9 @@ var User = require('../../models/users')
 var s3ImageHosting = require('../../libs/utils/aws-image-hosting');
 var _ = require('lodash');
 var Batch = require('batch');
-<<<<<<< Updated upstream
 var datasource_file_service = require('../../libs/utils/aws-datasource-files-hosting');
 var datasource_description = require('../../models/descriptions');
-=======
 var s3FileHosting = require('../../libs/utils/aws-datasource-files-hosting')
->>>>>>> Stashed changes
 
 
 module.exports.getAll = function (req, res) {
@@ -46,6 +43,7 @@ module.exports.create = function (req, res) {
     })
 }
 
+
 module.exports.search = function (req, res) {
 
     Team.find(req.query, function (err, foundTeams) {
@@ -57,6 +55,7 @@ module.exports.search = function (req, res) {
 
     })
 }
+
 
 module.exports.update = function (req, res) {
     Team.findByIdAndUpdate(req.params.id)
@@ -82,7 +81,6 @@ module.exports.update = function (req, res) {
 
 
 module.exports.signedUrlForAssetsUpload = function (req, res) {
-
     Team.findById(req.params.id)
         .exec(function (err, team) {
             var key;
@@ -128,8 +126,6 @@ module.exports.loadIcons = function (req, res) {
     }
 }
 
-
-<<<<<<< Updated upstream
 
 module.exports.delete = function(req,res) {
 
@@ -252,22 +248,33 @@ module.exports.delete = function(req,res) {
 
     } else {
         res.status(401).send({error:'unauthorized'});
-=======
+    }
+}
+
+
 module.exports.deleteImage = function (req, res) {
     if(req.user) {
         console.log(req.params);
         console.log(req.params.subdomain);
+        var unset = {$unset: {}};
+        if(req.params.type == "logo_header") {
+            unset.$unset["logo_header"] = "";
+        } else {
+            unset.$unset["logo"] = "";
+        }
         var key = req.params.subdomain + "/" + req.params.assets + "/" + req.params.type + "/" + req.params.filename;
         // delete the key from s3
         s3FileHosting.deleteObject(key, function(err, data) {
             if(err) {
                 res.status(500).send({error: err.message});
             } else {
-                Team.findByIdAndUpdate(req.params.id, {$unset: {logo: ""}}, {new: true}, function (err, updatedDoc) {
+                console.log(unset)
+                Team.findByIdAndUpdate(req.params.id, unset, {new: true}, function (err, updatedDoc) {
                     if(err) {
-                        console.log(err);
+                        console.log(err)
                         return res.status(500).send({error: err.message});
                     } else {
+                        console.log(updatedDoc)
                         return res.json({doc: updatedDoc});
                     }
                 })
@@ -275,16 +282,10 @@ module.exports.deleteImage = function (req, res) {
         })
     }  else {
         return res.status(401).send({error:'unauthorized'});
->>>>>>> Stashed changes
     }
 }
 
 
-<<<<<<< Updated upstream
-
-
-=======
->>>>>>> Stashed changes
 module.exports.switchAdmin = function(req,res) {
 
     var newAdminId = req.params.id;
