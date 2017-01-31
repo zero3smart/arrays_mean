@@ -541,7 +541,7 @@ ul.aa-color-picker {
 	height: 30px;
 	position: relative;
 	border: 3px solid white;
-	border-radius: 100%;
+	border-radius: 15px;
 }
 .aa-color-picker li.selected {
 	/*border: 3px solid var(--color-text-dark);*/
@@ -552,6 +552,37 @@ ul.aa-color-picker {
 .aa-color-picker li:hover,
 .aa-color-picker li:focus {
 	outline: 0;
+}
+/*multi color picker*/
+/*show drag/remove controls*/
+.aa-color-picker.list li {
+	transition: width 0.3s;
+}
+.aa-color-picker.list li .move-color {
+	padding-top: 3px;
+}
+.aa-color-picker.list li .remove-color {
+}
+.aa-color-picker.list li .move-color,
+.aa-color-picker.list li .remove-color {
+	color: white;
+	opacity: 0;
+	padding-left: 7px;
+	transition: opacity 0.3s, padding 0.3s;
+}
+.aa-color-picker.list li:not(.add-color):hover {
+	/*border: 3px solid black;*/
+	width: 60px;
+}
+.aa-color-picker.list li:hover .move-color,
+.aa-color-picker.list li:hover .remove-color {
+	opacity: 1;
+	/*padding-left: 36px;*/
+}
+.aa-color-picker.list li.add-color i {
+	/*text-align: center;*/
+	padding-top: 4px;
+	padding-left: 6px;
 }
 
 /* Dataset Upload */

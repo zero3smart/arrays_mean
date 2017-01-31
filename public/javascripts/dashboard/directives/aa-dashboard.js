@@ -74,6 +74,9 @@ angular.module('arraysApp')
                         scope.colors.push('');
                     }
                 };
+                scope.removeColor = function(ndex) {
+                    scope.colors.splice(ndex,1);
+                };
             }
         };
     });
