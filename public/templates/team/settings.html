@@ -40,7 +40,7 @@
             <label for="team_logo" class="md-button md-dashboard" ng-class="{'disabled': logoUploader.getNotUploadedItems().length}">
                 {{team.logo ? 'Update' : 'Add'}}
             </label>
-            <span><a href="" class="warn">Remove</a></span>
+            <span><a href="" ng-click="deleteFile(team.logo)" class="warn">Remove</a></span>
         </div>
     </div>
     <div flex="10"></div>
@@ -49,6 +49,7 @@
         <div>
             <img class="img-responsive team-header" ng-if="team.logo_header" ng-src="{{team.logo_header}}">
         </div>
+        {{team}}
 
         <input type="file" id="team_logo_header" nv-file-select="" uploader="logo_headerUploader" class="team-uploader">
 
