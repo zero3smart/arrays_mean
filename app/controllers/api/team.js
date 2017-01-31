@@ -254,30 +254,32 @@ module.exports.delete = function(req,res) {
 
 module.exports.deleteImage = function (req, res) {
     if(req.user) {
-        var unset = {$unset: {}};
-        if(req.params.type == "logo_header") {
-            unset.$unset["logo_header"] = "";
-        } else {
-            unset.$unset["logo"] = "";
-        } 
-        var key = req.params.subdomain + "/" + req.params.assets + "/" + req.params.type + "/" + req.params.filename;
-        // delete the key from s3
-        s3FileHosting.deleteObject(key, function(err, data) {
+        // only the admin can change images
+        Team.findOne({_id: req.params.id, admin: req.user}, function (err, teamDoc) {
             if(err) {
-                res.status(500).send({error: err.message});
+                return res.status(401).send({error:'unauthorized'});
             } else {
-                // if the url is in the database
-                if(req.params.type == "logo" || req.params.type == "logo_header") {
-                    Team.findByIdAndUpdate(req.params.id, unset, {new: true}, function (err, updatedDoc) {
-                        if(err) {
-                            return res.status(500).send({error: err.message});
+                // var unset = {$unset: {}};
+                var key = req.params.subdomain + "/" + req.params.assets + "/" + req.params.type + "/" + req.params.filename;
+
+                // delete the key from s3
+                s3FileHosting.deleteObject(key, function(err, data) {
+                    if(err) {
+                        res.status(500).send({error: err.message});
+                    } else {
+
+                        // if the url is in the database
+                        if(req.params.type == "logo_header") {
+                            teamDoc.logo_header = undefined;
+                        } else if(req.params.type == "logo"){
+                            teamDoc.logo = undefined;
                         } else {
-                            return res.json({doc: updatedDoc});
+                            return res.json({message: 'ok'});
                         }
-                    })
-                } else {
-                    return res.json({message: 'ok'});
-                }
+                        teamDoc.save();
+                        return res.json({doc: teamDoc});
+                    }
+                })  
             }
         })
     }  else {
