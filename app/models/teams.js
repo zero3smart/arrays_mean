@@ -75,24 +75,24 @@ team.GetTeamsAndDatasources = function(userId, fn) {
                 if (err) return fn(err);
                 if (!foundUser) return fn();
                 if (foundUser.isSuperAdmin()) {
-                    getTeamsAndPopulateDatasetWithQuery({}, { imported: true, fe_listed: true, fe_visible: true }, fn);
+                    getTeamsAndPopulateDatasetWithQuery({ 'subdomain': 'schema' }, { imported: true, fe_listed: true, fe_visible: true }, fn);
 
                 } else if (foundUser.defaultLoginTeam.admin == userId) {
                     var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = { _team: { $ne: myTeamId }, isPublic: true };
                     var myTeam = { _team: foundUser.defaultLoginTeam._id };
-                    getTeamsAndPopulateDatasetWithQuery({ 'subscription.state': 'active' }, { $and: [{ $or: [myTeam, otherTeams] }, { imported: true, fe_listed: true, fe_visible: true }] }, fn);
+                    getTeamsAndPopulateDatasetWithQuery({ $or: [ { 'subdomain': 'schema' }, { 'subscription.state': 'active' } ] }, { $and: [{ $or: [myTeam, otherTeams] }, { imported: true, fe_listed: true, fe_visible: true }] }, fn);
 
                 } else { //get published and unpublished dataset if currentUser is one of the viewers or editiors
                     var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = { _team: { $ne: myTeamId }, isPublic: true };
                     var myTeam = { _team: foundUser.defaultLoginTeam._id, _id: { $or: [{ $in: foundUser._editors }, { $in: foundUser._viewers }] } };
-                    getTeamsAndPopulateDatasetWithQuery({ 'subscription.state': 'active' }, { $and: [{ $or: [myTeam, otherTeams] }, { imported: true, fe_listed: true, fe_visible: true }] }, fn);
+                    getTeamsAndPopulateDatasetWithQuery({ $or: [ { 'subdomain': 'schema' }, { 'subscription.state': 'active' } ] }, { $and: [{ $or: [myTeam, otherTeams] }, { imported: true, fe_listed: true, fe_visible: true }] }, fn);
                 }
             });
 
     } else {
-        getTeamsAndPopulateDatasetWithQuery({ 'subscription.state': 'active' }, { isPublic: true, imported: true, fe_visible: true }, fn);
+        getTeamsAndPopulateDatasetWithQuery({ $or: [ { 'subdomain': 'schema' }, { 'subscription.state': 'active' } ] }, { isPublic: true, imported: true, fe_visible: true }, fn);
     }
 
 };
@@ -125,7 +125,7 @@ team.GetTeamBySubdomain = function(req, fn) {
                     var myTeamId = foundUser.defaultLoginTeam._id;
 
                     var myTeam = { _team: foundUser.defaultLoginTeam._id };
-                    getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, 'subscription.state': 'active' }, { $and: [myTeam, { imported: true, fe_listed: true, fe_visible: true }] }, fn);
+                    getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'subdomain': 'schema' }, { 'subscription.state': 'active' } ] }, { $and: [myTeam, { imported: true, fe_listed: true, fe_visible: true }] }, fn);
 
                 } else { //get published and unpublished dataset if currentUser is one of the viewers
 
@@ -133,12 +133,12 @@ team.GetTeamBySubdomain = function(req, fn) {
 
                     var myTeam = { $or: [{ _id: { $in: foundUser._editors } }, { _id: { $in: foundUser._viewers } }] };
 
-                    getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, 'subscription.state': 'active' }, { $and: [myTeam, { imported: true, fe_listed: true, fe_visible: true }] }, fn);
+                    getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'subdomain': 'schema' }, { 'subscription.state': 'active' } ] }, { $and: [myTeam, { imported: true, fe_listed: true, fe_visible: true }] }, fn);
                 }
             });
 
     } else {
-        getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, 'subscription.state': 'active' }, { isPublic: true, imported: true }, fn);
+        getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'subdomain': 'schema' }, { 'subscription.state': 'active' } ] }, { isPublic: true, imported: true }, fn);
     }
 
 };

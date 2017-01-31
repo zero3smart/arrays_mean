@@ -472,7 +472,7 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                                     foundUser._editors.indexOf(datasourceDescription._id) >= 0 ||
                                     foundUser._viewers.indexOf(datasourceDescription._id) >= 0
                                 ) && ( 
-                                    subscription.state === 'in_trial' || subscription.state === 'active'
+                                    subscription.state === 'in_trial' || subscription.state === 'active' || datasourceDescription._team.subdomain === 'schema'
                                 )
                             )
                         ) {
@@ -483,7 +483,7 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                     });
             } else {
 
-                if (subscription.state != 'in_trial' && subscription.state != 'active') return fn();
+                if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.subdomain != 'schema') return fn();
 
                 if (datasourceDescription.isPublic) return fn(null, datasourceDescription);
 
