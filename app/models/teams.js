@@ -72,6 +72,7 @@ team.GetTeamsAndDatasources = function (userId, fn) {
             .populate('defaultLoginTeam')
             .exec(function (err, foundUser) {
                 if (err) return fn(err);
+                if (!foundUser) return fn();
                 if (foundUser.isSuperAdmin()) {
                     getTeamsAndPopulateDatasetWithQuery({}, {imported: true, fe_listed: true,fe_visible: true}, fn);
 

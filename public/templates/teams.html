@@ -12,12 +12,15 @@
 
     <p class="instructions"  ng-if="teams.length > 1">Switch teams</p>
 
+
     <ul class="dashboard-list team-list" ng-cloak>
         <li ng-repeat="tm in teams track by $index">
             <md-button class="dashboard-list-hover" ng-disabled="team._id == tm._id" ng-click="signInWithTeam($index)" md-no-ink>
                 <span class="dashboard-list-name">{{tm.title}}</span>
                 <span class="dashboard-list-revision">({{tm.subdomain}}.arrays.co)</span>
             </md-button>
+
+            <a ng-if="team._id !== tm._id && user.role=='superAdmin'" herf="" ng-click="deleteTeam($index)" class="warn">Delete Team</a>
         </li>
     </ul>
 

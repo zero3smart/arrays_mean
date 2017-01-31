@@ -14,6 +14,10 @@
             return $http.post('api/dataset/remove', {id: id});         
         };
 
+        var update = function(id,update) {
+            return $http.put('api/dataset/update/'+ id, update);
+        }
+
         var get = function(id) {
             // New Dataset
 
@@ -46,23 +50,7 @@
             return $http.get('api/dataset' + formURL);
         }
 
-        var publish = function(id,isPublic) {
-            var body = {
-                id: id,
-                isPublic: isPublic
-            };
-            return $http.put('api/dataset/publish',body)
-        };
-
-
-        var skipImageScraping = function(id,skipping) {
-            var body = {
-                id: id,
-                skipImageScraping : skipping
-            }
-            return $http.put('api/dataset/skipImageScraping',body);
-        }
-
+ 
         var getAdditionalSources = function(id) {
 
             return $http.get('api/dataset/getAdditionalSources/' + id)
@@ -75,7 +63,7 @@
         };
 
         var save = function(dataset) {
-            return $http.post('api/dataset/update', dataset)
+            return $http.post('api/dataset/save', dataset)
         };
 
         var deleteSource = function(id) {
@@ -170,19 +158,23 @@
             return $http.delete('api/dataset/job/' + id);
        }
 
+       var connectToRemoteDatasource = function(datasetId,connectionInfo) {
+            return $http.post('api/dataset/connect/' + datasetId,connectionInfo);
+       }
+
 
         return {
             removeSubdataset: removeSubdataset,
             deleteSource: deleteSource,
             remove: remove,
             get: get,
+            connectToRemoteDatasource: connectToRemoteDatasource,
             killJob: killJob,
             search: search,
             getAdditionalSources: getAdditionalSources,
             getReimportDatasets: getReimportDatasets,
             save: save,
-            publish: publish,
-            skipImageScraping: skipImageScraping,
+            update: update,
             getJobStatus: getJobStatus,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
             getAvailableDesignatedFields: getAvailableDesignatedFields,

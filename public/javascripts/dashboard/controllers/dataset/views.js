@@ -21,11 +21,16 @@ angular.module('arraysApp')
             for (var i = 0; i < views.length; i++) {
 
                 if (views[i]._team) {
+
                     $scope.customViews.push(views[i].name);
+
+                    if (!$scope.$parent.$parent.dataset.fe_views) {
+                        $scope.$parent.$parent.dataset.fe_views = {};
+                        $scope.$parent.$parent.dataset.fe_views.default_view = views[i].name;
+                    }
                 }
             }
 
-            $scope.$parent.$parent.currentNavItem = 'views';
 
             if (!$scope.$parent.$parent.dataset.fe_views) {
                 $scope.$parent.$parent.dataset.fe_views = {};
@@ -34,6 +39,10 @@ angular.module('arraysApp')
                 $scope.$parent.$parent.dataset.fe_views.views.gallery = {visible: true};
 
             }
+
+
+            $scope.$parent.$parent.currentNavItem = 'views';
+
 
             var colsAvailable = dataset.columns.map(function(column) {
                 return column.name;

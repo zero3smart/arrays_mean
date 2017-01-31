@@ -8,8 +8,20 @@ angular.module('arraysApp')
             $scope.$parent.$parent.currentNavItem = 'upload';
             $scope.progressMode = 'determinate';
 
-            $scope.addingSourceType = ''; // ['csv', 'json', 'sql']
+            $scope.addingSourceType = ''; // ['csv', 'json', 'database']
+
+            if (dataset.connection && dataset.connection.url && dataset.connection.type && dataset.connection.tableName) {
+                $scope.isConnecting = false;
+            }
             $scope.addSourceType = function(type) {
+                if (type == 'database') {
+                    if (!dataset.connection) {
+                        dataset.connection = {};
+                        dataset.connection.type = 'hadoop'; //default
+                    }
+                } else {
+                    delete dataset.connection;
+                }
                 return $scope.addingSourceType = type;
             };
 
@@ -19,17 +31,46 @@ angular.module('arraysApp')
             $scope.$watch('dataset.fileName', function(hasFile) {
                 $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });
+            $scope.$watch('isConnecting', function(connecting) {
+                if (!dataset.fileName) {
+                    $scope.primaryAction.disabled = (connecting !== false)
+                }
+                
+                
+
+            });
             $scope.primaryAction.do = function() {
-                $state.transitionTo('dashboard.dataset.data', {id: dataset._id}, {
-                    reload: true,
-                    inherit: false,
-                    notify: true
-                });
+                DatasetService.save(dataset)
+                .then(function() {
+                    $state.transitionTo('dashboard.dataset.data', {id: dataset._id}, {
+                        reload: true,
+                        inherit: false,
+                        notify: true
+                    });
+                })
             };
 
             $scope.additionalDatasources = additionalDatasources.map(function(additionalDatasource) {
                 return initSource(additionalDatasource);
             });
+
+            $scope.connectToDB = function() {
+                $scope.isConnecting = true;
+
+                DatasetService.connectToRemoteDatasource(dataset._id,dataset.connection)
+                .then(function(response) {
+                    if (response.status == 200 && !response.data.error) {
+                        $scope.isConnecting = false;
+
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Connected to the database successfully!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    }
+                })
+            }
 
 
             function initSource(additionalDatasource) {

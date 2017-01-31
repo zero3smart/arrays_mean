@@ -34,7 +34,7 @@
 @import url('views/gallery-grid.css');
 @import url('views/svg-chart-base.css');
 @import url('views/chart.css');
-@import url('views/choropleth.css');
+@import url('views/map.css');
 @import url('views/timeline.css');
 @import url('views/scatterplot.css');
 @import url('views/linechart.css');

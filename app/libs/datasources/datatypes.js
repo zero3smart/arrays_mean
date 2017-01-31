@@ -83,6 +83,7 @@ var fieldValueDataTypeCoercion_coercionFunctions = function (inString, field) {
 
 
     } else if (opName == 'ToInteger') {
+        inString = inString.replace(',','');
         if (!isNaN(parseInt(inString)))
             return parseInt(inString);
         return 0;

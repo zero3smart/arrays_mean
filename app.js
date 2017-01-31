@@ -23,7 +23,8 @@ if (cluster.isMaster) {
         
     })
 
-} else {
+}
+ else {
 
     var path = require('path');
     var express = require('express');
@@ -121,6 +122,7 @@ if (cluster.isMaster) {
 
                         //serving static files for custom views
                         app.use('/static', express.static(path.join(userFolderPath, team_name + "/static")));
+
 
                     }
                     eachCb();
