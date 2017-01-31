@@ -65,20 +65,12 @@ angular.module('arraysApp')
         return {
             restrict: 'E',
             scope: {
-                colors: "="
+                colors: '='
             },
             templateUrl: 'templates/blocks/multicolorpicker.html',
             link: function(scope) {
-                // scope.$watch('colors', function() {
-                //     console.log('change');
-                //     if (scope.colors[scope.colors.length - 1] !== '') {
-                //         scope.addingColor = false;
-                //     }
-                // });
-
                 scope.addColor = function() {
                     if (scope.colors[scope.colors.length - 1] !== '') {
-                        scope.addingColor = true;
                         scope.colors.push('');
                     }
                 };
