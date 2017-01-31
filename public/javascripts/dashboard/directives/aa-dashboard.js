@@ -56,4 +56,22 @@ angular.module('arraysApp')
                 if(!scope.selected) { scope.selected = scope.colors[0]; }
             }
         };
+    })
+    .directive('aaMultiColorPicker', function() {
+        return {
+            restrict: 'E',
+            scope: {
+            },
+            templateUrl: 'templates/blocks/multicolorpicker.html',
+            link: function(scope) {
+                scope.dummyColors = [];
+
+                scope.addDummyColor = function() {
+                    if (scope.dummyColors[scope.dummyColors.length - 1] !== '') {
+                        scope.addingColor = true;
+                        scope.dummyColors.push('');
+                    }
+                };
+            }
+        };
     });
