@@ -89,9 +89,9 @@
     <small class="pull-right" ng-if="dep">
         Dropdown selections are based on {{dep.display}}
     </small>
-    <small class="pull-right" ng-if="setting.restrictColumnDataType">
-        Field type is restrcited to {{setting.restrictColumnDataType.toLowerCase()}}.
-    </small>
+    <!-- <small class="pull-right" ng-if="setting.restrictColumnDataType">
+        Field type is restrci to {{setting.restrictColumnDataType.toLowerCase()}}.
+    </small> -->
     <br ng-if="setting.restrictColumnDataType">
     <small class="pull-right" ng-if="setting.require">
         This is a required field.
@@ -113,10 +113,13 @@
                 </li>
             </ul>
         <!--  -->
-        <ul class="dashboard-list user-list" ng-if="!setting.settingNestedField">
+        <ul class="dashboard-list user-list" ng-if="!setting.settingNestedField" ng-init="data[setting.selectExcludeBy] = data[setting.selectExcludeBy] || []">
             <li ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle"
                 layout="row" layout-align="start center">
-                <span flex="10"><!-- --></span>
+                <span
+                    ng-if="setting.selectExcludeBy"
+                    flex="10">
+                </span>
                 <span flex="10"
                      class="dashboard-list-icon view"
                      ng-class="{'default-view': data[setting.name] == 'Object Title'}"
@@ -132,6 +135,7 @@
                 layout="row" layout-align="start center"
                 >
                 <md-checkbox name="Include/exclude"
+                            ng-if="setting.selectExcludeBy"
                              ng-checked="data[setting.selectExcludeBy].indexOf(col) == -1"
                              ng-click="includeExcludeCol(col,data[setting.selectExcludeBy])"
                              aria-label="Include/exclude"
@@ -147,7 +151,7 @@
                 </span>
                 <span>{{col}}</span>
             </li>
-            <li  ng-if="setting.selectFrom=='duration'" ng-repeat="dur in availableForDuration | filter:'!_all' && DataTypeMatch(setting.restrictColumnDataType)" ng-value="dur">
+            <li ng-if="setting.selectFrom=='duration'" ng-repeat="dur in availableForDuration | filter:'!_all' && DataTypeMatch(setting.restrictColumnDataType)" ng-value="dur">
                 {{dur}} (dur)
             </li>
             <li ng-if="dep" ng-repeat="opt in data[setting.selectFrom]" ng-value="opt">
