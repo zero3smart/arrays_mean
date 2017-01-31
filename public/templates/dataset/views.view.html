@@ -4,11 +4,12 @@
     <md-dialog-content>
         <form name="viewForm">
             <md-content md-no-ink>
-                <!-- <md-tabs md-selected="selectedIndex" md-dynamic-height md-border-bottom> -->
-                    <!-- <md-tab ng-repeat="tab in ['Layout','Menus','Colors']" label="{{tab}}"> -->
+                <md-tabs md-selected="selectedIndex" md-dynamic-height md-border-bottom>
+                    <md-tab ng-repeat="tab in ['Layout','Menus','Colors', 'Icons']" label="{{tab}}">
+                        <!-- {{ (viewSetting | filter:tab:true).length }} -->
                         <md-content layout-padding>
 
-                            <!-- <div ng-if="tab == 'Layout'"> -->
+                            <div ng-if="tab == 'Layout'">
                                 <label>Enter a description for this view</label>
                                 <p>
                                     The description will appear at the top of the view. For example, you can use it to describe what viewers can see.
@@ -17,13 +18,13 @@
                                     <textarea ng-model="data.description"
                                         md-maxlength="500" rows="3" aria-label="{{viewDisplayName}} Description"></textarea>
                                 </md-input-container>
-                            <!-- </div> -->
+                            </div>
 
-                            <div ng-repeat="setting in viewSetting">
+                            <div ng-repeat="setting in viewSetting | filter:tab:true">
 <!--  -->
-
 <div ng-if="setting.inputType == 'textbox'">
     <label>{{setting.displayAs}}</label>
+    <p>{{setting.description}}</p>
     <md-input-container class="md-block" flex-gt-sm>
         <input ng-if="!setting.expectedInputType" type="text" ng-model="data[setting.name]">
         <input ng-if="setting.expectedInputType=='float'" min="0" step="0.1" type="number" ng-model="data[setting.name]">
@@ -210,8 +211,7 @@
     </md-switch>
 </div>
 
-
-<div ng-if="setting.inputType=='multiColorpicker'" ng-init="data[setting.name] = data[setting.name] || []">
+<div ng-if="setting.inputType=='multiColorpicker' && tab == 'Colors'" ng-init="data[setting.name] = data[setting.name] || []">
     <label>{{setting.displayAs}}</label>
     <div layout="row" layout-wrap>
         <div ng-repeat="color in data[setting.name] track by $index">
@@ -362,10 +362,10 @@
                             </div>
 
                         </md-content>
-                    <!-- </md-tab> -->
+                    </md-tab>
                     <!-- dummy tab hack -->
-                    <!-- <md-tab></md-tab> -->
-                <!-- </md-tabs> -->
+                    <md-tab></md-tab>
+                </md-tabs>
             </md-content>
         </form>
     </md-dialog-content>
