@@ -114,8 +114,18 @@
             </ul>
         <!--  -->
         <ul class="dashboard-list user-list" ng-if="!setting.settingNestedField">
-            <li ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title">
-                Object Title
+            <li ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle"
+                layout="row" layout-align="start center">
+                <span flex="10"><!-- --></span>
+                <span flex="10"
+                     class="dashboard-list-icon view"
+                     ng-class="{'default-view': data[setting.name] == 'Object Title'}"
+                     ng-click="(data[setting.selectExcludeBy].indexOf('Object Title') == -1) ? (data[setting.name] = 'Object Title') : angular.noop()"
+                     >
+                     <!-- aa-tooltip="{{ data.default_view == view.name ? 'Default view' : 'Set as default view' }}" -->
+                     <i class="fa fa-lg fa-home" aria-hidden="true"></i>
+                </span>
+                <span>Object Title</span>
             </li>
             <li ng-if="setting.selectFrom=='column'"
                 ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)"
