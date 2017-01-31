@@ -1,4 +1,11 @@
 /**
+*Set container height for MapGL canvas
+**/
+//.navbar-brand-container is fixed so it's height needs to be part of the calculation
+var offsetY = document.getElementsByClassName("map-container")[0].offsetTop + document.getElementsByClassName("navbar-brand-container")[0].clientHeight;  
+document.getElementsByClassName('map-container')[0].style.height = window.innerHeight - offsetY + "px";
+
+/**
  * Initialize variables
  */
 var layer = 'contour',
@@ -51,6 +58,22 @@ var map = new mapboxgl.Map({
     center: [0, 35],
     zoom: 1.5 // starting zoom
 });
+
+/* Format popup span value for numbers
+*/
+function convertIntegerToReadable(prop) {
+    if (typeof prop == 'number') {
+        var splitNum = prop.toString().split('.'); 
+        var number = splitNum[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        var decimal = splitNum[1] ? '.' + splitNum[1] : '';
+
+        return number + decimal;
+    }
+    return prop;
+}
+/* Add number format to higher level helper/library file for reusability? */
+
+/**
 
 /**
  * On load map
@@ -116,7 +139,7 @@ map.on('load', function () {
          * Populate the popup and set its coordinates based on the feature found
          */
         popup.setLngLat(e.lngLat)
-            .setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + feature.properties.total + '</span>')
+            .setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + convertIntegerToReadable(feature.properties.total) + '</span>')
             .addTo(map);
     });
 
