@@ -59,6 +59,22 @@ var map = new mapboxgl.Map({
     zoom: 1.5 // starting zoom
 });
 
+/* Format popup span value for numbers
+*/
+function convertIntegerToReadable(prop) {
+    if (typeof prop == 'number') {
+        var splitNum = prop.toString().split('.'); 
+        var number = splitNum[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        var decimal = splitNum[1] ? '.' + splitNum[1] : '';
+
+        return number + decimal;
+    }
+    return prop;
+}
+/* Add number format to higher level helper/library file for reusability? */
+
+/**
+
 /**
  * On load map
  */
@@ -123,7 +139,7 @@ map.on('load', function () {
          * Populate the popup and set its coordinates based on the feature found
          */
         popup.setLngLat(e.lngLat)
-            .setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + feature.properties.total + '</span>')
+            .setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + convertIntegerToReadable(feature.properties.total) + '</span>')
             .addTo(map);
     });
 
