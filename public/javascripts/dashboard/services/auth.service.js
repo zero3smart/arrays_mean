@@ -25,6 +25,7 @@
                     var userData = result.data;
                     if (userData) {
 
+
                         isLoggedIn = true;  
                         $window.sessionStorage.setItem('user', JSON.stringify(userData));
                         $window.sessionStorage.setItem('team', JSON.stringify(userData.defaultLoginTeam));
@@ -36,6 +37,8 @@
                                  cb({success:true})
                             })
                         } else {
+
+
 
     
                             $window.sessionStorage.setItem('teams', JSON.stringify(userData._team));

@@ -124,39 +124,45 @@ var _mountRoutes_errorHandling = function (app) {
 
 
 
+
+
 var _mountRoutes_endPoints = function (app) {
     var apiVersion = 'v1';
     app.all("*", function(req,res,next) {
-        urlRegexForDataset.lastIndex = 0;
-        var isRouteForDataset = urlRegexForDataset.test(req.url);
 
+        if (process.env.NODE_ENV !== 'enterprise') {
 
+            urlRegexForDataset.lastIndex = 0;
 
+            var isRouteForDataset = urlRegexForDataset.test(req.url);
 
-
-
-        if (isNotRootDomain(req.subdomains)) {
-          
-            if (isRouteForDataset) {
-                return next();
-            } else {
-
-                if (req.url == '/') {
+            if (isNotRootDomain(req.subdomains)) {
+              
+                if (isRouteForDataset) {
                     return next();
-                } else if (req.url == '/' + apiVersion + '/share') {
-                    return next()
                 } else {
-                    return res.redirect(rootDomain + req.url);
+
+                    if (req.url == '/') {
+                        return next();
+                    } else if (req.url == '/' + apiVersion + '/share') {
+                        return next()
+                    } else {
+                        return res.redirect(rootDomain + req.url);
+                    }
+                }
+
+            } else {
+                if (isRouteForDataset) {
+                    return res.redirect(rootDomain + '/');
+                } else {
+                    return next();
                 }
             }
 
         } else {
-            if (isRouteForDataset) {
-                return res.redirect(rootDomain + '/');
-            } else {
-                return next();
-            }
+            return next();
         }
+      
     });
 
     // View endpoints
