@@ -930,3 +930,22 @@ function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupB
 }
 
 module.exports.ValueToExcludeByOriginalKey = _valueToExcludeByOriginalKey;
+
+
+function _calcContentColor(backgroundColor) {
+    var r, g, b;
+
+    r = parseInt('0x' + backgroundColor.slice(1,3));
+    g = parseInt('0x' + backgroundColor.slice(3,5));
+    b = parseInt('0x' + backgroundColor.slice(5,7));
+
+    var totalColorValue = r + g + b;
+
+    if (totalColorValue > 382) {
+        return '#000000';
+    }
+
+    return '#FFFFFF';
+}
+
+module.exports.calcContentColor = _calcContentColor;
