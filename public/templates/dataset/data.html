@@ -86,7 +86,7 @@
                              aria-label="Exclude {{field.name}}"
                              flex="10"
                              ></md-checkbox>
-                <span flex>
+                <span flex ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex)">
                     {{ dataset.fe_displayTitleOverrides[field.name] || field.name }}
                     <span class="sample">
 
