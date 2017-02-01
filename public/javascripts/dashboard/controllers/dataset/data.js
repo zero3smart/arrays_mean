@@ -31,8 +31,15 @@ angular.module('arraysApp')
             $scope.primaryAction.text = 'Next';
             $scope.$watch('vm.dataForm.$valid', function(validity) {
                 if (validity !== undefined) {
+
                     $scope.formValidity = validity;
-                    $scope.primaryAction.disabled = !validity;
+                    if (dataset.connection) {
+
+                        $scope.primaryAction.disabled = false;
+                    } else {
+                         $scope.primaryAction.disabled = !validity;
+                    }
+                   
                 }
             });
             $scope.primaryAction.do = function() {
@@ -1361,6 +1368,7 @@ angular.module('arraysApp')
                 //Save settings primary key and object title as set in the ui
                 $scope.saveRequiredFields();
 
+            
                 if (isValid) {
 
                     var errorHandler = function (error) {

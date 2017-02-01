@@ -25,6 +25,7 @@
                     var userData = result.data;
                     if (userData) {
 
+
                         isLoggedIn = true;  
                         $window.sessionStorage.setItem('user', JSON.stringify(userData));
                         $window.sessionStorage.setItem('team', JSON.stringify(userData.defaultLoginTeam));
@@ -36,6 +37,8 @@
                                  cb({success:true})
                             })
                         } else {
+
+
 
     
                             $window.sessionStorage.setItem('teams', JSON.stringify(userData._team));
@@ -71,6 +74,35 @@
 
                     }
                })
+            }
+
+            return deferred.promise;
+        };
+
+        var ensureIsAdmin = function () {
+
+            var deferred = $q.defer();
+            var user = currentUser();
+            if (isLoggedIn && (user.role === 'admin' || user.role === 'superAdmin') ) {
+                deferred.resolve();
+            } else {
+                deferred.reject();
+                $window.location.href="/dashboard/account/profile";
+            }
+
+            return deferred.promise;
+        };
+
+        var ensureActiveSubscription = function () {
+
+            var deferred = $q.defer();
+            var user = currentUser();
+            var team = currentTeam();
+            if (isLoggedIn && (user.role === 'superAdmin' || team.subscription.state === 'in_trial' || team.subscription.state === 'active') ) {
+                deferred.resolve();
+            } else {
+                deferred.reject();
+                $window.location.href="/dashboard/account/profile";
             }
 
             return deferred.promise;
@@ -242,6 +274,8 @@
             currentTeam: currentTeam,
             isLoggedIn: isLoggedIn,
             ensureLogIn: ensureLogin,
+            ensureIsAdmin: ensureIsAdmin,
+            ensureActiveSubscription: ensureActiveSubscription,
             allTeams: allTeams,
             // updateProfile: updateProfile,
             resendInvite:  resendInvite,

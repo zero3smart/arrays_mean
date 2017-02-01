@@ -2,18 +2,22 @@
     <md-nav-item md-nav-click="navigate('dashboard.dataset.upload')" name="upload" value="upload">
         Source</md-nav-item>
 
-    <md-nav-item md-nav-click="navigate('dashboard.dataset.data')" name="data" value="data" ng-hide="!dataset.fileName">
+
+
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.data')" name="data" value="data" ng-hide="!(dataset.fileName || dataset.connection)">
         Content</md-nav-item>
         <li role="option" aria-selected="false" aria-hidden="false">
-            <button class="_md-nav-button md-accent md-button md-unselected" type="button" disabled="disabled" ng-if="!dataset.fileName">
+            <button class="_md-nav-button md-accent md-button md-unselected" type="button" disabled="disabled" ng-if="!(dataset.fileName || dataset.connection)">
             <span class="_md-nav-button-text placeholder"><span>Content</span></span>
             </button>
         </li>
 
-    <md-nav-item md-nav-click="navigate('dashboard.dataset.views')" name="views" value="views" ng-hide="!dataset.fe_designatedFields.objectTitle">
+    <md-nav-item md-nav-click="navigate('dashboard.dataset.views')" name="views" value="views" ng-show="dataset.fe_designatedFields.objectTitle ||
+    dataset.connection">
         Views</md-nav-item>
     <li role="option" aria-selected="false" aria-hidden="false">
-        <button class="_md-nav-button md-accent md-button md-unselected" type="button" disabled="disabled" ng-if="!dataset.fe_designatedFields.objectTitle">
+        <button class="_md-nav-button md-accent md-button md-unselected" type="button" disabled="disabled" ng-if="
+        (!dataset.connection && !dataset.fe_designatedFields.objectTitle)">
         <span class="_md-nav-button-text placeholder"><span>Views</span></span>
         </button>
     </li>

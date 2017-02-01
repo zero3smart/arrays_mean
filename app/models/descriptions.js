@@ -10,6 +10,7 @@ var mongoose_client = require('./mongoose_client');
 var imported_data_preparation = require('../libs/datasources/imported_data_preparation');
 var import_controller = require('../libs/import/data_ingest/controller');
 var User = require('../models/users');
+var Team = require('../models/teams');
 
 var raw_source_documents = require('../models/raw_source_documents');
 var cached_values = require('../models/cached_values');
@@ -448,39 +449,49 @@ datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDe
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
 
-  
-
-    
-
-
 
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
-        .then(function (datasourceDescription) {
+        .then(function(datasourceDescription) {
 
+            var subscription = datasourceDescription._team.subscription ? datasourceDescription._team.subscription : { state: null };
 
             if (!datasourceDescription.fe_visible || !datasourceDescription.imported) return fn();
-            if (datasourceDescription.isPublic) return fn(null, datasourceDescription);
 
             if (userId) {
                 User.findById(userId)
                     .populate('_team')
-                    .exec(function (err, foundUser) {
-                  
+                    .exec(function(err, foundUser) {
+
                         if (err) return fn(err);
-                        if (foundUser.isSuperAdmin() || datasourceDescription.author.equals(foundUser._id)|| 
-                            foundUser._editors.indexOf(datasourceDescription._id) >= 0 || foundUser._viewers.indexOf(datasourceDescription._id) >= 0) {
+
+                        if (
+                            foundUser.isSuperAdmin() ||
+                            (
+                                (
+                                    datasourceDescription.author.equals(foundUser._id) ||
+                                    foundUser._editors.indexOf(datasourceDescription._id) >= 0 ||
+                                    foundUser._viewers.indexOf(datasourceDescription._id) >= 0
+                                ) && ( 
+                                    subscription.state === 'in_trial' || subscription.state === 'active' || datasourceDescription._team.subdomain === 'schema'
+                                )
+                            )
+                        ) {
                             return fn(null, datasourceDescription);
                         } else {
-            
                             return fn();
                         }
                     });
             } else {
+
+                if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.subdomain != 'schema') return fn();
+
+                if (datasourceDescription.isPublic) return fn(null, datasourceDescription);
+
                 fn();
             }
 
         })
-        .catch(function (err) {
+        .catch(function(err) {
             if (err) winston.error("❌  cannot bind Data to the view, error: ", err);
             fn(err);
         });
