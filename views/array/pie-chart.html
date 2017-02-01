@@ -24,11 +24,8 @@
 
         {% if view_description %}
            <div class="array-description-wrapper">
-                <p class="array-description">{{ view_description| truncate(80) }}</p>
-               <a href="javascript:;" onclick="document.location.hash='expanded';"><p class='array-description-expand'>Read more</p></a>
-                <p class="array-description-full">{{ view_description}}
-                <a href="javascript:;" onclick="document.location.hash='';"><p class="array-description-collapse">less</p></a>
-            </div>
+               <p class="array-description">{{ view_description }}</p>
+           </div>
         {% endif %}
 
         <div class="array-content">

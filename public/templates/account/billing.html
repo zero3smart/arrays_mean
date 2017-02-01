@@ -2,12 +2,12 @@
     <h2>Plan Summary</h2>
 
     <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
-    <p ng-if="subscription.trial_days_left > 0 && !subscription.canceled_at._">Your free trial expires in <strong>{{ subscription.trial_days_left | pluralize: "day" : "days" }}</strong>.&emsp;<a ui-sref="dashboard.account.upgradePro">Upgrade Now</a></p>
+    <p ng-if="subscription.trial_days_left > 0 && subscription.state === 'active'">Your free trial expires in <strong>{{ subscription.trial_days_left | pluralize: "day" : "days" }}</strong>.</p>
 
     <p ng-if="billing.exists">{{ paymentMethod }}&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
     <p ng-if="!billing.exists"><a ui-sref="dashboard.account.payment">Add Payment Info</a></p>
 
-    <div ng-if="subscription.trial_days_left > 0 && !subscription.canceled_at._">
+    <div ng-if="subscription.state === 'active'">
     <hr>
 
         <form name="billingForm">
@@ -32,25 +32,24 @@
 
     </div>
 
-    <div ng-if="!subscription.canceled_at._">
+    <div ng-if="subscription.state != 'active' && subscription.state != 'canceled' && subscription.state != 'expired' && billing.exists">
         <hr>
+        <h3>Start Free Trial of Arrays Pro</h3>
 
-        <div ng-if="!subscription.trial_days_left && billing.exists">
-            <h3>Start Free Trial of Arrays Pro</h3>
+        <md-button ui-sref="dashboard.account.startProTrial" class="md-dashboard">
+            <span class="btn-label">Learn More</span>
+        </md-button>
+    </div>
 
-            <md-button ui-sref="dashboard.account.startProTrial" class="md-dashboard">
-                <span class="btn-label">Learn More</span>
-            </md-button>
-        </div>
+    <div ng-if="subscription.state === 'expired'">
+        <h3>Upgrade to Arrays Pro</h3>
 
-        <!--<div ng-if="subscription.trial_days_left > 0">
-            <h3>Upgrade to Arrays Pro</h3>
+        <md-button ui-sref="dashboard.account.upgradePro" class="md-dashboard">
+            <span class="btn-label">Learn More</span>
+        </md-button>
+    </div>
 
-            <md-button ui-sref="dashboard.account.upgradePro" class="md-dashboard">
-                <span class="btn-label">Learn More</span>
-            </md-button>
-        </div>-->
-
+    <div>
         <h3>Upgrade to Arrays Enterprise</h3>
 
         <md-button ui-sref="dashboard.account.upgradeEnterprise" class="md-dashboard">
@@ -58,16 +57,16 @@
         </md-button>
     </div>
 
-    <div ng-if="subscription.canceled_at._">
-        <h3>Reactivate Canceled Subscription</h3>
+    <div ng-if="subscription.state === 'canceled'">
+        <h3>Reactivate Subscription</h3>
 
-        <md-button class="md-dashboard" ng-click="reactivateCanceledSubscription()">
+        <md-button class="md-dashboard" ng-click="reactivateSubscription()">
             <span class="btn-label">Reactivate Subscription</span>
         </md-button>
     </div>
 
     <hr>
 
-    <a ui-sref="dashboard.account.cancel" class="warn" ng-if="subscription && !subscription.canceled_at._">Cancel Subscription</a>
+    <a ui-sref="dashboard.account.cancel" class="warn" ng-if="subscription.state === 'active'">Cancel Subscription</a>
 
 </md-content>
