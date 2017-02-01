@@ -291,7 +291,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             eachCtx.nativeCollection = forThisDataSource_nativeCollection;
 
             processed_row_objects.EnumerateProcessedDataset(
-                dataSource_team_subdomain,
                 dataSourceDescription._id,
                 dataset_parentId,
                 function (doc, eachCb) {

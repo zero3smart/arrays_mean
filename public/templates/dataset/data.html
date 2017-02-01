@@ -6,7 +6,7 @@
 
         <md-input-container ng-hide="dataset.connection" class="md-block" md-no-asterisk style="margin-top: 45px">
             <label>Select the field you'd like to use as a title for each item</label>
-            <md-select required name="ObjectTitle" aria-label="Item title"
+            <md-select ng-required="!dataset.connection" name="ObjectTitle" aria-label="Item title"
                        ng-model="data.fe_designatedFields.objectTitle"
                        >
                 <md-option ng-repeat="column in dataset.columns track by column.name" value="{{column.name}}">

@@ -145,7 +145,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
 
             var returnAbsURLorBuildURL = function(url) {
-                if (url.slice(0, 5) == "https") {
+                if (url.slice(0, 4) == "http") {
                     return url
                 } else {
                     urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription._id + "/assets/images/" + url
