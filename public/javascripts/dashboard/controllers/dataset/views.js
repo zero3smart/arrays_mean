@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetViewsCtrl', ['$scope', 'dataset','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state','$filter', 'AssetService',
-        function($scope, dataset,views,viewResource,$mdDialog,DatasetService,$mdToast,$state,$filter,AssetService) {
+    .controller('DatasetViewsCtrl', ['$scope', 'dataset','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state','$filter', 'AssetService','user',
+        function($scope, dataset,views,viewResource,$mdDialog,DatasetService,$mdToast,$state,$filter,AssetService,user) {
             $scope.$parent.$parent.dataset = dataset;
 
             $scope.$parent.$parent.views = views;
@@ -98,7 +98,14 @@ angular.module('arraysApp')
                             viewDisplayName: data.displayAs,
                             dataset: $scope.$parent.$parent.dataset,
                             viewSetting: data.settings,
-                            viewTabs: data.tabs,
+                            // hide 'Advanced' tabs from all but superAdmin
+                            viewTabs: data.tabs.filter(function(tabName){
+                                if(user.role !== 'superAdmin') {
+                                    return tabName !== 'Advanced';
+                                } else {
+                                    return tabName;
+                                }
+                            }),
                             colsAvailable: colsAvailable,
                             team: $scope.$parent.$parent.team,
                             default_view: $scope.data.default_view,

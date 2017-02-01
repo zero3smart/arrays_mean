@@ -203,6 +203,9 @@ angular.module('arraysApp')
                             viewResource: 'View',
                             views: ['View', function (View) {
                                 return View.query().$promise;
+                            }],
+                            user: ['AuthService', function (AuthService) {
+                                return AuthService.currentUser();
                             }]
                         }
                     })
