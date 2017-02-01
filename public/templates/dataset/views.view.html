@@ -385,7 +385,7 @@
 <!--  -->
                             </div>
 <!-- menu -->
-                            <div ng-if="tab == 'Menus'">
+                            <div ng-if="tab == 'Menus' && ( viewSetting | filter:{'inputType':'menu'}:true ).length !== 0">
                                 <label ng-if="( viewSetting | filter:{'inputType':'menu'}:true ).length == 1">
                                     Configure Menu
                                 </label>
