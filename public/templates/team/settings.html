@@ -40,7 +40,7 @@
             <label for="team_logo" class="md-button md-dashboard" ng-class="{'disabled': logoUploader.getNotUploadedItems().length}">
                 {{team.logo ? 'Update' : 'Add'}}
             </label>
-            <span><a href="" class="warn">Remove</a></span>
+            <span><a href="" ng-click="deleteFile(team.logo, 'logo')" class="warn">Remove</a></span>
         </div>
     </div>
     <div flex="10"></div>
@@ -56,7 +56,7 @@
             <label for="team_logo_header" class="md-button md-dashboard" ng-class="{'disabled': logo_headerUploader.getNotUploadedItems().length}">
                 {{team.logo_header ? 'Update' : 'Add'}}
             </label>
-            <span><a href="" class="warn">Remove</a></span>
+            <span><a href="" ng-click="deleteFile(team.logo_header, 'logo_header')" class="warn">Remove</a></span>
         </div>
     </div>
 
