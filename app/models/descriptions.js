@@ -1,6 +1,7 @@
 var integerValidator = require('mongoose-integer');
 var fs = require('fs');
-var team = require('./teams'); // Do not remove, it should be proceed at first.
+var Team = require('./teams'); // Do not remove, it should be proceed at first.
+var User = require('./users')
 var winston = require('winston');
 var Promise = require('q').Promise;
 var _ = require("lodash");
@@ -9,8 +10,6 @@ var async = require('async');
 var mongoose_client = require('./mongoose_client');
 var imported_data_preparation = require('../libs/datasources/imported_data_preparation');
 var import_controller = require('../libs/import/data_ingest/controller');
-var User = require('../models/users');
-var Team = require('../models/teams');
 
 var raw_source_documents = require('../models/raw_source_documents');
 var cached_values = require('../models/cached_values');
@@ -427,27 +426,74 @@ datasource_description.GetDescriptionsToSetup = _GetDescriptionsToSetupByIds;
 
 
 var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid, revision, fn) {
+
+
+    var descriptions = [];
+
+    async.series([
+        function(callback) {
+            if (subdomain == null) {
+                Team.findOne({superTeam: true})
+                .exec(function(err,team) {
+                    if (err) callback(err);
+                    else {
+                        if (!team) {
+                            return callback();
+                        }
+                        subdomain = team.subdomain;
+                        callback();
+                    }
+                })
+
+            } else {
+                callback();
+            }
+        },
+        function(callback) {
+            this.findOne({uid:uid,importRevision:revision,fe_visible:true})
+            .populate({
+                path: '_team',
+                match: {'subdomain' : subdomain}
+            })
+            .lean()
+            .exec(function(err,descriptions) {
+                if (err) callback(err);
+                else {
+                    fn(err,des)
+                }
+            })
+
+
+        }
+    ],function(err) {
+        if (err) fn(err);
+        else {
+            fn(null,descriptions);
+        }
+    })
    
     
-    this.findOne({uid: uid, importRevision: revision, fe_visible: true})
-        .populate({
-            path: '_team',
-            match: { 'subdomain' : subdomain}
-        })
-        .lean()
-        .exec(function (err, descriptions) {
-            if (err) {
-                winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
-                fn(err, null);
-            } else {
-                fn(err, descriptions);
-            }
-        })
+    // this.findOne({uid: uid, importRevision: revision, fe_visible: true})
+    //     .populate({
+    //         path: '_team',
+    //         match: { 'subdomain' : subdomain}
+    //     })
+    //     .lean()
+    //     .exec(function (err, descriptions) {
+    //         if (err) {
+    //             winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
+    //             fn(err, null);
+    //         } else {
+    //             fn(err, descriptions);
+    //         }
+    //     })
 };
 
 datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDescriptionsWith_subdomain_uid_importRevision;
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
+
+
 
 
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)

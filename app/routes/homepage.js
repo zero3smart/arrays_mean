@@ -3,8 +3,13 @@ var router = express.Router();
 var winston = require('winston');
 var teams = require('../models/teams');
 var team_show_controller = require('../controllers/client/data_preparation/team/show');
+
+
+var rootDomain = process.env.HOST ? process.env.HOST : 'localhost';
+rootDomain += process.env.PORT? ":" + process.env.PORT : ':9080';
 var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-    baseURL += process.env.HOST ? process.env.HOST : 'localhost:9080';
+baseURL += rootDomain;
+
 
 
 router.get('/', function (req, res) {
@@ -17,6 +22,8 @@ router.get('/', function (req, res) {
                 winston.error("❌  Error getting bind data for Team show: ", err);
                 return res.status(500).send(err.response || 'Internal Server Error');
             } else {
+
+              
 
 
                 if (!teamDescriptions || teamDescriptions.length == 0) {

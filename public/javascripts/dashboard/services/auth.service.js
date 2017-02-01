@@ -16,6 +16,20 @@
             return null;
         };
 
+        var getEnv = function() {
+            var deferred = $q.defer();
+            $http.get('/env')
+            .then(function(result) {
+                var env = result.data;
+                if (env) {
+                    deferred.resolve(env);
+                } else {
+                    deferred.reject();
+                }
+            })
+            return deferred.promise;
+        }
+
 
         var reload = function(cb) {
 
@@ -98,7 +112,7 @@
             var deferred = $q.defer();
             var user = currentUser();
             var team = currentTeam();
-            if (isLoggedIn && (user.role === 'superAdmin' || team.subscription.state === 'in_trial' || team.subscription.state === 'active') ) {
+            if (isLoggedIn && ( team.superTeam==true || user.role === 'superAdmin' || team.subscription.state === 'in_trial' || team.subscription.state === 'active') ) {
                 deferred.resolve();
             } else {
                 deferred.reject();
@@ -230,33 +244,7 @@
         };
 
 
-        //ToDo: modify to match our current user acc.
-        // var updateProfile = function(user) {
-        //     var deferred = $q.defer();
-        //     if (isLoggedIn()) {
-        //         // update user /api/user/update
-        //         $http.post('/api/account/update', user).then(function(data) {
-        //             if (!data.error) {
-        //                 // Update User
-        //                 if (!$window.user._json.user_metadata) $window.user._json.user_metadata = {};
-        //                 if (!$window.user._json.user_metadata.name) $window.user._json.user_metadata.name = {};
-
-        //                 $window.user._json.user_metadata.name.givenName = user.givenName;
-        //                 $window.user._json.user_metadata.name.familyName = user.familyName;
-
-        //                 return deferred.resolve(data.message);
-        //             } else {
-        //                 return deferred.reject(data.error);
-        //             }
-        //         }, function(err) {
-        //             return deferred.reject(data.error);
-        //         });
-        //     } else {
-        //         return deferred.reject('You need to login first!'); 
-        //     }
-        //     return deferred.promise;
-        // };
-
+      
 
         var inviteUser = function (newUser) {
             return $http.post('/api/admin/invite', newUser)
@@ -277,9 +265,9 @@
             ensureIsAdmin: ensureIsAdmin,
             ensureActiveSubscription: ensureActiveSubscription,
             allTeams: allTeams,
-            // updateProfile: updateProfile,
             resendInvite:  resendInvite,
             reload: reload,
+            getEnv: getEnv,
             updateTeam: updateTeam,
             inviteUser: inviteUser,
             switchTeam: switchTeam,

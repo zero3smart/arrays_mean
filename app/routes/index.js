@@ -11,8 +11,10 @@ var fs = require('fs');
 var async = require('async');
 
 
+
 var rootDomain = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-    rootDomain += process.env.HOST ? process.env.HOST : 'localhost:9080';
+    rootDomain += process.env.HOST ? process.env.HOST : 'localhost';
+    rootDomain += process.env.PORT? ":" + process.env.PORT : ':9080';
 
 var View = require('../models/views');
 
@@ -127,7 +129,7 @@ var _mountRoutes_errorHandling = function (app) {
 
 
 var _mountRoutes_endPoints = function (app) {
-    var apiVersion = 'v1';
+    
     app.all("*", function(req,res,next) {
 
         if (process.env.NODE_ENV !== 'enterprise') {
@@ -166,6 +168,7 @@ var _mountRoutes_endPoints = function (app) {
     });
 
     // View endpoints
+    var apiVersion = 'v1';
     app.use('/', require('./homepage'));  
     app.use('/s', require('./shared_pages'));
     app.use('/' + apiVersion, require('./jsonAPI_share'));
@@ -184,6 +187,19 @@ var _mountRoutes_endPoints = function (app) {
 };
 
 module.exports.MountRoutes = function (app) {
+
+
+    app.get('/env',function(req,res) {
+        var host = process.env.HOST || 'localhost' ;
+        var port = process.env.PORT || '9080';
+        var obj = {
+            node_env: process.env.NODE_ENV,
+            host: host,
+            port: port
+        }
+        return res.json(obj);
+    })
+
     _mountRoutes_monitoring(app);
     //_mountRoutes_ensureWWW(app);
     _mountRoutes_subdomainRedirect(app);
