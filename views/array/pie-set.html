@@ -25,11 +25,8 @@
 
         {% if view_description %}
            <div class="array-description-wrapper">
-                <p class="array-description">{{ view_description| truncate(80) }}</p>
-               <a href="javascript:;" onclick="document.location.hash='expanded';"><p class='array-description-expand'>Read more</p></a>
-                <p class="array-description-full">{{ view_description}}
-                <a href="javascript:;" onclick="document.location.hash='';"><p class="array-description-collapse">less</p></a>
-            </div>
+               <p class="array-description">{{ view_description }}</p>
+           </div>
         {% endif %}
 
         <div class="array-content">
@@ -40,7 +37,7 @@
                     <div class="row">
                         <div class="col-sm-12">
 
-                            <div class="sort-bar clearfix">
+                            <div id="array-controls" class="sort-bar clearfix">
 
                                 <nav class="sort-bar-left pull-left" role="navigation">
                                     {{
@@ -185,4 +182,5 @@
     <script type="text/javascript" src="/vendors/d3/d3.js"></script>
     <script type="text/javascript" src="/javascripts/pieset/pieChart.js"></script>
     <script type="text/javascript" src="/javascripts/pieset/pieSetController.js"></script>
+    <script type="text/javascript" src="/vendors/scrollmagic/scrollmagic/minified/ScrollMagic.min.js"></script>
 {% endblock %}

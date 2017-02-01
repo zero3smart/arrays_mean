@@ -106,7 +106,15 @@
 
                                                     <a href="{{ ('/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">
                                                 {% endif %}
+
+                                                 {% set urlizedField = (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe %}
+                                                    {% set isUrlField = false if urlizedField == columnValue else true %}
+                                                    {% if isUrlField %}
+                                                        <span class="color-brand">{{ (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe }}</span>
+                                                    {% else %}   
+
                                                         {{ (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe }}
+                                                    {% endif %}
                                                 {% if shouldLink %}
                                                     </a>
                                                 {% endif %}

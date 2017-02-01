@@ -29,17 +29,17 @@ router.post('/share', function (req, res) {
         return matches[1];
     }
 
-    var urlRegEx = /^\/(.*)\/(gallery|pie-chart|map-view|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart)/g;
+    var urlRegEx = /^\/(.*)\/(gallery|pie-chart|map|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart)/g;
 
-    if (/^\/(.*)\/(gallery|pie-chart|map-view|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart)/g.test(pathname) == true) {
+    if (/^\/(.*)\/(gallery|pie-chart|map|timeline|word-cloud|scatterplot|line-graph|pie-set|bar-chart)/g.test(pathname) == true) {
         pageType = "array_view";
         //
         if (/^\/.*\/gallery/g.test(pathname) == true) {
             viewType_orNull = 'gallery';
         } else if (/^\/.*\/pie-chart/g.test(pathname) == true) {
             viewType_orNull = "pie-chart";
-        } else if (/^\/.*\/map-view/g.test(pathname) == true) {
-            viewType_orNull = "map-view";
+        } else if (/^\/.*\/map/g.test(pathname) == true) {
+            viewType_orNull = "map";
         } else if (/^\/.*\/timeline/g.test(pathname) == true) {
             viewType_orNull = "timeline";
         } else if (/^\/.*\/word-cloud/g.test(pathname) == true) {

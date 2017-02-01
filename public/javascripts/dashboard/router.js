@@ -30,7 +30,7 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dashboard.html',
                         controller: 'AdminCtrl',
                         resolve: {
-                            auth: function (AuthService) {
+                            auth: function(AuthService) {
                                 return AuthService.ensureLogIn();
                             }
                         }
@@ -50,7 +50,12 @@ angular.module('arraysApp')
                     .state('dashboard.account.billing', {
                         url: '/billing',
                         controller: 'BillingCtrl',
-                        templateUrl: 'templates/account/billing.html'
+                        templateUrl: 'templates/account/billing.html',
+                        resolve: {
+                            restrict: function(AuthService) {
+                                return AuthService.ensureIsAdmin();
+                            }
+                        }
                     })
                     .state('dashboard.account.payment', {
                         url: '/payment',
@@ -62,11 +67,11 @@ angular.module('arraysApp')
                         controller: 'BillingCtrl',
                         templateUrl: 'templates/account/upgrade.enterprise.html'
                     })
-                    // .state('dashboard.account.upgradePro', {
-                    //     url: '/upgrade/pro',
-                    //     controller: 'BillingCtrl',
-                    //     templateUrl: 'templates/account/upgrade.pro.html'
-                    // })
+                    .state('dashboard.account.upgradePro', {
+                        url: '/upgrade/pro',
+                        controller: 'BillingCtrl',
+                        templateUrl: 'templates/account/upgrade.pro.html'
+                    })
                     .state('dashboard.account.startProTrial', {
                         url: '/upgrade/proTrial',
                         controller: 'BillingCtrl',
@@ -87,7 +92,12 @@ angular.module('arraysApp')
                         abstract: true,
                         url: '/dataset',
                         templateUrl: 'templates/dataset.html',
-                        controller: 'DatasetCtrl'
+                        controller: 'DatasetCtrl',
+                        resolve: {
+                            restrict: function(AuthService) {
+                                return AuthService.ensureActiveSubscription();
+                            }
+                        }
                     })
                     .state('dashboard.dataset.list', {
                         url: '/list',
@@ -222,7 +232,12 @@ angular.module('arraysApp')
                     .state('dashboard.team', {
                         url: '/team',
                         controller: 'WebsiteCtrl as vm',
-                        templateUrl: 'templates/team.html'
+                        templateUrl: 'templates/team.html',
+                        resolve: {
+                            restrict: function(AuthService) {
+                                return AuthService.ensureIsAdmin();
+                            }
+                        }
                     })
                     .state('dashboard.team.settings', {
                         url: '/settings',
@@ -241,7 +256,12 @@ angular.module('arraysApp')
                     .state('dashboard.user', {
                         url: '/user',
                         controller: 'UserCtrl as vm',
-                        templateUrl: 'templates/user.html'
+                        templateUrl: 'templates/user.html',
+                        resolve: {
+                            restrict: function(AuthService) {
+                                return AuthService.ensureActiveSubscription();
+                            }
+                        }
                     })
                     .state('dashboard.user.list', {
                         url: '/list',
