@@ -215,7 +215,7 @@ if (cluster.isMaster) {
     if (typeof process === 'object') { /* to debug promise */
         process.on('unhandledRejection', function (error, promise) {
             console.error("== Node detected an unhandled rejection! ==");
-            console.error(error.stack);
+            console.error(error);
         });
     }
 
