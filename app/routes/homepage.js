@@ -18,7 +18,15 @@ router.get('/', function (req, res) {
                 return res.status(500).send(err.response || 'Internal Server Error');
             } else {
 
-                console.log(teamDescriptions);
+
+                if (!teamDescriptions || teamDescriptions.length == 0) {
+
+                    return res.redirect('auth/login');
+                    
+                }
+
+
+                
 
                 
                 team_show_controller.BindData(req,teamDescriptions[0],function(err,bindData) {

@@ -22,6 +22,8 @@ module.exports.getAll = function (req, res) {
 
 
 module.exports.create = function (req, res) {
+
+
     Team.create(req.body, function (err, createdTeam) {
         if (err) {
             res.send({error: err.message});
@@ -65,6 +67,7 @@ module.exports.update = function (req, res) {
                 for (var attr in req.body) {
                     team[attr] = req.body[attr];
                 }
+
                 team.save(function (err) {
                     if (!err) {
                         return res.json({team: team});

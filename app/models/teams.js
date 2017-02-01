@@ -10,7 +10,7 @@ var Schema = mongoose.Schema;
 
 var team_scheme = Schema({
     title: String,
-    subdomain: { type: String, unique: true },
+    subdomain: String,
     description: String,
     logo: String,
     logo_header: String,
