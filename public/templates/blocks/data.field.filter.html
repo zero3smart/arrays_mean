@@ -30,7 +30,7 @@
     <h3>Advanced Settings</h3>
 
     <fieldset class="standard" ng-if="customFieldIndex == undefined">
-        <legend>One To One Override Values By Title</legend>
+        <label>One To One Override Values By Title</label>
         <div layout="row"
              ng-repeat="valueByOverride in dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName]">
             <md-input-container flex="45">
@@ -60,8 +60,8 @@
                 <span class="fa fa-remove" ng-click="removeOneToOneOverride(valueByOverride)"></span>
             </div>
         </div>
-        <md-button class="md-raised" ng-click="addOneToOneOverride()"><span
-                class="glyphicon glyphicon-plus"></span>Add more
+        <md-button class="md-dashboard" ng-click="addOneToOneOverride()">
+            Add another
         </md-button>
     </fieldset>
 
@@ -96,10 +96,10 @@
     </fieldset>
 
     <md-input-container class="md-block" flex-gt-sm ng-if="customFieldIndex == undefined">
-        <label>Keywords</label>
+        <label>Exclude filters by keyword</label>
         <md-chips ng-model="data.keywords.choices" name="keywords"
                   md-enable-chip-edit="true"
-                  placeholder="Enter a Keyword" secondary-placeholder="+Keyword">
+                  placeholder="Enter a keyword" secondary-placeholder="Add keyword">
         </md-chips>
     </md-input-container>
 </md-content>

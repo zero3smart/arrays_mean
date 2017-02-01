@@ -723,9 +723,11 @@ md-dialog {
 
 md-dialog fieldset legend,
 .dataset fieldset legend {
-    font-size: 15px;
-    color: rgba(0,0,0,0.54);
-    margin-bottom: 4px;
+    font-size: 16px;
+	font-weight: bold;
+	color: var(--color-text-dark);
+	border: none;
+    /*margin-bottom: 4px;*/
     padding-top: 20px;
 }
 
