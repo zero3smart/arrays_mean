@@ -109,9 +109,9 @@
                                     var default_view_url = words.map(function(word){ return word.toLowerCase(); }).join('-');
                                     redirectBaseUrl = '/{{ mapping_source_pKey }}/' + default_view_url;
                                     {% if embedded %}
-                                    redirectBaseUrl += '{{ "?embed=true" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
+                                        redirectBaseUrl += '{{ "?embed=true" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
                                     {% else %}
-                                    redirectBaseUrl += '{{ "" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
+                                        redirectBaseUrl += '{{ "" | constructedRoutePath(mapping_default_filterObj, mapping_groupByObj) | safe }}';
                                     {% endif %}
                                 {% endif %}
                                 var options = {

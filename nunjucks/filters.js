@@ -271,7 +271,6 @@ module.exports = function (nunjucks_env,env) {
                     routePath += '&' + key + '=' + _queryObj[key];
                 }
             }
-
         if (routePath == '') return routePath_base;
 
         var joinChar = routePath_base.indexOf('?') !== -1 ? '&' : '?';
