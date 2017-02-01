@@ -4,6 +4,40 @@ angular.module('arraysApp')
 
             $scope.progressMode = "determinate";
 
+            $scope.deleteFile = function(url, type) {
+                var keyWithEndBit = url.split("amazonaws.com")[1];
+                var assetType = keyWithEndBit.split("logo")
+                keyWithEndBit = assetType[0] + type + assetType[1]
+                var key = keyWithEndBit.split("?")[0];
+                AssetService.deleteImage($scope.team._id, key).then(function (data) {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Image deleted successfully!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                        $scope.team = data["doc"];
+                });
+
+            }
+
+            $scope.deleteIcon = function(url) {
+                var key = url.split("amazonaws.com")[1]
+                AssetService.deleteImage($scope.team._id, key).then(function (data) {
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent('Icon deleted successfully!')
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+                    // get icons?
+                    AssetService.loadIcons()
+                    .then(function(data) {
+                        $scope.iconsUrl = data;
+                    })
+                });
+            }
+
 
             function newUploader(assetType, formName) {
                 var _uploader = new FileUploader({
@@ -41,6 +75,11 @@ angular.module('arraysApp')
                         var asset = fileItem.assetType;
 
                         $scope.team[asset] = fileItem.uploadUrls[asset].publicUrl + '?' + new Date().getTime();
+
+                        if(fileItem.assetType == "icon") {
+                            var iconUrl = fileItem["uploadUrls"]["icon"]["publicUrl"]
+                            $scope.iconsUrl.push(iconUrl)    
+                        }
 
                         if (this.formName) {
                             if ($scope.vm[formName].$pristine) {

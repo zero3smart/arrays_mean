@@ -121,7 +121,10 @@ function _deleteObject(key,cb) {
         Bucket : bucket,
         Key: key
     }
+    console.log(params)
     s3.deleteObject(params,function(err,data) {
+        console.log(err)
+        console.log(data)
         if (err) return cb(err);
         return cb(null,data);
     })

@@ -948,6 +948,7 @@ function _calcContentColor(backgroundColor) {
     var brightness = Math.sqrt(rWeight * (r * r) + gWeight * (g * g) + bWeight * (b * b));
 
     if (brightness > 0.54) {
+
         return '#000000';
     }
 

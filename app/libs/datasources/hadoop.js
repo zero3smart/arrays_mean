@@ -110,33 +110,30 @@ module.exports.initConnection = function(req,res) {
             url: req.body.url
         };
 
-        // var jsonData = [{name:'abc',sample:'1'},{name:'colms2',sample:"what is this???"},{name:"hello",sample:"hello"}];
-        // req.session.columns[req.params.id] = jsonData;
+        var jsonData = [{name:'abc',sample:'1'},{name:'colms2',sample:"what is this???"},{name:"hello",sample:"hello"}];
+        req.session.columns[req.params.id] = jsonData;
 
-        // return res.status(200).json({message: 'ok'});
+        return res.status(200).json({message: 'ok'});
 
+        // var JDBC = new jdbc(config)
 
-   
-        var JDBC = new jdbc(config)
+        // JDBC.initialize(function(err) {
+        //     if (err) {
+        //         winston.error("Cannot initialize JDBC object");
+        //         return res.status(500).send(JSON.stringify(err));
+        //     }
+        //     db = JDBC;
+        //     _readColumnsAndSample(req.body.tableName,function(err,data) {
+        //         if (err) return res.status(500).json(err);
+        //         else {
+        //             console.log("successfully read columns and sample, data: %s",
+        //                 JSON.stringify(data));
+        //             if (!req.session.columns) req.session.columns = {};
+        //             req.session.columns[req.params.id] = data;
+        //             return res.json(data);
+        //         }
 
-        JDBC.initialize(function(err) {
-            if (err) {
-                console.log(err);
-                winston.error("Cannot initialize JDBC object");
-                return res.status(500).send(err);
-            }
-            db = JDBC;
-            _readColumnsAndSample(req.body.tableName,function(err,data) {
-                if (err) return res.status(500).send(err);
-                else {
-                    console.log("successfully read columns and sample, data: %s",
-                        JSON.stringify(data));
-                    if (!req.session.columns) req.session.columns = {};
-                    req.session.columns[req.params.id] = data;
-                    return res.json(data);
-                }
-
-            })
-        })
+        //     })
+        // })
     }
 }

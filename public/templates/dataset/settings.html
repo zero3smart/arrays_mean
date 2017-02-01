@@ -5,12 +5,15 @@
 
         <p style="margin-bottom: 30px">Change your display and publishing settings below.</p>
 
+
         <md-input-container class="md-block" style="margin-top: 45px;">
             <label>Title</label>
-            <input required name="title" ng-model="dataset.title">
+            <input unique-title required name="title" ng-model="dataset.title" dataset-id="dataset._id">
             <div ng-messages="vm.settingsForm.title.$error">
                 <div ng-message="required">This is required.</div>
+                <div ng-message="titleAvailable">This title is already used on your team.</div>
             </div>
+           
         </md-input-container>
 
         <md-input-container class="md-block publish-settings">

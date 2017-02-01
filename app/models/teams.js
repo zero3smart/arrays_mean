@@ -75,7 +75,7 @@ team.GetTeamsAndDatasources = function(userId, fn) {
                 if (err) return fn(err);
                 if (!foundUser) return fn();
                 if (foundUser.isSuperAdmin()) {
-                    getTeamsAndPopulateDatasetWithQuery({ 'subdomain': 'schema' }, { imported: true, fe_listed: true, fe_visible: true }, fn);
+                    getTeamsAndPopulateDatasetWithQuery({}, { imported: true, fe_listed: true, fe_visible: true }, fn);
 
                 } else if (foundUser.defaultLoginTeam.admin == userId) {
                     var myTeamId = foundUser.defaultLoginTeam._id;

@@ -5,6 +5,7 @@ var _ = require('lodash');
 var Batch = require('batch');
 var datasource_file_service = require('../../libs/utils/aws-datasource-files-hosting');
 var datasource_description = require('../../models/descriptions');
+var s3FileHosting = require('../../libs/utils/aws-datasource-files-hosting')
 
 
 module.exports.getAll = function (req, res) {
@@ -42,6 +43,7 @@ module.exports.create = function (req, res) {
     })
 }
 
+
 module.exports.search = function (req, res) {
 
     Team.find(req.query, function (err, foundTeams) {
@@ -53,6 +55,7 @@ module.exports.search = function (req, res) {
 
     })
 }
+
 
 module.exports.update = function (req, res) {
     Team.findByIdAndUpdate(req.params.id)
@@ -78,7 +81,6 @@ module.exports.update = function (req, res) {
 
 
 module.exports.signedUrlForAssetsUpload = function (req, res) {
-
     Team.findById(req.params.id)
         .exec(function (err, team) {
             var key;
@@ -123,7 +125,6 @@ module.exports.loadIcons = function (req, res) {
         res.status(401).send({error:'unauthorized'});
     }
 }
-
 
 
 module.exports.delete = function(req,res) {
@@ -251,6 +252,40 @@ module.exports.delete = function(req,res) {
 }
 
 
+module.exports.deleteImage = function (req, res) {
+    if(req.user) {
+        // only the admin can change images
+        Team.findOne({_id: req.params.id, admin: req.user}, function (err, teamDoc) {
+            if(err) {
+                return res.status(401).send({error:'unauthorized'});
+            } else {
+                // var unset = {$unset: {}};
+                var key = req.params.subdomain + "/" + req.params.assets + "/" + req.params.type + "/" + req.params.filename;
+
+                // delete the key from s3
+                s3FileHosting.deleteObject(key, function(err, data) {
+                    if(err) {
+                        res.status(500).send({error: err.message});
+                    } else {
+
+                        // if the url is in the database
+                        if(req.params.type == "logo_header") {
+                            teamDoc.logo_header = undefined;
+                        } else if(req.params.type == "logo"){
+                            teamDoc.logo = undefined;
+                        } else {
+                            return res.json({message: 'ok'});
+                        }
+                        teamDoc.save();
+                        return res.json({doc: teamDoc});
+                    }
+                })  
+            }
+        })
+    }  else {
+        return res.status(401).send({error:'unauthorized'});
+    }
+}
 
 
 module.exports.switchAdmin = function(req,res) {

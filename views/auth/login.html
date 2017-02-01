@@ -1,10 +1,24 @@
-{% extends "../homepage/homepage.html" %}
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    {% include "../partials/base_header.html" %}
+      <!-- bootstrap -->
+    <script type="text/javascript" src="/vendors/bootstrap/bootstrap.js"></script>
 
-{% block content %}
-    {{ super() }}
+    {% block headSuffix %}{% endblock %}
+</head>
 
-    <script>
-        $('#login-modal').modal('show');
+<body class="login-page">
+
+{% include "../partials/login.modal.html" %}
+
+	<script>
+
+        $('#login-modal').modal('show')
     </script>
+    
+	<script type="text/javascript" src="/javascripts/main.js"></script>
+</body>
+</html>
 
-{% endblock %}
+

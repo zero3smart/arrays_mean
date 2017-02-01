@@ -106,22 +106,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (galleryViewSettings.galleryItemConditionsForBackgroundColor) {
                 var cond = galleryViewSettings.galleryItemConditionsForBackgroundColor;
 
-                var determineContentColor = function(backgroundColor) {
-                    var r, g, b;
-
-                    r = parseInt('0x' + backgroundColor.slice(1,3));
-                    g = parseInt('0x' + backgroundColor.slice(3,5));
-                    b = parseInt('0x' + backgroundColor.slice(5,7));
-
-                    var totalColorValue = r + g + b;
-
-                    if (totalColorValue > 382) {
-                        return '#000000';
-                    }
-
-                    return '#FFFFFF';
-                }
-
                 galleryItemBackgroundColor = function (rowObject) {
                     var fieldName = cond.field;
                     var conditions = cond.conditions;
@@ -132,7 +116,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         if (conditions[i].value == fieldValue) {
                             return {
                                 backgroundColor: conditions[i].backgroundColor,
-                                contentColor: determineContentColor(conditions[i].backgroundColor)
+                                contentColor: func.calcContentColor(conditions[i].backgroundColor)
                             };
                         }
                     }
@@ -145,7 +129,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
 
             var returnAbsURLorBuildURL = function(url) {
-                if (url.slice(0, 5) == "https") {
+                if (url.slice(0, 4) == "http") {
                     return url
                 } else {
                     urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription._id + "/assets/images/" + url
@@ -374,6 +358,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
+                    brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
                     displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,
