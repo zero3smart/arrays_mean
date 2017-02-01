@@ -1,19 +1,45 @@
 <md-content layout-padding>
-    <md-input-container class="md-block">
-        <label>Name</label>
-        <input type="text" required ng-model="fieldName" name="fieldName"
-               ng-change="verifyUniqueFieldName(fieldName)" ng-model-options="{updateOn:'blur'}" ng-readonly="customFieldIndex == undefined">
+    <md-input-container class="md-block" ng-if="customFieldIndex !== undefined">
+        <label>Field Name</label>
+        <input type="text" required
+            ng-model="fieldName" name="fieldName"
+            ng-change="verifyUniqueFieldName(fieldName)" ng-model-options="{updateOn:'blur'}">
         <div ng-messages="dialog.fieldForm.fieldName.$error">
             <div ng-message="required">This is required.</div>
             <div ng-message="unique">Must be unique.</div>
         </div>
     </md-input-container>
 
-    <md-input-container class="md-block" ng-if="!custom">
-        <label>First Record</label>
-        <input type="text" value="{{ firstRecord | limitTo: 200 }}{{firstRecord.length > 200 ? '...' : ''}}"
-               readonly="readonly">
+    <!-- <p>Overrides field name</p> -->
+    <md-input-container class="md-block">
+        <label>Display Name <span class="optional">(optional)</span></label>
+        <input type="text" name="titleOverride"
+               ng-model="dataset.fe_displayTitleOverrides[fieldName]">
     </md-input-container>
+
+<div layout="row">
+    <md-input-container class="md-block" flex="45">
+        <label>Data Type</label>
+        <md-select ng-if="!custom"
+                   name="dataType"
+                   ng-model="coercionScheme[fieldName]"
+                   ng-model-options="{trackBy: '$value | typeCoercionToString'}"
+                   ng-change="changeCoercionSchemeByOperation(fieldName)"
+                   aria-label="Field Type - {{fieldName}}" placeholder="String">
+            <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="coercion">
+                {{coercion | typeCoercionToString}}
+            </md-option>
+        </md-select>
+        <input type="text" value="Array" readonly="readonly" ng-if="custom && customFieldIndex != undefined">
+        <input type="text" value="Custom" readonly="readonly" ng-if="custom && customFieldIndex == undefined">
+        <div class="md-errors-spacer"></div>
+    </md-input-container>
+    <span flex></span>
+    <div ng-if="!custom"  flex="50">
+        <label>Data Sample <span class="optional">(first record)</span></label>
+        <p>{{ firstRecord | limitTo: 35 }}</p>
+    </div>
+</div>
 
     <md-input-container class="md-block" ng-if="customFieldIndex != undefined">
         <label>Fields To Merge</label>
@@ -40,23 +66,6 @@
         </md-chips>
     </md-input-container>
 
-    <md-input-container class="md-block" flex-gt-sm>
-        <label>Data Type</label>
-        <md-select ng-if="!custom"
-                   name="dataType"
-                   ng-model="coercionScheme[fieldName]"
-                   ng-model-options="{trackBy: '$value | typeCoercionToString'}"
-                   ng-change="changeCoercionSchemeByOperation(fieldName)"
-                   aria-label="Field Type - {{fieldName}}" placeholder="String">
-            <md-option ng-repeat="coercion in availableTypeCoercions" ng-value="coercion">
-                {{coercion | typeCoercionToString}}
-            </md-option>
-        </md-select>
-        <input type="text" value="Array" readonly="readonly" ng-if="custom && customFieldIndex != undefined">
-        <input type="text" value="Custom" readonly="readonly" ng-if="custom && customFieldIndex == undefined">
-        <div class="md-errors-spacer"></div>
-    </md-input-container>
-
     <md-input-container ng-if="!custom"
                         class="md-block" flex-gt-sm
                         ng-show="(dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
@@ -74,24 +83,18 @@
                ng-model="dataset.raw_rowObjects_coercionScheme[fieldName].outputFormat">
     </md-input-container>
 
-    <md-input-container class="md-block" flex-gt-sm>
+    <!-- <md-input-container class="md-block" flex-gt-sm>
         <md-checkbox name="exclude" ng-model="dataset.fe_excludeFields[fieldName]"
                      aria-label="Field Exclude {{fieldName}}">
             Exclude
         </md-checkbox>
-    </md-input-container>
+    </md-input-container> -->
 
-    <md-input-container class="md-block" flex-gt-sm>
-        <label>Title Override</label>
-        <input type="text" name="titleOverride"
-               ng-model="dataset.fe_displayTitleOverrides[fieldName]">
-    </md-input-container>
-
-    <md-input-container class="md-block" flex-gt-sm>
+    <!-- <md-input-container class="md-block" flex-gt-sm>
         <label>Display Order</label>
         <input type="number" min="0" name="displayOrder"
                ng-model="data.displayOrder">
-    </md-input-container>
+    </md-input-container> -->
 
     <md-input-container class="md-block" flex-gt-sm>
         <label>Designated Field</label>

@@ -1,14 +1,5 @@
-<md-dialog aria-label="Format Field : ({{ dataset.title }})" class="field-dialog">
-    <md-toolbar>
-        <div class="md-toolbar-tools">
-            <h2>Format Field : ({{ dataset.title }})</h2>
-            <span flex></span>
-            <md-button class="md-icon-button" ng-click="cancel()">
-                <span class="icon-close-big" aria-label="Close dialog"></span>
-            </md-button>
-        </div>
-    </md-toolbar>
-
+<md-dialog aria-label="Format Field: {{ dataset.fe_displayTitleOverrides[fieldName] ? dataset.fe_displayTitleOverrides[fieldName] + ' (' + fieldName + ')' : fieldName }}" class="field-dialog" md-no-ink>
+    <aa-toolbar title="Format Field: {{ dataset.fe_displayTitleOverrides[fieldName] ? dataset.fe_displayTitleOverrides[fieldName] + ' (' + fieldName + ')' : fieldName }}"></aa-toolbar>
     <md-dialog-content>
         <form name="dialog.fieldForm">
             <md-tabs md-dynamic-height md-border-bottom>
@@ -19,24 +10,19 @@
                 <md-tab label="Filter">
                     <ng-include src="'templates/blocks/data.field.filter.html'"></ng-include>
                 </md-tab>
-
                 <md-tab></md-tab>
             </md-tabs>
 
             <md-dialog-actions layout="row" layout-align="end center">
-                <md-button class="md-raised" ng-click="delete()" ng-if="customFieldIndex != undefined">
+                <md-button class="md-dashboard warn" ng-click="delete()" ng-if="customFieldIndex != undefined">
                     Delete
-                </md-button> 
-                <md-button class="md-raised" ng-click="reset()" ng-disabled="!dialog.fieldForm.$dirty">
+                </md-button>
+                <md-button class="md-dashboard cancel" ng-click="reset()" ng-disabled="!dialog.fieldForm.$dirty">
                     Reset
                 </md-button>
-
-                <md-button class="md-raised" ng-click="save()" ng-disabled="!dialog.fieldForm.$dirty || dialog.fieldForm.$invalid">
+                <md-button class="md-dashboard confirm" ng-click="save()" ng-disabled="!dialog.fieldForm.$dirty || dialog.fieldForm.$invalid">
                     Save
                 </md-button>
-
-
-
             </md-dialog-actions>
         </form>
     </md-dialog-content>
