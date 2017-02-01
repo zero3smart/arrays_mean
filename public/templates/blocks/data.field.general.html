@@ -1,5 +1,6 @@
 <md-content layout-padding>
-    <md-input-container class="md-block" ng-if="customFieldIndex !== undefined">
+<div>
+    <md-input-container class="md-block" ng-show="customFieldIndex !== undefined">
         <label>Field Name</label>
         <input type="text" required
             ng-model="fieldName" name="fieldName"
@@ -11,11 +12,12 @@
     </md-input-container>
 
     <!-- <p>Overrides field name</p> -->
-    <md-input-container class="md-block">
+    <md-input-container class="md-block" flex-gt-sm>
         <label>Display Name <span class="optional">(optional)</span></label>
         <input type="text" name="titleOverride"
                ng-model="dataset.fe_displayTitleOverrides[fieldName]">
     </md-input-container>
+</div>
 
 <div layout="row">
     <md-input-container class="md-block" flex="45">
@@ -41,7 +43,8 @@
     </div>
 </div>
 
-    <md-input-container class="md-block" ng-if="customFieldIndex != undefined">
+<div ng-if="customFieldIndex != undefined">
+    <md-input-container class="md-block">
         <label>Fields To Merge</label>
         <md-select required name="fields" ng-model="customField.fieldsToMergeIntoArray" multiple
                    aria-label="fieldToMerge">
@@ -56,32 +59,31 @@
             <div ng-message="required">This is required.</div>
         </div>
     </md-input-container>
-
-    <md-input-container class="md-block" ng-if="customFieldIndex != undefined">
+</div>
+<div ng-if="customFieldIndex != undefined">
+    <md-input-container class="md-block">
         <label>Delimiter</label>
         <md-chips ng-model="customField.delimiterOnFields"
                   name="delimiters"
                   md-enable-chip-edit="true"
-                  placeholder="Enter a Delimiter" secondary-placeholder="+Delimiter">
+                  placeholder="Enter a delimiter" secondary-placeholder="Add delimiter">
         </md-chips>
     </md-input-container>
+</div>
 
-    <md-input-container ng-if="!custom"
-                        class="md-block" flex-gt-sm
-                        ng-show="(dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
+<div ng-if="!custom && (dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
+    <md-input-container class="md-block" flex-gt-sm>
         <label>Format</label>
         <input type="text" name="dataType_format"
                ng-model="dataset.raw_rowObjects_coercionScheme[fieldName].format">
     </md-input-container>
 
-
-    <md-input-container class="md-block" flex-gt-sm
-                        ng-if="!custom"
-                        ng-show="(dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
+    <md-input-container class="md-block" flex-gt-sm>
         <label>Output Format</label>
         <input type="text" name="dataType_outputFormat"
                ng-model="dataset.raw_rowObjects_coercionScheme[fieldName].outputFormat">
     </md-input-container>
+</div>
 
     <!-- <md-input-container class="md-block" flex-gt-sm>
         <md-checkbox name="exclude" ng-model="dataset.fe_excludeFields[fieldName]"
@@ -96,8 +98,9 @@
                ng-model="data.displayOrder">
     </md-input-container> -->
 
+    <!-- <h3>Advanced</h3> -->
     <md-input-container class="md-block" flex-gt-sm>
-        <label>Designated Field</label>
+        <label>Designated Field <span class="optional">(advanced)</span></label>
         <md-select name="designatedField"
                    ng-model="data.designatedField"
                    aria-label="Designated Field - {{fieldName}}">

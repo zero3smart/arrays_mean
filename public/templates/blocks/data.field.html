@@ -1,5 +1,5 @@
 <md-dialog aria-label="Format Field: {{ dataset.fe_displayTitleOverrides[fieldName] ? dataset.fe_displayTitleOverrides[fieldName] + ' (' + fieldName + ')' : fieldName }}" class="field-dialog" md-no-ink>
-    <aa-toolbar title="Format Field: {{ dataset.fe_displayTitleOverrides[fieldName] ? dataset.fe_displayTitleOverrides[fieldName] + ' (' + fieldName + ')' : fieldName }}"></aa-toolbar>
+    <aa-toolbar title="Format Field: {{ dataset.fe_displayTitleOverrides[fieldName] ? dataset.fe_displayTitleOverrides[fieldName] + ' (' + fieldName + ')' : fieldName || 'New field' }}"></aa-toolbar>
     <md-dialog-content>
         <form name="dialog.fieldForm">
             <md-tabs md-dynamic-height md-border-bottom>
