@@ -1,4 +1,4 @@
 <md-nav-bar md-selected-nav-item="currentNavItem" md-no-ink role="navigation" aria-label="navigation links">
     <md-nav-item md-nav-sref="dashboard.account.profile" name="profile" value="profile">Profile</md-nav-item>
-    <md-nav-item md-nav-sref="dashboard.account.billing" name="billing" value="billing">Billing</md-nav-item>
+    <md-nav-item md-nav-sref="dashboard.account.billing" name="billing" value="billing" ng-if="user.role === 'admin' || user.role === 'superAdmin'">Billing</md-nav-item>
 </md-nav-bar>

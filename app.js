@@ -23,7 +23,8 @@ if (cluster.isMaster) {
         
     })
 
-} else {
+}
+ else {
 
     var path = require('path');
     var express = require('express');
@@ -122,6 +123,7 @@ if (cluster.isMaster) {
                         //serving static files for custom views
                         app.use('/static', express.static(path.join(userFolderPath, team_name + "/static")));
 
+
                     }
                     eachCb();
                 }
@@ -213,7 +215,7 @@ if (cluster.isMaster) {
     if (typeof process === 'object') { /* to debug promise */
         process.on('unhandledRejection', function (error, promise) {
             console.error("== Node detected an unhandled rejection! ==");
-            console.error(error.stack);
+            console.error(error);
         });
     }
 

@@ -29,7 +29,7 @@ module.exports.GeneratePostImportCaches = function (dataSourceDescriptions,job, 
 };
 //
 var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDescription,job, callback) {
-    var dataSource_title = dataSourceDescription.title;
+    var dataSource_title = dataSourceDescription.fileName;
     var fe_visible = dataSourceDescription.fe_visible;
     if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
         winston.warn("⚠️  The data source \"" + dataSource_title + "\" had fe_visible=false, so not going to generate its unique filter value cache.");
@@ -58,9 +58,8 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
 
 var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescription, callback) {
  
-    var dataSource_title = dataSourceDescription.title;
-    var dataSource_importRevision = dataSourceDescription.importRevision;
-
+    var dataSource_title = dataSourceDescription.fileName;
+    
     var collectionId = dataSourceDescription._id;
     if (dataSourceDescription.schemaId) collectionId = dataSourceDescription.schemaId;
    

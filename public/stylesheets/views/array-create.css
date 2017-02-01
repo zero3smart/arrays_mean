@@ -195,6 +195,15 @@
     line-height: 30px;
 }
 
+@media (max-width: 767px) {
+    .map-description-wrapper {
+        display: none;
+    }
+    .array-description-wrapper {
+        display: none;
+    }
+}
+
 .array-description {
     display: inline;
 }

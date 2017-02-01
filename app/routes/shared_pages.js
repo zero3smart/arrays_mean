@@ -7,7 +7,7 @@ var shared_pages_controller = require('../models/shared_pages');
 var object_details_controller = require('../controllers/client/data_preparation/object_details');
 
 var gallery_controller = require('../controllers/client/data_preparation/gallery');
-var map_view_controller = require('../controllers/client/data_preparation/map_view');
+var map_controller = require('../controllers/client/data_preparation/map');
 var timeline_controller = require('../controllers/client/data_preparation/timeline');
 var line_graph_controller = require('../controllers/client/data_preparation/line_graph');
 var word_cloud_controller = require('../controllers/client/data_preparation/word_cloud');
@@ -23,7 +23,7 @@ var controllers = {
     lineGraph: line_graph_controller,
     timeline: timeline_controller,
     wordCloud: word_cloud_controller,
-    mapView: map_view_controller,
+    map: map_controller,
     scatterplot: scatterplot_controller,
     pieSet: pie_set_controller,
     barChart: bar_chart_controller

@@ -4,11 +4,14 @@ angular.module('arraysApp')
         function($scope, $state, dataset, DatasetService, $mdToast, FileUploader, AssetService) {
 
             $scope.primaryAction.text = 'Publish';
+
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
+
                 if (validity !== undefined) {
                     $scope.formValidity = validity;
                     $scope.primaryAction.disabled = !validity;
                 }
+
             });
             $scope.primaryAction.do = function() {
                 $scope.submitForm($scope.formValidity);
@@ -19,7 +22,6 @@ angular.module('arraysApp')
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
             if (!dataset.fe_visible) {dataset.fe_visible = true;}
 
-            var original_feVisible = dataset.fe_visible;
 
             // if (!dataset.url) {
             //     dataset.url = $scope.convertToURLSafe(dataset.title);
@@ -30,26 +32,27 @@ angular.module('arraysApp')
             $scope.$parent.$parent.currentNavItem = 'settings';
 
             $scope.updatePublishSettings = function() {
+
                 if(!dataset.fe_visible) {
                     dataset.isPublic = false;
                     dataset.fe_listed = false;
                 } else {
                     if(dataset.imported) {
-                        DatasetService.publish($scope.$parent.$parent.dataset._id, dataset.isPublic);
+
+
+                        DatasetService.update($scope.$parent.$parent.dataset._id,{isPublic: dataset.isPublic,
+                            fe_visible: dataset.fe_visible,fe_listed:dataset.fe_listed})
+                       
                     }
                 }
             };
 
-            $scope.promptCacheFilter = function() {
-                if (original_feVisible !== dataset.fe_visible && (dataset.dirty == 0 || dataset.dirty == 4)) {
-                    dataset.dirty = 3;
-                }
-            };
 
             $scope.submitForm = function(isValid) {
+               
 
 
-                if (isValid) {
+                // if (isValid) {
                     $scope.submitting = true;
                     if (!dataset.author) {
                         dataset.author = $scope.user._id;
@@ -84,7 +87,6 @@ angular.module('arraysApp')
                         $scope.submitting = false;
                     }, function (error) {
 
-                        // console.log(error);
 
                         $mdToast.show(
                             $mdToast.simple()
@@ -94,7 +96,7 @@ angular.module('arraysApp')
                         );
                         $scope.submitting = false;
                     });
-                }
+                // }
             };
 
             // banner upload
@@ -139,7 +141,7 @@ angular.module('arraysApp')
             };
 
             $scope.imageUploader.onAfterAddingFile = function (fileItem) {
-                // console.log(fileItem);
+
                 if ($scope.imageUploader.queue.length > 0) {
                     $scope.imageUploader.queue[0] = fileItem;
                 }

@@ -62,6 +62,10 @@
                             %}</a>
                     </li>
                     <li class="dropdown">
+
+                
+
+
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false"><span class="icon-{{ currentView }}" aria-hidden="true"></span></a>
                         <ul class="dropdown-menu">
@@ -74,12 +78,12 @@
 				}) }}"><span class="icon-gallery color-brand" aria-hidden="true"></span> Gallery</a></li>
                             {% endif %}
 
-                            {% if view_visibility.mapView.visible == true %}
-                            <li class="background-color-brand-hover menu-item-map-view {{ " active
-                            " if currentView == "map-view" }}"><a href="/{{ array_source_key }}/{{ 'map-view' | constructedRoutePath(filterObj, {
+                            {% if view_visibility.map.visible == true %}
+                            <li class="background-color-brand-hover menu-item-map {{ " active
+                            " if currentView == "map" }}"><a href="/{{ array_source_key }}/{{ 'map' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
-				}) }}"><span class="icon-map-view color-brand" aria-hidden="true"></span> Map View</a></li>
+				}) }}"><span class="icon-map color-brand" aria-hidden="true"></span> Map</a></li>
                             {% endif %}
 
                             {% if view_visibility.pieChart.visible == true %}

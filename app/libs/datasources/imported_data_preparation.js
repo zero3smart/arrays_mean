@@ -4,21 +4,6 @@ var humanReadableColumnName_objectTitle = "Object Title";
 
 module.exports.HumanReadableColumnName_objectTitle = humanReadableColumnName_objectTitle;
 
-// function _dataSourcePKeyFromDataSourceDescription(dataSourceDescription,TeamSubdomain) {
-//     var uid = dataSourceDescription.uid;
-//     var importRevision = dataSourceDescription.importRevision;
-    
-//     var subdomain;
-//     if (TeamSubdomain) {
-//         subdomain = TeamSubdomain;
-//     }
-
-//     var pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(subdomain,uid, importRevision);
-
-//     return pKey;
-// };
-// module.exports.DataSourcePKeyFromDataSourceDescription = _dataSourcePKeyFromDataSourceDescription;
-
 
 var _dataSourceDescriptionWithPKey = function (source_pKey) {
 
@@ -32,6 +17,7 @@ var _dataSourceDescriptionWithPKey = function (source_pKey) {
     var subdomain = split[0];
     var uid = split[1];
     var revision = split[2].substring(1);
+
 
     return new Promise(function (resolve, reject) {
         var dataSourceDescriptions = require('../../models/descriptions');

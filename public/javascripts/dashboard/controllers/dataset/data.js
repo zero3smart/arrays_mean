@@ -87,7 +87,10 @@ angular.module('arraysApp')
                         $scope.$parent.$parent.dataset = savedDataset;
 
                         if (Object.keys(savedDataset.fe_designatedFields).length > 0) {
-                            $scope.data.fe_designatedFields = savedDataset.fe_designatedFields;
+
+                            for (var key in savedDataset.fe_designatedFields) {
+                                $scope.data.fe_designatedFields[key] = savedDataset.fe_designatedFields[key];
+                            }
                         }
 
                         $scope.coercionScheme = angular.copy(savedDataset.raw_rowObjects_coercionScheme);
@@ -1301,7 +1304,10 @@ angular.module('arraysApp')
                         });
 
                     $scope.vm.dataForm.$setDirty();
-                }
+                },
+
+                disabled: $scope.$parent.$parent.dataset.connection
+
             };
 
             $scope.saveRequiredFields = function() {
