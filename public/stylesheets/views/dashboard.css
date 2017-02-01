@@ -420,7 +420,9 @@ md-input-invalid.subdomain-append {
 .md-nav-bar .md-button.md-focused {
 	background-color: transparent;
 }
-
+md-tabs.md-default-theme .md-tab.md-focused, md-tabs .md-tab.md-focused {
+	background-color: transparent;
+}
 /*match sidebar button height*/
 .md-nav-bar {
 	height: 41px;
