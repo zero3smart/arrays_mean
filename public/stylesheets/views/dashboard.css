@@ -522,24 +522,23 @@ md-switch.md-checked .md-bar {
 	/*background-color: var(--color-text-light);*/
 }
 
-.dataset .md-chips {
+.md-chips {
     padding-left: 0;
 }
-.dataset .md-chips.md-focused {
+md-chips-wrap.md-chips.md-focused {
 	box-shadow: 0 2px var(--color-primary);
 }
 
 /*chip selected*/
-.dataset .md-chips md-chip.md-focused {
+.md-chips md-chip.md-focused {
 	background-color: var(--color-text-med);
 }
-.dataset .md-chips md-chip.md-focused md-icon {
-	color: white;
-}
-
 .md-chips md-chip md-icon,
 .md-chips.md-focused md-chip md-icon {
     color: var(--color-text-med);
+}
+.md-chips md-chip.md-focused md-icon {
+	color: white;
 }
 .md-chips .md-errors-spacer {
 	/*known issue, md-errors-spacer may be deprecated soon*/
