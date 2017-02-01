@@ -584,15 +584,17 @@ ul.aa-color-picker {
 	transition: width 0.3s;
 }
 .aa-color-picker.list li .move-color {
-	padding-top: 3px;
+	margin-top: 4px;
+	margin-left: 7px;
 }
 .aa-color-picker.list li .remove-color {
+	margin-top: 3px;
+	margin-left: 10px;
 }
 .aa-color-picker.list li .move-color,
 .aa-color-picker.list li .remove-color {
 	color: white;
 	opacity: 0;
-	padding-left: 7px;
 	transition: opacity 0.3s, padding 0.3s;
 }
 .aa-color-picker.list li:not(.add-color):hover {
