@@ -17,8 +17,8 @@
 				  <div class="text-fade-overlay" style="background:linear-gradient(transparent 105px, {{ fe_galleryItem_backgroundColorForRowObj(doc).backgroundColor | safe }});"></div>
 			</div>
 		{% elif fe_galleryItem_htmlForIconFromRowObjWhenMissingImage %}
-      {{ fe_galleryItem_htmlForIconFromRowObjWhenMissingImage(doc) | safe }}
-    {% endif %}
+      		{{ fe_galleryItem_htmlForIconFromRowObjWhenMissingImage(doc) | safe }}
+    	{% endif %}
 		</div>
 
 		<div class="gallery-tooltip">
