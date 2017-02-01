@@ -10,9 +10,7 @@ angular.module('arraysApp')
 
             $scope.addingSourceType = ''; // ['csv', 'json', 'database']
 
-            if (dataset.connection && dataset.connection.url && dataset.connection.type && dataset.connection.tableName) {
-                $scope.isConnecting = false;
-            }
+        
             $scope.addSourceType = function(type) {
                 if (type == 'database') {
                     if (!dataset.connection) {
@@ -31,16 +29,23 @@ angular.module('arraysApp')
             $scope.$watch('dataset.fileName', function(hasFile) {
                 $scope.primaryAction.disabled = !(hasFile && hasFile !== null);
             });
+
             $scope.$watch('isConnecting', function(connecting) {
+
                 if (!dataset.fileName) {
+
                     $scope.primaryAction.disabled = (connecting !== false)
                 }
-                
-                
-
             });
+
             $scope.primaryAction.do = function() {
-                DatasetService.save(dataset)
+                var finalizedDataset = angular.copy(dataset);
+                delete finalizedDataset.columns;
+                delete finalizedDataset.__v;
+
+
+
+                DatasetService.save(finalizedDataset)
                 .then(function() {
                     $state.transitionTo('dashboard.dataset.data', {id: dataset._id}, {
                         reload: true,
@@ -59,6 +64,7 @@ angular.module('arraysApp')
 
                 DatasetService.connectToRemoteDatasource(dataset._id,dataset.connection)
                 .then(function(response) {
+
                     if (response.status == 200 && !response.data.error) {
                         $scope.isConnecting = false;
 
@@ -68,7 +74,18 @@ angular.module('arraysApp')
                                 .position('top right')
                                 .hideDelay(3000)
                         );
+                    } else {
+                        $scope.isConnecting = undefined;
+
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Error connecting to the database')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+
                     }
+
                 })
             }
 
