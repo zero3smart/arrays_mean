@@ -100,6 +100,17 @@ md-radio-button .md-on {
 	background: transparent !important;
 }
 
+/*slider*/
+md-slider.md-default-theme .md-track.md-track-fill, md-slider .md-track.md-track-fill {
+	background-color: var(--color-primary);
+}
+md-slider.md-default-theme .md-thumb:after, md-slider .md-thumb:after {
+	border-color: var(--color-primary);
+	background-color: var(--color-primary);
+}
+md-slider.md-default-theme .md-focus-ring, md-slider .md-focus-ring {
+	background-color: transparent;
+}
 /*Arrays app*/
 aa-dialog-actions,
 .layout-padding aa-dialog-actions {
