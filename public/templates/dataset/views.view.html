@@ -6,6 +6,7 @@
             <md-content md-no-ink>
                 <!-- for testing -->
                 <!-- <md-tabs md-selected="2" md-dynamic-height md-border-bottom> -->
+
                 <md-tabs md-selected="selectedIndex" md-dynamic-height md-border-bottom>
                     <md-tab ng-repeat="tab in viewTabs" label="{{tab}}">
                         <md-content layout-margin>
@@ -77,7 +78,7 @@
         </div>
     </div>
 
-    <md-button class="md-raised" ng-click="data[setting.name].mappings.push({key:'',value:''})">
+    <md-button class="md-dashboard" ng-click="data[setting.name].mappings.push({key:'',value:''})">
         Add more
     </md-button>
 </div>
@@ -89,9 +90,9 @@
     <small class="pull-right" ng-if="dep">
         Dropdown selections are based on {{dep.display}}
     </small>
-    <!-- <small class="pull-right" ng-if="setting.restrictColumnDataType">
-        Field type is restrci to {{setting.restrictColumnDataType.toLowerCase()}}.
-    </small> -->
+    <small class="pull-right" ng-if="setting.restrictColumnDataType">
+        Field type is restricted to {{setting.restrictColumnDataType.toLowerCase()}}.
+    </small>
     <br ng-if="setting.restrictColumnDataType">
     <small class="pull-right" ng-if="setting.require">
         This is a required field.
@@ -171,7 +172,7 @@
     <p>{{setting.description}}</p>
 
     <div ng-repeat=" item in data[setting.name] track by $index" layout="row">
-        <md-input-container flex="25" >
+        <md-input-container flex="50">
             <md-select ng-if="setting.keyInputType=='select' && setting.keySelectFrom=='column'" aria-label="{{setting.name}} for {{viewName}}" ng-model="item.key">
                 <md-option value="_all" ng-if="notChosen(data[setting.name],'_all',$index) && !setting.restrictColumnDataType">
                     All Columns
@@ -180,6 +181,7 @@
                     {{col}}
                 </md-option>
             </md-select>
+            <!-- text -->
             <input ng-if="setting.keyInputType=='textbox'" type="text" ng-model="item.key" aria-label="Display Name {{viewName}}">
         </md-input-container>
 
@@ -205,18 +207,22 @@
             <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
         </md-input-container>
 
+        <span flex="5"></span>
+
         <aa-color-picker selected="item.value" ng-if="setting.valueInputType=='colorpicker'"></aa-color-picker>
         <!-- <md-input-container flex="65" ng-if="setting.valueInputType=='colorpicker'" class="md-color-picker">
             <div md-color-picker md-color-clear-button="false" ng-model="item.value"></div>
         </md-input-container> -->
 
-        <div flex="10">
-            <md-button class="md-raised" ng-click="remove(setting.name,$index)" aria-label="Remove {{setting.name}} For {{viewName}}"><span class="glyphicon glyphicon-remove"></span></md-button>
-        </div>
+        <span class="dashboard-list-icon warn" ng-click="remove(setting.name,$index)" aria-hidden="true" aria-label="Delete"
+            style="margin: 5px 15px 0"
+            flex="5">
+            <i class="fa fa-remove" aria-hidden="true"></i>
+        </span>
 
     </div>
-    <md-button class="md-raised" ng-click="addMore(data[setting.name],'object')"><span
-        class="glyphicon glyphicon-plus"></span>Add more
+    <md-button class="md-dashboard" ng-click="addMore(data[setting.name],'object')">
+        Add more
     </md-button>
 </div>
 <!-- <div ng-if="setting.inputType=='keyValue' && setting.valueInputType=='colorpicker'">
@@ -314,9 +320,10 @@
 
     <div ng-if="data[setting.name].field" ng-repeat="item in data[setting.name].conditions track by $index">
         <div layout="row">
-            <md-input-container flex="50">
+            <md-input-container flex="45">
                 <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}" placeholder="Condition">
             </md-input-container>
+            <span flex="5"></span>
             <md-input-container flex="50">
                 <aa-color-picker selected="data[setting.name].conditions[$index].backgroundColor"></aa-color-picker>
 
@@ -331,8 +338,8 @@
         </div>
     </div>
 
-    <md-button ng-if="data[setting.name].field" class="md-raised" ng-click="addMore(data[setting.name].conditions,'object')"><span
-        class="glyphicon glyphicon-plus"></span>Add more
+    <md-button ng-if="data[setting.name].field" class="md-dashboard primary-action" ng-click="addMore(data[setting.name].conditions,'object')">
+        Add condition
     </md-button>
 </div>
 
