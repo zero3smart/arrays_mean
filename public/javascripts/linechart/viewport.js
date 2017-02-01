@@ -438,7 +438,8 @@ linechart.viewport.prototype._mouseMoveEventHandler = function (redirectBaseUrl)
      */
     var circles = this._canvas.selectAll('circle.data-point')
         .data(tooltipData, function (d) {
-            return d.category + d.date;
+            return d.value;
+            // return d.category + d.date;
         });
     /*
      * Remove old circles.
