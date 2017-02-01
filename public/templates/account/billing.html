@@ -1,11 +1,19 @@
 <md-content md-no-ink>
-    <h2>Plan Summary</h2>
 
     <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
-    <p ng-if="subscription.trial_days_left > 0 && subscription.state === 'active'">Your free trial expires in <strong>{{ subscription.trial_days_left | pluralize: "day" : "days" }}</strong>.</p>
+    <p ng-if="subscription.trial_days_left > 0 && subscription.state === 'active'">Your free trial expires in <strong>{{ subscription.trial_days_left }} {{ subscription.trial_days_left | pluralize: "day" : "days" }}</strong>.</p>
 
-    <p ng-if="billing.exists">{{ paymentMethod }}&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
-    <p ng-if="!billing.exists"><a ui-sref="dashboard.account.payment">Add Payment Info</a></p>
+    <div ng-if="billing.exists">
+    <h3>Payment Info</h3>
+    <p>{{ paymentMethod }}&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
+    </div>
+
+    <div ng-if="!billing.exists">
+        <h3>Payment Info</h3>
+        <md-button ui-sref="dashboard.account.payment" class="md-dashboard">
+            <span class="btn-label">Add Payment Info</span>
+        </md-button>
+    </div>
 
     <div ng-if="subscription.state === 'active'">
     <hr>
