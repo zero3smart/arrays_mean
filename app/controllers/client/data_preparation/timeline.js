@@ -169,20 +169,21 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
 
                     sampleDoc = _sampleDoc;
-                    console.log(sampleDoc)
                     done();
                 });
             });
 
             // Obtain Top Unique Field Values For Filtering
             batch.push(function (done) {
-                func.topUniqueFieldValuesForFiltering(collectionPKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+                func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) {
                         console.log("error obtaining top unique field values for filtering");
                         return done(err);
                     }
 
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
+                    console.log(uniqueFieldValuesByFieldName)
+                    console.log('=======================')
                     done();
                 });
             });
