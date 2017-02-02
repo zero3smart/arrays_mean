@@ -9,9 +9,24 @@ angular.module('arraysApp')
                     $scope.importData();
                 }
             });
+
+            function makeFieldValuePairs(obj) {
+                var fieldValuePairs  = [], result;
+                for (var p in obj) {
+                    if( obj.hasOwnProperty(p) ) {
+                        fieldValuePairs.push(p + '=' + obj[p]);
+                    }
+                }
+                result = fieldValuePairs.join('&');
+                if (result !== '') {
+                    result = '?' + result;
+                }
+                return result;
+            }
             $scope.primaryAction.do = function() {
-                var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' + dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase();
-            
+                var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
+                    dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
+                    makeFieldValuePairs(dataset.fe_filters.default);
                 $window.open(url, "_blank");
             };
 
