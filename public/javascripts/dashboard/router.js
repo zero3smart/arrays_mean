@@ -32,9 +32,6 @@ angular.module('arraysApp')
                         resolve: {
                             auth: function(AuthService) {
                                 return AuthService.ensureLogIn();
-                            },
-                            env: function(AuthService) {
-                                return AuthService.getEnv();
                             }
                         }
                     })
@@ -109,7 +106,6 @@ angular.module('arraysApp')
                         resolve: {
                             datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
                                 var user = AuthService.currentUser();
-                
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
                                     return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id});
                                 } else if (user.role == 'editor') {

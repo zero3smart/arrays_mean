@@ -5,8 +5,6 @@ angular.module('arraysApp')
 
             $scope.primaryAction.text = 'Publish';
 
-        
-
             $scope.$watch('vm.settingsForm.$valid', function(validity) {
 
                 if (validity !== undefined) {

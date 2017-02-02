@@ -17,7 +17,6 @@ router.get('/verify', function(req, res) {
                     return res.redirect('/auth/login');
         		} else {
                     req.flash("success",{message:"Account is activated. You could login with your credentials now"});
-                    console.log("flashed");
                     return res.redirect('/auth/login');
                 }
         	})

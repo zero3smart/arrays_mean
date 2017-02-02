@@ -1,7 +1,6 @@
 var integerValidator = require('mongoose-integer');
 var fs = require('fs');
-var Team = require('./teams'); // Do not remove, it should be proceed at first.
-var User = require('./users')
+var team = require('./teams'); // Do not remove, it should be proceed at first.
 var winston = require('winston');
 var Promise = require('q').Promise;
 var _ = require("lodash");
@@ -10,6 +9,8 @@ var async = require('async');
 var mongoose_client = require('./mongoose_client');
 var imported_data_preparation = require('../libs/datasources/imported_data_preparation');
 var import_controller = require('../libs/import/data_ingest/controller');
+var User = require('../models/users');
+var Team = require('../models/teams');
 
 var raw_source_documents = require('../models/raw_source_documents');
 var cached_values = require('../models/cached_values');
@@ -426,55 +427,22 @@ datasource_description.GetDescriptionsToSetup = _GetDescriptionsToSetupByIds;
 
 
 var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid, revision, fn) {
-
-
-    var descriptions = [];
-    var self = this;
-    async.waterfall([
-        function(callback) {
-            if (subdomain == null) {
-                Team.findOne({superTeam: true})
-                .exec(function(err,team) {
-                    if (err) callback(err);
-                    else {
-                        if (!team) {
-                            return callback();
-                        }
-                        subdomain = team.subdomain;
-                        callback(null,subdomain);
-                    }
-                })
-
-            } else {
-                callback(null,subdomain);
-            }
-        },
-        function(sub,callback) {
-            self.findOne({uid:uid,importRevision:revision,fe_visible:true})
-            .populate({
-                path: '_team',
-                match: {'subdomain' : sub}
-            })
-            .lean()
-            .exec(function(err,descriptions) {
-                if (err) callback(err);
-                else {
-                    
-                    descriptions = descriptions;
-                    callback(null,descriptions)
-                }
-            })
-
-
-        }
-    ],function(err,descriptions) {
-        if (err) fn(err);
-        else {
-           
-            fn(null,descriptions);
-        }
-    })
    
+    
+    this.findOne({uid: uid, importRevision: revision, fe_visible: true})
+        .populate({
+            path: '_team',
+            match: { 'subdomain' : subdomain}
+        })
+        .lean()
+        .exec(function (err, descriptions) {
+            if (err) {
+                winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
+                fn(err, null);
+            } else {
+                fn(err, descriptions);
+            }
+        })
 };
 
 datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDescriptionsWith_subdomain_uid_importRevision;
@@ -482,12 +450,8 @@ datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDe
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
 
 
-
-
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
         .then(function(datasourceDescription) {
-
-
 
             var subscription = datasourceDescription._team.subscription ? datasourceDescription._team.subscription : { state: null };
 
@@ -497,7 +461,6 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                 User.findById(userId)
                     .populate('_team')
                     .exec(function(err, foundUser) {
-                        
 
                         if (err) return fn(err);
 
@@ -519,8 +482,6 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                         }
                     });
             } else {
-
-
 
                 if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.subdomain != 'schema') return fn();
 
