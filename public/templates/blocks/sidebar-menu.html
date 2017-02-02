@@ -17,7 +17,7 @@
     <hr>
 
     <li ng-if="env.node_env !== 'enterprise' " class="sidebar-label">
-        <a class="sidebar-label">{{team.subdomain + '.' + host}}</a>
+        <a class="sidebar-label">{{team.subdomain + '.' + env.host}}</a>
     </li>
     <li ng-if="env.node_env == 'enterprise' " class="sidebar-label">
         <a class="sidebar-label">{{host}}</a>
