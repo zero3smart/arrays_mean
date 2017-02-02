@@ -34,7 +34,6 @@
 
 		$scope.env = env;
 
-
 		var userId = $stateParams.id;
 		$scope.invitedUser = false;
 		$scope.showPasswordToolTip = false;

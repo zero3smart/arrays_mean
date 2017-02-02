@@ -70,17 +70,24 @@ angular
                 var team = $scope.teams[index];
                 console.log(team);
 
-                Team.update(team._id,{superTeam: team.superTeam}).$promise
-                .then(function() {
+                Team.update({id:team._id},{superTeam: team.superTeam}).$promise
+                .then(function(response) {
+                    if (response.team) {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Team setting saved!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
 
-                    $mdToast.show(
-                        $mdToast.simple()
-                            .textContent('Team setting saved!')
-                            .position('top right')
-                            .hideDelay(3000)
-                    );
-
-
+                    } else {
+                         $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Sorry! Cannot save team setting!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    }
                 })
 
             }
