@@ -21,7 +21,7 @@ angular.module('arraysApp')
 
             if (!dataset.fe_listed) {dataset.fe_listed = false;}
             if (!dataset.fe_visible) {dataset.fe_visible = true;}
-
+            if (!dataset.brandColor) {dataset.brandColor = '#FEB600';} // default to Arrays orange
 
             // if (!dataset.url) {
             //     dataset.url = $scope.convertToURLSafe(dataset.title);
@@ -42,14 +42,14 @@ angular.module('arraysApp')
 
                         DatasetService.update($scope.$parent.$parent.dataset._id,{isPublic: dataset.isPublic,
                             fe_visible: dataset.fe_visible,fe_listed:dataset.fe_listed})
-                       
+
                     }
                 }
             };
 
 
             $scope.submitForm = function(isValid) {
-               
+
 
 
                 // if (isValid) {
