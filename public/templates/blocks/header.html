@@ -29,8 +29,8 @@
 
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown right">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false">{{user.firstName}} {{ user.lastName}} </span></a>
+                        <a href="#" class="dropdown-toggle user-initial-nav" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false"><span class="user-initial">{{user.firstName.slice(0,1).toUpperCase()}}</span></a>
 
                         <ul class="dropdown-menu">
                             <li class="background-color-brand-hover">

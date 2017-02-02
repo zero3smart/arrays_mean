@@ -242,8 +242,9 @@ angular.module('arraysApp')
                                 $scope.otherDatasetsloaded = true;
                                 for (var i = 0; i < all.length; i++) {
                                     if (all[i].title !== dataset.title) {
-                                        var mappingPkey = getPkeyFromDatasource(all[i].title,
-                                            all[i].importRevision);
+                                        var mappingPkey = all[i]._id
+                                        // var mappingPkey = getPkeyFromDatasource(all[i].title,
+                                        //     all[i].importRevision);
                                         $scope.otherAvailableDatasets.push({
                                             displayAs: all[i].title, mappingPkey: mappingPkey
                                         });
