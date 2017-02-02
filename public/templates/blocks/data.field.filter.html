@@ -1,44 +1,35 @@
+<md-dialog aria-label="Format Filter: {{ dataset.fe_displayTitleOverrides[fieldName] ? dataset.fe_displayTitleOverrides[fieldName] + ' (' + fieldName + ')' : fieldName || 'New field' }}" class="field-dialog" md-no-ink>
+    <aa-toolbar title="Format Filter: {{ dataset.fe_displayTitleOverrides[fieldName] ? dataset.fe_displayTitleOverrides[fieldName] + ' (' + fieldName + ')' : fieldName || 'New field' }}"></aa-toolbar>
+    <md-dialog-content>
+        <form name="dialog.fieldForm">
+<!--  -->
 <md-content layout-padding>
-    <md-input-container class="md-block" flex-gt-sm>
-        <md-checkbox name="filterNotAvailable" ng-model="data.filterNotAvailable" ng-change="setDirty(3)"
+
+    <h3 ng-if="customFieldIndex == undefined">Basic Settings</h3>
+
+    <md-input-container layout="column">
+        <md-checkbox name="multipleSelection" ng-model="data.multipleSelection"
+                     aria-label="Allow multiple filter selection">
+            Allow user to select multiple filters
+        </md-checkbox>
+        <md-checkbox name="sortableInReverse" ng-model="data.sortableInReverse"
+                     aria-label="Allow sort in reverse order">
+            Allow sort in reverse order
+        </md-checkbox>
+        <md-checkbox name="sortableByInt" ng-model="data.sortableByInt"
+                     aria-label="Allow sort by integer">
+            Allow sort by integer
+        </md-checkbox>
+        <!-- <md-checkbox name="filterNotAvailable" ng-model="data.filterNotAvailable" ng-change="setDirty(3)"
                      aria-label="Filter Not Available">
             Not Available
-        </md-checkbox>
+        </md-checkbox> -->
     </md-input-container>
 
-<!--     <md-input-container class="md-block" flex-gt-sm>
-        <md-checkbox name="commaSeparatedAsIndividual" ng-model="data.commaSeparatedAsIndividual"
-                     aria-label="Filter Comma Separated">
-            Comma Separated As Individual
-        </md-checkbox>
-    </md-input-container>
- -->
-    <md-input-container class="md-block" flex-gt-sm>
-        <md-checkbox name="multipleSelection" ng-model="data.multipleSelection"
-                     aria-label="Filter Multiple Selection">
-            Allow Multiple Selection
-        </md-checkbox>
-    </md-input-container>
-
-    <md-input-container class="md-block" flex-gt-sm>
-        <md-checkbox name="sortableByInt" ng-model="data.sortableByInt"
-                     aria-label="Filter Sortable By Integer">
-            Sortable By Integer
-        </md-checkbox>
-    </md-input-container>
-
-    <md-input-container class="md-block" flex-gt-sm>
-        <md-checkbox name="sortableInReverse" ng-model="data.sortableInReverse"
-                     aria-label="Filter Sortable In Reverse Order">
-            Sortable In Reverse Order
-        </md-checkbox>
-    </md-input-container>
-
-
-
+    <h3 ng-if="customFieldIndex == undefined">Advanced Settings</h3>
 
     <fieldset class="standard" ng-if="customFieldIndex == undefined">
-        <legend>One To One Override Values By Title</legend>
+        <div><label>One To One Override Values By Title</label></div>
         <div layout="row"
              ng-repeat="valueByOverride in dataset.fe_filters.oneToOneOverrideWithValuesByTitleByFieldName[fieldName]">
             <md-input-container flex="45">
@@ -51,8 +42,9 @@
                     <div ng-message="unique">Must be unique.</div>
                 </div>
             </md-input-container>
+            <span flex="5"></span>
 
-            <md-input-container flex="45">
+            <md-input-container flex="40">
                 <label>Override</label>
                 <input type="text" name="overrideValueTitle_{{$index}}" ng-model="valueByOverride.override"
                        ng-change="verifyUniqueValueOverride(valueByOverride, $index)" required>
@@ -61,33 +53,19 @@
                     <div ng-message="unique">Must be unique.</div>
                 </div>
             </md-input-container>
+            <span flex="5"></span>
 
-            <div flex="10">
-                <md-button class="md-raised" ng-click="removeOneToOneOverride(valueByOverride)" aria-label="Remove OneToOneOverride"><span
-                        class="glyphicon glyphicon-remove"></span></md-button>
+            <div flex="5">
+                <span class="fa fa-remove" ng-click="removeOneToOneOverride(valueByOverride)"></span>
             </div>
         </div>
-        <md-button class="md-raised" ng-click="addOneToOneOverride()"><span
-                class="glyphicon glyphicon-plus"></span>Add more
+        <md-button class="md-dashboard" ng-click="addOneToOneOverride()">
+            Add another
         </md-button>
     </fieldset>
 
     <fieldset class="standard" ng-if="customFieldIndex == undefined">
-        <legend>Values to Exclude by Original Key</legend>
-        <md-input-container class="md-block md-padding">
-            <label>All</label>
-            <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey._all"
-                      name="valuesToExcludeAll"
-                      md-enable-chip-edit="true"
-                      placeholder="Enter a Value" secondary-placeholder="+Value" ng-trim="false">
-                <md-chip-template>
-                    {{$chip}}
-                    <em>(All)</em>
-                </md-chip-template>
-            </md-chips>
-        </md-input-container>
-
-        <md-input-container class="md-block md-padding">
+        <md-input-container class="md-block">
             <label>{{fieldName}}</label>
             <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey[fieldName]"
                       name="valuesToExcludeSelf"
@@ -103,10 +81,22 @@
     </fieldset>
 
     <md-input-container class="md-block" flex-gt-sm ng-if="customFieldIndex == undefined">
-        <label>Keywords</label>
+        <label>Exclude filters by keyword</label>
         <md-chips ng-model="data.keywords.choices" name="keywords"
                   md-enable-chip-edit="true"
-                  placeholder="Enter a Keyword" secondary-placeholder="+Keyword">
+                  placeholder="Enter a keyword" secondary-placeholder="Add keyword">
         </md-chips>
     </md-input-container>
 </md-content>
+<!--  -->
+            <md-dialog-actions layout="row" layout-align="end center">
+                <md-button class="md-dashboard cancel" ng-click="reset()" ng-disabled="!dialog.fieldForm.$dirty">
+                    Reset
+                </md-button>
+                <md-button class="md-dashboard confirm" ng-click="save()" ng-disabled="!dialog.fieldForm.$dirty || dialog.fieldForm.$invalid">
+                    Save
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog-content>
+</md-dialog>
