@@ -9,9 +9,11 @@ angular.module('arraysApp')
             $scope.paymentMethod = '';
 
             // Set defaults for empty fields
+            var d = new Date();
+
             $scope.billing = {
-                month: 01,
-                year: 2016,
+                month: parseInt(('0' + (d.getMonth() + 1)).slice(-2)), // Set current month and year
+                year: d.getFullYear(),
 
                 country: 'US'
             };
@@ -218,7 +220,43 @@ angular.module('arraysApp')
                         $state.go('dashboard.account.billing');
                     } else {
                         // console.log(res.data);
-                        $scope.errors = res.data.errors.error;
+                        if (res.data.errors.error.length) {
+                            $scope.errors = res.data.errors.error;
+                        } else {
+                            $scope.errors[0] = res.data.errors.error;
+                        }
+
+                        angular.forEach($scope.errors, function(error, key) {
+
+                            // console.log($scope.billing_info);
+
+                            // Get error field name from returned errors
+                            var field = error.$.field;
+                            var fieldSplit = field.split('.');
+                            var fieldName = fieldSplit[fieldSplit.length - 1];
+
+                            // console.log(fieldName);
+
+                            switch (fieldName) {
+                                case 'country':
+                                    $scope.billing_info.billing_address.country.$setValidity('invalid', false);
+
+                                case 'address1':
+                                    $scope.billing_info.billing_address.address1.$setValidity('invalid', false);
+
+                                case 'city':
+                                    $scope.billing_info.billing_address.city.$setValidity('invalid', false);
+
+                                case 'state':
+                                    $scope.billing_info.billing_address.state.$setValidity('invalid', false);
+
+                                case 'zip':
+                                    $scope.billing_info.billing_address.zip.$setValidity('invalid', false);
+
+                                // default:
+                            }
+
+                        
                     }
                 }, function(err) {});
             };

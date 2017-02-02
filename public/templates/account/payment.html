@@ -25,16 +25,21 @@
 
             <md-input-container class="md-block">
                 <label>Country</label>
-                <md-select name="country" ng-model="billing.country" required>
+                <md-select name="country" ng-model="billing.country" required aa-reset-validity-on-change="invalid">
                     <md-option ng-repeat="country in countries" value="{{country.code}}">{{country.name}}</md-option>
                 </md-select>
+                <div ng-messages="billing_address.address1.$error">
+                    <div ng-message="required">Country is required.</div>
+                    <div ng-message="invalid">Country is invalid.</div>
+                </div>
             </md-input-container>
 
             <md-input-container class="md-block">
                 <label>Address</label>
-                <input name="address1" ng-model="billing.address1" required />
+                <input name="address1" ng-model="billing.address1" required aa-reset-validity-on-change="invalid" />
                 <div ng-messages="billing_address.address1.$error">
                     <div ng-message="required">Address is required.</div>
+                    <div ng-message="invalid">Address is invalid.</div>
                 </div>
             </md-input-container>
 
@@ -46,29 +51,32 @@
 
             <md-input-container class="md-block">
                 <label>City</label>
-                <input name="city" ng-model="billing.city" required />
+                <input name="city" ng-model="billing.city" required aa-reset-validity-on-change="invalid" />
                 <div ng-messages="billing_address.city.$error">
                     <div ng-message="required">City is required.</div>
+                    <div ng-message="invalid">City is invalid.</div>
                 </div>
             </md-input-container>
 
             <div layout="row">
                 <md-input-container>
                     <label>State</label>
-                    <md-select name="state" ng-model="billing.state" required>
+                    <md-select name="state" ng-model="billing.state" required aa-reset-validity-on-change="invalid">
                         <md-option ng-repeat="aState in availableStates" value="{{aState.abbreviation}}">{{aState.name}}</md-option>
                     </md-select>
                     <div ng-messages="billing_address.state.$error">
                         <div ng-message="required">State is required.</div>
+                        <div ng-message="invalid">State is invalid.</div>
                     </div>
                 </md-input-container>
                 <md-input-container>
                     <label>ZIP Code</label>
-                    <input name="zip" ng-model="billing.zip" required ng-minlength="5" ng-maxlength="16" maxlength="16" />
+                    <input name="zip" ng-model="billing.zip" required ng-minlength="5" ng-maxlength="16" maxlength="16" aa-reset-validity-on-change="invalid" />
                     <div ng-messages="billing_address.zip.$error">
                     <div ng-message="required">ZIP Code is required.</div>
                     <div ng-message="minlength">ZIP Code must be at least 5 digits.</div>
                     <div ng-message="maxlangth">ZIP Code must be less than 17 digits.</div>
+                    <div ng-message="invalid">ZIP Code is invalid.</div>
                 </div>
                 </md-input-container>
             </div>

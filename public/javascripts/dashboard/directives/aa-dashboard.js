@@ -56,4 +56,15 @@ angular.module('arraysApp')
                 if(!scope.selected) { scope.selected = scope.colors[0]; }
             }
         };
+    })
+    .directive('aaResetValidityOnChange', function() {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function(scope, element, attrs, ngModelCtrl) {
+                ngModelCtrl.$viewChangeListeners.push(function() {
+                    ngModelCtrl.$setValidity(attrs['aaResetValidityOnChange'], true);
+                });
+            }
+        };
     });
