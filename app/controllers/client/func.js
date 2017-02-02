@@ -933,6 +933,7 @@ module.exports.ValueToExcludeByOriginalKey = _valueToExcludeByOriginalKey;
 
 
 function _calcContentColor(backgroundColor) {
+    if (!backgroundColor) return '#000000';
     // brightness method described here - http://alienryderflex.com/hsp.html
     var r, g, b;
     var rWeight = .299,
