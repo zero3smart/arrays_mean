@@ -88,7 +88,8 @@ angular.module('arraysApp')
                         availableTypeCoercions: availableTypeCoercions,
                         availableDesignatedFields: availableDesignatedFields,
                         custom: custom,
-                        customFieldIndex: customFieldIndex
+                        customFieldIndex: customFieldIndex,
+                        filterOnly: filterOnly
                     }
                 })
                     .then(function (savedDataset) {
@@ -107,14 +108,20 @@ angular.module('arraysApp')
 
                         $scope.vm.dataForm.$setDirty();
 
+                        if(filterOnly) {
+                            $scope.openFabricatedFilterDialog();
+                        }
+
                     }, function () {
 
+                        if(filterOnly) {
+                            $scope.openFabricatedFilterDialog();
+                        }
 
-                        // console.log('You cancelled the field dialog.');
                     });
             };
 
-            function FieldDialogController($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields, custom, customFieldIndex) {
+            function FieldDialogController($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields, custom, customFieldIndex, filterOnly) {
 
                 $scope.firstRecord = firstRecord;
                 $scope.availableTypeCoercions = availableTypeCoercions;
@@ -306,18 +313,17 @@ angular.module('arraysApp')
 
                 $scope.save = function () {
                     // General
-                    var currentValue = $scope.dialog.fieldForm.fieldName.$modelValue;
 
-                    if (originalFieldName !== currentValue) {
+                    if (!filterOnly) {
+                        var currentValue = $scope.dialog.fieldForm.fieldName.$modelValue;
 
-                        var originalExclude = $scope.dataset.fe_excludeFields[originalFieldName];
-                        $scope.dataset.fe_excludeFields[currentValue] = originalExclude;
-                        delete $scope.dataset.fe_excludeFields[originalFieldName];
+                        if (originalFieldName !== currentValue) {
+
+                            var originalExclude = $scope.dataset.fe_excludeFields[originalFieldName];
+                            $scope.dataset.fe_excludeFields[currentValue] = originalExclude;
+                            delete $scope.dataset.fe_excludeFields[originalFieldName];
+                        }
                     }
-
-
-
-
 
                     if (typeof $scope.data.designatedField !== 'undefined') {
                         $scope.dataset.fe_designatedFields[$scope.data.designatedField] = $scope.fieldName;
