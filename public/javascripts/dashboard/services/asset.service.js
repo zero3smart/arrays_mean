@@ -10,11 +10,12 @@
             var deferred = $q.defer();
             $http.get('api/team/deleteImage/' + id + key)
                 .success(function (data) {
-                    if(!data.error) {
-                        return deferred.resolve(data);
-                    } else {
-                        return deferred.reject(data.error);
+                    if(data) {
+                        if(!data.error) {
+                            return deferred.resolve(data);
+                        }
                     }
+                    return deferred.reject(data.error);
                 })
                 .error(deferred.reject);
             return deferred.promise
