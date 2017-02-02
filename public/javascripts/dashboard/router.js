@@ -32,6 +32,9 @@ angular.module('arraysApp')
                         resolve: {
                             auth: function(AuthService) {
                                 return AuthService.ensureLogIn();
+                            },
+                            env: function(AuthService) {
+                                return AuthService.getEnv();
                             }
                         }
                     })
@@ -213,6 +216,9 @@ angular.module('arraysApp')
                             viewResource: 'View',
                             views: ['View', function (View) {
                                 return View.query().$promise;
+                            }],
+                            user: ['AuthService', function (AuthService) {
+                                return AuthService.currentUser();
                             }]
                         }
                     })

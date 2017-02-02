@@ -215,11 +215,21 @@ module.exports.resend = function (req, res) {
 
 module.exports.update = function (req, res) {
 
+
     var team = req.body._team;
     var teamId = req.body._team._id;
 
     if (!teamId) { // admin/owner of the team signing up
         team.admin = req.body._id;
+        if (req.body._team.subdomain == 'schema' || process.env.NODE_ENV == 'enterprise' || req.body.email.indexOf('@schemadesign.com') >= 0 ||
+            req.body.email.indexOf('@arrays.co') >= 0) {
+    
+            team.superTeam = true;
+        }
+
+
+
+
         Team.create(team, function (err, createdTeam) {
             if (err) {
                 res.send(err);

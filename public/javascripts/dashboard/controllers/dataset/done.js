@@ -9,12 +9,31 @@ angular.module('arraysApp')
                     $scope.importData();
                 }
             });
-            $scope.primaryAction.do = function() {
-                var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' + dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase();
-                // {{subdomain}}/{{dataset.uid}}-r{{dataset.importRevision}}/{{dataset.fe_views.default_view | viewToName }}
 
+            function makeFieldValuePairs(obj) {
+                var fieldValuePairs  = [], result;
+                for (var p in obj) {
+                    if( obj.hasOwnProperty(p) ) {
+                        fieldValuePairs.push(p + '=' + obj[p]);
+                    }
+                }
+                result = fieldValuePairs.join('&');
+                if (result !== '') {
+                    result = '?' + result;
+                }
+                return result;
+            }
+            $scope.primaryAction.do = function() {
+                var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
+                    dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
+                    makeFieldValuePairs(dataset.fe_filters.default);
                 $window.open(url, "_blank");
             };
+
+            $scope.showAdvanced = false;
+            $scope.toggleShowAdvanced = function() {
+                $scope.showAdvanced = !$scope.showAdvanced; // #flip_it
+            }
 
             //-- helper functions ---//
 
@@ -368,12 +387,6 @@ angular.module('arraysApp')
 
 
 
-            $scope.subdomain = $location.protocol() +  '://' + $scope.team.subdomain  + '.'+ $location.host() + ':' + $location.port();
-
-
-
-
-
 
             var datasourceIndex = -1;
 
@@ -382,7 +395,7 @@ angular.module('arraysApp')
             };
 
             $scope.toggleImageScraping = function() {
-                DatasetService.update($scope.$parent.$parent.dataset._id, {skipImageScraping: 
+                DatasetService.update($scope.$parent.$parent.dataset._id, {skipImageScraping:
                     $scope.$parent.$parent.dataset.skipImageScraping});
             };
 

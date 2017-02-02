@@ -66,6 +66,25 @@ angular
                 })
             }
 
+            $scope.updateSuperTeam = function(index) {
+                var team = $scope.teams[index];
+                console.log(team);
+
+                Team.update(team._id,{superTeam: team.superTeam}).$promise
+                .then(function() {
+
+                    $mdToast.show(
+                        $mdToast.simple()
+                            .textContent('Team setting saved!')
+                            .position('top right')
+                            .hideDelay(3000)
+                    );
+
+
+                })
+
+            }
+
 
 
 

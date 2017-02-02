@@ -271,7 +271,6 @@ module.exports = function (nunjucks_env,env) {
                     routePath += '&' + key + '=' + _queryObj[key];
                 }
             }
-
         if (routePath == '') return routePath_base;
 
         var joinChar = routePath_base.indexOf('?') !== -1 ? '&' : '?';
@@ -322,10 +321,13 @@ module.exports = function (nunjucks_env,env) {
 
 
 
-    var exploreURL = protocol + 'explore.' + host;
-    if (env.NODE_ENV == 'enterprise') {
-        exploreURL = protocol + host;
+    var exploreURL = protocol;
+
+    if (env.NODE_ENV !== 'enterprise') {
+        exploreURL += "app."
     }
+    exploreURL += host 
+
 
 
     nunjucks_env.addGlobal('siteBaseURL',protocol + host);

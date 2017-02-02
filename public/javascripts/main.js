@@ -1,5 +1,6 @@
 $(window).load(function () {
 
+
     trackEvent("page load");
 
     trackEvent('page viewed', {
@@ -264,15 +265,19 @@ $(document).ready(function () {
     });
 
     $('#logout').on('click',function(e) {
+ 
         e.preventDefault();
         $.get('/auth/logout')
         .then(function(response) {
 
+
             if (response == 'ok') {
+
                 window.sessionStorage.removeItem('user');
                 window.sessionStorage.removeItem('team');
                 window.sessionStorage.removeItem('teams');
-                window.location.href='/';
+                window.location.reload();
+                
             }
 
         })

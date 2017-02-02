@@ -9,6 +9,7 @@ var processed_row_objects = require('../../../models/processed_row_objects');
 var config = require('../config');
 var func = require('../func');
 var User = require('../../../models/users');
+var dataSourceDescriptions = require('../../../models/descriptions')
 
 /**
  * @param {Object} urlQuery - URL params
@@ -61,13 +62,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var findOutputFormatObj = func.findItemInArrayOfObject(dataSourceDescription.fe_views.views.lineGraph.outputInFormat,groupBy_realColumnName);
 
 
-
             if (findOutputFormatObj != null) {
                 groupBy_outputInFormat = findOutputFormatObj.value;
             } else if (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[groupBy_realColumnName] &&
                 raw_rowObjects_coercionSchema[groupBy_realColumnName].outputFormat) {
                 groupBy_outputInFormat = raw_rowObjects_coercionSchema[groupBy_realColumnName].outputFormat;
             }
+            
             //
             var stackBy = dataSourceDescription.fe_views.views.lineGraph.defaultStackByColumnName;
             //
@@ -89,21 +90,18 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // DataSource Relationship
             var mapping_source_pKey = undefined;
             var datasourceMapping = dataSourceDescription.fe_views.views.lineGraph.datasourceMappings;
-            if(datasourceMapping != undefined){
-                mapping_source_pKey = datasourceMapping.pKey;
-            }
-            //var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(mapping_dataSource_uid, mapping_dataSource_importRevision);
             var mapping_default_filterObj = {};
             var mapping_default_view = "gallery";
             var mapping_groupByObj = {};
-
-            if (mapping_source_pKey) {
-
-                var mappingDataSourceDescription = importedDataPreparation.DataSourceDescriptionWithPKey(mapping_source_pKey).then(function (mappingDataSourceDescription) {
-
-                    if (mappingDataSourceDescription !== null) {
-
-                        if (typeof mappingDataSourceDescription.fe_filters.default !== 'undefined') {
+            if(datasourceMapping != undefined){
+                datsourceId = datasourceMapping.pKey;
+                //find the datasource
+                dataSourceDescriptions.findById(datsourceId, function(err, mappingDataSourceDescription) {
+                    if(err) {
+                        console.log(err);
+                    } else {
+                        mapping_source_pKey = mappingDataSourceDescription.uid + '-r' + mappingDataSourceDescription.importRevision;
+                        if(typeof(mappingDataSourceDescription.fe_filters.default) !== 'undefined') {
                             mapping_default_filterObj = mappingDataSourceDescription.fe_filters.default;
                         }
 
@@ -111,20 +109,20 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         var mapping_groupBy = groupBy_realColumnName;
                         var mappingField = datasourceMapping.mappings;
-                        if (mappingField && mappingField.length > 0)
-                            for (var i = 0 ; i < mappingField.length; i++) {
-                                if (mappingField[i].key == groupBy_realColumnName) {
+                        if(mappingField && mappingField.length > 0) {
+                            for(var i = 0; i < mappingField.length; i++) {
+                                if(mappingField[i].key == groupBy_realColumnName) {
                                     mapping_groupBy = mappingField[i].value;
                                     break;
                                 }
                             }
-
+                        }
                         if (urlQuery.embed == 'true') mapping_groupByObj.embed = 'true';
                         mapping_groupByObj[mapping_groupBy] = '';
 
                     }
-
                 })
+
             }
 
 
@@ -532,6 +530,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
+                    brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},

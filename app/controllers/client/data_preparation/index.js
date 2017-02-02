@@ -104,6 +104,7 @@ module.exports.BindData = function (req, callback) {
                    
 
                     var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
+
                     var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
 
                     baseUrl += teamDescription.subdomain + "." + rootDomain

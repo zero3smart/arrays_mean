@@ -1,6 +1,6 @@
 <md-content layout="column" layout-gt-xs="row" class="tab-content" md-no-ink>
 
-    <div flex="75">
+    <div flex="65">
         <md-input-container class="md-block">
             <label>First Name</label>
             <input required name="givenName" ng-model="user.firstName" disabled>
@@ -16,21 +16,22 @@
             <input required name="email" ng-model="user.email" disabled>
         </md-input-container>
 
-        <div layout="row" layout-align="end center" ng-if="user.provider !== 'Google'">
+        <!-- <div layout="row" layout-align="end center" ng-if="user.provider !== 'Google'">
             <md-button class="md-dashboard" ng-disabled="1">
                 <span class="btn-label">Update Settings</span>
             </md-button>
-        </div>
+        </div> -->
         <div ng-if="user.provider === 'Google'">
             Signed in via Google
         </div>
 
     </div>
 
-    <div flex="25" flex-order-gt-xs="-1">
+    <div flex="35"></div>
+    <!-- <div flex="25" flex-order-gt-xs="-1">
         <img src="/images/image-not-found-sm.png" class="profile" />
         <md-button class="md-dashboard" ng-disabled="1">
-            <span class="btn-label">Upload<!--Update if img exists --></span>
+            <span class="btn-label">Upload || Update</span>
         </md-button>
-    </div>
+    </div> -->
 </md-content>

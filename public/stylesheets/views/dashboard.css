@@ -100,6 +100,17 @@ md-radio-button .md-on {
 	background: transparent !important;
 }
 
+/*slider*/
+md-slider.md-default-theme .md-track.md-track-fill, md-slider .md-track.md-track-fill {
+	background-color: var(--color-primary);
+}
+md-slider.md-default-theme .md-thumb:after, md-slider .md-thumb:after {
+	border-color: var(--color-primary);
+	background-color: var(--color-primary);
+}
+md-slider.md-default-theme .md-focus-ring, md-slider .md-focus-ring {
+	background-color: transparent;
+}
 /*Arrays app*/
 aa-dialog-actions,
 .layout-padding aa-dialog-actions {
@@ -409,7 +420,9 @@ md-input-invalid.subdomain-append {
 .md-nav-bar .md-button.md-focused {
 	background-color: transparent;
 }
-
+md-tabs.md-default-theme .md-tab.md-focused, md-tabs .md-tab.md-focused {
+	background-color: transparent;
+}
 /*match sidebar button height*/
 .md-nav-bar {
 	height: 41px;
@@ -511,24 +524,23 @@ md-switch.md-checked .md-bar {
 	/*background-color: var(--color-text-light);*/
 }
 
-.dataset .md-chips {
+.md-chips {
     padding-left: 0;
 }
-.dataset .md-chips.md-focused {
+md-chips-wrap.md-chips.md-focused {
 	box-shadow: 0 2px var(--color-primary);
 }
 
 /*chip selected*/
-.dataset .md-chips md-chip.md-focused {
+.md-chips md-chip.md-focused {
 	background-color: var(--color-text-med);
 }
-.dataset .md-chips md-chip.md-focused md-icon {
-	color: white;
-}
-
 .md-chips md-chip md-icon,
 .md-chips.md-focused md-chip md-icon {
     color: var(--color-text-med);
+}
+.md-chips md-chip.md-focused md-icon {
+	color: white;
 }
 .md-chips .md-errors-spacer {
 	/*known issue, md-errors-spacer may be deprecated soon*/
@@ -554,7 +566,7 @@ ul.aa-color-picker {
 	height: 30px;
 	position: relative;
 	border: 3px solid white;
-	border-radius: 100%;
+	border-radius: 15px;
 }
 .aa-color-picker li.selected {
 	/*border: 3px solid var(--color-text-dark);*/
@@ -565,6 +577,39 @@ ul.aa-color-picker {
 .aa-color-picker li:hover,
 .aa-color-picker li:focus {
 	outline: 0;
+}
+/*multi color picker*/
+/*show drag/remove controls*/
+.aa-color-picker.list li {
+	transition: width 0.3s;
+}
+.aa-color-picker.list li .move-color {
+	margin-top: 4px;
+	margin-left: 7px;
+}
+.aa-color-picker.list li .remove-color {
+	margin-top: 3px;
+	margin-left: 10px;
+}
+.aa-color-picker.list li .move-color,
+.aa-color-picker.list li .remove-color {
+	color: white;
+	opacity: 0;
+	transition: opacity 0.3s, padding 0.3s;
+}
+.aa-color-picker.list li:not(.add-color):hover {
+	/*border: 3px solid black;*/
+	width: 60px;
+}
+.aa-color-picker.list li:hover .move-color,
+.aa-color-picker.list li:hover .remove-color {
+	opacity: 1;
+	/*padding-left: 36px;*/
+}
+.aa-color-picker.list li.add-color i {
+	/*text-align: center;*/
+	padding-top: 4px;
+	padding-left: 6px;
 }
 
 /* Dataset Upload */
@@ -723,9 +768,11 @@ md-dialog {
 
 md-dialog fieldset legend,
 .dataset fieldset legend {
-    font-size: 15px;
-    color: rgba(0,0,0,0.54);
-    margin-bottom: 4px;
+    font-size: 16px;
+	font-weight: bold;
+	color: var(--color-text-dark);
+	border: none;
+    /*margin-bottom: 4px;*/
     padding-top: 20px;
 }
 

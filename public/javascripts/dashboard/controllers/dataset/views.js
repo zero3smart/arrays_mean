@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('DatasetViewsCtrl', ['$scope', 'dataset','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state','$filter', 'AssetService',
-        function($scope, dataset,views,viewResource,$mdDialog,DatasetService,$mdToast,$state,$filter,AssetService) {
+    .controller('DatasetViewsCtrl', ['$scope', 'dataset','views', 'viewResource','$mdDialog','DatasetService', '$mdToast','$state','$filter', 'AssetService','user',
+        function($scope, dataset,views,viewResource,$mdDialog,DatasetService,$mdToast,$state,$filter,AssetService,user) {
             $scope.$parent.$parent.dataset = dataset;
 
             $scope.$parent.$parent.views = views;
@@ -69,7 +69,7 @@ angular.module('arraysApp')
             $scope.makeDefaultView = function(view) {
                 $scope.data.default_view = view.name;
                 $scope.makeViewVisible();
-            }
+            };
 
             $scope.makeViewVisible = function() {
                 if (!dataset.fe_views.views[$scope.data.default_view]) {
@@ -81,10 +81,7 @@ angular.module('arraysApp')
             };
 
 
-
             $scope.openViewDialog = function (evt, id) {
-
-
 
                 viewResource.get({id:id},function(data) {
 
@@ -101,6 +98,14 @@ angular.module('arraysApp')
                             viewDisplayName: data.displayAs,
                             dataset: $scope.$parent.$parent.dataset,
                             viewSetting: data.settings,
+                            // hide 'Advanced' tabs from all but superAdmin
+                            viewTabs: data.tabs.filter(function(tabName){
+                                if(user.role !== 'superAdmin') {
+                                    return tabName !== 'Advanced';
+                                } else {
+                                    return tabName;
+                                }
+                            }),
                             colsAvailable: colsAvailable,
                             team: $scope.$parent.$parent.team,
                             default_view: $scope.data.default_view,
@@ -120,7 +125,16 @@ angular.module('arraysApp')
 
                 });
             };
-
+            // open modal on load, for testing
+            // $scope.openViewDialog(null, "581942ad8f220a84e42ef52c"); // barChart
+            // $scope.openViewDialog(null, "581a83b24fc526c798a72559"); // lineGraph
+            // $scope.openViewDialog(null, "581b6a7dd1284154a885d09d"); // pieSet
+            // $scope.openViewDialog(null, "5817b73e4fc526c798a72554"); // gallery
+            // $scope.openViewDialog(null, "581af68aafb074615368829b"); // scatterplot
+            // $scope.openViewDialog(null, "5817b7cf4fc526c798a72555"); // timeline
+            // $scope.openViewDialog(null, "581d2b83d1284154a885d0b3"); // wordCloud
+            // $scope.openViewDialog(null, "5851e8fa9daaffbe4871bd04"); // map
+            // $scope.openViewDialog(null, "5851e8eb9daaffbe4871bd03"); // pieChart
 
             $scope.reset = function () {
                 $scope.data.default_view = $scope.$parent.$parent.dataset.fe_views.default_view;
@@ -184,12 +198,13 @@ angular.module('arraysApp')
             };
 
 
-            function ViewDialogController($scope, $mdDialog, $filter, viewName,belongsToTeam,viewDisplayName,dataset,viewSetting,colsAvailable,AssetService,
+            function ViewDialogController($scope, $mdDialog, $filter, viewName,belongsToTeam,viewDisplayName,dataset,viewSetting,viewTabs,colsAvailable,AssetService,
                 DatasetService,team,default_view,reimportStep) {
 
                 $scope.viewName = viewName;
                 $scope.viewDisplayName = viewDisplayName;
                 $scope.viewSetting = viewSetting;
+                $scope.viewTabs = viewTabs;
                 $scope.isDefault = false;
                 $scope.colsAvailable = colsAvailable;
                 $scope.otherAvailableDatasets = [];
@@ -227,8 +242,9 @@ angular.module('arraysApp')
                                 $scope.otherDatasetsloaded = true;
                                 for (var i = 0; i < all.length; i++) {
                                     if (all[i].title !== dataset.title) {
-                                        var mappingPkey = getPkeyFromDatasource(all[i].title,
-                                            all[i].importRevision);
+                                        var mappingPkey = all[i]._id
+                                        // var mappingPkey = getPkeyFromDatasource(all[i].title,
+                                        //     all[i].importRevision);
                                         $scope.otherAvailableDatasets.push({
                                             displayAs: all[i].title, mappingPkey: mappingPkey
                                         });
@@ -260,7 +276,7 @@ angular.module('arraysApp')
                         $scope.data[settingName].conditions.push({});
 
                     }
-                }
+                };
 
 
 
@@ -274,7 +290,7 @@ angular.module('arraysApp')
 
                 $scope.initBackgroundColors = function(settingName) {
                     assignNestedDataValues(settingName);
-                }
+                };
 
 
 
@@ -360,6 +376,15 @@ angular.module('arraysApp')
                         return true;
 
                     };
+                };
+
+                $scope.includeExcludeCol = function(col, array) {
+                    var ndex = array.indexOf(col);
+                    if (ndex == -1) {
+                        array.push(col);
+                    } else {
+                        array.splice(ndex, 1);
+                    }
                 };
 
                 $scope.excludeBy = function(excludeValueArray) {

@@ -1115,10 +1115,7 @@ function updateDocWithImageUrl(job,folder,mongooseModel, doc, scrapedObject, set
 
 
 module.exports.GenerateImageURLFieldsByScraping
-    = function (job,dataSource_team_subdomain,datasetId,
-                htmlSourceAtURLInField,
-                setFields,
-                callback) {
+    = function (job,dataSource_team_subdomain,datasetId, schemaId, htmlSourceAtURLInField, setFields, callback) {
     // var useAndHostSrcSetSizeByField_keys = Object.keys(useAndHostSrcSetSizeByField);
     //
 
@@ -1129,8 +1126,8 @@ module.exports.GenerateImageURLFieldsByScraping
         var mongooseModel = mongooseContext.Model;
 
         var datasetQuery = {};
-        if (dataset_uid) {
-            datasetQuery["pKey"] = {$regex: "^" + dataset_uid + "-"}
+        if (schemaId) {
+            datasetQuery["pKey"] = {$regex: "^" + schemaId + "-"}
         }
 
         datasetQuery["rowParams." + htmlSourceAtURLInField] = {$exists: true};
