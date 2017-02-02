@@ -39,7 +39,7 @@ angular.module('arraysApp')
                     } else {
                          $scope.primaryAction.disabled = !validity;
                     }
-                   
+
                 }
             });
             $scope.primaryAction.do = function() {
@@ -650,7 +650,7 @@ angular.module('arraysApp')
                 $mdDialog.show({
                     controller: FabricatedFilterDialogController,
                     controllerAs: 'dialog',
-                    templateUrl: 'templates/blocks/data.fabricated.html',
+                    templateUrl: 'templates/blocks/data.filters.html',
                     parent: angular.element(document.body),
                     targetEvent: evt,
                     clickOutsideToClose: true,
@@ -712,6 +712,19 @@ angular.module('arraysApp')
                     });
                     $scope.dialog.form['fabricatedTitle_' + index].$setValidity('unique', fabricatedTitleUnique);
                     $scope.dialog.form['fabricatedValue_' + index].$setValidity('unique', fabricatedValueUnique);
+                };
+
+                $scope.toggleFilter = function(col) {
+                    var fieldsNA = $scope.dataset.fe_filters.fieldsNotAvailable,
+                        ndex = fieldsNA.indexOf(col);
+                    if (ndex == -1) {
+                        fieldsNA.push(col);
+                    } else {
+                        fieldsNA.splice(ndex, 1);
+                    }
+                    $scope.dialog.form.$setDirty();
+                    // also set dataset to dirty, needs processing
+                    // $scope.setDirty(3);
                 };
 
                 $scope.addFabricated = function () {
@@ -1368,7 +1381,7 @@ angular.module('arraysApp')
                 //Save settings primary key and object title as set in the ui
                 $scope.saveRequiredFields();
 
-            
+
                 if (isValid) {
 
                     var errorHandler = function (error) {
