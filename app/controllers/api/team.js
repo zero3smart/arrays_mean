@@ -149,7 +149,6 @@ module.exports.delete = function(req,res) {
                             if (err) done(err);
                             else {
 
-                                console.log(user);
                                 if (user.isSuperAdmin()) done();
                                 else {
                                     unauthorized = true;
