@@ -70,9 +70,8 @@ module.exports.BindData = function (req, teamDescription, callback) {
     var completionFn = function (err, sourceDescriptions) {
 
 
-        var rootDomain = process.env.HOST ? process.env.HOST : 'localhost';
+        var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
 
-        rootDomain += process.env.PORT? ":" + process.env.PORT : ':9080';
 
 
         var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';

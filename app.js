@@ -170,17 +170,14 @@ if (cluster.isMaster) {
     app.set('trust proxy', true);
     app.use(cookieParser());
 
-    var host = process.env.HOST || 'localhost';
-    var urlParts = host.split('.');
-    urlParts.splice(0,urlParts.length-2);
+    var domain = 'localhost'
 
-    var domain;
-
-    if (urlParts.length == 1) {
-        domain = urlParts[0];
-    } else {
+    if (process.env.HOST) {
+        var urlParts = process.env.HOST.split('.');
+        urlParts.splice(0, urlParts.length-2);
+        // Remove port
+        urlParts[urlParts.length-1] = urlParts[urlParts.length-1].split(':')[0];
         domain = '.' + urlParts.join('.');
-
     }
 
     // Mongo Store to prevent a warnning.
@@ -239,8 +236,7 @@ if (cluster.isMaster) {
                 var server = app.listen(process.env.PORT || 9080, function () {
                     var host = isDev ? 'localhost' : server.address().address;
                     var port = server.address().port;
-                    // winston.info('📡  App listening at %s:%s', host, port);
-                    winston.info("💬   Worker %d running pid %d",cluster.worker.id,process.pid);
+                    winston.info("📡    Worker %d running pid %d listing at %s:%s",cluster.worker.id,process.pid,host,port);
                 });
             }
         });

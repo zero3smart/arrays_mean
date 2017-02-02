@@ -318,8 +318,7 @@ module.exports = function (nunjucks_env,env) {
     });
 
     var protocol =  env.USE_SSL === 'true' ? 'https://' : 'http://';
-    var host = env.HOST? env.HOST: 'localhost';
-    var port = env.PORT? ":" + env.PORT : ':9080';
+    var host = env.HOST? env.HOST: 'localhost:9080';
 
 
 
@@ -328,12 +327,12 @@ module.exports = function (nunjucks_env,env) {
     if (env.NODE_ENV !== 'enterprise') {
         exploreURL += 'app.'
     }
-    exploreURL += host + port;
+    exploreURL += host 
 
    
 
 
-    nunjucks_env.addGlobal('siteBaseURL',protocol+host+port);
+    nunjucks_env.addGlobal('siteBaseURL',protocol+host);
 
     nunjucks_env.addGlobal('explore_url', exploreURL);
 

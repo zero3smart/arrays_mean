@@ -29,7 +29,7 @@ angular
             if ($scope.env.node_env !== 'enterprise') {
                 $scope.explore_url += "app.";
             }
-            $scope.explore_url += env.host + ":" + env.port;
+            $scope.explore_url += env.host
 
 
             $scope.updateSubdomain = function() {
@@ -38,7 +38,7 @@ angular
                 if ($scope.env.node_env == 'enterprise') {
                     $scope.subdomain = $scope.explore_url;
                 } else {
-                    $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain + "."+  env.host + ":" + env.port
+                    $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain + "."+  env.host
 
                 }
             }

@@ -13,8 +13,7 @@ var async = require('async');
 
 
 var rootDomain = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
-    rootDomain += process.env.HOST ? process.env.HOST : 'localhost';
-var port = process.env.PORT || '9080';
+    rootDomain += process.env.HOST ? process.env.HOST : 'localhost:9080';
 
 var View = require('../models/views');
 
@@ -159,15 +158,11 @@ var _mountRoutes_endPoints = function (app) {
 
             } else { //www.arrays.co or app.arrays.co
 
-
           
-                if (isRouteForDataset) {
-                    return res.redirect(rootDomain +  ":" + port +'/');
+                if (isRouteForDataset || req.subdomains.length == 0) {
+                    return res.redirect(rootDomain +'/');
                 } else {
-                    if (req.subdomains.length == 0) {
-                        return res.redirect(rootDomain + ":" + port + '/');
-                    }
-                
+                                
 
                     return next();
                 }
@@ -202,12 +197,10 @@ module.exports.MountRoutes = function (app) {
 
 
     app.get('/env',function(req,res) {
-        var host = process.env.HOST || 'localhost' ;
-        var port = process.env.PORT || '9080';
+        var host = process.env.HOST || 'localhost:9080' ;
         var obj = {
             node_env: process.env.NODE_ENV,
-            host: host,
-            port: port
+            host: host
         }
         return res.json(obj);
     })

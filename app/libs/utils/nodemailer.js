@@ -24,11 +24,7 @@ module.exports.sendActivationEmail = function(user, cb) {
 		email: user.email
 	},jwtSecret,{expiresIn:'2h'});
 
-	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost';
-
-    rootDomain += process.env.PORT? ":" + process.env.PORT : ':9080';
-
-
+	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
 
 
     var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
@@ -63,12 +59,7 @@ module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,
 		host: host._id
 	},jwtSecret,{expiresIn:'2h'});
 
-	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost';
-
-    rootDomain += process.env.PORT? ":" + process.env.PORT : ':9080';
-
-
-
+	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
 
     var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
     baseURL += rootDomain;

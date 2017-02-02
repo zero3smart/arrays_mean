@@ -5,8 +5,7 @@ var teams = require('../models/teams');
 var team_show_controller = require('../controllers/client/data_preparation/team/show');
 
 
-var rootDomain = process.env.HOST ? process.env.HOST : 'localhost';
-rootDomain += process.env.PORT? ":" + process.env.PORT : ':9080';
+var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
 var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
 baseURL += rootDomain;
 
