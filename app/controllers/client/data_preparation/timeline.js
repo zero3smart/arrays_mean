@@ -27,7 +27,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
     importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
         .then(function (dataSourceDescription) {
-            console.log(dataSourceDescription)
             // var collectionPKey = dataSourceDescription._id
 
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
@@ -182,8 +181,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
 
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
-                    console.log(uniqueFieldValuesByFieldName)
-                    console.log('=======================')
                     done();
                 });
             });
@@ -208,7 +205,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         }
                     }
                 ]);
-                console.log(countWholeFilteredSet_aggregationOperators)
 
                 var doneFn = function (err, results) {
                     if (err) {
@@ -256,7 +252,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 // Exclude the nested pages fields to reduce the amount of data returned
                 var rowParamsfields = Object.keys(sampleDoc.rowParams);
                 rowParamsfields.forEach(function (rowParamsField) {
-                    console.log(rowParamsField)
                     if (rowParamsField == sortBy_realColumnName || dataSourceDescription.fe_nestedObject == null || rowParamsField.indexOf(dataSourceDescription.fe_nestedObject.prefix) == -1) {
                         projects['$project']['rowParams.' + rowParamsField] = 1;
                     }
@@ -313,10 +308,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
               
 
                     if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
-
-                    console.log(_groupedResults)
-                    console.log("wham")
-               
 
                     _groupedResults.forEach(function (el, i, arr) {
                         var results = [];
@@ -486,6 +477,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
                     folder: "/assets/images/",
                     uid: dataSourceDescription.uid,
+                    importRevision: dataSourceDescription.importRevision,
                     returnAbsURLorBuildURL: returnAbsURLorBuildURL
 
                 };
