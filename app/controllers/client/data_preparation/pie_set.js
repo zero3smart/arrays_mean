@@ -386,6 +386,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     brandColor: dataSourceDescription.brandColor,
+                    brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
