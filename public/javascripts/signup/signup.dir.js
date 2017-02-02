@@ -79,7 +79,7 @@
 					var params = {subdomain: value};
 					var deferred = $q.defer();
 
-					if (value == 'blog' || value == 'explore') {
+					if (value == 'app' ) {
 						deferred.reject(false);
 					} else {
 						if (scope.invitedUser) {

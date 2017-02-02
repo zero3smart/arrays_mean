@@ -102,7 +102,7 @@ angular
 
                 $scope.checkSubdomain = function() {
                     var params = {subdomain: $scope.newTeam.subdomain};
-                    if ($scope.newTeam.subdomain == 'blog' || $scope.newTeam.subdomain == 'explore') {
+                    if ($scope.newTeam.subdomain == 'app' ) {
                          $scope.vm.teamForm.subdomain.$setValidity('unique', false);
                          return; 
                     }
