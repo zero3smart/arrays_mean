@@ -106,6 +106,7 @@ router.post('/team', ctrlTeam.create);
 router.get('/team', ctrlTeam.getAll);
 router.get('/team/search', ctrlTeam.search);
 router.get('/team/loadIcons', ctrlTeam.loadIcons);
+router.get('/team/deleteImage/:id/:subdomain/:assets/:type/:filename', ctrlTeam.deleteImage);
 router.get('/team/getAssetUploadSignedUrl/:id', ctrlTeam.signedUrlForAssetsUpload);
 router.put('/team/:id', ctrlTeam.update);
 router.put('/team/admin/:id',ctrlTeam.switchAdmin);

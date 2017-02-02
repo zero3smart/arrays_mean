@@ -278,7 +278,7 @@ linechart.viewport.prototype.render = function (container) {
                 self._mouseOutEventHandler();
             }, 2000);
         }).on('mousemove', function () {
-            self._mouseMoveEventHandler(self._options.redirectBaseUrl);
+            self._mouseMoveEventHandler();
         }).on('click', function () {
             if (self._options.redirectBaseUrl) {
                 /*
@@ -368,7 +368,7 @@ linechart.viewport.prototype._mouseOutEventHandler = function () {
  * Viewport mouse move event handler.
  * @private
  */
-linechart.viewport.prototype._mouseMoveEventHandler = function (redirectBaseUrl) {
+linechart.viewport.prototype._mouseMoveEventHandler = function () {
 
     /*
      * Stash reference to this object.
@@ -438,7 +438,8 @@ linechart.viewport.prototype._mouseMoveEventHandler = function (redirectBaseUrl)
      */
     var circles = this._canvas.selectAll('circle.data-point')
         .data(tooltipData, function (d) {
-            return d.category + d.date;
+            return d.value;
+            // return d.category + d.date;
         });
     /*
      * Remove old circles.
@@ -490,11 +491,12 @@ linechart.viewport.prototype._mouseMoveEventHandler = function (redirectBaseUrl)
     var element = document.getElementById('default-tooltip-content-date')
 
     clickFunction = function() {
-        if (redirectBaseUrl) {
+        if (self._options.redirectBaseUrl) {
+
             var index = self._bisectDate(self._datesDomain, date.getTime());
             date = new Date(self._datesDomain[index]);
 
-            window.location.href = redirectBaseUrl +
+            window.location.href = self._options.redirectBaseUrl +
                 moment(date, moment.ISO_8601).format(self._options.outputInFormat);
         }
     }

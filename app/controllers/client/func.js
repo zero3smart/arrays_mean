@@ -930,3 +930,30 @@ function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupB
 }
 
 module.exports.ValueToExcludeByOriginalKey = _valueToExcludeByOriginalKey;
+
+
+function _calcContentColor(backgroundColor) {
+    if (!backgroundColor) return '#000000';
+    // brightness method described here - http://alienryderflex.com/hsp.html
+    var r, g, b;
+    var rWeight = .299,
+        gWeight = .587,
+        bWeight = .114;
+
+
+    // Calculate individual color components
+    r = parseInt('0x' + backgroundColor.slice(1,3)) / 255;
+    g = parseInt('0x' + backgroundColor.slice(3,5)) / 255;
+    b = parseInt('0x' + backgroundColor.slice(5,7)) / 255;
+
+    var brightness = Math.sqrt(rWeight * (r * r) + gWeight * (g * g) + bWeight * (b * b));
+
+    if (brightness > 0.54) {
+
+        return '#000000';
+    }
+
+    return '#FFFFFF';
+}
+
+module.exports.calcContentColor = _calcContentColor;

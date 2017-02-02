@@ -57,7 +57,11 @@
                             Join with another dataset
                         </md-button>
                     </md-menu-item>
-                    <!-- Include/Exclude All toggleExclude()" -->
+                    <md-menu-item>
+                        <md-button ng-click="toggleExclude(excludeAll)">
+                            Include/Exclude all fields
+                        </md-button>
+                    </md-menu-item>
                 </md-menu-content>
             </md-menu>
         </div>
@@ -74,7 +78,6 @@
                     <span class="glyphicon glyphicon-move"></span>
                 </span>
 
-                <!-- aa-tooltip="Include/Exclude" -->
                 <md-checkbox ng-hide="dataset.connection" name="fe_excludeFields_{{$index}}"
                              ng-model="dataset.fe_excludeFields[field.name]"
                              ng-true-value="false"

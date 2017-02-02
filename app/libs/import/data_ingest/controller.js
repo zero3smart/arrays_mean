@@ -394,7 +394,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey
                     };
 
-
+                    
                     eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
                      
                 } else if (newFieldType == 'object') {

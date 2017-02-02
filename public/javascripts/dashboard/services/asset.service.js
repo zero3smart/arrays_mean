@@ -6,12 +6,25 @@
     AssetService.$inject = ['$http', '$q'];
     function AssetService($http, $q) {
 
+        var deleteImage = function(id, key) {
+            var deferred = $q.defer();
+            $http.get('api/team/deleteImage/' + id + key)
+                .success(function (data) {
+                    if(!data.error) {
+                        return deferred.resolve(data);
+                    } else {
+                        return deferred.reject(data.error);
+                    }
+                })
+                .error(deferred.reject);
+            return deferred.promise
+        }
+
         var loadIcons = function() {
             var deferred = $q.defer();
             $http.get('/api/team/loadIcons')
                 .success(function(data) {
                     if (!data.error) {
-
                         return deferred.resolve(data.iconsUrl);
                     } else {
                         return deferred.reject(data.error);
@@ -61,7 +74,8 @@
         return {
             loadIcons: loadIcons,
             getPutUrlForTeamAssets: getPutUrlForTeamAssets,
-            getPutUrlForDatasetAssets : getPutUrlForDatasetAssets 
+            getPutUrlForDatasetAssets : getPutUrlForDatasetAssets,
+            deleteImage: deleteImage 
          
         }
     }
