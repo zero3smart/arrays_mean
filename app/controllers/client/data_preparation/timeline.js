@@ -24,8 +24,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
     var source_pKey = urlQuery.source_key;
     var collectionPKey = req.subdomains[0] + '-' + source_pKey;
 
+
     importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
         .then(function (dataSourceDescription) {
+            console.log(dataSourceDescription)
+            // var collectionPKey = dataSourceDescription._id
 
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
                 callback(new Error("No data source with that source pkey " + source_pKey), null);
@@ -39,7 +42,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 return;
             }
 
-            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(collectionPKey);
+            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
             var page = urlQuery.page;
@@ -146,8 +149,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain source document
             batch.push(function (done) {
-                raw_source_documents.Model.findOne({primaryKey: collectionPKey}, function (err, _sourceDoc) {
-                    if (err) return done(err);
+                raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, _sourceDoc) {
+                    if (err) {
+                        console.log("error obtaining source document");
+                        return done(err);
+                    }
 
                     sourceDoc = _sourceDoc;
                     done();
@@ -157,9 +163,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // Obtain sample document
             batch.push(function (done) {
                 processedRowObjects_mongooseModel.findOne({}, function (err, _sampleDoc) {
-                    if (err) return done(err);
+                    if (err) {
+                        console.log("error obtaining sample document");
+                        return done(err);
+                    }
 
                     sampleDoc = _sampleDoc;
+                    console.log(sampleDoc)
                     done();
                 });
             });
@@ -167,7 +177,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // Obtain Top Unique Field Values For Filtering
             batch.push(function (done) {
                 func.topUniqueFieldValuesForFiltering(collectionPKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
-                    if (err) return done(err);
+                    if (err) {
+                        console.log("error obtaining top unique field values for filtering");
+                        return done(err);
+                    }
 
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
                     done();
@@ -194,9 +207,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         }
                     }
                 ]);
+                console.log(countWholeFilteredSet_aggregationOperators)
 
                 var doneFn = function (err, results) {
-                    if (err) return done(err);
+                    if (err) {
+                        console.log("eroor counting whole set");
+                        return done(err);
+                    }
                     if (results == undefined || results == null) { // 0
                     } else {
                         nonpagedCount = results.length;
@@ -238,6 +255,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 // Exclude the nested pages fields to reduce the amount of data returned
                 var rowParamsfields = Object.keys(sampleDoc.rowParams);
                 rowParamsfields.forEach(function (rowParamsField) {
+                    console.log(rowParamsField)
                     if (rowParamsField == sortBy_realColumnName || dataSourceDescription.fe_nestedObject == null || rowParamsField.indexOf(dataSourceDescription.fe_nestedObject.prefix) == -1) {
                         projects['$project']['rowParams.' + rowParamsField] = 1;
                     }
@@ -287,16 +305,16 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
                 var doneFn = function (err, _groupedResults) {
-                    if (err) return done(err);
+                    if (err) {
+                        console.log("error obtaining grouped results");
+                        return done(err);
+                    }
               
-                   
-
-                  
-
-
 
                     if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
 
+                    console.log(_groupedResults)
+                    console.log("wham")
                
 
                     _groupedResults.forEach(function (el, i, arr) {
@@ -385,7 +403,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.push(function(done) {
                 if (req.user) {
                     User.findById(req.user, function(err, doc) {
-                        if (err) return done(err);
+                        if (err) {
+                            console.log("error finding user");
+                            return done(err);
+                        }
                         user = doc;
                         done();
                     })
@@ -467,7 +488,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     returnAbsURLorBuildURL: returnAbsURLorBuildURL
 
                 };
-
 
                 callback(err, data);
 
