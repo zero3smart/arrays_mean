@@ -27,7 +27,7 @@ module.exports.sendActivationEmail = function(user, cb) {
 
 	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
 
-    var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+    var baseURL = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
     baseURL += rootDomain
 
     var activationLink = baseURL + '/account/verify?token=' + token;
@@ -36,7 +36,7 @@ module.exports.sendActivationEmail = function(user, cb) {
 		to: user.email,
 		subject: 'Welcome To Arrays!',
 		html: 'Hi ' + user.firstName + ", <br> Thank you for signing up with us ! Your account has been created, please" + 
-		" activate your account using the following link: " + activationLink+ "<br> This link will expire in two hours. <br><br><br> Sincerely, <br>The Arrays Team"
+		" activate your account using the following link: <a href='" + activationLink+ "'>here</a><br> This link will expire in two hours. <br><br><br> Sincerely, <br>The Arrays Team"
 
 	}
 	sendEmail(mailOptions,function(err) {
@@ -60,7 +60,7 @@ module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,
 
 	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
 
-    var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+    var baseURL = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
     baseURL += rootDomain;
 
 
