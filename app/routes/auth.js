@@ -11,6 +11,7 @@ router.get('/google', passport.authenticate('google', {
 
 
 router.get('/google/callback',function(req,res,next) {
+
     passport.authenticate('google',
         function(err,user,info) {
 

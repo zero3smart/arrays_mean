@@ -170,17 +170,17 @@ if (cluster.isMaster) {
     app.set('trust proxy', true);
     app.use(cookieParser());
 
+    var host = process.env.HOST || 'localhost';
+    var urlParts = host.split('.');
+    urlParts.splice(0,urlParts.length-2);
 
-    var domain = 'localhost';
+    var domain;
 
-
-
-    if (process.env.HOST) {
-        var urlParts = process.env.HOST.split('.');
-        urlParts.splice(0, urlParts.length-2);
-        // Remove port
-        urlParts[urlParts.length-1] = urlParts[urlParts.length-1].split(':')[0];
+    if (urlParts.length == 1) {
+        domain = urlParts[0];
+    } else {
         domain = '.' + urlParts.join('.');
+
     }
 
     // Mongo Store to prevent a warnning.

@@ -4,6 +4,7 @@ angular.module('arraysApp')
 
             $scope.progressMode = "determinate";
 
+
             $scope.deleteFile = function(url, type) {
                 var keyWithEndBit = url.split("amazonaws.com")[1];
                 var assetType = keyWithEndBit.split("logo")
@@ -37,6 +38,7 @@ angular.module('arraysApp')
                     })
                 });
             }
+
 
 
             function newUploader(assetType, formName) {

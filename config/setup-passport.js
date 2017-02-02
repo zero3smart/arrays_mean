@@ -34,8 +34,9 @@ var localStrategy = new LocalStrategy({
 })
 
 
-var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-baseURL += process.env.HOST ? process.env.HOST : 'localhost:9080';
+var baseURL = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
+baseURL += process.env.HOST ? process.env.HOST : 'localhost';
+baseURL += process.env.PORT? ":" + process.env.PORT : ':9080';
 
 var googleStrategy = new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,

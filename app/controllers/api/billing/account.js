@@ -50,6 +50,7 @@ module.exports.get = function(req, res) {
 
     var userId = req.user;
 
+
     User.findById(userId)
         .populate('_team')
         .populate('defaultLoginTeam')
@@ -75,4 +76,5 @@ module.exports.get = function(req, res) {
                 });
             }
         });
+
 };

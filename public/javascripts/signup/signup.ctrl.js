@@ -58,6 +58,7 @@
 			User.update({id:$scope.user._id},$scope.user)
 			.$promise
 			.then(function(data) {
+
 				if ($scope.invitedUser) {
 					$state.go('signup.success',{isInvite: true,id:null});
 				} else { 
@@ -68,6 +69,8 @@
 					}
 				}
 			},function(err) {
+
+				console.log(err);
 
 			})
 

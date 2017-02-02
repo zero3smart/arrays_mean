@@ -24,8 +24,17 @@ module.exports.sendActivationEmail = function(user, cb) {
 		email: user.email
 	},jwtSecret,{expiresIn:'2h'});
 
+	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost';
+
+    rootDomain += process.env.PORT? ":" + process.env.PORT : ':9080';
+
+
+
+
     var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-    baseURL += process.env.HOST ? process.env.HOST : 'localhost:9080';
+    baseURL += rootDomain;
+
+
 
     var activationLink = baseURL + '/account/verify?token=' + token;
 	var mailOptions = {
@@ -33,7 +42,7 @@ module.exports.sendActivationEmail = function(user, cb) {
 		to: user.email,
 		subject: 'Welcome To Arrays!',
 		html: 'Hi ' + user.firstName + ", <br> Thank you for signing up with us ! Your account has been created, please" + 
-		" activate your account using the following link: " + activationLink+ "<br> This link will expire in two hours. <br><br><br> Sincerely, <br>The Arrays Team"
+		" activate your account using the following link: <a href='" + activationLink+ "'>here</a><br> This link will expire in two hours. <br><br><br> Sincerely, <br>The Arrays Team"
 
 	}
 	sendEmail(mailOptions,function(err) {
@@ -54,8 +63,16 @@ module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,
 		host: host._id
 	},jwtSecret,{expiresIn:'2h'});
 
-	var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-    baseURL += process.env.HOST ? process.env.HOST : 'localhost:9080';
+	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost';
+
+    rootDomain += process.env.PORT? ":" + process.env.PORT : ':9080';
+
+
+
+
+    var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+    baseURL += rootDomain;
+
 
     var invitationLink = baseURL + '/account/invitation?token=' + token;
     var mailOptions = {
