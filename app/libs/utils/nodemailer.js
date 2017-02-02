@@ -24,8 +24,11 @@ module.exports.sendActivationEmail = function(user, cb) {
 		email: user.email
 	},jwtSecret,{expiresIn:'2h'});
 
+
+	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
+
     var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-    baseURL += process.env.HOST ? process.env.HOST : 'localhost:9080';
+    baseURL += rootDomain
 
     var activationLink = baseURL + '/account/verify?token=' + token;
 	var mailOptions = {
@@ -54,8 +57,12 @@ module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,
 		host: host._id
 	},jwtSecret,{expiresIn:'2h'});
 
-	var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-    baseURL += process.env.HOST ? process.env.HOST : 'localhost:9080';
+
+	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
+
+    var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+    baseURL += rootDomain;
+
 
     var invitationLink = baseURL + '/account/invitation?token=' + token;
     var mailOptions = {

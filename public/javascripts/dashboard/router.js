@@ -32,6 +32,9 @@ angular.module('arraysApp')
                         resolve: {
                             auth: function(AuthService) {
                                 return AuthService.ensureLogIn();
+                            },
+                            env: function(AuthService) {
+                                return AuthService.getEnv();
                             }
                         }
                     })

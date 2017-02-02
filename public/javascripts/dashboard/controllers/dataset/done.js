@@ -11,8 +11,7 @@ angular.module('arraysApp')
             });
             $scope.primaryAction.do = function() {
                 var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' + dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase();
-                // {{subdomain}}/{{dataset.uid}}-r{{dataset.importRevision}}/{{dataset.fe_views.default_view | viewToName }}
-
+            
                 $window.open(url, "_blank");
             };
 
@@ -370,12 +369,6 @@ angular.module('arraysApp')
 
 
             };
-
-
-
-            $scope.subdomain = $location.protocol() +  '://' + $scope.team.subdomain  + '.'+ $location.host() + ':' + $location.port();
-
-
 
 
 

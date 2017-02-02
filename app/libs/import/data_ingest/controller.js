@@ -203,8 +203,6 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
             function (description, cb) {
 
                 processed_row_objects.GenerateImageURLFieldsByScraping(job,dataSourceDescription._team.subdomain,dataSourceDescription._id,
-                    dataSourceDescription.importRevision,
-                    dataSourceDescription.title,
                     dataSourceDescription.schemaId,
                     description.htmlSourceAtURLInField,
                     description.setFields,
