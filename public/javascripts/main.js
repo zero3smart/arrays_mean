@@ -265,9 +265,9 @@ $(document).ready(function () {
 
     $('#logout').on('click',function(e) {
         e.preventDefault();
-        // console.log(window.location)
         $.get('/auth/logout')
         .then(function(response) {
+
 
             if (response == 'ok') {
                 window.sessionStorage.removeItem('user');

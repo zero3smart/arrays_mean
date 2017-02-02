@@ -497,6 +497,7 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                 User.findById(userId)
                     .populate('_team')
                     .exec(function(err, foundUser) {
+                        
 
                         if (err) return fn(err);
 
@@ -518,6 +519,8 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                         }
                     });
             } else {
+
+
 
                 if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.subdomain != 'schema') return fn();
 

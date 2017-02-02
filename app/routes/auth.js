@@ -22,9 +22,6 @@ router.get('/google/callback',function(req,res,next) {
                 return res.redirect('/signup/info/' + user._id);
                 
             } else {
-                console.log("log user in");
-
-
                 req.logIn(user,function(err) {
                     if (err) {return next(err);}
                     return res.redirect(req.session.returnTo || '/dashboard');

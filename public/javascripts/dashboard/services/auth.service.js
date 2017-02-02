@@ -228,9 +228,12 @@
 
 
 
+
         var logout = function () {
+
             $http.get('/auth/logout')
                 .then(function (response) {
+
                     if (response.status == 200) {
                         isLoggedIn = false;
                         $window.sessionStorage.removeItem('user');

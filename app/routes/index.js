@@ -148,10 +148,8 @@ var _mountRoutes_endPoints = function (app) {
                     return next();
                 } else {
 
-                    if (req.url == '/') {
+                    if (req.url == '/' || req.url == '/' + apiVersion + '/share' || req.url == '/auth/logout') {
                         return next();
-                    } else if (req.url == '/' + apiVersion + '/share') {
-                        return next()
                     } else {
                         return res.redirect(rootDomain + req.url);
                     }
