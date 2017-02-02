@@ -55,11 +55,11 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
     var title = description.title;
     var parentId = description.schemaId;
 
-var insertTo = datasetId;
+    var insertTo = datasetId;
 
-if (parentId) {
-    insertTo = parentId;
-}
+    if (parentId) {
+        insertTo = parentId;
+    }
 
     var delimiter = ',';
     if (fileType == 'TSV') delimiter = '\t';

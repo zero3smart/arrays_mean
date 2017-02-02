@@ -68,7 +68,6 @@ module.exports.update = function (req, res) {
                 for (var attr in req.body) {
                     team[attr] = req.body[attr];
                 }
-
                 team.save(function (err) {
                     if (!err) {
                         return res.json({team: team});

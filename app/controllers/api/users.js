@@ -220,9 +220,6 @@ module.exports.update = function (req, res) {
 
     if (!teamId) { // admin/owner of the team signing up
         team.admin = req.body._id;
-        if (req.body._team.subdomain == 'schema' || process.env.NODE_ENV == 'enterprise') {
-            team.superTeam = true;
-        }
         Team.create(team, function (err, createdTeam) {
             if (err) {
                 res.send(err);

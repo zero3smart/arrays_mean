@@ -15,9 +15,8 @@
 
     <div ng-hide="isEnterprise" layout="row">
        <md-input-container flex="50">
-           <label> {{ env.node_env == 'enterprise'? 'Unique Team Identifier' : 'Subdomain'}} </label>
-           <input ng-if="env.node_env=='enterprise'" value="{{team.subdomain}}" disabled><!--ng-model="team.subdomain" -->
-           <input ng-if="env.node_env!=='enterprise'" value="{{team.subdomain}}.arrays.co" disabled><!--ng-model="team.subdomain" -->
+           <label>Subdomain</label>
+           <input value="{{team.subdomain}}.arrays.co" disabled><!--ng-model="team.subdomain" -->
        </md-input-container>
        <!-- <span>.arrays.co.arrays.co</span> -->
    </div>

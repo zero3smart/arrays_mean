@@ -237,9 +237,10 @@ var _proceedToScrapeImagesAndRemainderOfPostProcessing = function (indexInList, 
 
 var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexInList, dataSourceDescription,job, callback) {
 
+    var dataSource_importRevision = dataSourceDescription.importRevision;
     var dataSource_title = dataSourceDescription.fileName;
     var dataset_parentId = dataSourceDescription.schemaId;
-  
+    var dataSource_team_subdomain = dataSourceDescription._team.subdomain;
 
 
     var forThisDataSource_mongooseContext;

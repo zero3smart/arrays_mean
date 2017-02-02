@@ -3,13 +3,8 @@ var router = express.Router();
 var winston = require('winston');
 var teams = require('../models/teams');
 var team_show_controller = require('../controllers/client/data_preparation/team/show');
-
-
-var rootDomain = process.env.HOST ? process.env.HOST : 'localhost';
-rootDomain += process.env.PORT? ":" + process.env.PORT : ':9080';
 var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-baseURL += rootDomain;
-
+    baseURL += process.env.HOST ? process.env.HOST : 'localhost:9080';
 
 
 router.get('/', function (req, res) {
@@ -23,17 +18,7 @@ router.get('/', function (req, res) {
                 return res.status(500).send(err.response || 'Internal Server Error');
             } else {
 
-              
-
-
-                if (!teamDescriptions || teamDescriptions.length == 0) {
-
-                    return res.redirect('auth/login');
-                    
-                }
-
-
-                
+                console.log(teamDescriptions);
 
                 
                 team_show_controller.BindData(req,teamDescriptions[0],function(err,bindData) {
@@ -56,7 +41,7 @@ router.get('/', function (req, res) {
         }
 
 
-        if (req.subdomains[0] == 'app') {
+        if (req.subdomains[0] == 'explore') {
             var index_controller = require('../controllers/client/data_preparation');
             index_controller.BindData(req, function (err, bindData) {
                 if (err) {

@@ -72,15 +72,14 @@
 			link: function(scope,elem,attr,model) {
 
 
+
 				model.$asyncValidators.subdomainAvailable = function(modelValue,viewValue) {
-
-
 
 					var value = modelValue|| viewValue;
 					var params = {subdomain: value};
 					var deferred = $q.defer();
 
-					if (value == 'app' && !scope.isEnterprise) {
+					if (value == 'blog' || value == 'explore') {
 						deferred.reject(false);
 					} else {
 						if (scope.invitedUser) {
