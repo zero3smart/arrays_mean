@@ -259,6 +259,45 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 
 /* @end Team Logo */
 
+
+.user-initial-nav {
+	margin-right: 10px;
+	height: 50px;
+	width: 30px;
+}
+
+.user-initial {
+	display: block;
+	position: absolute;
+	color: #FFFFFF;
+	background-color: #000000;
+	vertical-align: middle;
+	text-align: center;
+	line-height: 30px;
+	height: 30px;
+	width: 30px;
+	left: 0px;
+	bottom: 10px;
+	border-radius: 100%;
+}
+
+
+@media (min-width: 768px) {
+	.user-initial-nav {
+		margin-right: 20px;
+		margin-left: 20px;
+		height: 64px;
+		width: 38px;
+	}
+
+	.user-initial {
+		height: 38px;
+		width: 38px;
+		line-height: 38px;
+		bottom: 13px;
+	}
+}
+
 /* scroll magic content color */
 .array-controls-pinned .icon-filter {
     color: #000000;
@@ -273,6 +312,10 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 }
 .array-controls-pinned .dropdown-toggle span {
     color: #000000;
+}
+
+.array-controls-pinned .dropdown-toggle.user-initial-nav span {
+    color: #FFFFFF;
 }
 
 .array-controls-pinned .dropdown-toggle span:hover {
