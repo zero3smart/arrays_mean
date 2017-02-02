@@ -170,8 +170,8 @@ if (cluster.isMaster) {
     app.set('trust proxy', true);
     app.use(cookieParser());
 
-
     var domain = 'localhost';
+
 
 
 
@@ -239,8 +239,7 @@ if (cluster.isMaster) {
                 var server = app.listen(process.env.PORT || 9080, function () {
                     var host = isDev ? 'localhost' : server.address().address;
                     var port = server.address().port;
-                    // winston.info('📡  App listening at %s:%s', host, port);
-                    winston.info("💬   Worker %d running pid %d",cluster.worker.id,process.pid);
+                    winston.info("📡    Worker %d running pid %d listing at %s:%s",cluster.worker.id,process.pid,host,port);
                 });
             }
         });
