@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', '$window', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 
-        function($scope, $mdDialog, $state, $http, $window, AuthService, Account, Billing, Subscriptions, Plans) {
+    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 
+        function($scope, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans) {
 
             $scope.errors = {};
 
@@ -237,24 +237,42 @@ angular.module('arraysApp')
 
                             // console.log(fieldName);
 
+                            var form;
+
                             switch (fieldName) {
+                                case 'first_name':
+                                case 'last_name':
+                                case 'number':
+                                case 'month':
+                                case 'year':
+                                    form = 'payment_card';
+                                    break;
+
                                 case 'country':
-                                    $scope.billing_info.billing_address.country.$setValidity('invalid', false);
-
                                 case 'address1':
-                                    $scope.billing_info.billing_address.address1.$setValidity('invalid', false);
-
                                 case 'city':
-                                    $scope.billing_info.billing_address.city.$setValidity('invalid', false);
-
                                 case 'state':
-                                    $scope.billing_info.billing_address.state.$setValidity('invalid', false);
-
                                 case 'zip':
-                                    $scope.billing_info.billing_address.zip.$setValidity('invalid', false);
+                                    form = 'billing_address';
+                                    break;
 
                                 // default:
                             }
+
+                            if (form) $scope.billing_info[form][fieldName].$setValidity('invalid', false);
+
+                            if (fieldName === 'base' || fieldName === 'credit_card_verification_value' || fieldName === 'credit_card_number') {
+
+                                // Show popup notification
+                                $mdToast.show(
+                                    $mdToast.simple()
+                                    .textContent(error._)
+                                    .action('Ok')
+                                    .position('top right')
+                                    .hideDelay(10000)
+                                );
+                            }
+                        });
 
                         
                     }

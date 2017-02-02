@@ -4,23 +4,43 @@
 
     <md-input-container>
         <label>First Name</label>
-        <input ng-model="billing.first_name" required />
+        <input name="first_name" ng-model="billing.first_name" required aa-reset-validity-on-change="invalid" />
+        <div ng-messages="payment_card.first_name.$error">
+            <div ng-message="required">First Name is required.</div>
+            <div ng-message="invalid">First Name is invalid.</div>
+        </div>
     </md-input-container>
 
     <md-input-container>
         <label>Last Name</label>
-        <input ng-model="billing.last_name" required />
+        <input name="last_name" ng-model="billing.last_name" required aa-reset-validity-on-change="invalid" />
+        <div ng-messages="payment_card.last_name.$error">
+            <div ng-message="required">Last Name is required.</div>
+            <div ng-message="invalid">Last name is invalid.</div>
+        </div>
     </md-input-container>
 
     <div layout="row">
         <md-input-container>
             <label>Card Number</label>
-            <input ng-model="billing.number" placeholder="{{ billing.numberPlaceholder }}" required ng-minlength="13" ng-maxlength="19" maxlength="19" />
+            <input name="number" ng-model="billing.number" placeholder="{{ billing.numberPlaceholder }}" required ng-minlength="13" ng-maxlength="19" maxlength="19" aa-reset-validity-on-change="invalid" />
+            <div ng-messages="payment_card.number.$error">
+                <div ng-message="required">Card Number is required.</div>
+                <div ng-message="minlength">Card Number must be at least 13 digits.</div>
+                <div ng-message="maxlangth">Card Number must be less than 20 digits.</div>
+                <div ng-message="invalid">Card Number is invalid.</div>
+            </div>
         </md-input-container>
 
         <md-input-container>
             <label>CVV</label>
-            <input ng-model="billing.verification_value" required ng-minlength="3" ng-maxlength="4" maxlength="4" />
+            <input name="verification_value" ng-model="billing.verification_value" required ng-minlength="3" ng-maxlength="4" maxlength="4" ng-pattern="/^\d+$/"/>
+            <div ng-messages="payment_card.verification_value.$error">
+                <div ng-message="required">CVV is required.</div>
+                <div ng-message="minlength">CVV must be at least 3 digits.</div>
+                <div ng-message="maxlangth">CVV must be less than 5 digits.</div>
+                <div ng-message="pattern">CVV must be numeric.</div>
+            </div>
         </md-input-container>
     </div>
 
@@ -30,12 +50,31 @@
     <h3>Expires</h3>
 
     <div layout="row">
-        <md-select ng-model="billing.month" required aria-label="Card Expiration Month">
-            <md-option ng-repeat="month in ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']" ng-value="{{month}}">{{month}}</md-option>
-        </md-select>
-        <md-select ng-model="billing.year" required aria-label="Card Expiration Year">
-            <md-option ng-repeat="year in [2016, 2017, 2018, 2019, 2020]" ng-value="{{year}}">{{year}}</md-option>
-        </md-select>
+        <md-input-container>
+            <md-select name="month" ng-model="billing.month" required aria-label="Card Expiration Month" aa-reset-validity-on-change="invalid">
+                <md-option ng-repeat="month in ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']" ng-value="{{month}}">{{month}}</md-option>
+            </md-select>
+            <div ng-messages="payment_card.month.$error">
+                <div ng-message="required">Month is required.</div>
+                <div ng-message="invalid">Month is invalid.</div>
+            </div>
+        </md-input-container>
+
+        <md-input-container>
+            <md-select name="year" ng-model="billing.year" required aria-label="Card Expiration Year" aa-reset-validity-on-change="invalid">
+                <md-option ng-repeat="year in [2016, 2017, 2018, 2019, 2020]" ng-value="{{year}}">{{year}}</md-option>
+            </md-select>
+            <div ng-messages="payment_card.year.$error">
+                <div ng-message="required">Year is required.</div>
+                <div ng-message="invalid">Year is invalid.</div>
+            </div>
+        </md-input-container>
+    </div>
+
+    <div layout="row">
+        <p ng-repeat="error in errors" ng-if="error.$.field === 'billing_info.base' || error.$.field === 'billing_info.billing_info.credit_card_verification_value' || error.$.field === 'billing_info.billing_info.credit_card_number'" class="warn">
+            {{ error._ }}
+        </p>
     </div>
 
 </ng-form>
