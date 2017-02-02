@@ -294,3 +294,30 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 		bottom: 13px;
 	}
 }
+
+
+/* scroll magic content color */
+.array-controls-pinned .icon-filter {
+    color: #000000;
+}
+
+.array-controls-pinned .icon-filter:hover {
+    color: #000000;
+}
+
+.array-controls-pinned .navbar-nav > li .dropdown-toggle {
+    color: #000000;
+}
+.array-controls-pinned .dropdown-toggle span {
+    color: #000000;
+}
+.array-controls-pinned .dropdown-toggle.user-initial-nav span {
+    color: #FFFFFF;
+}
+.array-controls-pinned .dropdown-toggle span:hover {
+    color: #000000;
+}
+
+.array-controls-pinned .navbar-brand-container .navbar-brand {
+    color: #000000;
+}
