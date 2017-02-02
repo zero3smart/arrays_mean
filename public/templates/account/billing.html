@@ -18,21 +18,21 @@
     <div ng-if="subscription.state === 'active'">
     <hr>
 
-        <form name="billingForm">
+        <form name="quantity_form" novalidate>
             <md-input-container>
                 <label>Visualizations</label>
-                <input name="datasets" required type="number" min="1" step="1" ng-model="subscription.quantity._" ng-pattern="/^[0-9]{1,7}$/"/>
-                <div ng-messages="billingForm.datasets.$error">
-                    <div ng-message="pattern">Please enter an integer greater than 0.</div>
+                <input name="datasets" required type="number" min="1" ng-min="1" step="1" ng-model="subscription.quantity._" />
+                <div ng-messages="quantity_form.datasets.$error">
+                    <div ng-message="min">Please enter a number greater than 0.</div>
                 </div>
             </md-input-container>
 
             <div layout="row" layout-align="space-between center">
-                <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'monthly')" ng-disabled="!billingForm.$dirty">
+                <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'monthly')" ng-disabled="!quantity_form.$dirty || quantity_form.$invalid">
                     <span class="btn-label">Save and Update Monthly Billing Amount</span>
                 </md-button>
 
-                <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'annual')" ng-if="subscription.plan.plan_code != 'arrays-pro-yearly'">
+                <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'annual')" ng-if="subscription.plan.plan_code != 'arrays-pro-yearly'" ng-disabled="quantity_form.$invalid">
                     <span class="btn-label">Pay Yearly (${{ subscription.quantity._ * 99 }} / mo)</span>
                 </md-button>
             </div>

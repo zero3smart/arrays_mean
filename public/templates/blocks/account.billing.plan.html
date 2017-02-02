@@ -1,7 +1,7 @@
 <div ng-if="subscription.state === 'active' || subscription.state === 'canceled'">
     <h2>Plan Summary</h2>
     <p>
-        {{ subscription.plan.name }}: {{ subscription.quantity._ | pluralize: 'Dataset' : 'Datasets' }}<br />
+        {{ subscription.plan.name }}: {{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'Dataset' : 'Datasets' }}<br />
         Cost per Dataset: {{ plan.unit_amount_in_cents.USD._ / 100 | currency }}<br />
         <strong>Total per month:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency }}<br />
         <strong ng-if="subscription.canceled_at._">Subscription ends {{ subscription.current_period_ends_at._ | date: 'MM/dd/yyyy' }}</strong>
