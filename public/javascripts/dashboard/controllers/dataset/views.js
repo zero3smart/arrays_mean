@@ -297,9 +297,9 @@ angular.module('arraysApp')
 
 
                 $scope.makeRelative = function(Url) {
-                    subdomainIndex = Url.indexOf($scope.dataset._team.subdomain);
-                    sliceIndex = subdomainIndex + $scope.dataset._team.subdomain.length;
-                    relativeUrl = Url.slice(sliceIndex);
+                    // assets is the only thing that is constant so we can split on it and then prepend it back on the relative url
+                    var splitUrl = Url.split("assets")[1];
+                    var relativeUrl = "/assets" + splitUrl;
                     return relativeUrl;
                 };
 

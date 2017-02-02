@@ -16,6 +16,11 @@ angular.module('arraysApp')
                 $window.open(url, "_blank");
             };
 
+            $scope.showAdvanced = false;
+            $scope.toggleShowAdvanced = function() {
+                $scope.showAdvanced = !$scope.showAdvanced; // #flip_it
+            }
+
             //-- helper functions ---//
 
             function errorHandler(response) {
@@ -382,7 +387,7 @@ angular.module('arraysApp')
             };
 
             $scope.toggleImageScraping = function() {
-                DatasetService.update($scope.$parent.$parent.dataset._id, {skipImageScraping: 
+                DatasetService.update($scope.$parent.$parent.dataset._id, {skipImageScraping:
                     $scope.$parent.$parent.dataset.skipImageScraping});
             };
 

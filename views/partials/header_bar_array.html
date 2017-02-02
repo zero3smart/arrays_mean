@@ -35,6 +35,42 @@
     .border-top-color-brand {
         border-top-color: {{ brandColor }};
     }
+
+    body:not(.array-controls-pinned) .navbar-nav .dropdown > a,
+    body:not(.array-controls-pinned) .navbar-nav .dropdown > a span,
+    body:not(.array-controls-pinned) .sidebar-filter-slide-toggle span,
+    body:not(.array-controls-pinned) .navbar-brand-container .navbar-brand
+    {
+        color: {{ brandContentColor }};
+    }
+
+    body:not(.array-controls-pinned) .dropdown.open > a,
+    body:not(.array-controls-pinned) .dropdown.open > a span,
+    body:not(.array-controls-pinned) li.active > .sidebar-filter-slide-toggle span
+    {
+        color: {{ '#FFFFFF' if brandContentColor == '#000000' else '#000000' }};
+    }
+
+    .input-subscribe,
+    .input-subscribe:focus {
+        border-color: {{ brandContentColor }};
+        color: {{ brandContentColor }};
+    }
+
+    .input-subscribe::-webkit-input-placeholder,
+    .site-footer,
+    .site-info a {
+        color: {{ brandContentColor }};
+    }
+
+    .btn-inverse {
+        background-color: {{ brandContentColor }};
+        border-color: {{ brandContentColor }}
+    }
+
+    .btn-inverse:hover {
+        color: {{ '#FFFFFF' if brandContentColor == '#000000' else '#000000' }};
+    }
 </style>
 {% endif %}
 
@@ -148,9 +184,9 @@
                         <a href="#" class="share-link btn btn-splash">Share</a>
                     </li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <a href="#" class="dropdown-toggle {{ "user-initial-nav" if user }}" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                             {% if user %}
-                            {{user.firstName}} {{user.lastName}}
+                            <span class="user-initial">{{user.firstName.slice(0,1).toUpperCase()}}</span>
                             {% else %}
                             <span class="icon-menu" aria-hidden="true"></span>
                             {% endif %}

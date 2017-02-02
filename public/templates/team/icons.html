@@ -16,14 +16,14 @@
                 <span class="dashboard-list-name">{{icon.split('/').pop()}}</span>
             </span>
 
-            <!-- <span class="dashboard-list-icon warn" ng-click="" aria-hidden="true" aria-label="Delete" flex="5">
+            <span class="dashboard-list-icon warn" ng-click="deleteIcon(icon)" aria-hidden="true" aria-label="Delete" flex="5">
                 <i class="fa fa-remove" aria-hidden="true"></i>
-            </span> -->
+            </span>
         </li>
     </ul>
 
     <ul class="dashboard-list user-list" ng-cloak>
-        <li ng-repeat="item in iconsUploader.queue track by $index" layout="row" layout-align="none center">
+        <li ng-repeat="item in iconsUploader.queue track by $index" layout="row" layout-align="none center" ng-hide="item.isSuccess">
 
             <div flex="10" ng-show="iconsUploader.isHTML5" ng-thumb="{ file: item._file, height: '100' }"></div>
 
@@ -38,9 +38,6 @@
             <span class="dashboard-list-icon warn" ng-click="item.cancel()" ng-hide="!item.isUploading" aria-hidden="true" aria-label="Cancel Upload" flex="5">
                 <i class="fa fa-remove" aria-hidden="true"></i>
             </span>
-            <!-- <span class="dashboard-list-icon warn" ng-click="item.remove()" ng-hide="item.isUploading" aria-hidden="true" aria-label="Delete" flex="5">
-                <i class="fa fa-remove" aria-hidden="true"></i>
-            </span> -->
 
         </li>
     </ul>

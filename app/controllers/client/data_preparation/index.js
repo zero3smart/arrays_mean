@@ -127,7 +127,8 @@ module.exports.BindData = function (req, callback) {
                         urls: dataSourceDescription.urls,
                         default_view: default_view,
                         default_filterJSON: default_filterJSON,
-                        datasetBaseLink: baseUrl
+                        datasetBaseLink: baseUrl,
+                        banner: dataSourceDescription.banner
 
                     };
 
