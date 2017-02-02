@@ -158,8 +158,9 @@ function _humanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdow
 
     var fe_displayTitleOverrides = dataSourceDescription.fe_displayTitleOverrides || {};
     // add in "Object Title" so we use the same machinery as the hand-specified ones
-    fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
+    // fe_displayTitleOverrides["" + dataSourceDescription.fe_designatedFields.objectTitle] = humanReadableColumnName_objectTitle;
     //
+    // ^^^^^^commented out because we don't want dropdowns to display object title but I'm not deleting because we may change our minds down the road
     var keys = _rowParamKeysFromSampleRowObject_sansFEExcludedFields(sampleRowObject, dataSourceDescription);
     var available_keys = [];
     var field = 'fieldsNotAvailable';
