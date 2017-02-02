@@ -14,7 +14,7 @@ var async = require('async');
 
 var rootDomain = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
     rootDomain += process.env.HOST ? process.env.HOST : 'localhost';
-    rootDomain += process.env.PORT? ":" + process.env.PORT : ':9080';
+var port = process.env.PORT || '9080';
 
 var View = require('../models/views');
 
@@ -144,6 +144,8 @@ var _mountRoutes_endPoints = function (app) {
             if (isNotRootDomain(req.subdomains)) {
 
 
+
+
                 if (isRouteForDataset) {
                     return next();
                 } else {
@@ -160,10 +162,10 @@ var _mountRoutes_endPoints = function (app) {
 
           
                 if (isRouteForDataset) {
-                    return res.redirect(rootDomain + '/');
+                    return res.redirect(rootDomain +  ":" + port +'/');
                 } else {
                     if (req.subdomains.length == 0) {
-                        return res.redirect(rootDomain + '/');
+                        return res.redirect(rootDomain + ":" + port + '/');
                     }
                 
 
