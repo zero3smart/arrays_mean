@@ -5,33 +5,34 @@
         <form name="dialog.form">
             <md-tabs md-dynamic-height md-border-bottom>
                 <md-tab label="Fields">
-                <md-content layout-padding md-no-ink>
-                    <!-- <ng-include src="'templates/blocks/data.fabricated.html'"></ng-include> -->
+                    <md-content layout-padding md-no-ink>
+                        <!-- <ng-include src="'templates/blocks/data.fabricated.html'"></ng-include> -->
 
-                    <p>Include these fields as filters:</p>
-                    <ul class="dashboard-list user-list">
-                        <li ng-repeat="col in colsAvailable"
-                            ng-hide="dataset.fe_excludeFields[col]"
-                            layout="row" layout-align="space-between center">
-                            <!-- TODO add function to toggle -->
-                            <md-checkbox
-                                ng-checked="dataset.fe_filters.fieldsNotAvailable.indexOf(col) == -1"
-                                ng-click="toggleFilter(col)"
-                                name="{{col}}"
-                                aria-label="{{col}}"
-                                flex="10">{{col.checked}}
-                            </md-checkbox>
-                            <!-- <span flex></span> -->
-                            <div flex>
-                                {{ dataset.fe_displayTitleOverrides[col] || col }}
-                                <!-- TODO sample -->
-                            </div>
-                            <span class="dashboard-list-icon" flex="5" aa-tooltip="Edit filter">
-                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                            </span>
-                        </li>
-                    </ul>
-                </md-content>
+                        <p>Include these fields as filters:</p>
+                        <div>
+                        <ul class="dashboard-list user-list">
+                            <li ng-repeat="col in colsAvailable"
+                                ng-hide="dataset.fe_excludeFields[col]"
+                                layout="row" layout-align="space-between center">
+                                <md-checkbox
+                                    ng-checked="dataset.fe_filters.fieldsNotAvailable.indexOf(col) == -1"
+                                    ng-click="toggleFilter(col)"
+                                    name="{{col}}"
+                                    aria-label="{{col}}"
+                                    flex="10">{{col.checked}}
+                                </md-checkbox>
+                                <div flex>
+                                    {{ dataset.fe_displayTitleOverrides[col] || col }}
+                                    <!-- TODO sample -->
+                                </div>
+                                <span class="dashboard-list-icon" flex="5" aa-tooltip="Edit filter"
+                                    ng-click="editFilter($event, col)">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                </span>
+                            </li>
+                        </ul>
+                        </div>
+                    </md-content>
                 </md-tab>
 
                 <md-tab label="Global">

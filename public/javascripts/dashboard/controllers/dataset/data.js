@@ -668,7 +668,7 @@ angular.module('arraysApp')
                     });
             };
 
-            function FabricatedFilterDialogController($scope, $mdDialog, $filter, dataset,colsAvailable) {
+            function FabricatedFilterDialogController($scope, $mdDialog, $filter, dataset, colsAvailable) {
                 $scope.colsAvailable = colsAvailable;
                 $scope.indexInFabricatedFilter = function (input) {
                     for (var i = 0; i < $scope.dataset.fe_filters.fabricated.length; i++) {
@@ -724,7 +724,18 @@ angular.module('arraysApp')
                     }
                     $scope.dialog.form.$setDirty();
                     // also set dataset to dirty, needs processing
-                    // $scope.setDirty(3);
+                    if ($scope.dataset.dirty !== 1) {
+                        $scope.dataset.dirty = 3;
+                    }
+                };
+
+                $scope.editFilter = function(evt, col) {
+                    if ($scope.dialog.form.$dirty || $scope.dialog.form.$valid) {
+                        $scope.save();
+                    } else {
+                        $scope.cancel();
+                    }
+                    // $scope.openFieldDialog(evt, col, field.sample, field.custom, field.customFieldIndex)
                 };
 
                 $scope.addFabricated = function () {
