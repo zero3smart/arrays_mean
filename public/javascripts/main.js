@@ -265,6 +265,7 @@ $(document).ready(function () {
 
     $('#logout').on('click',function(e) {
         e.preventDefault();
+        // console.log(window.location)
         $.get('/auth/logout')
         .then(function(response) {
 
@@ -272,7 +273,7 @@ $(document).ready(function () {
                 window.sessionStorage.removeItem('user');
                 window.sessionStorage.removeItem('team');
                 window.sessionStorage.removeItem('teams');
-                window.location.href='/';
+                window.location.href='/';  //this doesnt work
             }
 
         })

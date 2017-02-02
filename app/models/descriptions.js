@@ -429,8 +429,8 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid,
 
 
     var descriptions = [];
-
-    async.series([
+    var self = this;
+    async.waterfall([
         function(callback) {
             if (subdomain == null) {
                 Team.findOne({superTeam: true})
@@ -441,52 +441,40 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid,
                             return callback();
                         }
                         subdomain = team.subdomain;
-                        callback();
+                        callback(null,subdomain);
                     }
                 })
 
             } else {
-                callback();
+                callback(null,subdomain);
             }
         },
-        function(callback) {
-            this.findOne({uid:uid,importRevision:revision,fe_visible:true})
+        function(sub,callback) {
+            self.findOne({uid:uid,importRevision:revision,fe_visible:true})
             .populate({
                 path: '_team',
-                match: {'subdomain' : subdomain}
+                match: {'subdomain' : sub}
             })
             .lean()
             .exec(function(err,descriptions) {
                 if (err) callback(err);
                 else {
-                    fn(err,des)
+                    
+                    descriptions = descriptions;
+                    callback(null,descriptions)
                 }
             })
 
 
         }
-    ],function(err) {
+    ],function(err,descriptions) {
         if (err) fn(err);
         else {
+           
             fn(null,descriptions);
         }
     })
    
-    
-    // this.findOne({uid: uid, importRevision: revision, fe_visible: true})
-    //     .populate({
-    //         path: '_team',
-    //         match: { 'subdomain' : subdomain}
-    //     })
-    //     .lean()
-    //     .exec(function (err, descriptions) {
-    //         if (err) {
-    //             winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
-    //             fn(err, null);
-    //         } else {
-    //             fn(err, descriptions);
-    //         }
-    //     })
 };
 
 datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDescriptionsWith_subdomain_uid_importRevision;
@@ -498,6 +486,8 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
 
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
         .then(function(datasourceDescription) {
+
+
 
             var subscription = datasourceDescription._team.subscription ? datasourceDescription._team.subscription : { state: null };
 

@@ -56,7 +56,7 @@ router.get('/', function (req, res) {
         }
 
 
-        if (req.subdomains[0] == 'explore') {
+        if (req.subdomains[0] == 'app') {
             var index_controller = require('../controllers/client/data_preparation');
             index_controller.BindData(req, function (err, bindData) {
                 if (err) {

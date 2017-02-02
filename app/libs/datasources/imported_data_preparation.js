@@ -1,7 +1,7 @@
 var raw_source_documents = require('../../models/raw_source_documents');
 var _ = require('lodash');
 var humanReadableColumnName_objectTitle = "Object Title";
-var dataSourceDescriptions = require('../../models/descriptions');
+
 
 module.exports.HumanReadableColumnName_objectTitle = humanReadableColumnName_objectTitle;
 
@@ -23,13 +23,13 @@ var _dataSourceDescriptionWithPKey = function (source_pKey) {
 
 
     return new Promise(function (resolve, reject) {
-        console.log(uid);
-        console.log(revision)
-        // dataSourceDescriptions.GetDescriptionsWith_subdomain_uid_importRevision(subdomain,uid, revision, function (err, data) {
-        //     if (err) reject(err);
+        var dataSourceDescriptions = require('../../models/descriptions');
 
-        //     resolve(data);
-        // })
+        dataSourceDescriptions.GetDescriptionsWith_subdomain_uid_importRevision(subdomain,uid, revision, function (err, data) {
+            if (err) reject(err);
+
+            resolve(data);
+        })
     })
 };
 
