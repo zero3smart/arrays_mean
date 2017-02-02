@@ -1,3 +1,8 @@
+<md-dialog aria-label="Format Field: {{ dataset.fe_displayTitleOverrides[fieldName] ? dataset.fe_displayTitleOverrides[fieldName] + ' (' + fieldName + ')' : fieldName || 'New field' }}" class="field-dialog" md-no-ink>
+    <aa-toolbar title="Format Field: {{ dataset.fe_displayTitleOverrides[fieldName] ? dataset.fe_displayTitleOverrides[fieldName] + ' (' + fieldName + ')' : fieldName || 'New field' }}"></aa-toolbar>
+    <md-dialog-content>
+        <form name="dialog.fieldForm">
+<!--  -->
 <md-content layout-padding>
 <div>
     <md-input-container class="md-block" ng-show="customFieldIndex !== undefined">
@@ -111,3 +116,18 @@
         <div class="md-errors-spacer"></div>
     </md-input-container>
 </md-content>
+<!--  -->
+<md-dialog-actions layout="row" layout-align="end center">
+    <md-button class="md-dashboard warn" ng-click="delete()" ng-if="customFieldIndex != undefined">
+        Delete field
+    </md-button>
+    <md-button class="md-dashboard cancel" ng-click="reset()" ng-disabled="!dialog.fieldForm.$dirty">
+        Reset
+    </md-button>
+    <md-button class="md-dashboard confirm" ng-click="save()" ng-disabled="!dialog.fieldForm.$dirty || dialog.fieldForm.$invalid">
+        Save
+    </md-button>
+</md-dialog-actions>
+</form>
+</md-dialog-content>
+</md-dialog>

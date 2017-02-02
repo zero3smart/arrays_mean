@@ -1,6 +1,11 @@
+<md-dialog aria-label="Format Filter: {{ dataset.fe_displayTitleOverrides[fieldName] ? dataset.fe_displayTitleOverrides[fieldName] + ' (' + fieldName + ')' : fieldName || 'New field' }}" class="field-dialog" md-no-ink>
+    <aa-toolbar title="Format Filter: {{ dataset.fe_displayTitleOverrides[fieldName] ? dataset.fe_displayTitleOverrides[fieldName] + ' (' + fieldName + ')' : fieldName || 'New field' }}"></aa-toolbar>
+    <md-dialog-content>
+        <form name="dialog.fieldForm">
+<!--  -->
 <md-content layout-padding>
 
-    <h3>Basic Settings</h3>
+    <h3 ng-if="customFieldIndex == undefined">Basic Settings</h3>
 
     <md-input-container layout="column">
         <md-checkbox name="multipleSelection" ng-model="data.multipleSelection"
@@ -15,11 +20,10 @@
                      aria-label="Allow sort by integer">
             Allow sort by integer
         </md-checkbox>
-        <!-- TODO remove when able to check off list of all filters -->
-        <md-checkbox name="filterNotAvailable" ng-model="data.filterNotAvailable" ng-change="setDirty(3)"
+        <!-- <md-checkbox name="filterNotAvailable" ng-model="data.filterNotAvailable" ng-change="setDirty(3)"
                      aria-label="Filter Not Available">
             Not Available
-        </md-checkbox>
+        </md-checkbox> -->
     </md-input-container>
     <!-- <md-checkbox name="commaSeparatedAsIndividual" ng-model="data.commaSeparatedAsIndividual"
                      aria-label="Filter Comma Separated">
@@ -27,7 +31,7 @@
         </md-checkbox>
     </md-input-container> -->
 
-    <h3>Advanced Settings</h3>
+    <h3 ng-if="customFieldIndex == undefined">Advanced Settings</h3>
 
     <fieldset class="standard" ng-if="customFieldIndex == undefined">
         <div><label>One To One Override Values By Title</label></div>
@@ -66,21 +70,7 @@
     </fieldset>
 
     <fieldset class="standard" ng-if="customFieldIndex == undefined">
-        <!-- <legend>Values to Exclude by Original Key</legend>
-        <md-input-container class="md-block md-padding">
-            <label>All</label>
-            <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey._all"
-                      name="valuesToExcludeAll"
-                      md-enable-chip-edit="true"
-                      placeholder="Enter a Value" secondary-placeholder="+Value" ng-trim="false">
-                <md-chip-template>
-                    {{$chip}}
-                    <em>(All)</em>
-                </md-chip-template>
-            </md-chips>
-        </md-input-container> -->
-
-        <md-input-container class="md-block md-padding">
+        <md-input-container class="md-block">
             <label>{{fieldName}}</label>
             <md-chips ng-model="dataset.fe_filters.valuesToExcludeByOriginalKey[fieldName]"
                       name="valuesToExcludeSelf"
@@ -103,3 +93,15 @@
         </md-chips>
     </md-input-container>
 </md-content>
+<!--  -->
+            <md-dialog-actions layout="row" layout-align="end center">
+                <md-button class="md-dashboard cancel" ng-click="reset()" ng-disabled="!dialog.fieldForm.$dirty">
+                    Reset
+                </md-button>
+                <md-button class="md-dashboard confirm" ng-click="save()" ng-disabled="!dialog.fieldForm.$dirty || dialog.fieldForm.$invalid">
+                    Save
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog-content>
+</md-dialog>
