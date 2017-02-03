@@ -100,9 +100,9 @@
 
     <md-input-container class="md-block" flex-gt-sm>
         <md-select ng-if="setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name][setting.settingNestedField]">
-            <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle" value="Object Title">
+            <!-- <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle" value="Object Title">
                 Object Title
-            </md-option>
+            </md-option> -->
             <md-option ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
                 {{col}}
             </md-option>
@@ -115,9 +115,9 @@
         </md-select>
 
         <md-select ng-required="setting.require" ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
-            <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title">
+            <!-- <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title">
                 Object Title
-            </md-option>
+            </md-option> -->
             <md-option ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType) | filter: excludeBy(data[setting.selectExcludeBy])" ng-value="col">
                 {{col}}
             </md-option>
@@ -362,9 +362,9 @@
 
     <md-input-container class="md-block" flex-gt-sm>
         <md-select ng-if="setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name][setting.settingNestedField]">
-            <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle" value="Object Title">
+            <!-- <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle" value="Object Title">
                 Object Title
-            </md-option>
+            </md-option> -->
             <md-option ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
                 {{col}}
             </md-option>
@@ -377,9 +377,9 @@
         </md-select>
 
         <md-select ng-required="setting.require" ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
-            <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title">
+            <!-- <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title">
                 Object Title
-            </md-option>
+            </md-option> -->
             <md-option ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType) | filter: excludeBy(data[setting.selectExcludeBy])" ng-value="col">
                 {{col}}
             </md-option>
