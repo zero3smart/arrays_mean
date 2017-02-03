@@ -112,12 +112,17 @@
             var deferred = $q.defer();
             var user = currentUser();
             var team = currentTeam();
-            if (isLoggedIn && (user.role === 'superAdmin' || team.subscription.state === 'in_trial' || team.subscription.state === 'active') ) {
+
+   
+
+            if (isLoggedIn && ( (team.superTeam && team.superTeam==true) || user.role === 'superAdmin' || team.subscription.state === 'in_trial' || team.subscription.state === 'active')) {
+
                 deferred.resolve();
             } else {
                 deferred.reject();
                 $window.location.href="/dashboard/account/profile";
             }
+
 
             return deferred.promise;
         };

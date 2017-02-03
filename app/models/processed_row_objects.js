@@ -1087,7 +1087,7 @@ function updateDocWithImageUrl(job,folder,mongooseModel, doc, scrapedObject, set
             var hostingOpts = {
                 overwrite: true
             }
-            var destinationFilenameSansExt = doc.srcDocPKey + "/" + doc.pKey + "__" + key;
+            var destinationFilenameSansExt = doc.pKey + "__" + key;
             winston.info("🔁  Download/host and store hosted url for original " + finalized_imageSourceURLForSize)
 
 
@@ -1151,7 +1151,7 @@ module.exports.GenerateImageURLFieldsByScraping
 
                     // winston.info("📡  already scraped this ,skipping");
 
-                     process.nextTick(function() {callback();})
+                     process.nextTick(function() {return callback();})
 
                 } else {
                    
@@ -1160,9 +1160,9 @@ module.exports.GenerateImageURLFieldsByScraping
                             updateDocWithImageUrl
                         ], function (err) {
                             if (err && err.code !== 'ENOTFOUND'  &&  err.code !== 'ETIMEDOUT' && err.code !== 'ECONNRESET') {
-                                callback(err);
+                                return callback(err);
                             } else {
-                                 process.nextTick(function() {callback();})
+                                 process.nextTick(function() {return callback();})
                             }
                         })
                 }

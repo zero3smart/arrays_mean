@@ -26,7 +26,8 @@
     <li ng-if="user.role=='admin' || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'team'}">
         <a ui-sref="dashboard.team.settings" role="button">Team Settings</a>
     </li>
-    <li ng-if="((user.role=='admin' || user.role=='editor') && (team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active')) || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'dataset'}">
+
+    <li ng-if="((user.role=='admin' || user.role=='editor') && ( team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active')) || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'dataset'}">
         <a ui-sref="dashboard.dataset.list" role="button">Visualization Settings</a>
     </li>
     <li ng-if="((user.role=='admin' || user.role=='editor') && (team.superTeam  || team.subscription.state=='in_trial' || team.subscription.state=='active')) || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'user'}">

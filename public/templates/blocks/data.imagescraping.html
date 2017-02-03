@@ -32,15 +32,17 @@
                         </span>
                     </div>
 
-                    <fieldset ng-repeat="field in imageScraping.setFields">
-                    {{ field.newFieldName || 'New scraped field' }}&ensp;<a href="#" ng-click="toggleShowAdvanced(field)">Advanced</a>
-                    <div ng-hide="!field.showAdvanced">
+                    <fieldset ng-repeat="field in imageScraping.setFields" ng-init="show=[];srcset=field.size? true:false">
+                    {{ field.newFieldName || 'New scraped field' }}&ensp;<a href="#" ng-click="show[$index]==undefined? show[$index]=true: show[$index]=!show[$index]">Advanced</a>
+
+
+                    <div ng-hide="!show[$index]">
                         <div layout="row">
                             <md-input-container class="md-block" flex>
                                 <label>New Field Name</label>
                                 <input type="text" required name="newField_{{$index}}"
                                        ng-model="field.newFieldName"
-                                       ng-change="verifyValidNewFieldName(field.newFieldName, $index)"/>
+                                       ng-change="verifyValidNewFieldName(field.newFieldName, $index)" />
                                 <div ng-messages="dialog.form.newField.$error">
                                     <div ng-message="required">This is required.</div>
                                     <div ng-message="unique">Must be unique.</div>
@@ -65,8 +67,11 @@
                                 <input type="text" name="prepend_{{$index}}" ng-model="field.prependToImageURLs"/>
                             </md-input-container>
 
+
+
                             <div flex="50">
-                                <md-checkbox ng-model="srcset">Source set</md-checkbox>
+
+                                <md-checkbox ng-model="srcset" ng-click="isSrcSet(srcset,field)">Source set</md-checkbox>
                             </div>
 
 
