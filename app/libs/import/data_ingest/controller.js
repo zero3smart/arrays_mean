@@ -370,7 +370,9 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                 eachCtx.numberOfInsertedRows++;
 
             } else {
+                console.log('has and meet criteria')
                 eachCtx.cached.push(rowDoc);
+                console.log(eachCtx).cached;
             }
             eachCtx.numberOfRows++;
         } else {
