@@ -118,7 +118,7 @@ angular.module('arraysApp')
                     $scope.plans = res.data.plans.plan;
 
                     $scope.plan = getPlanFromPlans($scope.subscription.plan.plan_code, res.data.plans.plan);
-                    $scope.annualplan = getPlanFromPlans('arrays-pro-yearly', res.data.plans.plan);
+                    $scope.annualplan = getPlanFromPlans('pro-annual', res.data.plans.plan);
 
                     // console.log($scope.annualplan);
                 });
