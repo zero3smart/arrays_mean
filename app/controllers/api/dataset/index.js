@@ -197,19 +197,15 @@ module.exports.remove = function (req, res) {
         .exec(function (err, results) {
             if (err) return done(err);
 
-            var batch = new Batch();
-            batch.concurrency(1);
+    
 
             results.forEach(function (element) {
-                batch.push(function (done) {
-                    element.remove(done);
-                });
+               
+                element.remove();
+                
             });
-
-            batch.end(function (err) {
-                winston.info("✅  Removed all the schema descriptions inherited to the datasource description : " + description._id);
-                done(err);
-            });
+            winston.info("✅  Removed all the schema descriptions inherited to the datasource description : " + description._id);
+            done();
 
         });
     });

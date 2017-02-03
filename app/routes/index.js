@@ -132,6 +132,7 @@ var _mountRoutes_endPoints = function (app) {
     var apiVersion = 'v1';
     app.all("*", function(req,res,next) {
 
+
         if (process.env.NODE_ENV !== 'enterprise') {
 
             urlRegexForDataset.lastIndex = 0;

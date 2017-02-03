@@ -110,9 +110,14 @@
             var deferred = $q.defer();
             var user = currentUser();
             var team = currentTeam();
+
             team.subscription = team.subscription || {};
             team.subscription.state = team.subscription.state || {};
-            if (isLoggedIn && (user.role === 'superAdmin' || team.subscription.state === 'in_trial' || team.subscription.state === 'active' || team.superTeam === true) ) {
+
+   
+
+            if (isLoggedIn && ( (team.superTeam && team.superTeam==true) || user.role === 'superAdmin' || team.subscription.state === 'in_trial' || team.subscription.state === 'active')) {
+
 
                 deferred.resolve();
 
@@ -120,6 +125,7 @@
                 deferred.reject();
                 $window.location.href="/dashboard/account/profile";
             }
+
 
             return deferred.promise;
         };

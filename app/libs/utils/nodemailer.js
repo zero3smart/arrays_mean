@@ -27,8 +27,15 @@ module.exports.sendActivationEmail = function(user, cb) {
 
 	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
 
-    var baseURL = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
-    baseURL += rootDomain
+
+
+
+    var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
+
+    baseURL += process.env.NODE_ENV == 'enterprise' ? rootDomain : 'app.' + rootDomain;
+
+
+
 
     var activationLink = baseURL + '/account/verify?token=' + token;
 	var mailOptions = {
@@ -60,9 +67,10 @@ module.exports.sendInvitationEmail = function(team,host,invitee,editors,viewers,
 
 	var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
 
-    var baseURL = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
-    baseURL += rootDomain;
+	var baseURL = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
 
+
+	baseURL += process.env.NODE_ENV == 'enterprise' ? rootDomain : 'app.' + rootDomain;
 
     var invitationLink = baseURL + '/account/invitation?token=' + token;
     var mailOptions = {

@@ -118,6 +118,7 @@ angular.module('arraysApp')
                                 } else {
                                     return [];
                                 }
+        
                             }]
                         }
                     })

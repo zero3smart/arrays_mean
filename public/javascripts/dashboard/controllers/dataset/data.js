@@ -845,6 +845,24 @@ angular.module('arraysApp')
 
             function ImageScrapingDialogController($scope, $mdDialog, $filter, dataset) {
 
+            
+
+              
+               
+
+                $scope.isSrcSet = function(isSrcSet,field) {
+
+               
+                    if (!isSrcSet) {
+                        delete field.resize;
+                    } else {
+                        delete field.size;
+                    }
+
+        
+
+                }
+
 
 
                 $scope.reset = function () {
@@ -853,8 +871,11 @@ angular.module('arraysApp')
 
                     if (!$scope.dataset.imageScraping) { $scope.dataset.imageScraping = []; }
 
+                    var index = 0;
                     for (var i = 0; i < $scope.dataset.imageScraping.length ; i++) {
                         $scope.dataset.imageScraping[i].setFields.map(function(field) {
+
+                          
                             var fieldName = field.newFieldName;
                             delete $scope.dataset.fe_excludeFields[fieldName];
                         });
@@ -880,11 +901,11 @@ angular.module('arraysApp')
                             {
                                 newFieldName: '',
                                 prependToImageURLs: '',
-                                resize: 200,
-                                selector: ''
+                                resize: 200
                             }
                         ]
                     });
+
                 };
 
                 if (!$scope.dataset.imageScraping.length) { $scope.addImageToScrap(); }
@@ -898,9 +919,10 @@ angular.module('arraysApp')
                     setFields.push({
                         newFieldName: '',
                         prependToImageURLs: '',
-                        resize: 200,
-                        selector: ''
+                        resize: 200
                     });
+
+
                 };
 
                 $scope.removeField = function (setFields, index) {
@@ -908,9 +930,6 @@ angular.module('arraysApp')
                     $scope.dialog.form.$setDirty();
                 };
 
-                $scope.toggleShowAdvanced = function(field) {
-                    field.showAdvanced = !field.showAdvanced; // #flip_it
-                }
 
                 $scope.verifyUniqueHtmlSource = function (imageScraping, index) {
                     var unique = true;
