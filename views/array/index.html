@@ -87,7 +87,11 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {% if teamDesc.banner %}
                                         <div class="explore-tile-banner-image" style="background-image:url('{{ teamDesc.banner }}')"></div>
+                                        {% else %}
+                                        <div class="explore-tile-banner-image" style="background-image:url('/images/explore/default_pattern.png'); background-color:{{ teamDesc.brandColor }}"></div>
+                                        {% endif %}
                                     </div><!-- .panel -->
                                 </div><!-- .radio -->
 
