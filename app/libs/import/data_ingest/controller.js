@@ -314,6 +314,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
         var bulkOperationQueryFragment;
         console.log(eachCtx)
+        console.log("EACH CTX!!!!!!^^^^^")
 
         if (typeof eachCtx.nested !== 'undefined' && eachCtx.nested == true) {
 

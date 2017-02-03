@@ -29,7 +29,7 @@ module.exports.ModelName = modelName;
 
 module.exports.Model = RawSourceDocument_model;
 
-module.exports.New_templateForPersistableObject = function (datasetId , /*parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys,*/ numberOfRows) {
+module.exports.New_templateForPersistableObject = function (datasetId, numberOfRows) {
     return {
         primaryKey: datasetId,
         // parsed_rowObjectsById: parsed_rowObjectsById,
