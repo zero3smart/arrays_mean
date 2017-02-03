@@ -384,12 +384,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
 
             var returnAbsURLorBuildURL = function(url) {
-                if (url.slice(0, 5) == "https") {
+                if (url.slice(0, 4) == "http") {
                     return url
                 } else {
-                    return "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
+                    urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription._id + "/assets/images/" + url
+                    return urlToReturn
                 }
             }
+
 
             var user = null;
             batch.push(function(done) {
