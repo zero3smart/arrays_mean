@@ -33,7 +33,7 @@ var _cacheKeywords_fromDataSourceDescription = function (job,dataSourceDescripti
         var needToUpdate = false;
 
         processed_row_objects.EnumerateProcessedDataset(
-            datasetId,
+            dataSourceDescription._id,
             dataSourceDescription.schemaId,
             function (doc, eachCb) {
                 var fieldValues = [];

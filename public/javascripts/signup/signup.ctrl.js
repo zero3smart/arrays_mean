@@ -29,15 +29,10 @@
 
 	}])
 
-	signupModule.controller('signupCtrl',['$scope','$stateParams','User','$state','$location',function($scope,$stateParams,User,$state,
-		$location) {
+	signupModule.controller('signupCtrl',['$scope','$stateParams','User','$state','$location','env',function($scope,$stateParams,User,$state,
+		$location,env) {
 
-		$scope.host = $location.host();
-		$scope.isEnterprise = false;
-
-		if ($location.host().indexOf('arrays.co') == -1) {
-			$scope.isEnterprise = true;
-		}
+		$scope.env = env;
 
 		var userId = $stateParams.id;
 		$scope.invitedUser = false;

@@ -132,7 +132,9 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
                 }
                 if (results == undefined || results == null || results.length == 0) {
 
-                    callback(new Error('Unexpectedly empty unique field value aggregation for field named: %s ', key));
+                    console.log('Unexpectedly empty unique field value aggregation for field named: %s ', key);
+
+                    callback(new Error('Unexpectedly empty unique field value aggregation for field'));
 
                     return;
                 }
