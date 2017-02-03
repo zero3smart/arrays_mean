@@ -198,7 +198,14 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
         }
     };
 
-    var readStream = datasource_file_service.getDatasource(description).createReadStream();
+    try {
+
+        var readStream = datasource_file_service.getDatasource(description).createReadStream();
+    }
+    catch(e) {
+        winston.error("Error getting datasource from s3")
+        return fn(e);
+    }
 
     readStream = readStream.pipe(es.split())
         .pipe(es.mapSync(function (line) {

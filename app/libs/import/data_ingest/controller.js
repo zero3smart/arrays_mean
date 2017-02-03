@@ -62,8 +62,8 @@ var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (da
         },
         function (err) {
             if (err) {
-                winston.info("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
-                job.log("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
+                winston.info("❌  Error encountered during image-scraping:(" + err.code + ')', err);
+                job.log("❌  Error encountered during image-scraping:(" + err.code + ')', err);
                 fn(err);
             } else {
                 winston.info("✅  Import completed.");
