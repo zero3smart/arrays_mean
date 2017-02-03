@@ -5,7 +5,7 @@ angular.module('arraysApp')
             $scope.primaryAction.text = 'View Your Array';
             $scope.$watch('dirty', function(dirty) {
                 $scope.primaryAction.disabled = dirty;
-                if(dirty) {
+                if(dirty && !$scope.inProgress) {
                     $scope.importData();
                 }
             });

@@ -20,7 +20,7 @@ $(function () {
      }
      else {
          var scene = new ScrollMagic.Scene({
-                offset: - $('.navbar-fixed-top').innerHeight(),
+                offset: - $('.navbar-fixed-top').innerHeight() - $('.w-container').innerHeight(),
                 triggerElement: '#array-controls'
             })
             .triggerHook('onLeave')
