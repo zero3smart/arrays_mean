@@ -9,33 +9,36 @@ var recurlyConfig = {
 };
 var recurly = new Recurly(recurlyConfig);
 
-var updateSubscriptionInDB = function(req, res, userId, response) {
+var updateSubscriptionInDB = function(userId, response, callback) {
     User.findById(userId)
         .populate('_team')
         .populate('defaultLoginTeam')
-        .exec(function (err, user) {
+        .exec(function(err, user) {
             if (err) {
-                res.status(500).send(err);
+                callback(500, err);
             } else {
 
+                // If user doesn't have a team
                 if (!user.defaultLoginTeam || user._team.length === 0) {
-                    return res.status(401).send({error: 'unauthorized'});
+                    callback(401, 'unauthorized');
                 }
 
+                // If user is not superAdmin or team admin
                 if (!user.isSuperAdmin() && !user.defaultLoginTeam.admin && user.defaultLoginTeam.admin != userId) {
-                    return res.status(401).send({error: 'unauthorized'});
+                    callback(401, 'unauthorized');
                 }
 
+                // Update team with subscription info
                 Team.findByIdAndUpdate(user.defaultLoginTeam._id)
-                    .exec(function (err, team) {
+                    .exec(function(err, team) {
                         if (err) {
-                            return res.status(500).send(err);
+                            callback(500, err);
                         } else if (!team) {
-                            return res.status(404).send('Team not found.');
+                            callback(404, 'Team not found');
                         } else {
 
                             var subscription = response.data.subscription;
-                            
+
                             team.subscription = {
                                 activated_at: subscription.activated_at._,
                                 canceled_at: subscription.canceled_at._,
@@ -57,11 +60,11 @@ var updateSubscriptionInDB = function(req, res, userId, response) {
 
                             };
 
-                            team.save(function (err) {
+                            team.save(function(err) {
                                 if (err) {
-                                    res.status(500).send(err);
+                                    callback(500, err);
                                 } else {
-                                    res.status(response.statusCode).json(response);
+                                    callback(response.statusCode, null, response);
                                 }
                             });
                         }
@@ -116,17 +119,17 @@ module.exports.getAll = function(req, res) {
     User.findById(userId)
         .populate('_team')
         .populate('defaultLoginTeam')
-        .exec(function (err, user) {
+        .exec(function(err, user) {
             if (err) {
                 res.status(500).send(err);
             } else {
 
                 if (!user.defaultLoginTeam || user._team.length === 0) {
-                    return res.status(401).send({error: 'unauthorized'});
+                    return res.status(401).send({ error: 'unauthorized' });
                 }
 
                 if (!user.isSuperAdmin() && !user.defaultLoginTeam.admin && user.defaultLoginTeam.admin != userId) {
-                    return res.status(401).send({error: 'unauthorized'});
+                    return res.status(401).send({ error: 'unauthorized' });
                 }
 
                 recurly.subscriptions.listByAccount(user.defaultLoginTeam._id.toString(), {}, function(err, response) {
@@ -161,10 +164,16 @@ module.exports.update = function(req, res) {
         if (err) {
             res.status(err.statusCode).send(err);
         } else {
-            updateSubscriptionInDB(req, res, userId, response);
+            updateSubscriptionInDB(userId, response, function(status, err, response) {
+                if (err) {
+                    res.status(status).send(err);
+                } else {
+                    res.status(status).send(response);
+                }
+            });
         }
     });
-    
+
 };
 
 module.exports.cancel = function(req, res) {
@@ -176,7 +185,13 @@ module.exports.cancel = function(req, res) {
         if (err) {
             res.status(err.statusCode).send(err);
         } else {
-            updateSubscriptionInDB(req, res, userId, response);
+            updateSubscriptionInDB(userId, response, function(status, err, response) {
+                if (err) {
+                    res.status(status).send(err);
+                } else {
+                    res.status(status).send(response);
+                }
+            });
         }
     });
 };
@@ -190,7 +205,13 @@ module.exports.reactivate = function(req, res) {
         if (err) {
             res.status(err.statusCode).send(err);
         } else {
-            updateSubscriptionInDB(req, res, userId, response);
+            updateSubscriptionInDB(userId, response, function(status, err, response) {
+                if (err) {
+                    res.status(status).send(err);
+                } else {
+                    res.status(status).send(response);
+                }
+            });
         }
     });
 };
