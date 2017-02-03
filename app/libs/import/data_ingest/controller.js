@@ -313,6 +313,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     function afterGeneratingProcessedRowObjects_eachRowFn(eachCtx, rowDoc, cb) {
 
         var bulkOperationQueryFragment;
+        console.log(eachCtx)
 
         if (typeof eachCtx.nested !== 'undefined' && eachCtx.nested == true) {
 
