@@ -756,13 +756,13 @@ module.exports.EnumerateProcessedDataset = function (datasetId,
 
                     if (hasReachedEndOfCursor == true) {
                         if (numberOfDocumentsFoundButNotYetProcessed == 0) {
-                            // console.log("Reached end of cursor and finished processing all")
+                            console.log("Reached end of cursor and finished processing all")
                             completeFn();
                         } else {
-                            // console.log("Reached end of cursor but not finished processing all")
+                            console.log("Reached end of cursor but not finished processing all")
                         }
                     } else {
-                        // console.log("Hasn't reached end of cursor")
+                        console.log("Hasn't reached end of cursor")
                     }
                 }
 

@@ -292,6 +292,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                 dataSourceDescription._id,
                 dataset_parentId,
                 function (doc, eachCb) {
+                    console.log("first callback - calling afterGeneratingProcessedRowObjects_eachRowFn")
                     afterGeneratingProcessedRowObjects_eachRowFn(eachCtx, doc, eachCb);
                 },
                 function (err) {
@@ -315,6 +316,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         if (typeof eachCtx.nested !== 'undefined' && eachCtx.nested == true) {
 
             if (!ifHasAndMeetCriteria(eachCtx, rowDoc)) {
+                console.log("not has and meet criteria")
                 var updateFragment = {$pushAll: {}};
                 for (var i = 0; i < eachCtx.fields.length; i++) {
                     var fieldName = eachCtx.fields[i];
@@ -356,7 +358,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         pKey: rowDoc.pKey, // the specific row
                         srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                     };
-
+                    console.log("right before the bulkupdate query")
                     eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateFragment);
 
 
@@ -392,7 +394,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey
                     };
 
-                    
+                    console.log('right before the bulkOperationQueryFragment')
                     eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
                      
                 } else if (newFieldType == 'object') {
