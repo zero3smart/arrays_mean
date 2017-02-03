@@ -10,7 +10,7 @@ angular.module('arraysApp')
 
             $scope.addingSourceType = ''; // ['csv', 'json', 'database']
 
-        
+
             $scope.addSourceType = function(type) {
                 if (type == 'database') {
                     if (!dataset.connection) {
@@ -162,7 +162,7 @@ angular.module('arraysApp')
                     additionalDatasource.sourceType = '';
                 };
 
-                additionalDatasource.sourceType = '';
+                additionalDatasource.sourceType = 'csv'; // force csv until JSON is ready
                 additionalDatasource.setSourceType = function(type) {
                     additionalDatasource.sourceType = type;
                 };
