@@ -1,4 +1,4 @@
-/* @override 
+/* @override
 	http://localhost:9080/stylesheets/module/choropleth.css */
 
 .map-container {
@@ -37,6 +37,10 @@
     border-radius: 5px;
     background-color: #ffffff;
     box-shadow: var(--box-shadow);
+}
+
+.dropdown-toggle-empty {
+    box-shadow: none;
 }
 
 .dropdown-toggle-button-group {
