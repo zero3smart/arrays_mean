@@ -362,7 +362,15 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                     };
                     console.log("right before the bulkupdate query")
-                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateFragment);
+                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateFragment, function (err, result) {
+                        if(err) {
+                            console.log(err)
+                            console.log("err in update")
+                        } else {
+                            console.log("no errors in bulkupdate query")
+                        }
+                    });
+                    console.log("right after the bulkupdate query")
 
 
 

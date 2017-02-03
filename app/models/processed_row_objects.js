@@ -721,7 +721,6 @@ module.exports.EnumerateProcessedDataset = function (datasetId, parentId, eachFn
                 });
             }
             console.log("is there a cursor")
-            console.log(cursor)
 
             cursor.each(function (err, doc) {
                 console.log("in each cursor func")
