@@ -287,6 +287,10 @@ angular.module('arraysApp')
                     $scope.loadIcons();
                 };
 
+                $scope.removeIconField = function(settingName, index) {
+                    $scope.data[settingName].conditions.splice(index, 1)
+                }
+
 
                 $scope.initBackgroundColors = function(settingName) {
                     assignNestedDataValues(settingName);

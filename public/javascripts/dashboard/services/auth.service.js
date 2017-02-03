@@ -77,7 +77,6 @@
             if (isLoggedIn && currentUser() != null) {
                 deferred.resolve();
             } else {
-
                reload(function(data) {
                     if (data.success) {
                         deferred.resolve();
@@ -108,16 +107,20 @@
         };
 
         var ensureActiveSubscription = function () {
-
             var deferred = $q.defer();
             var user = currentUser();
             var team = currentTeam();
+
+            team.subscription = team.subscription || {};
+            team.subscription.state = team.subscription.state || {};
 
    
 
             if (isLoggedIn && ( (team.superTeam && team.superTeam==true) || user.role === 'superAdmin' || team.subscription.state === 'in_trial' || team.subscription.state === 'active')) {
 
+
                 deferred.resolve();
+
             } else {
                 deferred.reject();
                 $window.location.href="/dashboard/account/profile";

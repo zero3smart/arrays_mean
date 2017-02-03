@@ -39,7 +39,7 @@ angular.module('arraysApp')
                     } else {
                          $scope.primaryAction.disabled = !validity;
                     }
-                   
+
                 }
             });
             $scope.primaryAction.do = function() {
@@ -69,12 +69,14 @@ angular.module('arraysApp')
                 $scope.excludeAll = exclude ? false : true; // toggle
             };
 
-            $scope.openFieldDialog = function (evt, fieldName, firstRecord, custom, customFieldIndex) {
+            $scope.openFieldDialog = function (evt, fieldName, firstRecord, custom, customFieldIndex, filterOnly) {
+                // using the same controller for general field settings and field filter setting, for now
+                var fieldTemplate = filterOnly ? 'templates/blocks/data.field.filter.html' : 'templates/blocks/data.field.general.html';
 
                 $mdDialog.show({
                     controller: FieldDialogController,
                     controllerAs: 'dialog',
-                    templateUrl: 'templates/blocks/data.field.html',
+                    templateUrl: fieldTemplate, //'templates/blocks/data.field.html',
                     parent: angular.element(document.body),
                     targetEvent: evt,
                     clickOutsideToClose: true,
@@ -86,7 +88,8 @@ angular.module('arraysApp')
                         availableTypeCoercions: availableTypeCoercions,
                         availableDesignatedFields: availableDesignatedFields,
                         custom: custom,
-                        customFieldIndex: customFieldIndex
+                        customFieldIndex: customFieldIndex,
+                        filterOnly: filterOnly
                     }
                 })
                     .then(function (savedDataset) {
@@ -105,14 +108,20 @@ angular.module('arraysApp')
 
                         $scope.vm.dataForm.$setDirty();
 
+                        if(filterOnly) {
+                            $scope.openFabricatedFilterDialog();
+                        }
+
                     }, function () {
 
+                        if(filterOnly) {
+                            $scope.openFabricatedFilterDialog();
+                        }
 
-                        // console.log('You cancelled the field dialog.');
                     });
             };
 
-            function FieldDialogController($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields, custom, customFieldIndex) {
+            function FieldDialogController($scope, $mdDialog, $filter, fieldName, firstRecord, dataset, availableTypeCoercions, availableDesignatedFields, custom, customFieldIndex, filterOnly) {
 
                 $scope.firstRecord = firstRecord;
                 $scope.availableTypeCoercions = availableTypeCoercions;
@@ -304,18 +313,17 @@ angular.module('arraysApp')
 
                 $scope.save = function () {
                     // General
-                    var currentValue = $scope.dialog.fieldForm.fieldName.$modelValue;
 
-                    if (originalFieldName !== currentValue) {
+                    if (!filterOnly) {
+                        var currentValue = $scope.dialog.fieldForm.fieldName.$modelValue;
 
-                        var originalExclude = $scope.dataset.fe_excludeFields[originalFieldName];
-                        $scope.dataset.fe_excludeFields[currentValue] = originalExclude;
-                        delete $scope.dataset.fe_excludeFields[originalFieldName];
+                        if (originalFieldName !== currentValue) {
+
+                            var originalExclude = $scope.dataset.fe_excludeFields[originalFieldName];
+                            $scope.dataset.fe_excludeFields[currentValue] = originalExclude;
+                            delete $scope.dataset.fe_excludeFields[originalFieldName];
+                        }
                     }
-
-
-
-
 
                     if (typeof $scope.data.designatedField !== 'undefined') {
                         $scope.dataset.fe_designatedFields[$scope.data.designatedField] = $scope.fieldName;
@@ -650,14 +658,16 @@ angular.module('arraysApp')
                 $mdDialog.show({
                     controller: FabricatedFilterDialogController,
                     controllerAs: 'dialog',
-                    templateUrl: 'templates/blocks/data.fabricated.html',
+                    templateUrl: 'templates/blocks/data.filters.html',
                     parent: angular.element(document.body),
                     targetEvent: evt,
                     clickOutsideToClose: true,
                     fullscreen: true, // Only for -xs, -sm breakpoints.
                     locals: {
                         dataset: dataset,
-                        colsAvailable: colsAvailable
+                        colsAvailable: colsAvailable,
+                        fields: $scope.data.fields,
+                        openFieldDialog: $scope.openFieldDialog
                     }
                 })
                     .then(function (savedDataset) {
@@ -668,8 +678,10 @@ angular.module('arraysApp')
                     });
             };
 
-            function FabricatedFilterDialogController($scope, $mdDialog, $filter, dataset,colsAvailable) {
+            function FabricatedFilterDialogController($scope, $mdDialog, $filter, dataset, colsAvailable, openFieldDialog, fields) {
                 $scope.colsAvailable = colsAvailable;
+                $scope.openFieldDialog = openFieldDialog;
+                $scope.fields = fields;
                 $scope.indexInFabricatedFilter = function (input) {
                     for (var i = 0; i < $scope.dataset.fe_filters.fabricated.length; i++) {
                         var currentFab = $scope.dataset.fe_filters.fabricated[i];
@@ -712,6 +724,30 @@ angular.module('arraysApp')
                     });
                     $scope.dialog.form['fabricatedTitle_' + index].$setValidity('unique', fabricatedTitleUnique);
                     $scope.dialog.form['fabricatedValue_' + index].$setValidity('unique', fabricatedValueUnique);
+                };
+
+                $scope.toggleFilter = function(col) {
+                    var fieldsNA = $scope.dataset.fe_filters.fieldsNotAvailable,
+                        ndex = fieldsNA.indexOf(col);
+                    if (ndex == -1) {
+                        fieldsNA.push(col);
+                    } else {
+                        fieldsNA.splice(ndex, 1);
+                    }
+                    $scope.dialog.form.$setDirty();
+                    // also set dataset to dirty, needs processing
+                    if ($scope.dataset.dirty !== 1) {
+                        $scope.dataset.dirty = 3;
+                    }
+                };
+
+                $scope.editFilter = function(evt, field) {
+                    if ($scope.dialog.form.$dirty || $scope.dialog.form.$valid) {
+                        $scope.save();
+                    } else {
+                        $scope.cancel();
+                    }
+                    $scope.openFieldDialog(evt, field.name, field.sample, field.custom, field.customFieldIndex, true);
                 };
 
                 $scope.addFabricated = function () {
@@ -1387,7 +1423,7 @@ angular.module('arraysApp')
                 //Save settings primary key and object title as set in the ui
                 $scope.saveRequiredFields();
 
-            
+
                 if (isValid) {
 
                     var errorHandler = function (error) {

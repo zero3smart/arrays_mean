@@ -5,7 +5,7 @@
     <ul class="sidebar-filter-group">
 
         {% for field in uniqueFieldValuesByFieldName %}
-            
+
             {% if field.values | length == 1 %}
                 {% set isThisAnActiveFilterColumn = false %}
                 {% if isFilterActive %}
@@ -63,7 +63,12 @@
                     {% set isMultiselectable = multiselectableFilterFields | doesArrayContain(field.name) %}
 
                     <a class="collapse-trigger" role="button" href="#column-{{ loop.index }}" aria-expanded="false" aria-controls="column-{{ loop.index }}">
-                        <span class="sidebar-filter-fieldname">{{ displayTitleOverrides[field.name] or field.name }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">{{ filterObj[field.name] | filterCount }}</span>{%endif %}
+                        <!-- don't show object title -->
+                        {% if displayTitleOverrides[field.name] == "Object Title" %}
+                            <span class="sidebar-filter-fieldname">{{ field.name }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">{{ filterObj[field.name] | filterCount }}</span>{%endif %}
+                        {% else %}
+                            <span class="sidebar-filter-fieldname">{{ displayTitleOverrides[field.name] or field.name }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">{{ filterObj[field.name] | filterCount }}</span>{%endif %}
+                            {%endif%}
                     </a>
                     <ul id="column-{{ loop.index }}" class="sidebar-filter-subgroup collapse" aria-expanded="false">
                         {% for fieldValue in field.values %}

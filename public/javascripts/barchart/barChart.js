@@ -352,8 +352,8 @@ BarChart.prototype.getValueFormatter = function() {
  * @param {Integer} j - series number
  */
 BarChart.prototype._barMouseEnterEventHandler = function(barElement, i, j, categoriesAndData) {
-    var label = categoriesAndData[j][1][0].label;
-    var value = categoriesAndData[j][1][0].value;
+    var label = categoriesAndData[j][1][i].label;
+    var value = categoriesAndData[j][1][i].value;
     var category = categoriesAndData[j][0];
 
     this._canvas.selectAll('rect.bar')

@@ -230,7 +230,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.push(function (done) {
                 func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
-
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
                
                     done();

@@ -5,10 +5,6 @@
         <h2 ng-if="!dirty && imported">Your data has been successfully processed!</h2>
         <h2 ng-if="dirty">Your data is processing&hellip;</h2>
 
-        <!-- <div ng-if="dataset.fe_visible">
-        <h2><strong><a href="{{subdomain}}/{{dataset.uid}}-r{{dataset.importRevision}}/{{dataset.fe_views.default_view | viewToName }}" target="_blank">View your array</a></strong></h2>
-        </div> -->
-
         <md-content class="md-block" ng-show="inProgress">
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>
         </md-content>

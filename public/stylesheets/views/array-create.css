@@ -258,7 +258,8 @@
 }
 
 .explore-tile-banner-image {
-    height: 295px;
+    height: 0px;
+    padding-bottom: 75%;
     width: 100%;
     background-size: cover;
 }

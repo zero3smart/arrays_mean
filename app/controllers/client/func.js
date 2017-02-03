@@ -760,7 +760,6 @@ var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callbac
             // names must be equal
             return 0;
         });
-
         //
         callback(null, finalizedUniqueFieldValuesByFieldName);
     });
