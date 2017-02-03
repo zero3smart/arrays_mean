@@ -372,7 +372,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             } else {
                 console.log('has and meet criteria')
                 eachCtx.cached.push(rowDoc);
-                console.log(eachCtx).cached;
+                console.log(eachCtx.cached);
             }
             eachCtx.numberOfRows++;
         } else {
