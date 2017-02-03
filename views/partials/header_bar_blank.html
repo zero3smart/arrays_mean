@@ -90,7 +90,7 @@
     {% if user %}
     <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand">
     {% else %}
-    <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand" style="top:65px">
+    <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand" style="top:64px">
     {% endif %}
         <div class="container-fluid container-full-width">
             <div class="navbar-brand-container">
@@ -101,7 +101,7 @@
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                        <a href="#" class="dropdown-toggle user-initial-nav" data-toggle="dropdown" role="button" aria-haspopup="true"
                            aria-expanded="false">
                             <span class="user-initial">{{user.firstName.slice(0,1).toUpperCase()}}</span>
                         </a>
