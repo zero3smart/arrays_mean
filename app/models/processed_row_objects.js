@@ -705,6 +705,7 @@ module.exports.EnumerateProcessedDataset = function (datasetId, parentId, eachFn
 
         nativeCollection_ofTheseProcessedRowObjects.find(query, {sort: {_id: 1}}, function (err, cursor) {
             if (err) { // No cursor yet so we do not call closeCursorAndReturnWithErr(err)
+                console.log("error before cursor")
                 hasErroredAndReturned = true;
                 errFn(err);
 
@@ -719,8 +720,11 @@ module.exports.EnumerateProcessedDataset = function (datasetId, parentId, eachFn
                     errFn(err);
                 });
             }
+            console.log("is there a cursor")
+            console.log(cursor)
 
             cursor.each(function (err, doc) {
+                console.log("in each cursor func")
                 console.log(doc);
                 console.log(err);
                 if (hasErroredAndReturned == true) {
@@ -729,6 +733,7 @@ module.exports.EnumerateProcessedDataset = function (datasetId, parentId, eachFn
                     return;
                 }
                 if (err) {
+                    console.log("there was an error line 732")
                     closeCursorAndReturnWithErr(err);
 
                     return;
@@ -743,6 +748,7 @@ module.exports.EnumerateProcessedDataset = function (datasetId, parentId, eachFn
                 }
                 //
                 numberOfDocumentsFoundButNotYetProcessed += 1;
+                console.log(numberOfDocumentsFoundButNotYetProcessed)
                 numDocs += 1;
                 //
                 function _finishedWithDoc() {
@@ -765,6 +771,7 @@ module.exports.EnumerateProcessedDataset = function (datasetId, parentId, eachFn
 
                 //
                 eachFn(doc, function (err) {
+                    console.log("line 770")
                     console.log(err);
                     console.log(typeof(err))
                     if (err != null && typeof err !== 'undefined') {
