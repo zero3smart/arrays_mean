@@ -135,11 +135,9 @@
                 <ul class="dashboard-list user-list" ng-if="!additionalDatasource._id" ng-cloak><!-- ng-if="!additionalDatasource.fileName" -->
                     <li>
                         <div ng-hide="additionalDatasource.uploader.isUploading">
-                            <!-- <p>Select a data source to import from the options below.</p> -->
                             <ul class="dashboard-list aa-file-select-source" ng-if="additionalDatasource.sourceType == ''">
                                 <li><a href="#" ng-click="additionalDatasource.setSourceType('csv')">Upload a spreadsheet</a></li>
                                 <!-- <li><a href="#" ng-click="">Upload a JSON file</a></li> -->
-                                <!-- <li><a href="#" ng-click="">Connect to a SQL database</a></li> -->
                             </ul>
                             <div ng-if="additionalDatasource.sourceType == 'csv'">
                                 <label>Upload spreadsheet</label>
