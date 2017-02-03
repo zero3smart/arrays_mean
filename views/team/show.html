@@ -70,7 +70,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="explore-tile-banner-image team-page" style="background-image:url('{{ source.banner }}')"></div>
+                                        {% if source.banner %}
+                                        <div class="explore-tile-banner-image" style="background-image:url('{{ source.banner }}')"></div>
+                                        {% else %}
+                                        <div class="explore-tile-banner-image" style="background-image:url('/images/explore/default_pattern.png'); background-color:{{ source.brandColor }}"></div>
+                                        {% endif %}
                                     </div>
                                 </div><!-- .panel -->
                             </div>
