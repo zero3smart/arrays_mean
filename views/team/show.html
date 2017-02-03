@@ -14,7 +14,7 @@
                 <section class="section section-array-create section-team-show">
                     <form id="form-source" class="form-source">
 
-                        <header class="section-header">
+                        <header class="section-header explore-header">
                             <div class="row">
                                 <div class="col-sm-12 text-center">
                                     {% if team.logo %}
@@ -30,59 +30,53 @@
                         </header>
 
                         {% if sources | length %}
-                        <ul class="team-list">
+                        <div class="row">
 
                             {% for source in sources %}
                             {% if source.arrayListed %}
-                            <li class="team-list-item">
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="source_key" value="{{ source.key | splitSubdomain }}" class="hidden">
-                                        <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
-                                        <input type="hidden" name="default_view" value="{{ source.default_view }}" class="hidden">
+                            <div class="explore-tile col-sm-6 col-xs-12">
+                                <input type="radio" name="source_key" value="{{ source.key | splitSubdomain }}" class="hidden">
+                                <input type="hidden" name="default_filterJSON" value="{{ source.default_filterJSON }}" class="hidden">
+                                <input type="hidden" name="default_view" value="{{ source.default_view }}" class="hidden">
 
-                                        <input type="hidden" name="subdomainUrl" value="{{baseUrl}}" class="hidden">
+                                <input type="hidden" name="subdomainUrl" value="{{baseUrl}}" class="hidden">
 
-                                        <div class="panel panel-default panel-source source-{{ source.key }} js-panel-array">
-                                            {% if source.brandColor %}
-                                                <style scoped>
-                                                    .source-{{ source.key }} .color-brand,
-                                                    .source-{{ source.key }} a.color-brand:hover,
-                                                    .source-{{ source.key }} a.color-brand:focus,
-                                                    .source-{{ source.key }} a.color-brand:active {
-                                                        color: {{ source.brandColor }};
-                                                    }
-                                                </style>
-                                            {% endif %}
-                                            {% if source.banner %}
-                                            <img src="{{ source.banner }}" class="team-array-logo img-responsive" />
-                                            {% endif %}
+                                <div class="panel panel-default panel-source source-{{ source.key }} js-panel-array">
+                                    {% if source.brandColor %}
+                                        <style scoped>
+                                            .source-{{ source.key }} .explore-tile-header {
+                                                background-color: {{ source.brandColor }};
+                                            }
+                                        </style>
+                                    {% endif %}
 
-                                            <div class="panel-body border-top-color-brand">
-                                                <h2 class="panel-body-title">{{ source.title }}</h2>
-                                                <div class="panel-body-meta">
-                                                    <div>
-                                                        <a class="panel-view-array color-brand">View Visualization</a>
-                                                    </div>
+                                    <div class="explore-tile-body">
+                                        <div class="explore-tile-header">
+                                            <h2>{{ source.title }}</h2>
+                                            <div class="explore-tile-meta-wrapper">
+                                                <div class="explore-tile-meta">
+                                                    <span> By {{source.author}}</span>
+                                                </div>
+                                                <div class="explore-tile-meta hidden-xs">
                                                     {% set comma = joiner() %}
                                                     {% for url in source.urls -%}
                                                       {{ comma() }} <a href="{{ url }}" class="source-link" target="_blank">{{ url }}</a>
                                                     {%- endfor %}
-                                                    <span class="source-divider hidden-xs"> Author: {{source.author}}</span>
-                                                    <span class="source-divider hidden-xs"></span>
-                                                    <span class="source-count hidden-xs">{{ source.sourceDoc.numberOfRows | comma }} Record{{ "s" if source.sourceDoc.numberOfRows != 1 else "" }}</span>
-                                                    <span class="source-divider hidden-xs"></span>
-                                                    <span class="source-updated hidden-xs">Last Updated {{ source.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }} By {{source.lastUpdatedBy}}</span>
                                                 </div>
-                                                <p class="panel-body-description">{{ source.description }}</p>
+                                                <div class="explore-tile-meta">
+                                                    <span class="source-count">{{ source.sourceDoc.numberOfRows | comma }} Record{{ "s" if source.sourceDoc.numberOfRows != 1 else "" }}</span>
+                                                    <span class="source-divider"></span>
+                                                    <span class="source-updated">Last Updated {{ source.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                                                </div>
                                             </div>
-                                        </div><!-- .panel -->
-                                    </label>
-                                </div><!-- .radio -->
-                            </li>
+                                        </div>
+                                        <div class="explore-tile-banner-image team-page" style="background-image:url('{{ source.banner }}')"></div>
+                                    </div>
+                                </div><!-- .panel -->
+                            </div>
                             {% endif %}
                             {% endfor %}
-                        </ul>
+                        </div>
 
                         {% else %}
                           <h1 class='array-title'>This team has no visualizations listed</h1>
