@@ -65,7 +65,7 @@
 
 .navbar-default .navbar-brand-arrays {
 	height: var(--navbar-height-mobile);
-	text-transform: uppercase;
+	text-transform: capitalize;
 	letter-spacing: 10px;
 	font-size: 17px;
 }
@@ -299,29 +299,199 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 }
 
 /* scroll magic content color */
-.array-controls-pinned .icon-filter {
+.array-controls-pinned .icon-filter,
+.array-controls-pinned .icon-filter:hover,
+.array-controls-pinned .navbar-nav > li .dropdown-toggle,
+.array-controls-pinned .dropdown-toggle span,
+.array-controls-pinned .dropdown-toggle.user-initial-nav span,
+.array-controls-pinned .dropdown-toggle span:hover,
+.array-controls-pinned .navbar-brand-container .navbar-brand
+{
     color: #000000;
 }
 
-.array-controls-pinned .icon-filter:hover {
+.array-controls-pinned .navbar-nav .dropdown > a,
+.array-controls-pinned .navbar-nav .dropdown > a span,
+.array-controls-pinned .sidebar-filter-slide-toggle span,
+.array-controls-pinned .navbar-brand-container .navbar-brand
+{
     color: #000000;
 }
 
-.array-controls-pinned .navbar-nav > li .dropdown-toggle {
-    color: #000000;
-}
-.array-controls-pinned .dropdown-toggle span {
-    color: #000000;
-}
-
-.array-controls-pinned .dropdown-toggle.user-initial-nav span {
-    color: #FFFFFF;
+.array-controls-pinned .navbar-nav .dropdown > a .user-initial,
+.dropdown.open > a .user-initial,
+.array-controls-pinned .dropdown.open > a .user-initial {
+  color: #FFFFFF;
 }
 
-.array-controls-pinned .dropdown-toggle span:hover {
+.array-controls-pinned .dropdown.open > a,
+.array-controls-pinned .dropdown.open > a span,
+.array-controls-pinned li.active > .sidebar-filter-slide-toggle span
+{
     color: #000000;
 }
+/* User Conversion Header Replicated From Webflow Site */
 
-.array-controls-pinned .navbar-brand-container .navbar-brand {
-    color: #000000;
+.w-nav {
+  display: block;
+  top: 0px;
+  width: 100%;
+  height: 64px;
+  z-index: 1000;
+  position: relative;
+}
+
+.w-container {
+  width: 100%;
+  position: fixed;
+  top: 0px;
+  height: 64px;
+  background-color: #FFFFFF;
+}
+
+.w-logo {
+  padding-left: 10px;
+}
+
+.w-logo img {
+  position: absolute;
+  top: 50%;
+  transform: perspective(1px) translateY(-50%);
+}
+
+.w-nav-burger {
+  float: right;
+}
+
+.w-burger-menu {
+  display: block;
+  line-height: 64px;
+  vertical-align: middle;
+  font-size: 24px;
+  padding-left: 15px;
+  padding-right: 15px;
+  color: #333;
+  background-color: #FFF;
+  height: 64px;
+}
+
+.w-burger-menu:focus,
+.w-burger-menu:hover {
+  color: #333;
+}
+
+.w-burger-menu i {
+  margin-left: 0.2em;
+}
+
+.w-burger-menu.open {
+  color: #FFF;
+  background-color: #333;
+}
+
+.w-nav-overlay {
+  display: block;
+  overflow: hidden;
+  position: fixed;
+  top: 64px;
+  left: 0;
+  width: 100%;
+  background-color: #333;
+  z-index: 5000;
+}
+
+.w-nav-overlay .mobile-nav-menu {
+  max-height: 0;
+  transition: all 125ms linear;
+}
+
+.w-nav-overlay.open .mobile-nav-menu {
+  padding-top: 7px;
+  padding-bottom: 7px;
+  max-height: 300px;
+  transition: max-height 125ms linear;
+}
+
+.w-mobile-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  line-height: 50px;
+  vertical-align: middle;
+  height: 50px;
+  font-size: 18px;
+  font-weight: 300;
+  color: #FFF;
+  background-color: #333;
+}
+
+.w-mobile-link:hover,
+.w-mobile-link:focus {
+  color: #FFF;
+  text-decoration: none;
+}
+
+.w-nav-list {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .w-nav-overlay {
+    display: none;
+  }
+  
+  .w-nav-burger {
+    display: none;
+  }
+
+  .w-logo {
+    padding-left: 15px;
+  }
+
+  .w-nav-list {
+    display: block;
+    float: right;
+    padding-right: 15px;
+    list-style: none;
+    line-height: 64px;
+    vertical-align: middle;
+  }
+
+  .w-nav-list li {
+    display: inline;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .w-nav-link {
+    font-size: 18px;
+    /*font-family: var(--font-family-calibre);*/
+    font-family: 'Calibre', sans-serif;
+    font-weight: 500;
+    color: #333;
+    transition: color 150ms ease;
+  }
+
+  .w-nav-link:hover,
+  .w-nav-link:focus {
+    text-decoration: none;
+    color: #FEB600;
+    transition: color 150ms ease;
+  }
+
+  .w-nav-list .signup-container {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+  .w-nav-link.nav-link-signup {
+    border: 1px solid #FEB600;
+    padding: 7px 20px;
+    border-radius: 20px;
+  }
+
+  .w-nav-link.nav-link-signup:hover,
+  .w-nav-link.nav-link-signup:focus {
+    color: #333;
+  }
 }
