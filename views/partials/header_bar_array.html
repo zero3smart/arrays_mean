@@ -36,17 +36,17 @@
         border-top-color: {{ brandColor }};
     }
 
-    body:not(.array-controls-pinned) .navbar-nav .dropdown > a,
-    body:not(.array-controls-pinned) .navbar-nav .dropdown > a span,
-    body:not(.array-controls-pinned) .sidebar-filter-slide-toggle span,
-    body:not(.array-controls-pinned) .navbar-brand-container .navbar-brand
+    .navbar-nav .dropdown > a,
+    .navbar-nav .dropdown > a span,
+    .sidebar-filter-slide-toggle span,
+    .navbar-brand-container .navbar-brand
     {
         color: {{ brandContentColor }};
     }
 
-    body:not(.array-controls-pinned) .dropdown.open > a,
-    body:not(.array-controls-pinned) .dropdown.open > a span,
-    body:not(.array-controls-pinned) li.active > .sidebar-filter-slide-toggle span
+    .dropdown.open > a,
+    .dropdown.open > a span,
+    li.active > .sidebar-filter-slide-toggle span
     {
         color: {{ '#FFFFFF' if brandContentColor == '#000000' else '#000000' }};
     }
@@ -71,18 +71,71 @@
     .btn-inverse:hover {
         color: {{ '#FFFFFF' if brandContentColor == '#000000' else '#000000' }};
     }
+
+    {% if not user %}
+    .share-link {
+        margin-right: 15px;
+    }
+    {% endif %}
 </style>
 {% endif %}
 
 <!-- Fixed navbar -->
 <header id="masthead" class="site-header hidden-print" role="banner">
 
+    {% if not user %}
+
+    <div class="w-nav">
+      <div class="w-container">
+        <a class="w-logo" href="https://www.arrays.co"><img sizes="(max-width: 767px) 100vw, 210px" src="https://s3-us-west-2.amazonaws.com/arraysassets/Logo_Header.png" width="210">
+        </a>
+        <ul class="w-nav-list">
+          <li>
+              <a class="w-nav-link" href="https://app.arrays.co" target="_blank">Explore</a>
+          </li>
+          <li>
+              <a class="w-nav-link" href="https://www.arrays.co/news">News</a>
+          </li>
+          <li>
+              <a class="w-nav-link" href="https://www.arrays.co/pricing">Pricing</a>
+          </li>
+          <li>
+              <a class="w-nav-link" href="https://explore.arrays.co/auth/login">Log In</a>
+          </li>
+          <li class="signup-container">
+              <a class="nav-link-signup w-nav-link" href="https://explore.arrays.co/auth/login">Sign Up</a>
+          </li>
+        </ul>
+        <div class="w-nav-burger">
+          <a class="w-burger-menu" href="#">
+            <i id="menu-expand" class="icon-menu"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-nav-overlay">
+      <nav class="mobile-nav-menu">
+        <a class="w-mobile-link" href="https://app.arrays.co" target="_blank">Explore</a>
+        <a class="w-mobile-link" href="news.html">News</a>
+        <a class="w-mobile-link" href="pricing.html">Pricing</a>
+        <a class="w-mobile-link" href="https://explore.arrays.co/auth/login">Log In</a>
+        <a class="w-mobile-link" href="https://explore.arrays.co/auth/login">Sign Up</a>
+      </nav>
+    </div>
+
+    {% endif %}
+
+    {% if user %}
     <nav class="navbar navbar-default navbar-fixed-top background-color-brand">
+    {% else %}
+    <nav class="navbar navbar-default navbar-fixed-top background-color-brand" style="top:64px;">
+    {% endif %}
         <div class="container-fluid container-full-width">
             <div class="navbar-brand-container">
                 <a class="navbar-brand navbar-brand-arrays {% if team.logo | length %}navbar-brand-team-logo{% endif %}"
                    href="{% if team.subdomain | length %}{{ addSubdomain(team.subdomain) }}{% else %}{{explore_url}}{% endif %}">{% if team.logo_header
-                    | length %}<img src="{{ team.logo_header }}"/>{% elif team.title | length %}{{ team.title }}{% else
+                    | length %}<img src="{{ team.logo_header }}"/>{% elif team.title | length %}{{ team.title.toLowerCase() }}{% else
                     %}Arrays{% endif %}</a><br/>
                 <a class="navbar-brand navbar-brand-array-title" href="/{{ array_source_key }}/{{ 'gallery' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
@@ -181,24 +234,17 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="#" class="share-link btn btn-splash">Share</a>
+                        <a href="#" class="share-link btn btn-splash">SHARE</a>
                     </li>
+                    {% if user %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle {{ "user-initial-nav" if user }}" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                            {% if user %}
                             <span class="user-initial">{{user.firstName.slice(0,1).toUpperCase()}}</span>
-                            {% else %}
-                            <span class="icon-menu" aria-hidden="true"></span>
-                            {% endif %}
                         </a>
                         <ul class="dropdown-menu">
                             {% if env.NODE_ENV != 'production' %}
-                            {% if user %}
                             <li class="background-color-brand-hover"><a href="/dashboard">Account Settings</a></li>
                             <li class="background-color-brand-hover"><a class="pointer" id="logout">Log Out</a></li>
-                            {% else %}
-                            <li class="background-color-brand-hover"><a class="pointer" id="login">Log In</a></li>
-                            {% endif %}
                             <li role="separator" class="divider"></li>
                             {% endif %}
                             {% if team.title %}
@@ -212,6 +258,7 @@
                             </li>
                         </ul>
                     </li>
+                    {% endif %}
                 </ul>
             </div><!--/.nav-collapse -->
         </div>
