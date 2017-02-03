@@ -35,6 +35,8 @@ angular
 
             $scope.updateSubdomain = function() {
                 $scope.team = AuthService.currentTeam();
+                $scope.team.subscription = $scope.team.subscription || {};
+                $scope.team.subscription.state = $scope.team.subscription.state || {};
                 
                 if ($scope.env.node_env == 'enterprise') {
                     $scope.subdomain = $scope.explore_url;
