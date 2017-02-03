@@ -352,6 +352,19 @@ angular.module('arraysApp')
 
                 // $scope.data.default_view = default_view;
 
+                // save or cancel before navigating back to include a field
+                // $scope.goToData = function() {
+                //     if ($scope.viewForm.$dirty || $scope.viewForm.$valid) {
+                //         // $scope.save();
+                //     } else {
+                //         // $scope.cancel();
+                //     }
+                //     $state.transitionTo('dashboard.dataset.data', {id: dataset._id}, {
+                //         reload: true,
+                //         inherit: false,
+                //         notify: true
+                //     });
+                // };
 
                 $scope.addMore = function (field,pushType) {
                     if (pushType == 'object') {
