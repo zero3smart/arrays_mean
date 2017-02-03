@@ -746,9 +746,10 @@ module.exports.EnumerateProcessedDataset = function (datasetId, parentId, eachFn
                 numDocs += 1;
                 //
                 function _finishedWithDoc() {
+                    console.log("finished with doc")
                     numberOfDocumentsFoundButNotYetProcessed -= 1; // finished with this doc - decrement
                     //
-
+                    console.log(numberOfDocumentsFoundButNotYetProcessed)
 
                     if (hasReachedEndOfCursor == true) {
                         if (numberOfDocumentsFoundButNotYetProcessed == 0) {
@@ -765,7 +766,9 @@ module.exports.EnumerateProcessedDataset = function (datasetId, parentId, eachFn
                 //
                 eachFn(doc, function (err) {
                     console.log(err);
+                    console.log(typeof(err))
                     if (err != null && typeof err !== 'undefined') {
+                        console.log("there's an error")
                         closeCursorAndReturnWithErr(err);
                     }
                     _finishedWithDoc();

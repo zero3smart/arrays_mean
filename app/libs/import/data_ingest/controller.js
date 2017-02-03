@@ -301,6 +301,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     callback(err); // bail early
                 },
                 function () {
+                    console.log("last callback")
                     continueToAfterIterating(eachCtx); // done iterating each row
                 },
                 {}
@@ -339,6 +340,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                             pKey: rowDoc.pKey, // the specific row
                             srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                         };
+                        console.log(bulkOperationQueryFragment)
+                        console.log("LIne 343")
 
                         
                         eachCtx.nativeCollection.remove(bulkOperationQueryFragment);
@@ -400,7 +403,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
                      
                 } else if (newFieldType == 'object') {
-
+                    console.log("is object")
 
                 }
 
