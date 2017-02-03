@@ -98,7 +98,7 @@
             <span class="btn-label">Update Billing Information</span>
         </md-button>
 
-        <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard" ng-click="updateBillingInfo($event)" ng-disabled="billing_info.payment_bank.$invalid">
+        <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard" ng-click="updateBillingInfo($event)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
             <span class="btn-label">Update Billing Information</span>
         </md-button>
 

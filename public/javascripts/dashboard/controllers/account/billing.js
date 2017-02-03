@@ -226,6 +226,7 @@ angular.module('arraysApp')
                             $scope.errors[0] = res.data.errors.error;
                         }
 
+                        // Set validation errors on fields returned in Recurly errors array
                         angular.forEach($scope.errors, function(error, key) {
 
                             // console.log($scope.billing_info);
@@ -239,6 +240,7 @@ angular.module('arraysApp')
 
                             var form;
 
+                            // Set which form each field belongs to
                             switch (fieldName) {
                                 case 'first_name':
                                 case 'last_name':
@@ -246,6 +248,13 @@ angular.module('arraysApp')
                                 case 'month':
                                 case 'year':
                                     form = 'payment_card';
+                                    break;
+
+                                case 'name_on_account':
+                                case 'routing_number':
+                                case 'account_number':
+                                case 'account_type':
+                                    form = 'payment_bank';
                                     break;
 
                                 case 'country':
@@ -259,8 +268,10 @@ angular.module('arraysApp')
                                 // default:
                             }
 
+                            // Set field to invalid if error is returned from Recurly
                             if (form) $scope.billing_info[form][fieldName].$setValidity('invalid', false);
 
+                            // Show popup notification if error doesn't belong to a particular field
                             if (fieldName === 'base' || fieldName === 'credit_card_verification_value' || fieldName === 'credit_card_number') {
 
                                 // Show popup notification
