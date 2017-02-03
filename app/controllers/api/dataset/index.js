@@ -408,8 +408,22 @@ module.exports.save = function (req, res) {
                     } else {
                         team.datasourceDescriptions.push(doc.id);
                         team.save(function (err, saved) {
-                            if (err) return res.status(500).send(err);
-                            return res.json({id: doc.id});
+                            if (err) {
+                                return res.status(500).send(err);
+                            } else {
+                                //update the user as an editor of the dataset
+                                User.findById(req.user, function(err, user) {
+                                    if(err) {
+                                        return res.status(500).send(err);
+                                    } else {
+                                        user._editors.push(doc.id);
+                                        user.save(function (err, saved) {
+                                            if (err) return res.status(500).send(err);
+                                            return res.json({id: doc.id}) 
+                                        })
+                                    }
+                                })
+                            }
                         });
                     }
                 })
