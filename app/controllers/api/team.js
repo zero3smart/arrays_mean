@@ -49,7 +49,7 @@ module.exports.search = function (req, res) {
     Team.find(req.query, function (err, foundTeams) {
         if (err) {
             res.send({error: err.message});
-        } else {
+    } else {
             return res.status(200).json(foundTeams);
         }
 
@@ -58,6 +58,9 @@ module.exports.search = function (req, res) {
 
 
 module.exports.update = function (req, res) {
+
+  
+
     Team.findByIdAndUpdate(req.params.id)
         .exec(function (err, team) {
             if (err) {

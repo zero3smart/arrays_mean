@@ -12,6 +12,31 @@
 		return $resource('/api/team/:id',{id:'@_id'},{search:{'url':'/api/team/search', method:'GET',isArray:true}});
 	})
 
+	signupModule.service('ENV',function($http,$q) {
+
+		var getEnv = function() {
+			var deferred = $q.defer();
+            $http.get('/env')
+            .then(function(result) {
+                var env = result.data;
+                if (env) {
+                    deferred.resolve(env)
+                } else {
+                    deferred.reject();
+                }
+            })
+            return deferred.promise;
+
+		}
+
+		return {
+			get: getEnv
+		}
+
+	})
+
+
+
 
 
 
