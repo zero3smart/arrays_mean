@@ -252,7 +252,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.Model.model;
     var forThisDataSource_nativeCollection = forThisDataSource_mongooseContext.Model.collection;
 
-    // var mergeFieldsIntoCustomField_BulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
+    var mergeFieldsIntoCustomField_BulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
 
 
     //
@@ -285,8 +285,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             continueToAfterIterating();
         } else {
 
-            // eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation;
-            eachCtx.nativeCollectionBulk = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
+            eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation;
+            // eachCtx.nativeCollectionBulk = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
 
             processed_row_objects.EnumerateProcessedDataset(
                 dataSourceDescription._id,
@@ -346,8 +346,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         console.log("LIne 343")
 
                         
-                        eachCtx.nativeCollectionBulk.remove(bulkOperationQueryFragment);
-                        // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
+                        // eachCtx.nativeCollectionBulk.remove(bulkOperationQueryFragment);
+                        eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
                     });
 
                     if (eachCtx.fieldOverrides[fieldName]) {
@@ -364,19 +364,19 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                     };
                     console.log("right before the bulkupdate query")
-                    eachCtx.nativeCollectionBulk.update(bulkOperationQueryFragment,updateFragment, function (err, result) {
-                        if(err) {
-                            console.log(err)
-                            console.log("err in update")
-                        } else {
-                            console.log("no errors in bulkupdate query")
-                        }
-                    });
-                    console.log("right after the bulkupdate query")
+                    // eachCtx.nativeCollectionBulk.update(bulkOperationQueryFragment,updateFragment, function (err, result) {
+                        // if(err) {
+                            // console.log(err)
+                            // console.log("err in update")
+                        // } else {
+                            // console.log("no errors in bulkupdate query")
+                        // }
+                    // });
+                    // console.log("right after the bulkupdate query")
 
 
 
-                    // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
 
                     eachCtx.cached = [];
                 }
@@ -409,8 +409,9 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey
                     };
 
-                    console.log('right before the bulkOperationQueryFragment')
-                    eachCtx.nativeCollectionBulk.update(bulkOperationQueryFragment,updateQuery);
+                    // console.log('right before the bulkOperationQueryFragment')
+                    // eachCtx.nativeCollectionBulk.update(bulkOperationQueryFragment,updateQuery);
+                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
                      
                 } else if (newFieldType == 'object') {
                     console.log("is object")
