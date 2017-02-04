@@ -100,7 +100,6 @@ team.GetTeamsAndDatasources = function(userId, fn) {
 
 //team page
 team.GetTeamBySubdomain = function(req, fn) {
-    console.log("team page")
 
     var subdomains = req.subdomains;
 
