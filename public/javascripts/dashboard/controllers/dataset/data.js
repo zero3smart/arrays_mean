@@ -807,14 +807,18 @@ angular.module('arraysApp')
                 };
 
                 $scope.save = function () {
+                    var _newDefaultFilters = {};
+
                     $scope.dataset.fe_filters.fabricated.map(function (fabricated) {
                         fabricated.choices[0].match.field = 'rowParams.' + fabricated.choices[0].match.field;
                     });
 
+                    // overwrite defaultFilters so removed filters are--removed
                     $scope.data.defaultFilters.forEach(function (filter) {
-                        if (!$scope.dataset.fe_filters.default) $scope.dataset.fe_filters.default = {};
-                        $scope.dataset.fe_filters.default[filter.name] = filter.value;
+                        _newDefaultFilters[filter.name] = filter.value;
                     });
+
+                    $scope.dataset.fe_filters.default = _newDefaultFilters;
 
                     $mdDialog.hide($scope.dataset);
                 };
