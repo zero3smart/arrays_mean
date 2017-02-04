@@ -144,4 +144,70 @@ team.GetTeamBySubdomain = function(req, fn) {
 
 };
 
+
+//Update Subscription info from data returned from Recurly API
+team.UpdateSubscription = function(userId, responseData, callback) {
+    User.findById(userId)
+        .populate('_team')
+        .populate('defaultLoginTeam')
+        .exec(function(err, user) {
+            if (err) {
+                callback(500, err);
+            } else {
+
+                // If user doesn't have a team
+                if (!user.defaultLoginTeam || user._team.length === 0) {
+                    callback(401, 'unauthorized');
+                }
+
+                // If user is not superAdmin or team admin
+                if (!user.isSuperAdmin() && !user.defaultLoginTeam.admin && user.defaultLoginTeam.admin != userId) {
+                    callback(401, 'unauthorized');
+                }
+
+                // Update team with subscription info
+                Team.findByIdAndUpdate(user.defaultLoginTeam._id)
+                    .exec(function(err, team) {
+                        if (err) {
+                            callback(500, err);
+                        } else if (!team) {
+                            callback(404, 'Team not found');
+                        } else {
+
+                            var subscription = responseData.data.subscription;
+
+                            team.subscription = {
+                                activated_at: subscription.activated_at._,
+                                canceled_at: subscription.canceled_at._,
+                                current_period_ends_at: subscription.current_period_ends_at._,
+                                current_period_started_at: subscription.current_period_started_at._,
+                                expires_at: subscription.expires_at._,
+                                plan: {
+                                    name: subscription.plan.name,
+                                    plan_code: subscription.plan.plan_code
+                                },
+                                quantity: subscription.quantity._,
+                                remaining_billing_cycles: subscription.remaining_billing_cycles._,
+                                state: subscription.state,
+                                total_billing_cycles: subscription.total_billing_cycles._,
+                                trial_days_left: subscription.trial_days_left,
+                                trial_ends_at: subscription.trial_ends_at._,
+                                trial_started_at: subscription.trial_started_at._,
+                                uuid: subscription.uuid
+
+                            };
+
+                            team.save(function(err) {
+                                if (err) {
+                                    callback(500, err);
+                                } else {
+                                    callback(responseData.statusCode, null, response);
+                                }
+                            });
+                        }
+                    });
+            }
+        });
+};
+
 module.exports = team;
