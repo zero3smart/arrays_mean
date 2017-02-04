@@ -13,7 +13,6 @@ var User = require('../../../models/users');
 
 module.exports.BindData = function (req, callback) {
 
-
     var teamsObj = {};
    
 
