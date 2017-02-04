@@ -671,12 +671,7 @@ module.exports.GenerateFieldsByJoining = function (dataSource_uid,
 //     });
 // };
 
-module.exports.EnumerateProcessedDataset = function (datasetId,
-                                                     parentId,
-                                                     eachFn,
-                                                     errFn,
-                                                     completeFn,
-                                                     query_optl) {
+module.exports.EnumerateProcessedDataset = function (datasetId, parentId, eachFn, errFn, completeFn, query_optl) {
     // eachFn: (doc, cb) -> Void ……… call cb(null_optl) when done with doc
     // errFn: (err) -> Void
     // completeFn: () -> Void
@@ -726,7 +721,6 @@ module.exports.EnumerateProcessedDataset = function (datasetId,
             }
 
             cursor.each(function (err, doc) {
-                // console.log(doc);
                 if (hasErroredAndReturned == true) {
                     winston.warn("⚠️  Each called after hasErroredAndReturned.");
 
@@ -752,8 +746,6 @@ module.exports.EnumerateProcessedDataset = function (datasetId,
                 function _finishedWithDoc() {
                     numberOfDocumentsFoundButNotYetProcessed -= 1; // finished with this doc - decrement
                     //
-
-
                     if (hasReachedEndOfCursor == true) {
                         if (numberOfDocumentsFoundButNotYetProcessed == 0) {
                             // console.log("Reached end of cursor and finished processing all")
