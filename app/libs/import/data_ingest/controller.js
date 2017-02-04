@@ -338,9 +338,9 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                             srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                         };
 
-                        
                         eachCtx.nativeCollection.remove(bulkOperationQueryFragment);
                         // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
+
                     });
 
                     if (eachCtx.fieldOverrides[fieldName]) {
@@ -358,7 +358,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     };
 
                     eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateFragment);
-
 
 
                     // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
@@ -391,7 +390,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         pKey: rowDoc.pKey,
                         srcDocPKey: rowDoc.srcDocPKey
                     };
-
                     
                     eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
                      
