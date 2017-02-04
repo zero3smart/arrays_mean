@@ -238,6 +238,8 @@ var _checkCollection = function (datasource_description, schemaKey, eachCb) {
                             import_controller.PostProcessRawObjects([datasource_description], function (err) {
                                 if (err) {
                                     // TODO: Error Handler
+                                    winston.error("❌ err when post processing raw objects: ", err);
+                                    eachCb(err);
                                 }
                                 eachCb(null);
                             })
