@@ -255,17 +255,15 @@
 <div ng-if="setting.inputType=='iconMapping' && !data.defaultGalleryConditionalBackground" ng-init="initIcons(setting.name)">
     <label>{{setting.displayAs}}</label>
     <p>{{setting.description}}</p>
-    <div layout="row">
-        <md-select flex="30" class="md-block"
-            ng-model="data[setting.name].field"
-            ng-model-options="{updateOn:'default'}"
-            placeholder="Select field">
-            <md-option ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
-                {{col}}
-            </md-option>
-        </md-select>
-        <div flex="20"></div>
-    </div>
+
+    <md-select flex="45" class="md-block"
+        ng-model="data[setting.name].field"
+        ng-model-options="{updateOn:'default'}"
+        placeholder="Select field">
+        <md-option ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
+            {{col}}
+        </md-option>
+    </md-select>
 
     <div ng-if="data[setting.name].field && iconsUrl.length > 0" ng-repeat="item in data[setting.name].conditions track by $index">
         <div layout="row">
@@ -321,14 +319,15 @@
 <div ng-if="setting.inputType=='backgroundColorMapping' && data.defaultGalleryConditionalBackground" ng-init="initBackgroundColors(setting.name)">
     <label>{{setting.displayAs}}</label>
     <p>{{setting.description}}</p>
-    <div layout="row">
-        <md-select aria-label="{{setting.name}} for {{viewName}}" flex="30" class="md-block" ng-model="data[setting.name].field" ng-model-options="{updateOn:'blur'}">
-            <md-option  ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
-                {{col}}
-            </md-option>
-        </md-select>
-        <div flex="20"></div>
-    </div>
+
+    <md-select aria-label="{{setting.name}} for {{viewName}}" flex="45" class="md-block"
+        placeholder="Select field"
+        ng-model="data[setting.name].field"
+        ng-model-options="{updateOn:'default'}">
+        <md-option ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
+            {{col}}
+        </md-option>
+    </md-select>
 
     <div ng-if="data[setting.name].field" ng-repeat="item in data[setting.name].conditions track by $index">
         <div layout="row">
