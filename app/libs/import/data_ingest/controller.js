@@ -62,8 +62,8 @@ var _Import_dataSourceDescriptions__enteringImageScrapingDirectly = function (da
         },
         function (err) {
             if (err) {
-                winston.info("❌  Error encountered during image-scraping:(" + err.code + ')', err);
-                job.log("❌  Error encountered during image-scraping:(" + err.code + ')', err);
+                winston.info("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
+                job.log("❌  Error encountered during image-scrapping:(" + err.code + ')', err);
                 fn(err);
             } else {
                 winston.info("✅  Import completed.");
@@ -252,7 +252,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     var forThisDataSource_RawRowObject_model = forThisDataSource_mongooseContext.Model.model;
     var forThisDataSource_nativeCollection = forThisDataSource_mongooseContext.Model.collection;
 
-    var mergeFieldsIntoCustomField_BulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
+    // var mergeFieldsIntoCustomField_BulkOperation = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
 
 
     //
@@ -285,8 +285,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             continueToAfterIterating();
         } else {
 
-            eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation;
-            // eachCtx.nativeCollection = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
+            // eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation;
+            eachCtx.nativeCollection = forThisDataSource_nativeCollection;
 
             processed_row_objects.EnumerateProcessedDataset(
                 dataSourceDescription._id,
@@ -337,9 +337,10 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                             pKey: rowDoc.pKey, // the specific row
                             srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                         };
+
                         
-                        // eachCtx.nativeCollection.remove(bulkOperationQueryFragment);
-                        eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
+                        eachCtx.nativeCollection.remove(bulkOperationQueryFragment);
+                        // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
                     });
 
                     if (eachCtx.fieldOverrides[fieldName]) {
@@ -355,9 +356,12 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         pKey: rowDoc.pKey, // the specific row
                         srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                     };
-                    // eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateFragment) 
 
-                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateFragment);
+
+
+
+                    // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
 
                     eachCtx.cached = [];
                 }
@@ -388,14 +392,13 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey
                     };
 
-                    // eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
-                    eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+                    
+                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
                      
-                } 
-                // else if (newFieldType == 'object') {
-                //     console.log("is object")
+                } else if (newFieldType == 'object') {
 
-                // }
+
+                }
 
             }
         }
