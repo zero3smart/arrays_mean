@@ -198,14 +198,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
         }
     };
 
-    try {
-
-        var readStream = datasource_file_service.getDatasource(description).createReadStream();
-    }
-    catch(e) {
-        winston.error("Error getting datasource from s3")
-        return fn(e);
-    }
+    var readStream = datasource_file_service.getDatasource(description).createReadStream();
 
     readStream = readStream.pipe(es.split())
         .pipe(es.mapSync(function (line) {
@@ -276,7 +269,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
                     winston.info("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
                     job.log("✅  Saved " + lineNr + " lines of document: ", sourceDocumentTitle);
 
-                    var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(insertTo, numberOfRows_inserted);
+                    var stringDocumentObject = raw_source_documents.New_templateForPersistableObject(insertTo , /*parsed_rowObjectsById, parsed_orderedRowObjectPrimaryKeys, */ numberOfRows_inserted);
                     var append = parentId ? true: false;
                     raw_source_documents.UpsertWithOnePersistableObjectTemplate(append,stringDocumentObject, fn);
 
