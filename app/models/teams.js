@@ -2,6 +2,7 @@ var mongoose_client = require('./mongoose_client');
 var integerValidator = require('mongoose-integer');
 var _ = require("lodash");
 var User = require('./users');
+var Team = require('./teams');
 
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
@@ -152,56 +153,62 @@ team.UpdateSubscription = function(userId, responseData, callback) {
         .populate('defaultLoginTeam')
         .exec(function(err, user) {
             if (err) {
-                callback(500, err);
+                return callback(500, err);
             } else {
 
                 // If user doesn't have a team
                 if (!user.defaultLoginTeam || user._team.length === 0) {
-                    callback(401, 'unauthorized');
+                    return callback(401, 'unauthorized');
                 }
 
                 // If user is not superAdmin or team admin
                 if (!user.isSuperAdmin() && !user.defaultLoginTeam.admin && user.defaultLoginTeam.admin != userId) {
-                    callback(401, 'unauthorized');
+                    return callback(401, 'unauthorized');
                 }
 
                 // Update team with subscription info
-                Team.findByIdAndUpdate(user.defaultLoginTeam._id)
+                team.findByIdAndUpdate(user.defaultLoginTeam._id)
                     .exec(function(err, team) {
                         if (err) {
-                            callback(500, err);
+                            return callback(500, err);
                         } else if (!team) {
-                            callback(404, 'Team not found');
+                            return callback(404, 'Team not found');
                         } else {
 
-                            var subscription = responseData.data.subscription;
+                            if (responseData.data.subscription) {
 
-                            team.subscription = {
-                                activated_at: subscription.activated_at._,
-                                canceled_at: subscription.canceled_at._,
-                                current_period_ends_at: subscription.current_period_ends_at._,
-                                current_period_started_at: subscription.current_period_started_at._,
-                                expires_at: subscription.expires_at._,
-                                plan: {
-                                    name: subscription.plan.name,
-                                    plan_code: subscription.plan.plan_code
-                                },
-                                quantity: subscription.quantity._,
-                                remaining_billing_cycles: subscription.remaining_billing_cycles._,
-                                state: subscription.state,
-                                total_billing_cycles: subscription.total_billing_cycles._,
-                                trial_days_left: subscription.trial_days_left,
-                                trial_ends_at: subscription.trial_ends_at._,
-                                trial_started_at: subscription.trial_started_at._,
-                                uuid: subscription.uuid
+                                var subscription = responseData.data.subscription;
 
-                            };
+                                team.subscription = {
+                                    activated_at: subscription.activated_at._,
+                                    canceled_at: subscription.canceled_at._,
+                                    current_period_ends_at: subscription.current_period_ends_at._,
+                                    current_period_started_at: subscription.current_period_started_at._,
+                                    expires_at: subscription.expires_at._,
+                                    plan: {
+                                        name: subscription.plan.name,
+                                        plan_code: subscription.plan.plan_code
+                                    },
+                                    quantity: subscription.quantity._,
+                                    remaining_billing_cycles: subscription.remaining_billing_cycles._,
+                                    state: subscription.state,
+                                    total_billing_cycles: subscription.total_billing_cycles._,
+                                    trial_days_left: subscription.trial_days_left,
+                                    trial_ends_at: subscription.trial_ends_at._,
+                                    trial_started_at: subscription.trial_started_at._,
+                                    uuid: subscription.uuid
+
+                                };
+
+                            } else {
+                                team.subscription = {};
+                            }
 
                             team.save(function(err) {
                                 if (err) {
-                                    callback(500, err);
+                                    return callback(500, err);
                                 } else {
-                                    callback(responseData.statusCode, null, response);
+                                    return callback(responseData.statusCode, null, responseData);
                                 }
                             });
                         }
