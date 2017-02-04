@@ -316,11 +316,14 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
             if (!ifHasAndMeetCriteria(eachCtx, rowDoc)) {
                 var updateFragment = {$pushAll: {}};
-                for (var i = 0; i < eachCtx.fields.length; i++) {
-                    var fieldName = eachCtx.fields[i];
+
+                async.each(eachCtx.fields,function(field,callb) {
+
+                    var fieldName = field;
                     var generatedArray = [];
 
-                    eachCtx.cached.forEach(function (rowDoc) {
+                    async.each(eachCtx.cached,function(rowDoc,callback) {
+
                         var fieldValue = rowDoc["rowParams"][fieldName];
 
                         if (eachCtx.valueOverrides[fieldName]) {
@@ -340,32 +343,127 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
                         
                         eachCtx.nativeCollection.remove(bulkOperationQueryFragment);
-                        // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
-                    });
+                        callback();
 
-                    if (eachCtx.fieldOverrides[fieldName]) {
-                        fieldName = eachCtx.fieldOverrides[fieldName];
+                    },function(err) {
+                         if (eachCtx.fieldOverrides[fieldName]) {
+                            fieldName = eachCtx.fieldOverrides[fieldName];
+                        }
+                        updateFragment["$pushAll"]["rowParams." + eachCtx.prefix + fieldName] = generatedArray;
+                        callb(err);
+                    })
+
+
+
+
+
+
+
+                },function(err) {
+
+                    if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {
+                        bulkOperationQueryFragment =
+                        {
+                            pKey: rowDoc.pKey, // the specific row
+                            srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
+                        };
+
+                        eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateFragment);
+
+                        // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+
+                        eachCtx.cached = [];
                     }
-                    updateFragment["$pushAll"]["rowParams." + eachCtx.prefix + fieldName] = generatedArray;
-                }
-
-                // Insert the nested object into the main row
-                if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {
-                    bulkOperationQueryFragment =
-                    {
-                        pKey: rowDoc.pKey, // the specific row
-                        srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
-                    };
-
-                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateFragment);
+                    eachCtx.numberOfInsertedRows++;
 
 
 
-                    // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+                    })
 
-                    eachCtx.cached = [];
-                }
-                eachCtx.numberOfInsertedRows++;
+                // for (var i = 0; i < eachCtx.fields.length; i++) {
+                //     var fieldName = eachCtx.fields[i];
+                //     var generatedArray = [];
+
+                //     async.each(eachCtx.cached,function(rowDoc,callback) {
+                //         var fieldValue = rowDoc["rowParams"][fieldName];
+
+                //         if (eachCtx.valueOverrides[fieldName]) {
+                //             var keys = Object.keys(eachCtx.valueOverrides[fieldName]);
+                //             keys.forEach(function (key) {
+                //                 var re = new RegExp(key, 'i');
+                //                 fieldValue = fieldValue.replace(re, eachCtx.valueOverrides[fieldName][key])
+                //             });
+                //         }
+                //         generatedArray.push(fieldValue);
+
+                //         bulkOperationQueryFragment =
+                //         {
+                //             pKey: rowDoc.pKey, // the specific row
+                //             srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
+                //         };
+
+                        
+                //         eachCtx.nativeCollection.remove(bulkOperationQueryFragment);
+                //         callback();
+
+                //     },function(err) {
+                //          if (eachCtx.fieldOverrides[fieldName]) {
+                //             fieldName = eachCtx.fieldOverrides[fieldName];
+                //         }
+                //         updateFragment["$pushAll"]["rowParams." + eachCtx.prefix + fieldName] = generatedArray;
+
+                //     })
+
+
+
+
+                //     // eachCtx.cached.forEach(function (rowDoc) {
+                //     //     var fieldValue = rowDoc["rowParams"][fieldName];
+
+                //     //     if (eachCtx.valueOverrides[fieldName]) {
+                //     //         var keys = Object.keys(eachCtx.valueOverrides[fieldName]);
+                //     //         keys.forEach(function (key) {
+                //     //             var re = new RegExp(key, 'i');
+                //     //             fieldValue = fieldValue.replace(re, eachCtx.valueOverrides[fieldName][key])
+                //     //         });
+                //     //     }
+                //     //     generatedArray.push(fieldValue);
+
+                //     //     bulkOperationQueryFragment =
+                //     //     {
+                //     //         pKey: rowDoc.pKey, // the specific row
+                //     //         srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
+                //     //     };
+
+                        
+                //     //     eachCtx.nativeCollection.remove(bulkOperationQueryFragment);
+                //     //     // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
+                //     // });
+
+                //     // if (eachCtx.fieldOverrides[fieldName]) {
+                //     //     fieldName = eachCtx.fieldOverrides[fieldName];
+                //     // }
+                //     // updateFragment["$pushAll"]["rowParams." + eachCtx.prefix + fieldName] = generatedArray;
+                // }
+
+                // // Insert the nested object into the main row
+                // if (updateFragment["$pushAll"] && Object.keys(updateFragment['$pushAll']).length > 0) {
+                //     bulkOperationQueryFragment =
+                //     {
+                //         pKey: rowDoc.pKey, // the specific row
+                //         srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
+                //     };
+
+                //     eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateFragment);
+
+                //     // eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
+
+                //     eachCtx.cached = [];
+                // }
+                // eachCtx.numberOfInsertedRows++;
+
+
+
 
             } else {
                 eachCtx.cached.push(rowDoc);
