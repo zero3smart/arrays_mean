@@ -411,6 +411,7 @@
                                     Configure Menus
                                 </label>
                                 <md-select aria-label="Select menu" ng-model="currentMenu"
+                                    flex="25"
                                     ng-hide="( viewSetting | filter:{'inputType':'menu'}:true ).length == 1">
                                     <md-option ng-repeat="setting in viewSetting | filter:{'inputType':'menu'}:true"
                                         value="{{setting.displayAs}}"
