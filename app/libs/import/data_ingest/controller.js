@@ -286,13 +286,12 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         } else {
 
             eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation;
-            // eachCtx.nativeCollectionBulk = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
+            // eachCtx.nativeCollection = forThisDataSource_nativeCollection.initializeUnorderedBulkOp();
 
             processed_row_objects.EnumerateProcessedDataset(
                 dataSourceDescription._id,
                 dataset_parentId,
                 function (doc, eachCb) {
-                    console.log("first callback - calling afterGeneratingProcessedRowObjects_eachRowFn")
                     afterGeneratingProcessedRowObjects_eachRowFn(eachCtx, doc, eachCb);
                 },
                 function (err) {
@@ -301,7 +300,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     callback(err); // bail early
                 },
                 function () {
-                    console.log("last callback")
                     continueToAfterIterating(eachCtx); // done iterating each row
                 },
                 {}
@@ -313,13 +311,10 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     function afterGeneratingProcessedRowObjects_eachRowFn(eachCtx, rowDoc, cb) {
 
         var bulkOperationQueryFragment;
-        console.log(eachCtx)
-        console.log("EACH CTX!!!!!!^^^^^")
 
         if (typeof eachCtx.nested !== 'undefined' && eachCtx.nested == true) {
 
             if (!ifHasAndMeetCriteria(eachCtx, rowDoc)) {
-                console.log("not has and meet criteria")
                 var updateFragment = {$pushAll: {}};
                 for (var i = 0; i < eachCtx.fields.length; i++) {
                     var fieldName = eachCtx.fields[i];
@@ -342,11 +337,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                             pKey: rowDoc.pKey, // the specific row
                             srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                         };
-                        console.log(bulkOperationQueryFragment)
-                        console.log("LIne 343")
-
                         
-                        // eachCtx.nativeCollectionBulk.remove(bulkOperationQueryFragment);
+                        // eachCtx.nativeCollection.remove(bulkOperationQueryFragment);
                         eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).remove();
                     });
 
@@ -363,18 +355,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         pKey: rowDoc.pKey, // the specific row
                         srcDocPKey: rowDoc.srcDocPKey // of its specific source (parent) document
                     };
-                    console.log("right before the bulkupdate query")
-                    // eachCtx.nativeCollectionBulk.update(bulkOperationQueryFragment,updateFragment, function (err, result) {
-                        // if(err) {
-                            // console.log(err)
-                            // console.log("err in update")
-                        // } else {
-                            // console.log("no errors in bulkupdate query")
-                        // }
-                    // });
-                    // console.log("right after the bulkupdate query")
-
-
+                    // eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateFragment) 
 
                     eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
 
@@ -383,9 +364,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                 eachCtx.numberOfInsertedRows++;
 
             } else {
-                console.log('has and meet criteria')
                 eachCtx.cached.push(rowDoc);
-                console.log(eachCtx.cached);
             }
             eachCtx.numberOfRows++;
         } else {
@@ -409,14 +388,14 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         srcDocPKey: rowDoc.srcDocPKey
                     };
 
-                    // console.log('right before the bulkOperationQueryFragment')
-                    // eachCtx.nativeCollectionBulk.update(bulkOperationQueryFragment,updateQuery);
+                    // eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
                     eachCtx.mergeFieldsIntoCustomField_BulkOperation.find(bulkOperationQueryFragment).upsert().update(updateFragment);
                      
-                } else if (newFieldType == 'object') {
-                    console.log("is object")
+                } 
+                // else if (newFieldType == 'object') {
+                //     console.log("is object")
 
-                }
+                // }
 
             }
         }

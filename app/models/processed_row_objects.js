@@ -705,7 +705,6 @@ module.exports.EnumerateProcessedDataset = function (datasetId, parentId, eachFn
 
         nativeCollection_ofTheseProcessedRowObjects.find(query, {sort: {_id: 1}}, function (err, cursor) {
             if (err) { // No cursor yet so we do not call closeCursorAndReturnWithErr(err)
-                console.log("error before cursor")
                 hasErroredAndReturned = true;
                 errFn(err);
 
@@ -720,19 +719,14 @@ module.exports.EnumerateProcessedDataset = function (datasetId, parentId, eachFn
                     errFn(err);
                 });
             }
-            console.log("is there a cursor")
 
             cursor.each(function (err, doc) {
-                console.log("in each cursor func")
-                console.log(doc);
-                console.log(err);
                 if (hasErroredAndReturned == true) {
                     winston.warn("⚠️  Each called after hasErroredAndReturned.");
 
                     return;
                 }
                 if (err) {
-                    console.log("there was an error line 732")
                     closeCursorAndReturnWithErr(err);
 
                     return;
@@ -747,34 +741,26 @@ module.exports.EnumerateProcessedDataset = function (datasetId, parentId, eachFn
                 }
                 //
                 numberOfDocumentsFoundButNotYetProcessed += 1;
-                console.log(numberOfDocumentsFoundButNotYetProcessed)
                 numDocs += 1;
                 //
                 function _finishedWithDoc() {
-                    console.log("finished with doc")
                     numberOfDocumentsFoundButNotYetProcessed -= 1; // finished with this doc - decrement
                     //
-                    console.log(numberOfDocumentsFoundButNotYetProcessed)
-
                     if (hasReachedEndOfCursor == true) {
                         if (numberOfDocumentsFoundButNotYetProcessed == 0) {
-                            console.log("Reached end of cursor and finished processing all")
+                            // console.log("Reached end of cursor and finished processing all")
                             completeFn();
                         } else {
-                            console.log("Reached end of cursor but not finished processing all")
+                            // console.log("Reached end of cursor but not finished processing all")
                         }
                     } else {
-                        console.log("Hasn't reached end of cursor")
+                        // console.log("Hasn't reached end of cursor")
                     }
                 }
 
                 //
                 eachFn(doc, function (err) {
-                    console.log("line 770")
-                    console.log(err);
-                    console.log(typeof(err))
                     if (err != null && typeof err !== 'undefined') {
-                        console.log("there's an error")
                         closeCursorAndReturnWithErr(err);
                     }
                     _finishedWithDoc();
