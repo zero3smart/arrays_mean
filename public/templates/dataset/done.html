@@ -2,8 +2,8 @@
 <md-content layout-padding>
     <div>
 
-        <h2 ng-if="!dirty && imported">Your data has been successfully processed!</h2>
-        <h2 ng-if="dirty">Your data is processing&hellip;</h2>
+        <h2 ng-if="!dirty && imported && !inProgress">Your data has been successfully processed!</h2>
+        <h2 ng-if="inProgress">Your data is processing&hellip;</h2>
 
         <md-content class="md-block" ng-show="inProgress">
             <md-progress-linear md-mode="indeterminate"></md-progress-linear>

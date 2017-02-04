@@ -85,6 +85,7 @@ angular.module('arraysApp')
 
                 viewResource.get({id:id},function(data) {
 
+
                     $mdDialog.show({
                         controller: ViewDialogController,
                         templateUrl: 'templates/dataset/views.view.html',
