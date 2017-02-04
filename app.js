@@ -1,5 +1,12 @@
 
 var cluster = require('cluster');
+var dotenv = require('dotenv');
+var isDev = process.env.NODE_ENV == 'production' ? false : true;
+var dotenv_path = __dirname + "/config/env/.env." + (process.env.NODE_ENV ? process.env.NODE_ENV : "development");
+dotenv.config({
+    path: dotenv_path,
+    silent: true
+});
 
 
 
@@ -41,20 +48,9 @@ if (cluster.isMaster) {
     var MongoSessionStore = require('connect-mongo')(session);
     var flash = require('connect-flash');
     var passport = require('passport');
-    var dotenv = require('dotenv');
     var fs = require('fs');
     var cors = require('cors');
     var async = require('async');
-
-
-    var isDev = process.env.NODE_ENV == 'production' ? false : true;
-    var dotenv_path = __dirname + "/config/env/.env." + (process.env.NODE_ENV ? process.env.NODE_ENV : "development");
-    dotenv.config({
-        path: dotenv_path,
-        silent: true
-    });
-
-
 
     var app = express();
 

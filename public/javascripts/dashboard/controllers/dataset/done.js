@@ -2,15 +2,10 @@ angular.module('arraysApp')
     .controller('DatasetDoneCtrl', ['$scope', '$mdToast', 'dataset', 'additionalDatasources', 'DatasetService', '$location', '$q','Job','$timeout','$window',
         function($scope, $mdToast, dataset, additionalDatasources, DatasetService, $location, $q,Job,$timeout,$window) {
 
-            $scope.primaryAction.text = 'View Your Array';
-            $scope.$watch('dirty', function(dirty) {
-                $scope.primaryAction.disabled = dirty;
-                if(dirty && !$scope.inProgress) {
-                    $scope.importData();
-                }
-            });
+           
+            //-- helper functions ---//
 
-            function makeFieldValuePairs(obj) {
+             function makeFieldValuePairs(obj) {
                 var fieldValuePairs  = [], result;
                 for (var p in obj) {
                     if( obj.hasOwnProperty(p) ) {
@@ -23,19 +18,7 @@ angular.module('arraysApp')
                 }
                 return result;
             }
-            $scope.primaryAction.do = function() {
-                var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
-                    dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
-                    makeFieldValuePairs(dataset.fe_filters.default);
-                $window.open(url, "_blank");
-            };
 
-            $scope.showAdvanced = false;
-            $scope.toggleShowAdvanced = function() {
-                $scope.showAdvanced = !$scope.showAdvanced; // #flip_it
-            }
-
-            //-- helper functions ---//
 
             function errorHandler(response) {
 
@@ -300,7 +283,7 @@ angular.module('arraysApp')
             }
             // -- end helper functions --- //
 
-
+            //this block has to come first, do not move
 
             if (dataset.jobId !== 0) {
                 $scope.inProgress = true;
@@ -310,6 +293,33 @@ angular.module('arraysApp')
             } else {
                 $scope.inProgress = false;
             }
+            //----
+
+
+            $scope.primaryAction.text = 'View Your Array';
+            $scope.$watch('dirty', function(dirty) {
+                $scope.primaryAction.disabled = dirty;
+                if(dirty && !$scope.inProgress) {
+                    $scope.importData();
+                }
+            });
+
+           
+            $scope.primaryAction.do = function() {
+                var url = $scope.subdomain + '/' + dataset.uid + '-r' + dataset.importRevision + '/' +
+                    dataset.fe_views.default_view.split(/(?=[A-Z])/).join('-').toLowerCase() +
+                    makeFieldValuePairs(dataset.fe_filters.default);
+                $window.open(url, "_blank");
+            };
+
+            $scope.showAdvanced = false;
+            $scope.toggleShowAdvanced = function() {
+                $scope.showAdvanced = !$scope.showAdvanced; // #flip_it
+            }
+
+
+
+
 
 
 
