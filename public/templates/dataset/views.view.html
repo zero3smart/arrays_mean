@@ -100,9 +100,9 @@
 
     <md-input-container class="md-block" flex-gt-sm>
         <md-select ng-if="setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name][setting.settingNestedField]">
-            <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle" value="Object Title">
+            <!-- <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle" value="Object Title">
                 Object Title
-            </md-option>
+            </md-option> -->
             <md-option ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
                 {{col}}
             </md-option>
@@ -115,9 +115,9 @@
         </md-select>
 
         <md-select ng-required="setting.require" ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
-            <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title">
+            <!-- <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title">
                 Object Title
-            </md-option>
+            </md-option> -->
             <md-option ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType) | filter: excludeBy(data[setting.selectExcludeBy])" ng-value="col">
                 {{col}}
             </md-option>
@@ -362,9 +362,9 @@
 
     <md-input-container class="md-block" flex-gt-sm>
         <md-select ng-if="setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model="data[setting.name][setting.settingNestedField]">
-            <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle" value="Object Title">
+            <!-- <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle" value="Object Title">
                 Object Title
-            </md-option>
+            </md-option> -->
             <md-option ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
                 {{col}}
             </md-option>
@@ -377,9 +377,9 @@
         </md-select>
 
         <md-select ng-required="setting.require" ng-if="!setting.settingNestedField" aria-label="{{setting.name}} for {{viewName}}" ng-model=" data[setting.name]">
-            <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title">
+            <!-- <md-option ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType &&dataset.fe_designatedFields.objectTitle" value="Object Title">
                 Object Title
-            </md-option>
+            </md-option> -->
             <md-option ng-if="setting.selectFrom=='column'" ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType) | filter: excludeBy(data[setting.selectExcludeBy])" ng-value="col">
                 {{col}}
             </md-option>
@@ -410,15 +410,28 @@
                                         {{setting.displayAs}}
                                     </md-option>
                                 </md-select>
-
-                                    <p>
+                                <div ng-repeat="setting in viewSetting | filter:{'inputType':'menu'}:true"
+                                        ng-if="(currentMenu == setting.displayAs) && !setting.settingNestedField">
+                                    <p ng-if="!(colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)).length">
+                                        <span class="warn">
+                                            No fields
+                                            {{ setting.restrictColumnDataType ? 'of ' + setting.restrictColumnDataType + ' type' : '' }}
+                                            available for this menu.
+                                            <br /><br />
+                                        </span>
+                                        <!-- <md-button class="md-dashboard" ng-click="goToData()">
+                                            Include a field
+                                        </md-button> -->
+                                    </p>
+                                    <p ng-if="(colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)).length == 1">
+                                        Include this field in the <strong>{{currentMenu}}</strong> menu:
+                                    </p>
+                                    <p ng-if="(colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)).length > 1">
                                         Include these fields in the <strong>{{currentMenu}}</strong> menu:
                                     </p>
                                     <ul class="dashboard-list user-list"
-                                        ng-repeat="setting in viewSetting | filter:{'inputType':'menu'}:true"
-                                        ng-if="(currentMenu == setting.displayAs) && !setting.settingNestedField"
                                         ng-init="data[setting.selectExcludeBy] = data[setting.selectExcludeBy] || []">
-                                        <li ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle"
+                                        <!-- <li ng-if="setting.selectFrom=='column' && !setting.restrictColumnDataType && dataset.fe_designatedFields.objectTitle"
                                             layout="row" layout-align="start center">
                                             <span
                                                 ng-if="setting.selectExcludeBy"
@@ -429,11 +442,10 @@
                                                  ng-class="{'default-view': data[setting.name] == 'Object Title'}"
                                                  ng-click="(data[setting.selectExcludeBy].indexOf('Object Title') == -1) ? (data[setting.name] = 'Object Title') : angular.noop()"
                                                  >
-                                                 <!-- aa-tooltip="{{ data.default_view == view.name ? 'Default view' : 'Set as default view' }}" -->
                                                  <i class="fa fa-lg fa-home" aria-hidden="true"></i>
                                             </span>
                                             <span>Object Title</span>
-                                        </li>
+                                        </li> -->
                                         <li ng-if="setting.selectFrom=='column'"
                                             ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)"
                                             layout="row" layout-align="start center"
@@ -462,6 +474,7 @@
                                             {{opt}} (opt)
                                         </li>
                                     </ul>
+                                </div>
                             </div>
 <!-- /menus -->
                         </md-content>
