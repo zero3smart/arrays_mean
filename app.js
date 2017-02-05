@@ -25,7 +25,7 @@ if (cluster.isMaster) {
 
 
     console.log('env %s, master pid %s, total Workers: %s ', process.env.NODE_ENV,process.pid,clusterWorkerSize);
-    for (var i = 0; i < 1; i ++) {
+    for (var i = 0; i < clusterWorkerSize; i ++) {
         cluster.fork();
     }
 
