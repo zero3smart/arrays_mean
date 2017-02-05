@@ -17,7 +17,7 @@
                                     The description will appear at the top of the view. For example, you can use it to describe what viewers can see.
                                 </p>
                                 <md-input-container class="md-block">
-                                    <textarea ng-model="data.description"
+                                    <textarea ng-model="data.description" md-autofocus
                                         md-maxlength="500" rows="3" aria-label="{{viewDisplayName}} Description"></textarea>
                                 </md-input-container>
                             </div>
@@ -255,27 +255,34 @@
 <div ng-if="setting.inputType=='iconMapping' && !data.defaultGalleryConditionalBackground" ng-init="initIcons(setting.name)">
     <label>{{setting.displayAs}}</label>
     <p>{{setting.description}}</p>
-    <div layout="row">
-        <md-select aria-label="{{setting.name}} for {{viewName}}" flex="30" class="md-block" ng-model="data[setting.name].field" ng-model-options="{updateOn:'blur'}">
-            <md-option  ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
-                {{col}}
-            </md-option>
-        </md-select>
-        <div flex="20"></div>
-    </div>
+
+    <md-select flex="45" class="md-block"
+        ng-model="data[setting.name].field"
+        ng-model-options="{updateOn:'default'}"
+        placeholder="Select field">
+        <md-option ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
+            {{col}}
+        </md-option>
+    </md-select>
 
     <div ng-if="data[setting.name].field && iconsUrl.length > 0" ng-repeat="item in data[setting.name].conditions track by $index">
         <div layout="row">
-            <md-input-container flex="50">
+            <md-input-container flex="45">
+                <label>Value</label>
                 <input type="text" ng-model="item.value" aria-label="Display Name {{viewName}}">
             </md-input-container>
-            <md-input-container flex="50">
-                <md-select aria-label="{{setting.name}} for {{viewName}}" data-ng-model="data[setting.name].conditions[$index].applyIconFromUrl" flex="50">
+            <span flex="5"></span>
+
+            <md-input-container flex="20">
+                <label>Image</label>
+                <md-select aria-label="{{setting.name}} for {{viewName}}" data-ng-model="data[setting.name].conditions[$index].applyIconFromUrl">
                     <md-option  data-ng-repeat="icon_url in iconsUrl" data-ng-value="makeRelative(icon_url)" >
                         <img class="iconMap" ng-src="{{icon_url}}">
                     </md-option>
                 </md-select>
             </md-input-container>
+            <span flex="5"></span>
+
             <span class="dashboard-list-icon warn" ng-click="removeIconField(setting.name, $index)" aria-hidden="true" aria-label="Remove" flex="5">
                 <i class="fa fa-remove" aria-hidden="true"></i>
             </span>
@@ -304,22 +311,23 @@
         </div>
     </div>
 
-    <md-button ng-if="data[setting.name].field" class="md-raised" ng-click="addMore(data[setting.name].conditions,'object')">
-        Add more
+    <md-button ng-if="data[setting.name].field" class="md-dashboard" ng-click="addMore(data[setting.name].conditions,'object')">
+        <span class="btn-label">Add more</span>
     </md-button>
 </div>
 
 <div ng-if="setting.inputType=='backgroundColorMapping' && data.defaultGalleryConditionalBackground" ng-init="initBackgroundColors(setting.name)">
     <label>{{setting.displayAs}}</label>
     <p>{{setting.description}}</p>
-    <div layout="row">
-        <md-select aria-label="{{setting.name}} for {{viewName}}" flex="30" class="md-block" ng-model="data[setting.name].field" ng-model-options="{updateOn:'blur'}">
-            <md-option  ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
-                {{col}}
-            </md-option>
-        </md-select>
-        <div flex="20"></div>
-    </div>
+
+    <md-select aria-label="{{setting.name}} for {{viewName}}" flex="45" class="md-block"
+        placeholder="Select field"
+        ng-model="data[setting.name].field"
+        ng-model-options="{updateOn:'default'}">
+        <md-option ng-repeat="col in colsAvailable | filter: DataTypeMatch(setting.restrictColumnDataType)" ng-value="col">
+            {{col}}
+        </md-option>
+    </md-select>
 
     <div ng-if="data[setting.name].field" ng-repeat="item in data[setting.name].conditions track by $index">
         <div layout="row">
@@ -403,6 +411,7 @@
                                     Configure Menus
                                 </label>
                                 <md-select aria-label="Select menu" ng-model="currentMenu"
+                                    flex="25"
                                     ng-hide="( viewSetting | filter:{'inputType':'menu'}:true ).length == 1">
                                     <md-option ng-repeat="setting in viewSetting | filter:{'inputType':'menu'}:true"
                                         value="{{setting.displayAs}}"
