@@ -330,8 +330,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var galleryItem_htmlWhenMissingImage;
 
-            if (dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage) {
-                var cond = dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage;
+            if (dataSourceDescription.fe_views.views.timeline.galleryItemConditionsForIconWhenMissingImage) {
+                var cond = dataSourceDescription.fe_views.views.timeline.galleryItemConditionsForIconWhenMissingImage;
 
                 var checkConditionAndApplyClasses = function (conditions, value,multiple) {
 
