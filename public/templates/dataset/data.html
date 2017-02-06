@@ -38,7 +38,8 @@
                 <md-menu-content width="4">
                     <md-menu-item>
 
-                        <md-button ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
+                        <md-button ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)"
+                            ng-if="user.role=='superAdmin'">
                             Add a new field
                         </md-button>
                     </md-menu-item>
