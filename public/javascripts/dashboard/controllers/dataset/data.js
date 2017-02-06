@@ -559,8 +559,6 @@ angular.module('arraysApp')
                 $scope.save = function () {
                     // Master Dataset
 
-
-
                     if ($scope.dataset.dirty !== 1) {
                         $scope.dataset.dirty = 2;
                     }
@@ -586,6 +584,7 @@ angular.module('arraysApp')
 
                     $scope.dataset.fe_nestedObject.valueOverrides = {};
                     $scope.dataset.fe_nestedObject.fields = $scope.data.fields;
+
 
                     $scope.data.valueOverrides.map(function (elem) {
 
@@ -621,9 +620,6 @@ angular.module('arraysApp')
                             datasource.fe_nestedObject.valueOverrides[elem.field] = valueOverrides;
                         });
                     });
-
-
-
 
                     $mdDialog.hide({
                         dataset: $scope.dataset,

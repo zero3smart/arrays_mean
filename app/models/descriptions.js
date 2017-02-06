@@ -82,7 +82,8 @@ var DatasourceDescription_scheme = Schema({
             fieldName: String,
             operatorName: String, // "equal"
             value: String // ""
-        }
+        },
+        nestingKey: String
     },
 
     author: {type: Schema.Types.ObjectId, ref: 'User'},
