@@ -341,12 +341,17 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
   position: relative;
 }
 
+.w-bottom-shadow {
+	box-shadow: 1px 1px 3px 0 rgba(0,0,0,0.2);
+}
+
 .w-container {
   width: 100%;
   position: fixed;
   top: 0px;
   height: 64px;
   background-color: #FFFFFF;
+  z-index: 1000;
 }
 
 .w-logo {
