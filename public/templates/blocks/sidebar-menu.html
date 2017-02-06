@@ -1,17 +1,14 @@
 <ul class="nav">
-
     <li class="sidebar-label">
         <a class="sidebar-label">{{user.firstName}} {{user.lastName}}</a>
     </li>
 
     <li ng-class="{'active': currentMenuItem === 'account'}">
-        <a ui-sref="dashboard.account.profile" role="button"> Account Settings</a>
+        <a ui-sref="dashboard.account.profile" role="button">Account Settings</a>
     </li>
 
-
-
     <li ng-if="env.node_env !== 'enterprise' && (user.role=='admin' || user.role=='superAdmin' || user._team.length > 1 ) " ng-class="{'active': currentMenuItem === 'teams'}">
-        <a ui-sref="dashboard.teams" role="button">Manage Teams</a>
+        <a ui-sref="dashboard.teams" role="button">Teams</a>
     </li>
 
     <hr>
@@ -28,15 +25,16 @@
     </li>
 
     <li ng-if="((user.role=='admin' || user.role=='editor') && ( team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active')) || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'dataset'}">
-        <a ui-sref="dashboard.dataset.list" role="button">Visualization Settings</a>
-    </li>
-    <li ng-if="((user.role=='admin' || user.role=='editor') && (team.superTeam  || team.subscription.state=='in_trial' || team.subscription.state=='active')) || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'user'}">
-        <a ui-sref="dashboard.user.list" role="button">Manage Users</a>
-    </li>
-    <li ng-if="team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active' || user.role=='superAdmin'" class="sidebar-link">
-        <span>
-        <a href="{{subdomain}}" target="_blank" ng-click="updateSubdomain()">View Website</a>
-        </span>
+        <a ui-sref="dashboard.dataset.list" role="button">Visualizations</a>
     </li>
 
+    <li ng-if="((user.role=='admin' || user.role=='editor') && (team.superTeam  || team.subscription.state=='in_trial' || team.subscription.state=='active')) || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'user'}">
+        <a ui-sref="dashboard.user.list" role="button">Users</a>
+    </li>
+
+    <li ng-if="team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active' || user.role=='superAdmin'" class="sidebar-link">
+        <span>
+            <a href="{{subdomain}}" target="_blank" ng-click="updateSubdomain()">View Website</a>
+        </span>
+    </li>
 </ul>
