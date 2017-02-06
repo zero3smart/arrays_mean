@@ -41,12 +41,19 @@
 
                                 <input type="hidden" name="subdomainUrl" value="{{baseUrl}}" class="hidden">
 
-                                <div class="panel panel-default panel-source source-{{ source.key }} js-panel-array">
+                                <div class="panel panel-default panel-source source-{{ source.key }} js-panel-array mobile-max-width">
                                     {% if source.brandColor %}
                                         <style scoped>
                                             .source-{{ source.key }} .explore-tile-header {
                                                 background-color: {{ source.brandColor }};
                                             }
+
+                                            {% if source.description %}
+                                            .source-{{ source.key }}:hover .explore-tile-description-container {
+                                                max-height: 100%;
+                                                transition: max-height 250ms linear;
+                                            }
+                                            {% endif %}
                                         </style>
                                     {% endif %}
 
@@ -60,7 +67,7 @@
                                                 <div class="explore-tile-meta hidden-xs">
                                                     {% set comma = joiner() %}
                                                     {% for url in source.urls -%}
-                                                      {{ comma() }} <a href="{{ url }}" class="source-link" target="_blank">{{ url }}</a>
+                                                      {{ comma() }} <span><a href="{{ url }}" class="source-link source-underline" target="_blank">{{ url }}</a></span>
                                                     {%- endfor %}
                                                 </div>
                                                 <div class="explore-tile-meta">
@@ -71,10 +78,29 @@
                                             </div>
                                         </div>
                                         {% if source.banner %}
-                                        <div class="explore-tile-banner-image" style="background-image:url('{{ source.banner }}')"></div>
+                                        <div class="explore-tile-banner-image" style="background-image:url('{{ source.banner }}')">
                                         {% else %}
-                                        <div class="explore-tile-banner-image" style="background-image:url('/images/explore/default_pattern.png'); background-color:{{ source.brandColor }}"></div>
+                                        <div class="explore-tile-banner-image" style="background-image:url('/images/explore/default_pattern.png'); background-color:{{ source.brandColor }}">
                                         {% endif %}
+                                            {% if source.description %}
+                                            <div class="explore-tile-description-container team-tile-description">
+                                                <div class="explore-tile-description">
+                                                {% if source.description.length > 300 %}
+                                                {% set space = source.description.indexOf(' ', 290) %}
+                                                    {% if space %}
+                                                        {{ source.description.slice(0,space) + '...' }}
+                                                    {% elif source.description.length > 325 %}
+                                                        {{ source.description.slice(0,300) + '...' }}
+                                                    {% else %}
+                                                        {{ source.description }}
+                                                    {% endif %}
+                                                {% else %}
+                                                    {{ source.description }}
+                                                {% endif %}
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div><!-- .panel -->
                             </div>
