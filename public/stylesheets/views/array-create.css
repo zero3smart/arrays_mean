@@ -279,6 +279,7 @@
     font-weight: 500;
     max-height: 0%;
     height: 100%;
+    width: 100%;
     transition: max-height 250ms linear;
 }
 
