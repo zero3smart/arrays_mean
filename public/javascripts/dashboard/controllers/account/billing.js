@@ -89,13 +89,13 @@ angular.module('arraysApp')
                         
                     } else if (res.data.subscriptions.subscription) {
 
-                        if (typeof res.data.subscriptions.subscription === 'object') { // If there's only one subscription
-                            $scope.subscription = res.data.subscriptions.subscription;
-                            $scope.subscription.quantity._ = parseInt(res.data.subscriptions.subscription.quantity._);
-                        } else { // If there are more than on subscriptions in the system
+                        if (res.data.subscriptions.subscription.length > 1) {
                             var curSubscription = res.data.subscriptions.subscription[0];
                             $scope.subscription = curSubscription;
                             $scope.subscription.quantity._ = parseInt(curSubscription.quantity._);
+                        } else {
+                            $scope.subscription = res.data.subscriptions.subscription;
+                            $scope.subscription.quantity._ = parseInt(res.data.subscriptions.subscription.quantity._);
                         }
 
                         // Calculate trial days remaining
