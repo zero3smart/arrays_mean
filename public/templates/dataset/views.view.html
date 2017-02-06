@@ -35,7 +35,7 @@
 <div ng-if="setting.inputType == 'slider'">
     <label>{{setting.displayAs}}</label>
     <p>{{setting.description}}</p>
-    <md-input-container layout="row" layout-align="space-between center">
+    <md-input-container layout="row" layout-align="space-between center" ng-init="data[setting.name] = data[setting.name] || 0.5">
         <md-slider ng-model="data[setting.name]" min="0" max="1" step="0.1" flex aria-label="Bar chart spacing"></md-slider>
         <span flex="5"></span>
         <span flex="5">{{ data[setting.name] * 100}}%</span>
