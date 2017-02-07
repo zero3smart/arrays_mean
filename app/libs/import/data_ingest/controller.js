@@ -123,7 +123,6 @@ var _postProcess = function (indexInList, dataSourceDescription,job, callback) {
     //
 
 
-
     processed_row_objects.InsertProcessedDatasetFromRawRowObjects
     (
         job,
@@ -270,6 +269,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         eachCtx.numberOfInsertedRows = 0;
         eachCtx.numberOfRows = 0;
         eachCtx.pKeyQuery = {};
+        eachCtx.id = dataSourceDescription._id;
         if (dataset_parentId) {
             eachCtx.pKeyQuery = {$regex: "^" + dataSourceDescription._id + "-"}
         } else {
@@ -290,7 +290,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             continueToAfterIterating();
         } else {
 
-            // eachCtx.mergeFieldsIntoCustomField_BulkOperation = mergeFieldsIntoCustomField_BulkOperation;
             eachCtx.nativeCollection = forThisDataSource_nativeCollection;
             afterGeneratingProcessedRowObjects_eachRowFn(eachCtx,function(err) {
                 if (err) {
@@ -325,102 +324,157 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             }
 
             var groupQuery = formGroupQuery(eachCtx);
+            
 
-            var completed = false;
+
+                
+            var continueLoop = true;
             var counter = 1;
             var skipping = 0;
-            var limit = 1000;
+            var limit = 10;
 
             async.whilst(function() {
                 if (counter == 1) {
+
+
                     return true;
                 } else {
-                    return completed;
+                    return continueLoop;
                 }
             },function(next) {
                 eachCtx.nativeCollection.aggregate([
                     {$match: matchQuery},
-                    {$group: groupQuery},
                     {$skip: skipping},
-                    {$limit: limit}
-                ],function(err,aggregatedResult) {
+                    {$limit: limit},
+                    {$group: groupQuery}
+                    
+                ],{allowDiskUse:true},function(err,aggregatedResult) {
 
                
                     if (err) return next(err);
-                 
+                    
+
+            
                     if (aggregatedResult.length == 0) {
-                        completed = true;
+                        continueLoop = false;
                         return next();
                     } 
-                
+
+                   
+                    console.log("here");
                     async.each(aggregatedResult,function(res,callback) {
                         var updateQuery = {};
                         updateQuery["rowParams." + eachCtx.criteria.fieldName] = {$ne: eachCtx.criteria.value};
                         var matchingCond = res._id;
-                        updateQuery["rowParams." + eachCtx.nestingKey] = matchingCond;
-                        var setQuery = formSetQuery(res,eachCtx.prefix);
-
                         eachCtx.numberOfRows += res.count;
 
                         delete res._id;
                         delete res.count;
 
-                        eachCtx.nativeCollection.update(updateQuery,{$set: setQuery},function(err,result) {
+                        updateQuery["rowParams." + eachCtx.nestingKey] = matchingCond;
+                        var setQuery = formSetQuery(res,eachCtx.prefix,eachCtx.valueOverrides);
+
+                        console.log("bac")
+                        eachCtx.nativeCollection.update(updateQuery,{$push: setQuery},function(err,result) {
                             if (err) return callback(err);
                             var r = JSON.parse(result);
 
                             eachCtx.numberOfInsertedRows += parseInt(r["n"]);
                             eachCtx.numberOfRows += parseInt(r["n"]);
-
-                            var removeQuery = {};
-                            removeQuery["rowParams." + eachCtx.nestingKey] = matchingCond;
-                            removeQuery["rowParams." + eachCtx.criteria.fieldName] = eachCtx.criteria.value;
-                            eachCtx.nativeCollection.remove(removeQuery,callback(err));
+                            callback();
                         })
 
                     },function(err) {
      
-                        skipping += counter * limit;
+                        skipping = counter * limit;
                         counter++;
+
+                        console.log(eachCtx.numberOfRows);
+
+
+                        if (eachCtx.numberOfRows!== 0 && eachCtx.numberOfRows % 100 == 0) {
+                            winston.info("✅  processed " + eachCtx.numberOfRows + " of nested fields");
+                            job.log("✅  processed " + eachCtx.numberOfRows + " of nested fields");
+                        }
+
                         next(err);
                     })
 
                 })
 
             },function(err) {
-                cb(err);
+                var removeQuery = {};
+                removeQuery["rowParams." + eachCtx.criteria.fieldName] = eachCtx.criteria.value;
+                eachCtx.nativeCollection.remove(removeQuery,cb);
+
+                // cb(err);
             })
+
 
         } else {
 
-            for (var i = 0; i < eachCtx.length; i++) {
+            async.each(eachCtx,function(customField,outterCallback) {
 
-                var newFieldName = eachCtx[i].fieldName;
+                var projectQuery = formProjectQuery(customField);
+        
 
-                var newFieldType = eachCtx[i].fieldType;
-                if (newFieldType == 'array') {
-                    var fieldsToMergeIntoArray = eachCtx[i].fieldsToMergeIntoArray;
-                    var delimiterArrays = eachCtx[i].delimiterOnFields;
-                    var new_array = mergeAllFieldsToArray(fieldsToMergeIntoArray,delimiterArrays, rowDoc, null);
-             
+                var continueLoop = true;
+                var counter = 1;
+                var skipping = 0;
+                var limit = 1000;
 
-                    var updateQuery = addToSet(newFieldName, new_array);
+                async.whilst(function() {
+
+                    if (counter == 1) {
+                        return true;
+                    } else {
+                        return continueLoop;
+                    }
+                },function(next) {
+
+                    eachCtx.nativeCollection.aggregate([
+                        {$skip: skipping},
+                        {$limit: limit},
+                        {$project:projectQuery}
+                    ],function(err,aggregatedResult) {
     
-                    bulkOperationQueryFragment =
-                    {
-                        pKey: rowDoc.pKey,
-                        srcDocPKey: rowDoc.srcDocPKey
-                    };
+                        if (err) return next(err);
 
+                        // console.log(aggregatedResult.length);
+
+                        if (aggregatedResult.length == 0) {
+                            continueLoop = false;
+                            return next();
+                        } 
                     
-                    eachCtx.nativeCollection.update(bulkOperationQueryFragment,updateQuery);
-                     
-                } else if (newFieldType == 'object') {
+                        async.each(aggregatedResult,function(res,asynEachCb) {
+                            var docId = res._id;
+                            delete res._id;
+                            var setQuery = formSetQuery(res);
+
+                            eachCtx.nativeCollection.update({_id:docId},{$set: setQuery},function(err) {
+                                asynEachCb(err);
+                            });
+
+                        },function(err) {
+         
+                            skipping = counter * limit;
+                            counter++;
+                            next(err);
+                        })
 
 
-                }
+                    })
 
-            }
+                },function(err) {
+                    outterCallback(err);
+
+                })
+
+            },function(err) {
+                return cb(err);
+            })
+
         }
 
     }
@@ -429,7 +483,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
         var ret = {};
         ret["_id"] = "$rowParams." + ctx.nestingKey;
         for (var i = 0; i < ctx.fields.length; i ++) {
-            if (ctx.fields[i] == "Transcript") continue;
             ret[ctx.fields[i]] = {$push: "$" + "rowParams." + ctx.fields[i]};
         }
         ret["count"] = {$sum:1};
@@ -439,52 +492,65 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
     
 
 
-    function formSetQuery(obj,prefix) {
+    function formSetQuery(obj,prefix,valueOverrides) {
         var ret = {};
-        for (var key in obj) {
-            var revisedKey = "rowParams." + prefix + key;
-            ret[revisedKey] = obj[key];
+        for (var fieldName in obj) {
+            if (!prefix || !valueOverrides) {
+                var revisedKey = "rowParams." + fieldName;
+                ret[revisedKey] = obj[fieldName];
+                continue;
+
+            } 
+            var revisedKey = "rowParams." + prefix + fieldName;
+            var fieldValue = obj[fieldName];
+
+
+            if (valueOverrides[fieldName]) {
+                var keys = Object.keys(valueOverrides[fieldName]);
+                keys.forEach(function (key) {
+                    var re = new RegExp(key, 'i');
+                    fieldValue = fieldValue.map(function(f) {
+                        return f.replace(re, valueOverrides[fieldName][key]);
+                    })
+                    
+                });
+
+            }
+            ret[revisedKey] = {};
+            ret[revisedKey].$each = fieldValue;
         }
         return ret;
     }
 
-
-
-
-
-    function mergeAllFieldsToArray(withValuesInFieldsNamed,delimiterArrays, rowDoc) {
-
-        var generatedArray = [];
-        for (var i = 0; i < withValuesInFieldsNamed.length; i++) {
-            var fieldName = withValuesInFieldsNamed[i];
-            var fieldValue = rowDoc["rowParams"][fieldName];
-            if (typeof fieldValue !== 'undefined' && fieldValue !== null && fieldValue !== "") {
-                if (typeof delimiterArrays !== 'undefined' && Array.isArray(delimiterArrays) &&
-                    delimiterArrays.length > 0) {
-                    if (delimiterArrays[i] == '" "') {
-                        delimiterArrays[i] = " ";
-                    }
-                    fieldValue = fieldValue.split(delimiterArrays[i]);
-                    var refinedValue = [];
-                    fieldValue.forEach(function(value) {
-                        refinedValue.push(value.toString().trim());
-                    });
-                    generatedArray = generatedArray.concat(refinedValue);
-                } else {
-                    generatedArray.push(fieldValue);
-                }
-            }
+    function formProjectQuery(customField) {
+        //assuming its merging to array
+        var mergingFields = customField.fieldsToMergeIntoArray;
+        var newFieldName = customField.fieldName;
+        var p = {};
+        var useDelimiter = false;
+        if (!customField.delimiterOnFields || customField.delimiterOnFields.length == 0) {
+            p[newFieldName] = [];
+        } else {
+            useDelimiter = true;
+            p[newFieldName] = {$split:[]};
         }
-        return generatedArray;
+        if (useDelimiter) {
+            p[newFieldName]["$split"].push("$rowParams." + mergingFields[0]);
+            var split = customField.delimiterOnFields[0];
+            if (split == '" "') {
+               split = " ";
+            }
+            p[newFieldName]["$split"].push(split);
+        } else {
+            for (var i = 0; i < mergingFields.length; i++) {
+                p[newFieldName].push("$rowParams." + mergingFields[i])
+            }
+
+        }
+       
+        return p;
     }
 
-    function addToSet(generateFieldNamed, persistableValue) {
-        var updateFragment = {$addToSet: {}};
-        updateFragment["$addToSet"]["rowParams." + generateFieldNamed] = {"$each": persistableValue};
-
-        return updateFragment;
-
-    }
 
     function afterGeneratingProcessedRowObjects_afterIterating_eachRowFn(eachCtx, cb) {
 
