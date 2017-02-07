@@ -84,7 +84,7 @@
 </div>
 
 
-<div ng-if="setting.inputType == 'select'" ng-init="dep = checkDependency(setting.selectFrom);">
+<div ng-if="(setting.inputType == 'select' && viewName != 'map') || (setting.inputType == 'select' && viewName == 'map' && (setting.name == 'coordTitle' || setting.name == 'latitudeField' || setting.name == 'longitudeField') && data.plotCoordinates == true)" ng-init="dep = checkDependency(setting.selectFrom);">
     <label>{{setting.displayAs}}</label>
     <p>{{setting.description}}</p>
     <small class="pull-right" ng-if="dep">
@@ -243,6 +243,12 @@
         <md-radio-button ng-value="false" aria-label="Default ascending order">Ascending</md-radio-button>
         <md-radio-button ng-value="true" aria-label="Default descending order">Descending</md-radio-button>
     </md-radio-group>
+</div>
+
+<div ng-if="(setting.inputType=='colorpicker' && viewName != 'map') || (setting.inputType=='colorpicker' && data.plotCoordinates == true)">
+    <label>{{setting.displayAs}}</label>
+    <p>{{setting.description}}</p>
+    <aa-color-picker selected="data[setting.name]"></aa-color-picker>
 </div>
 
 <div ng-if="setting.inputType=='multiColorpicker'" ng-init="data[setting.name] = data[setting.name] || []">
@@ -415,6 +421,7 @@
                                     ng-hide="( viewSetting | filter:{'inputType':'menu'}:true ).length == 1">
                                     <md-option ng-repeat="setting in viewSetting | filter:{'inputType':'menu'}:true"
                                         value="{{setting.displayAs}}"
+                                        ng-if="!(viewName == 'map' && data.plotCoordinates == true && setting.name == 'defaultMapByColumnName')"
                                         ng-selected="$first">
                                         {{setting.displayAs}}
                                     </md-option>

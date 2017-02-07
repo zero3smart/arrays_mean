@@ -12,22 +12,34 @@ var layer = 'contour',
     metric = 'total',
     numBreaks = 100, // How many layers of opacity values there should be
     topValue = parseInt(templateOutput_topValue), // This should be the highest "total" value in the data
+    coordMinMax = templateOutput_coordMinMax,
     filteruse,
+    mapStyle,
     breaks = [],
+    maxRadius = 40, // At 0 zoom
+    radii = [],
     opacities = [],
-    names = [];
+    names = [],
+    logOffset;
+
+logOffset = coordMinMax.min < 0 ? Math.abs(coordMinMax.min - 1) : 0;
 
 /**
  * Logarithmic scale
  */
-function logScale(currentBreak, numBreaks, topValue) {
+function logScale(currentBreak, numBreaks, maxValue, minValue) {
     // current break will be between 0 and numBreaks
     var minp = 0;
     var maxp = numBreaks;
 
+    var minv,
+        maxv,
+        logMax = maxValue + logOffset,
+        logMin = isCoordMap ? minValue + logOffset : 1;
+    console.log('logMin', logMin);
     // The result should be between 1 an topValue
-    var minv = Math.log(1);
-    var maxv = Math.log(topValue);
+    minv = Math.log(logMin); 
+    maxv = Math.log(logMax);
 
     // calculate adjustment factor
     var scale = (maxv - minv) / (maxp - minp);
@@ -35,14 +47,29 @@ function logScale(currentBreak, numBreaks, topValue) {
     return Math.exp(minv + scale * (currentBreak - minp));
 }
 
+function linearScale(currentBreak, numBreaks, maxValue, minValue) {
+    var diff = maxValue - minValue,
+        interval = diff / numBreaks;
+
+    return interval * currentBreak;
+}
+
 /**
  * Generate layer breakpoints, layer names, and opacity values;
  */
 for (i = 0; i < numBreaks; i++) {
-    breaks[i] = logScale(i, numBreaks, topValue);
-    opacities[i] = (i / numBreaks);
+    if (isCoordMap) {
+        breaks[i] = linearScale(i, numBreaks, coordMinMax.max, coordMinMax.min); 
+        radii[i] = (i / numBreaks) * maxRadius + (maxRadius / numBreaks);
+    } else {
+        breaks[i] = logScale(i, numBreaks, topValue);
+        opacities[i] = (i / numBreaks);
+    }
+
     names[i] = 'layer-' + i;
 }
+
+console.log(breaks);
 
 /**
  * Mapbox access token
@@ -52,9 +79,18 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoic2NoZW1hIiwiYSI6IjAxcE9MMlkifQ.Kljao5iyXhySu2
 /**
  * Create map, set style and centering
  */
+
+/*
+-- styles --
+basic: mapbox://styles/schema/cinavisv200i4bckv2fb6atgp
+roads: mapbox://styles/schema/ciyurftt3003a2rqsh7xqectv
+*/
+
+mapStyle = isCoordMap ? 'mapbox://styles/schema/ciyurftt3003a2rqsh7xqectv' : 'mapbox://styles/schema/cinavisv200i4bckv2fb6atgp';
+
 var map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/schema/cinavisv200i4bckv2fb6atgp',
+    style: mapStyle,
     center: [0, 35],
     zoom: 1.5 // starting zoom
 });
@@ -83,33 +119,66 @@ map.on('load', function () {
     /**
      * Add source data to map
      */
-    map.addSource('countries', {
-        type: 'geojson',
-        data: geoData
-    });
+    if (isCoordMap) {
+        map.addSource('points', {
+            type: 'geojson',
+            data: coordData
+        });
+    } else {
+        map.addSource('countries', {
+            type: 'geojson',
+            data: geoData
+        });
+    }
+
 
     /**
      * Loop through layers, filter countries, and apply opacity
      */
     for (i = 0; i < numBreaks; i++) {
         if (i < numBreaks - 1) {
-            filteruse = ['all', ['>=', metric, breaks[i]], ['<', metric, breaks[i + 1]]];
+            filteruse = ['all', ['>=', metric, breaks[i] - logOffset], ['<', metric, breaks[i + 1] - logOffset]];
         } else {
-            filteruse = ['>=', metric, breaks[i]];
+            filteruse = ['>=', metric, breaks[i] - logOffset];
         }
 
-        map.addLayer({
-            id: names[i],
-            type: 'fill',
-            source: 'countries',
-            'source-layer': layer,
-            filter: filteruse,
-            paint: {
-                'fill-color': '#00DAE5',
-                'fill-opacity': opacities[i]
-            }
-        }, 'water');
+        if (isCoordMap) {
+            map.addLayer({
+                id: names[i],
+                type: 'circle',
+                source: 'points',
+                filter: filteruse,
+                paint: {
+                    'circle-radius': {
+                        stops: [
+                            [0, radii[i]],
+                            [4, radii[i] * 3],
+                            [8, radii[i] * 6],
+                            [12, radii[i] * 9],
+                            [16, radii[i] * 12],
+                            [20, radii[i] * 15]
+                        ]
+                    },
+                    // 'circle-radius': radii[i],
+                    'circle-color': coordColor,
+                    'circle-opacity': 0.5
+                }
+            });
+        } else {            
+            map.addLayer({
+                id: names[i],
+                type: 'fill',
+                source: 'countries',
+                'source-layer': layer,
+                filter: filteruse,
+                paint: {
+                    'fill-color': '#00DAE5',
+                    'fill-opacity': opacities[i]
+                }
+            }, 'water');
+        }
     }
+
 
     /**
      * Create a popup, but don't add it to the map yet
@@ -142,6 +211,7 @@ map.on('load', function () {
             .setHTML('<span class="popup-key">' + feature.properties.name + '</span> <span class="popup-value">' + convertIntegerToReadable(feature.properties.total) + '</span>')
             .addTo(map);
     });
+
 
     /**
      * Filter by country on click

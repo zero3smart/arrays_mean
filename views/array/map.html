@@ -41,7 +41,7 @@
 
                         <div class="sort-bar clearfix">
 
-                            <nav class="sort-bar-left pull-left" role="navigation">
+                            <nav style="display: {{ 'none' if isCoordMap else 'block' }};" class="sort-bar-left pull-left" role="navigation">
                                 {{
                                 dropdown.default(
                                     'Map By',
@@ -94,7 +94,15 @@
 
             <script type="text/javascript">
                 var templateOutput_topValue = {{ highestValue if highestValue else 0 }};
+                var templateOutput_coordMinMax = {
+                    min: {{ coordMinMax.min if coordMinMax else 0 }},
+                    max: {{ coordMinMax.max if coordMinMax else 0 }}
+                };
+                var coordColor = '{{ coordColor }}';
+                var isCoordMap = {{ isCoordMap if isCoordMap else false }};
                 var geoData = {{ featureCollection | dump | safe }};
+                var coordData = {{ coordCollection | dump | safe }};
+                console.log(coordData.features[0]);
                 var filterObj = {{ filterObj | dump | safe }};
                 var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
                         searchCol: searchCol,
