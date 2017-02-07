@@ -13,7 +13,6 @@ module.exports.BindData = function (req, teamDescription, callback) {
     var team_dataSourceDescriptions = teamDescription.datasourceDescriptions;
 
 
-
     var iterateeFn = async.ensureAsync(function (dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
     {
 
@@ -55,6 +54,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
                 lastUpdatedBy: updatedByDisplayName,
                 author: authorDisplayName,
                 arrayListed: default_listed,
+                arrayVisible: dataSourceDescription.fe_visible,
 
                 default_filterJSON: default_filterJSON,
                 default_view: default_view,
@@ -67,8 +67,8 @@ module.exports.BindData = function (req, teamDescription, callback) {
     });
 
 
-    var completionFn = function (err, sourceDescriptions) {
 
+    var completionFn = function (err, sourceDescriptions) {
 
         var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
 

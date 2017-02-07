@@ -211,6 +211,7 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
                 parse(cachedLines + line, {delimiter: delimiter, relax: true, skip_empty_lines: true}, function (err, output) {
                     if (err || !output || output.length == 0) {
                         winston.info("❌  Error encountered during saving the line " + lineNr + " of document: ", sourceDocumentTitle);
+                        console.log(line)
                         console.log(err);
                         cachedLines = cachedLines + line;
                         return readStream.resume();

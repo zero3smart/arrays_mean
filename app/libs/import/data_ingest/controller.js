@@ -327,6 +327,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             
 
 
+
                 
             var continueLoop = true;
             var counter = 1;
@@ -361,7 +362,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     } 
 
                    
-                    console.log("here");
+    
                     async.each(aggregatedResult,function(res,callback) {
                         var updateQuery = {};
                         updateQuery["rowParams." + eachCtx.criteria.fieldName] = {$ne: eachCtx.criteria.value};
@@ -400,6 +401,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         next(err);
                     })
 
+
                 })
 
             },function(err) {
@@ -407,8 +409,8 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                 removeQuery["rowParams." + eachCtx.criteria.fieldName] = eachCtx.criteria.value;
                 eachCtx.nativeCollection.remove(removeQuery,cb);
 
-                // cb(err);
             })
+
 
 
         } else {
@@ -446,6 +448,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                             continueLoop = false;
                             return next();
                         } 
+
                     
                         async.each(aggregatedResult,function(res,asynEachCb) {
                             var docId = res._id;

@@ -11,6 +11,9 @@
 		{% endif %}
 		<div class="gallery-tooltip border-top-color-brand">
 			<h2 class="gallery-title">{{ doc.rowParams[fieldKey_objectTitle] if doc.rowParams[fieldKey_objectTitle] else "(Title not specified)" }}</h2>
+			<div class="gallery-object-title-ellipses">
+				<h2>…</h2>
+			</div>
 		</div>
 	</a>
 </li>

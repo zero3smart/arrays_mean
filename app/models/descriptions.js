@@ -468,12 +468,13 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                         if (err) return fn(err);
 
                         if (
-                            foundUser.isSuperAdmin() ||
+                            foundUser.isSuperAdmin() || 
                             (
                                 (
                                     datasourceDescription.author.equals(foundUser._id) ||
                                     foundUser._editors.indexOf(datasourceDescription._id) >= 0 ||
-                                    foundUser._viewers.indexOf(datasourceDescription._id) >= 0
+                                    foundUser._viewers.indexOf(datasourceDescription._id) >= 0 ||
+                                    datasourceDescription.isPublic
                                 ) && ( 
                                     subscription.state === 'in_trial' || subscription.state === 'active' || datasourceDescription._team.superTeam == true
                                 )

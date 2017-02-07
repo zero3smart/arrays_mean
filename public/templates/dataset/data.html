@@ -36,8 +36,7 @@
                     <span class="md-select-icon" aria-hidden="true"></span>
                 </md-button>
                 <md-menu-content width="4">
-                    <md-menu-item>
-
+                    <md-menu-item ng-if="user.role=='superAdmin'">
                         <md-button ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
                             Add a new field
                         </md-button>
@@ -47,8 +46,8 @@
                             Group data together
                         </md-button>
                     </md-menu-item>
-                    <md-menu-item>
-                        <md-button ng-click="openImageScrapingDialog()" ng-if="user.role=='superAdmin'">
+                    <md-menu-item ng-if="user.role=='superAdmin'">
+                        <md-button ng-click="openImageScrapingDialog()">
                             Image scraping
                         </md-button>
                     </md-menu-item>
@@ -78,15 +77,17 @@
                     <span class="glyphicon glyphicon-move"></span>
                 </span>
 
-                <md-checkbox ng-hide="dataset.connection" name="fe_excludeFields_{{$index}}"
+                <span flex="10" aa-tooltip="{{ dataset.fe_excludeFields[field.name] ? 'Include field' : 'Exclude field' }}">
+                    <md-checkbox ng-hide="dataset.connection" name="fe_excludeFields_{{$index}}"
                              ng-model="dataset.fe_excludeFields[field.name]"
                              ng-true-value="false"
                              ng-false-value="true"
                              ng-click="$event.stopPropagation();"
                              ng-change="setDirty(3)"
                              aria-label="Exclude {{field.name}}"
-                             flex="10"
                              ></md-checkbox>
+                </span>
+
                 <span flex ng-click="openFieldDialog($event, field.name, field.sample, field.custom, field.customFieldIndex)">
                     {{ dataset.fe_displayTitleOverrides[field.name] || field.name }}
                     <span class="sample">

@@ -1,4 +1,4 @@
-/* @override 
+/* @override
 	http://localhost:9080/stylesheets/module/choropleth.css */
 
 .map-container {
@@ -77,6 +77,17 @@
 .sort-control .dropdown-toggle-button:focus,
 .sort-control .dropdown-toggle-button:active {
     box-shadow: var(--box-shadow);
+}
+
+.sort-control .dropdown-toggle-empty,
+.sort-control .dropdown-toggle-empty:hover {
+    cursor: default;
+    box-shadow: none;
+}
+
+.sort-control .dropdown-toggle-empty .sort-criteria,
+.sort-control .dropdown-toggle-empty:hover .sort-criteria {
+    color: var(--color-text-dark);
 }
 
 .sort-control-left {
