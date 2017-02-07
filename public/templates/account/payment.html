@@ -94,13 +94,33 @@
 
     <div layout="row" layout-align="space-between center">
 
-        <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard" ng-click="updateBillingInfo($event)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
-            <span class="btn-label">Update Billing Information</span>
-        </md-button>
+        <div ng-if="!billing.exists">
+            <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard" ng-click="updateBillingInfo('pro-monthly')" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
+                <span class="btn-label">Start Trial (Monthly)</span>
+            </md-button>
 
-        <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard" ng-click="updateBillingInfo($event)" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
-            <span class="btn-label">Update Billing Information</span>
-        </md-button>
+            <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard" ng-click="updateBillingInfo('pro-monthly')" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
+                <span class="btn-label">Start Trial (Monthly)</span>
+            </md-button>
+
+            <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard" ng-click="updateBillingInfo('pro-annual')" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
+                <span class="btn-label">Start Trial (Annual)</span>
+            </md-button>
+
+            <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard" ng-click="updateBillingInfo('pro-annual')" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
+                <span class="btn-label">Start Trial (Annual)</span>
+            </md-button>
+        </div>
+
+        <div ng-if="billing.exists">
+            <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard" ng-click="updateBillingInfo()" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
+                <span class="btn-label">Update Billing Information</span>
+            </md-button>
+
+            <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard" ng-click="updateBillingInfo()" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
+                <span class="btn-label">Update Billing Information</span>
+            </md-button>
+        </div>
 
         <md-button class="md-dashboard" ui-sref="dashboard.account.billing">
             <span class="btn-label">Cancel</span>

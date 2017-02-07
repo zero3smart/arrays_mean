@@ -9,9 +9,9 @@
     </div>
 
     <div ng-if="!billing.exists">
-        <h3>Payment Info</h3>
-        <md-button ui-sref="dashboard.account.payment" class="md-dashboard">
-            <span class="btn-label">Add Payment Info</span>
+        <h3>Upgrade to Arrays Pro</h3>
+        <md-button ui-sref="dashboard.account.startProTrial" class="md-dashboard">
+            <span class="btn-label">Learn More</span>
         </md-button>
     </div>
 
@@ -29,7 +29,8 @@
 
             <div layout="row" layout-align="space-between center">
                 <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'monthly')" ng-disabled="!quantity_form.$dirty || quantity_form.$invalid">
-                    <span class="btn-label">Save and Update Monthly Billing Amount</span>
+                    <span class="btn-label" ng-if="subscription.plan.plan_code === 'pro-monthly'">Save and Update Monthly Billing Amount</span>
+                    <span class="btn-label" ng-if="subscription.plan.plan_code === 'pro-annual'">Save and Update Yearly Billing Amount</span>
                 </md-button>
 
                 <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'annual')" ng-if="subscription.plan.plan_code != 'pro-annual'" ng-disabled="quantity_form.$invalid">

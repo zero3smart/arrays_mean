@@ -3,7 +3,9 @@
     <p>
         {{ subscription.plan.name }}: {{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'Dataset' : 'Datasets' }}<br />
         Cost per Dataset: {{ plan.unit_amount_in_cents.USD._ / 100 | currency }}<br />
-        <strong>Total per month:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency }}<br />
+        <span ng-if="subscription.plan.plan_code === 'pro-monthly'"><strong>Total per month:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency }}</span>
+        <span ng-if="subscription.plan.plan_code === 'pro-annual'"><strong>Total per year:</strong> {{ plan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency }}</span>
+        <br />
         <strong ng-if="subscription.canceled_at._">Subscription ends {{ subscription.current_period_ends_at._ | date: 'MM/dd/yyyy' }}</strong>
     </p>
 </div>

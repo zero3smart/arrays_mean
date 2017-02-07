@@ -202,13 +202,20 @@ angular.module('arraysApp')
                 $scope.billing.payment_type = currentTab;
             };
 
-            $scope.updateBillingInfo = function(ev) {
+            $scope.updateBillingInfo = function(plan_code) {
                 Billing.update(null, $scope.billing)
                 .$promise.then(function(res) {
                     // console.log(res);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
-                        $state.go('dashboard.account.billing');
+
+                        // If adding billing for first time, create subscription
+                        if (plan_code) {
+                            $scope.startTrialSubscription(plan_code);
+                        } else {
+                            $state.go('dashboard.account.billing');
+                        }
+                        
                     } else {
                         // console.log(res.data);
                         if (res.data.errors.error.length) {
