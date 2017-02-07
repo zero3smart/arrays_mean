@@ -99,6 +99,7 @@
                     max: {{ coordMinMax.max if coordMinMax else 0 }}
                 };
                 var coordColor = '{{ coordColor }}';
+                var coordCol = '{{ coordCol }}'
                 var isCoordMap = {{ isCoordMap if isCoordMap else false }};
                 var geoData = {{ featureCollection | dump | safe }};
                 var coordData = {{ coordCollection | dump | safe }};

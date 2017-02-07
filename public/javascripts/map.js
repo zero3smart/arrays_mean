@@ -223,7 +223,12 @@ map.on('load', function () {
 
         var queryParamJoinChar = routePath_withoutFilter.indexOf('?') !== -1 ? '&' : '?';
 
-        var filterObjForThisFilterColVal = constructedFilterObj(filterObj, mapBy, feature.properties.name, false);
+        var filterObjForThisFilterColVal;
+        if (isCoordMap) {
+            filterObjForThisFilterColVal = constructedFilterObj(filterObj, coordCol, feature.properties.name, false);
+        } else {
+            filterObjForThisFilterColVal = constructedFilterObj(filterObj, mapBy, feature.properties.name, false);
+        }
         var filterObjString = $.param(filterObjForThisFilterColVal);
         var urlForFilterValue = routePath_withoutFilter + queryParamJoinChar + filterObjString;
 

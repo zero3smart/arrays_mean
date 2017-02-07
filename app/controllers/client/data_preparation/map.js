@@ -130,7 +130,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
            
 
-            var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures = [], highestValue = 0, coordFeatures = [], coordMinMax = {min: 0, max: 0}, coordRadiusValue;
+            var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, mapFeatures = [], highestValue = 0, coordFeatures = [], coordMinMax = {min: 0, max: 0}, coordRadiusValue, coordTitle;
             var latField = dataSourceDescription.fe_views.views.map.latitudeField,
                 lngField = dataSourceDescription.fe_views.views.map.longitudeField;
 
@@ -192,7 +192,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         coordRadiusValue = dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
                         var coordValue;
 
-                        var coordTitle = dataSourceDescription.fe_views.views.map.coordTitle;
+                        coordTitle = dataSourceDescription.fe_views.views.map.coordTitle;
 
                         if (_coordDocs == undefined || _coordDocs == null) _coordDocs = [];
                         if (_coordDocs.length > 0) {
@@ -352,6 +352,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         features: mapFeatures
                     },
                     isCoordMap: dataSourceDescription.fe_views.views.map.plotCoordinates,
+                    coordCol: coordTitle,
                     coordCollection: {
                         type: "FeatureCollection",
                         features: coordFeatures
