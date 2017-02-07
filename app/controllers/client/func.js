@@ -824,7 +824,13 @@ module.exports.reverseDataToBeDisplayableVal = _reverseDataToBeDisplayableVal;
 //
 var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescription) {
     var dateToFormat = new Date(originalVal)
-    var displayableVal = dateToFormat.toISOString();
+    try{
+        var displayableVal = dateToFormat.toISOString();
+    }
+    catch(e) {
+        console.log(e + ": " + dateToFormat)
+        var displayableVal = originalVal;
+    }
     // var prototypeName = Object.prototype.toString.call(originalVal);
     // if (prototypeName === '[object Date]') {
     // }
