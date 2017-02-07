@@ -36,8 +36,7 @@
                     <span class="md-select-icon" aria-hidden="true"></span>
                 </md-button>
                 <md-menu-content width="4">
-                    <md-menu-item>
-
+                    <md-menu-item ng-if="user.role=='superAdmin'">
                         <md-button ng-click="openFieldDialog($event, '', null, true, dataset.customFieldsToProcess ? dataset.customFieldsToProcess.length : 0)">
                             Add a new field
                         </md-button>
@@ -47,8 +46,8 @@
                             Group data together
                         </md-button>
                     </md-menu-item>
-                    <md-menu-item>
-                        <md-button ng-click="openImageScrapingDialog()" ng-if="user.role=='superAdmin'">
+                    <md-menu-item ng-if="user.role=='superAdmin'">
+                        <md-button ng-click="openImageScrapingDialog()">
                             Image scraping
                         </md-button>
                     </md-menu-item>
