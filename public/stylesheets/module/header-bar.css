@@ -269,7 +269,6 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 .user-initial {
 	display: block;
 	position: absolute;
-	color: #FFFFFF;
 	background-color: #000000;
 	vertical-align: middle;
 	text-align: center;
@@ -279,6 +278,10 @@ body:not(.array-controls-pinned) .navbar-default.background-color-brand .navbar-
 	left: 0px;
 	bottom: 10px;
 	border-radius: 100%;
+}
+
+.navbar-nav .dropdown > a .user-initial {
+	color: #FFFFFF;
 }
 
 
