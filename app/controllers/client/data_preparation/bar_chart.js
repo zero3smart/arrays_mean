@@ -81,6 +81,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             (dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName,dataSourceDescription) :
             dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName;
 
+            var stackBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[stackBy_realColumnName] &&
+            raw_rowObjects_coercionSchema[stackBy_realColumnName].operation == "ToDate");
 
 
 
@@ -335,7 +337,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     _.forOwn(_multigroupedResults_object, function (_groupedResults, category) {
 
-
                         var displayableCategory;
                         if (groupBy_isDate) {
                             displayableCategory = func.convertDateToBeRecognizable(category, groupBy_realColumnName, dataSourceDescription);
@@ -350,11 +351,16 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         _.each(_groupedResults, function (el, i) {
                             //
+                            var displayableLabel;
                             if (el.label) {
-                                var displayableLabel;
-
-                                displayableLabel = func.ValueToExcludeByOriginalKey(
-                                    el.label, dataSourceDescription, groupBy_realColumnName, 'barChart');
+                                if(stackBy_isDate) {
+                                    displayableLabel = func.convertDateToBeRecognizable(el.label, stackBy_realColumnName, dataSourceDescription)
+                                    displayableLabel = func.ValueToExcludeByOriginalKey(
+                                        displayableLabel, dataSourceDescription, groupBy_realColumnName, 'barChart');
+                                } else {
+                                    displayableLabel = func.ValueToExcludeByOriginalKey(
+                                        el.label, dataSourceDescription, groupBy_realColumnName, 'barChart');
+                                }
                                 if (!displayableLabel) return;
 
                                 finalizedButNotCoalesced_groupedResults.push({
