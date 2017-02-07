@@ -44,11 +44,15 @@
         </md-input-container>
     </div>
 
-    <!-- <h3>Cards Accepted</h3>
-    <i class="fa fa-credit-card" aria-hidden="true" ng-repeat="i in [1, 2, 3, 4]">&emsp;</i> -->
+    <h3>Cards Accepted</h3>
+    <i class="fa fa-2x fa-large fa-cc-visa" aria-hidden="true" title="Visa"></i>&emsp;
+    <i class="fa fa-2x fa-cc-mastercard" aria-hidden="true" title="Mastercard"></i>&emsp;
+    <i class="fa fa-2x fa-cc-amex" aria-hidden="true" title="AMEX"></i>&emsp;
+    <i class="fa fa-2x fa-cc-discover" aria-hidden="true" title="Discover"></i>&emsp;
+    <i class="fa fa-2x fa-cc-diners-club" aria-hidden="true" title="Diners Club"></i>&emsp;
+    <i class="fa fa-2x fa-cc-jcb" aria-hidden="true" title="JCB"></i>
 
     <h4>Expires</h4>
-
     <div layout="row">
         <md-input-container>
             <md-select name="month" ng-model="billing.month" required aria-label="Card Expiration Month" aa-reset-validity-on-change="invalid">
