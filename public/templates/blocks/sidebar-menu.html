@@ -10,20 +10,20 @@
 
 
 
-    <li ng-if="env.node_env !== 'enterprise' && (user.role=='admin' || user.role=='superAdmin' || user._team.length > 1 ) " ng-class="{'active': currentMenuItem === 'teams'}">
+    <li ng-if="env.node_env !== 'enterprise' && (user.role=='admin' || user.role=='superAdmin' || user._team.length > 1 ) && (team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active') " ng-class="{'active': currentMenuItem === 'teams'}">
         <a ui-sref="dashboard.teams" role="button">Manage Teams</a>
     </li>
 
-    <hr>
+    <hr ng-if="(team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active')">
 
-    <li ng-if="env.node_env !== 'enterprise' " class="sidebar-label">
+    <li ng-if="env.node_env !== 'enterprise' && (team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active')" class="sidebar-label">
         <a class="sidebar-label">{{team.subdomain + '.' + env.host}}</a>
     </li>
     <li ng-if="env.node_env == 'enterprise'" class="sidebar-label">
         <a class="sidebar-label">{{host}}</a>
     </li>
 
-    <li ng-if="user.role=='admin' || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'team'}">
+    <li ng-if="(user.role=='admin' || user.role=='superAdmin') && (team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active')" ng-class="{'active': currentMenuItem === 'team'}">
         <a ui-sref="dashboard.team.settings" role="button">Team Settings</a>
     </li>
 
