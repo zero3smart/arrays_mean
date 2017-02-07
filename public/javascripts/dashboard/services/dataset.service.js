@@ -14,8 +14,15 @@
             return $http.post('api/dataset/remove', {id: id});         
         };
 
+        var update = function(id,update) {
+            return $http.put('api/dataset/update/'+ id, update);
+        }
+
         var get = function(id) {
             // New Dataset
+
+    
+
             if (!id) return {
                 urls: []
             };
@@ -26,23 +33,24 @@
             });
         };
 
-        var publish = function(id,isPublic) {
-            var body = {
-                id: id,
-                isPublic: isPublic
-            };
-            return $http.put('api/dataset/publish',body)
-        };
+        var search = function(queryObj) {
+            var formURL = "";
+            var first = true;
+            for (var obj in queryObj) {
+                if (first) {
+                    formURL += '?';
+                    first = false;
+                } else {
+                   formURL += '&'
 
-
-        var skipImageScraping = function(id,skipping) {
-            var body = {
-                id: id,
-                skipImageScraping : skipping
+                }
+                formURL += obj + '=' + queryObj[obj];
             }
-            return $http.put('api/dataset/skipImageScraping',body);
+
+            return $http.get('api/dataset' + formURL);
         }
 
+ 
         var getAdditionalSources = function(id) {
 
             return $http.get('api/dataset/getAdditionalSources/' + id)
@@ -55,8 +63,12 @@
         };
 
         var save = function(dataset) {
-            return $http.post('api/dataset/update', dataset)
+            return $http.post('api/dataset/save', dataset)
         };
+
+        var deleteSource = function(id) {
+            return $http.delete('api/dataset/source/' + id);
+        }
 
         var preImport = function(id) {
             return $http.get('api/dataset/preImport/' + id);
@@ -107,6 +119,14 @@
 
         };
 
+        var getJobStatus = function(id) {
+            return $http.get('api/dataset/jobStatus/' + id)
+            .then(function(response) {
+
+                return response.data;
+            })
+        }
+
         var getDatasetsWithQuery = function(query) {
             return $http.post('api/dataset/getDatasetsWithQuery',query)
             .then(function(response) {
@@ -134,16 +154,28 @@
                 return [];
             })
        }
+       var killJob = function(id) {
+            return $http.delete('api/dataset/job/' + id);
+       }
+
+       var connectToRemoteDatasource = function(datasetId,connectionInfo) {
+            return $http.post('api/dataset/connect/' + datasetId,connectionInfo);
+       }
+
 
         return {
             removeSubdataset: removeSubdataset,
+            deleteSource: deleteSource,
             remove: remove,
             get: get,
+            connectToRemoteDatasource: connectToRemoteDatasource,
+            killJob: killJob,
+            search: search,
             getAdditionalSources: getAdditionalSources,
             getReimportDatasets: getReimportDatasets,
             save: save,
-            publish: publish,
-            skipImageScraping: skipImageScraping,
+            update: update,
+            getJobStatus: getJobStatus,
             getAvailableTypeCoercions: getAvailableTypeCoercions,
             getAvailableDesignatedFields: getAvailableDesignatedFields,
             getAvailableMatchFns: getAvailableMatchFns,

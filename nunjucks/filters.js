@@ -271,7 +271,6 @@ module.exports = function (nunjucks_env,env) {
                     routePath += '&' + key + '=' + _queryObj[key];
                 }
             }
-
         if (routePath == '') return routePath_base;
 
         var joinChar = routePath_base.indexOf('?') !== -1 ? '&' : '?';
@@ -291,6 +290,16 @@ module.exports = function (nunjucks_env,env) {
         }).join(' ');
     });
 
+    nunjucks_env.addFilter('splitSubdomain',function(srcDocPKey) {
+        if (srcDocPKey.split('-').length == 3) {
+            var i = srcDocPKey.indexOf('-');
+            var substring = srcDocPKey.substring(i+1,srcDocPKey.length);
+            return substring;
+        }
+        return srcDocPKey;
+   
+    })
+
     // Object Row Coercion Data Type
     nunjucks_env.addFilter('fieldDataType_coercion_toString', function(field) {
         return datatypes.fieldDataType_coercion_toString(field);
@@ -309,10 +318,28 @@ module.exports = function (nunjucks_env,env) {
 
     var protocol =  env.USE_SSL === 'true' ? 'https://' : 'http://';
     var host = env.HOST? env.HOST: 'localhost:9080';
+    var marketingPage = protocol;
+
+
+
+    var exploreURL = protocol;
+
+    if (env.NODE_ENV !== 'enterprise') {
+        exploreURL += "app."
+    }
+    if (env.NODE_ENV == 'production') {
+        marketingPage += "www.";
+    }
+    exploreURL += host 
+    marketingPage += host;
+   
+
 
     nunjucks_env.addGlobal('siteBaseURL',protocol + host);
 
-    nunjucks_env.addGlobal('explore_url', protocol + 'app.' + host);
+    nunjucks_env.addGlobal('explore_url', exploreURL);
+
+    nunjucks_env.addGlobal('marketing_url', marketingPage);
 
 
     nunjucks_env.addGlobal('addSubdomain', function(strSubdomain) {

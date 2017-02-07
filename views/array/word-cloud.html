@@ -17,15 +17,15 @@
             <div class="container-fluid">
                 <h1 class="array-title">{{ arrayTitle }}</h1>
                 <div class="array-meta">
-                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Item{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
                 </div>
             </div>
         </header><!-- .array-header -->
 
         {% if view_description %}
-            <div class="array-description-wrapper">
-                <p class="array-description">{{ view_description }}</p>
-            </div>
+           <div class="array-description-wrapper">
+               <p class="array-description">{{ view_description }}</p>
+           </div>
         {% endif %}
 
         <div class="array-content">
@@ -133,4 +133,5 @@
     {{ super() }}
 
     <script type="text/javascript" src="/javascripts/word-cloud.js"></script>
+    <script type="text/javascript" src="/javascripts/banner.js"></script>
 {% endblock %}

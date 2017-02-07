@@ -1,23 +1,16 @@
-<md-button class="md-dashboard primary-action" ng-click="add()" md-no-ink>
-    <span class="btn-label">New Dataset</span>
-</md-button>
 
-<p class="instructions" ng-if="datasets.length > 0">Datasets</p>
+
+<p class="instructions" ng-if="datasets.length > 0">Visualizations</p>
 
 <ul class="dashboard-list user-list" ng-cloak>
     <li ng-repeat="dataset in datasets" layout="row" layout-align="none center">
 
-        <div flex="10" ng-click="select(dataset._id)" class="list-thumb">
+        <!-- use DatasetService.get() to retrieve each {{dataset.banner}} url? -->
+        <!-- <div flex="10" ng-click="select(dataset._id)" class="list-thumb">
             <img ng-src="/images/image-not-found-sm.png" />
-            <!-- need to use DatasetService.get() to retrieve each {{dataset.banner}} url? -->
-        </div>
+        </div> -->
 
         <span flex class="dashboard-list-name" ng-click="select(dataset._id)">{{ dataset.title }}</span>
-
-        <!-- placeholder/spacer until ready -->
-        <!-- <div flex="10">
-            <img src="/images/image-not-found-sm.png" style="opacity: 0" />
-        </div> -->
 
         <span class="dashboard-list-icon" ng-click="select(dataset._id)" flex="10">
             <i class="fa fa-pencil" aria-hidden="true"></i>

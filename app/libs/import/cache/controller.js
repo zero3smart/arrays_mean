@@ -29,16 +29,16 @@ module.exports.GeneratePostImportCaches = function (dataSourceDescriptions,job, 
 };
 //
 var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDescription,job, callback) {
-    var dataSource_title = dataSourceDescription.title;
+    var dataSource_title = dataSourceDescription.fileName;
     var fe_visible = dataSourceDescription.fe_visible;
     if (typeof fe_visible !== 'undefined' && fe_visible != null && fe_visible === false) {
         winston.warn("⚠️  The data source \"" + dataSource_title + "\" had fe_visible=false, so not going to generate its unique filter value cache.");
         return callback(null);
     }
 
-    if (dataSourceDescription.dataset_uid) {
+    if (dataSourceDescription.schemaId) {
           winston.info("🔁  " + indexInList + ": Generated post-import caches for \"" + dataSource_title + "\" (appended dataset: " + 
-            dataSourceDescription.dataset_uid + ")");
+            dataSourceDescription.fileName + ")");
     }
 
 
@@ -57,12 +57,14 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
 
 
 var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescription, callback) {
-    var dataSource_uid = dataSourceDescription.uid;
-    var dataSource_title = dataSourceDescription.title;
-    var dataSource_importRevision = dataSourceDescription.importRevision;
-    var dataSourceRevision_pKey = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
+ 
+    var dataSource_title = dataSourceDescription.fileName;
+    
+    var collectionId = dataSourceDescription._id;
+    if (dataSourceDescription.schemaId) collectionId = dataSourceDescription.schemaId;
+   
     //
-    var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceRevision_pKey);
+    var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(collectionId);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
     //
     processedRowObjects_mongooseModel.findOne({}, function (err, sampleDoc) {
@@ -122,8 +124,7 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
                 {$limit : limitToNTopValues} // To escape that aggregation result exceeds maximum document size (16MB)
             ]).allowDiskUse(true).exec(function (err, results) {
 
-                // console.log(results);
-
+    
                 if (err) {
                     cb(err);
 
@@ -131,8 +132,9 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
                 }
                 if (results == undefined || results == null || results.length == 0) {
 
-                    console.log(key);
-                    callback(new Error('Unexpectedly empty unique field value aggregation'));
+                    console.log('Unexpectedly empty unique field value aggregation for field named: %s ', key);
+
+                    callback(new Error('Unexpectedly empty unique field value aggregation for field'));
 
                     return;
                 }
@@ -162,11 +164,11 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
 
             var persistableDoc =
             {
-                srcDocPKey: dataSourceRevision_pKey,
+                srcDocPKey: collectionId,
                 limitedUniqValsByColName: uniqueFieldValuesByFieldName
             };
             var cached_values = require('../../../models/cached_values');
-            cached_values.findOneAndUpdate({srcDocPKey: dataSourceRevision_pKey}, persistableDoc, {
+            cached_values.findOneAndUpdate({srcDocPKey: collectionId}, persistableDoc, {
                 upsert: true,
                 new: true
             }, function (err, doc) {

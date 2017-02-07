@@ -2,29 +2,39 @@
 
 angular.module('arraysApp')
     .run(
-        ['$rootScope', '$state', '$stateParams',
-            function ($rootScope, $state, $stateParams) {
-                $rootScope.$state = $state;
-                $rootScope.$stateParams = $stateParams;
-            }
-        ]
+    ['$rootScope', '$state', '$stateParams',
+        function ($rootScope, $state, $stateParams) {
+            $rootScope.$state = $state;
+            $rootScope.$stateParams = $stateParams;
+
+            $rootScope.$on('$stateChangeError',function(event, toState,toParams,fromState,fromParams,error) {
+                event.preventDefault();
+                if (error.importing == true) {
+                    $state.go('dashboard.dataset.done', {id: error.datasetId});
+                }
+            });
+        }
+    ]
     )
     .config(
-        ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider',
-            function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+    ['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider',
+        function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
 
-                $urlRouterProvider
+            $urlRouterProvider
                     .otherwise('/dashboard/account/profile');
 
-                $stateProvider
+            $stateProvider
                     .state('dashboard', {
                         abstract: true,
                         url: '/dashboard',
-                        templateUrl: "templates/dashboard.html",
-                        controller: "AdminCtrl",
+                        templateUrl: 'templates/dashboard.html',
+                        controller: 'AdminCtrl',
                         resolve: {
-                            auth: function (AuthService) {
+                            auth: function(AuthService) {
                                 return AuthService.ensureLogIn();
+                            },
+                            env: function(AuthService) {
+                                return AuthService.getEnv();
                             }
                         }
                     })
@@ -43,7 +53,12 @@ angular.module('arraysApp')
                     .state('dashboard.account.billing', {
                         url: '/billing',
                         controller: 'BillingCtrl',
-                        templateUrl: 'templates/account/billing.html'
+                        templateUrl: 'templates/account/billing.html',
+                        resolve: {
+                            restrict: function(AuthService) {
+                                return AuthService.ensureIsAdmin();
+                            }
+                        }
                     })
                     .state('dashboard.account.payment', {
                         url: '/payment',
@@ -55,11 +70,11 @@ angular.module('arraysApp')
                         controller: 'BillingCtrl',
                         templateUrl: 'templates/account/upgrade.enterprise.html'
                     })
-                    // .state('dashboard.account.upgradePro', {
-                    //     url: '/upgrade/pro',
-                    //     controller: 'BillingCtrl',
-                    //     templateUrl: 'templates/account/upgrade.pro.html'
-                    // })
+                    .state('dashboard.account.upgradePro', {
+                        url: '/upgrade/pro',
+                        controller: 'BillingCtrl',
+                        templateUrl: 'templates/account/upgrade.pro.html'
+                    })
                     .state('dashboard.account.startProTrial', {
                         url: '/upgrade/proTrial',
                         controller: 'BillingCtrl',
@@ -80,7 +95,12 @@ angular.module('arraysApp')
                         abstract: true,
                         url: '/dataset',
                         templateUrl: 'templates/dataset.html',
-                        controller: 'DatasetCtrl'
+                        controller: 'DatasetCtrl',
+                        resolve: {
+                            restrict: function(AuthService) {
+                                return AuthService.ensureActiveSubscription();
+                            }
+                        }
                     })
                     .state('dashboard.dataset.list', {
                         url: '/list',
@@ -89,20 +109,39 @@ angular.module('arraysApp')
                         resolve: {
                             datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
                                 var user = AuthService.currentUser();
+
+                               
+
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
+                                    
                                     return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id});
+
                                 } else if (user.role == 'editor') {
+
                                     return DatasetService.getDatasetsWithQuery({_id: {$in: user._editors}, _team:user.defaultLoginTeam._id});
+
                                 } else {
                                     return [];
                                 }
+        
                             }]
                         }
                     })
                     .state('dashboard.dataset.settings', {
                         url: '/settings/:id',
-                        controller: 'DatasetSettingsCtrl',
+                        controller: 'DatasetSettingsCtrl as vm',
                         templateUrl: 'templates/dataset/settings.html',
+                        resolve: {
+                            dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {
+
+                                return DatasetService.get($stateParams.id);
+                            }]
+                        }
+                    })
+                    .state('dashboard.dataset.new', {
+                        url: '/new',
+                        controller: 'DatasetNewCtrl',
+                        templateUrl: 'templates/dataset/new.html',
                         resolve: {
                             dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
                                 return DatasetService.get($stateParams.id);
@@ -114,14 +153,41 @@ angular.module('arraysApp')
                         templateUrl: 'templates/dataset/upload.html',
                         controller: 'DatasetUploadCtrl',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
-                                return DatasetService.get($stateParams.id);
+                            dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {
+
+                                var deferred = $q.defer();
+                                DatasetService.get($stateParams.id)
+                                .then(function(data) {
+
+
+                                    if (data.jobId !== 0) {
+                                        deferred.reject({importing: true, datasetId: data._id});
+                                    } else {
+                                        deferred.resolve(data);
+                                    }
+                                })
+                                return deferred.promise;
+
                             }],
-                            additionalDatasources: ['DatasetService', '$stateParams', function (DatasetService, $stateParams) {
-                                if ($stateParams.id)
-                                    return DatasetService.getAdditionalSources($stateParams.id);
-                                else
-                                    return [];
+                            additionalDatasources: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams
+                                ,$q) {
+                                var deferred = $q.defer();
+                                DatasetService.getAdditionalSources($stateParams.id)
+                                .then(function(additionalDatasets) {
+                                    if (additionalDatasets.length > 0) {
+                                        additionalDatasets.map(function(dataset) {
+                                            if (dataset.jobId !== 0) {
+                                                deferred.reject({importing: true, datasetId: dataset._id});
+                                                return false;
+
+                                            }
+                                        })
+
+                                    }
+                                    deferred.resolve(additionalDatasets);
+
+                                })
+                                return deferred.promise;
                             }]
                         }
                     })
@@ -156,6 +222,9 @@ angular.module('arraysApp')
                             viewResource: 'View',
                             views: ['View', function (View) {
                                 return View.query().$promise;
+                            }],
+                            user: ['AuthService', function (AuthService) {
+                                return AuthService.currentUser();
                             }]
                         }
                     })
@@ -175,7 +244,12 @@ angular.module('arraysApp')
                     .state('dashboard.team', {
                         url: '/team',
                         controller: 'WebsiteCtrl as vm',
-                        templateUrl: 'templates/team.html'
+                        templateUrl: 'templates/team.html',
+                        resolve: {
+                            restrict: function(AuthService) {
+                                return AuthService.ensureIsAdmin() && AuthService.ensureActiveSubscription();
+                            }
+                        }
                     })
                     .state('dashboard.team.settings', {
                         url: '/settings',
@@ -194,7 +268,12 @@ angular.module('arraysApp')
                     .state('dashboard.user', {
                         url: '/user',
                         controller: 'UserCtrl as vm',
-                        templateUrl: 'templates/user.html'
+                        templateUrl: 'templates/user.html',
+                        resolve: {
+                            restrict: function(AuthService) {
+                                return AuthService.ensureActiveSubscription();
+                            }
+                        }
                     })
                     .state('dashboard.user.list', {
                         url: '/list',
@@ -208,7 +287,7 @@ angular.module('arraysApp')
                             datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
                                 var user = AuthService.currentUser();
                                 if (user.role == 'superAdmin' || user.role == 'admin') {
-                                    return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id})
+                                    return DatasetService.getDatasetsWithQuery({_team:user.defaultLoginTeam._id});
                                 } else {
                                     return [];
                                 }
@@ -219,11 +298,16 @@ angular.module('arraysApp')
                         url: '/teams',
                         controller: 'TeamCtrl as vm',
                         templateUrl: 'templates/teams.html',
+                        resolve: {
+                            restrict: function(AuthService) {
+                                return AuthService.ensureActiveSubscription();
+                            }
+                        }
                     });
 
                 // use the HTML5 History API
-                $locationProvider.html5Mode(true);
-                $httpProvider.interceptors.push('TokenInterceptor');
+            $locationProvider.html5Mode(true);
+            $httpProvider.interceptors.push('TokenInterceptor');
 
-            }
-        ]);
+        }
+    ]);

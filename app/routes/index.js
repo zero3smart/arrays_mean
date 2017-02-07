@@ -11,9 +11,7 @@ var fs = require('fs');
 var async = require('async');
 
 
-var rootDomain = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
-
-    rootDomain += "app.";
+var rootDomain = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
     rootDomain += process.env.HOST ? process.env.HOST : 'localhost:9080';
 
 var View = require('../models/views');
@@ -49,7 +47,7 @@ var _mountRoutes_ensureWWW = function (app) {
 
 function isNotRootDomain (subdomains) {
         
-    if (subdomains.length == 1 && subdomains[0] !== 'app') { // pattern: subdomain.arrays.co
+    if (subdomains.length == 1 && subdomains[0] !== 'www' && subdomains[0] !== 'app') { // pattern: subdomain.arrays.co
         return true;
     }  else {
         return false;
@@ -126,35 +124,49 @@ var _mountRoutes_errorHandling = function (app) {
 
 
 
+
+
 var _mountRoutes_endPoints = function (app) {
     var apiVersion = 'v1';
     app.all("*", function(req,res,next) {
-        urlRegexForDataset.lastIndex = 0;
-        var isRouteForDataset = urlRegexForDataset.test(req.url);
 
 
+        if (process.env.NODE_ENV !== 'enterprise') {
 
-        if (isNotRootDomain(req.subdomains)) {
-            if (isRouteForDataset) {
-                return next();
-            } else {
+            urlRegexForDataset.lastIndex = 0;
 
-                if (req.url == '/') {
+            var isRouteForDataset = urlRegexForDataset.test(req.url);
+
+            if (isNotRootDomain(req.subdomains)) {
+
+                if (isRouteForDataset) {
                     return next();
-                } else if (req.url == '/' + apiVersion + '/share') {
-                    return next()
                 } else {
-                    return res.redirect(rootDomain + req.url);
+
+                    if (req.url == '/' || req.url == "/" + apiVersion + '/share' || req.url == '/auth/logout') {
+                        return next();
+                    } else {
+                        return res.redirect(rootDomain + req.url);
+                    }
+                }
+
+
+            } else { //www.arrays.co or app.arrays.co
+
+          
+                if (isRouteForDataset || req.subdomains.length == 0) {
+                    return res.redirect(rootDomain +'/');
+                } else {
+                                
+
+                    return next();
                 }
             }
 
         } else {
-            if (isRouteForDataset) {
-                return res.redirect(rootDomain + '/');
-            } else {
-                return next();
-            }
+            return next();
         }
+      
     });
 
     // View endpoints
@@ -177,6 +189,17 @@ var _mountRoutes_endPoints = function (app) {
 };
 
 module.exports.MountRoutes = function (app) {
+
+    app.get('/env',function(req,res) {
+        var host = process.env.HOST || 'localhost:9080' ;
+        var obj = {
+            node_env: process.env.NODE_ENV,
+            host: host
+        }
+        return res.json(obj);
+    })
+
+
     _mountRoutes_monitoring(app);
     //_mountRoutes_ensureWWW(app);
     _mountRoutes_subdomainRedirect(app);

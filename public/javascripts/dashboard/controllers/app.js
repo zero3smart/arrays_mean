@@ -1,7 +1,9 @@
 angular
     .module('arraysApp')
-    .controller('AdminCtrl', ['$scope', '$state', 'AuthService', '$window', '$location', '$mdSidenav',
-        function ($scope, $state, AuthService, $window, $location, $mdSidenav) {
+    .controller('AdminCtrl', ['$scope', '$state', 'AuthService', '$window', '$location', '$mdSidenav','env',
+        function ($scope, $state, AuthService, $window, $location, $mdSidenav,env) {
+
+            $scope.env = env;
 
             $scope.currentMenuItem = '';
 
@@ -19,15 +21,38 @@ angular
             $scope.user = AuthService.currentUser();
             $scope.teams = AuthService.allTeams();
 
+ 
+            $scope.explore_url = $location.protocol() +  "://";
+
+
+            if ($scope.env.node_env !== 'enterprise') {
+                $scope.explore_url += "app."
+            }
+
+            $scope.explore_url += env.host
+
+
+
             $scope.updateSubdomain = function() {
                 $scope.team = AuthService.currentTeam();
-                $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain  + "."+ $location.host() + ":" + $location.port();
+                $scope.team.subscription = $scope.team.subscription || {};
+                $scope.team.subscription.state = $scope.team.subscription.state || {};
+                
+                if ($scope.env.node_env == 'enterprise') {
+                    $scope.subdomain = $scope.explore_url;
+                } else {
+
+                    $scope.subdomain = $location.protocol() +  "://" + $scope.team.subdomain + "."+  env.host
+
+
+                }
+               
             }
+
 
             $scope.updateSubdomain();
 
-            $scope.explore_url = $location.protocol() +  "://" +  $location.host() + ":" + $location.port();
-
+    
             $scope.logout = function() {
                 AuthService.logout();
             };

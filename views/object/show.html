@@ -1,3 +1,4 @@
+
 {% extends "../layout/object.html" %}
 
 {% block headSuffix %}
@@ -5,6 +6,7 @@
 {% endblock %}
 
 {% block content %}
+
     <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-8 col-sm-offset-2">
@@ -32,6 +34,7 @@
                                     {% set objectTitle = rowObject.rowParams[fieldKey_objectTitle] %}
                                     <h1 class="object-title">{{ objectTitle if objectTitle else "(Title not specified)" }}</h1>
                                     {% if embedded %}
+                       
                                     {% set mainViewURL = "/" + array_source_key + "/" + main_view + "?embed=true" + ("&" + default_filterJSON if default_filterJSON else "") %}
                                     <a href="{{ mainViewURL }}">{{ arrayTitle }}</a>
                                     {% endif %}
@@ -60,6 +63,7 @@
                                                         <dt> {{columnName + " " + column}} </dt>
                                                         {% for value, id in fieldValueArray %}
                                                             <dd>
+
                                                                 <ul class="object-list">
                                                                     <li class="object-list-item"><a href="{{ buildObjectLink(columnName, value, id) }}" class="color-brand">{{ value }}</a></li>
                                                                 </ul>
@@ -80,7 +84,7 @@
                                                             {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, arrayMember, false) %}
                                                             {% set arrayMemberText = arrayMember %}
                                                             {% if shouldLink %}
-                                                                <li class="object-list-item"><a href="{{ ('/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">{{ arrayMemberText }} 
+                                                                <li class="object-list-item"><a href="{{ ('/' +array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">{{ arrayMemberText }} 
                                                                 </a></li>
                                                             {% else %}
                                                                 <li class="object-list-item">{{ arrayMemberText | substitutePlainURLs | safe }}</li>
@@ -101,11 +105,13 @@
                                                     <a href="{{ ('/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">
                                                 {% endif %}
 
-                                                    {% set urlizedField = (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe %}
+                                                 {% set urlizedField = (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe %}
+
                                                     {% set isUrlField = false if urlizedField == columnValue else true %}
                                                     {% if isUrlField %}
                                                         <span class="color-brand">{{ (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe }}</span>
                                                     {% else %}   
+
                                                         {{ (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe }}
                                                     {% endif %}
 
@@ -136,4 +142,8 @@
 
 {% block footer %}
 {% include "../partials/footer.html" %}
+{% endblock %}
+
+{% block inlineScript %}
+<script type="text/javascript" src="/javascripts/banner.js"></script>
 {% endblock %}

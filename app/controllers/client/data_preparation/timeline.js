@@ -22,9 +22,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // Other filters
 
     var source_pKey = urlQuery.source_key;
+    var collectionPKey = req.subdomains[0] + '-' + source_pKey;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
+
+    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
         .then(function (dataSourceDescription) {
+            // var collectionPKey = dataSourceDescription._id
 
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
                 callback(new Error("No data source with that source pkey " + source_pKey), null);
@@ -38,7 +41,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 return;
             }
 
-            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
             var page = urlQuery.page;
@@ -145,8 +148,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain source document
             batch.push(function (done) {
-                raw_source_documents.Model.findOne({primaryKey: source_pKey}, function (err, _sourceDoc) {
-                    if (err) return done(err);
+                raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, _sourceDoc) {
+                    if (err) {
+                        console.log("error obtaining source document");
+                        return done(err);
+                    }
 
                     sourceDoc = _sourceDoc;
                     done();
@@ -156,7 +162,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // Obtain sample document
             batch.push(function (done) {
                 processedRowObjects_mongooseModel.findOne({}, function (err, _sampleDoc) {
-                    if (err) return done(err);
+                    if (err) {
+                        console.log("error obtaining sample document");
+                        return done(err);
+                    }
 
                     sampleDoc = _sampleDoc;
                     done();
@@ -165,8 +174,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain Top Unique Field Values For Filtering
             batch.push(function (done) {
-                func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
-                    if (err) return done(err);
+                func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+                    if (err) {
+                        console.log("error obtaining top unique field values for filtering");
+                        return done(err);
+                    }
 
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
                     done();
@@ -195,7 +207,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 ]);
 
                 var doneFn = function (err, results) {
-                    if (err) return done(err);
+                    if (err) {
+                        console.log("eroor counting whole set");
+                        return done(err);
+                    }
                     if (results == undefined || results == null) { // 0
                     } else {
                         nonpagedCount = results.length;
@@ -286,17 +301,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
                 var doneFn = function (err, _groupedResults) {
-                    if (err) return done(err);
+                    if (err) {
+                        console.log("error obtaining grouped results");
+                        return done(err);
+                    }
               
-                   
-
-                  
-
-
 
                     if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
-
-               
 
                     _groupedResults.forEach(function (el, i, arr) {
                         var results = [];
@@ -319,8 +330,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var galleryItem_htmlWhenMissingImage;
 
-            if (dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage) {
-                var cond = dataSourceDescription.fe_views.views.gallery.galleryItemConditionsForIconWhenMissingImage;
+            if (dataSourceDescription.fe_views.views.timeline.galleryItemConditionsForIconWhenMissingImage) {
+                var cond = dataSourceDescription.fe_views.views.timeline.galleryItemConditionsForIconWhenMissingImage;
 
                 var checkConditionAndApplyClasses = function (conditions, value,multiple) {
 
@@ -373,18 +384,23 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
 
             var returnAbsURLorBuildURL = function(url) {
-                if (url.slice(0, 5) == "https") {
+                if (url.slice(0, 4) == "http") {
                     return url
                 } else {
-                    return "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
+                    urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription._id + "/assets/images/" + url
+                    return urlToReturn
                 }
             }
+
 
             var user = null;
             batch.push(function(done) {
                 if (req.user) {
                     User.findById(req.user, function(err, doc) {
-                        if (err) return done(err);
+                        if (err) {
+                            console.log("error finding user");
+                            return done(err);
+                        }
                         user = doc;
                         done();
                     })
@@ -408,6 +424,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
+                    brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
@@ -462,10 +479,10 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
                     folder: "/assets/images/",
                     uid: dataSourceDescription.uid,
+                    importRevision: dataSourceDescription.importRevision,
                     returnAbsURLorBuildURL: returnAbsURLorBuildURL
 
                 };
-
 
                 callback(err, data);
 

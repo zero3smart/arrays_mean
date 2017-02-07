@@ -1,0 +1,12 @@
+<ul class="aa-color-picker list" flex layout="row" layout-align="start center"
+    ui-sortable="fieldSortableOptions" ng-model="colors">
+    <li ng-repeat="color in colors" ng-style="{'background-color': color, 'display': color ? 'inherit' : 'none'};">
+        <span class="glyphicon glyphicon-move move-color"></span>
+        <i class="fa fa-remove remove-color" aria-hidden="true" ng-click="removeColor($index)"></i>
+    </li>
+    <li class="add-color" ng-click="addColor()" role="button" ng-style="{'color': !colors[colors.length - 1] ? 'grey' : 'black'}"><i class="fa fa-plus"></i></li>
+</ul>
+<div ng-if="colors[colors.length - 1] == ''">
+    <label>Add new color</label>
+    <aa-color-picker selected="colors[colors.length - 1]" unlist="colors"></aa-color-picker>
+</div>

@@ -1,15 +1,17 @@
-<header>
+<header layout="row" layout-align="start center">
     <h1>Manage Teams</h1>
+
+    <span flex></span>
+
+    <md-button class="md-dashboard md-dashboard-header" ng-if="user.role=='superAdmin'" ng-click="openAddTeamDialog($event)" md-no-ink>
+        <span class="btn-label">Add Team</span>
+    </md-button>
 </header>
 
 <div class="array-content teams">
 
-    <md-button class="md-dashboard primary-action" ng-if="user.role=='superAdmin'" ng-click="openAddTeamDialog($event)" md-no-ink>
-        <!-- <md-icon class="btn-icon">add</md-icon> -->
-        <span class="btn-label">Add Team</span>
-    </md-button>
-
     <p class="instructions"  ng-if="teams.length > 1">Switch teams</p>
+
 
     <ul class="dashboard-list team-list" ng-cloak>
         <li ng-repeat="tm in teams track by $index">
@@ -17,6 +19,15 @@
                 <span class="dashboard-list-name">{{tm.title}}</span>
                 <span class="dashboard-list-revision">({{tm.subdomain}}.arrays.co)</span>
             </md-button>
+
+            <a ng-if="team._id !== tm._id && user.role=='superAdmin'" herf="" ng-click="deleteTeam($index)" class="warn">Delete Team</a>
+        
+            <md-checkbox ng-if="team._id !== tm._id && user.role=='superAdmin'" ng-model="tm.superTeam"
+                ng-change="updateSuperTeam($index)"
+                aria-label="Make team super team">
+                Dont Require Subscription
+            </md-checkbox>
+
         </li>
     </ul>
 

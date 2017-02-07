@@ -1,41 +1,54 @@
 <md-content md-no-ink>
-    <h2>Plan Summary</h2>
 
-    <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
-    <p ng-if="subscription.trial_days_left > 0 && !subscription.canceled_at._">Your free trial expires in <strong>{{ subscription.trial_days_left | pluralize: "day" : "days" }}</strong>.&emsp;<a ui-sref="dashboard.account.upgradePro">Upgrade Now</a></p>
-
-    <p ng-if="billing.exists">{{ paymentMethod }}&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
-    <p ng-if="!billing.exists"><a ui-sref="dashboard.account.payment">Add Payment Info</a></p>
-
-    <div ng-if="subscription.trial_days_left > 0 && !subscription.canceled_at._">
-    <hr>
-
-        <form name="billingForm">
-            <md-input-container>
-                <label>Datasets</label>
-                <input name="datasets" required type="number" min="1" step="1" ng-model="subscription.quantity._" ng-pattern="/^[0-9]{1,7}$/"/>
-                <div ng-messages="billingForm.datasets.$error">
-                    <div ng-message="pattern">Please enter an integer greater than 0.</div>
-                </div>
-            </md-input-container>
-
-            <div layout="row" layout-align="space-between center">
-                <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'monthly')" ng-disabled="!billingForm.$dirty">
-                    <span class="btn-label">Save and Update Monthly Billing Amount</span>
-                </md-button>
-
-                <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'annual')" ng-if="subscription.plan.plan_code != 'arrays-pro-yearly'">
-                    <span class="btn-label">Pay Yearly (${{ subscription.quantity._ * 99 }} / mo)</span>
-                </md-button>
-            </div>
-        </form>
-
+    <div ng-if="!loaded">
+        <h3>Checking billing info&hellip;</h3>
     </div>
 
-    <div ng-if="!subscription.canceled_at._">
+    <div ng-if="loaded">
+
+        <ng-include src="'templates/blocks/account.billing.plan.html'"></ng-include>
+        <p ng-if="subscription.trial_days_left > 0 && subscription.state === 'active'">Your free trial expires in <strong>{{ subscription.trial_days_left }} {{ subscription.trial_days_left | pluralize: "day" : "days" }}</strong>.</p>
+
+        <div ng-if="billing.exists">
+        <h3>Payment Info</h3>
+        <p>{{ paymentMethod }}&emsp;<a ui-sref="dashboard.account.payment">Edit Payment Info</a></p>
+        </div>
+
+        <div ng-if="!billing.exists">
+            <h3>Upgrade to Arrays Pro</h3>
+            <md-button ui-sref="dashboard.account.startProTrial" class="md-dashboard">
+                <span class="btn-label">Learn More</span>
+            </md-button>
+        </div>
+
+        <div ng-if="subscription.state === 'active'">
         <hr>
 
-        <div ng-if="!subscription.trial_days_left && billing.exists">
+            <form name="quantity_form" novalidate>
+                <md-input-container>
+                    <label>Visualizations</label>
+                    <input name="datasets" required type="number" min="1" ng-min="1" step="1" ng-model="subscription.quantity._" />
+                    <div ng-messages="quantity_form.datasets.$error">
+                        <div ng-message="min">Please enter a number greater than 0.</div>
+                    </div>
+                </md-input-container>
+
+                <div layout="row" layout-align="space-between center">
+                    <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'monthly')" ng-disabled="!quantity_form.$dirty || quantity_form.$invalid">
+                        <span class="btn-label" ng-if="subscription.plan.plan_code === 'pro-monthly'">Save and Update Monthly Billing Amount</span>
+                        <span class="btn-label" ng-if="subscription.plan.plan_code === 'pro-annual'">Save and Update Yearly Billing Amount</span>
+                    </md-button>
+
+                    <md-button class="md-dashboard" ng-click="openBillingDialog($event, 'annual')" ng-if="subscription.plan.plan_code != 'pro-annual'" ng-disabled="quantity_form.$invalid">
+                        <span class="btn-label">Pay Yearly (${{ subscription.quantity._ * 99 }} / mo)</span>
+                    </md-button>
+                </div>
+            </form>
+
+        </div>
+
+        <div ng-if="subscription.state != 'active' && subscription.state != 'canceled' && subscription.state != 'expired' && billing.exists">
+            <hr>
             <h3>Start Free Trial of Arrays Pro</h3>
 
             <md-button ui-sref="dashboard.account.startProTrial" class="md-dashboard">
@@ -43,31 +56,34 @@
             </md-button>
         </div>
 
-        <!--<div ng-if="subscription.trial_days_left > 0">
+        <div ng-if="subscription.state === 'expired'">
             <h3>Upgrade to Arrays Pro</h3>
 
             <md-button ui-sref="dashboard.account.upgradePro" class="md-dashboard">
                 <span class="btn-label">Learn More</span>
             </md-button>
-        </div>-->
+        </div>
 
-        <h3>Upgrade to Arrays Enterprise</h3>
+        <div ng-if="subscription.state === 'canceled'">
+            <h3>Reactivate Subscription</h3>
 
-        <md-button ui-sref="dashboard.account.upgradeEnterprise" class="md-dashboard">
-            <span class="btn-label">Learn More</span>
-        </md-button>
+            <md-button class="md-dashboard" ng-click="reactivateSubscription()">
+                <span class="btn-label">Reactivate Subscription</span>
+            </md-button>
+        </div>
+
+        <div>
+            <h3>Upgrade to Arrays Enterprise</h3>
+
+            <md-button ui-sref="dashboard.account.upgradeEnterprise" class="md-dashboard">
+                <span class="btn-label">Learn More</span>
+            </md-button>
+        </div>
+
+        <hr>
+
+        <a ui-sref="dashboard.account.cancel" class="warn" ng-if="subscription.state === 'active'">Cancel Subscription</a>
+
     </div>
-
-    <div ng-if="subscription.canceled_at._">
-        <h3>Reactivate Canceled Subscription</h3>
-
-        <md-button class="md-dashboard" ng-click="reactivateCanceledSubscription()">
-            <span class="btn-label">Reactivate Subscription</span>
-        </md-button>
-    </div>
-
-    <hr>
-
-    <a ui-sref="dashboard.account.cancel" class="warn" ng-if="subscription && !subscription.canceled_at._">Cancel Subscription</a>
 
 </md-content>

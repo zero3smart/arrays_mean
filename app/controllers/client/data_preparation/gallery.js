@@ -22,9 +22,12 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
+    var collectionPKey = req.subdomains[0] + '-' + source_pKey;
 
-    importedDataPreparation.DataSourceDescriptionWithPKey(source_pKey)
+
+    importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
         .then(function (dataSourceDescription) {
+
 
 
 
@@ -39,7 +42,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             }
             var galleryViewSettings = dataSourceDescription.fe_views.views.gallery;
 
-            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(source_pKey);
+            var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
 
             var galleryItem_htmlWhenMissingImage;
@@ -139,15 +142,46 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 }
 
                 
-                var returnAbsURLorBuildURL = function(url) {
-                    if (url.slice(0, 5) == "https") {
-                        return url
-                    } else {
-                        urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription.uid + "/assets/images/" + url
-                        return urlToReturn
+
+            }
+
+            var galleryItemBackgroundColor;
+
+            if (galleryViewSettings.galleryItemConditionsForBackgroundColor) {
+                var cond = galleryViewSettings.galleryItemConditionsForBackgroundColor;
+
+                galleryItemBackgroundColor = function (rowObject) {
+                    var fieldName = cond.field;
+                    var conditions = cond.conditions;
+
+                    var fieldValue = rowObject["rowParams"][fieldName];
+
+                    for (var i = 0; i < conditions.length; i++) {
+                        if (conditions[i].value == fieldValue) {
+                            return {
+                                backgroundColor: conditions[i].backgroundColor,
+                                contentColor: func.calcContentColor(conditions[i].backgroundColor)
+                            };
+                        }
                     }
+                    
+                    return {
+                        backgroundColor: '#FFFFFF',
+                        contentColor: '#000000'
+                    };
                 }
             }
+
+            var returnAbsURLorBuildURL = function(url) {
+                if (url.slice(0, 4) == "http") {
+                    return url
+                } else {
+                    urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription._id + "/assets/images/" + url
+                    return urlToReturn
+                }
+            }
+
+                
 
             var page = urlQuery.page;
             var pageNumber = page ? page : 1;
@@ -218,7 +252,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain source document
             batch.push(function (done) {
-                raw_source_documents.Model.findOne({primaryKey: source_pKey}, function (err, _sourceDoc) {
+                raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, _sourceDoc) {
                     if (err) return done(err);
 
                     sourceDoc = _sourceDoc;
@@ -238,9 +272,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             // Obtain Top Unique Field Values For Filtering
             batch.push(function (done) {
-                func.topUniqueFieldValuesForFiltering(source_pKey, dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
+                func.topUniqueFieldValuesForFiltering(dataSourceDescription, function (err, _uniqueFieldValuesByFieldName) {
                     if (err) return done(err);
-
                     uniqueFieldValuesByFieldName = _uniqueFieldValuesByFieldName;
                
                     done();
@@ -258,6 +291,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
                 ]);
                 var doneFn = function (err, results) {
+
                     if (err) return done(err);
 
 
@@ -302,7 +336,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
                 });
 
-                // projects['$project']['rowParams.imgURL_gridThumb'] = 1
+  
 
                 var pagedDocs_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
                     projects,
@@ -314,9 +348,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 ]);
 
 
-
-
                 var doneFn = function (err, _docs) {
+
                     if (err) return done(err);
 
                     docs = _docs;
@@ -329,7 +362,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     done();
                 };
 
-                // console.log(pagedDocs_aggregationOperators)
 
                 // Next, get the full set of sorted results
                 processedRowObjects_mongooseModel
@@ -356,7 +388,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.end(function (err) {
 
                 if (err) return callback(err);        
-          
+
+
 
                 var data =
                 {
@@ -368,6 +401,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     array_source_key: source_pKey,
                     team: dataSourceDescription._team ? dataSourceDescription._team : null,
                     brandColor: dataSourceDescription.brandColor,
+                    brandContentColor: func.calcContentColor(dataSourceDescription.brandColor),
                     sourceDoc: sourceDoc,
                     displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     sourceDocURL: dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null,

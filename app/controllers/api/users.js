@@ -52,6 +52,7 @@ module.exports.get = function (req, res) {
     var id = req.params.id;
     if (id == 'currentUser') {
         if (!req.user) {
+
             res.status(401).send({error: 'unauthorized'});
         } else {
             var userId = req.user;
@@ -60,54 +61,47 @@ module.exports.get = function (req, res) {
                 .populate('defaultLoginTeam')
                 .exec(function (err, user) {
 
+
+
                     var token = jwt.sign({_id: user._id}, process.env.SESSION_SECRET);
                     var role;
-                    var batch = new Batch();
+            
 
-                    batch.concurrency(1);
-                    batch.push(function (done) {
-                        if (!user.defaultLoginTeam || user._team.length == 0) {
-                            return res.status(401).send({error: 'unauthorized'});
-                        }
+                    if (!user.defaultLoginTeam || user._team.length == 0) {
+                        return res.status(401).json({error: 'unauthorized'});
+                    }
 
-                        if (user.isSuperAdmin()) {
-                            role = 'superAdmin';
-                        } else if (user.defaultLoginTeam.admin && user.defaultLoginTeam.admin == userId) {
-                            role = 'admin'
+
+                    if (user.isSuperAdmin()) {
+                        role = 'superAdmin';
+                    } else if (user.defaultLoginTeam.admin && user.defaultLoginTeam.admin == userId) {
+                        role = 'admin'
+                    } else {
+                        var isEditor = _checkIfUserIsEditor(user.defaultLoginTeam.datasourceDescriptions,user._editors);
+                        if (isEditor) {
+                            role = 'editor';
                         } else {
-                            var isEditor = _checkIfUserIsEditor(user.defaultLoginTeam.datasourceDescriptions,user._editors);
-                            if (isEditor) {
-                                role = 'editor';
-                            } else {
-                                role = 'viewer';
-                            }
+                            role = 'viewer';
                         }
-                        done();
+                    }
+                    
+                    var userInfo = {
+                        _id: user._id,
+                        provider: user.provider,
+                        email: user.email,
+                        _team: user._team,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        _editors : user._editors,
+                        _viewers: user._viewers,
+                        authToken: token,
+                        invited: user.invited,
+                        role: role,
+                        defaultLoginTeam: user.defaultLoginTeam
+                    }
 
-                    })
-
-                    batch.end(function (err) {
-                        if (err) {
-                            console.log(err);
-                            res.status(500).send(err);
-                        } else {
-                            var userInfo = {
-                                _id: user._id,
-                                provider: user.provider,
-                                email: user.email,
-                                _team: user._team,
-                                firstName: user.firstName,
-                                lastName: user.lastName,
-                                _editors : user._editors,
-                                _viewers: user._viewers,
-                                authToken: token,
-                                invited: user.invited,
-                                role: role,
-                                defaultLoginTeam: user.defaultLoginTeam
-                            }
-                            return res.json(userInfo);
-                        }
-                    })
+                    return res.status(200).json(userInfo);
+                    
                 })
         }
 
@@ -144,9 +138,9 @@ var _checkIfUserIsEditor = function(teamDatasourceDescriptions, userEditors) {
 module.exports.create = function (req, res) {
     User.create(req.body, function (err, user) {
         if (err) {
-            res.send(err);
+            res.status(500).send(err);
         } else {
-            res.json(user);
+            res.status(200).json(user);
         }
     })
 }
@@ -221,11 +215,21 @@ module.exports.resend = function (req, res) {
 
 module.exports.update = function (req, res) {
 
+
     var team = req.body._team;
     var teamId = req.body._team._id;
 
     if (!teamId) { // admin/owner of the team signing up
         team.admin = req.body._id;
+        if (req.body._team.subdomain == 'schema' || process.env.NODE_ENV == 'enterprise' || req.body.email.indexOf('@schemadesign.com') >= 0 ||
+            req.body.email.indexOf('@arrays.co') >= 0) {
+    
+            team.superTeam = true;
+        }
+
+
+
+
         Team.create(team, function (err, createdTeam) {
             if (err) {
                 res.send(err);
@@ -325,7 +329,7 @@ module.exports.save = function(req, res) {
 module.exports.defaultLoginTeam = function(req,res) {
     var teamId = req.params.teamId;
     if (!teamId) {
-        return res.send(new Error("No teamId given"));
+        return res.status(500).send(new Error("No teamId given"));
     } 
     if (!req.user) {
         return res.status(401).send("unauthorized");
@@ -333,7 +337,7 @@ module.exports.defaultLoginTeam = function(req,res) {
         User.findByIdAndUpdate(req.user,{$set: {defaultLoginTeam: teamId}})
         .exec(function(err,result) {
             if (err) return res.send(err);
-            res.json(result);
+            return res.status(200).json(result);
         })
     }
 }

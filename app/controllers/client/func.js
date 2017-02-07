@@ -6,6 +6,8 @@ var importedDataPreparation = require('../../libs/datasources/imported_data_prep
 var cached_values = require('../../models/cached_values');
 var datatypes = require('../../libs/datasources/datatypes');
 var config = require('./config.js');
+
+
 //
 
 
@@ -163,7 +165,7 @@ var _activeFilter_matchCondition_orErrDescription = function (dataSourceDescript
                         }
 
 
-                        console.log(nin);
+                        // console.log(nin);
 
                         matchConditions = [{$match: reformQuery}];
 
@@ -526,10 +528,10 @@ var _neededFilterValues = function(dataSourceDescription) {
 
 }
 
-var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescription, callback) {
+var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callback) {
 
     var excludeValues = _neededFilterValues(dataSourceDescription);
-    cached_values.findOne({srcDocPKey: source_pKey},excludeValues,function (err, doc) {
+    cached_values.findOne({srcDocPKey: dataSourceDescription._id},excludeValues,function (err, doc) {
         if (err) {
             callback(err, null);
 
@@ -537,13 +539,13 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
         }
         
         if (doc == null) {
-            callback(new Error('Missing cached values document for srcDocPKey: ' + source_pKey), null);
+            callback(new Error('Missing cached values document for srcDocPKey: ' + dataSourceDescription._id), null);
 
             return;
         }
         var uniqueFieldValuesByFieldName = doc.limitedUniqValsByColName;
         if (uniqueFieldValuesByFieldName == null || typeof uniqueFieldValuesByFieldName === 'undefined') {
-            callback(new Error('Unexpectedly missing uniqueFieldValuesByFieldName for srcDocPKey: ' + source_pKey), null);
+            callback(new Error('Unexpectedly missing uniqueFieldValuesByFieldName for srcDocPKey: ' + dataSourceDescription._id), null);
 
             return;
         }
@@ -758,7 +760,6 @@ var _topUniqueFieldValuesForFiltering = function (source_pKey, dataSourceDescrip
             // names must be equal
             return 0;
         });
-
         //
         callback(null, finalizedUniqueFieldValuesByFieldName);
     });
@@ -822,7 +823,8 @@ module.exports.reverseDataToBeDisplayableVal = _reverseDataToBeDisplayableVal;
 
 //
 var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescription) {
-    var displayableVal = originalVal;
+    var dateToFormat = new Date(originalVal)
+    var displayableVal = dateToFormat.toISOString();
     // var prototypeName = Object.prototype.toString.call(originalVal);
     // if (prototypeName === '[object Date]') {
     // }
@@ -840,12 +842,12 @@ var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescrip
                 if (originalVal == null || originalVal == "") {
                     return originalVal; // do not attempt to format
                 }
-                displayableVal = moment(originalVal, moment.ISO_8601).utc().format("MMM DD, YYYY HH:mm:ss");
+                var newDateValue = moment(displayableVal, moment.ISO_8601).utc().format(coersionSchemeOfKey.outputFormat);
             }
         }
     }
     //
-    return displayableVal;
+    return newDateValue;
 };
 module.exports.convertDateToBeRecognizable = _convertDateToBeRecognizable;
 
@@ -927,3 +929,30 @@ function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupB
 }
 
 module.exports.ValueToExcludeByOriginalKey = _valueToExcludeByOriginalKey;
+
+
+function _calcContentColor(backgroundColor) {
+    if (!backgroundColor) return '#000000';
+    // brightness method described here - http://alienryderflex.com/hsp.html
+    var r, g, b;
+    var rWeight = .299,
+        gWeight = .587,
+        bWeight = .114;
+
+
+    // Calculate individual color components
+    r = parseInt('0x' + backgroundColor.slice(1,3)) / 255;
+    g = parseInt('0x' + backgroundColor.slice(3,5)) / 255;
+    b = parseInt('0x' + backgroundColor.slice(5,7)) / 255;
+
+    var brightness = Math.sqrt(rWeight * (r * r) + gWeight * (g * g) + bWeight * (b * b));
+
+    if (brightness > 0.54) {
+
+        return '#000000';
+    }
+
+    return '#FFFFFF';
+}
+
+module.exports.calcContentColor = _calcContentColor;

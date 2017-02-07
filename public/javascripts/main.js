@@ -1,5 +1,6 @@
 $(window).load(function () {
 
+
     trackEvent("page load");
 
     trackEvent('page viewed', {
@@ -40,7 +41,7 @@ $(document).ready(function () {
 
         //toDo: get view from api
         
-        var viewTypes = ['gallery', 'chart', 'line-graph', 'scatterplot', 'choropleth', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
+        var viewTypes = ['gallery', 'pie-chart', 'line-graph', 'scatterplot', 'map-view', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
 
         var words = default_view.split(/(?=[A-Z])/);
         var default_view_url = words.map(function (word) {
@@ -60,6 +61,7 @@ $(document).ready(function () {
                 href += "?" + default_filterJSON;
             }
             window.location.href = baseUrl + href;
+
          }
     });
 
@@ -67,7 +69,6 @@ $(document).ready(function () {
      * Select team on click
      */
     $('.js-panel-team').on('click', function (e) {
-
 
         e.preventDefault();
         var $parent = $(this).parent();
@@ -263,15 +264,19 @@ $(document).ready(function () {
     });
 
     $('#logout').on('click',function(e) {
+ 
         e.preventDefault();
         $.get('/auth/logout')
         .then(function(response) {
 
+
             if (response == 'ok') {
+
                 window.sessionStorage.removeItem('user');
                 window.sessionStorage.removeItem('team');
                 window.sessionStorage.removeItem('teams');
-                window.location.href='/';
+                window.location.reload();
+                
             }
 
         })

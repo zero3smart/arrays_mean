@@ -1,0 +1,58 @@
+<md-dialog aria-label="Filters" class="field-dialog">
+    <aa-toolbar title="Filters"></aa-toolbar>
+
+    <md-dialog-content>
+        <form name="dialog.form">
+            <md-tabs md-dynamic-height md-no-ink>
+                <md-tab label="Fields">
+                    <md-content layout-padding md-no-ink>
+
+                        <p>Include these fields as filters:</p>
+                        <div>
+                        <ul class="dashboard-list user-list">
+                            <li ng-repeat="field in fields"
+                                ng-hide="dataset.fe_excludeFields[field.name]"
+                                layout="row" layout-align="space-between center">
+                                <md-checkbox
+                                    ng-checked="dataset.fe_filters.fieldsNotAvailable.indexOf(field.name) == -1"
+                                    ng-click="toggleFilter(field.name)"
+                                    name="{{field.name}}"
+                                    aria-label="{{field.name}}"
+                                    flex="10">
+                                </md-checkbox>
+                                <div flex
+                                    ng-click="editFilter($event, field)">
+                                    {{ dataset.fe_displayTitleOverrides[field.name] || field.name }}
+                                    <span class="sample">
+                                        <span ng-if="!field.custom">(Sample: {{ field.sample | limitTo:35 }})</span>
+                                        <!-- <span ng-if="field.customField" ng-repeat="mergeField in field.customField.fieldsToMergeIntoArray">{{mergeField}}<span ng-if="!$last">,</span>)</span> -->
+                                    </span>
+                                </div>
+                                <span class="dashboard-list-icon" flex="5" aa-tooltip="Edit filter"
+                                    ng-click="editFilter($event, field)">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                </span>
+                            </li>
+                        </ul>
+                        </div>
+                    </md-content>
+                </md-tab>
+
+                <md-tab label="Global">
+                    <ng-include src="'templates/blocks/data.fabricated.html'"></ng-include>
+                </md-tab>
+                <md-tab></md-tab>
+            </md-tabs>
+
+            <md-dialog-actions layout="row" layout-align="end center" md-no-ink>
+                <md-button class="md-dashboard cancel" ng-click="cancel()">
+                    <span class="btn-label">Cancel</span>
+                </md-button>
+                <md-button class="md-dashboard confirm" ng-click="save()"
+                           ng-disabled="!dialog.form.$dirty || dialog.form.$invalid">
+                    <span class="btn-label">Save</span>
+                </md-button>
+            </md-dialog-actions>
+        </form>
+    </md-dialog-content>
+</md-dialog>

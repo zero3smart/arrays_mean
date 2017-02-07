@@ -1,51 +1,57 @@
-<md-content layout-padding ng-if="dataset.uid">
-    <form name="vm.viewsForm" ng-submit="submitForm(!vm.viewsForm.$invalid)">
-        <md-input-container class="md-block" flex-gt-sm>
-            <label>Default View</label>
-            <md-select ng-required="dataset.fe_visible&&dataset.fe_listed" name="default"
-                       ng-model="data.default_view">
-                <md-option ng-repeat="view in views" value="{{view.name}}">
-                    {{view.displayAs}}
-                </md-option>
-            </md-select>
-            <div ng-messages="vm.viewsForm.default.$error">
-                <div ng-message="required">This is required.</div>
-            </div>
-        </md-input-container>
+<form name="vm.viewsForm" ng-submit="submitForm(!vm.viewsForm.$invalid)" ng-if="dataset.uid">
+    <md-content layout-padding md-no-ink>
+        <h2>Configure Your Views</h2>
 
-        <div class="table-container">
-            <table class="table data">
-                <thead>
-                <tr>
-                    <th>Visibility</th>
-                    <th>View Name</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="view in views">
-                    <td>
-                        <md-checkbox ng-model="dataset.fe_views.views[view.name].visible"
-                                     aria-label="Exclude {{view.name}}" md-no-ink></md-checkbox>
-                    </td>
-                    <td ng-click="openViewDialog($event, view._id)" class="view-name" ng-class="{default_view: data.default_view === view.name}" >
-                        <span class="{{ view.icon }}"></span>
-                        {{ view.displayAs}}
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+        <p>Select and edit the views you want to include below:</p>
 
-        <div layout="row" layout-align="space-between center" class="panel-footer">
-            <md-button class="md-dashboard" ng-click="reset()" ng-disabled="!vm.viewsForm.$dirty">
-                <span class="btn-label">Reset</span>
-            </md-button>
+        <ul class="dashboard-list user-list" ng-cloak>
+            <li ng-repeat="view in views | orderBy:'name'" layout="row" layout-align="space-between center"
+                ng-class="{'li-disabled': !dataset.fe_views.views[view.name].visible }">
 
+                <span flex="10"
+                    aa-tooltip="{{ data.default_view == view.name ? 'Default view must be visible' : (dataset.fe_views.views[view.name].visible ? 'Set view as not visible' : 'Set view as visible') }}">
+                <md-checkbox ng-model="dataset.fe_views.views[view.name].visible"
+                    ng-disabled="data.default_view == view.name"
+                    class="view-visible"
+                    aria-label="{{view.name}} Visibility" md-no-ink></md-checkbox>
+                </span>
+
+                <span flex="10"
+                    class="dashboard-list-icon view"
+                    ng-class="{'default-view': data.default_view == view.name}"
+                    aa-tooltip="{{ data.default_view == view.name ? 'Default view' : 'Set as default view' }}"
+                    ng-click="makeDefaultView(view)">
+                    <i class="fa fa-lg fa-home" aria-hidden="true"></i>
+                </span>
+
+                <div flex="10" class="list-thumb">
+                    <span class="{{ view.icon }}"></span>
+                </div>
+
+                <span flex ng-click="openViewDialog($event, view._id)">{{ view.displayAs }}</span>
+
+                <span class="dashboard-list-icon"
+                    aa-tooltip="Edit view"
+                    ng-click="openViewDialog($event, view._id)" flex="5">
+                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                </span>
+
+                <!-- <span class="dashboard-list-icon"
+                    aa-tooltip="{{ dummyNeedsProcessing ? 'Open preview' : 'Process data to open preview' }}"
+                    ng-class="{'disabled': !dummyNeedsProcessing }"
+                    ng-click="" flex="5">
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                </span> -->
+
+            </li>
+        </ul>
+
+        <div layout="row" layout-align="end center" class="hidden-submit">
             <md-button class="md-dashboard confirm" type="submit" ng-disabled="vm.viewsForm.$invalid">
                 <span class="btn-label">Next</span>
             </md-button>
         </div>
-    </form>
-</md-content>
+    </md-content>
+</form>
 
-<ng-include src="'/templates/blocks/dataset.empty.html'" ng-if="!dataset.uid"></ng-include>
+<!-- <ng-include src="'/templates/blocks/dataset.empty.html'" ng-if="!dataset.uid"></ng-include> -->

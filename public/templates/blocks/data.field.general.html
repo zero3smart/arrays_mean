@@ -1,46 +1,31 @@
+<md-dialog aria-label="Format Field: {{ dataset.fe_displayTitleOverrides[fieldName] ? dataset.fe_displayTitleOverrides[fieldName] + ' (' + fieldName + ')' : fieldName || 'New field' }}" class="field-dialog" md-no-ink>
+    <aa-toolbar title="Format Field: {{ dataset.fe_displayTitleOverrides[fieldName] ? dataset.fe_displayTitleOverrides[fieldName] + ' (' + fieldName + ')' : fieldName || 'New field' }}"></aa-toolbar>
+    <md-dialog-content>
+        <form name="dialog.fieldForm">
+<!--  -->
 <md-content layout-padding>
-    <md-input-container class="md-block">
-        <label>Name</label>
-        <input type="text" required ng-model="fieldName" name="fieldName"
-               ng-change="verifyUniqueFieldName(fieldName)" ng-model-options="{updateOn:'blur'}" ng-readonly="customFieldIndex == undefined">
+<div>
+    <md-input-container class="md-block" ng-show="customFieldIndex !== undefined">
+        <label>Field Name</label>
+        <input type="text" required
+            ng-model="fieldName" name="fieldName"
+            ng-change="verifyUniqueFieldName(fieldName)" ng-model-options="{updateOn:'blur'}">
         <div ng-messages="dialog.fieldForm.fieldName.$error">
             <div ng-message="required">This is required.</div>
             <div ng-message="unique">Must be unique.</div>
         </div>
     </md-input-container>
 
-    <md-input-container class="md-block" ng-if="!custom">
-        <label>First Record</label>
-        <input type="text" value="{{ firstRecord | limitTo: 200 }}{{firstRecord.length > 200 ? '...' : ''}}"
-               readonly="readonly">
-    </md-input-container>
-
-    <md-input-container class="md-block" ng-if="customFieldIndex != undefined">
-        <label>Fields To Merge</label>
-        <md-select required name="fields" ng-model="customField.fieldsToMergeIntoArray" multiple
-                   aria-label="fieldToMerge">
-            <md-option ng-repeat="column in dataset.columns" ng-value="column.name">
-                {{column.name}}
-            </md-option>
-            <md-option ng-repeat="customField in dataset.customFieldsToProcess" ng-value="customField.fieldName">
-                {{customField.fieldName}}
-            </md-option>
-        </md-select>
-        <div ng-messages="dialog.fieldForm.fields.$error">
-            <div ng-message="required">This is required.</div>
-        </div>
-    </md-input-container>
-
-    <md-input-container class="md-block" ng-if="customFieldIndex != undefined">
-        <label>Delimiter</label>
-        <md-chips ng-model="customField.delimiterOnFields"
-                  name="delimiters"
-                  md-enable-chip-edit="true"
-                  placeholder="Enter a Delimiter" secondary-placeholder="+Delimiter">
-        </md-chips>
-    </md-input-container>
-
+    <!-- <p>Overrides field name</p> -->
     <md-input-container class="md-block" flex-gt-sm>
+        <label>Display Name <span class="optional">(optional)</span></label>
+        <input type="text" name="titleOverride"
+               ng-model="dataset.fe_displayTitleOverrides[fieldName]">
+    </md-input-container>
+</div>
+
+<div layout="row">
+    <md-input-container class="md-block" flex="45">
         <label>Data Type</label>
         <md-select ng-if="!custom"
                    name="dataType"
@@ -56,52 +41,93 @@
         <input type="text" value="Custom" readonly="readonly" ng-if="custom && customFieldIndex == undefined">
         <div class="md-errors-spacer"></div>
     </md-input-container>
+    <span flex></span>
+    <div ng-if="!custom"  flex="50">
+        <label>Data Sample <span class="optional">(first record)</span></label>
+        <p>{{ firstRecord | limitTo: 35 }}</p>
+    </div>
+</div>
 
-    <md-input-container ng-if="!custom"
-                        class="md-block" flex-gt-sm
-                        ng-show="(dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
+<div ng-if="customFieldIndex != undefined">
+    <md-input-container class="md-block">
+        <label>Fields To Merge</label>
+        <md-select required name="fields" ng-model="customField.fieldsToMergeIntoArray" multiple
+                   aria-label="fieldToMerge">
+            <md-option ng-repeat="column in dataset.columns" ng-value="column.name">
+                {{column.name}}
+            </md-option>
+            <md-option ng-repeat="customField in dataset.customFieldsToProcess" ng-value="customField.fieldName">
+                {{customField.fieldName}}
+            </md-option>
+        </md-select>
+        <div ng-messages="dialog.fieldForm.fields.$error">
+            <div ng-message="required">This is required.</div>
+        </div>
+    </md-input-container>
+</div>
+<div ng-if="customFieldIndex != undefined">
+    <md-input-container class="md-block">
+        <label>Delimiter</label>
+        <md-chips ng-model="customField.delimiterOnFields"
+                  name="delimiters"
+                  md-enable-chip-edit="true"
+                  placeholder="Enter a delimiter" secondary-placeholder="Add delimiter">
+        </md-chips>
+    </md-input-container>
+</div>
+
+<div ng-if="!custom && (dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
+    <md-input-container class="md-block" flex-gt-sm>
         <label>Format</label>
         <input type="text" name="dataType_format"
                ng-model="dataset.raw_rowObjects_coercionScheme[fieldName].format">
     </md-input-container>
 
-
-    <md-input-container class="md-block" flex-gt-sm
-                        ng-if="!custom"
-                        ng-show="(dataset.raw_rowObjects_coercionScheme[fieldName] | typeCoercionToString) == 'Date'">
+    <md-input-container class="md-block" flex-gt-sm>
         <label>Output Format</label>
         <input type="text" name="dataType_outputFormat"
                ng-model="dataset.raw_rowObjects_coercionScheme[fieldName].outputFormat">
     </md-input-container>
+</div>
 
-    <md-input-container class="md-block" flex-gt-sm>
+    <!-- <md-input-container class="md-block" flex-gt-sm>
         <md-checkbox name="exclude" ng-model="dataset.fe_excludeFields[fieldName]"
                      aria-label="Field Exclude {{fieldName}}">
             Exclude
         </md-checkbox>
-    </md-input-container>
+    </md-input-container> -->
 
-    <md-input-container class="md-block" flex-gt-sm>
-        <label>Title Override</label>
-        <input type="text" name="titleOverride"
-               ng-model="dataset.fe_displayTitleOverrides[fieldName]">
-    </md-input-container>
-
-    <md-input-container class="md-block" flex-gt-sm>
+    <!-- <md-input-container class="md-block" flex-gt-sm>
         <label>Display Order</label>
         <input type="number" min="0" name="displayOrder"
                ng-model="data.displayOrder">
-    </md-input-container>
+    </md-input-container> -->
 
+    <!-- <h3>Advanced</h3> -->
     <md-input-container class="md-block" flex-gt-sm>
-        <label>Designated Field</label>
+        <label>Designated Field <span class="optional">(advanced)</span></label>
         <md-select name="designatedField"
                    ng-model="data.designatedField"
                    aria-label="Designated Field - {{fieldName}}">
-            <md-option ng-repeat="field in availableDesignatedFields" ng-value="field">
+            <md-option ng-repeat="field in availableDesignatedFields | filter: '!objectTitle'" ng-value="field">
                 {{field}}
             </md-option>
         </md-select>
         <div class="md-errors-spacer"></div>
     </md-input-container>
 </md-content>
+<!--  -->
+<md-dialog-actions layout="row" layout-align="end center">
+    <md-button class="md-dashboard warn" ng-click="delete()" ng-if="customFieldIndex != undefined">
+        <span class="btn-label">Delete field</span>
+    </md-button>
+    <md-button class="md-dashboard cancel" ng-click="cancel()">
+        <span class="btn-label">Cancel</span>
+    </md-button>
+    <md-button class="md-dashboard confirm" ng-click="save()" ng-disabled="!dialog.fieldForm.$dirty || dialog.fieldForm.$invalid">
+        <span class="btn-label">Save</span>
+    </md-button>
+</md-dialog-actions>
+</form>
+</md-dialog-content>
+</md-dialog>

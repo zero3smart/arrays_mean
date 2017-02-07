@@ -22,7 +22,12 @@
 				.state('signup.info', {
 					url: '/info/:id',
 					templateUrl: 'templates/blocks/signup.info.html',
-					controller: 'signupCtrl'
+					controller: 'signupCtrl',
+					resolve: {
+						env: function(ENV) {
+							return ENV.get();
+						}
+					}
 				})
 
 				.state('signup.success',{

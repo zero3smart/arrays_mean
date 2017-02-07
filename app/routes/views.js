@@ -21,6 +21,8 @@ View.getAllBuiltInViews(function(err,defaultViews) {
                 var query = queryString.parse(req.url.replace(/^.*\?/,''));
                 query.source_key = source_key;
                 var camelCaseViewType = view.name.replace('-','_');
+
+            
                 require('../controllers/client/data_preparation/' + camelCaseViewType).BindData(req,query,function(err,bindData) {
                     if (err) {
                         winston.error("❌  Error getting bind data for built in view %s , err: %s" , view.name,err);
@@ -84,7 +86,7 @@ router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/, ensureAuthorized, function (r
 
 
     var source_key = req.params[0] + req.params[1];
-    source_key = source_key.substring(1);
+    source_key = req.subdomains[0] + '-' + source_key.substring(1);
 
     if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
         return res.status(403).send("Bad Request - source_key missing");
@@ -93,6 +95,7 @@ router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/, ensureAuthorized, function (r
     if (object_id == null || typeof object_id === 'undefined' || object_id == "") {
         return res.status(403).send("Bad Request - object_id missing");
     }
+
 
     object_details_controller.BindData(req, source_key, object_id, function (err, bindData) {
 

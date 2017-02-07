@@ -1,5 +1,5 @@
 <p>
-    {{ annualplan.name }}: {{ subscription.quantity._ | pluralize: 'Dataset' : 'Datasets' }}<br />
+    {{ annualplan.name }}: {{ subscription.quantity._ }} {{ subscription.quantity._ | pluralize: 'Dataset' : 'Datasets' }}<br />
     Cost per Dataset: {{ annualplan.unit_amount_in_cents.USD._ / 100 | currency }}<br />
-    <strong>Total per month:</strong> {{ annualplan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency }}
+    <strong>Total per year:</strong> {{ annualplan.unit_amount_in_cents.USD._ * subscription.quantity._ / 100 | currency }}
 </p>

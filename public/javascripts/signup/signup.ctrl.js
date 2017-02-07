@@ -6,6 +6,8 @@
 	signupModule.controller('mainCtrl',['$scope','User','$state', function($scope,User,$state){
 		$scope.user = {};
 
+		
+
 
 		$scope.createUser = function() {
 			if (!$scope.user.provider) {
@@ -27,7 +29,11 @@
 
 	}])
 
-	signupModule.controller('signupCtrl',['$scope','$stateParams','User','$state',function($scope,$stateParams,User,$state) {
+	signupModule.controller('signupCtrl',['$scope','$stateParams','User','$state','$location','env',function($scope,$stateParams,User,$state,
+		$location,env) {
+
+		$scope.env = env;
+
 		var userId = $stateParams.id;
 		$scope.invitedUser = false;
 		$scope.showPasswordToolTip = false;

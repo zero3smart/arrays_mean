@@ -1,175 +1,215 @@
-<md-content layout-padding ng-if="dataset.title">
-    <div>
+<form name="uploadForm" autocomplete="off">
+    <md-content layout-padding md-no-ink>
 
-        <h2>Select Your Data Source</h2>
+            <h2>Select Your Data Source</h2>
+            <p ng-if="dataset.fileName">Data Source(s)</p>
 
-        <label>Upload spreadsheet</label>
-        <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
-        <input type="file" nv-file-select="" uploader="uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv"/>
 
-        <table class="table upload">
-            <thead>
-            <tr>
-                <th width="50%">DataSource Name</th>
-                <th ng-show="uploader.isHTML5">Size</th>
-                <th ng-show="uploader.isHTML5">Progress</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
 
-            <tr ng-repeat="item in uploader.queue">
-                <td><strong>{{ item.file.name }}</strong></td>
-                <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
-                <td ng-show="uploader.isHTML5" class="progress-container">
-                    <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
-                </td>
+            <div ng-hide="addingSourceType != '' || dataset.fileName || dataset.connection">
+                <p>Add a data source from the options below.</p>
+                <ul class="dashboard-list">
+                    <li><a href="#" ng-click="addSourceType('csv')">Upload a spreadsheet</a></li>
+                    <!-- <li><a href="#" ng-click="">Upload a JSON file</a></li> -->
+                    <li><a href="#" ng-click="addSourceType('database')">Connect to a database</a></li>
+                </ul>
+            </div>
 
-                <td class="text-center">
-                    <span ng-show="item.isSuccess" class="text-success"><i class="glyphicon glyphicon-ok"></i></span>
-                    <span ng-show="item.isCancel" class="text-warning"><i
-                            class="glyphicon glyphicon-ban-circle"></i></span>
-                    <span ng-show="item.isError" class="text-danger"><i class="glyphicon glyphicon-remove"></i></span>
-                </td>
-                <td nowrap class="no-padding-vertical">
-                    <md-button class="md-raised" ng-click="item.upload()"
-                               ng-disabled="item.isReady || item.isUploading || item.isSuccess">
-                        Upload
+             <div ng-if="addingSourceType=='database' || dataset.connection">
+
+                <md-select  aria-label="Dataset Connection Url" flex="50" ng-model="dataset.connection.type">
+
+                    <md-option value="hadoop">
+                       Hadoop
+                    </md-option>
+
+                </md-select>
+
+                <md-input-container layout="row" flex="80" md-no-float>
+                    <input ng-model="dataset.connection.url"
+                    aria-label="Dataset Connection String" placeholder="Connection URL" autofocus>
+                </md-input-container>
+
+                <md-input-container layout="row" flex="80" md-no-float>
+                    <input ng-model="dataset.connection.tableName"
+                    aria-label="Dataset Connection Table Name" placeholder="Table Name" autofocus>
+                </md-input-container>
+
+
+                <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="connectToDB()"
+                    ng-if="dataset.connection.url && dataset.connection.url.indexOf('://')>=0 &&
+                    dataset.connection.tableName" ng-hide="isConnecting==false"
+                    ng-disabled="isConnecting || !dataset.connection.type ">
+                    <span class="btn-label"> {{ isConnecting ? 'Connecting' : 'Connect' }}</span>
+                </md-button>
+
+
+
+
+
+                <p ng-show="isConnecting!==false" class="aa-file-select-close"><a href="#" ng-click="addSourceType('')">Go back</a></p>
+
+
+            </div>
+
+
+
+
+            <div ng-if="addingSourceType == 'csv'" ng-hide="dataset.fileName" class="aa-file-select no-padding">
+                <label>Upload spreadsheet</label>
+                <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
+
+                <div ng-hide="uploader.isUploading">
+                    <input type="file" id="datafile" nv-file-select="" uploader="uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" ng-disabled=" !uploadForm.$valid || uploader.queue.length > 0" />
+
+                    <div layout="row" layout-align="start center">
+                        <label for="datafile" class="md-button md-dashboard" ng-disabled=" !uploadForm.$valid || uploader.queue.length > 0" >
+                            Choose File
+                        </label>
+                        <span class="aa-file-select-file" ng-class="{'no-file': !uploader.queue[0].file.name}">{{ uploader.queue[0].file.name || 'No file selected' }}</span>
+                    </div>
+
+                    <md-button class="md-block md-dashboard confirm" style="margin-top: 11px;" ng-click="uploader.uploadAll()"
+                        ng-if="uploader.queue.length > 0 && !dataset.fileName"
+                        ng-disabled="uploader.isUploading || !uploadForm.$valid ">
+                        <span class="btn-label">Upload Data</span>
                     </md-button>
-                    <md-button class="md-raised" ng-click="item.cancel()" ng-disabled="!item.isUploading">
-                        Cancel
+
+                    <p class="aa-file-select-close"><a href="#" ng-click="uploader.removeAndReset(uploader.queue[0])">Go back</a></p>
+                </div>
+                <div ng-repeat="item in uploader.queue track by $index" ng-show="uploader.isUploading">
+
+                    <div layout="row" layout-align="space-between center">
+                        <span flex="45">
+                            <span class="dashboard-list-name">{{ item.file.name }}</span>
+                        </span>
+
+                        <div flex="5"></div>
+
+
+                        <div ng-show="uploader.isHTML5" ng-hide="item.isSuccess" class="progress-container" draggable="" flex="50">
+                            <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
+                        </div>
+                    </div>
+                    <md-button class="md-block md-dashboard cancel" style="margin-top: 11px;" ng-click="item.cancel()">
+                        <span class="btn-label">Cancel</span>
                     </md-button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
 
-        <div ng-repeat="additionalDatasource in additionalDatasources">
-            <label>Choose datasource file to merge {{additionalDatasource.dataset_uid ? '(' + additionalDatasource.dataset_uid + ')' : ''}}</label>
-            <input type="file" nv-file-select="" uploader="additionalDatasource.uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv"/>
+                </div>
+            </div>
 
-            <table class="table upload">
-                <thead>
-                <tr>
-                    <th width="50%">DataSource Name</th>
-                    <th ng-show="additionalDatasource.uploader.isHTML5">Size</th>
-                    <th ng-show="additionalDatasource.uploader.isHTML5">Progress</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
 
-                <tr ng-repeat="item in additionalDatasource.uploader.queue">
-                    <td><strong>{{ item.file.name }}</strong></td>
-                    <td ng-show="additionalDatasource.uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
-                    <td ng-show="additionalDatasource.uploader.isHTML5" class="progress-container">
-                        <md-progress-linear md-mode="{{additionalDatasource.progressMode}}" value="{{item.progress}}"></md-progress-linear>
-                    </td>
+            <ul class="dashboard-list user-list no-padding" ng-cloak>
+                <li ng-if="dataset.fileName" layout="row" layout-align="space-between center">
 
-                    <td class="text-center">
-                        <span ng-show="item.isSuccess" class="text-success"><i class="glyphicon glyphicon-ok"></i></span>
-                        <span ng-show="item.isCancel" class="text-warning"><i
-                                class="glyphicon glyphicon-ban-circle"></i></span>
-                        <span ng-show="item.isError" class="text-danger"><i class="glyphicon glyphicon-remove"></i></span>
-                    </td>
-                    <td nowrap class="no-padding-vertical">
-                        <md-button class="md-raised" ng-click="item.upload()"
-                                   ng-disabled="item.isReady || item.isUploading || item.isSuccess">
-                            Upload
-                        </md-button>
-                        <md-button class="md-raised" ng-click="item.cancel()" ng-disabled="!item.isUploading">
-                            Cancel
-                        </md-button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                    <span flex="50" class="dashboard-list-name">
+                        <strong>{{dataset.fileName}}</strong>
+                    </span>
+
+                    <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-if="!additionalDatasources[0].fileName"
+                       ng-click="removeSourceDialog(dataset, removeSource, $event)">
+                        <i class="fa fa-remove" aria-hidden="true"></i>
+                    </span>
+
+                </li>
+            </ul>
+
+
+            <div ng-if="dataset.fileName" ng-repeat="additionalDatasource in additionalDatasources" class="no-padding">
+
+                <ul class="dashboard-list user-list" ng-if="additionalDatasource._id" ng-cloak>
+                    <li layout="row" layout-align="space-between center">
+
+                        <span flex="50">
+                            <span class="dashboard-list-name">{{ additionalDatasource.fileName }}</span>
+                        </span>
+
+                        <span class="dashboard-list-icon warn" aria-hidden="true" aria-label="Remove" flex="5" ng-click="removeSourceDialog(additionalDatasource, removeAdditionalDatasource, $event)">
+                            <i class="fa fa-remove" aria-hidden="true"></i>
+                        </span>
+
+                    </li>
+                </ul>
+                <!-- <div > -->
+
+                <ul class="dashboard-list user-list" ng-if="!additionalDatasource._id" ng-cloak><!-- ng-if="!additionalDatasource.fileName" -->
+                    <li>
+                        <div ng-hide="additionalDatasource.uploader.isUploading">
+                            <ul class="dashboard-list aa-file-select-source" ng-if="additionalDatasource.sourceType == ''">
+                                <li><a href="#" ng-click="additionalDatasource.setSourceType('csv')">Upload a spreadsheet</a></li>
+                                <!-- <li><a href="#" ng-click="">Upload a JSON file</a></li> -->
+                            </ul>
+                            <div ng-if="additionalDatasource.sourceType == 'csv'">
+                                <label>Upload spreadsheet</label>
+                                <p>Select any .csv (comma-separated) or .tsv (tab-separated) file.</p>
+                                <input type="file" id="adddatafile" nv-file-select="" uploader="additionalDatasource.uploader" accept=".csv, .tsv, .tsv|text/csv,text/csv-schema,text/tsv" class="team-uploader" />
+
+                                <div layout="row" layout-align="start center">
+                                    <label for="adddatafile" class="md-button md-dashboard" ng-disabled="additionalDatasource.uploader.queue.length > 0" >
+                                        Choose File
+                                    </label>
+                                    <span class="aa-file-select-file" ng-class="{'no-file': !additionalDatasource.uploader.queue[0].file.name}">{{ additionalDatasource.uploader.queue[0].file.name || 'No file selected' }}</span>
+                                </div>
+
+                                <md-button class="md-dashboard confirm" ng-click="additionalDatasource.uploader.uploadAll()"
+                                        ng-if="additionalDatasource.uploader.queue.length > 0"
+                                       ng-disabled="item.isReady || item.isUploading"
+                                       style="margin-top: 15px">
+                                    <span class="btn-label">Upload Data</span>
+                                </md-button>
+
+                                <p class="aa-file-select-close"><a href="#" ng-click="additionalDatasource.uploader.removeAndReset(additionalDatasource.uploader.queue[0])">Go back</a></p>
+                            </div>
+                        </div>
+
+                        <div ng-repeat="item in additionalDatasource.uploader.queue track by $index" ng-show="additionalDatasource.uploader.isUploading">
+                            <div layout="row" layout-align="space-between center">
+                            <span ng-class="{'pending': item.isUploading }" flex="50">
+                                <span class="dashboard-list-name">{{ item.file.name }}</span>
+                            </span>
+
+                            <div ng-show="uploader.isHTML5" ng-hide="item.isSuccess" class="progress-container" draggable="" flex="40">
+                                <md-progress-linear md-mode="{{progressMode}}" value="{{item.progress}}"></md-progress-linear>
+                            </div>
+
+                            <div flex="5"></div>
+
+                            <span class="dashboard-list-icon warn" ng-click="item.cancel()" ng-hide="!item.isUploading" aria-hidden="true" aria-label="Cancel Upload" flex="5">
+                                <i class="fa fa-remove" aria-hidden="true"></i>
+                            </span>
+                            <span class="dashboard-list-icon warn" ng-click="additionalDatasource.uploader.removeAndReset(item)" ng-hide="item.isUploading" aria-hidden="true" aria-label="Delete" flex="5">
+                                <i class="fa fa-remove" aria-hidden="true"></i>
+                            </span>
+                            </div>
+                        </div>
+
+                    </li>
+                </ul>
+                <!-- </div> -->
+            </div>
+
+
+
+        <div ng-if="dataset.fileName && !addingAdditionalDatasource">
+            <md-input-container>
+                <md-button class="md-dashboard" ng-click="addNewDatasource()">
+                    <span class="btn-label">Combine with another data source</span></md-button>
+            </md-input-container>
         </div>
 
-        <md-input-container>
-            <md-button class="md-raised" ng-click="addNewDatasource()"><span class="glyphicon glyphicon-plus"
-                                                                             aria-hidden="true"></span><span
-                    class="btn-label">Add New Additional Datasource To Merge</span></md-button>
-        </md-input-container>
+        <div layout="row" layout-align="space-between center" ng-hide="!dataset.fileName">
 
-        <md-input-container>
-            <md-button class="md-raised" ng-click="removeAdditionalDatasource()" ng-disabled="additionalDatasources.length == 0"><span class="glyphicon glyphicon-minus"
-                                                                             aria-hidden="true"></span><span
-                    class="btn-label">Remove Last Sub Datasource </span></md-button>
-        </md-input-container>
-    </div>
+            <!--  let comment this, not fully tested with joining multiple datasets, hence not useful for now and not implemented -->
+            <!-- <p>
+                <a ng-click="clearAll()" class="warn">Clear All</a>
+            </p> -->
 
-    <div>
-        <md-toolbar layout="row">
-            <div class="md-toolbar-tools">Banner</div>
-        </md-toolbar>
-
-        <div flex="50">
-            <img class="img-responsive" ng-if="dataset.banner" ng-src="{{dataset.banner}}">
+            <div class="hidden-submit">
+                <md-button class="md-dashboard confirm" ng-click="navigate('dashboard.dataset.data')" md-no-ink>
+                    <span class="btn-label">Next</span>
+                </md-button>
+            </div>
         </div>
-
-        <label>Choose image</label>
-        <input type="file" nv-file-select="" uploader="imageUploader">
-
-        <table class="table upload">
-            <thead>
-            <tr>
-                <th width="50%">Image Name</th>
-                <th ng-show="imageUploader.isHTML5">Size</th>
-                <th ng-show="imageUploader.isHTML5">Progress</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-
-            <tr ng-if="imageUploader.queue[0]">
-                <td><strong>{{ imageUploader.queue[0].file.name }}</strong></td>
-                <td ng-show="imageUploader.isHTML5" nowrap>{{ imageUploader.queue[0].file.size/1024/1024|number:2 }}
-                    MB
-                </td>
-                <td ng-show="imageUploader.isHTML5" class="progress-container">
-                    <md-progress-linear md-mode="determinate"
-                                        value="{{imageUploader.queue[0].progress}}"></md-progress-linear>
-                </td>
-
-
-                <td class="text-center">
-                    <span ng-show="imageUploader.queue[0].isSuccess" class="text-success"><i
-                            class="glyphicon glyphicon-ok"></i></span>
-                    <span ng-show="imageUploader.queue[0].isCancel" class="text-warning"><i
-                            class="glyphicon glyphicon-ban-circle"></i></span>
-                    <span ng-show="imageUploader.queue[0].isError" class="text-danger"><i
-                            class="glyphicon glyphicon-remove"></i></span>
-                </td>
-                <td nowrap class="no-padding-vertical">
-
-                    <md-button class="md-raised" ng-click="imageUploader.queue[0].upload()"
-                               ng-disabled="imageUploader.queue[0].isReady || imageUploader.queue[0].isUploading || imageUploader.queue[0].isSuccess">
-                        Upload
-                    </md-button>
-                    <md-button class="md-raised" ng-click="imageUploader.queue[0].cancel()"
-                               ng-disabled="!imageUploader.queue[0].isUploading">
-                        Cancel
-                    </md-button>
-                    <md-button class="md-raised" ng-click="imageUploader.queue[0].remove()">
-                        Remove
-                    </md-button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div layout="row" layout-align="space-between center" class="panel-footer">
-        <md-button class="md-dashboard" ng-click="navigate('dashboard.dataset.settings')" target="_self" md-no-ink>
-            <span class="btn-label">Back</span>
-        </md-button>
-        <md-button class="md-dashboard confirm" ng-click="navigate('dashboard.dataset.data')" ng-disabled="!dataset.uid" md-no-ink>
-            <span class="btn-label">Next</span>
-        </md-button>
-    </div>
-</md-content>
-
-<ng-include src="'/templates/blocks/dataset.empty.html'" ng-if="!dataset.title"></ng-include>
+    </md-content>
+</form>
+<!-- <ng-include src="'/templates/blocks/dataset.empty.html'" ng-if="!dataset.title"></ng-include> -->

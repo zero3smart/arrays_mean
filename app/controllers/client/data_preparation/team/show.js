@@ -13,15 +13,14 @@ module.exports.BindData = function (req, teamDescription, callback) {
     var team_dataSourceDescriptions = teamDescription.datasourceDescriptions;
 
 
-
     var iterateeFn = async.ensureAsync(function (dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
     {
 
         var err = null;
-        var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription);
+ 
 
         raw_source_documents.Model.findOne({
-            primaryKey: source_pKey
+            primaryKey: dataSourceDescription._id
         }, function (err, doc) {
             if (err)
                 return callback(err, null);
@@ -46,7 +45,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
             var authorDisplayName = dataSourceDescription.author.firstName + " " + dataSourceDescription.author.lastName;
 
             var sourceDescription = {
-                key: source_pKey,
+                key: dataSourceDescription.uid + '-r' + dataSourceDescription.importRevision,
                 sourceDoc: doc,
                 title: dataSourceDescription.title,
                 brandColor: dataSourceDescription.brandColor,
@@ -55,6 +54,7 @@ module.exports.BindData = function (req, teamDescription, callback) {
                 lastUpdatedBy: updatedByDisplayName,
                 author: authorDisplayName,
                 arrayListed: default_listed,
+                arrayVisible: dataSourceDescription.fe_visible,
 
                 default_filterJSON: default_filterJSON,
                 default_view: default_view,
@@ -67,10 +67,11 @@ module.exports.BindData = function (req, teamDescription, callback) {
     });
 
 
+
     var completionFn = function (err, sourceDescriptions) {
 
-
         var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
+
         var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
 
         baseUrl += teamDescription.subdomain + "." + rootDomain

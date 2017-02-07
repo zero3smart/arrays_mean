@@ -1,0 +1,123 @@
+{% set currentView = "map" %}
+
+{% extends "../layout/array.html" %}
+
+{% import "../partials/dropdown.html" as dropdown %}
+{% import "../partials/search.html" as search %}
+{% import "../partials/filter.html" as filter %}
+
+{% block headSuffix %}
+    <title>Arrays - {{ arrayTitle }}</title>
+    
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.css' rel='stylesheet' />
+{% endblock %}
+
+{% block content %}
+    <section class="array">
+
+        <header class="array-header header-shadow array-header-small clearfix">
+            <div class="container-fluid">
+                <h1 class="array-title">{{ arrayTitle }}</h1>
+                <div class="array-meta">
+                    {% if sourceDocURL %}<a href="{{ sourceDocURL }}" target="_blank" class="array-meta-about color-brand">Source</a> <span class="array-meta-divider"></span> {% endif %}<span class="array-meta-count">{{ sourceDoc.numberOfRows | comma }} Record{{ "s" if sourceDoc.numberOfRows != 1 else "" }}</span> <span class="array-meta-divider hidden-xs"></span> <span class="array-meta-updated hidden-xs">Last Updated {{ sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
+                </div>
+            </div>
+        </header><!-- .array-header -->
+
+        <div class="map-description-wrapper">
+        {% if view_description %}
+
+            <div class="array-description-wrapper">
+                <p class="array-description">{{ view_description }}</p>
+            </div>
+        
+        {% endif %}
+        </div>
+
+        <div class="map-container">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+
+                        <div class="sort-bar clearfix">
+
+                            <nav class="sort-bar-left pull-left" role="navigation">
+                                {{
+                                dropdown.default(
+                                    'Map By',
+                                    mapBy if mapBy else defaultMapByColumnName_humanReadable,
+                                    colNames_orderedForMapByDropdown,
+                                    routePath_base | constructedRoutePath(filterObj, {
+                                        searchCol: searchCol,
+                                        searchQ: searchQ,
+                                        mapBy: ''
+                                    })
+                                )
+                                }}
+                            </nav>
+
+                            <div class="sort-bar-right pull-right">
+                                {{
+                                search.panel(
+                                    routePath_base,
+                                    searchCol if searchCol else "Object Title",
+                                    colNames_orderedForSortByDropdown,
+                                    searchQ if searchQ else "",
+                                    sortBy,
+                                    sortDir,
+                                    filterObj
+                                )
+                                }}
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div><!-- .row -->
+            </div><!-- .container-fluid -->
+
+            {% if isFilterActive %}
+                {{
+                filter.default(displayTitleOverrides,
+                    routePath_base | constructedRoutePath(null, {
+                        searchCol: searchCol,
+                        searchQ: searchQ,
+                        mapBy: mapBy
+                    }),
+                    filterObj,
+                    truesByFilterValueByFilterColumnName_forWhichNotToOutputColumnNameInPill,
+                    false,
+                    'filter-bar-fixed-bottom'
+                )
+                }}
+            {% endif %}
+
+            <script type="text/javascript">
+                var templateOutput_topValue = {{ highestValue if highestValue else 0 }};
+                var geoData = {{ featureCollection | dump | safe }};
+                var filterObj = {{ filterObj | dump | safe }};
+                var routePath_withoutFilter = "{{ routePath_base | constructedRoutePath(null, {
+                        searchCol: searchCol,
+                        searchQ: searchQ,
+                        mapBy: mapBy
+                }) | safe }}";
+                var mapBy = '{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}';
+            </script>
+
+            <div class="array-content">
+
+                <div id="map"></div>
+
+            </div>
+        </div>
+
+    </section>
+{% endblock %}
+
+{% block inlineScript %}
+    {{ super() }}
+
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.js'></script>
+    <script type="text/javascript" src="/javascripts/map.js"></script>
+    <script type="text/javascript" src="/javascripts/banner.js"></script>
+{% endblock %}

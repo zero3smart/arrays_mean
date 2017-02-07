@@ -13,7 +13,6 @@ var User = require('../../../models/users');
 
 module.exports.BindData = function (req, callback) {
 
-
     var teamsObj = {};
    
 
@@ -81,12 +80,11 @@ module.exports.BindData = function (req, callback) {
 
 
         async.each(teamDescription.datasourceDescriptions, function (dataSourceDescription, innerCallback) {
-
-            var source_pKey = importedDataPreparation.DataSourcePKeyFromDataSourceDescription(dataSourceDescription, raw_source_documents);
+            
 
 
             raw_source_documents.Model.findOne({
-                primaryKey: source_pKey
+                primaryKey: dataSourceDescription._id
             }, function (err, doc) {
 
                 if (err) {
@@ -105,6 +103,7 @@ module.exports.BindData = function (req, callback) {
                    
 
                     var rootDomain = process.env.HOST ? process.env.HOST : 'localhost:9080';
+
                     var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
 
                     baseUrl += teamDescription.subdomain + "." + rootDomain
@@ -112,7 +111,7 @@ module.exports.BindData = function (req, callback) {
 
                 
                     var s = {
-                        key: source_pKey,
+                        key:  dataSourceDescription.uid + '-r' + dataSourceDescription.importRevision,
                         sourceDoc: doc,
                         title: dataSourceDescription.title,
                         brandColor: dataSourceDescription.brandColor,
@@ -120,7 +119,8 @@ module.exports.BindData = function (req, callback) {
                         urls: dataSourceDescription.urls,
                         default_view: default_view,
                         default_filterJSON: default_filterJSON,
-                        datasetBaseLink: baseUrl
+                        datasetBaseLink: baseUrl,
+                        banner: dataSourceDescription.banner
 
                     };
 

@@ -16,6 +16,20 @@
             return null;
         };
 
+        var getEnv = function() {
+            var deferred = $q.defer();
+            $http.get('/env')
+            .then(function(result) {
+                var env = result.data;
+                if (env) {
+                    deferred.resolve(env)
+                } else {
+                    deferred.reject();
+                }
+            })
+            return deferred.promise;
+        }
+
 
         var reload = function(cb) {
 
@@ -24,6 +38,7 @@
 
                     var userData = result.data;
                     if (userData) {
+
 
                         isLoggedIn = true;  
                         $window.sessionStorage.setItem('user', JSON.stringify(userData));
@@ -36,6 +51,8 @@
                                  cb({success:true})
                             })
                         } else {
+
+
 
     
                             $window.sessionStorage.setItem('teams', JSON.stringify(userData._team));
@@ -60,7 +77,6 @@
             if (isLoggedIn && currentUser() != null) {
                 deferred.resolve();
             } else {
-
                reload(function(data) {
                     if (data.success) {
                         deferred.resolve();
@@ -72,6 +88,44 @@
                     }
                })
             }
+
+            return deferred.promise;
+        };
+
+        var ensureIsAdmin = function () {
+
+            var deferred = $q.defer();
+            var user = currentUser();
+            if (isLoggedIn && (user.role === 'admin' || user.role === 'superAdmin') ) {
+                deferred.resolve();
+            } else {
+                deferred.reject();
+                $window.location.href="/dashboard/account/profile";
+            }
+
+            return deferred.promise;
+        };
+
+        var ensureActiveSubscription = function () {
+            var deferred = $q.defer();
+            var user = currentUser();
+            var team = currentTeam();
+
+            team.subscription = team.subscription || {};
+            team.subscription.state = team.subscription.state || {};
+
+   
+
+            if (isLoggedIn && ( (team.superTeam && team.superTeam==true) || user.role === 'superAdmin' || team.subscription.state === 'in_trial' || team.subscription.state === 'active')) {
+
+
+                deferred.resolve();
+
+            } else {
+                deferred.reject();
+                $window.location.href="/dashboard/account/profile";
+            }
+
 
             return deferred.promise;
         };
@@ -198,33 +252,6 @@
         };
 
 
-        //ToDo: modify to match our current user acc.
-        // var updateProfile = function(user) {
-        //     var deferred = $q.defer();
-        //     if (isLoggedIn()) {
-        //         // update user /api/user/update
-        //         $http.post('/api/account/update', user).then(function(data) {
-        //             if (!data.error) {
-        //                 // Update User
-        //                 if (!$window.user._json.user_metadata) $window.user._json.user_metadata = {};
-        //                 if (!$window.user._json.user_metadata.name) $window.user._json.user_metadata.name = {};
-
-        //                 $window.user._json.user_metadata.name.givenName = user.givenName;
-        //                 $window.user._json.user_metadata.name.familyName = user.familyName;
-
-        //                 return deferred.resolve(data.message);
-        //             } else {
-        //                 return deferred.reject(data.error);
-        //             }
-        //         }, function(err) {
-        //             return deferred.reject(data.error);
-        //         });
-        //     } else {
-        //         return deferred.reject('You need to login first!'); 
-        //     }
-        //     return deferred.promise;
-        // };
-
 
         var inviteUser = function (newUser) {
             return $http.post('/api/admin/invite', newUser)
@@ -242,8 +269,10 @@
             currentTeam: currentTeam,
             isLoggedIn: isLoggedIn,
             ensureLogIn: ensureLogin,
+            ensureIsAdmin: ensureIsAdmin,
+            ensureActiveSubscription: ensureActiveSubscription,
             allTeams: allTeams,
-            // updateProfile: updateProfile,
+            getEnv: getEnv,
             resendInvite:  resendInvite,
             reload: reload,
             updateTeam: updateTeam,

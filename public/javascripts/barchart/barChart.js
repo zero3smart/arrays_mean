@@ -4,6 +4,7 @@
 function BarChart(selector, dataSet, options) {
 
     this._categories = dataSet.categories;
+
     this._categoryData = $.extend(true, [], this._categories);
     this._data = dataSet.data;
     this._options = options;
@@ -38,7 +39,8 @@ function BarChart(selector, dataSet, options) {
     this._margin = {
         top : 25,
         right : 15,
-        bottom : 144 + $('.filter-bar').height(),  //Add more margin if filters present
+        bottom : 144 + $('.filter-bar').height(),  //Add more margin if filters present - margin bottom can be 15 if we're not showing the labels
+        // bottom: 10,
         left : options.horizontal ? 120 : Math.max(10 * digitCount, 50)
     };
 
@@ -77,11 +79,12 @@ function BarChart(selector, dataSet, options) {
 
 
     // /*Set a minimum width for the barchart in cases where # of labels exceeds 18*/
-    if (dimension.width < 580 & self._categoryData.length > 16) {
+    if (dimension.width < 580 && self._categoryData.length > 16) {
         this._outerWidth = 580;
     } else {
         this._outerWidth = dimension.width;
     }
+
 
     this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
     this._outerHeight = window.innerHeight - container.offset().top - 30;
@@ -92,7 +95,7 @@ function BarChart(selector, dataSet, options) {
     }
     this._innerHeight = this._outerHeight - this._margin.top - this._margin.bottom;
 
-    // anything beyond this and the x-axis labels get too squished
+    // anything beyond this and the axis labels get too squished
     if(options.horizontal == false) {
         this._showYLabels = true;
         if(this._outerWidth/self._categoryData.length < 16) {
@@ -100,21 +103,22 @@ function BarChart(selector, dataSet, options) {
         } else {
             this._showXLabels = true;
         }
-    } else if(options.horizontal == true) {
+
+    } else if(options.horizontal == true){
         this._showXLabels = true;
         if(this._outerHeight/self._categoryData.length < 18) {
             this._showYLabels = false;
-            this._margin.left = 10;
         } else {
             this._showYLabels = true;
         }
     }
 
 
+
     this._svg = this._container.append('svg')
         .attr('height', this._outerHeight)
         .attr('width', this._outerWidth)
-        .attr('viewbox', '0, 0, ' + this._outerWidth + ', ' + this._outerHeight)
+        .attr('viewbox', '0, 0, ' + this._outerWidth + ", " + this._outerHeight)
         .attr('preserveAspectRatio', 'none')
 
     this._canvas = this._svg.append('g')
@@ -350,8 +354,8 @@ BarChart.prototype.getValueFormatter = function() {
  * @param {Integer} j - series number
  */
 BarChart.prototype._barMouseEnterEventHandler = function(barElement, i, j, categoriesAndData) {
-    var label = categoriesAndData[j][1][0].label;
-    var value = categoriesAndData[j][1][0].value;
+    var label = categoriesAndData[j][1][i].label;
+    var value = categoriesAndData[j][1][i].value;
     var category = categoriesAndData[j][0];
 
     this._canvas.selectAll('rect.bar')

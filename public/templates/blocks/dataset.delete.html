@@ -1,25 +1,21 @@
-<md-dialog md-no-ink aria-label="Delete Dataset">
-    <aa-toolbar title="Delete Dataset" class="warn"></aa-toolbar>
+<md-dialog md-no-ink aria-label="Delete Visualization">
+    <aa-toolbar title="Delete Visualization" class="warn"></aa-toolbar>
 
     <md-dialog-content layout-padding>
         <md-content layout="column">
             <p>
-                Are you sure you want to delete the dataset
+                Are you sure you want to delete the visualization
                 <span><strong>{{ title }}</strong></span>?
             </p>
             <p>
-                Dataset will be deleted permanently and any datasets with merged fields dependent on this dataset will not display properly.
-                Please re-configure and re-import any dependent datasets as needed.
+                Visualization will be deleted permanently and any visualizations with merged fields dependent on this visualization will not display properly.
+                Please re-configure and re-import any dependent visualizations as needed.
             </p>
         </md-content>
-        <md-dialog-actions layout="row" layout-align="end center">
-            <md-button class="md-dashboard md-warn" ng-click="hide()">
-                <span class="btn-label">Remove Dataset</span>
-            </md-button>
-            <md-button class="md-dashboard" ng-click="cancel()">
-                Cancel
-            </md-button>
-        </md-dialog-actions>
+
+
+        <aa-dialog-actions warn="Remove Visualization" cancel=""></aa-dialog-actions>
+
     </md-dialog-content>
 
 </md-dialog>

@@ -19,11 +19,6 @@
             <span ng-if="user.invited[person._id]">(Pending Invitation)</span>
         </span>
 
-        <!-- placeholder until ready -->
-        <div flex="10">
-            <img src="/images/image-not-found-sm.png" style="opacity: 0" />
-        </div>
-
         <span class="dashboard-list-icon" ng-click="openUserDialog($event, person, user)" ng-if="user._id != person._id && !user.invited[person._id]" flex="10" aa-tooltip="Edit user">
             <i class="fa fa-pencil" aria-hidden="true"></i>
         </span>

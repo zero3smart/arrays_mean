@@ -6,23 +6,26 @@ var raw_source_documents = require('../../../models/raw_source_documents');
 //
 var _cacheKeywords_fromDataSourceDescription = function (job,dataSourceDescription, callback) {
     if (!dataSourceDescription.fe_views || dataSourceDescription.fe_views.views == null || typeof dataSourceDescription.fe_views.views.wordCloud == 'undefined' || !dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName ||
-        dataSourceDescription.fe_views.views.wordCloud.visible == false ) return callback();
+        dataSourceDescription.fe_views.views.wordCloud.visible == false || 
+        !dataSourceDescription.fe_views.views.wordCloud.keywords || dataSourceDescription.fe_views.views.wordCloud.keywords.length == 0) return callback();
 
     mongoose_client.WhenMongoDBConnected(function () {
-        var dataSource_uid = dataSourceDescription.uid;
-        var dataSource_importRevision = dataSourceDescription.importRevision;
-        var dataSource_title = dataSourceDescription.title;
-        var dataset_uid = dataSourceDescription.dataset_uid;
-        //
+       
+        var dataSource_title = dataSourceDescription.fileName;
+        var iterateDataset = dataSourceDescription._id;
+
+        if (dataSourceDescription.schemaId) {
+            iterateDataset = dataSourceDescription.schemaId;
+        }
+       
         winston.info("🔁  Caching keywords operation for \"" + dataSource_title + "\"");
         job.log("🔁  Caching keywords operation for \"" + dataSource_title + "\"");
 
         var realFieldName = dataSourceDescription.fe_views.views.wordCloud.defaultGroupByColumnName;
 
-        var pKey_ofDataSrcDocBeingProcessed = raw_source_documents.NewCustomPrimaryKeyStringWithComponents(dataSource_uid, dataSource_importRevision);
 
-        //
-        var mongooseContext_ofTheseProcessedRowObjects = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(pKey_ofDataSrcDocBeingProcessed);
+        
+        var mongooseContext_ofTheseProcessedRowObjects = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(iterateDataset);
         var mongooseModel_ofTheseProcessedRowObjects = mongooseContext_ofTheseProcessedRowObjects.Model;
         var nativeCollection_ofTheseProcessedRowObjects = mongooseModel_ofTheseProcessedRowObjects.collection;
         //
@@ -30,9 +33,8 @@ var _cacheKeywords_fromDataSourceDescription = function (job,dataSourceDescripti
         var needToUpdate = false;
 
         processed_row_objects.EnumerateProcessedDataset(
-            dataSource_uid,
-            dataSource_importRevision,
-            dataset_uid,
+            dataSourceDescription._id,
+            dataSourceDescription.schemaId,
             function (doc, eachCb) {
                 var fieldValues = [];
                 if (doc.rowParams[realFieldName] != null) {
@@ -76,11 +78,8 @@ var _cacheKeywords_fromDataSourceDescription = function (job,dataSourceDescripti
             function () {
                 // Finished iterating … execute the batch operation
                 if (needToUpdate) {
-                    var writeConcern =
-                    {
-                        upsert: true // might as well - but this is not necessary
-                    };
-                    bulkOperation_ofTheseProcessedRowObjects.execute(writeConcern, function (err, result) {
+             
+                    bulkOperation_ofTheseProcessedRowObjects.execute(function (err, result) {
                         if (err) {
                             winston.error("❌  Error while caching keywords: ", err);
                         } else {

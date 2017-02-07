@@ -14,7 +14,7 @@ VerticalBarChart.prototype = Object.create(BarChart.prototype);
 
 
 VerticalBarChart.prototype._animate = function () {
-
+    
     var self = this;
 
     this._bars.attr('width', function (d, i, j) {

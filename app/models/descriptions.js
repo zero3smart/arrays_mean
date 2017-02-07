@@ -10,6 +10,10 @@ var mongoose_client = require('./mongoose_client');
 var imported_data_preparation = require('../libs/datasources/imported_data_preparation');
 var import_controller = require('../libs/import/data_ingest/controller');
 var User = require('../models/users');
+var Team = require('../models/teams');
+
+var raw_source_documents = require('../models/raw_source_documents');
+var cached_values = require('../models/cached_values');
 
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
@@ -21,8 +25,8 @@ var DatasourceDescription_scheme = Schema({
     importRevision: {type: Number, integer: true, default: 1},
     schema_id: {type: Schema.Types.ObjectId, ref: 'DatasourceDescription'},
     banner: String,
-    dataset_uid: String, // It is not changeable once it's generated automaticlly when creating a descrpition
-    format: String,
+    format: String, //csv, tsv, json
+    connection: Object,
     title: String,
     brandColor: String,
     urls: Array,
@@ -31,6 +35,7 @@ var DatasourceDescription_scheme = Schema({
     fe_listed: {type: Boolean, default: false},
 
     useCustomView: {type: Boolean, default: false},
+    fileName: String,
     
     raw_rowObjects_coercionScheme: Object,
     fe_excludeFields: Object,
@@ -85,12 +90,22 @@ var DatasourceDescription_scheme = Schema({
 
     imported: {type: Boolean, default: false},
     dirty: {type: Number, integer: true, default: 0},
-    skipImageScraping: {type: Boolean, default: false}
     //0: nth to do, imported
     //1: reimport from begining
     //2: starting from import processed
     //3: post import caching
     //4: only image scraping 
+
+    skipImageScraping: {type: Boolean, default: false},
+
+    jobId: {type: Number,integer: true, default: 0}
+
+    //0: no job has started, job has completed
+    //all others: related to the jobId in the queue
+
+
+    
+
 
 });
 
@@ -98,7 +113,68 @@ var deepPopulate = require('mongoose-deep-populate')(mongoose);
 DatasourceDescription_scheme.plugin(integerValidator);
 DatasourceDescription_scheme.plugin(deepPopulate, {whitelist: ['_otherSources', '_otherSources._team', 'schema_id', '_team', 'schema_id._team']});
 
-var datasource_description = mongoose.model('DatasourceDescription', DatasourceDescription_scheme);
+DatasourceDescription_scheme.pre('remove',function(next) {
+    var thisId = this._id;
+
+
+
+    if (!this.schema_id) {
+        
+        async.parallel([
+            function(callback) {
+                mongoose_client.dropCollection('rawrowobjects-' + thisId, function (err) {
+                    // Consider that the collection might not exist since it's in the importing process.
+                    if (err && err.code != 26) return callback(err);
+                    winston.info("✅  Removed raw row object : " + thisId );
+                    callback(null);
+                })
+            },
+            function(callback) {
+                mongoose_client.dropCollection('processedrowobjects-' + thisId, function (err) {
+                // Consider that the collection might not exist since it's in the importing process.
+                    if (err && err.code != 26) return done(err);
+
+                    winston.info("✅  Removed processed row object : " + thisId);
+                    callback(null);
+                });
+            },
+            function(callback) {
+
+                raw_source_documents.Model.remove({primaryKey: thisId},function(err) {
+
+                    if (err) return callback(err);
+                    winston.info("✅  Removed raw source document : " + thisId);
+                    callback(null);
+
+                })
+
+            },
+            function(callback) {
+
+                cached_values.remove({srcDocPKey: thisId},function(err) {
+                    if (err) return callback(err);
+                    winston.info("✅  Removed cached unique values : " + thisId) ;
+                    callback(null);
+                })
+            }
+
+        ],function(err){
+
+            if (err) console.log(err);
+            next();
+        })
+
+    } else {
+        next();
+    }
+    
+})
+
+
+var datasource_description = mongoose.model('DatasourceDescription', DatasourceDescription_scheme,'datasourcedescriptions');
+
+
+
 
 /* -----------   helper function ----------- */
 var _mergeObject = function (obj1, obj2) {
@@ -114,7 +190,8 @@ var _mergeObject = function (obj1, obj2) {
 
 var _consolidate_descriptions_hasSchema = function (description) {
     var desc = _.omit(description, ['schema_id'])
-    var schemaDesc = description.schema_id
+    var schemaDesc = description.schema_id;
+    desc.schemaId = schemaDesc._id;
     for (var attrname in schemaDesc) {
         if (desc[attrname]) {
             if (Array.isArray(desc[attrname])) {
@@ -258,6 +335,38 @@ var _GetDescriptions = function (fn) {
 
 datasource_description.GetDescriptions = _GetDescriptions;
 
+var _datasetsNeedToReimport = function (currentSourceId,cb) {
+
+    datasource_description.find({_otherSources: currentSourceId},function(err,relatedSources) {
+        if (err) return cb(err);
+        if (!relatedSources) return cb(null,{datasets:[]});
+        var datasetsNeedToReimport = [];
+        relatedSources.forEach(function(src) {
+            if (src.relationshipFields) {
+
+                for (var i = 0; i < src.relationshipFields.length; i++) {
+
+                    if (src.relationshipFields[i].relationship == true && 
+                        src.relationshipFields[i].by.joinDataset == currentSourceId) {
+                        datasetsNeedToReimport.push(src);
+                    }
+
+                 }
+
+            }
+
+
+        })
+        cb(null,{datasets:datasetsNeedToReimport});
+
+
+    })
+
+}
+
+
+datasource_description.datasetsNeedToReimport = _datasetsNeedToReimport;
+
 
 var _GetDescriptionsToSetupByIds = function (Ids, fn) {
 
@@ -317,9 +426,14 @@ var _GetDescriptionsToSetupByIds = function (Ids, fn) {
 datasource_description.GetDescriptionsToSetup = _GetDescriptionsToSetupByIds;
 
 
-var _GetDescriptionsWith_uid_importRevision = function (uid, revision, fn) {
+var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid, revision, fn) {
+   
+    
     this.findOne({uid: uid, importRevision: revision, fe_visible: true})
-        .populate('_team')
+        .populate({
+            path: '_team',
+            match: { 'subdomain' : subdomain}
+        })
         .lean()
         .exec(function (err, descriptions) {
             if (err) {
@@ -331,37 +445,59 @@ var _GetDescriptionsWith_uid_importRevision = function (uid, revision, fn) {
         })
 };
 
-datasource_description.GetDescriptionsWith_uid_importRevision = _GetDescriptionsWith_uid_importRevision;
+datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDescriptionsWith_subdomain_uid_importRevision;
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
 
-    imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
-        .then(function (datasourceDescription) {
 
+    imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
+        .then(function(datasourceDescription) {
+
+            var subscription = datasourceDescription._team.subscription ? datasourceDescription._team.subscription : { state: null };
 
             if (!datasourceDescription.fe_visible || !datasourceDescription.imported) return fn();
-            if (datasourceDescription.isPublic) return fn(null, datasourceDescription);
+
+
 
             if (userId) {
                 User.findById(userId)
                     .populate('_team')
-                    .exec(function (err, foundUser) {
-                  
+                    .exec(function(err, foundUser) {
+
                         if (err) return fn(err);
-                        if (foundUser.isSuperAdmin() || datasourceDescription.author.equals(foundUser._id)|| 
-                            foundUser._editors.indexOf(datasourceDescription._id) >= 0 || foundUser._viewers.indexOf(datasourceDescription._id) >= 0) {
+
+                        if (
+                            foundUser.isSuperAdmin() || 
+                            (
+                                (
+                                    datasourceDescription.author.equals(foundUser._id) ||
+                                    foundUser._editors.indexOf(datasourceDescription._id) >= 0 ||
+                                    foundUser._viewers.indexOf(datasourceDescription._id) >= 0 ||
+                                    datasourceDescription.isPublic
+                                ) && ( 
+                                    subscription.state === 'in_trial' || subscription.state === 'active' || datasourceDescription._team.superTeam == true
+                                )
+                            )
+                        ) {
                             return fn(null, datasourceDescription);
                         } else {
-            
                             return fn();
                         }
                     });
             } else {
+
+                
+    
+                if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.superTeam !== true) return fn();
+
+
+                if (datasourceDescription.isPublic) return fn(null, datasourceDescription);
+
                 fn();
             }
 
         })
-        .catch(function (err) {
+        .catch(function(err) {
             if (err) winston.error("❌  cannot bind Data to the view, error: ", err);
             fn(err);
         });

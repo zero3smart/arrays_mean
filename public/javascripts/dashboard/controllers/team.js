@@ -20,6 +20,82 @@ angular
                 });
             };
 
+
+
+            $scope.deleteTeam = function(index) {
+                //show warning, ask for confirmation
+                var teamId = $scope.teams[index]._id;
+                var teamName = $scope.teams[index].title;
+
+                $mdDialog.show({
+                    templateUrl: 'templates/blocks/team.delete.html',
+                    clickOutsideToClose: true,
+                    fullscreen: true,
+
+                    controller: function($scope,$mdDialog) {
+                        $scope.team = teamName;
+
+                        $scope.hide = function() {
+                            $mdDialog.hide();
+                        };
+                        $scope.cancel = function() {
+                            $mdDialog.cancel();
+                        };
+                    }
+                })
+                .then(function() {
+
+                    Team.delete({id:teamId}).$promise
+                        .then(function(response){
+                          
+                               if (response.message == 'ok') {
+                                    $scope.teams.splice(index,1);
+
+                                     $mdToast.show(
+                                        $mdToast.simple()
+                                            .textContent('Team deleted successfully!')
+                                            .position('top right')
+                                            .hideDelay(3000)
+                                    );
+                               }
+                        })
+                    
+
+                },function() {
+                    //dialog canceled
+                })
+            }
+
+            $scope.updateSuperTeam = function(index) {
+                var team = $scope.teams[index];
+                console.log(team);
+
+                Team.update({id:team._id},{superTeam: team.superTeam}).$promise
+                .then(function(response) {
+                    if (response.team) {
+                        $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Team setting saved!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+
+                    } else {
+                         $mdToast.show(
+                            $mdToast.simple()
+                                .textContent('Sorry! Cannot save team setting!')
+                                .position('top right')
+                                .hideDelay(3000)
+                        );
+                    }
+                })
+
+            }
+
+
+
+
+
             function AddTeamDialogController($scope, $mdDialog, Team, user) {
                 $scope.newTeam = {};
                 $scope.newTeam.admin = user._id;
@@ -33,7 +109,7 @@ angular
 
                 $scope.checkSubdomain = function() {
                     var params = {subdomain: $scope.newTeam.subdomain};
-                    if ($scope.newTeam.subdomain == 'blog' || $scope.newTeam.subdomain == 'explore') {
+                    if ($scope.newTeam.subdomain == 'app' ) {
                          $scope.vm.teamForm.subdomain.$setValidity('unique', false);
                          return; 
                     }
@@ -41,8 +117,10 @@ angular
                     .$promise.then(function(data) { 
 
                         if (data.length == 0) {
+
                             if (/^[a-z0-9\-]*$/.test($scope.newTeam.subdomain)) {
                                 $scope.vm.teamForm.subdomain.$setValidity('unique', true);
+                                $scope.vm.teamForm.subdomain.$setValidity('pattern', true);
                             } else {
                                 $scope.vm.teamForm.subdomain.$setValidity('unique', true);
                                 $scope.vm.teamForm.subdomain.$setValidity('pattern', false);

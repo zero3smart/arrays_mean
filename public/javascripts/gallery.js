@@ -4,6 +4,7 @@ $(function () {
      */
     var controller = new ScrollMagic.Controller();
 
+
 	/**
 	 * Set array header pin
 	 */
@@ -20,7 +21,7 @@ $(function () {
 	 }
 	 else {
 		 var scene = new ScrollMagic.Scene({
-				offset: - $('.navbar-fixed-top').innerHeight(),
+				offset: - $('.navbar-fixed-top').innerHeight() - $('.w-container').innerHeight(),
 				triggerElement: '#array-controls'
 			})
 			.triggerHook('onLeave')
@@ -43,7 +44,7 @@ $(function () {
 
 	 galleryTitles = document.querySelectorAll('.gallery-title');
 
-	 //convert to array
+	 // convert to array
 	 var secondaryColumnsArr, galleryTitlesArr; 
 
 	 secondaryColumnsArr = Array.prototype.slice.call(secondaryColumns);
@@ -53,10 +54,10 @@ $(function () {
 	 var overflowColumns, overflowGalleryTitles;
 
 	 overflowColumns = secondaryColumnsArr.filter(function(el) {
-  	 	return el.offsetHeight > 136;
-  	 });
+	 	return el.offsetHeight > 136;
+	 });
 
-  	 overflowGalleryTitles = galleryTitlesArr.filter(function(el) {
+	 overflowGalleryTitles = galleryTitlesArr.filter(function(el) {
 	 	return el.offsetHeight > galleryTitleThreshold;
 	 })
 

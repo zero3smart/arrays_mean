@@ -1,3 +1,4 @@
+var Team = require('../../../models/teams');
 var User = require('../../../models/users');
 
 var Recurly = require('node-recurly');
@@ -12,20 +13,44 @@ module.exports.create = function(req, res) {
 
     var userId = req.user;
 
-    recurly.subscriptions.create({
-        plan_code: req.body.plan_code, // *required
-        account: {
-            account_code: userId       // *required
-        },
-        currency: 'USD'                // *required
+    User.findById(userId)
+        .populate('_team')
+        .populate('defaultLoginTeam')
+        .exec(function (err, user) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
 
-    }, function(err, response) {
-        if (err) {
-            res.status(err.statusCode).send(err);
-        } else {
-            res.status(response.statusCode).json(response);
-        }
-    });
+                if (!user.defaultLoginTeam || user._team.length === 0) {
+                    return res.status(401).send({error: 'unauthorized'});
+                }
+
+                if (!user.isSuperAdmin() && !user.defaultLoginTeam.admin && user.defaultLoginTeam.admin != userId) {
+                    return res.status(401).send({error: 'unauthorized'});
+                }
+
+                recurly.subscriptions.create({
+                    plan_code: req.body.plan_code, // *required
+                    account: {
+                        account_code: user.defaultLoginTeam._id.toString()  // *required
+                    },
+                    currency: 'USD'                // *required
+
+                }, function(err, response) {
+                    if (err) {
+                        res.status(err.statusCode).send(err);
+                    } else {
+                        Team.UpdateSubscription(userId, response, function(status, err, response) {
+                            if (err) {
+                                res.status(status).send(err);
+                            } else {
+                                res.status(status).send(response);
+                            }
+                        });
+                    }
+                });
+            }
+        });
     
 };
 
@@ -33,13 +58,31 @@ module.exports.getAll = function(req, res) {
 
     var userId = req.user;
 
-    recurly.subscriptions.listByAccount(userId, {}, function(err, response) {
-        if (err) {
-            res.status(err.statusCode).send(err);
-        } else {
-            res.status(response.statusCode).json(response);
-        }
-    });
+    User.findById(userId)
+        .populate('_team')
+        .populate('defaultLoginTeam')
+        .exec(function(err, user) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+
+                if (!user.defaultLoginTeam || user._team.length === 0) {
+                    return res.status(401).send({ error: 'unauthorized' });
+                }
+
+                if (!user.isSuperAdmin() && !user.defaultLoginTeam.admin && user.defaultLoginTeam.admin != userId) {
+                    return res.status(401).send({ error: 'unauthorized' });
+                }
+
+                recurly.subscriptions.listByAccount(user.defaultLoginTeam._id.toString(), {}, function(err, response) {
+                    if (err) {
+                        res.status(err.statusCode).send(err);
+                    } else {
+                        res.status(response.statusCode).json(response);
+                    }
+                });
+            }
+        });
 };
 
 module.exports.update = function(req, res) {
@@ -63,10 +106,16 @@ module.exports.update = function(req, res) {
         if (err) {
             res.status(err.statusCode).send(err);
         } else {
-            res.status(response.statusCode).json(response);
+            Team.UpdateSubscription(userId, response, function(status, err, response) {
+                if (err) {
+                    res.status(status).send(err);
+                } else {
+                    res.status(status).send(response);
+                }
+            });
         }
     });
-    
+
 };
 
 module.exports.cancel = function(req, res) {
@@ -78,7 +127,13 @@ module.exports.cancel = function(req, res) {
         if (err) {
             res.status(err.statusCode).send(err);
         } else {
-            res.status(response.statusCode).json(response);
+            Team.UpdateSubscription(userId, response, function(status, err, response) {
+                if (err) {
+                    res.status(status).send(err);
+                } else {
+                    res.status(status).send(response);
+                }
+            });
         }
     });
 };
@@ -92,7 +147,13 @@ module.exports.reactivate = function(req, res) {
         if (err) {
             res.status(err.statusCode).send(err);
         } else {
-            res.status(response.statusCode).json(response);
+            Team.UpdateSubscription(userId, response, function(status, err, response) {
+                if (err) {
+                    res.status(status).send(err);
+                } else {
+                    res.status(status).send(response);
+                }
+            });
         }
     });
 };

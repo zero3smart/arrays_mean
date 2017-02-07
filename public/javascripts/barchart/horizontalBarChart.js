@@ -37,9 +37,10 @@ HorizontalBarChart.prototype.rotateYLabel = function() {
     if(this._showYLabels) {
         return true;
     } else {
-        return this._yAxisContainer
-        .selectAll("g")
+
+        return this._yAxisContainer.selectAll("g")
         .style("visibility", "hidden")
+
     }
 };
 
@@ -48,7 +49,7 @@ HorizontalBarChart.prototype.rotateXLabel = function() {
         return this._xAxisContainer.selectAll("g")
         .style("visibility", "visible")
     }
-};
+}
 
 HorizontalBarChart.prototype._animateForSort = function() {
 
