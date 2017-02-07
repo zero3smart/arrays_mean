@@ -37,8 +37,10 @@ HorizontalBarChart.prototype.rotateYLabel = function() {
     if(this._showYLabels) {
         return true;
     } else {
+
         return this._yAxisContainer.selectAll("g")
         .style("visibility", "hidden")
+
     }
 };
 
@@ -124,7 +126,7 @@ HorizontalBarChart.prototype.getXAxisTransform = function() {
 HorizontalBarChart.prototype.getYScale = function() {
     
     return this._yScale = d3.scale.ordinal()
-        .rangeRoundBands([0, this._innerHeight], this._padding)
+        .rangeBands([0, this._innerHeight], this._padding)
         .domain(this._categories);
 };
 

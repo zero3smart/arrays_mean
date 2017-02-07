@@ -11,8 +11,6 @@
                     <div class="row">
                         <div class="col-sm-8 col-sm-offset-2">
 
-
-
                             <article id="object-id" class="object">
                                 <header class="object-header">
                                     {% if hasOriginalImage %}
@@ -103,11 +101,12 @@
                                                 {% set shouldLink = false if fieldsNotToLinkAsGalleryFilter_byColName[columnName] else true %}
                                                 {% if shouldLink %}
                                                     {% set filterObjForThisFilterColVal = {} | constructedFilterObj(columnName, columnValue, false) %}
-
+                                                    
                                                     <a href="{{ ('/' + array_source_key + '/gallery') | constructedRoutePath(filterObjForThisFilterColVal, {embed: embedded}) }}" class="color-brand">
                                                 {% endif %}
 
                                                  {% set urlizedField = (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe %}
+
                                                     {% set isUrlField = false if urlizedField == columnValue else true %}
                                                     {% if isUrlField %}
                                                         <span class="color-brand">{{ (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe }}</span>
@@ -115,6 +114,7 @@
 
                                                         {{ (htmlOverrideFn(rowObject, columnValue, strParams) | safe if htmlOverrideFn else columnValue) | substitutePlainURLs | safe }}
                                                     {% endif %}
+
                                                 {% if shouldLink %}
                                                     </a>
                                                 {% endif %}

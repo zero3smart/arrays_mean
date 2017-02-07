@@ -15,7 +15,6 @@ router.get('/', function (req, res) {
 
     if (process.env.NODE_ENV == 'enterprise') {
 
-
         teams.GetTeamsAndDatasources(req.user,function(err,teamDescriptions) {
             if (err) {
                 winston.error("❌  Error getting bind data for Team show: ", err);

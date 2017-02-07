@@ -1,4 +1,4 @@
-var winston = require('winston');
+ var winston = require('winston');
 var expressWinston = require('express-winston');
 var url = require('url');
 var path = require('path');
@@ -9,8 +9,6 @@ var shouldEnsureWWW = isDev == false || __DEBUG_enableEnsureWWWForDev;
 
 var fs = require('fs');
 var async = require('async');
-
-
 
 
 var rootDomain = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
@@ -180,6 +178,7 @@ var _mountRoutes_endPoints = function (app) {
         res.redirect('/auth/login');
     });
     app.use('/signup',require('./signup'));
+    app.use('/schemaaccess', require('./auth'));
 
     app.use('/dashboard', require('./dashboard'));
     app.use('/api', require('./api'));
