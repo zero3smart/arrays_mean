@@ -266,11 +266,11 @@
             </md-tabs>
 
             <md-dialog-actions layout="row" layout-align="end center">
-                <md-button class="md-dashboard cancel" ng-click="reset()" ng-disabled="!dialog.form.$dirty">
-                    Reset
+                <md-button class="md-dashboard cancel" ng-click="cancel()">
+                    <span class="btn-label">Cancel</span>
                 </md-button>
                 <md-button class="md-dashboard confirm" ng-click="save()" ng-disabled="!dialog.form.$dirty || dialog.form.$invalid">
-                    Save
+                    <span class="btn-label">Save</span>
                 </md-button>
             </md-dialog-actions>
         </form>
