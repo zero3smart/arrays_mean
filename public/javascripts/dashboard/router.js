@@ -128,10 +128,7 @@ angular.module('arraysApp')
                                     return [];
                                 }
         
-                            }],
-                            team: function(AuthService) {
-                                return AuthService.currentTeam();
-                            }
+                            }]
                         }
                     })
                     .state('dashboard.dataset.settings', {
