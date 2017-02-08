@@ -132,8 +132,7 @@ angular.module('arraysApp')
                         controller: 'DatasetSettingsCtrl as vm',
                         templateUrl: 'templates/dataset/settings.html',
                         resolve: {
-                            dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {
-
+                            dataset: ['DatasetService', '$stateParams','$q', function (DatasetService, $stateParams,$q) {                        
                                 return DatasetService.get($stateParams.id);
                             }]
                         }

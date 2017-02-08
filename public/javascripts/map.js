@@ -83,6 +83,7 @@ map.on('load', function () {
     /**
      * Add source data to map
      */
+
     map.addSource('countries', {
         type: 'geojson',
         data: geoData
@@ -105,7 +106,7 @@ map.on('load', function () {
             'source-layer': layer,
             filter: filteruse,
             paint: {
-                'fill-color': '#00DAE5',
+                'fill-color': brandColor,
                 'fill-opacity': opacities[i]
             }
         }, 'water');

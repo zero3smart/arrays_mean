@@ -8,7 +8,7 @@
 
 {% block headSuffix %}
     <title>Arrays - {{ arrayTitle }}</title>
-    
+
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.css' rel='stylesheet' />
 {% endblock %}
 
@@ -30,7 +30,7 @@
             <div class="array-description-wrapper">
                 <p class="array-description">{{ view_description }}</p>
             </div>
-        
+
         {% endif %}
         </div>
 
@@ -102,6 +102,7 @@
                         mapBy: mapBy
                 }) | safe }}";
                 var mapBy = '{{ mapBy if mapBy else defaultMapByColumnName_humanReadable }}';
+                var brandColor = '{{ brandColor }}';
             </script>
 
             <div class="array-content">
