@@ -246,7 +246,7 @@ angular.module('arraysApp')
                         templateUrl: 'templates/team.html',
                         resolve: {
                             restrict: function(AuthService) {
-                                return AuthService.ensureIsAdmin();
+                                return AuthService.ensureIsAdmin() && AuthService.ensureActiveSubscription();
                             }
                         }
                     })
@@ -297,6 +297,11 @@ angular.module('arraysApp')
                         url: '/teams',
                         controller: 'TeamCtrl as vm',
                         templateUrl: 'templates/teams.html',
+                        resolve: {
+                            restrict: function(AuthService) {
+                                return AuthService.ensureActiveSubscription();
+                            }
+                        }
                     });
 
                 // use the HTML5 History API

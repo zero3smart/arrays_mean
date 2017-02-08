@@ -90,11 +90,11 @@
 </md-content>
 <!--  -->
             <md-dialog-actions layout="row" layout-align="end center">
-                <md-button class="md-dashboard cancel" ng-click="reset()" ng-disabled="!dialog.fieldForm.$dirty">
-                    Reset
+                <md-button class="md-dashboard cancel" ng-click="cancel()">
+                    <span class="btn-label">Cancel</span>
                 </md-button>
                 <md-button class="md-dashboard confirm" ng-click="save()" ng-disabled="!dialog.fieldForm.$dirty || dialog.fieldForm.$invalid">
-                    Save
+                    <span class="btn-label">Save</span>
                 </md-button>
             </md-dialog-actions>
         </form>

@@ -13,7 +13,7 @@ module.exports.ensureAuthorized = function(req, res, next) {
     	sourceKey = req.params[0] + req.params[1];
       
 
-    	sourceKey = req.subdomains[0] + '-' + sourceKey.substring(1);
+        sourceKey = req.subdomains[0] + '-' + sourceKey.substring(1);
     } else {
         sourceKey = req.subdomains[0] + '-' + req.params.source_key;
     }

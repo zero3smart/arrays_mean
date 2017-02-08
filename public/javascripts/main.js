@@ -70,7 +70,6 @@ $(document).ready(function () {
      */
     $('.js-panel-team').on('click', function (e) {
 
-
         e.preventDefault();
         var $parent = $(this).parent();
         var subdomain = $parent.find("[name='subdomain']").val();

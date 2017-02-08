@@ -2,6 +2,7 @@ var mongoose_client = require('./mongoose_client');
 var integerValidator = require('mongoose-integer');
 var _ = require("lodash");
 var User = require('./users');
+var Team = require('./teams');
 
 var mongoose = mongoose_client.mongoose;
 var Schema = mongoose.Schema;
@@ -87,7 +88,7 @@ team.GetTeamsAndDatasources = function(userId, fn) {
                 } else { //get published and unpublished dataset if currentUser is one of the viewers or editiors
                     var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = { _team: { $ne: myTeamId }, isPublic: true };
-                    var myTeam = {_team: foundUser.defaultLoginTeam._id, $or: [{ _id: {$in: foundUser._editors} }, {_id: { $in: foundUser._viewers} }] } 
+                    var myTeam = {_team: foundUser.defaultLoginTeam._id, $or: [{ _id: {$in: foundUser._editors} }, {_id: { $in: foundUser._viewers} }] }
                     getTeamsAndPopulateDatasetWithQuery({ $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] }, { $and: [{ $or: [myTeam, otherTeams] }, { imported: true, fe_listed: true, fe_visible: true }] }, fn);
                 }
             });
@@ -111,13 +112,20 @@ team.GetTeamBySubdomain = function(req, fn) {
     }
 
     var userId = req.user;
+    var userIsPartOfThisTeam;
 
     if (userId) {
-
         User.findById(userId)
             .populate('_team')
             .populate('defaultLoginTeam')
             .exec(function(err, foundUser) {
+                for(var i = 0; i < foundUser._team.length; i++) {
+                    if(team_key === foundUser._team[i].subdomain) {
+                        userIsPartOfThisTeam = true;
+                        break;
+                    }
+                    userIsPartOfThisTeam = false;
+                }
                 if (err) return fn(err);
                 if (foundUser.isSuperAdmin()) {
                     getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key }, { imported: true, fe_visible: true }, fn);
@@ -128,20 +136,94 @@ team.GetTeamBySubdomain = function(req, fn) {
                     var myTeam = { _team: foundUser.defaultLoginTeam._id };
                     getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] }, { $and: [myTeam, { imported: true, fe_visible: true }] }, fn);
 
-                } else { //get published and unpublished dataset if currentUser is one of the viewers
+                } else if(userIsPartOfThisTeam) { //get published and unpublished dataset if currentUser is one of the viewers
 
                     var myTeamId = foundUser.defaultLoginTeam._id;
 
                     var myTeam = { $or: [{ _id: { $in: foundUser._editors } }, { _id: { $in: foundUser._viewers } }] };
 
                     getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam' : true }, { 'subscription.state': 'active' } ] }, { $and: [myTeam, { imported: true, fe_visible: true }] }, fn);
+                } else { // get published dataset if currentUser is not one of the viewers
+                    getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] }, { isPublic: true, imported: true }, fn);
                 }
             });
 
-    } else {
+    } else { //get published datasets
         getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] }, { isPublic: true, imported: true }, fn);
     }
 
+};
+
+
+//Update Subscription info from data returned from Recurly API
+team.UpdateSubscription = function(userId, responseData, callback) {
+    User.findById(userId)
+        .populate('_team')
+        .populate('defaultLoginTeam')
+        .exec(function(err, user) {
+            if (err) {
+                return callback(500, err);
+            } else {
+
+                // If user doesn't have a team
+                if (!user.defaultLoginTeam || user._team.length === 0) {
+                    return callback(401, 'unauthorized');
+                }
+
+                // If user is not superAdmin or team admin
+                if (!user.isSuperAdmin() && !user.defaultLoginTeam.admin && user.defaultLoginTeam.admin != userId) {
+                    return callback(401, 'unauthorized');
+                }
+
+                // Update team with subscription info
+                team.findByIdAndUpdate(user.defaultLoginTeam._id)
+                    .exec(function(err, team) {
+                        if (err) {
+                            return callback(500, err);
+                        } else if (!team) {
+                            return callback(404, 'Team not found');
+                        } else {
+
+                            if (responseData.data.subscription) {
+
+                                var subscription = responseData.data.subscription;
+
+                                team.subscription = {
+                                    activated_at: subscription.activated_at._,
+                                    canceled_at: subscription.canceled_at._,
+                                    current_period_ends_at: subscription.current_period_ends_at._,
+                                    current_period_started_at: subscription.current_period_started_at._,
+                                    expires_at: subscription.expires_at._,
+                                    plan: {
+                                        name: subscription.plan.name,
+                                        plan_code: subscription.plan.plan_code
+                                    },
+                                    quantity: subscription.quantity._,
+                                    remaining_billing_cycles: subscription.remaining_billing_cycles._,
+                                    state: subscription.state,
+                                    total_billing_cycles: subscription.total_billing_cycles._,
+                                    trial_days_left: subscription.trial_days_left,
+                                    trial_ends_at: subscription.trial_ends_at._,
+                                    trial_started_at: subscription.trial_started_at._,
+                                    uuid: subscription.uuid
+
+                                };
+
+                            } else {
+                                team.subscription = {};
+                            }
+
+                            team.save(function(err) {
+                                if (err) {
+                                    return callback(500, err);
+                                } else {
+                                    return callback(responseData.statusCode, null, responseData);
+                                }
+                            });
+                        }
+                    });
+            }
+        });
 };
 
 module.exports = team;

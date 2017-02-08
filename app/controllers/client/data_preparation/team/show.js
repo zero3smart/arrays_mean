@@ -13,7 +13,6 @@ module.exports.BindData = function (req, teamDescription, callback) {
     var team_dataSourceDescriptions = teamDescription.datasourceDescriptions;
 
 
-
     var iterateeFn = async.ensureAsync(function (dataSourceDescription, cb) // prevent stack overflows from this sync iteratee
     {
 

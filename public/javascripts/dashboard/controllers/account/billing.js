@@ -2,6 +2,8 @@ angular.module('arraysApp')
     .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 
         function($scope, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans) {
 
+            $scope.loaded = false;
+
             $scope.errors = {};
 
             // Default to Credit Card tab selected
@@ -28,8 +30,13 @@ angular.module('arraysApp')
                 if (res.data.error) {
                     newAccount();
                 } else if (res.data.account) {
-                    getBilling();
-                    getSubscriptions();
+                    getBilling(function() {
+                        getSubscriptions(function() {
+                            getPlans(function() {
+                                $scope.loaded = true;
+                            });
+                        });
+                    });
                 }
             });
 
@@ -38,20 +45,29 @@ angular.module('arraysApp')
             function newAccount() {
                 Account.save()
                 .$promise.then(function(res) {
-                    getBilling();
-                    getSubscriptions();
+                    getBilling(function() {
+                        getSubscriptions(function() {
+                            getPlans(function() {
+                                $scope.loaded = true;
+                            });
+                        });
+                    });
+                    
                 });
             }
 
 
             // Get billing info from Recurly
-            function getBilling() {
+            function getBilling(callback) {
+                var self = this;
+
                 Billing.get()
                 .$promise.then(function(res) {
                     // console.log(res.data);
 
                     if (res.data.error) {
                         $scope.billing.exists = false;
+                        $scope.loaded = true;
                     } else if (res.data.billing_info) {
 
                         $scope.billing.exists = true;
@@ -75,27 +91,29 @@ angular.module('arraysApp')
                             $scope.billing.numberPlaceholder = billingInfo.first_six + 'XXXXXX' + billingInfo.last_four;
                         }
                     }
+
+                    return callback();
                 }, function(err) {});
             }
 
 
             //Get subscriptions info from Recurly
-            function getSubscriptions() {
+            function getSubscriptions(callback) {
                 Subscriptions.get()
                 .$promise.then(function(res) {
                     // console.log(res.data);
 
                     if (res.data.error) {
-                        
+                        $scope.loaded = true;
                     } else if (res.data.subscriptions.subscription) {
 
-                        if (typeof res.data.subscriptions.subscription === 'object') { // If there's only one subscription
-                            $scope.subscription = res.data.subscriptions.subscription;
-                            $scope.subscription.quantity._ = parseInt(res.data.subscriptions.subscription.quantity._);
-                        } else { // If there are more than on subscriptions in the system
+                        if (res.data.subscriptions.subscription.length > 1) {
                             var curSubscription = res.data.subscriptions.subscription[0];
                             $scope.subscription = curSubscription;
                             $scope.subscription.quantity._ = parseInt(curSubscription.quantity._);
+                        } else {
+                            $scope.subscription = res.data.subscriptions.subscription;
+                            $scope.subscription.quantity._ = parseInt(res.data.subscriptions.subscription.quantity._);
                         }
 
                         // Calculate trial days remaining
@@ -105,14 +123,14 @@ angular.module('arraysApp')
                         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
                         $scope.subscription.trial_days_left = diffDays;
 
-                        getPlans();
+                        return callback();
                     }
-                });
+                }, function(err) {});
             }
 
 
             //Get plans info from Recurly
-            function getPlans() {
+            function getPlans(callback) {
                 Plans.get()
                 .$promise.then(function(res) {
                     // console.log(res.data.plans.plan);
@@ -123,7 +141,9 @@ angular.module('arraysApp')
                     $scope.annualplan = getPlanFromPlans('pro-annual', res.data.plans.plan);
 
                     // console.log($scope.annualplan);
-                });
+
+                    return callback();
+                }, function(err) {});
             }
 
 
@@ -202,13 +222,20 @@ angular.module('arraysApp')
                 $scope.billing.payment_type = currentTab;
             };
 
-            $scope.updateBillingInfo = function(ev) {
+            $scope.updateBillingInfo = function(plan_code) {
                 Billing.update(null, $scope.billing)
                 .$promise.then(function(res) {
                     // console.log(res);
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
-                        $state.go('dashboard.account.billing');
+
+                        // If adding billing for first time, create subscription
+                        if (plan_code) {
+                            $scope.startTrialSubscription(plan_code);
+                        } else {
+                            $state.go('dashboard.account.billing');
+                        }
+                        
                     } else {
                         // console.log(res.data);
                         if (res.data.errors.error.length) {

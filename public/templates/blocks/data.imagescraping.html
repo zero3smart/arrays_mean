@@ -127,8 +127,8 @@
                 </md-button>
 
                 <div>
-                    <md-button class="md-dashboard cancel" ng-click="reset()" ng-disabled="!dialog.form.$dirty" style="margin-right: 8px;">
-                        <span class="btn-label">Reset</span>
+                    <md-button class="md-dashboard cancel" ng-click="cancel()">
+                        <span class="btn-label">Cancel</span>
                     </md-button>
                     <md-button class="md-dashboard confirm" ng-click="save()"
                                ng-disabled="!dialog.form.$dirty || dialog.form.$invalid">

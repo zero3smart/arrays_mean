@@ -46,8 +46,8 @@
 
     {% if not user %}
 
-    <div class="w-nav">
-      <div class="w-container">
+    <div>
+      <div class="w-container w-bottom-shadow">
         <a class="w-logo" href="{{marketing_url}}"><img sizes="(max-width: 767px) 100vw, 210px" src="https://s3-us-west-2.amazonaws.com/arraysassets/Logo_Header.png" width="210">
         </a>
         <ul class="w-nav-list">
@@ -71,9 +71,12 @@
           </li>
 
           <li class="signup-container">
+              {% if env.NODE_ENV == 'production' %}
+              <a class="nav-link-signup w-nav-link" href="https://www.arrays.co/signup">Sign Up</a>
+              {% else %}
               <a class="nav-link-signup w-nav-link" href="/auth/login">Sign Up</a>
+              {% endif %}
           </li>
-
 
 
         </ul>
@@ -91,23 +94,21 @@
         <a class="w-mobile-link" href="news.html">News</a>
         <a class="w-mobile-link" href="pricing.html">Pricing</a>
         <a class="w-mobile-link" href="/auth/login">Log In</a>
+        {% if env.NODE_ENV == 'production' %}
+        <a class="w-mobile-link" href="https://www.arrays.co/signup">Sign Up</a>
+        {% else %}
         <a class="w-mobile-link" href="/auth/login">Sign Up</a>
+        {% endif %}
       </nav>
     </div>
 
-    {% endif %}
-
-    {% if user %}
-    <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand">
     {% else %}
-    <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand" style="top:64px">
-    {% endif %}
+    <nav class="navbar navbar-default navbar-fixed-top header-shadow background-color-brand">
         <div class="container-fluid container-full-width">
             <div class="navbar-brand-container">
 
                 <a class="navbar-brand navbar-brand-arrays" href="{{explore_url}}">Arrays</a>
             </div>
-            {% if user %}
             <div id="navbar" class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
@@ -116,12 +117,10 @@
                             <span class="user-initial">{{user.firstName.slice(0,1).toUpperCase()}}</span>
                         </a>
                         <ul class="dropdown-menu">
-                            {% if env.NODE_ENV != 'production' %}
 
                             <li class="background-color-brand-hover"><a href="/dashboard">Account Settings</a></li>
                             <li class="background-color-brand-hover"><a class="pointer" id="logout" >Log Out</a></li>
                             <li role="separator" class="divider"></li>
-                            {% endif %}
                             <li class="background-color-brand-hover"><a
                                     href="mailto:{{ 'Arrays Support<info@arrays.co>' | urlencode }}">Contact Support</a>
                             </li>
@@ -129,7 +128,7 @@
                     </li>
                 </ul>
             </div><!--/.nav-collapse -->
-            {% endif %}
         </div>
     </nav>
+    {% endif %}
 </header>
