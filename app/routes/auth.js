@@ -50,8 +50,11 @@ router.get('/google/callback', function(req, res, next) {
     passport.authenticate('google', function(err, user, info) {
 
         if (err) return next(err);
-        if (!user) {
-            return res.redirect('auth/login');
+        // once we switch from private beta to public beta remove the signup redirect and the betaProduction conditional
+        if (!user && info.betaProduction) {
+            return res.redirect('https://www.arrays.co/signup');
+        } else if (!user) {
+            return res.redirect('/auth/login')
         } else {
             if (!user._team || user._team.length === 0) {
                 return res.redirect('/signup/info/' + user._id);
