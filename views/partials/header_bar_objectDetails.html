@@ -133,11 +133,9 @@
                             <span class="user-initial">{{user.firstName.slice(0,1).toUpperCase()}}</span>
                         </a>
                         <ul class="dropdown-menu">
-                            {% if env.NODE_ENV != 'production' %}
                             <li class="background-color-brand-hover"><a href="/dashboard">Account Settings</a></li>
                             <li class="background-color-brand-hover"><a class="pointer" id="logout">Log Out</a></li>
                             <li role="separator" class="divider"></li>
-                            {% endif %}
                             <li class="background-color-brand-hover"><a href="{{ galleryURL }}">{{ arrayTitle }}</a>
                             </li>
                             <li class="background-color-brand-hover"><a href="#" class="share-link">Share</a></li>
