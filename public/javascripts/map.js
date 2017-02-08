@@ -134,6 +134,7 @@ map.on('load', function () {
     /**
      * Add source data to map
      */
+
     if (isCoordMap) {
         map.addSource('points', {
             type: 'geojson',
@@ -145,7 +146,6 @@ map.on('load', function () {
             data: geoData
         });
     }
-
 
     /**
      * Loop through layers, filter countries, and apply opacity
@@ -180,17 +180,17 @@ map.on('load', function () {
                 }
             });
         } else {            
-            map.addLayer({
-                id: names[i],
-                type: 'fill',
-                source: 'countries',
-                'source-layer': layer,
-                filter: filteruse,
-                paint: {
-                    'fill-color': '#00DAE5',
-                    'fill-opacity': opacities[i]
-                }
-            }, 'water');
+          map.addLayer({
+              id: names[i],
+              type: 'fill',
+              source: 'countries',
+              'source-layer': layer,
+              filter: filteruse,
+              paint: {
+                  'fill-color': brandColor,
+                  'fill-opacity': opacities[i]
+              }
+          }, 'water');
         }
     }
 
