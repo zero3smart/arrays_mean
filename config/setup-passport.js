@@ -38,6 +38,9 @@ var localStrategy = new LocalStrategy({
 var baseURL = process.env.USE_SSL === 'true' ? 'https://app.' : 'http://app.';
 baseURL += process.env.HOST ? process.env.HOST : 'localhost:9080';
 
+// once we switch from private beta to public beta remove this and the conditional
+var betaProduction = process.env.NODE_ENV === 'production';
+
 var googleStrategy = new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -52,10 +55,19 @@ var googleStrategy = new GoogleStrategy({
         lastName: profile.name.familyName,
         profileImageUrl: profile.photos[0].value
     };
-    User.findOrCreate(findQuery, insertQuery, function (err, user, created) {
-        if (!created && user && !user.active) return done(err, false, {message: "You are banned"});
-        return done(err, user);
-    })
+    if(betaProduction) {
+        User.find(findQuery, insertQuery, function (err, user) {
+            if(!user) {
+                return done(err, false, {message: "Google sign up is blocked at this time."});
+            }
+            return done(err, user);
+        })
+    } else {
+        User.findOrCreate(findQuery, insertQuery, function (err, user, created) {
+            if (!created && user && !user.active) return done(err, false, {message: "You are banned"});
+            return done(err, user);
+        })
+    }
 });
 
 passport.use(localStrategy);
