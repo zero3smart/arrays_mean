@@ -57,7 +57,11 @@ angular.module('arraysApp')
                         resolve: {
                             restrict: function(AuthService) {
                                 return AuthService.ensureIsAdmin();
-                            }
+                            },
+                            datasets: ['DatasetService', 'AuthService', function (DatasetService, AuthService) {
+                                var user = AuthService.currentUser();
+                                return DatasetService.getDatasetsWithQuery({ _team: user.defaultLoginTeam._id });
+                            }]
                         }
                     })
                     .state('dashboard.account.payment', {

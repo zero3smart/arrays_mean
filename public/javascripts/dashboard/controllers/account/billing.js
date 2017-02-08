@@ -1,6 +1,6 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 
-        function($scope, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans) {
+    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'datasets',
+        function($scope, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, datasets) {
 
             $scope.loaded = false;
 
@@ -19,6 +19,9 @@ angular.module('arraysApp')
 
                 country: 'US'
             };
+
+            // Get datasets for quantity limit
+            $scope.datasetsQuantity = datasets.length;
 
 
             // Get account info from Recurly
