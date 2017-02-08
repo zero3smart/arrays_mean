@@ -1,0 +1,15 @@
+# schemadesign.com/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    Schema Design -- Design, Research & Development -- @schemadesign
+
+# THANKS
+
+    <name>
+
+# TECHNOLOGY COLOPHON
+
+    HTML5, CSS3
+    Normalize.css, jQuery, Modernizr
