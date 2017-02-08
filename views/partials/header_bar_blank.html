@@ -72,9 +72,9 @@
 
           <li class="signup-container">
               {% if env.NODE_ENV == 'production' %}
-              <a class="nav-link-signup w-nav-link" href="/auth/login">Sign Up</a>
-              {% else %}
               <a class="nav-link-signup w-nav-link" href="https://www.arrays.co/signup">Sign Up</a>
+              {% else %}
+              <a class="nav-link-signup w-nav-link" href="/auth/login">Sign Up</a>
               {% endif %}
           </li>
 
@@ -94,7 +94,11 @@
         <a class="w-mobile-link" href="news.html">News</a>
         <a class="w-mobile-link" href="pricing.html">Pricing</a>
         <a class="w-mobile-link" href="/auth/login">Log In</a>
+        {% if env.NODE_ENV == 'production' %}
+        <a class="w-mobile-link" href="https://www.arrays.co/signup">Sign Up</a>
+        {% else %}
         <a class="w-mobile-link" href="/auth/login">Sign Up</a>
+        {% endif %}
       </nav>
     </div>
 
