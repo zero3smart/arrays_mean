@@ -57,15 +57,18 @@ router.get('/google/callback', function(req, res, next) {
                 return res.redirect('/signup/info/' + user._id);
 
             } else {
+
                 req.logIn(user, function(err) {
                     if (err) return next(err);
 
+                    
                     // Update subscription info from Recurly
                     updateSubscriptionInfo(user, function(err) {
                         if (err) return next(err);
 
                         return res.redirect(req.session.returnTo || '/dashboard');
                     });
+                    
                 });
             }
         }
@@ -75,25 +78,35 @@ router.get('/google/callback', function(req, res, next) {
 router.post('/login', function(req, res, next) {
     passport.authenticate('local', function(err, user, info) {
 
+
+
         if (err) return next(err);
         if (!user) {
             if (info.message == "no team set up") {
                 return res.redirect('/signup/info/' + info.userId);
             } else {
+
                 req.flash("error", info);
-                return res.redirect('/auth/login');
+                return res.redirect('login');
             }
 
         } else {
             req.logIn(user, function(err) {
                 if (err) return next(err);
-                
-                // Update subscription info from Recurly
-                updateSubscriptionInfo(user, function(err) {
-                    if (err) return next(err);
 
+                if (process.env.NODE_ENV == 'enterprise') {
                     return res.redirect(req.session.returnTo || '/dashboard');
-                });
+                } else {
+                    // Update subscription info from Recurly
+                    updateSubscriptionInfo(user, function(err) {
+                        if (err) return next(err);
+
+                        return res.redirect(req.session.returnTo || '/dashboard');
+                    });
+
+                }
+                
+                
             });
         }
     })(req, res, next);

@@ -165,9 +165,8 @@ var _mountRoutes_endPoints = function (app) {
                 }
             }
 
-        } else {
-            return next();
         }
+        next();
       
     });
 

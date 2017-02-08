@@ -428,12 +428,16 @@ datasource_description.GetDescriptionsToSetup = _GetDescriptionsToSetupByIds;
 
 
 var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid, revision, fn) {
+
+    var subdomainQuery = {};
+    if (subdomain !== null) {
+        subdomainQuery["subdomain"] = subdomain;
+    }
    
-    
     this.findOne({uid: uid, importRevision: revision, fe_visible: true})
         .populate({
             path: '_team',
-            match: { 'subdomain' : subdomain}
+            match: subdomainQuery
         })
         .lean()
         .exec(function (err, descriptions) {
@@ -441,6 +445,7 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid,
                 winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
                 fn(err, null);
             } else {
+
                 fn(err, descriptions);
             }
         })

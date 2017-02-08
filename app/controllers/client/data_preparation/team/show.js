@@ -74,7 +74,15 @@ module.exports.BindData = function (req, teamDescription, callback) {
 
         var baseUrl = process.env.USE_SSL === 'true' ? 'https://' : 'http://';
 
-        baseUrl += teamDescription.subdomain + "." + rootDomain
+
+
+        if (process.env.NODE_ENV !== 'enterprise') {
+
+            baseUrl += teamDescription.subdomain + ".";
+        }
+        baseUrl += rootDomain;
+
+
 
 
 
