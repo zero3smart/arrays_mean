@@ -55,25 +55,13 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
     });
 };
 
-// var renameEmptyStringKey = function (object) {
-//     // check for empty strings in object because we're not actually changing their csv, just manipulating after the fact
-//     for (var key in object) {
-//         if (key === '') {
-//             object["No Name"] = object[key];
-//             delete object[key];
-//         }
-//     }
-//     return object
-// }
-
-
 var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescription, callback) {
  
     var dataSource_title = dataSourceDescription.fileName;
     
     var collectionId = dataSourceDescription._id;
     if (dataSourceDescription.schemaId) collectionId = dataSourceDescription.schemaId;
-   
+
     //
     var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(collectionId);
     var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
@@ -85,13 +73,9 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
 
             return;
         }
-        // run through empty string key check 
-        sampleDoc.rowParams = processed_row_objects.renameEmptyStringKey(sampleDoc.rowParams)
 
         var limitToNTopValues = 100;
 
-
-     
         var filterKeys = Object.keys(sampleDoc.rowParams);
 
         if (dataSourceDescription.useCustomView) {
