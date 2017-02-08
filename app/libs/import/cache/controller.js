@@ -55,6 +55,17 @@ var _dataSourcePostImportCachingFunction = function (indexInList, dataSourceDesc
     });
 };
 
+// var renameEmptyStringKey = function (object) {
+//     // check for empty strings in object because we're not actually changing their csv, just manipulating after the fact
+//     for (var key in object) {
+//         if (key === '') {
+//             object["No Name"] = object[key];
+//             delete object[key];
+//         }
+//     }
+//     return object
+// }
+
 
 var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescription, callback) {
  
@@ -69,13 +80,14 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
     //
     processedRowObjects_mongooseModel.findOne({}, function (err, sampleDoc) {
 
-        // console.log(JSON.stringify(sampleDoc));
-
         if (err) {
             callback(err, null);
 
             return;
         }
+        // run through empty string key check 
+        sampleDoc.rowParams = processed_row_objects.renameEmptyStringKey(sampleDoc.rowParams)
+
         var limitToNTopValues = 100;
 
 
@@ -112,6 +124,7 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
         }
 
         async.each(filterKeys, function (key, cb) {
+
             // Commented out the count section for the comma-separated as individual filters.
             var uniqueStage = {$group: {_id: {}, count: {$sum: 1}}};
             uniqueStage["$group"]["_id"] = "$" + "rowParams." + key;

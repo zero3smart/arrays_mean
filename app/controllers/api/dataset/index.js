@@ -543,6 +543,10 @@ function _readDatasourceColumnsAndSampleRecords(description, fileReadStream, nex
 
                         if (countOfLines == 1) {
                             columns = output[0].map(function (e) {
+                                // change any empty string keys to "No Name"
+                                if(e === '') {
+                                    e = "No Name";
+                                }
                                 return {name: e.replace(/\./g, '_')};
                             });
                             readStream.resume();

@@ -100,6 +100,20 @@ module.exports.initializeBackgroundIndexBuilding = function(description) {
 
 }
 
+
+var _renameEmptyStringKey = function(rowParams) {
+    for (var key in rowParams) {
+        if (key == '') {
+            rowParams["No Name"] = rowParams[key];
+            delete rowParams[key];
+        }
+    }
+    return rowParams;
+}
+
+module.exports.renameEmptyStringKey = _renameEmptyStringKey;
+
+
 module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataset_id,
                                                                    parentId,
                                                                    callback) {
@@ -126,6 +140,11 @@ module.exports.InsertProcessedDatasetFromRawRowObjects = function (job,dataset_i
         var error = null;
 
         cursor.on('data', function (doc) {
+
+            var nonEmptyRowParams = _renameEmptyStringKey(doc.rowParams);
+            doc.rowParams = nonEmptyRowParams;
+            // reset the variable just in case it causes memory leaks
+            nonEmptyRowParams = '';
 
             count += 1;
 
