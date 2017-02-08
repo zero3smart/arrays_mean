@@ -92,6 +92,22 @@ function _readColumnsAndSample(tableName,fn) {
     })
 }
 
+function _initConnection(url,callback) {
+    winston.info("ready to init a new connection.");
+    var config = {
+        url: url
+    }
+    var JDBC = new jdbc(config);
+    JDBC.initialize(function(err) {
+        if (err) callback(err);
+        else {
+            db = JDBC;
+            callback(null);
+        }
+    })
+
+}
+
 module.exports.initConnection = function(req,res) {
 
     if (db) {
@@ -105,26 +121,10 @@ module.exports.initConnection = function(req,res) {
             }
         })
     } else {
-        winston.info("ready to init a new connection.");
+        _initConnection(req.body.url,function(err) {
 
-        var config = {
+            if (err) return res.status(500).send(JSON.stringify(err));
 
-            url: req.body.url
-        };
-
-        // var jsonData = [{name:'abc',sample:'1'},{name:'colms2',sample:"what is this???"},{name:"hello",sample:"hello"}];
-        // req.session.columns[req.params.id] = jsonData;
-
-        // return res.status(200).json({message: 'ok'});
-
-        var JDBC = new jdbc(config)
-
-        JDBC.initialize(function(err) {
-            if (err) {
-                winston.error("Cannot initialize JDBC object");
-                return res.status(500).send(JSON.stringify(err));
-            }
-            db = JDBC;
             _readColumnsAndSample(req.body.tableName,function(err,data) {
                 if (err) return res.status(500).json(err);
                 else {
@@ -137,20 +137,11 @@ module.exports.initConnection = function(req,res) {
 
             })
         })
+        
     }
 }
 
-
-module.exports.readData = function(query,fn) {
-
-
-    // var jsonData = [{amgid:'abc',sample:'1'},{amgid:'colms2',sample:"what is this???"},{amgid:"hello",sample:"hello"}];
-
-    // return fn(null,jsonData);
-
-
-
-
+function _runQuery(query,fn) {
 
      db.reserve(function(err,connObj) {
 
@@ -188,13 +179,35 @@ module.exports.readData = function(query,fn) {
                 var errorFromFuncions = err;
                 db.release(connObj,function(err) {
                     if (err || errorFromFuncions) {
-                        winston.error("Error reading remote data columns and records: %s",err);
-                        return fn(err);
+                        winston.error("Error reading remote data columns and records: ",err);
+                        fn(err);
                     } else {
-                        return fn(null,arrayOfData);
+                        fn(null,arrayOfData);
                     }
                 })
             })
         }
     })
+}
+
+
+module.exports.readData = function(url,query,fn) {
+
+
+    if (!db) {
+
+        _initConnection(url,function(err) {
+
+            if (err) fn(err);
+
+            else {
+                _runQuery(query,fn);
+            }
+        })
+
+    } else {
+
+        _runQuery(query,fn);
+
+    }
 }
