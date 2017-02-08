@@ -374,8 +374,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
                         updateQuery["rowParams." + eachCtx.nestingKey] = matchingCond;
                         var setQuery = formSetQuery(res,eachCtx.prefix,eachCtx.valueOverrides);
-
-                        console.log("bac")
                         eachCtx.nativeCollection.update(updateQuery,{$push: setQuery},function(err,result) {
                             if (err) return callback(err);
                             var r = JSON.parse(result);
@@ -389,9 +387,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
      
                         skipping = counter * limit;
                         counter++;
-
-                        console.log(eachCtx.numberOfRows);
-
 
                         if (eachCtx.numberOfRows!== 0 && eachCtx.numberOfRows % 100 == 0) {
                             winston.info("✅  processed " + eachCtx.numberOfRows + " of nested fields");
@@ -418,7 +413,7 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             async.each(eachCtx,function(customField,outterCallback) {
 
                 var projectQuery = formProjectQuery(customField);
-        
+
 
                 var continueLoop = true;
                 var counter = 1;
@@ -441,8 +436,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     ],function(err,aggregatedResult) {
     
                         if (err) return next(err);
-
-                        // console.log(aggregatedResult.length);
 
                         if (aggregatedResult.length == 0) {
                             continueLoop = false;

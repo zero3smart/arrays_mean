@@ -111,6 +111,8 @@ var _generateUniqueFilterValueCacheCollection = function (job,dataSourceDescript
             uniqueFieldValuesByFieldName[key] = [];
         }
 
+
+
         async.each(filterKeys, function (key, cb) {
             // Commented out the count section for the comma-separated as individual filters.
             var uniqueStage = {$group: {_id: {}, count: {$sum: 1}}};

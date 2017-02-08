@@ -27,11 +27,15 @@ angular.module('arraysApp')
                     if (!$scope.$parent.$parent.dataset.fe_views) {
                         $scope.$parent.$parent.dataset.fe_views = {};
                         $scope.$parent.$parent.dataset.fe_views.default_view = views[i].name;
+                        $scope.$parent.$parent.dataset.fe_views.views = {};
+                        $scope.$parent.$parent.dataset.fe_views.views[views[i].name]= {visible: true};
+
+
                     }
                 }
             }
 
-
+   
             if (!$scope.$parent.$parent.dataset.fe_views) {
                 $scope.$parent.$parent.dataset.fe_views = {};
                 $scope.$parent.$parent.dataset.fe_views.default_view = 'gallery';

@@ -34,6 +34,7 @@ var db;
 
 
 function _readColumnsAndSample(tableName,fn) {
+
     db.reserve(function(err,connObj) {
 
         if (connObj) {
@@ -82,6 +83,7 @@ function _readColumnsAndSample(tableName,fn) {
                         winston.error("Error reading remote data columns and records: %s",err);
                         return fn(err);
                     } else {
+                        console.log("return data and release connection:", connObj. uuid);
                         return fn(null,arrayOfCols);
                     }
                 })
@@ -136,4 +138,63 @@ module.exports.initConnection = function(req,res) {
         //     })
         // })
     }
+}
+
+
+module.exports.readData = function(query,fn) {
+
+
+    var jsonData = [{amgid:'abc',sample:'1'},{amgid:'colms2',sample:"what is this???"},{amgid:"hello",sample:"hello"}];
+
+    return fn(null,jsonData);
+
+
+
+
+
+    //  db.reserve(function(err,connObj) {
+
+    //     if (connObj) {
+
+    //         console.log("Using connection: " + connObj. uuid);
+    //         var conn = connObj.conn;
+
+    //         async.waterfall([
+    //             function(callback) {
+    //                 conn.createStatement(function(err,statement) {
+    //                     if (err) callback(err);
+    //                     else {
+    //                         callback(null,statement);
+    //                     }
+    //                 })
+    //             },
+    //             function(statement,callback) {
+    //                 statement.executeQuery(query,function(err,results) {
+    //                     if (err) callback(err);
+    //                     else {
+    //                         callback(null,results);
+    //                     }
+    //                 })
+    //             },
+    //             function(results,callback) {
+    //                 results.toObjArray(function(err,obj) {
+    //                     if (err) callback(err);
+    //                     else {
+    //                         callback(null,obj);
+    //                     }
+    //                 })
+    //             }
+    //         ],function(err,arrayOfData) {
+    //             var errorFromFuncions = err;
+    //             db.release(connObj,function(err) {
+    //                 if (err || errorFromFuncions) {
+    //                     winston.error("Error reading remote data columns and records: %s",err);
+    //                     return fn(err);
+    //                 } else {
+    //                     return fn(null,arrayOfData);
+    //                 }
+    //             })
+    //         })
+    //     }
+    // })
 }

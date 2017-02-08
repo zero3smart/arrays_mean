@@ -63,7 +63,12 @@ View.getAllCustomViews(function(err,customViews) {
 
             router.get('/:source_key/getData', ensureAuthorized,function(req,res,next) {
 
+            
+
                 var team = req.subdomains[0];
+                if (!team) {
+                    team = view.name;
+                }
                 var controller = require('../../user/' + team + '/src/' + view.name);
 
                 controller.BindData(req,function(err,bindData) {

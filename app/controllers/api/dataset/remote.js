@@ -8,3 +8,4 @@ module.exports.connect = function(req,res) {
 		hadoop.initConnection(req,res);
 	}
 }
+
