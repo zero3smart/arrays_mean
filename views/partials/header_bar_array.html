@@ -87,7 +87,7 @@
 
     <div class="w-nav">
       <div class="w-container">
-  
+
         <a class="w-logo" href="{{marketing_url}}"><img sizes="(max-width: 767px) 100vw, 210px" src="https://s3-us-west-2.amazonaws.com/arraysassets/Logo_Header.png" width="210">
         </a>
         <ul class="w-nav-list">
@@ -109,9 +109,13 @@
           <li>
               <a class="w-nav-link" href="/auth/login">Log In</a>
           </li>
-          
+
           <li class="signup-container">
+              {% if env.NODE_ENV == 'production' %}
               <a class="nav-link-signup w-nav-link" href="/auth/login">Sign Up</a>
+              {% else %}
+              <a class="nav-link-signup w-nav-link" href="https://www.arrays.co/signup">Sign Up</a>
+              {% endif %}
           </li>
 
 
@@ -163,7 +167,7 @@
                     </li>
                     <li class="dropdown">
 
-                
+
 
 
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
