@@ -56,9 +56,9 @@ var googleStrategy = new GoogleStrategy({
         profileImageUrl: profile.photos[0].value
     };
     if(betaProduction) {
-        User.find(findQuery, insertQuery, function (err, user) {
+        User.findOne(findQuery, function (err, user) {
             if(!user) {
-                return done(err, false, {message: "Google sign up is blocked at this time."});
+                return done(err, false, {betaProduction: betaProduction, message: "Google sign up is blocked at this time."});
             }
             return done(err, user);
         })
