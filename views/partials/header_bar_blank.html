@@ -71,9 +71,12 @@
           </li>
 
           <li class="signup-container">
+              {% if env.NODE_ENV == 'production' %}
               <a class="nav-link-signup w-nav-link" href="/auth/login">Sign Up</a>
+              {% else %}
+              <a class="nav-link-signup w-nav-link" href="https://www.arrays.co/signup">Sign Up</a>
+              {% endif %}
           </li>
-
 
 
         </ul>
