@@ -119,7 +119,7 @@ dump.*
 *.csv
 
 
-# staging sever files# 
+# staging sever files#
 config.json
 github-post-receive.sh
 
@@ -133,3 +133,7 @@ github-post-receive.sh
 
 ### temporary ###
 tmp/
+
+### built files ###
+style.min.css
+public/vendors/
