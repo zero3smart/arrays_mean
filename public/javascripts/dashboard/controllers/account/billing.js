@@ -1,6 +1,13 @@
 angular.module('arraysApp')
-    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'datasets',
-        function($scope, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, datasets) {
+    .controller('BillingCtrl', ['$scope', '$mdDialog', '$state', '$http', '$window', '$mdToast', 'AuthService', 'Account', 'Billing', 'Subscriptions', 'Plans', 'DatasetService', 
+        function($scope, $mdDialog, $state, $http, $window, $mdToast, AuthService, Account, Billing, Subscriptions, Plans, DatasetService) {
+
+            // Get datasets for quantity limit
+            DatasetService.getDatasetsWithQuery({ _team: $scope.user.defaultLoginTeam._id })
+                .then(function(res) {
+                    $scope.datasetsQuantity = res.length;
+                }, function(err) {});
+
 
             $scope.loaded = false;
 
@@ -19,9 +26,6 @@ angular.module('arraysApp')
 
                 country: 'US'
             };
-
-            // Get datasets for quantity limit
-            $scope.datasetsQuantity = datasets.length;
 
 
             // Get account info from Recurly
@@ -95,7 +99,7 @@ angular.module('arraysApp')
                         }
                     }
 
-                    return callback();
+                    if (callback) return callback();
                 }, function(err) {});
             }
 
@@ -126,7 +130,7 @@ angular.module('arraysApp')
                         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
                         $scope.subscription.trial_days_left = diffDays;
 
-                        return callback();
+                        if (callback) return callback();
                     }
                 }, function(err) {});
             }
@@ -145,7 +149,7 @@ angular.module('arraysApp')
 
                     // console.log($scope.annualplan);
 
-                    return callback();
+                    if (callback) return callback();
                 }, function(err) {});
             }
 
@@ -214,7 +218,9 @@ angular.module('arraysApp')
                     })
                     .$promise.then(function(res) {
                         // console.log(res.data);
-                        getSubscriptions();
+                        getSubscriptions(function() {
+                            getPlans();
+                        });
                         $mdDialog.hide();
                     });
                 };
