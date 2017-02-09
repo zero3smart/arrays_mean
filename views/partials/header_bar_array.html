@@ -44,8 +44,8 @@
         color: {{ brandContentColor }};
     }
 
-    .dropdown.open > a,
-    .dropdown.open > a span,
+    /*.dropdown.open > a,
+    .dropdown.open > a span,*/
     li.active > .sidebar-filter-slide-toggle span
     {
         color: {{ '#FFFFFF' if brandContentColor == '#000000' else '#000000' }};
@@ -87,7 +87,7 @@
 
     <div class="w-nav">
       <div class="w-container">
-  
+
         <a class="w-logo" href="{{marketing_url}}"><img sizes="(max-width: 767px) 100vw, 210px" src="https://s3-us-west-2.amazonaws.com/arraysassets/Logo_Header.png" width="210">
         </a>
         <ul class="w-nav-list">
@@ -109,9 +109,13 @@
           <li>
               <a class="w-nav-link" href="/auth/login">Log In</a>
           </li>
-          
+
           <li class="signup-container">
+              {% if env.NODE_ENV == 'production' %}
+              <a class="nav-link-signup w-nav-link" href="https://www.arrays.co/signup">Sign Up</a>
+              {% else %}
               <a class="nav-link-signup w-nav-link" href="/auth/login">Sign Up</a>
+              {% endif %}
           </li>
 
 
@@ -131,7 +135,11 @@
         <a class="w-mobile-link" href="news.html">News</a>
         <a class="w-mobile-link" href="pricing.html">Pricing</a>
         <a class="w-mobile-link" href="/auth/login">Log In</a>
+        {% if env.NODE_ENV == 'production' %}
+        <a class="w-mobile-link" href="https://www.arrays.co/signup">Sign Up</a>
+        {% else %}
         <a class="w-mobile-link" href="/auth/login">Sign Up</a>
+        {% endif %}
       </nav>
     </div>
 
@@ -165,7 +173,7 @@
                     </li>
                     <li class="dropdown">
 
-                
+
 
 
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
@@ -185,7 +193,9 @@
                             " if currentView == "map" }}"><a href="/{{ array_source_key }}/{{ 'map' | constructedRoutePath(filterObj, {
 					searchQ: searchQ,
 					searchCol: searchCol
+
 				}) }}"><span class="icon-map color-brand" aria-hidden="true"></span> Map</a></li>
+
                             {% endif %}
 
                             {% if view_visibility.pieChart.visible == true %}
@@ -255,11 +265,9 @@
                             <span class="user-initial">{{user.firstName.slice(0,1).toUpperCase()}}</span>
                         </a>
                         <ul class="dropdown-menu">
-                            {% if env.NODE_ENV != 'production' %}
                             <li class="background-color-brand-hover"><a href="/dashboard">Account Settings</a></li>
                             <li class="background-color-brand-hover"><a class="pointer" id="logout">Log Out</a></li>
                             <li role="separator" class="divider"></li>
-                            {% endif %}
                             {% if team.title %}
                             <li class="background-color-brand-hover"><a href="{{ addSubdomain(team.subdomain) }}">Home</a></li>
                             {% endif %}

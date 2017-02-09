@@ -81,6 +81,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             (dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName == 'Object Title') ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName,dataSourceDescription) :
             dataSourceDescription.fe_views.views.barChart.defaultStackByColumnName;
 
+            var stackBy_isDate = (raw_rowObjects_coercionSchema && raw_rowObjects_coercionSchema[stackBy_realColumnName] &&
+            raw_rowObjects_coercionSchema[stackBy_realColumnName].operation == "ToDate");
 
 
 
@@ -335,7 +337,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     _.forOwn(_multigroupedResults_object, function (_groupedResults, category) {
 
-
                         var displayableCategory;
                         if (groupBy_isDate) {
                             displayableCategory = func.convertDateToBeRecognizable(category, groupBy_realColumnName, dataSourceDescription);
@@ -350,11 +351,16 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                         _.each(_groupedResults, function (el, i) {
                             //
+                            var displayableLabel;
                             if (el.label) {
-                                var displayableLabel;
-
-                                displayableLabel = func.ValueToExcludeByOriginalKey(
-                                    el.label, dataSourceDescription, groupBy_realColumnName, 'barChart');
+                                if(stackBy_isDate) {
+                                    displayableLabel = func.convertDateToBeRecognizable(el.label, stackBy_realColumnName, dataSourceDescription)
+                                    displayableLabel = func.ValueToExcludeByOriginalKey(
+                                        displayableLabel, dataSourceDescription, groupBy_realColumnName, 'barChart');
+                                } else {
+                                    displayableLabel = func.ValueToExcludeByOriginalKey(
+                                        el.label, dataSourceDescription, groupBy_realColumnName, 'barChart');
+                                }
                                 if (!displayableLabel) return;
 
                                 finalizedButNotCoalesced_groupedResults.push({
@@ -421,14 +427,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     var i = 0;
                     for (var category in stackedResultsByGroup) {
                         if (stackedResultsByGroup.hasOwnProperty(category)) {
-                            if (groupBy_isDate) {
-                                var offsetTime = new Date(category);
-                                offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
-                                offsetTime = func.convertDateToBeRecognizable(offsetTime, groupBy_realColumnName, dataSourceDescription);
-                                graphData.categories.push(offsetTime);
-                            } else {
+                            // I'm not sure what this is for but I am sure that it doesn't work
+                            // if (groupBy_isDate) {
+                            //     var offsetTime = new Date(arrayCategory[0], arrayCategory[1], arrayCategory[2]);
+                            //     offsetTime = new Date(offsetTime.getTime() + offsetTime.getTimezoneOffset() * 60 * 1000);
+                            //     offsetTime = func.convertDateToBeRecognizable(offsetTime, groupBy_realColumnName, dataSourceDescription);
+                            //     graphData.categories.push(offsetTime);
+                            // } else {
                                 graphData.categories.push(category);
-                            }
+                            // }
 
                             graphData.data.push(stackedResultsByGroup[category]);
                         }

@@ -10,6 +10,7 @@
 {% endif %}
 		<div class="gallery-item-text-inner">
 		{% if fe_galleryItem_secondaryColumnDisplay and fe_galleryItem_useBackgroundColor %}
+
 				<div class="gallery-secondary-column-item">
 					<h2 style="color:{{ fe_galleryItem_backgroundColorForRowObj(doc).contentColor | safe }};">
 					{{ doc.rowParams[fe_galleryItem_secondaryColumnDisplay] | formatIntegerWithCommas }}

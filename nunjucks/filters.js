@@ -370,7 +370,6 @@ module.exports = function (nunjucks_env,env) {
     nunjucks_env.addGlobal('marketing_url', marketingPage);
 
 
-
     nunjucks_env.addGlobal('addSubdomain', function(strSubdomain) {
         var siteBaseUrl = nunjucks_env.getGlobal('siteBaseURL');
 

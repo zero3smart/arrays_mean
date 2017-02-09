@@ -766,7 +766,7 @@ var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callbac
 };
 module.exports.topUniqueFieldValuesForFiltering = _topUniqueFieldValuesForFiltering;
 
-//
+//for object_detail
 var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescription) {
 
  
@@ -781,6 +781,7 @@ var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescr
     // Perhaps we could do some type-introspection automated formatting later
     // here if needed, but I think generally that kind of thing would be done case-by-case
     // in the template, such as comma-formatting numbers.
+
     var raw_rowObjects_coercionScheme = dataSourceDescription.raw_rowObjects_coercionScheme;
     if (raw_rowObjects_coercionScheme && typeof raw_rowObjects_coercionScheme !== 'undefined') {
         var coersionSchemeOfKey = raw_rowObjects_coercionScheme["" + key];
@@ -805,8 +806,7 @@ var _reverseDataToBeDisplayableVal = function (originalVal, key, dataSourceDescr
                     dateFormat = config.defaultDateFormat;
                 }
 
-             
-
+                
                 displayableVal = moment(originalVal, moment.ISO_8601).utc().format(dateFormat);
             } else { // nothing to do? (no other types yet)
             }
@@ -824,7 +824,13 @@ module.exports.reverseDataToBeDisplayableVal = _reverseDataToBeDisplayableVal;
 //
 var _convertDateToBeRecognizable = function (originalVal, key, dataSourceDescription) {
     var dateToFormat = new Date(originalVal)
-    var displayableVal = dateToFormat.toISOString();
+    try{
+        var displayableVal = dateToFormat.toISOString();
+    }
+    catch(e) {
+        console.log(e + ": " + dateToFormat)
+        var displayableVal = originalVal;
+    }
     // var prototypeName = Object.prototype.toString.call(originalVal);
     // if (prototypeName === '[object Date]') {
     // }
@@ -922,8 +928,6 @@ function _valueToExcludeByOriginalKey(originalVal, dataSourceDescription, groupB
         displayableVal = "(null)"; // null breaks chart but we don't want to lose its data
     } else if (originalVal === "") {
         displayableVal = "(not specified)"; // we want to show a category for it rather than it appearing broken by lacking a category
-    } else {
-        displayableVal = _reverseDataToBeDisplayableVal(originalVal, groupBy_realColumnName, dataSourceDescription);
     }
 
     return displayableVal;
