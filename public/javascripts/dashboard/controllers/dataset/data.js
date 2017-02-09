@@ -87,34 +87,33 @@ angular.module('arraysApp')
                             if (!$scope.colsByJoinTableName[$scope.dataset.connection.join.tableName]) {
                                 $scope.colsByJoinTableName[$scope.dataset.connection.join.tableName] = [];
                             }
-                     
+
                             DatasetService.colsForJoinTables($scope.dataset.connection)
                             .then(function(response) {
-                                console.log(response);
+                                if (response.status == 200 && response.data) {
+                                    $scope.colsByJoinTableName[$scope.dataset.connection.join.tableName] = response.data;
+                                }
                             })
 
                             
                         }
 
                         $scope.remove = function() {
+                            $scope.dialog.form.$setDirty();
                             delete $scope.dataset.connection.join;
+
                         }
 
                         $scope.save = function() {
-                            console.log($scope.dataset);
+                            $mdDialog.hide($scope.dataset);
                         }
-
-
-                        
-
                     },
                     parent: angular.element(document.body),
                     templateUrl: 'templates/blocks/data.joinTables.html',
                     clickOutsideToClose: true
                 })
                 .then(function(savedDataset) {
-
-
+                     $scope.$parent.$parent.dataset = savedDataset;
                 })
 
             }
