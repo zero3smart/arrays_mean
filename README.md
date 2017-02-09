@@ -10,19 +10,19 @@
 
   * [Homebrew](http://brew.sh)
 
-2. Install Node.JS & NPM: 
-  * [Install Node.js and npm using Homebrew on OS X](https://changelog.com/install-node-js-with-homebrew-on-os-x/), 
+2. Install Node.JS & NPM:
+  * [Install Node.js and npm using Homebrew on OS X](https://changelog.com/install-node-js-with-homebrew-on-os-x/),
   * [How to Install Node.js and NPM on a Mac](http://blog.teamtreehouse.com/install-node-js-npm-mac)
 
 3. Install nodemon for development (optional)
     * Execute `npm install -g nodemon`
 
-4. Install MongoDB: 
+4. Install MongoDB:
   * [Install MongoDB Community Edition on OS X](https://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
-  
+
     Note: If you already have Mongo installed, be sure you have >= v3.2 with `brew update && brew upgrade mongodb`
-    
-5. Run the MongoDB daemon by executing `monogod` in a Terminal window
+
+5. Run the MongoDB daemon by executing `mongod` in a Terminal window
 
 ---------------------
 
@@ -78,7 +78,7 @@ In order to add them (and to support both local development and production deplo
 
 3. Add your subdomain to hosts
   * Run `sudo nano /etc/hosts` again.
-  * Add a new log `[your local ip address]    [your arrays subdomain].local.arrays.co` 
+  * Add a new log `[your local ip address]    [your arrays subdomain].local.arrays.co`
   * Save the write changes with control + "o"
   * Hit "enter"
   * Exit with "control" + "x"
@@ -96,7 +96,7 @@ Anytime you add a new account in arrays, you will have a new subdomain. If you w
 
 ### VIII. Running the front-end server locally
 
-1. Flush your cache by running `dscacheutil -flushcache` in the terminal and you're all set for running Arrays locally!. 
+1. Flush your cache by running `dscacheutil -flushcache` in the terminal and you're all set for running Arrays locally!.
 2. Execute [`bin/start_dev_app`](bin/start_dev_app)
 
 ---------------------
@@ -128,4 +128,3 @@ $ heroku git:remote -a arrays
   * Add in any comments for clarity and click "Create pull request".
 
 4. Once you're ready to start a new branch, go back to step 1. Note: It's important to start the new branch off 'develop' as each time you create one, it inherits from the branch you're currently on.
-

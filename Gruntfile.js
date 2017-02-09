@@ -92,7 +92,8 @@ module.exports = function (grunt) {
                     'tinycolor/dist/tinycolor-min.js',
                     'md-color-picker/dist/*',
                     'angular-ui-sortable/sortable.min.js',
-                    'jquery-ui/jquery-ui.min.js'
+                    'jquery-ui/jquery-ui.min.js',
+                    'threejs/build/three.min.js'
                 ],
                 dest: 'public/vendors'
             }
@@ -146,7 +147,7 @@ module.exports = function (grunt) {
 
     // custom task
     grunt.loadTasks('grunt-subgrunt');
-    
+
     // Default task.
     grunt.registerTask('default', ['jshint']);
 
