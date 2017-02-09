@@ -278,7 +278,7 @@
 }
 
 .filter-bar-fixed-bottom {
-	position: absolute;
+	position: fixed;
 	bottom: 0;
 	padding-bottom: 30px;
 	z-index: 1;
