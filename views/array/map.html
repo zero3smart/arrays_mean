@@ -76,15 +76,6 @@
                 </div><!-- .row -->
             </div><!-- .container-fluid -->
 
-
-            {% if not user %}
-                <style scoped>
-                    .filter-bar-fixed-bottom {
-                        padding-bottom: 94px;
-                    }
-                </style>
-            {% endif %}
-
             {% if isFilterActive %}
                 {{
                 filter.default(displayTitleOverrides,
