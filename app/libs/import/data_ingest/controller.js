@@ -324,10 +324,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             }
 
             var groupQuery = formGroupQuery(eachCtx);
-            
-
-
-
                 
             var continueLoop = true;
             var counter = 1;
@@ -375,7 +371,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                         updateQuery["rowParams." + eachCtx.nestingKey] = matchingCond;
                         var setQuery = formSetQuery(res,eachCtx.prefix,eachCtx.valueOverrides);
 
-                        console.log("bac")
                         eachCtx.nativeCollection.update(updateQuery,{$push: setQuery},function(err,result) {
                             if (err) return callback(err);
                             var r = JSON.parse(result);
@@ -389,9 +384,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
      
                         skipping = counter * limit;
                         counter++;
-
-                        console.log(eachCtx.numberOfRows);
-
 
                         if (eachCtx.numberOfRows!== 0 && eachCtx.numberOfRows % 100 == 0) {
                             winston.info("✅  processed " + eachCtx.numberOfRows + " of nested fields");
@@ -415,10 +407,10 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
         } else {
 
+
+  
             async.each(eachCtx,function(customField,outterCallback) {
 
-                var projectQuery = formProjectQuery(customField);
-        
 
                 var continueLoop = true;
                 var counter = 1;
@@ -434,25 +426,50 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
                     }
                 },function(next) {
 
+            
+                    var project = formProjectQuery(customField);
+
+                    var useDelimiter = false;
+
+                    if (customField.delimiterOnFields && customField.delimiterOnFields.length == 1 && 
+                        customField.fieldsToMergeIntoArray.length == 1) {
+                        useDelimiter = true;
+                    }
+
+
                     eachCtx.nativeCollection.aggregate([
                         {$skip: skipping},
                         {$limit: limit},
-                        {$project:projectQuery}
+                        {$project: project}
                     ],function(err,aggregatedResult) {
+
+  
     
                         if (err) return next(err);
 
-                        // console.log(aggregatedResult.length);
+
 
                         if (aggregatedResult.length == 0) {
                             continueLoop = false;
                             return next();
                         } 
 
-                    
+
                         async.each(aggregatedResult,function(res,asynEachCb) {
                             var docId = res._id;
                             delete res._id;
+
+                            if (useDelimiter) {
+                                var sp = customField.delimiterOnFields[0];
+                                if (sp == '" "') {
+                                    sp = " ";
+                                }
+
+                        
+
+                                res[customField.fieldName] = res[customField.fieldName][0].split(sp);
+                            }
+
                             var setQuery = formSetQuery(res);
 
                             eachCtx.nativeCollection.update({_id:docId},{$set: setQuery},function(err) {
@@ -484,13 +501,35 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
 
     function formGroupQuery(ctx) {
         var ret = {};
+   
+
         ret["_id"] = "$rowParams." + ctx.nestingKey;
         for (var i = 0; i < ctx.fields.length; i ++) {
             ret[ctx.fields[i]] = {$push: "$" + "rowParams." + ctx.fields[i]};
         }
         ret["count"] = {$sum:1};
+
+        
+       
         return ret;
     }
+
+    function formProjectQuery(customField) {
+        //assuming its merging to array
+        var mergingFields = customField.fieldsToMergeIntoArray;
+        var newFieldName = customField.fieldName;
+        var p = {};
+        
+        p[newFieldName] = [];
+        
+        
+        for (var i = 0; i < mergingFields.length; i++) {
+            p[newFieldName].push("$rowParams." + mergingFields[i])
+        }
+       
+        return p;
+    }
+
 
     
 
@@ -523,35 +562,6 @@ var _afterGeneratingProcessedDataSet_performEachRowOperations = function (indexI
             ret[revisedKey].$each = fieldValue;
         }
         return ret;
-    }
-
-    function formProjectQuery(customField) {
-        //assuming its merging to array
-        var mergingFields = customField.fieldsToMergeIntoArray;
-        var newFieldName = customField.fieldName;
-        var p = {};
-        var useDelimiter = false;
-        if (!customField.delimiterOnFields || customField.delimiterOnFields.length == 0) {
-            p[newFieldName] = [];
-        } else {
-            useDelimiter = true;
-            p[newFieldName] = {$split:[]};
-        }
-        if (useDelimiter) {
-            p[newFieldName]["$split"].push("$rowParams." + mergingFields[0]);
-            var split = customField.delimiterOnFields[0];
-            if (split == '" "') {
-               split = " ";
-            }
-            p[newFieldName]["$split"].push(split);
-        } else {
-            for (var i = 0; i < mergingFields.length; i++) {
-                p[newFieldName].push("$rowParams." + mergingFields[i])
-            }
-
-        }
-       
-        return p;
     }
 
 

@@ -49,7 +49,7 @@ angular.module('arraysApp')
 
 
             $scope.submitForm = function(isValid) {
-                debugger;
+                // debugger;
 
 
 
