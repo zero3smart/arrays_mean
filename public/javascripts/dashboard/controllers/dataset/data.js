@@ -142,7 +142,6 @@ angular.module('arraysApp')
                     }
                 })
                     .then(function (savedDataset) {
-
                         $scope.$parent.$parent.dataset = savedDataset;
 
                         if (Object.keys(savedDataset.fe_designatedFields).length > 0) {

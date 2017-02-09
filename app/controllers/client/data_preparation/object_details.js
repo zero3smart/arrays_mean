@@ -44,7 +44,7 @@ module.exports.BindData = function (req, source_pKey, rowObject_id, callback) {
                 });
             });
 
-            var galleryViewSettings = dataSourceDescription.fe_views.views.gallery;
+            var galleryViewSettings = dataSourceDescription.fe_views.views.gallery || dataSourceDescription.fe_views.views.timeline;
             var galleryItem_htmlWhenMissingImage;
 
             if (galleryViewSettings.galleryItemConditionsForIconWhenMissingImage) {
