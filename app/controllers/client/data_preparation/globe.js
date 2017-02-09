@@ -47,7 +47,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 return;
             }
-            if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.map === 'undefined') {
+            if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views != null && typeof dataSourceDescription.fe_views.views.globe === 'undefined') {
                 callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
 
                 return;
@@ -57,11 +57,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var processedRowObjects_mongooseContext = processed_row_objects.Lazy_Shared_ProcessedRowObject_MongooseContext(dataSourceDescription._id);
             var processedRowObjects_mongooseModel = processedRowObjects_mongooseContext.Model;
             //
-            var mapBy = urlQuery.mapBy; // the human readable col name - real col name derived below
-            var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultMapByColumnName] ||
-            dataSourceDescription.fe_views.views.map.defaultMapByColumnName;
+            // var mapBy = urlQuery.mapBy; // the human readable col name - real col name derived below
+            // var defaultMapByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.globe.defaultMapByColumnName] ||
+            // dataSourceDescription.fe_views.views.globe.defaultMapByColumnName;
             //
-            var routePath_base = "/" + source_pKey + "/map";
+            var routePath_base = "/" + source_pKey + "/globe";
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
@@ -78,9 +78,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
            
-            var aggregateBy = urlQuery.aggregateBy;
-            var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName] ||
-            dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName ;
+            // var aggregateBy = urlQuery.aggregateBy;
+            // var defaultAggregateByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.globe.defaultAggregateByColumnName] ||
+            // dataSourceDescription.fe_views.views.globe.defaultAggregateByColumnName ;
 
 
          
@@ -102,14 +102,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         if (dataSourceDescription.fe_displayTitleOverrides && dataSourceDescription.fe_displayTitleOverrides[colName])
                             humanReadableColumnName = dataSourceDescription.fe_displayTitleOverrides[colName];
 
-                        if (!aggregateBy_humanReadable_available) {
-                            aggregateBy_humanReadable_available = [];
-                            aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
-                        }
+                        // if (!aggregateBy_humanReadable_available) {
+                        //     aggregateBy_humanReadable_available = [];
+                        //     aggregateBy_humanReadable_available.push(config.aggregateByDefaultColumnName); // Add the default - aggregate by number of records.
+                        // }
 
 
 
-                        aggregateBy_humanReadable_available.push(humanReadableColumnName);
+                        // aggregateBy_humanReadable_available.push(humanReadableColumnName);
                     }
                 }
             }
@@ -117,14 +117,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
             
 
 
-            if (aggregateBy_humanReadable_available) {
-                if (aggregateBy_humanReadable_available.length == 1)
-                    aggregateBy_humanReadable_available = undefined;
-            }
+            // if (aggregateBy_humanReadable_available) {
+            //     if (aggregateBy_humanReadable_available.length == 1)
+            //         aggregateBy_humanReadable_available = undefined;
+            // }
 
-            var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
-            (typeof dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
-            dataSourceDescription.fe_views.views.map.defaultAggregateByColumnName;
+            // var aggregateBy_realColumnName = aggregateBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(aggregateBy,dataSourceDescription) :
+            // (typeof dataSourceDescription.fe_views.views.globe.defaultAggregateByColumnName  == 'undefined') ?importedDataPreparation.RealColumnNameFromHumanReadableColumnName(defaultAggregateByColumnName_humanReadable,dataSourceDescription) :
+            // dataSourceDescription.fe_views.views.globe.defaultAggregateByColumnName;
 
 
 
@@ -166,31 +166,31 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 });
             });
 
-            batch.push(function(done) {
-                var aggregationOperators = [];
+            // batch.push(function(done) {
+            //     var aggregationOperators = [];
 
-                if (isSearchActive) {
-                    var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
-                    if (_orErrDesc.err) return done(_orErrDesc.err);
+            //     if (isSearchActive) {
+            //         var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+            //         if (_orErrDesc.err) return done(_orErrDesc.err);
 
-                    aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
-                }
-                if (isFilterActive) { // rules out undefined filterCol
-                    var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
-                    if (_orErrDesc.err) return done(_orErrDesc.err);
+            //         aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
+            //     }
+            //     if (isFilterActive) { // rules out undefined filterCol
+            //         var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+            //         if (_orErrDesc.err) return done(_orErrDesc.err);
 
-                    aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
-                }
+            //         aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
+            //     }
 
-                var doneFn = function(err, _coordDocs) {
-                    if (err) return done(err);
+            //     var doneFn = function(err, _coordDocs) {
+            //         if (err) return done(err);
 
-                    // format retrieved globe data needed in view here
-                    done();
-                }
-                // Update query to reflect what is needed in globe view
-                processedRowObjects_mongooseModel.find({}).exec(doneFn);
-            });
+            //         // format retrieved globe data needed in view here
+            //         done();
+            //     }
+            //     // Update query to reflect what is needed in globe view
+            //     processedRowObjects_mongooseModel.find({}).limit(100).exec(doneFn);
+            // });
             
 
             var user = null;
@@ -227,7 +227,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                    view_description: dataSourceDescription.fe_views.views.map.description ? dataSourceDescription.fe_views.views.map.description : "",
+                    view_description: dataSourceDescription.fe_views.views.globe.description ? dataSourceDescription.fe_views.views.globe.description : "",
                     //
                     displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     //
@@ -240,17 +240,17 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     searchCol: searchCol,
                     isSearchActive: isSearchActive,
                     //
-                    defaultMapByColumnName_humanReadable: defaultMapByColumnName_humanReadable,
-                    colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'map', 'MapBy'),
-                    colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
+                    // defaultMapByColumnName_humanReadable: defaultMapByColumnName_humanReadable,
+                    // colNames_orderedForMapByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForDropdown(sampleDoc, dataSourceDescription, 'map', 'MapBy'),
+                    // colNames_orderedForSortByDropdown: importedDataPreparation.HumanReadableFEVisibleColumnNamesWithSampleRowObject_orderedForSortByDropdown(sampleDoc, dataSourceDescription),
                     //
                     routePath_base: routePath_base,
                     // multiselectable filter fields
                     multiselectableFilterFields: dataSourceDescription.fe_filters.fieldsMultiSelectable,
 
-                    aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
-                    defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
-                    aggregateBy: aggregateBy
+                    // aggregateBy_humanReadable_available: aggregateBy_humanReadable_available,
+                    // defaultAggregateByColumnName_humanReadable: defaultAggregateByColumnName_humanReadable,
+                    // aggregateBy: aggregateBy
 
                 };
                 callback(err, data);
