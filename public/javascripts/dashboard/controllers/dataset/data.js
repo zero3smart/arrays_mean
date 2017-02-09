@@ -69,6 +69,56 @@ angular.module('arraysApp')
                 $scope.excludeAll = exclude ? false : true; // toggle
             };
 
+            $scope.openJoinTablesDialog = function(evt) {
+                $mdDialog.show({
+                    locals: {
+                        dataset: $scope.$parent.$parent.dataset,
+                        DatasetService: DatasetService,
+
+
+                    },
+                    controller: function($scope,$mdDialog,dataset,DatasetService) {
+                        $scope.dataset = dataset;
+                        $scope.colsByJoinTableName = {};
+
+                        $scope.loadCols = function() {
+
+                            if (!$scope.dataset.connection.join.tableName || $scope.dataset.connection.join.tableName == "") return;
+                            if (!$scope.colsByJoinTableName[$scope.dataset.connection.join.tableName]) {
+                                $scope.colsByJoinTableName[$scope.dataset.connection.join.tableName] = [];
+                            }
+                     
+                            DatasetService.colsForJoinTables($scope.dataset.connection)
+                            .then(function(response) {
+                                console.log(response);
+                            })
+
+                            
+                        }
+
+                        $scope.remove = function() {
+                            delete $scope.dataset.connection.join;
+                        }
+
+                        $scope.save = function() {
+                            console.log($scope.dataset);
+                        }
+
+
+                        
+
+                    },
+                    parent: angular.element(document.body),
+                    templateUrl: 'templates/blocks/data.joinTables.html',
+                    clickOutsideToClose: true
+                })
+                .then(function(savedDataset) {
+
+
+                })
+
+            }
+
             $scope.openFieldDialog = function (evt, fieldName, firstRecord, custom, customFieldIndex, filterOnly) {
                 // using the same controller for general field settings and field filter setting, for now
                 var fieldTemplate = filterOnly ? 'templates/blocks/data.field.filter.html' : 'templates/blocks/data.field.general.html';

@@ -9,3 +9,11 @@ module.exports.connect = function(req,res) {
 	}
 }
 
+
+module.exports.getColumnsForFieldMapping = function(req,res) {
+	
+	if (req.body.type == 'hadoop') {
+		hadoop.readColumnsForJoin(req,res);
+	}
+
+}

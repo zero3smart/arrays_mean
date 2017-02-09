@@ -136,9 +136,48 @@ module.exports.initConnection = function(req,res) {
                 }
 
             })
-        })
-        
+        })        
     }
+}
+
+module.exports.readColumnsForJoin = function(req,res) {
+
+   
+    if (db) {
+        _readColumnsAndSample(req.body.join.tableName,function(err,data) {
+
+            if (err) return res.status(500).json(err);
+
+            else {
+                console.log("successfully read columns and sample for join, data: %s",
+                    JSON.stringify(data));
+                return res.json(data);
+            }
+
+        })
+
+    } else {
+        _initConnection(req.body.url,function(err) {
+            if (err) return res.status(500).json(err);
+            else {
+
+                 _readColumnsAndSample(req.body.join.tableName,function(err,data) {
+
+                    if (err) return res.status(500).json(err);
+
+                    else {
+                        console.log("successfully read columns and sample for join, data: %s",
+                            JSON.stringify(data));
+                        return res.json(data);
+                    }
+
+                })
+
+            }
+
+        })
+    }
+
 }
 
 function _runQuery(query,fn) {

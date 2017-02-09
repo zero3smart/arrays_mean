@@ -12,6 +12,8 @@
                     {{column.name}}
                 </md-option>
             </md-select>
+
+
         </md-input-container>
 
         <h3 ng-hide="dataset.connection">You can make changes to your content below.</h3>
@@ -64,6 +66,14 @@
                 </md-menu-content>
             </md-menu>
         </div>
+
+
+
+        <md-button ng-show="dataset.connection" class="md-dashboard" ng-click="openJoinTablesDialog()">
+            <span class="btn-label">Join Tables</span>
+        </md-button>
+
+
 
 
         <p>We found these fields in your data source:</p>
