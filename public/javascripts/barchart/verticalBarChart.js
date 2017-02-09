@@ -37,7 +37,7 @@ VerticalBarChart.prototype._animateForSort = function () {
 
     var self = this;
 
-    var newCategories = this._categoryData
+    var newCategories = this._categories
         .reduce(function(o, v, i) {
             o.push([v, self._data[i]]);
             return o;
@@ -59,6 +59,7 @@ VerticalBarChart.prototype._animateForSort = function () {
             return d[0];
         });
 
+
     // Copy-on-write since tweens are evaluated after a delay.
     var x0 = d3.scale.ordinal()
         .rangeBands([0, this._innerWidth], this._padding)
@@ -71,7 +72,7 @@ VerticalBarChart.prototype._animateForSort = function () {
         .duration(750)
         .delay(delay)
         .attr("x", function(d, i, j) { 
-            return x0(self._categoryData[j]); 
+            return x0(self._categories[j]); 
         });
 
     this._categories = newCategories;
@@ -87,9 +88,9 @@ VerticalBarChart.prototype.rotateLabel = function () {
     // rotate x-axis labels 90 degrees or hide
     if(this._showXLabels) {
         return this._xAxisContainer.selectAll("text")  
-            .style("text-anchor", "end")
             .attr("dx", "-.8em")
             .attr("dy", "-.2em")
+            .style("text-anchor", "end")
             .attr("transform", "rotate(-90)" );
     } else {
         return this._xAxisContainer.selectAll("g")
