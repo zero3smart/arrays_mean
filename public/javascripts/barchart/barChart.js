@@ -88,6 +88,7 @@ function BarChart(selector, dataSet, options) {
 
     this._innerWidth = this._outerWidth - this._margin.left - this._margin.right;
     this._outerHeight = window.innerHeight - container.offset().top - 30;
+
     // minimum height for mobile view
     if(this._outerHeight < defaultMinHeight) {
         this._outerHeight = defaultMinHeight
@@ -102,6 +103,7 @@ function BarChart(selector, dataSet, options) {
         } else {
             this._showXLabels = true;
         }
+
     } else if(options.horizontal == true){
         this._showXLabels = true;
         if(this._outerHeight/self._categoryData.length < 18) {

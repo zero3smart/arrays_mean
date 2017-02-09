@@ -50,8 +50,6 @@ angular
             }
 
 
-
-
             $scope.updateSubdomain();
 
     

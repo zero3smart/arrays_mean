@@ -30,7 +30,6 @@ $(function () {
      }
 });
 
-
 var colors = [
     '#FEAA00',
     '#FEBC12',
