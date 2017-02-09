@@ -328,6 +328,7 @@ angular.module('arraysApp')
                         } else {
                             $scope.$parent.team.subscription = { state: 'in_trial'};
                         }
+                        $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                         $state.go('dashboard.account.billing');
                     } else {
                         // console.log(res.data);
@@ -344,6 +345,7 @@ angular.module('arraysApp')
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
                         $scope.$parent.team.subscription.state = 'active';
+                        $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                         $state.go('dashboard.account.billing');
                     } else {
                         // console.log(res.data);
@@ -357,6 +359,7 @@ angular.module('arraysApp')
                 .$promise.then(function(res) {
                     // console.log(res.data);
                     $scope.$parent.team.subscription.state = 'canceled';
+                    $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                     $state.go('dashboard.account.billing');
                 });
             };
@@ -367,6 +370,7 @@ angular.module('arraysApp')
                 .$promise.then(function(res) {
                     // console.log(res.data);
                     $scope.$parent.team.subscription.state = 'active';
+                    $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                     getSubscriptions();
                 });
             };
