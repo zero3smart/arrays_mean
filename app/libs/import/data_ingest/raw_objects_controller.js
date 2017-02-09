@@ -105,7 +105,15 @@ var _new_parsed_StringDocumentObject_fromDataSourceDescription = function (job,d
         // column names
         if (lineNr == 1) {
 
+            var numberOfEmptyFields = 0;
             for (var i = 0; i < columnNamesAndThenRowObject.length; i++) {
+                // because both this and the sample generation is looping through the csv in order, we can safely assume that the fields will all still be in the same order. Therefore, whatever we named Field1 when generating sample, will still match Field1 here. If we change that logic, this may no longer be effective.
+
+                // change any empty string keys to "Field"
+                if(columnNamesAndThenRowObject[i] === '') {
+                    numberOfEmptyFields++;
+                    columnNamesAndThenRowObject[i] ='Field' + numberOfEmptyFields;
+                }
                 columnNamesAndThenRowObject[i] = columnNamesAndThenRowObject[i].replace(/\./g, "_");
                 
             }
