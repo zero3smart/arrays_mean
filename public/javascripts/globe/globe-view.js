@@ -16,7 +16,6 @@
         this._mode = 0;
         this._bottomAltitude = 200.5;
         this._topAltitude = 218;
-        this._shown = false;
         this._storyNodeScale = 2.15;
         this._storyGlowScale = 4.3;
 
@@ -63,13 +62,7 @@
             imgDir: '/images/globe/',
             shaders: this.shaders,
             onBeforeRender: function(time) {
-                if (!self._shown) {
-                    self.$el.css({
-                        opacity: 1
-                    });
-
-                    self._shown = false;
-                }
+                TWEEN.update(time);
             },
             onMouseDown: function(event) {
                 return self._onMouseDown ? self._onMouseDown(event) : false;
@@ -104,35 +97,20 @@
         var lineConfig = {
             globe: this.globe,
             start: {
-                altitude: altitude,
+                altitude: this._bottomAltitude,
                 color: GlobeMain.blue
             },
             end: {
-                altitude: altitude,
+                altitude: this._bottomAltitude,
                 color: GlobeMain.blue
             }
         };
-
-        var i2, cityNode, cityNode2;
-        for (i = 0; i < this._cityNodes.length; i += 12) {
-            cityNode = this._cityNodes[i];
-            lineConfig.start.point = {
-                lat: cityNode.lat,
-                lng: cityNode.lng
-            };
-
-            for (i2 = 0; i2 < 3; i2++) {
-                cityNode2 = this._cityNodes[Math.floor(Math.random() * this._cityNodes.length)];
-                if (cityNode2 !== cityNode) {
-                    lineConfig.end.point = {
-                        lat: cityNode2.lat,
-                        lng: cityNode2.lng
-                    };
-
-                    this._addLine(lineConfig);
-                }
-            }
-        }
+        
+        _.each(config.lines, function(v, i) {
+            lineConfig.start.point = v.start;
+            lineConfig.end.point = v.end;
+            self._addLine(lineConfig);
+        });
 
         var raycaster = new THREE.Raycaster();
         var mouse = new THREE.Vector2();
@@ -193,15 +171,6 @@
         // ----------
         start: function() {
             this.globe.animate();
-        },
-
-        // ----------
-        hide: function() {
-            this.$el.css({
-                opacity: 0
-            });
-
-            this._shown = true;
         },
 
         // ----------
@@ -441,9 +410,7 @@
                             return;
                         }
 
-                        v.animateOn(function() {
-                            v.animateOff(animate);
-                        });
+                        v.animateOn();
                     };
 
                     if (self._mode === 0) {

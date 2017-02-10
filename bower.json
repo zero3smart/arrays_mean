@@ -30,7 +30,8 @@
     "md-color-picker": "^0.2.6",
     "angular-resource": "1.5.8",
     "angular-ui-sortable": "^0.14.3",
-    "threejs": "r71"
+    "threejs": "r71",
+    "tweenjs": "~16.6.0"
   },
   "ignore": [
     "\\.*",
