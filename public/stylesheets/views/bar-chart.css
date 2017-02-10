@@ -16,6 +16,7 @@
 
 .array-bar-chart .sort-direction {
     display: inline-block;
+    font-size: 18px;
 }
 
 .array-bar-chart .array-content {
@@ -24,7 +25,7 @@
 
 @media (min-width: 768px) {
     .array-bar-chart .sort-direction {
-        margin: 12px 0;
+        /*margin: 12px 0;*/
     }
 }
 
@@ -43,7 +44,7 @@
 
 #normalization {
     font-weight: bold;
-    padding: 13px 16px 9px;
+    /*padding: 13px 16px 9px;*/
 }
 
 #orientation .horizontal,
@@ -70,4 +71,3 @@
         overflow: hidden;
     }
 }
-
