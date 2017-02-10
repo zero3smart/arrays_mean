@@ -61,7 +61,7 @@
     /*padding-top: 4px;*/
     /*padding-right: 23px;*/
     /*padding-left: 23px;*/
-    width: 4px;
+    width: 12px;
     /*height: 52px;*/
     /*border-radius: 0 4px 4px 0;*/
     /*background-color: var(--color-background);*/
@@ -70,7 +70,7 @@
 }
 
 .sort-control .dropdown-toggle-button-has-caret .dropdown-toggle-label {
-    margin-right: 9px;
+    margin-right: 16px;
 }
 
 .sort-control .dropdown-toggle-button:hover,
