@@ -11,6 +11,7 @@
         this._onMouseUp = config.onMouseUp;
 
         this._cityNodes = [];
+        this._pointNodes = [];
         this._lines = [];
         this._mode = 0;
         this._bottomAltitude = 200.5;
@@ -71,58 +72,32 @@
                 }
             },
             onMouseDown: function(event) {
-                return self._onMouseDown(event);
+                return self._onMouseDown ? self._onMouseDown(event) : false;
             },
             onDrag: function(event) {
-                self._onDrag(event);
+                if (self._onDrag) {
+                    self._onDrag(event);
+                }
             },
             onMouseUp: function() {
-                self._onMouseUp();
+                if (self._onMouseUp) {
+                    self._onMouseUp();
+                }
             }
         });
-
-        // var verts = this.globe.atmosphere.geometry.vertices;
-        // var values = shaders.atmosphere.attributes.noise.value;
-        // for (var i = 0; i < verts.length; i++) {
-        //   values.push(2);
-        // }
-
+        
         var size = 1.3;
         var altitude = this._bottomAltitude;
-        _.each(GlobeMain.pointData, function(point, i) {
-            // Find best story match
-            var best;
-            _.each(GlobeMain.stories, function(story, i2) {
-                var i3, location, index;
-                for (i3 = 0; i3 < story.locations.length; i3++) {
-                    location = story.locations[i3];
-                    index = (i3 > 0 ? 1 : 0); // We just care about top vs. others
-                    if (point.city === location.city && point.country === location.country) {
-                        if (!best || index < best.index || (index === best.index && best.story.modifiedDate < story.modifiedDate)) {
-                            best = {
-                                story: story,
-                                index: index
-                            };
-                        }
-                    }
-                }
-            });
-
-            var story = best && best.story;
-
-            // Make the node
-            self._cityNodes.push(new GlobeMain.CityNode({
+        _.each(config.points, function(point) {
+            self._pointNodes.push(new GlobeMain.PointNode({
                 globeView: self,
-                cityNodes: self._cityNodes,
                 globe: self.globe,
                 lat: point.lat,
                 lng: point.lng,
-                city: point.city,
                 size: size,
                 altitude: altitude,
-                color: story ? GlobeMain.yellow : '#fff',
-                opacity: story ? 1 : 0.25,
-                story: story
+                color: '#fff',
+                opacity: 1
             }));
         });
 

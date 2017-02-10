@@ -1,17 +1,13 @@
 (function() {
 
     // ----------
-    var component = GlobeMain.CityNode = function(config) {
+    var component = GlobeMain.PointNode = function(config) {
         this.lat = config.lat;
         this.lng = config.lng;
-        this.city = config.city;
         this.color = config.color;
         this.altitude = config.altitude;
         this.size = config.size;
-        this.story = config.story;
         this.globe = config.globe;
-        this._cityNodes = config.cityNodes;
-        this._globeView = config.globeView;
         this._lines = [];
         this._viewed = false;
         this._glowAttached = false;
@@ -45,10 +41,6 @@
         this.glow.position.x = vector.x;
         this.glow.position.y = vector.y;
         this.glow.position.z = vector.z;
-
-        if (this.story) {
-            this._setGlow(true);
-        }
     };
 
     // ----------
@@ -60,51 +52,12 @@
             // Highlight the node
             this._selected = true;
             this._update();
-
-            // Draw the lines
-            var lineConfig = {
-                globe: this.globe,
-                start: {
-                    point: {
-                        lat: this.lat,
-                        lng: this.lng
-                    },
-                    altitude: this.altitude,
-                    color: GlobeMain.yellow
-                },
-                end: {
-                    color: GlobeMain.blue
-                }
-            };
-
-            var endPointCityNodes = _.filter(this._cityNodes, function(v, i) {
-                return (v !== self && _.findWhere(self.story.locations, { city: v.city }));
-            });
-
-            _.each(endPointCityNodes, function(v, i) {
-                lineConfig.end.point = {
-                    lat: v.lat,
-                    lng: v.lng
-                };
-
-                lineConfig.end.altitude = v.altitude;
-
-                var line = new GlobeMain.Line(lineConfig);
-                line.animateOn();
-                self._lines.push(line);
-            });
         },
 
         // ----------
         deselect: function() {
             this._selected = false;
             this._update();
-
-            _.each(this._lines, function(v, i) {
-                v.destroy();
-            });
-
-            this._lines = [];
         },
 
         // ----------
