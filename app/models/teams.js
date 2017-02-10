@@ -83,7 +83,7 @@ team.GetTeamsAndDatasources = function(userId, fn) {
                     var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = { _team: { $ne: myTeamId }, isPublic: true };
                     var myTeam = { _team: foundUser.defaultLoginTeam._id };
-                    getTeamsAndPopulateDatasetWithQuery({ $or: [{ 'superTeam': true }, { 'subscription.state': 'active' }, , { 'subscription.state': 'canceled' }] }, { $and: [{ $or: [myTeam, otherTeams] }, { imported: true, fe_listed: true, fe_visible: true }] }, fn);
+                    getTeamsAndPopulateDatasetWithQuery({ $or: [{ 'superTeam': true }, { 'subscription.state': 'active' }, { 'subscription.state': 'canceled' }] }, { $and: [{ $or: [myTeam, otherTeams] }, { imported: true, fe_listed: true, fe_visible: true }] }, fn);
 
                 } else { //get published and unpublished dataset if currentUser is one of the viewers or editiors
                     var myTeamId = foundUser.defaultLoginTeam._id;
@@ -94,7 +94,7 @@ team.GetTeamsAndDatasources = function(userId, fn) {
             });
 
     } else {
-        getTeamsAndPopulateDatasetWithQuery({ $or: [{ 'superTeam': true }, { 'subscription.state': 'active' }] }, { isPublic: true, imported: true, fe_visible: true }, fn);
+        getTeamsAndPopulateDatasetWithQuery({ $or: [{ 'superTeam': true }, { 'subscription.state': 'active' }, { 'subscription.state': 'canceled' }] }, { isPublic: true, imported: true, fe_visible: true }, fn);
     }
 
 };
