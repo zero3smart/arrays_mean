@@ -13,7 +13,7 @@
   "scripts": {
     "start": "node app.js",
     "monitor": "nodemon app.js",
-    "postinstall": "bower intall && grunt build"
+    "postinstall": "bower install && grunt build"
   },
   "dependencies": {
     "async": "^1.5.2",
