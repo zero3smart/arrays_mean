@@ -1,12 +1,25 @@
 angular.module('arraysApp')
-    .controller('DatasetListCtrl', ['$scope', '$mdDialog', '$state', '$mdToast', 'DatasetService', 'datasets',
-        function ($scope, $mdDialog, $state, $mdToast, DatasetService, datasets, nullDatasets) {
+    .controller('DatasetListCtrl', ['$scope', '$mdDialog', '$state', '$mdToast', 'DatasetService', 'datasets', 
+        function ($scope, $mdDialog, $state, $mdToast, DatasetService, datasets) {
+
+            // Get subscription quantity to limit number of datasets
+            if ($scope.$parent.team && $scope.$parent.team.subscription && $scope.$parent.team.subscription.quantity) {
+                $scope.subscriptionQuantity = parseInt($scope.$parent.team.subscription.quantity);
+            } else {
+                $scope.subscriptionQuantity = 0;
+            }
 
             $scope.$parent.$parent.dataset = {};
             $scope.datasets = datasets;
 
+
             $scope.primaryAction.text = 'New Visualization';
-            $scope.primaryAction.disabled = false; // can limit here based on billing
+
+            if ($scope.$parent.user === 'superAdmin' || $scope.$parent.team.superTeam === true) {
+                $scope.primaryAction.disabled = false;
+            } else {
+                $scope.primaryAction.disabled = $scope.subscriptionQuantity > $scope.datasets.length ? false : true; // limit based on billing
+            }
             $scope.primaryAction.do = function() {
                 $scope.add();
             };
