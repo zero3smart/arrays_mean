@@ -92,7 +92,8 @@ module.exports = function (grunt) {
                     'tinycolor/dist/tinycolor-min.js',
                     'md-color-picker/dist/*',
                     'angular-ui-sortable/sortable.min.js',
-                    'jquery-ui/jquery-ui.min.js'
+                    'jquery-ui/jquery-ui.min.js',
+                    'bootstrap/dist/js/bootstrap.min.js'
                 ],
                 dest: 'public/vendors'
             }

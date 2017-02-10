@@ -473,29 +473,37 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                     .exec(function(err, foundUser) {
 
                         if (err) return fn(err);
+                        if (!foundUser) {
 
-                        if (
-                            foundUser.isSuperAdmin() || 
-                            (
-                                (
-                                    datasourceDescription.author.equals(foundUser._id) ||
-                                    foundUser._editors.indexOf(datasourceDescription._id) >= 0 ||
-                                    foundUser._viewers.indexOf(datasourceDescription._id) >= 0 ||
-                                    datasourceDescription.isPublic
-                                ) && ( 
-                                    subscription.state === 'in_trial' || subscription.state === 'active' || datasourceDescription._team.superTeam == true
-                                )
-                            )
-                        ) {
-                            return fn(null, datasourceDescription);
+                            if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.superTeam !== true) return fn();
+                            
+                            if (datasourceDescription.isPublic) return fn(null, datasourceDescription);
                         } else {
-                            return fn();
+
+                            if (
+                                foundUser.isSuperAdmin() || 
+                                (
+                                    (
+                                        datasourceDescription.author.equals(foundUser._id) ||
+                                        foundUser._editors.indexOf(datasourceDescription._id) >= 0 ||
+                                        foundUser._viewers.indexOf(datasourceDescription._id) >= 0 ||
+                                        datasourceDescription.isPublic
+                                    ) && ( 
+                                        subscription.state === 'in_trial' || subscription.state === 'active' || datasourceDescription._team.superTeam == true
+                                    )
+                                )
+                            ) {
+                                return fn(null, datasourceDescription);
+                            } else {
+                                return fn();
+                            }
                         }
+
+                        
                     });
             } else {
 
-                
-    
+            
                 if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.superTeam !== true) return fn();
 
 
