@@ -56,21 +56,21 @@
     position: relative;
     display: block;
     float: right;
-    margin-top: -15px;
-    margin-bottom: -15px;
-    padding-top: 16px;
-    padding-right: 23px;
-    padding-left: 23px;
-    width: 52px;
-    height: 52px;
-    border-radius: 0 4px 4px 0;
-    background-color: var(--color-background);
+    /*margin-top: -15px;*/
+    /*margin-bottom: -15px;*/
+    /*padding-top: 4px;*/
+    /*padding-right: 23px;*/
+    /*padding-left: 23px;*/
+    width: 4px;
+    /*height: 52px;*/
+    /*border-radius: 0 4px 4px 0;*/
+    /*background-color: var(--color-background);*/
     content: "▾";
-    font-size: 14px;
+    font-size: 18px;
 }
 
 .sort-control .dropdown-toggle-button-has-caret .dropdown-toggle-label {
-    margin-right: 65px;
+    margin-right: 9px;
 }
 
 .sort-control .dropdown-toggle-button:hover,

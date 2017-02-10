@@ -1,4 +1,4 @@
-/* @override 
+/* @override
 	http://localhost:9080/stylesheets/base/typography.css */
 
 @font-face {
@@ -41,9 +41,9 @@ body {
 }
 
 .ui-label {
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 16px;
+    /*text-transform: uppercase;*/
+    /*letter-spacing: 2px;*/
+    font-size: 18px;
 }
 
 .ui-label,

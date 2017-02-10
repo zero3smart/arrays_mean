@@ -1,6 +1,6 @@
-/* @override 
+/* @override
 	http://localhost:9080/stylesheets/module/sort-bar.css */
-	
+
 #array-controls {
 	z-index: 1;
 	background-color: #ffffff;
@@ -212,7 +212,7 @@
 	.sort-bar-left .dropdown-toggle {
 		max-width: 100%;
 	}
-	
+
 	.dropdown-toggle-label {
 		overflow-x: hidden;
 		text-overflow: ellipsis;
@@ -249,9 +249,9 @@
 		pointer-events: all;
 	}
 
-	.sort-control > a {
+	/*.sort-control > a {
 		display: block;
-	}
+	}*/
 
 	.form-search {
 		position: absolute;
