@@ -13,7 +13,6 @@
         this._cityNodes = [];
         this._pointNodes = [];
         this._lines = [];
-        this._mode = 0;
         this._bottomAltitude = 200.5;
         this._topAltitude = 218;
         this._storyNodeScale = 2.15;
@@ -174,22 +173,6 @@
         },
 
         // ----------
-        mode: function() {
-            return this._mode;
-        },
-
-        // ----------
-        storyMode: function(value) {
-            this._storyMode = value;
-
-            this.$el.css({
-                opacity: this._storyMode ? 0.35 : 1
-            });
-
-            this.globe.distance(this._storyMode ? 1150 : 1000);
-        },
-
-        // ----------
         selectCity: function(key, city) {
             this.deselectCity();
 
@@ -259,28 +242,6 @@
         },
 
         // ----------
-        findLineEndPoints: function(cityNode, cityNodes, distance) {
-            return _.chain(cityNodes)
-                .map(function(v, i) {
-                    var diff = new zot.point(v.lat - cityNode.lat, v.lng - cityNode.lng);
-
-                    return {
-                        cityNode: v,
-                        distance: diff.polar().distance
-                    };
-                })
-                .filter(function(v, i) {
-                    return v.distance > distance;
-                })
-                .sortBy('distance')
-                .first(3)
-                .map(function(v, i) {
-                    return v.cityNode;
-                })
-                .value();
-        },
-
-        // ----------
         _toScreenXY: function ( position, camera, jqdiv ) {
             var pos = position.clone();
             var projScreenMat = new THREE.Matrix4();
@@ -289,108 +250,6 @@
 
             return new THREE.Vector2( ( pos.x + 1 ) * jqdiv.width() / 2 + jqdiv.offset().left,
                         ( - pos.y + 1) * jqdiv.height() / 2 + jqdiv.offset().top );
-        },
-
-        // ----------
-        filterStoryNodes: function(filterKey) {
-            _.each(this._cityNodes, function(v, i) {
-                if (!v.story) {
-                    return;
-                }
-
-                v.disabled(filterKey && filterKey !== v.story.category);
-            });
-        },
-
-        // ----------
-        transition: function(args) {
-            var self = this;
-
-            args = args || {};
-
-            if (this.transitioning) {
-                zot.fire(args.onComplete);
-                return;
-            }
-
-            this.transitioning = true;
-
-            this._mode++;
-            if (this._mode >= 2) {
-                this._mode = 0;
-            }
-
-            var bigNodes = _.filter(this._cityNodes, function(v, i) {
-                return !!v.story;
-            });
-
-            var launch = function(config) {
-                _.each(bigNodes, function(v, i) {
-                    setTimeout(function() {
-                        new TWEEN.Tween(config.from)
-                            .to(config.to, 1000)
-                            .easing(TWEEN.Easing.Cubic.InOut)
-                            .onUpdate(function() {
-                                var tween = this;
-                                var vector = GlobeMain.coordToVector(v.lat, v.lng, tween.altitude);
-                                v.altitude = tween.altitude;
-                                v.node.position.x = vector.x;
-                                v.node.position.y = vector.y;
-                                v.node.position.z = vector.z;
-                                v.node.scale.set(tween.nodeScale, tween.nodeScale, tween.nodeScale);
-
-                                v.glow.position.x = vector.x;
-                                v.glow.position.y = vector.y;
-                                v.glow.position.z = vector.z;
-                                v.glow.scale.set(tween.glowScale, tween.glowScale, tween.glowScale);
-                            })
-                            .start();
-                    }, Math.floor(Math.random() * 1000));
-                });
-
-                setTimeout(config.onComplete, 2000);
-            };
-
-            if (this._mode === 0) {
-                launch({
-                    from: {
-                        altitude: this._topAltitude,
-                        nodeScale: this._storyNodeScale,
-                        glowScale: this._storyGlowScale
-                    },
-                    to: {
-                        altitude: this._bottomAltitude,
-                        nodeScale: 1,
-                        glowScale: 1
-                    },
-                    onComplete: function() {
-                        self.animateLinesOn();
-                        setTimeout(function() {
-                            self.transitioning = false;
-                            zot.fire(args.onComplete);
-                        }, 2000);
-                    }
-                });
-            } else if (this._mode === 1) {
-                this.animateLinesOff(function() {
-                    launch({
-                        from: {
-                            altitude: self._bottomAltitude,
-                            nodeScale: 1,
-                            glowScale: 1
-                        },
-                        to: {
-                            altitude: self._topAltitude,
-                            nodeScale: self._storyNodeScale,
-                            glowScale: self._storyGlowScale
-                        },
-                        onComplete: function() {
-                            self.transitioning = false;
-                            zot.fire(args.onComplete);
-                        }
-                    });
-                });
-            }
         },
 
         // ----------
@@ -413,9 +272,7 @@
                         v.animateOn();
                     };
 
-                    if (self._mode === 0) {
-                        animate();
-                    }
+                    animate();
                 }, i * 50);
             });
         },

@@ -9,23 +9,6 @@ var GlobeMain = {
         var offsetY = document.getElementsByClassName("map-container")[0].offsetTop + document.getElementsByClassName("navbar-brand-container")[0].clientHeight;
         document.getElementsByClassName('map-container')[0].style.height = window.innerHeight - offsetY + "px";
 
-        var points = [];
-        _.each(flightPaths, function(v, i) {
-            points.push({
-                lat: v.origin.lat,
-                lng: v.origin.lon
-            });
-            
-            points.push({
-                lat: v.destination.lat,
-                lng: v.destination.lon
-            });
-        });
-        
-        points = _.uniqBy(points, function(v, i) {
-            return '' + v.lat + 'x' + v.lng;
-        });
-        
         var lines = _.uniqBy(flightPaths, function(v, i) {
             return '' + v.origin.lat + 'x' + v.origin.lon + 'x' +
                 v.destination.lat + 'x' + v.destination.lon;
@@ -42,6 +25,16 @@ var GlobeMain = {
                     lng: parseFloat(v.destination.lon)
                 }
             };
+        });
+        
+        var points = [];
+        _.each(lines, function(v, i) {
+            points.push(v.start);
+            points.push(v.end);
+        });
+        
+        points = _.uniqBy(points, function(v, i) {
+            return '' + v.lat + 'x' + v.lng;
         });
         
         this.globeView = new GlobeMain.GlobeView({
