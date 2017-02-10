@@ -132,6 +132,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName;
 
+            var oLatField = dataSourceDescription.fe_views.views.globe.originLatitude,
+                oLonField = dataSourceDescription.fe_views.views.globe.originLongitude,
+                dLatField = dataSourceDescription.fe_views.views.globe.destinationLatitude,
+                dLonField = dataSourceDescription.fe_views.views.globe.destinationLongitude;
+
+            var flightPaths = [];
+
             var batch = new Batch();
             batch.concurrency(1);
 
@@ -191,6 +198,29 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //     // Update query to reflect what is needed in globe view
             //     processedRowObjects_mongooseModel.find({}).limit(100).exec(doneFn);
             // });
+
+            batch.push(function (done) {
+                var doneFn = function (err, _flightpaths) {
+                    if (err) return done(err);
+
+                    if (_flightpaths == undefined || _flightpaths == null) _flightpaths = [];
+
+                    _flightpaths.forEach(function (el, i, arr) {
+                        flightPaths.push({
+                            origin: {
+                                lat: el.rowParams[oLatField],
+                                lon: el.rowParams[oLonField]
+                            },
+                            destination: {
+                                lat: el.rowParams[dLatField],
+                                lon: el.rowParams[dLonField]
+                            }
+                        });
+                    });
+                    done();
+                };
+                processedRowObjects_mongooseModel.find({}).exec(doneFn);
+            });
             
 
             var user = null;
@@ -228,6 +258,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                     view_description: dataSourceDescription.fe_views.views.globe.description ? dataSourceDescription.fe_views.views.globe.description : "",
+                    //
+                    flightPathsCollection: flightPaths,
                     //
                     displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
                     //

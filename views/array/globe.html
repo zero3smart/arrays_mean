@@ -151,7 +151,8 @@
             {% endif %}
 
             <script type="text/javascript">
-            // extract variables needed in /javascripts/globe.js
+                var flightPaths = {{ flightPathsCollection | dump | safe }};
+                // extract variables needed in /javascripts/globe.js
             </script>
 
             <div class="array-content">
