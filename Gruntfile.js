@@ -71,7 +71,7 @@ module.exports = function (grunt) {
                 src: [
                     'jquery/dist/jquery.min.js',
                     'd3/d3.js',
-                    'sharrre/jquery.sharrre.js',
+                    'sharrre/jquery.sharrre.min.js',
                     'scrollmagic/scrollmagic/minified/ScrollMagic.min.js',
                     'urijs/src/URI.min.js',
                     'lodash/dist/**',
