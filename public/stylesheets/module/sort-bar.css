@@ -20,7 +20,7 @@
 
 @media (min-width: 768px) {
 	.sort-bar {
-		padding-top: 30px;
+		/*padding-top: 30px;*/
 		padding-bottom: 25px;
 	}
 }
