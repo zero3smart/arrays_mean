@@ -37,7 +37,7 @@ var _mountRoutes_ensureWWW = function (app) {
         var protocol = req.header('x-forwarded-proto') == 'https' ? 'https' : 'http';
         if (host.match(/^www\..*/i)) {
             next();
-        } else {
+            } else {
             return res.redirect(301, protocol + "://www." + host + req.originalUrl);
 
         }

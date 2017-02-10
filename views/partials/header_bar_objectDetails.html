@@ -71,7 +71,11 @@
               <a class="w-nav-link" href="/auth/login">Log In</a>
           </li>
           <li class="signup-container">
+              {% if env.NODE_ENV == 'production' %}
+              <a class="nav-link-signup w-nav-link" href="https://www.arrays.co/signup">Sign Up</a>
+              {% else %}
               <a class="nav-link-signup w-nav-link" href="/auth/login">Sign Up</a>
+              {% endif %}
           </li>
 
         </ul>
@@ -92,7 +96,11 @@
 
 
         <a class="w-mobile-link" href="/auth/login">Log In</a>
+        {% if env.NODE_ENV == 'production' %}
+        <a class="w-mobile-link" href="https://www.arrays.co/signup">Sign Up</a>
+        {% else %}
         <a class="w-mobile-link" href="/auth/login">Sign Up</a>
+        {% endif %}
       </nav>
     </div>
 
@@ -125,11 +133,9 @@
                             <span class="user-initial">{{user.firstName.slice(0,1).toUpperCase()}}</span>
                         </a>
                         <ul class="dropdown-menu">
-                            {% if env.NODE_ENV != 'production' %}
                             <li class="background-color-brand-hover"><a href="/dashboard">Account Settings</a></li>
                             <li class="background-color-brand-hover"><a class="pointer" id="logout">Log Out</a></li>
                             <li role="separator" class="divider"></li>
-                            {% endif %}
                             <li class="background-color-brand-hover"><a href="{{ galleryURL }}">{{ arrayTitle }}</a>
                             </li>
                             <li class="background-color-brand-hover"><a href="#" class="share-link">Share</a></li>
