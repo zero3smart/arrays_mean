@@ -337,9 +337,9 @@ angular.module('arraysApp')
 
                     if (res.statusCode === 200 || res.statusCode === 201) {
                         if ($scope.$parent.team.subscription) {
-                            $scope.$parent.team.subscription.state = 'in_trial';
+                            $scope.$parent.team.subscription.state = 'active';
                         } else {
-                            $scope.$parent.team.subscription = { state: 'in_trial'};
+                            $scope.$parent.team.subscription = { state: 'active'};
                         }
                         $window.sessionStorage.setItem('team', JSON.stringify($scope.$parent.team));
                         $state.go('dashboard.account.billing');

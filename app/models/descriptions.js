@@ -475,7 +475,7 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                                     foundUser._viewers.indexOf(datasourceDescription._id) >= 0 ||
                                     datasourceDescription.isPublic
                                 ) && ( 
-                                    subscription.state === 'in_trial' || subscription.state === 'active' || datasourceDescription._team.superTeam == true
+                                    subscription.state === 'active' || subscription.state === 'canceled' || datasourceDescription._team.superTeam == true
                                 )
                             )
                         ) {
@@ -488,7 +488,7 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
 
                 
     
-                if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.superTeam !== true) return fn();
+                if (subscription.state != 'active' && subscription.state != 'canceled' && datasourceDescription._team.superTeam !== true) return fn();
 
 
                 if (datasourceDescription.isPublic) return fn(null, datasourceDescription);
