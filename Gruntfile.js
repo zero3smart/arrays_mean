@@ -42,13 +42,6 @@ module.exports = function (grunt) {
                 },
                 tasks: ['postcss']
             },
-            sass: {
-                files: ['public/stylesheets/scss/**/*.scss'],
-                options: {
-                    livereload: true
-                },
-                tasks: ['sass', 'postcss']
-            },
             js: {
                 files: ['public/javascripts/**/*.js', '!public/javascripts/main.min.js', '!public/vendors/**/*.js'],
                 options: {
