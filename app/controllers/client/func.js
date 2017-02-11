@@ -737,10 +737,15 @@ var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callbac
             });
         });
 
+
+
         finalizedUniqueFieldValuesByFieldName.sort(function(a, b) {
             var nameA = a.name;
             var nameB = b.name;
+
             if (dataSourceDescription.fe_displayTitleOverrides) {
+             
+           
                 if (dataSourceDescription.fe_displayTitleOverrides[nameA])
                     nameA = dataSourceDescription.fe_displayTitleOverrides[nameA];
                 if (dataSourceDescription.fe_displayTitleOverrides[nameB])
@@ -760,6 +765,7 @@ var _topUniqueFieldValuesForFiltering = function (dataSourceDescription, callbac
             // names must be equal
             return 0;
         });
+
         //
         callback(null, finalizedUniqueFieldValuesByFieldName);
     });

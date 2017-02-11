@@ -447,7 +447,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     groupBy_realColumnName: groupBy_realColumnName,
                     groupedResultsLimit: groupedResultsLimit,
                     groupByDateFormat: groupByDateFormat,
-                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
+                    displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
                     //
                     sortBy: sortBy,
                     sortDir: sortDir,
