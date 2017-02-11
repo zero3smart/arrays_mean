@@ -2,3 +2,6 @@
 	path = user/rhodium-group
 	url = https://0b322b878919da3bb6e63091dac66168f7324d08:x-oauth-basic@github.com/schemadesign/rhodium_arrays.git
 
+[submodule "user/atlas"]
+	path = user/atlas
+	url = https://0b322b878919da3bb6e63091dac66168f7324d08:x-oauth-basic@github.com/schemadesign/atlas_arrays.git

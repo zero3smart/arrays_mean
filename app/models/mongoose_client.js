@@ -109,6 +109,8 @@ function _dropColletion(collection, cb) {
 exports.dropCollection = _dropColletion;
 
 
+
+
 function checkIfCollectionExists(collectionName, fn) {
     connection.db.listCollections({name: collectionName})
         .next(function (err, collinfo) {

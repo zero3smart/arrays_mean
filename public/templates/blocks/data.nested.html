@@ -130,6 +130,19 @@
                                    ng-model="dataset.fe_nestedObject.prefix" ng-trim="false">
                         </md-input-container>
 
+
+                         <md-input-container class="md-block" flex-gt-sm>
+                            <label>Nesting Key</label>
+                              <md-select required name="valueOverrideField_{{$index}}" ng-model="dataset.fe_nestedObject.nestingKey">
+                                <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
+                                    {{column.name}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+
+
+
+
                     </md-content>
                 </md-tab>
 
@@ -258,6 +271,18 @@
                             <input type="text" name="prefix"
                                    ng-model="datasource.fe_nestedObject.prefix" ng-trim="false">
                         </md-input-container>
+
+
+                        <md-input-container class="md-block" flex-gt-sm>
+                            <label>Nesting Key</label>
+                              <md-select required name="valueOverrideField_{{$index}}" ng-model="datasource.fe_nestedObject.nestingKey">
+                                <md-option ng-repeat="column in dataset.columns" value="{{column.name}}">
+                                    {{column.name}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+
+
 
                     </md-content>
                 </md-tab>

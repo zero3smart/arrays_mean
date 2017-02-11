@@ -5,7 +5,7 @@ angular.module('arraysApp')
            
             //-- helper functions ---//
 
-             function makeFieldValuePairs(obj) {
+            function makeFieldValuePairs(obj) {
                 var fieldValuePairs  = [], result;
                 for (var p in obj) {
                     if( obj.hasOwnProperty(p) ) {
@@ -285,6 +285,7 @@ angular.module('arraysApp')
 
             //this block has to come first, do not move
 
+
             if (dataset.jobId !== 0) {
                 $scope.inProgress = true;
 
@@ -299,7 +300,7 @@ angular.module('arraysApp')
             $scope.primaryAction.text = 'View Your Array';
             $scope.$watch('dirty', function(dirty) {
                 $scope.primaryAction.disabled = dirty;
-                if(dirty && !$scope.inProgress) {
+                if(dirty && !$scope.inProgress && !dataset.connection) {
                     $scope.importData();
                 }
             });
@@ -354,9 +355,9 @@ angular.module('arraysApp')
 
 
 
-            $scope.dirty = $scope.$parent.$parent.dataset.dirty;
+            $scope.dirty = dataset.connection? 0: $scope.$parent.$parent.dataset.dirty;
 
-            $scope.imported = $scope.$parent.$parent.dataset.imported;
+            $scope.imported =  dataset.connection? true: $scope.$parent.$parent.dataset.imported;
 
 
 
@@ -412,9 +413,13 @@ angular.module('arraysApp')
 
             $scope.importData = function() {
                 // datasourceIndex = -1;
-                $scope.inProgress = true;
-                $scope.jobs = [];
-                importDatasource($scope.$parent.$parent.dataset);
+                if (!$scope.$parent.$parent.dataset.connection) {
+                    $scope.inProgress = true;
+                    $scope.jobs = [];
+                    importDatasource($scope.$parent.$parent.dataset);
+
+                }
+              
             };
         }
     ]);

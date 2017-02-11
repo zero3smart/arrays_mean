@@ -891,6 +891,7 @@ function _filterObjFromQueryParams(queryParams) {
         if (reservedKeys.indexOf(key) !== -1) continue;
 
         if (queryParams[key] != '') {
+        
             filterObj[key] = queryParams[key];
         }
     }

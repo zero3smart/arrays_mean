@@ -95,8 +95,6 @@ Temporary Items
 ### Espresso ###
 *.esproj
 
-## atlas folder for now
-atlas/
 
 ### JSHint ###
 *.jshintrc

@@ -63,7 +63,12 @@ View.getAllCustomViews(function(err,customViews) {
 
             router.get('/:source_key/getData', ensureAuthorized,function(req,res,next) {
 
+            
+
                 var team = req.subdomains[0];
+                if (!team) {
+                    team = view.name;
+                }
                 var controller = require('../../user/' + team + '/src/' + view.name);
 
                 controller.BindData(req,function(err,bindData) {
@@ -86,7 +91,7 @@ router.get(/(\/[a-z_\d-]+)(-r\d)\/([0-9a-f]{24})/, ensureAuthorized, function (r
 
 
     var source_key = req.params[0] + req.params[1];
-    source_key = req.subdomains[0] + '-' + source_key.substring(1);
+    source_key = process.env.NODE_ENV !== 'enterprise' ? req.subdomains[0] + '-' + source_key.substring(1) : source_key.substring(1);
 
     if (source_key == null || typeof source_key === 'undefined' || source_key == "") {
         return res.status(403).send("Bad Request - source_key missing");
