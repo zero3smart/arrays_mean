@@ -11,7 +11,7 @@ var config = require('../config');
 var func = require('../func');
 var User = require('../../../models/users');
 //
-module.exports.BindData = function (req, urlQuery, callback) {
+module.exports.BindData = function(req, urlQuery, callback) {
     var self = this;
     // urlQuery keys:
     // source_key
@@ -26,11 +26,11 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
 
     importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
-        .then(function (dataSourceDescription) {
+        .then(function(dataSourceDescription) {
             // var collectionPKey = dataSourceDescription._id
 
             if (dataSourceDescription == null || typeof dataSourceDescription === 'undefined') {
-                callback(new Error("No data source with that source pkey " + source_pKey), null);
+                callback(new Error('No data source with that source pkey ' + source_pKey), null);
 
                 return;
             }
@@ -47,7 +47,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
             var page = urlQuery.page;
             var pageNumber = page ? page : 1;
             var skipNResults = config.timelineGroups * (Math.max(pageNumber, 1) - 1);
-            var limitToNResults = config.timelineGroups;
             //
             var groupBy = urlQuery.groupBy; // the human readable col name - real col name derived below
 
@@ -57,7 +56,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // var defaultGroupByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName] ||
             // dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
 
-            var groupBy_realColumnName = groupBy? groupBy : dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
+            var groupBy_realColumnName = groupBy ? groupBy : dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
 
             // importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
             // dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
@@ -68,14 +67,14 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var sortBy = urlQuery.sortBy; // the human readable col name - real col name derived below
             var sortDir = urlQuery.sortDir;
-            var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
+            // var sortDirection = sortDir ? sortDir == 'Ascending' ? 1 : -1 : 1;
             var defaultSortByColumnName_humanReadable = dataSourceDescription.fe_displayTitleOverrides[dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName] || dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName;
 
-            var sortBy_realColumnName = sortBy? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy,dataSourceDescription) :
-            dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName
+            var sortBy_realColumnName = sortBy ? importedDataPreparation.RealColumnNameFromHumanReadableColumnName(sortBy, dataSourceDescription) :
+                dataSourceDescription.fe_views.views.timeline.defaultSortByColumnName;
 
             var hasThumbs = dataSourceDescription.fe_designatedFields.medThumbImageURL ? true : false;
-            var routePath_base = "/" + source_pKey + "/timeline";
+            var routePath_base = '/' + source_pKey + '/timeline';
             var sourceDocURL = dataSourceDescription.urls ? dataSourceDescription.urls.length > 0 ? dataSourceDescription.urls[0] : null : null;
             if (urlQuery.embed == 'true') routePath_base += '?embed=true';
             //
@@ -86,14 +85,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
             //
             var searchCol = urlQuery.searchCol;
             var searchQ = urlQuery.searchQ;
-            var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != "" // Not only a column
-                && typeof searchQ !== 'undefined' && searchQ != null && searchQ != "";  // but a search query
+            var isSearchActive = typeof searchCol !== 'undefined' && searchCol != null && searchCol != '' // Not only a column
+                && typeof searchQ !== 'undefined' && searchQ != null && searchQ != ''; // but a search query
             //
             //
             var wholeFilteredSet_aggregationOperators = [];
 
+            var _orErrDesc;
             if (isSearchActive) {
-                var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+                _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
                 if (typeof _orErrDesc.err !== 'undefined') {
                     callback(_orErrDesc.err, null);
 
@@ -102,7 +102,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
             }
             if (isFilterActive) {
-                var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+                _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
                 if (typeof _orErrDesc.err !== 'undefined') {
                     callback(_orErrDesc.err, null);
 
@@ -111,34 +111,34 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 wholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat(_orErrDesc.matchOps);
             }
 
-            var groupBySortFieldPath = "results.rowParams." + sortBy_realColumnName
+            var groupBySortFieldPath = 'results.rowParams.' + sortBy_realColumnName;
             var groupByColumnName = groupBy ? groupBy : defaultGroupByColumnName_humanReadable;
             var groupByDuration;
 
             switch (groupByColumnName) {
-                case 'Decade':
-                    groupByDuration = moment.duration(10, 'years').asMilliseconds();
-                    groupByDateFormat = "YYYY";
-                    break;
+            case 'Decade':
+                groupByDuration = moment.duration(10, 'years').asMilliseconds();
+                groupByDateFormat = 'YYYY';
+                break;
 
-                case 'Year':
-                    groupByDuration = moment.duration(1, 'years').asMilliseconds();
-                    groupByDateFormat = "YYYY";
-                    break;
+            case 'Year':
+                groupByDuration = moment.duration(1, 'years').asMilliseconds();
+                groupByDateFormat = 'YYYY';
+                break;
 
-                case 'Month':
-                    groupByDuration = moment.duration(1, 'months').asMilliseconds();
-                    groupByDateFormat = "MMMM YYYY";
-                    break;
+            case 'Month':
+                groupByDuration = moment.duration(1, 'months').asMilliseconds();
+                groupByDateFormat = 'MMMM YYYY';
+                break;
 
-                case 'Day':
-                    groupByDuration = moment.duration(1, 'days').asMilliseconds();
-                    groupByDateFormat = "MMMM Do YYYY";
-                    break;
+            case 'Day':
+                groupByDuration = moment.duration(1, 'days').asMilliseconds();
+                groupByDateFormat = 'MMMM Do YYYY';
+                break;
 
-                default:
-                    groupByDuration = moment.duration(1, 'years').asMilliseconds();
-                    groupByDateFormat = "YYYY";
+            default:
+                groupByDuration = moment.duration(1, 'years').asMilliseconds();
+                groupByDateFormat = 'YYYY';
             }
 
             var sourceDoc, sampleDoc, uniqueFieldValuesByFieldName, nonpagedCount = 0, groupedResults = [];
@@ -147,8 +147,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
             batch.concurrency(1);
 
             // Obtain source document
-            batch.push(function (done) {
-                raw_source_documents.Model.findOne({primaryKey: dataSourceDescription._id}, function (err, _sourceDoc) {
+            batch.push(function(done) {
+                raw_source_documents.Model.findOne({ primaryKey: dataSourceDescription._id }, function(err, _sourceDoc) {
                     if (err) {
                         console.log("error obtaining source document");
                         return done(err);
@@ -186,32 +186,31 @@ module.exports.BindData = function (req, urlQuery, callback) {
             });
 
             // Count whole set
-            batch.push(function (done) {
-                var countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([
-                    { // Count
-                        $group: {
-                            // _id: 1,
-                            _id: {
-                                "$subtract": [
-                                    {"$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")]},
-                                    {
-                                        "$mod": [
-                                            {"$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")]},
-                                            groupByDuration
-                                        ]
-                                    }
-                                ]
-                            }
+            batch.push(function(done) {
+                var countWholeFilteredSet_aggregationOperators = wholeFilteredSet_aggregationOperators.concat([{ // Count
+                    $group: {
+                        // _id: 1,
+                        _id: {
+                            "$subtract": [
+                                { "$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")] }, {
+                                    "$mod": [
+                                        { "$subtract": ["$" + "rowParams." + sortBy_realColumnName, new Date("1970-01-01")] },
+                                        groupByDuration
+                                    ]
+                                }
+                            ]
                         }
                     }
-                ]);
+                }]);
 
-                var doneFn = function (err, results) {
+                var doneFn = function(err, results) {
                     if (err) {
-                        console.log("eroor counting whole set");
+                        console.log('eroor counting whole set');
                         return done(err);
                     }
-                    if (results == undefined || results == null) { // 0
+
+                    if (results == undefined || results == null) {
+                        // 0
                     } else {
                         nonpagedCount = results.length;
                     }
@@ -219,20 +218,21 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     done();
                 };
 
-                processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true)/* or we will hit mem limit on some pages*/.exec(doneFn);
+                processedRowObjects_mongooseModel.aggregate(countWholeFilteredSet_aggregationOperators).allowDiskUse(true) /* or we will hit mem limit on some pages*/ .exec(doneFn);
             });
 
             // Obtain Grouped results
             batch.push(function (done) {
                 var aggregationOperators = [];
+                var _orErrDesc;
                 if (isSearchActive) {
-                    var _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
+                    _orErrDesc = func.activeSearch_matchOp_orErrDescription(dataSourceDescription, searchCol, searchQ);
                     if (_orErrDesc.err) return done(_orErrDesc.err);
 
                     aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
                 }
                 if (isFilterActive) { // rules out undefined filterCol
-                    var _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
+                    _orErrDesc = func.activeFilter_matchOp_orErrDescription_fromMultiFilter(dataSourceDescription, filterObj);
                     if (_orErrDesc.err) return done(_orErrDesc.err, null);
 
                     aggregationOperators = aggregationOperators.concat(_orErrDesc.matchOps);
@@ -251,7 +251,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 // Exclude the nested pages fields to reduce the amount of data returned
                 var rowParamsfields = Object.keys(sampleDoc.rowParams);
-                rowParamsfields.forEach(function (rowParamsField) {
+                rowParamsfields.forEach(function(rowParamsField) {
                     if (rowParamsField == sortBy_realColumnName || dataSourceDescription.fe_nestedObject == null || rowParamsField.indexOf(dataSourceDescription.fe_nestedObject.prefix) == -1) {
                         projects['$project']['rowParams.' + rowParamsField] = 1;
                     }
@@ -306,18 +306,18 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     ]);
 
 
-                var doneFn = function (err, _groupedResults) {
+                var doneFn = function(err, _groupedResults) {
                     if (err) {
                         console.log("error obtaining grouped results");
                         return done(err);
                     }
-              
+
 
                     if (_groupedResults == undefined || _groupedResults == null) _groupedResults = [];
 
-                    _groupedResults.forEach(function (el, i, arr) {
+                    _groupedResults.forEach(function(el, i, arr) {
                         var results = [];
-                        el.results.forEach(function (el2, i2) {
+                        el.results.forEach(function(el2, i2) {
                             var displayableVal = func.ValueToExcludeByOriginalKey(
                                 el2.rowParams[sortBy_realColumnName], dataSourceDescription, sortBy_realColumnName, 'timeline');
 
@@ -339,9 +339,9 @@ module.exports.BindData = function (req, urlQuery, callback) {
             if (dataSourceDescription.fe_views.views.timeline.galleryItemConditionsForIconWhenMissingImage) {
                 var cond = dataSourceDescription.fe_views.views.timeline.galleryItemConditionsForIconWhenMissingImage;
 
-                var checkConditionAndApplyClasses = function (conditions, value,multiple) {
+                var checkConditionAndApplyClasses = function(conditions, value, multiple) {
 
-                    if (typeof value == 'undefined' || value == "" || value == null) {
+                    if (typeof value == 'undefined' || value == '' || value == null) {
                         return '<span class="icon-tile-null"></span>';
                     }
                     for (var i = 0; i < conditions.length; i++) {
@@ -351,37 +351,34 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                             if (conditions[i].applyIconFromUrl) {
                                 if (multiple) {
-                                    return "<img class='icon-tile category-icon-2' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
+                                    return '<img class="icon-tile category-icon-2" src="https://' + process.env.AWS_S3_BUCKET + '.s3.amazonaws.com/' + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + '">';
                                 }
 
-                                return "<img class='icon-tile' src='https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + "'>"
+                                return '<img class="icon-tile" src="https://' + process.env.AWS_S3_BUCKET + '.s3.amazonaws.com/' + dataSourceDescription._team.subdomain + conditions[i].applyIconFromUrl + '">';
                             } else if (conditions[i].applyClass) {
                                 // hard coded color-gender , as it is the only default icon category for now
-                                return "<span class='" + conditions[i].applyClass + " color-gender'></span>";
+                                return '<span class="' + conditions[i].applyClass + ' color-gender"></span>';
                             }
-                           
+
                         }
                     }
                     return null;
                 };
 
-                var galleryItem_htmlWhenMissingImage = function (rowObject) {
+
+                galleryItem_htmlWhenMissingImage = function(rowObject) {
                     var fieldName = cond.field;
                     var conditions = cond.conditions;
-                    var htmlElem = "";
+                    var htmlElem = '';
 
-
-                    var fieldValue = rowObject["rowParams"][fieldName];
-
+                    var fieldValue = rowObject['rowParams'][fieldName];
 
                     if (Array.isArray(fieldValue) === true) {
-
-
                         for (var i = 0; i < fieldValue.length; i++) {
-                            htmlElem += checkConditionAndApplyClasses(conditions, fieldValue[i],true);
+                            htmlElem += checkConditionAndApplyClasses(conditions, fieldValue[i], true);
                         }
 
-                    } else if (typeof fieldValue == "string") {
+                    } else if (typeof fieldValue == 'string') {
                         htmlElem = checkConditionAndApplyClasses(conditions, fieldValue);
 
                     }
@@ -389,14 +386,15 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 };
             }
 
+
             var returnAbsURLorBuildURL = function(url) {
-                if (url.slice(0, 4) == "http") {
-                    return url
+                if (url.slice(0, 4) == 'http') {
+                    return url;
                 } else {
-                    urlToReturn = "https://" + process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/" + dataSourceDescription._team.subdomain + "/datasets/" + dataSourceDescription._id + "/assets/images/" + url
-                    return urlToReturn
+                    var urlToReturn = 'https://' + process.env.AWS_S3_BUCKET + '.s3.amazonaws.com/' + dataSourceDescription._team.subdomain + '/datasets/' + dataSourceDescription._id + '/assets/images/' + url;
+                    return urlToReturn;
                 }
-            }
+            };
 
 
             var user = null;
@@ -409,19 +407,17 @@ module.exports.BindData = function (req, urlQuery, callback) {
                         }
                         user = doc;
                         done();
-                    })
+                    });
                 } else {
                     done();
                 }
             });
 
+
             batch.end(function (err) {
                 if (err) return callback(err);
 
-           
-
-                var data =
-                {
+                var data = {
                     env: process.env,
 
                     user: user,
@@ -434,7 +430,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDoc: sourceDoc,
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
-                    view_description: dataSourceDescription.fe_views.views.timeline.description ? dataSourceDescription.fe_views.views.timeline.description : "",
+                    view_description: dataSourceDescription.fe_views.views.timeline.description ? dataSourceDescription.fe_views.views.timeline.description : '',
                     viewAllLinkTo: dataSourceDescription.fe_views.views.gallery ? 'gallery' : 'timeline',
                     //
                     pageSize: config.timelineGroups < nonpagedCount ? config.pageSize : nonpagedCount,
@@ -483,8 +479,8 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                     tooltipDateFormat: dataSourceDescription.fe_views.views.timeline.tooltipDateFormat || null,
 
-                    aws_bucket_for_url: process.env.AWS_S3_BUCKET + ".s3.amazonaws.com/",
-                    folder: "/assets/images/",
+                    aws_bucket_for_url: process.env.AWS_S3_BUCKET + '.s3.amazonaws.com/',
+                    folder: '/assets/images/',
                     uid: dataSourceDescription.uid,
                     importRevision: dataSourceDescription.importRevision,
                     returnAbsURLorBuildURL: returnAbsURLorBuildURL
@@ -493,8 +489,6 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                 callback(err, data);
 
-
             });
-        })
-
+        });
 };
