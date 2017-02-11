@@ -27,9 +27,12 @@
             <form name="quantity_form" novalidate>
                 <md-input-container>
                     <label>Visualizations</label>
-                    <input name="datasets" required type="number" min="1" ng-min="1" step="1" ng-model="subscription.quantity._" />
-                    <div ng-messages="quantity_form.datasets.$error">
-                        <div ng-message="min">Please enter a number greater than 0.</div>
+                    <input name="datasets" required type="number" min="{{ datasetsQuantity }}" ng-min="{{ datasetsQuantity }}" step="1" ng-model="subscription.quantity._" />
+                    <div ng-messages="quantity_form.datasets.$error" ng-if="datasetsQuantity <= 1">
+                        <div ng-message="min">Must be greater than 0.</div>
+                    </div>
+                    <div ng-messages="quantity_form.datasets.$error" ng-if="datasetsQuantity > 1">
+                        <div ng-message="min">Cannot be less than the number of visualizations on your team.</div>
                     </div>
                 </md-input-container>
 

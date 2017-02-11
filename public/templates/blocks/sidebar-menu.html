@@ -7,32 +7,32 @@
         <a ui-sref="dashboard.account.profile" role="button">Account Settings</a>
     </li>
 
-    <li ng-if="env.node_env !== 'enterprise' && (user.role=='admin' || user.role=='superAdmin' || user._team.length > 1 ) && (team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active')" ng-class="{'active': currentMenuItem === 'teams'}">
+    <li ng-if="env.node_env !== 'enterprise' && (user.role=='admin' || user.role=='superAdmin' || user._team.length > 1 ) && (team.superTeam || team.subscription.state=='active' || team.subscription.state=='canceled')" ng-class="{'active': currentMenuItem === 'teams'}">
         <a ui-sref="dashboard.teams" role="button">Teams</a>
     </li>
 
-    <hr ng-if="(team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active')">
+    <hr ng-if="(team.superTeam || team.subscription.state=='active' || team.subscription.state=='canceled')">
 
-    <li ng-if="env.node_env !== 'enterprise' && (team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active')" class="sidebar-label">
+    <li ng-if="env.node_env !== 'enterprise' && (team.superTeam || team.subscription.state=='active' || team.subscription.state=='canceled')" class="sidebar-label">
         <a class="sidebar-label">{{team.subdomain + '.' + env.host}}</a>
     </li>
     <li ng-if="env.node_env == 'enterprise'" class="sidebar-label">
         <a class="sidebar-label">{{host}}</a>
     </li>
 
-    <li ng-if="(user.role=='admin' || user.role=='superAdmin') && (team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active')" ng-class="{'active': currentMenuItem === 'team'}">
+    <li ng-if="(user.role=='admin' || user.role=='superAdmin') && (team.superTeam || team.subscription.state=='active' || team.subscription.state=='canceled')" ng-class="{'active': currentMenuItem === 'team'}">
         <a ui-sref="dashboard.team.settings" role="button">Team Settings</a>
     </li>
 
-    <li ng-if="((user.role=='admin' || user.role=='editor') && ( team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active')) || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'dataset'}">
+    <li ng-if="((user.role=='admin' || user.role=='editor') && ( team.superTeam || team.subscription.state=='active' || team.subscription.state=='canceled')) || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'dataset'}">
         <a ui-sref="dashboard.dataset.list" role="button">Visualizations</a>
     </li>
 
-    <li ng-if="((user.role=='admin' || user.role=='editor') && (team.superTeam  || team.subscription.state=='in_trial' || team.subscription.state=='active')) || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'user'}">
+    <li ng-if="((user.role=='admin' || user.role=='editor') && (team.superTeam  || team.subscription.state=='active' || team.subscription.state=='canceled')) || user.role=='superAdmin'" ng-class="{'active': currentMenuItem === 'user'}">
         <a ui-sref="dashboard.user.list" role="button">Users</a>
     </li>
 
-    <li ng-if="team.superTeam || team.subscription.state=='in_trial' || team.subscription.state=='active' || user.role=='superAdmin'" class="sidebar-link">
+    <li ng-if="team.superTeam || team.subscription.state=='active' || team.subscription.state=='canceled' || user.role=='superAdmin'" class="sidebar-link">
         <span>
             <a href="{{subdomain}}" target="_blank" ng-click="updateSubdomain()">View Website</a>
         </span>
