@@ -35,7 +35,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                 return;
             }
 
-            if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.timeline != null && dataSourceDescription.fe_views.timeline === false) {
+            if (typeof dataSourceDescription.fe_views !== 'undefined' && dataSourceDescription.fe_views.views !== 'undefined' && dataSourceDescription.fe_views.views.timeline != null && dataSourceDescription.fe_views.views.timeline === false) {
                 callback(new Error('View doesn\'t exist for dataset. UID? urlQuery: ' + JSON.stringify(urlQuery, null, '\t')), null);
 
                 return;
