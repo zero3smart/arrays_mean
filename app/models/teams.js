@@ -190,8 +190,7 @@ team.GetTeamBySubdomain = function(req, fn) {
 
     } else { //get published datasets
 
-        getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [{ 'superTeam': true }, { 'subscription.state': 'active' }, { 'subscription.state': 'canceled' }] }, { isPublic: true, imported: true }, fn);
-
+       getPublishedDataset(fn);
     }
 
 };
