@@ -103,11 +103,11 @@
                 <span class="btn-label">Start Trial (Monthly)</span>
             </md-button>
 
-            <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard" ng-click="updateBillingInfo('pro-annual')" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
+            <md-button ng-if="billing.payment_type === 'credit_card'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo('pro-annual')" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_card.$invalid">
                 <span class="btn-label">Start Trial (Annual)</span>
             </md-button>
 
-            <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard" ng-click="updateBillingInfo('pro-annual')" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
+            <md-button ng-if="billing.payment_type === 'bank_account'" class="md-dashboard confirm md-button" ng-click="updateBillingInfo('pro-annual')" ng-disabled="billing_info.billing_address.$invalid || billing_info.payment_bank.$invalid">
                 <span class="btn-label">Start Trial (Annual)</span>
             </md-button>
         </div>

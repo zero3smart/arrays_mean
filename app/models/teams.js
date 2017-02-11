@@ -93,21 +93,27 @@ team.GetTeamsAndDatasources = function(userId, fn) {
                     var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = { _team: { $ne: myTeamId }, isPublic: true };
                     var myTeam = { _team: foundUser.defaultLoginTeam._id };
+
                     getTeamsAndPopulateDatasetWithQuery({ $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] },
                      { $and: [{ $or: [myTeam, otherTeams] }, 
                      {$or:[importedDataset,connectedDataset] } ] }, 
                      fn);
 
+
                 } else { //get published and unpublished dataset if currentUser is one of the viewers or editiors
                     var myTeamId = foundUser.defaultLoginTeam._id;
                     var otherTeams = { _team: { $ne: myTeamId }, isPublic: true };
+
                     var myTeam = {_team: foundUser.defaultLoginTeam._id, $or: [{ _id: {$in: foundUser._editors} }, {_id: { $in: foundUser._viewers} }] }
                     getTeamsAndPopulateDatasetWithQuery({ $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] }, { $and: [{ $or: [myTeam, otherTeams] }, {$or:[importedDataset,connectedDataset] } ] }, fn);
+
                 }
             });
 
     } else {
+
         nonLoginUserQuery(fn);
+
     }
 
 };
@@ -141,8 +147,8 @@ team.GetTeamBySubdomain = function(req, fn) {
             .populate('_team')
             .populate('defaultLoginTeam')
             .exec(function(err, foundUser) {
-                for(var i = 0; i < foundUser._team.length; i++) {
-                    if(team_key === foundUser._team[i].subdomain) {
+                for (var i = 0; i < foundUser._team.length; i++) {
+                    if (team_key === foundUser._team[i].subdomain) {
                         userIsPartOfThisTeam = true;
                         break;
                     }
@@ -161,25 +167,31 @@ team.GetTeamBySubdomain = function(req, fn) {
                     var myTeamId = foundUser.defaultLoginTeam._id;
 
                     var myTeam = { _team: foundUser.defaultLoginTeam._id };
+
                     getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] }, 
                         { $and: [myTeam, {$or:[connectedDataset,importedDataset] }     ] }, fn);
 
-                } else if(userIsPartOfThisTeam) { //get published and unpublished dataset if currentUser is one of the viewers
+
+                } else if (userIsPartOfThisTeam) { //get published and unpublished dataset if currentUser is one of the viewers
 
                     var myTeamId = foundUser.defaultLoginTeam._id;
 
                     var myTeam = { $or: [{ _id: { $in: foundUser._editors } }, { _id: { $in: foundUser._viewers } }] };
+
 
                     getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam' : true }, 
                         { 'subscription.state': 'active' } ] }, 
                         { $and: [myTeam, {$or:[connectedDataset,importedDataset]}] }, fn);
                 } else { // get published dataset if currentUser is not one of the viewers
                     getPublishedDataset(fn);
+
                 }
             });
 
     } else { //get published datasets
-        getPublishedDataset(fn);
+
+        getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [{ 'superTeam': true }, { 'subscription.state': 'active' }, { 'subscription.state': 'canceled' }] }, { isPublic: true, imported: true }, fn);
+
     }
 
 };

@@ -465,6 +465,32 @@ md-tooltip .md-content {
     margin-right: 30px;
 }
 
+/*Dataset process data banner*/
+.process-data {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    background-color: #005CFF;
+    color: white;
+    padding: 0.5em;
+
+    top: 0;
+    opacity: 0;
+    transition: top 0.3s, opacity 0.3s;
+}
+.process-data.show {
+    top: 18px;
+    opacity: 1;
+}
+.process-data a {
+    color: white;
+    text-decoration: underline;
+}
+.process-data a:hover {
+    text-decoration: none;
+}
+
 /* Dataset Breadcrumb */
 
 ._md-nav-button-text.placeholder {
