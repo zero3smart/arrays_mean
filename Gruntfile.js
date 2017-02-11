@@ -92,14 +92,6 @@ module.exports = function (grunt) {
             }
         },
 
-        sass: {
-            bootstrap: {
-                files: {
-                    'public/stylesheets/base/bootstrap.css': 'public/stylesheets/scss/bootstrap.scss'
-                }
-            }
-        },
-
         postcss: {
             options: {
                 map: true,
@@ -132,7 +124,6 @@ module.exports = function (grunt) {
     // These plugins provide necessary tasks.
     // grunt.loadNpmTasks('grunt-contrib-concat');
     // grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-copy');
@@ -144,6 +135,6 @@ module.exports = function (grunt) {
     // Default task.
     grunt.registerTask('default', ['jshint']);
 
-    grunt.registerTask('build', ['copy', 'sass', 'postcss', 'subgrunt']);
+    grunt.registerTask('build', ['copy', 'postcss', 'subgrunt']);
 
 };
