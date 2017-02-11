@@ -199,6 +199,8 @@ function _runQuery(query,fn) {
                     })
                 },
                 function(statement,callback) {
+
+                    winston.info("Executing query: %s" , query);
                     statement.executeQuery(query,function(err,results) {
                         if (err) callback(err);
                         else {
