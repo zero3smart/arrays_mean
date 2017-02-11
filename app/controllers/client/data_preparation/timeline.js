@@ -62,7 +62,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
             // importedDataPreparation.RealColumnNameFromHumanReadableColumnName(groupBy,dataSourceDescription) :
             // dataSourceDescription.fe_views.views.timeline.defaultGroupByColumnName;
 
-            var groupedResultsLimit = config.timelineGroupSize;
+            var groupedResultsLimit = urlQuery.groupSize ? parseInt(urlQuery.groupSize) : config.timelineGroupSize;
             var groupsLimit = config.timelineGroups;
             var groupByDateFormat;
             //
@@ -257,7 +257,13 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     }
                 });
 
-
+                // Show all if groupSize is -1
+                var groupedResultsLimitQuery;
+                if (groupedResultsLimit === -1) {
+                    groupedResultsLimitQuery = "$results";
+                } else {
+                    groupedResultsLimitQuery = { $slice: ["$results", groupedResultsLimit] };
+                }
 
                 aggregationOperators = aggregationOperators.concat(
                     [
@@ -288,7 +294,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                                 startDate: 1,
                                 endDate: 1,
                                 total: 1,
-                                results: {$slice: ["$results", groupedResultsLimit]}
+                                results: groupedResultsLimitQuery
                             }
                         },
                         {
@@ -429,6 +435,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
                     sourceDocURL: sourceDocURL,
                     view_visibility: dataSourceDescription.fe_views.views ? dataSourceDescription.fe_views.views : {},
                     view_description: dataSourceDescription.fe_views.views.timeline.description ? dataSourceDescription.fe_views.views.timeline.description : "",
+                    viewAllLinkTo: dataSourceDescription.fe_views.views.gallery ? 'gallery' : 'timeline',
                     //
                     pageSize: config.timelineGroups < nonpagedCount ? config.pageSize : nonpagedCount,
                     onPageNum: pageNumber,
