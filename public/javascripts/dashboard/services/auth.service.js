@@ -116,7 +116,7 @@
 
    
 
-            if (isLoggedIn && ( (team.superTeam && team.superTeam==true) || user.role === 'superAdmin' || team.subscription.state === 'in_trial' || team.subscription.state === 'active')) {
+            if (isLoggedIn && ( (team.superTeam && team.superTeam==true) || user.role === 'superAdmin' || team.subscription.state === 'active' || team.subscription.state === 'canceled')) {
 
 
                 deferred.resolve();

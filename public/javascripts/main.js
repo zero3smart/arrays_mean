@@ -41,7 +41,7 @@ $(document).ready(function () {
 
         //toDo: get view from api
         
-        var viewTypes = ['gallery', 'pie-chart', 'line-graph', 'scatterplot', 'map-view', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
+        var viewTypes = ['gallery', 'pie-chart', 'line-graph', 'scatterplot', 'map', 'timeline', 'word-cloud', 'bar-chart', 'pie-set'];
 
         var words = default_view.split(/(?=[A-Z])/);
         var default_view_url = words.map(function (word) {

@@ -28,6 +28,8 @@ angular.module('arraysApp')
             // }
             if (!dataset.importRevision) {dataset.importRevision = 1;}
 
+
+
             $scope.$parent.$parent.dataset = dataset;
             $scope.$parent.$parent.currentNavItem = 'settings';
 
@@ -49,7 +51,7 @@ angular.module('arraysApp')
 
 
             $scope.submitForm = function(isValid) {
-                debugger;
+                // debugger;
 
 
 
@@ -64,7 +66,6 @@ angular.module('arraysApp')
 
                     var finalizedDataset = angular.copy(dataset);
                     delete finalizedDataset.columns;
-
 
 
 

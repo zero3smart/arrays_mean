@@ -86,8 +86,7 @@
                                                     </div>
                                                     <div class="explore-tile-meta">
                                                         {% set comma = joiner() %}
-
-                                                        <span class="source-count">{{ teamDesc.sourceDoc.numberOfRows | comma }} Record{{ "s" if teamDesc.sourceDoc.numberOfRows != 1 else "" }}</span>
+                                                  
                                                         <span class="source-divider"></span>
                                                         <span class="source-updated">Updated: {{ teamDesc.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
                                                     </div>

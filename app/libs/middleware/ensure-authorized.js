@@ -13,9 +13,10 @@ module.exports.ensureAuthorized = function(req, res, next) {
     	sourceKey = req.params[0] + req.params[1];
       
 
-        sourceKey = req.subdomains[0] + '-' + sourceKey.substring(1);
+        sourceKey = process.env.NODE_ENV !== 'enterprise' ? req.subdomains[0] + '-' + sourceKey.substring(1) : sourceKey.substring(1)
+
     } else {
-        sourceKey = req.subdomains[0] + '-' + req.params.source_key;
+        sourceKey = process.env.NODE_ENV !== 'enterprise' ? req.subdomains[0] + '-' + req.params.source_key : req.params.source_key;
     }
 
 
@@ -25,6 +26,8 @@ module.exports.ensureAuthorized = function(req, res, next) {
             winston.error("❌  Error getting bind data to authoriziing: ", err);
             return res.status(500).send(err.response || 'Internal Server Error');
         }
+
+
 
         if (!datasource) return res.redirect('/');
 

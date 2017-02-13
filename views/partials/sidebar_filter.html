@@ -4,7 +4,12 @@
     </div>
     <ul class="sidebar-filter-group">
 
+
+
         {% for field in uniqueFieldValuesByFieldName %}
+
+
+
 
             {% if field.values | length == 1 %}
                 {% set isThisAnActiveFilterColumn = false %}
@@ -64,6 +69,9 @@
 
                     <a class="collapse-trigger" role="button" href="#column-{{ loop.index }}" aria-expanded="false" aria-controls="column-{{ loop.index }}">
                         <!-- don't show object title -->
+
+
+
                         {% if displayTitleOverrides[field.name] == "Object Title" %}
                             <span class="sidebar-filter-fieldname">{{ field.name }}</span> {% if isThisAnActiveFilterColumn %}<span class="badge background-color-brand">{{ filterObj[field.name] | filterCount }}</span>{%endif %}
                         {% else %}
