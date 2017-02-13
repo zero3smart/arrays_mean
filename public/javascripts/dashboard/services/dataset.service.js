@@ -162,6 +162,12 @@
             return $http.post('api/dataset/connect/' + datasetId,connectionInfo);
        }
 
+       var colsForJoinTables = function(connectionInfo) {
+            return $http.post('api/dataset/colsForJoinTables',connectionInfo);
+       }
+
+
+
 
         return {
             removeSubdataset: removeSubdataset,
@@ -171,6 +177,7 @@
             connectToRemoteDatasource: connectToRemoteDatasource,
             killJob: killJob,
             search: search,
+            colsForJoinTables:colsForJoinTables,
             getAdditionalSources: getAdditionalSources,
             getReimportDatasets: getReimportDatasets,
             save: save,

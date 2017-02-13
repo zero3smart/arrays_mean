@@ -176,7 +176,7 @@ angular.module('arraysApp')
                                     if (additionalDatasets.length > 0) {
                                         additionalDatasets.map(function(dataset) {
                                             if (dataset.jobId !== 0) {
-                                                deferred.reject({importing: true, datasetId: dataset._id});
+                                                deferred.reject({importing: true, datasetId: dataset.schema_id});
                                                 return false;
 
                                             }

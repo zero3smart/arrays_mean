@@ -71,8 +71,15 @@
                                                     {%- endfor %}
                                                 </div>
                                                 <div class="explore-tile-meta">
+
+                                                    {% if source.sourceDoc %}
+
                                                     <span class="source-count">{{ source.sourceDoc.numberOfRows | comma }} Record{{ "s" if source.sourceDoc.numberOfRows != 1 else "" }}</span>
                                                     <span class="source-divider"></span>
+
+                                                    {% endif %}
+
+                                                   
                                                     <span class="source-updated">Last Updated {{ source.sourceDoc.dateOfLastImport | dateFormattedAs_monthDayYear }}</span>
                                                 </div>
                                             </div>

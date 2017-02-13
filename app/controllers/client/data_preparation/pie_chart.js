@@ -20,7 +20,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
     // embed
     // Other filters
     var source_pKey = urlQuery.source_key;
-    var collectionPKey = req.subdomains[0] + '-' + source_pKey;
+    var collectionPKey = process.env.NODE_ENV !== 'enterprise'? req.subdomains[0] + '-' + source_pKey : source_pKey;
 
     importedDataPreparation.DataSourceDescriptionWithPKey(collectionPKey)
         .then(function (dataSourceDescription) {
