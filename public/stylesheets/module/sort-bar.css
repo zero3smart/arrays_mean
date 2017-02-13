@@ -120,7 +120,7 @@
 
 .search-icon {
 	position: relative;
-	top: 2px;
+	/*top: 2px;*/
 	display: inline-block;
 	margin-top: -3px;
 	margin-bottom: -3px;
@@ -132,6 +132,13 @@
 .search-by-label {
 	font-size: 18px;
 	color: var(--color-text-light);
+}
+
+.form-search .sort-control .dropdown-toggle {
+    padding-left: 0;
+}
+.form-search .sort-control .dropdown-toggle-button-has-caret:before {
+    top: -4px;
 }
 
 /* @end Search form */

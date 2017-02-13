@@ -128,8 +128,8 @@ $(document).ready(function () {
         $('.search-criteria').html(colname);
         $('.search-colname').attr('value', colname);
 
-        $('.search-by-label').html('Search by ' + colname);
-        // $('.search-input').attr('placeholder', 'Search by ' + colname);
+        $('.search-by-label').html('Search by ' + colname + ':');
+        // $('.search-input').attr('placeholder', 'Type to search by ' + colname);
 
         $('.search-control .dropdown-toggle').attr('aria-expanded', 'false');
         $(this).closest('.dropdown').removeClass('open');
