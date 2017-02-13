@@ -110,6 +110,7 @@ team.GetTeamsAndDatasources = function(userId, fn) {
                     var myTeam = {_team: foundUser.defaultLoginTeam._id, $or: [{ _id: {$in: foundUser._editors} }, {_id: { $in: foundUser._viewers} }] }
                     getTeamsAndPopulateDatasetWithQuery({ $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] }, { $and: [{ $or: [myTeam, otherTeams] }, {$or:[importedDataset,connectedDataset] } ] }, fn);
 
+
                 }
             });
 
@@ -174,6 +175,7 @@ team.GetTeamBySubdomain = function(req, fn) {
 
                     getTeamsAndPopulateDatasetWithQuery({ subdomain: team_key, $or: [ { 'superTeam': true }, { 'subscription.state': 'active' } ] }, 
                         { $and: [myTeam, {$or:[connectedDataset,importedDataset] }     ] }, fn);
+
 
 
                 } else if (userIsPartOfThisTeam) { //get published and unpublished dataset if currentUser is one of the viewers
