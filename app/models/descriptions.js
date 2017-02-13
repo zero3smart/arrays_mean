@@ -501,11 +501,13 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
 
                         
                     });
+
             } else {
 
 
             
                 if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.superTeam !== true) return fn();
+
 
 
 

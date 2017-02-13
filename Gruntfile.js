@@ -42,13 +42,6 @@ module.exports = function (grunt) {
                 },
                 tasks: ['postcss']
             },
-            sass: {
-                files: ['public/stylesheets/scss/**/*.scss'],
-                options: {
-                    livereload: true
-                },
-                tasks: ['sass', 'postcss']
-            },
             js: {
                 files: ['public/javascripts/**/*.js', '!public/javascripts/main.min.js', '!public/vendors/**/*.js'],
                 options: {
@@ -100,6 +93,7 @@ module.exports = function (grunt) {
         },
 
 
+
         // sass: {  
         //     bootstrap: {
         //         files: {
@@ -107,6 +101,7 @@ module.exports = function (grunt) {
         //         }
         //     }
         // },
+
 
         postcss: {
             options: {
@@ -140,7 +135,9 @@ module.exports = function (grunt) {
     // These plugins provide necessary tasks.
     // grunt.loadNpmTasks('grunt-contrib-concat');
     // grunt.loadNpmTasks('grunt-contrib-uglify');
+
     // grunt.loadNpmTasks('grunt-contrib-sass');
+
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-copy');
