@@ -130,7 +130,7 @@ module.exports.BindData = function (req, urlQuery, callback) {
 
                                     user: user,
 
-                                    displayTitleOverrides: dataSourceDescription.fe_displayTitleOverrides,
+                                    displayTitleOverrides:  _.cloneDeep(dataSourceDescription.fe_displayTitleOverrides),
 
                                     documents: documents,
                                     metaData: dataSourceDescription,

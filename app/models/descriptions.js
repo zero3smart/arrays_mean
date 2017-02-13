@@ -490,6 +490,7 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
                                     datasourceDescription.isPublic
                                 ) && ( 
                                     subscription.state === 'active' || subscription.state === 'canceled' || datasourceDescription._team.superTeam == true
+
                                 )
                             ) {
                                 return fn(null, datasourceDescription);
@@ -500,9 +501,14 @@ function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
 
                         
                     });
-            } else {   
-    
-                if (subscription.state != 'active' && subscription.state != 'canceled' && datasourceDescription._team.superTeam !== true) return fn();
+
+            } else {
+
+
+            
+                if (subscription.state != 'in_trial' && subscription.state != 'active' && datasourceDescription._team.superTeam !== true) return fn();
+
+
 
 
                 if (datasourceDescription.isPublic) return fn(null, datasourceDescription);
