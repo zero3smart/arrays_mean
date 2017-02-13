@@ -220,7 +220,10 @@ function _runQuery(query,fn) {
                 var errorFromFuncions = err;
                 db.release(connObj,function(err) {
                     if (err || errorFromFuncions) {
-                        winston.error("Error reading remote data columns and records: ",err);
+
+                        winston.error("Error reading remote data columns and records");
+                        console.log("err: %s", err);
+                        console.log("err from functions: %s",errorFromFuncions);
                         fn(err);
                     } else {
                         fn(null,arrayOfData);
