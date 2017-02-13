@@ -68,6 +68,7 @@ var DatasourceDescription_scheme = Schema({
     _team: {type: Schema.Types.ObjectId, ref: 'Team'},
 
     isPublic: {type: Boolean, default: false},
+    sample: {type: Boolean, default: false},
 
     fe_objectShow_customHTMLOverrideFnsByColumnNames: Object,
 
@@ -427,15 +428,20 @@ datasource_description.GetDescriptionsToSetup = _GetDescriptionsToSetupByIds;
 
 
 var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid, revision, fn) {
-   
     
-    this.findOne({uid: uid, importRevision: revision, fe_visible: true})
+    this.find({uid: uid, importRevision: revision, fe_visible: true})
         .populate({
             path: '_team',
-            match: { 'subdomain' : subdomain}
+            match: {subdomain : subdomain}
         })
         .lean()
         .exec(function (err, descriptions) {
+            descriptions = descriptions.filter(function (description) {
+                if (description._team !== null) {
+                    return description
+                }
+            });
+            descriptions  = descriptions[0];
             if (err) {
                 winston.error("❌ Error occurred when finding datasource description with uid and importRevision ", err);
                 fn(err, null);
@@ -448,10 +454,13 @@ var _GetDescriptionsWith_subdomain_uid_importRevision = function (subdomain,uid,
 datasource_description.GetDescriptionsWith_subdomain_uid_importRevision = _GetDescriptionsWith_subdomain_uid_importRevision;
 
 function _GetDatasourceByUserAndKey(userId, sourceKey, fn) {
+    console.log(sourceKey)
 
 
     imported_data_preparation.DataSourceDescriptionWithPKey(sourceKey)
         .then(function(datasourceDescription) {
+            // console.log(datasourceDescription)
+            // console.log(datasourceDescription._team)
 
             var subscription = datasourceDescription._team.subscription ? datasourceDescription._team.subscription : { state: null };
 

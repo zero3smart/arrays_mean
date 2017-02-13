@@ -23,12 +23,12 @@ function _uploadDataSource(filePath, newFilename, contentType,teamSubdomin, data
 module.exports.uploadDataSource = _uploadDataSource;
 
 
-function _copySampleDatasource(datasetToDuplicateId, datasetId, teamSubdomain, callback) {
+function _copySampleDatasource(datasetToDuplicateId, fileName, datasetId, teamSubdomain, callback) {
     // this will be the demo team
     var params = {
         Bucket: bucket,
-        CopySource: bucket + '/maitland/datasets/' + datasetToDuplicateId + '/datasources/pokemonGO.csv',
-        Key: teamSubdomain + '/datasets/' + datasetId + '/datasources/sample.csv'
+        CopySource: bucket + '/maitland/datasets/' + datasetToDuplicateId + '/datasources/' + fileName,
+        Key: teamSubdomain + '/datasets/' + datasetId + '/datasources/' + fileName
     };
     s3.copyObject(params, function (err, data) {
         if(err) {

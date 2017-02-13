@@ -233,7 +233,6 @@ module.exports.update = function (req, res) {
 
 
         Team.create(team, function (err, createdTeam) {
-            console.log("creating team over here")
             if (err) {
                 res.send(err);
             }
@@ -246,7 +245,7 @@ module.exports.update = function (req, res) {
                         res.status(404).send('User not found');
                     } else {
                         // create sample dataset
-                        sample_dataset.delegateDatasetDuplication(user, createdTeam, function (err) {
+                        sample_dataset.delegateDatasetDuplicationTasks(user, createdTeam, function (err) {
                             if (err) {
                                 res.send({error: err})
                             }

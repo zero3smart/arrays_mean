@@ -20,7 +20,6 @@ module.exports.ensureAuthorized = function(req, res, next) {
 
 
 
-
     datasourceDescriptions.GetDatasourceByUserAndKey(req.user, sourceKey, function(err, datasource) {
         if (err) {
             winston.error("❌  Error getting bind data to authoriziing: ", err);
